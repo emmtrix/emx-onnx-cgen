@@ -74,12 +74,12 @@ const EMX_UNUSED float weight2_max[1] = {
     0x1.800000p+2f
 };
 
-static inline float ref_scalar_f32_minimum(float a, float b) {
-    return fminf(a, b);
-}
-
 static inline float ref_scalar_f32_maximum(float a, float b) {
     return fmaxf(a, b);
+}
+
+static inline float ref_scalar_f32_minimum(float a, float b) {
+    return fminf(a, b);
 }
 
 /*

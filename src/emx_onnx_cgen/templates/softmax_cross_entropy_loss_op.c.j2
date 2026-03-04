@@ -26,14 +26,14 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             {{ acc_type }} max_value = ({{ acc_type }})input_flat[base];
             for (idx_t c_idx = 1; c_idx < c; ++c_idx) {
                 {{ acc_type }} value = ({{ acc_type }})input_flat[base + c_idx * d];
-                max_value = {{ max_fn }}(max_value, value);
+                max_value = {{ scalar_fn(SF.MAXIMUM, acc_dtype) }}(max_value, value);
             }
             {{ acc_type }} sum = {{ acc_zero_literal }};
             for (idx_t c_idx = 0; c_idx < c; ++c_idx) {
                 {{ acc_type }} value = ({{ acc_type }})input_flat[base + c_idx * d] - max_value;
-                sum += {{ acc_exp_fn }}(value);
+                sum += {{ math_fn("exp", acc_dtype) }}(value);
             }
-            {{ acc_type }} logsum = {{ acc_log_fn }}(sum);
+            {{ acc_type }} logsum = {{ math_fn("log", acc_dtype) }}(sum);
 {% if log_prob %}
             {{ acc_type }} loss_value = {{ acc_zero_literal }};
             for (idx_t c_idx = 0; c_idx < c; ++c_idx) {

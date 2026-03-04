@@ -7440,17 +7440,6 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, AttentionOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for Attention codegen."
-                )
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, op.dtype, scalar_registry
-            )
-            if max_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar maximum function for Attention."
-                )
             params = self._shared_param_map(
                 [
                     ("input_q", op.input_q),
@@ -7645,9 +7634,7 @@ class CEmitter:
                 scale_literal=CEmitter._format_floating(op.scale, op.dtype),
                 softcap_literal=CEmitter._format_floating(op.softcap, op.dtype),
                 one_literal=CEmitter._format_literal(op.dtype, 1),
-                max_fn=max_fn,
-                exp_fn=CEmitter._math_fn(op.dtype, "expf", "exp"),
-                tanh_fn=CEmitter._math_fn(op.dtype, "tanhf", "tanh"),
+                dtype=op.dtype,
                 is_causal=int(op.is_causal),
                 qk_matmul_output_mode=op.qk_matmul_output_mode,
                 batch=op.batch,
@@ -8225,21 +8212,10 @@ class CEmitter:
                     ("output", op.output),
                 ]
             )
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for DeformConv codegen."
-                )
             acc_dtype = self._accumulation_dtype(op.dtype)
             acc_type = acc_dtype.c_type
             acc_zero_literal = CEmitter._format_literal(acc_dtype, 0)
             acc_one_literal = CEmitter._format_literal(acc_dtype, 1)
-            floor_fn = self._scalar_function_name(
-                ScalarFunction.FLOOR, acc_dtype, scalar_registry
-            )
-            if floor_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar floor function for DeformConv."
-                )
             input_shape = (op.batch, op.in_channels, op.in_h, op.in_w)
             weight_shape = (
                 op.out_channels,
@@ -8303,7 +8279,7 @@ class CEmitter:
                 acc_zero_literal=acc_zero_literal,
                 zero_literal=acc_zero_literal,
                 one_literal=acc_one_literal,
-                floor_fn=floor_fn,
+                acc_scalar_dtype=acc_dtype,
                 batch=op.batch,
                 in_channels=op.in_channels,
                 out_channels=op.out_channels,
@@ -8437,8 +8413,7 @@ class CEmitter:
                 pad_right=op.pad_right,
                 p=op.p,
                 zero_literal=zero_literal,
-                abs_fn=CEmitter._math_fn(op.dtype, "fabsf", "fabs"),
-                pow_fn=CEmitter._math_fn(op.dtype, "powf", "pow"),
+                dtype=op.dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, BatchNormOp):
@@ -8506,7 +8481,7 @@ class CEmitter:
                     1.0 - op.momentum, op.dtype
                 ),
                 epsilon_literal=CEmitter._format_floating(op.epsilon, op.dtype),
-                sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
+                dtype=op.dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, LpNormalizationOp):
@@ -8534,8 +8509,7 @@ class CEmitter:
                 inner=op.inner,
                 p=op.p,
                 zero_literal=zero_literal,
-                abs_fn=CEmitter._math_fn(op.dtype, "fabsf", "fabs"),
-                sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
+                dtype=op.dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, InstanceNormalizationOp):
@@ -8579,7 +8553,7 @@ class CEmitter:
                 loop_vars=loop_vars,
                 spatial_size=op.spatial_size,
                 epsilon_literal=CEmitter._format_floating(op.epsilon, op.dtype),
-                sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
+                dtype=op.dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, GroupNormalizationOp):
@@ -8625,7 +8599,7 @@ class CEmitter:
                 group_size=op.group_size,
                 spatial_size=op.spatial_size,
                 epsilon_literal=CEmitter._format_floating(op.epsilon, op.dtype),
-                sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
+                dtype=op.dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, LayerNormalizationOp):
@@ -8634,7 +8608,6 @@ class CEmitter:
             acc_zero_literal = CEmitter._format_literal(acc_dtype, 0)
             acc_one_literal = CEmitter._format_literal(acc_dtype, 1)
             acc_epsilon_literal = CEmitter._format_floating(op.epsilon, acc_dtype)
-            acc_sqrt_fn = CEmitter._math_fn(acc_dtype, "sqrtf", "sqrt")
             use_kahan = False
             params = self._shared_param_map(
                 [
@@ -8753,7 +8726,7 @@ class CEmitter:
                 acc_zero_literal=acc_zero_literal,
                 acc_one_literal=acc_one_literal,
                 acc_epsilon_literal=acc_epsilon_literal,
-                acc_sqrt_fn=acc_sqrt_fn,
+                acc_dtype=acc_dtype,
                 use_kahan=use_kahan,
             ).rstrip()
             return with_node_comment(rendered)
@@ -8787,7 +8760,7 @@ class CEmitter:
                 non_axes=op.non_axes,
                 reduce_count=op.reduce_count,
                 epsilon_literal=CEmitter._format_floating(op.epsilon, op.dtype),
-                sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
+                dtype=op.dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, RMSNormalizationOp):
@@ -8835,7 +8808,7 @@ class CEmitter:
                 scale_index_vars=scale_index_vars,
                 inner=op.inner,
                 epsilon_literal=CEmitter._format_floating(op.epsilon, op.dtype),
-                sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
+                dtype=op.dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, LrnOp):
@@ -8871,7 +8844,7 @@ class CEmitter:
                 ),
                 beta_literal=CEmitter._format_floating(op.beta, op.dtype),
                 bias_literal=CEmitter._format_floating(op.bias, op.dtype),
-                pow_fn=CEmitter._math_fn(op.dtype, "powf", "pow"),
+                dtype=op.dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, GruOp):
@@ -9341,7 +9314,7 @@ class CEmitter:
                     op.norm_coefficient, op.dtype
                 ),
                 epsilon_literal=CEmitter._format_floating(op.epsilon, op.dtype),
-                sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
+                dtype=op.dtype,
                 tensors=tensor_specs,
             ).rstrip()
             return with_node_comment(rendered)
@@ -9441,22 +9414,11 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, SoftmaxOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for Softmax rendering."
-                )
             output_shape = self._ctx_shape(op.output)
             output_dtype = self._ctx_dtype(op.output)
             outer = self._derived(op, "outer")
             axis_size = self._derived(op, "axis_size")
             inner = self._derived(op, "inner")
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, output_dtype, scalar_registry
-            )
-            if max_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar maximum function for Softmax."
-                )
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
@@ -9478,27 +9440,15 @@ class CEmitter:
                 outer=outer,
                 axis_size=axis_size,
                 inner=inner,
-                max_fn=max_fn,
-                exp_fn=CEmitter._math_fn(output_dtype, "expf", "exp"),
+                dtype=output_dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, LogSoftmaxOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for LogSoftmax rendering."
-                )
             output_shape = self._ctx_shape(op.output)
             output_dtype = self._ctx_dtype(op.output)
             outer = self._derived(op, "outer")
             axis_size = self._derived(op, "axis_size")
             inner = self._derived(op, "inner")
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, output_dtype, scalar_registry
-            )
-            if max_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar maximum function for LogSoftmax."
-                )
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
@@ -9520,28 +9470,15 @@ class CEmitter:
                 outer=outer,
                 axis_size=axis_size,
                 inner=inner,
-                max_fn=max_fn,
-                exp_fn=CEmitter._math_fn(output_dtype, "expf", "exp"),
-                log_fn=CEmitter._math_fn(output_dtype, "logf", "log"),
+                dtype=output_dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, HardmaxOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for Hardmax rendering."
-                )
             output_shape = self._ctx_shape(op.output)
             output_dtype = self._ctx_dtype(op.output)
             outer = self._derived(op, "outer")
             axis_size = self._derived(op, "axis_size")
             inner = self._derived(op, "inner")
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, output_dtype, scalar_registry
-            )
-            if max_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar maximum function for Hardmax."
-                )
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
@@ -9565,7 +9502,7 @@ class CEmitter:
                 inner=inner,
                 zero_literal=zero_literal,
                 one_literal=CEmitter._format_literal(output_dtype, 1),
-                max_fn=max_fn,
+                dtype=output_dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, NegativeLogLikelihoodLossOp):
@@ -9629,22 +9566,9 @@ class CEmitter:
             return with_node_comment(rendered)
         if isinstance(op, SoftmaxCrossEntropyLossOp):
             acc_dtype = self._accumulation_dtype(op.dtype)
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for SoftmaxCrossEntropyLoss."
-                )
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, acc_dtype, scalar_registry
-            )
-            if max_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar maximum function for SoftmaxCrossEntropyLoss."
-                )
             acc_type = acc_dtype.c_type
             acc_zero_literal = CEmitter._format_literal(acc_dtype, 0)
             acc_one_literal = CEmitter._format_literal(acc_dtype, 1)
-            acc_exp_fn = CEmitter._math_fn(acc_dtype, "expf", "exp")
-            acc_log_fn = CEmitter._math_fn(acc_dtype, "logf", "log")
             params = self._shared_param_map(
                 [
                     ("input0", op.input0),
@@ -9720,23 +9644,10 @@ class CEmitter:
                 acc_type=acc_type,
                 acc_zero_literal=acc_zero_literal,
                 acc_one_literal=acc_one_literal,
-                acc_exp_fn=acc_exp_fn,
-                acc_log_fn=acc_log_fn,
-                max_fn=max_fn,
+                acc_dtype=acc_dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, MaxPoolOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for MaxPool rendering."
-                )
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, op.dtype, scalar_registry
-            )
-            if max_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar maximum function for MaxPool."
-                )
             params = self._shared_param_map(
                 [
                     ("input0", op.input0),
@@ -9783,7 +9694,7 @@ class CEmitter:
                 output_suffix=output_suffix,
                 indices_suffix=indices_suffix,
                 indices_c_type=indices_c_type,
-                max_fn=max_fn,
+                dtype=op.dtype,
                 batch=op.batch,
                 channels=op.channels,
                 spatial_rank=op.spatial_rank,
@@ -11539,10 +11450,6 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, NonMaxSuppressionOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for NonMaxSuppression."
-                )
             boxes_shape = self._ctx_shape(op.boxes)
             scores_shape = self._ctx_shape(op.scores)
             output_shape = self._ctx_shape(op.output)
@@ -11578,16 +11485,7 @@ class CEmitter:
                 if op.score_threshold is not None
                 else None
             )
-            min_fn = self._scalar_function_name(
-                ScalarFunction.MINIMUM, boxes_dtype, scalar_registry
-            )
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, boxes_dtype, scalar_registry
-            )
-            if min_fn is None or max_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar min/max functions for NonMaxSuppression."
-                )
+
             params = self._shared_param_map(
                 [
                     ("boxes", op.boxes),
@@ -11690,8 +11588,7 @@ class CEmitter:
                 num_boxes=boxes_shape[1],
                 num_classes=scores_shape[1],
                 center_point_box=op.center_point_box,
-                min_fn=min_fn,
-                max_fn=max_fn,
+                compute_scalar_dtype=boxes_dtype,
                 iou_threshold_default=boxes_dtype.zero_literal,
                 score_threshold_default=boxes_dtype.zero_literal,
                 score_threshold_enabled=op.score_threshold is not None,
@@ -11885,10 +11782,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, BlackmanWindowOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for Window rendering."
-                )
+
             params = self._shared_param_map(
                 [
                     ("size", op.size),
@@ -11914,13 +11808,7 @@ class CEmitter:
                 ScalarType.F64 if output_dtype == ScalarType.F64 else ScalarType.F32
             )
             compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
-            cos_fn = self._scalar_function_name(
-                ScalarFunction.COS, compute_dtype, scalar_registry
-            )
-            if cos_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar cosine function for Window rendering."
-                )
+
             rendered = blackman_window_template.render(
                 model_name=model.name,
                 op_name=op_name,
@@ -11938,7 +11826,7 @@ class CEmitter:
                 c05_literal=self._format_literal(compute_dtype, 0.5),
                 c008_literal=self._format_literal(compute_dtype, 0.08),
                 pi_literal=self._format_literal(compute_dtype, math.pi),
-                cos_fn=cos_fn,
+                compute_scalar_dtype=compute_dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, LoopSequenceMapOp):
@@ -12083,10 +11971,7 @@ class CEmitter:
             lines.append("}")
             return with_node_comment("\n".join(lines))
         if isinstance(op, HammingWindowOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for Window rendering."
-                )
+
             params = self._shared_param_map(
                 [
                     ("size", op.size),
@@ -12112,13 +11997,7 @@ class CEmitter:
                 ScalarType.F64 if output_dtype == ScalarType.F64 else ScalarType.F32
             )
             compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
-            cos_fn = self._scalar_function_name(
-                ScalarFunction.COS, compute_dtype, scalar_registry
-            )
-            if cos_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar cosine function for Window rendering."
-                )
+
             rendered = hamming_window_template.render(
                 model_name=model.name,
                 op_name=op_name,
@@ -12135,14 +12014,11 @@ class CEmitter:
                 alpha_literal=self._format_literal(compute_dtype, 25.0 / 46.0),
                 beta_literal=self._format_literal(compute_dtype, 1.0 - (25.0 / 46.0)),
                 pi_literal=self._format_literal(compute_dtype, math.pi),
-                cos_fn=cos_fn,
+                compute_scalar_dtype=compute_dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, HannWindowOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for Window rendering."
-                )
+
             params = self._shared_param_map(
                 [
                     ("size", op.size),
@@ -12168,13 +12044,7 @@ class CEmitter:
                 ScalarType.F64 if output_dtype == ScalarType.F64 else ScalarType.F32
             )
             compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
-            cos_fn = self._scalar_function_name(
-                ScalarFunction.COS, compute_dtype, scalar_registry
-            )
-            if cos_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar cosine function for Window rendering."
-                )
+
             rendered = hann_window_template.render(
                 model_name=model.name,
                 op_name=op_name,
@@ -12191,7 +12061,7 @@ class CEmitter:
                 alpha_literal=self._format_literal(compute_dtype, 0.5),
                 beta_literal=self._format_literal(compute_dtype, 0.5),
                 pi_literal=self._format_literal(compute_dtype, math.pi),
-                cos_fn=cos_fn,
+                compute_scalar_dtype=compute_dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, OneHotOp):
@@ -13967,7 +13837,7 @@ class CEmitter:
                 compute_type=compute_type,
                 round_fn=round_fn,
                 min_fn=min_fn,
-                max_fn=max_fn,
+                dtype=op.dtype,
                 min_literal=op.dtype.min_literal,
                 max_literal=op.dtype.max_literal,
                 input_scale_expr=f"{params['input_scale']}[0]",
@@ -14171,7 +14041,7 @@ class CEmitter:
                 k=op.k,
                 round_fn=round_fn,
                 min_fn=min_fn,
-                max_fn=max_fn,
+                dtype=op.dtype,
                 min_literal=min_literal,
                 max_literal=max_literal,
                 enable_integer_requant=scale_dtype != ScalarType.F16,
@@ -14280,10 +14150,6 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ClipOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for Clip rendering."
-                )
             input_shape = self._ctx_shape(op.input0)
             output_shape_raw = self._ctx_shape(op.output)
             input_dtype = self._ctx_dtype(op.input0)
@@ -14294,16 +14160,6 @@ class CEmitter:
             max_shape = (
                 self._ctx_shape(op.input_max) if op.input_max is not None else None
             )
-            min_fn = self._scalar_function_name(
-                ScalarFunction.MINIMUM, input_dtype, scalar_registry
-            )
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, input_dtype, scalar_registry
-            )
-            if min_fn is None or max_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar min/max functions for Clip."
-                )
             params = self._shared_param_map(
                 [
                     ("input0", op.input0),
@@ -14408,8 +14264,7 @@ class CEmitter:
                 input_expr=input_expr,
                 min_expr=min_expr,
                 max_expr=max_expr,
-                min_fn=min_fn,
-                max_fn=max_fn,
+                dtype=input_dtype,
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)

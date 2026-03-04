@@ -10,14 +10,14 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             {{ c_type }} max_value = input_flat[base];
             for (idx_t axis_idx = 1; axis_idx < axis_size; ++axis_idx) {
                 {{ c_type }} value = input_flat[base + axis_idx * inner];
-                max_value = {{ max_fn }}(max_value, value);
+                max_value = {{ scalar_fn(SF.MAXIMUM, dtype) }}(max_value, value);
             }
             {{ c_type }} sum = 0;
             for (idx_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
-                {{ c_type }} value = {{ exp_fn }}(input_flat[base + axis_idx * inner] - max_value);
+                {{ c_type }} value = {{ math_fn("exp", dtype) }}(input_flat[base + axis_idx * inner] - max_value);
                 sum += value;
             }
-            {{ c_type }} logsum = {{ log_fn }}(sum);
+            {{ c_type }} logsum = {{ math_fn("log", dtype) }}(sum);
             for (idx_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
                 {{ c_type }} value = input_flat[base + axis_idx * inner] - max_value;
                 output_flat[base + axis_idx * inner] = value - logsum;

@@ -27,7 +27,7 @@ for (idx_t {{ loop_vars[0] }} = 0; {{ loop_vars[0] }} < {{ dim }}; ++{{ loop_var
             }
 {% endfor %}
         }
-        {{ c_type }} denom = {{ sqrt_fn }}(var / ({{ group_size }} * {{ spatial_size }}) + {{ epsilon_literal }});
+        {{ c_type }} denom = {{ math_fn("sqrt", dtype) }}(var / ({{ group_size }} * {{ spatial_size }}) + {{ epsilon_literal }});
         for (idx_t c_in_group = 0; c_in_group < {{ group_size }}; ++c_in_group) {
             idx_t c = g * {{ group_size }} + c_in_group;
 {% for dim in shape[2:] %}
