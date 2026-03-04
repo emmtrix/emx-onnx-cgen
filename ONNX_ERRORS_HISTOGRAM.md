@@ -30,6 +30,7 @@ Aggregates non-success verification outcomes.
 | Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op RoiAlign | 3 | 22 |
 | '*' | 2 |  |
+| Failed to build testbench. | 2 | 17 |
 | Gelu only supports approximate=none | 2 | 20 |
 | LpPool expects 2D kernel_shape | 2 | 22 |
 | LpPool supports auto_pad=NOTSET only | 2 | 22 |
@@ -40,7 +41,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op BitwiseNot | 2 | 18 |
 | Unsupported op Det | 2 | 22 |
 | Unsupported op MaxUnpool | 2 | 22 |
-| Unsupported op STFT | 2 | 17 |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | 22 |
 | Dropout mask output is not supported | 1 | 22 |
 | Graph must contain at least one node | 1 | 25 |
@@ -61,7 +61,7 @@ Aggregates non-success verification outcomes.
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
 | Out of tolerance | 15 | 1 |
 | Unsupported op Loop | 16 | 1 |
-| Unsupported op STFT | 17 | 2 |
+| Failed to build testbench. | 17 | 2 |
 | Unsupported op MelWeightMatrix | 17 | 1 |
 | Unsupported op Col2Im | 18 | 5 |
 | OptionalHasElement expects exactly one non-empty input. | 18 | 4 |

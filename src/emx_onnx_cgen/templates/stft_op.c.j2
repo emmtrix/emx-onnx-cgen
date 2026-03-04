@@ -1,0 +1,165 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    static const {{ c_type }} stft_twiddle_re[{{ twiddle_len }}] = { {{ twiddle_re_values | join(', ') }} };
+    static const {{ c_type }} stft_twiddle_im[{{ twiddle_len }}] = { {{ twiddle_im_values | join(', ') }} };
+{% if use_fft %}
+    static const idx_t stft_input_perm[{{ fft_length }}] = { {{ fft_input_permutation | join(', ') }} };
+{% endif %}
+    const idx_t batch_count = (idx_t)({{ batch_expr }});
+    const idx_t signal_length = (idx_t)({{ signal_length_expr }});
+    const idx_t frame_count = (idx_t)({{ output_frames_expr }});
+    const idx_t output_bins = (idx_t)({{ output_bins_expr }});
+    const idx_t frame_step_value = (idx_t){{ frame_step }}[0];
+    idx_t runtime_frame_length = (idx_t)({{ frame_length_literal }});
+{% if use_runtime_frame_length %}
+    runtime_frame_length = (idx_t){{ frame_length_input }}[0];
+{% endif %}
+    if (frame_step_value <= 0 || runtime_frame_length <= 0) {
+        for (idx_t batch = 0; batch < batch_count; ++batch) {
+            for (idx_t frame = 0; frame < frame_count; ++frame) {
+                for (idx_t bin = 0; bin < output_bins; ++bin) {
+                    {{ output }}[batch][frame][bin][0] = {{ zero_literal }};
+                    {{ output }}[batch][frame][bin][1] = {{ zero_literal }};
+                }
+            }
+        }
+        return;
+    }
+    for (idx_t batch = 0; batch < batch_count; ++batch) {
+        for (idx_t frame = 0; frame < frame_count; ++frame) {
+            {{ c_type }} frame_re[{{ fft_length }}];
+            {{ c_type }} frame_im[{{ fft_length }}];
+            {{ c_type }} spectrum_re[{{ fft_length }}];
+            {{ c_type }} spectrum_im[{{ fft_length }}];
+            idx_t effective_frame_length = runtime_frame_length;
+            const idx_t frame_start = frame * frame_step_value;
+            if (effective_frame_length > {{ fft_length }}) {
+                effective_frame_length = {{ fft_length }};
+            }
+{% if use_window %}
+            idx_t sample_count = {{ window_length }};
+            if (sample_count > effective_frame_length) {
+                sample_count = effective_frame_length;
+            }
+{% else %}
+            const idx_t sample_count = effective_frame_length;
+{% endif %}
+            for (idx_t n = 0; n < {{ fft_length }}; ++n) {
+                frame_re[n] = {{ zero_literal }};
+                frame_im[n] = {{ zero_literal }};
+            }
+            for (idx_t n = 0; n < sample_count; ++n) {
+                const idx_t signal_index = frame_start + n;
+                if (signal_index < 0 || signal_index >= signal_length) {
+                    continue;
+                }
+                {{ c_type }} value_re = {{ signal }}[batch][signal_index][0];
+{% if input_components == 2 %}
+                {{ c_type }} value_im = {{ signal }}[batch][signal_index][1];
+{% else %}
+                {{ c_type }} value_im = {{ zero_literal }};
+{% endif %}
+{% if use_window %}
+                const {{ c_type }} window_value = {{ window }}[n];
+                value_re = value_re * window_value;
+                value_im = value_im * window_value;
+{% endif %}
+                frame_re[n] = value_re;
+                frame_im[n] = value_im;
+            }
+{% if use_fft %}
+            for (idx_t n = 0; n < {{ fft_length }}; ++n) {
+                const idx_t permuted = stft_input_perm[n];
+                spectrum_re[permuted] = frame_re[n];
+                spectrum_im[permuted] = frame_im[n];
+            }
+{% for stage in stage_data %}
+{% if stage.kind == "radix2" %}
+            for (idx_t block = 0; block < {{ fft_length }}; block += {{ 2 * stage.m }}) {
+                for (idx_t j = 0; j < {{ stage.m }}; ++j) {
+                    const idx_t tw_index = (idx_t)((j * {{ stage.l }}) % {{ twiddle_len }});
+                    const {{ c_type }} w_re = stft_twiddle_re[tw_index];
+                    const {{ c_type }} w_im = stft_twiddle_im[tw_index];
+                    const idx_t i0 = block + j;
+                    const idx_t i1 = i0 + {{ stage.m }};
+                    const {{ c_type }} b_re = spectrum_re[i1];
+                    const {{ c_type }} b_im = spectrum_im[i1];
+                    const {{ c_type }} t_re = (b_re * w_re) - (b_im * w_im);
+                    const {{ c_type }} t_im = (b_re * w_im) + (b_im * w_re);
+                    const {{ c_type }} a_re = spectrum_re[i0];
+                    const {{ c_type }} a_im = spectrum_im[i0];
+                    spectrum_re[i0] = a_re + t_re;
+                    spectrum_im[i0] = a_im + t_im;
+                    spectrum_re[i1] = a_re - t_re;
+                    spectrum_im[i1] = a_im - t_im;
+                }
+            }
+{% elif stage.kind == "radix4" %}
+            for (idx_t block = 0; block < {{ fft_length }}; block += {{ 4 * stage.m }}) {
+                for (idx_t j = 0; j < {{ stage.m }}; ++j) {
+                    const idx_t tw1 = (idx_t)((j * {{ stage.l }}) % {{ twiddle_len }});
+                    const idx_t tw2 = (idx_t)(((2 * j) * {{ stage.l }}) % {{ twiddle_len }});
+                    const idx_t tw3 = (idx_t)(((3 * j) * {{ stage.l }}) % {{ twiddle_len }});
+                    const idx_t i0 = block + j;
+                    const idx_t i1 = i0 + {{ stage.m }};
+                    const idx_t i2 = i1 + {{ stage.m }};
+                    const idx_t i3 = i2 + {{ stage.m }};
+                    const {{ c_type }} x0_re = spectrum_re[i0];
+                    const {{ c_type }} x0_im = spectrum_im[i0];
+                    const {{ c_type }} x1_src_re = spectrum_re[i1];
+                    const {{ c_type }} x1_src_im = spectrum_im[i1];
+                    const {{ c_type }} x2_src_re = spectrum_re[i2];
+                    const {{ c_type }} x2_src_im = spectrum_im[i2];
+                    const {{ c_type }} x3_src_re = spectrum_re[i3];
+                    const {{ c_type }} x3_src_im = spectrum_im[i3];
+                    const {{ c_type }} x1_re = (x1_src_re * stft_twiddle_re[tw1]) - (x1_src_im * stft_twiddle_im[tw1]);
+                    const {{ c_type }} x1_im = (x1_src_re * stft_twiddle_im[tw1]) + (x1_src_im * stft_twiddle_re[tw1]);
+                    const {{ c_type }} x2_re = (x2_src_re * stft_twiddle_re[tw2]) - (x2_src_im * stft_twiddle_im[tw2]);
+                    const {{ c_type }} x2_im = (x2_src_re * stft_twiddle_im[tw2]) + (x2_src_im * stft_twiddle_re[tw2]);
+                    const {{ c_type }} x3_re = (x3_src_re * stft_twiddle_re[tw3]) - (x3_src_im * stft_twiddle_im[tw3]);
+                    const {{ c_type }} x3_im = (x3_src_re * stft_twiddle_im[tw3]) + (x3_src_im * stft_twiddle_re[tw3]);
+                    const {{ c_type }} s02_re = x0_re + x2_re;
+                    const {{ c_type }} s02_im = x0_im + x2_im;
+                    const {{ c_type }} d02_re = x0_re - x2_re;
+                    const {{ c_type }} d02_im = x0_im - x2_im;
+                    const {{ c_type }} s13_re = x1_re + x3_re;
+                    const {{ c_type }} s13_im = x1_im + x3_im;
+                    const {{ c_type }} d13_re = x1_re - x3_re;
+                    const {{ c_type }} d13_im = x1_im - x3_im;
+                    const {{ c_type }} minus_i_d13_re = d13_im;
+                    const {{ c_type }} minus_i_d13_im = -d13_re;
+                    spectrum_re[i0] = s02_re + s13_re;
+                    spectrum_im[i0] = s02_im + s13_im;
+                    spectrum_re[i2] = s02_re - s13_re;
+                    spectrum_im[i2] = s02_im - s13_im;
+                    spectrum_re[i1] = d02_re + minus_i_d13_re;
+                    spectrum_im[i1] = d02_im + minus_i_d13_im;
+                    spectrum_re[i3] = d02_re - minus_i_d13_re;
+                    spectrum_im[i3] = d02_im - minus_i_d13_im;
+                }
+            }
+{% endif %}
+{% endfor %}
+{% else %}
+            for (idx_t k = 0; k < {{ fft_length }}; ++k) {
+                {{ c_type }} acc_re = {{ zero_literal }};
+                {{ c_type }} acc_im = {{ zero_literal }};
+                for (idx_t n = 0; n < {{ fft_length }}; ++n) {
+                    const idx_t tw_index = (idx_t)((k * n) % {{ twiddle_len }});
+                    const {{ c_type }} w_re = stft_twiddle_re[tw_index];
+                    const {{ c_type }} w_im = stft_twiddle_im[tw_index];
+                    const {{ c_type }} in_re = frame_re[n];
+                    const {{ c_type }} in_im = frame_im[n];
+                    acc_re += (in_re * w_re) - (in_im * w_im);
+                    acc_im += (in_re * w_im) + (in_im * w_re);
+                }
+                spectrum_re[k] = acc_re;
+                spectrum_im[k] = acc_im;
+            }
+{% endif %}
+            for (idx_t bin = 0; bin < output_bins; ++bin) {
+                {{ output }}[batch][frame][bin][0] = spectrum_re[bin];
+                {{ output }}[batch][frame][bin][1] = spectrum_im[bin];
+            }
+        }
+    }
+}

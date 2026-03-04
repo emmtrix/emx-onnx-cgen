@@ -52,6 +52,7 @@ from ..ir.ops import (
     ConvTransposeOp,
     DeformConvOp,
     CumSumOp,
+    STFTOp,
     DepthToSpaceOp,
     DequantizeLinearOp,
     DynamicQuantizeLinearOp,
@@ -603,6 +604,86 @@ class CEmitter:
             const_prefix = "const " if info["is_const"] else ""
             decls.append(f"{const_prefix}{info['c_type']} {name}{info['suffix']}")
         return decls
+
+    @staticmethod
+    def _fft_stockham_stage_plan(
+        fft_length: int,
+    ) -> tuple[tuple[str, int, int], ...]:
+        if fft_length <= 1:
+            return ()
+        if fft_length & (fft_length - 1):
+            return ()
+        stages: list[tuple[str, int, int]] = []
+        base4_value = fft_length
+        while base4_value % 4 == 0:
+            base4_value //= 4
+        if base4_value == 1:
+            m = 1
+            while m < fft_length:
+                stage_span = fft_length // (4 * m)
+                stages.append(("radix4", m, stage_span))
+                m *= 4
+            return tuple(stages)
+        m = 1
+        while m < fft_length:
+            stage_span = fft_length // (2 * m)
+            stages.append(("radix2", m, stage_span))
+            m *= 2
+        return tuple(stages)
+
+    @staticmethod
+    def _fft_twiddle_table(
+        fft_length: int,
+        *,
+        dtype: ScalarType,
+    ) -> tuple[tuple[str, str], ...]:
+        twiddles: list[tuple[str, str]] = []
+        for index in range(fft_length):
+            angle = -2.0 * math.pi * (index / fft_length)
+            real = math.cos(angle)
+            imag = math.sin(angle)
+            twiddles.append(
+                (
+                    CEmitter._format_literal(dtype, real),
+                    CEmitter._format_literal(dtype, imag),
+                )
+            )
+        return tuple(twiddles)
+
+    @staticmethod
+    def _fft_input_permutation(
+        fft_length: int,
+        *,
+        stage_plan: tuple[tuple[str, int, int], ...],
+    ) -> tuple[int, ...]:
+        if not stage_plan:
+            return tuple(range(fft_length))
+        kinds = {kind for kind, _, _ in stage_plan}
+        if kinds == {"radix2"}:
+            bits = fft_length.bit_length() - 1
+
+            def _bit_reverse(index: int) -> int:
+                reversed_index = 0
+                value = index
+                for _ in range(bits):
+                    reversed_index = (reversed_index << 1) | (value & 1)
+                    value >>= 1
+                return reversed_index
+
+            return tuple(_bit_reverse(index) for index in range(fft_length))
+        if kinds == {"radix4"}:
+            digits = len(stage_plan)
+
+            def _base4_reverse(index: int) -> int:
+                reversed_index = 0
+                value = index
+                for _ in range(digits):
+                    reversed_index = (reversed_index << 2) | (value & 0x3)
+                    value >>= 2
+                return reversed_index
+
+            return tuple(_base4_reverse(index) for index in range(fft_length))
+        raise CodegenError("mixed FFT stage plans are not supported")
 
     @staticmethod
     def _op_names(op: OpBase) -> tuple[str, ...]:
@@ -2034,6 +2115,22 @@ class CEmitter:
                 exclusive=op.exclusive,
                 reverse=op.reverse,
             )
+        if isinstance(op, STFTOp):
+            return STFTOp(
+                signal=name_map.get(op.signal, op.signal),
+                frame_step=name_map.get(op.frame_step, op.frame_step),
+                window=self._map_optional_name(name_map, op.window),
+                frame_length_input=self._map_optional_name(
+                    name_map, op.frame_length_input
+                ),
+                output=name_map.get(op.output, op.output),
+                onesided=op.onesided,
+                input_is_complex=op.input_is_complex,
+                fft_length=op.fft_length,
+                window_length=op.window_length,
+                frame_length_literal=op.frame_length_literal,
+                use_runtime_frame_length=op.use_runtime_frame_length,
+            )
         if isinstance(op, LoopRangeOp):
             return LoopRangeOp(
                 trip_count=name_map.get(op.trip_count, op.trip_count),
@@ -2484,6 +2581,7 @@ class CEmitter:
                 ),
                 "expand": self._env.get_template("expand_op.c.j2"),
                 "cumsum": self._env.get_template("cumsum_op.c.j2"),
+                "stft": self._env.get_template("stft_op.c.j2"),
                 "range": self._env.get_template("range_op.c.j2"),
                 "loop_range": self._env.get_template("loop_range_op.c.j2"),
                 "loop_sequence_insert": self._env.get_template(
@@ -5486,6 +5584,22 @@ class CEmitter:
                 exclusive=op.exclusive,
                 reverse=op.reverse,
             )
+        if isinstance(op, STFTOp):
+            return STFTOp(
+                signal=temp_map.get(op.signal, op.signal),
+                frame_step=temp_map.get(op.frame_step, op.frame_step),
+                window=CEmitter._map_optional_name(temp_map, op.window),
+                frame_length_input=CEmitter._map_optional_name(
+                    temp_map, op.frame_length_input
+                ),
+                output=temp_map.get(op.output, op.output),
+                onesided=op.onesided,
+                input_is_complex=op.input_is_complex,
+                fft_length=op.fft_length,
+                window_length=op.window_length,
+                frame_length_literal=op.frame_length_literal,
+                use_runtime_frame_length=op.use_runtime_frame_length,
+            )
         if isinstance(op, RangeOp):
             return RangeOp(
                 start=temp_map.get(op.start, op.start),
@@ -6111,6 +6225,7 @@ class CEmitter:
             nonmax_suppression_template=templates["nonmax_suppression"],
             expand_template=templates["expand"],
             cumsum_template=templates["cumsum"],
+            stft_template=templates["stft"],
             range_template=templates["range"],
             loop_range_template=templates["loop_range"],
             loop_sequence_insert_template=templates["loop_sequence_insert"],
@@ -6663,6 +6778,7 @@ class CEmitter:
         nonmax_suppression_template,
         expand_template,
         cumsum_template,
+        stft_template,
         range_template,
         loop_range_template,
         loop_sequence_insert_template,
@@ -11704,6 +11820,150 @@ class CEmitter:
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, STFTOp):
+            signal_shape = self._ctx_shape(op.signal)
+            output_shape = self._ctx_shape(op.output)
+            stft_dtype = self._ctx_dtype(op.output)
+            if stft_dtype != self._ctx_dtype(op.signal):
+                raise CodegenError("STFT signal and output dtypes must match")
+            if len(signal_shape) != 3 or len(output_shape) != 4:
+                raise CodegenError("STFT expects signal rank 3 and output rank 4")
+            if signal_shape[2] not in {1, 2}:
+                raise CodegenError("STFT signal last dimension must be 1 or 2")
+            if output_shape[3] != 2:
+                raise CodegenError("STFT output last dimension must be 2")
+            if op.onesided and op.input_is_complex:
+                raise CodegenError("STFT onesided output is invalid for complex input")
+            if op.fft_length <= 0:
+                raise CodegenError("STFT frame_length must be > 0")
+            if op.window_length <= 0:
+                raise CodegenError("STFT window length must be > 0")
+
+            frame_step_dtype = self._ctx_dtype(op.frame_step)
+            if frame_step_dtype not in {ScalarType.I32, ScalarType.I64}:
+                raise CodegenError("STFT frame_step must be int32 or int64")
+
+            frame_length_c_type = frame_step_dtype.c_type
+            if op.frame_length_input is not None:
+                frame_length_dtype = self._ctx_dtype(op.frame_length_input)
+                if frame_length_dtype not in {ScalarType.I32, ScalarType.I64}:
+                    raise CodegenError("STFT frame_length input must be int32 or int64")
+                frame_length_c_type = frame_length_dtype.c_type
+
+            params = self._unique_param_map(
+                [
+                    ("signal", op.signal),
+                    ("frame_step", op.frame_step),
+                    ("window", op.window),
+                    ("frame_length_input", op.frame_length_input),
+                    ("output", op.output),
+                ]
+            )
+            signal_dim_names = _dim_names_for(op.signal)
+            output_dim_names = _dim_names_for(op.output)
+            signal_shape_expr = CEmitter._shape_dim_exprs(signal_shape, signal_dim_names)
+            output_shape_expr = CEmitter._shape_dim_exprs(output_shape, output_dim_names)
+
+            signal_suffix = self._param_array_suffix(
+                signal_shape,
+                signal_dim_names,
+                dtype=stft_dtype,
+            )
+            output_suffix = self._param_array_suffix(
+                output_shape,
+                output_dim_names,
+                dtype=stft_dtype,
+            )
+            window_suffix = None
+            if op.window is not None:
+                window_shape = self._ctx_shape(op.window)
+                window_suffix = self._param_array_suffix(
+                    window_shape,
+                    dtype=stft_dtype,
+                )
+                if self._ctx_dtype(op.window) != stft_dtype:
+                    raise CodegenError("STFT window dtype must match signal dtype")
+
+            scalar_suffix = self._param_array_suffix(())
+            param_decls = self._build_param_decls(
+                [
+                    (params["signal"], stft_dtype.c_type, signal_suffix, True),
+                    (
+                        params["frame_step"],
+                        frame_step_dtype.c_type,
+                        scalar_suffix,
+                        True,
+                    ),
+                    (params["window"], stft_dtype.c_type, window_suffix or "", True),
+                    (
+                        params["frame_length_input"],
+                        frame_length_c_type,
+                        scalar_suffix,
+                        True,
+                    ),
+                    (params["output"], stft_dtype.c_type, output_suffix, False),
+                ]
+            )
+
+            stage_plan = self._fft_stockham_stage_plan(op.fft_length)
+            use_fft = bool(stage_plan) and op.fft_length > 1
+            fft_variant = "dft"
+            fft_input_permutation = tuple(range(op.fft_length))
+            if use_fft:
+                stage_kinds = {kind for kind, _, _ in stage_plan}
+                if stage_kinds == {"radix4"}:
+                    fft_variant = "radix4"
+                elif stage_kinds == {"radix2"}:
+                    fft_variant = "radix2"
+                else:
+                    raise CodegenError("mixed FFT stage plans are not supported")
+                fft_input_permutation = self._fft_input_permutation(
+                    op.fft_length,
+                    stage_plan=stage_plan,
+                )
+            twiddles = self._fft_twiddle_table(op.fft_length, dtype=stft_dtype)
+            stage_data = [
+                {"kind": kind, "m": m, "l": stage_span}
+                for kind, m, stage_span in stage_plan
+            ]
+            rendered = stft_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                params=param_decls,
+                signal=params["signal"],
+                frame_step=params["frame_step"],
+                window=params["window"],
+                frame_length_input=params["frame_length_input"],
+                output=params["output"],
+                c_type=stft_dtype.c_type,
+                signal_suffix=signal_suffix,
+                frame_step_suffix=scalar_suffix,
+                window_suffix=window_suffix,
+                frame_length_suffix=scalar_suffix,
+                output_suffix=output_suffix,
+                frame_step_c_type=frame_step_dtype.c_type,
+                frame_length_c_type=frame_length_c_type,
+                batch_expr=str(signal_shape_expr[0]),
+                signal_length_expr=str(signal_shape_expr[1]),
+                output_frames_expr=str(output_shape_expr[1]),
+                output_bins_expr=str(output_shape_expr[2]),
+                input_components=2 if op.input_is_complex else 1,
+                fft_length=op.fft_length,
+                window_length=op.window_length,
+                frame_length_literal=op.frame_length_literal,
+                use_runtime_frame_length=op.use_runtime_frame_length,
+                use_window=op.window is not None,
+                use_fft=use_fft,
+                fft_variant=fft_variant,
+                stage_data=stage_data,
+                twiddle_re_values=[real for real, _ in twiddles],
+                twiddle_im_values=[imag for _, imag in twiddles],
+                twiddle_len=op.fft_length,
+                fft_input_permutation=fft_input_permutation,
+                zero_literal=stft_dtype.zero_literal,
+                dim_args=dim_args,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, RangeOp):
             params = self._shared_param_map(
                 [
@@ -14626,6 +14886,16 @@ class CEmitter:
             return tuple(inputs)
         if isinstance(op, CumSumOp):
             return ((op.input0, self._ctx_shape(op.input0)),)
+        if isinstance(op, STFTOp):
+            inputs: list[tuple[str, tuple[int, ...]]] = [
+                (op.signal, self._ctx_shape(op.signal)),
+                (op.frame_step, ()),
+            ]
+            if op.window is not None:
+                inputs.append((op.window, self._ctx_shape(op.window)))
+            if op.frame_length_input is not None:
+                inputs.append((op.frame_length_input, ()))
+            return tuple(inputs)
         if isinstance(op, RangeOp):
             return ((op.start, ()), (op.limit, ()), (op.delta, ()))
         if isinstance(op, LoopRangeOp):
@@ -15426,6 +15696,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, CumSumOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, STFTOp):
+            return self._ctx_shape(op.output)
         if isinstance(op, RangeOp):
             return self._ctx_shape(op.output)
         if isinstance(op, LoopRangeOp):
@@ -15545,6 +15817,7 @@ class CEmitter:
             | NonMaxSuppressionOp
             | ExpandOp
             | CumSumOp
+            | STFTOp
             | RangeOp
             | BlackmanWindowOp
             | HammingWindowOp
@@ -15591,7 +15864,7 @@ class CEmitter:
             op, (QuantizeLinearOp, DequantizeLinearOp, DynamicQuantizeLinearOp)
         ):
             return self._ctx_dtype(op.output)
-        if isinstance(op, (TriluOp, TileOp, CenterCropPadOp, CumSumOp)):
+        if isinstance(op, (TriluOp, TileOp, CenterCropPadOp, CumSumOp, STFTOp)):
             return self._ctx_dtype(op.output)
         if isinstance(op, SplitOp):
             return self._ctx_dtype(op.outputs[0])
