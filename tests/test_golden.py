@@ -776,6 +776,17 @@ def test_codegen_testbench_output_format_txt_emmtrix() -> None:
     assert_golden(generated, golden_path)
 
 
+def test_codegen_testbench_output_format_txt_emmtrix_custom_ulp() -> None:
+    model = _make_add_model()
+    options = CompilerOptions(
+        emit_testbench=True, testbench_output_format="txt-emmtrix:123.5"
+    )
+    compiler = Compiler(options)
+    generated = compiler.compile(model)
+
+    assert "#ULP123.5" in generated
+
+
 def test_codegen_separate_testbench_source() -> None:
     model = _make_add_model()
     compiler = Compiler(CompilerOptions(emit_testbench=False))

@@ -272,9 +272,9 @@ static void testbench_print_txt_emmtrix(
 for (idx_t {{ output.loop_vars[depth] }} = 0; {{ output.loop_vars[depth] }} < {{ output.shape[depth] }}; ++{{ output.loop_vars[depth] }}) {
 {% endfor %}
 {% if output.is_string %}
-    printf("#ULP1000 %s[%zu] = %s\n", "{{ output.json_name }}", (size_t){{ output.index_expr }}, {{ output.name }}{{ output.array_index_expr }});
+    printf("#ULP{{ testbench_emmtrix_ulp_tag }} %s[%zu] = %s\n", "{{ output.json_name }}", (size_t){{ output.index_expr }}, {{ output.name }}{{ output.array_index_expr }});
 {% else %}
-    printf("#ULP1000 %s[%zu] = %a\n", "{{ output.json_name }}", (size_t){{ output.index_expr }}, (double){{ output.name }}{{ output.array_index_expr }});
+    printf("#ULP{{ testbench_emmtrix_ulp_tag }} %s[%zu] = %a\n", "{{ output.json_name }}", (size_t){{ output.index_expr }}, (double){{ output.name }}{{ output.array_index_expr }});
 {% endif %}
 {% for depth in range(output.rank - 1, -1, -1) %}
 }
