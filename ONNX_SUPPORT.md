@@ -9,7 +9,7 @@ Overview:
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1547 / 1802, 85.8% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
-| [Local ONNX test coverage](#local-onnx-test-coverage) | 5 / 7, 71.4% | n/a |
+| [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
 See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.
 
