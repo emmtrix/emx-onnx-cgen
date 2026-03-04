@@ -58,6 +58,10 @@ def _normalize_dft_axis(axis: int, input_shape: tuple[int, ...], node: Node) -> 
     return axis
 
 
+def _is_scalar_shape(shape: tuple[int, ...]) -> bool:
+    return shape == () or shape == (1,)
+
+
 @register_lowering("DFT")
 def lower_dft(graph: Graph | GraphContext, node: Node) -> DFTOp:
     if len(node.inputs) < 1 or len(node.inputs) > 3 or len(node.outputs) != 1:
@@ -101,22 +105,30 @@ def lower_dft(graph: Graph | GraphContext, node: Node) -> DFTOp:
     inverse = bool(int(node.attrs.get("inverse", 0)))
     onesided = bool(int(node.attrs.get("onesided", 0)))
     if onesided and input_complex_lanes != 1:
-        raise UnsupportedOpError("DFT onesided output requires real input (last dim = 1)")
+        raise UnsupportedOpError(
+            "DFT onesided output requires real input (last dim = 1)"
+        )
 
     axis_value = int(node.attrs.get("axis", -2))
+    axis_input: str | None = None
     axis_name = optional_name(node.inputs, 2)
     if axis_name is not None:
         axis_const = _read_scalar_int_initializer(graph, axis_name, node, "axis")
-        if axis_const is None:
-            raise UnsupportedOpError(
-                "DFT axis input must be a constant scalar for code generation"
-            )
-        axis_value = axis_const
-    axis = _normalize_dft_axis(axis_value, input_shape, node)
+        if axis_const is not None:
+            axis_value = axis_const
+        else:
+            axis_shape = value_shape(graph, axis_name, node)
+            if not _is_scalar_shape(axis_shape):
+                raise UnsupportedOpError("DFT axis input must be a scalar")
+            axis_dtype = value_dtype(graph, axis_name, node)
+            if axis_dtype not in {ScalarType.I32, ScalarType.I64}:
+                raise UnsupportedOpError("DFT axis input must be int32 or int64")
+            axis_input = axis_name
 
     dft_length_name = optional_name(node.inputs, 1)
+    dft_length_const: int | None
     if dft_length_name is None:
-        dft_length = input_shape[axis]
+        dft_length_const = None
     else:
         dft_length_const = _read_scalar_int_initializer(
             graph, dft_length_name, node, "dft_length"
@@ -125,29 +137,65 @@ def lower_dft(graph: Graph | GraphContext, node: Node) -> DFTOp:
             raise UnsupportedOpError(
                 "DFT dft_length input must be a constant scalar for code generation"
             )
-        dft_length = dft_length_const
-    if dft_length <= 0:
-        raise ShapeInferenceError(f"DFT dft_length must be > 0, got {dft_length}")
+        if dft_length_const <= 0:
+            raise ShapeInferenceError(
+                f"DFT dft_length must be > 0, got {dft_length_const}"
+            )
 
-    expected_axis_dim = dft_length // 2 + 1 if onesided else dft_length
-    if output_shape[axis] != expected_axis_dim:
+    rank = len(input_shape)
+    if axis_input is None:
+        axis_candidates = (_normalize_dft_axis(axis_value, input_shape, node),)
+    else:
+        axis_candidates = tuple(range(rank - 1))
+
+    valid_axes: list[int] = []
+    valid_dft_lengths: list[int] = []
+    for axis in axis_candidates:
+        dft_length = dft_length_const
+        if dft_length is None:
+            dft_length = input_shape[axis]
+        if dft_length <= 0:
+            continue
+        expected_axis_dim = dft_length // 2 + 1 if onesided else dft_length
+        if output_shape[axis] != expected_axis_dim:
+            continue
+        compatible = True
+        for index, (input_dim, output_dim) in enumerate(zip(input_shape, output_shape)):
+            if index in {axis, rank - 1}:
+                continue
+            if input_dim != output_dim:
+                compatible = False
+                break
+        if not compatible:
+            continue
+        valid_axes.append(axis)
+        valid_dft_lengths.append(dft_length)
+
+    if not valid_axes:
+        if axis_input is not None:
+            raise ShapeInferenceError(
+                "DFT dynamic axis input is incompatible with declared input/output shapes"
+            )
+        axis = axis_candidates[0]
+        dft_length = dft_length_const
+        if dft_length is None:
+            dft_length = input_shape[axis]
+        expected_axis_dim = dft_length // 2 + 1 if onesided else dft_length
         raise ShapeInferenceError(
             f"DFT output axis dimension must be {expected_axis_dim}, got {output_shape[axis]}"
         )
-    for index, (input_dim, output_dim) in enumerate(zip(input_shape, output_shape)):
-        if index in {axis, len(input_shape) - 1}:
-            continue
-        if input_dim != output_dim:
-            raise ShapeInferenceError(
-                "DFT input/output dimensions must match outside transform axis, "
-                f"got input {input_shape} and output {output_shape}"
-            )
+
+    axis = valid_axes[0] if axis_input is None else None
+    dft_length = valid_dft_lengths[0] if axis_input is None else None
 
     return DFTOp(
         input0=input_name,
+        axis_input=axis_input,
         output=output_name,
         axis=axis,
         dft_length=dft_length,
+        axis_variants=tuple(valid_axes),
+        dft_lengths=tuple(valid_dft_lengths),
         inverse=inverse,
         onesided=onesided,
         input_is_complex=input_complex_lanes == 2,

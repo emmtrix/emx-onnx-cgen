@@ -668,6 +668,7 @@ def _make_dft_model(
     inverse: bool = False,
     onesided: bool = False,
     include_axis_input: bool = True,
+    axis_as_initializer: bool = True,
     opset: int = 20,
 ) -> onnx.ModelProto:
     if len(input_shape) < 2:
@@ -683,6 +684,7 @@ def _make_dft_model(
 
     input_info = helper.make_tensor_value_info("x", dtype, input_shape)
     output_info = helper.make_tensor_value_info("y", dtype, output_shape)
+    graph_inputs = [input_info]
 
     initializers: list[onnx.TensorProto] = []
     node_inputs = ["x"]
@@ -702,13 +704,18 @@ def _make_dft_model(
         "onesided": int(onesided),
     }
     if include_axis_input:
-        axis_tensor = helper.make_tensor(
-            "axis",
-            TensorProto.INT64,
-            dims=[],
-            vals=[int(axis)],
-        )
-        initializers.append(axis_tensor)
+        if axis_as_initializer:
+            axis_tensor = helper.make_tensor(
+                "axis",
+                TensorProto.INT64,
+                dims=[],
+                vals=[int(axis)],
+            )
+            initializers.append(axis_tensor)
+        else:
+            graph_inputs.append(
+                helper.make_tensor_value_info("axis", TensorProto.INT64, [])
+            )
         node_inputs.append("axis")
     else:
         attrs["axis"] = int(axis)
@@ -722,7 +729,7 @@ def _make_dft_model(
     graph = helper.make_graph(
         [node],
         "dft_graph",
-        [input_info],
+        graph_inputs,
         [output_info],
         initializer=initializers,
     )
@@ -5916,6 +5923,41 @@ def test_dft_opset19_axis_attribute_matches_reference() -> None:
         opset=19,
     )
     _run_reference_testbench_compare(model)
+
+
+def test_dft_runtime_axis_dispatch_matches_reference() -> None:
+    model = _make_dft_model(
+        input_shape=[1, 8, 8, 2],
+        axis=1,
+        dtype=TensorProto.FLOAT,
+        include_axis_input=True,
+        axis_as_initializer=False,
+        opset=20,
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "switch (axis)" in generated
+    assert "case 0:" in generated
+    assert "case 1:" in generated
+    assert "case 2:" in generated
+
+    rng = np.random.default_rng(0)
+    x = rng.standard_normal((1, 8, 8, 2)).astype(np.float32)
+    for axis_value in (1, 2, -2):
+        axis_data = np.array(axis_value, dtype=np.int64)
+        reference = _run_reference(model, {"x": x, "axis": axis_data})["y"]
+        payload = _compile_and_run_testbench(
+            model,
+            testbench_inputs={"x": x, "axis": axis_data},
+        )
+        output_payload = payload["outputs"]["y"]
+        output_data = decode_testbench_array(output_payload["data"], reference.dtype)
+        output_data = output_data.reshape(reference.shape)
+        np.testing.assert_allclose(
+            output_data,
+            reference,
+            rtol=1e-4,
+            atol=1e-5,
+        )
 
 
 def test_split_matches_onnxruntime() -> None:

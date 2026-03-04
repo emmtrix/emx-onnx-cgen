@@ -85,136 +85,138 @@ const EMX_UNUSED int64_t weight2_axis[1] = {
 EMX_NODE_FN void node0_dft(const float input0[1][8][2], float output[1][8][2]) {
     const float *input_flat = (const float *)input0;
     float *output_flat = (float *)output;
-    const idx_t outer = 1;
-    const idx_t inner = 1;
-    const idx_t input_axis_dim = 8;
-    const idx_t output_axis_dim = 8;
-    static const float twiddle_re[8] = { 1.0f, 0.707106781f, 0.0f, -0.707106781f, -1.0f, -0.707106781f, 0.0f, 0.707106781f };
-    static const float twiddle_im[8] = { 0.0f, -0.707106781f, -1.0f, -0.707106781f, 0.0f, 0.707106781f, 1.0f, 0.707106781f };
-    float buf0_re[8];
-    float buf0_im[8];
-    float buf1_re[8];
-    float buf1_im[8];
+    {
+        const idx_t outer = 1;
+        const idx_t inner = 1;
+        const idx_t input_axis_dim = 8;
+        const idx_t output_axis_dim = 8;
+        static const float twiddle_re[8] = { 1.0f, 0.707106781f, 0.0f, -0.707106781f, -1.0f, -0.707106781f, 0.0f, 0.707106781f };
+        static const float twiddle_im[8] = { 0.0f, -0.707106781f, -1.0f, -0.707106781f, 0.0f, 0.707106781f, 1.0f, 0.707106781f };
+        float buf0_re[8];
+        float buf0_im[8];
+        float buf1_re[8];
+        float buf1_im[8];
 
-    for (idx_t outer_idx = 0; outer_idx < outer; ++outer_idx) {
-        for (idx_t inner_idx = 0; inner_idx < inner; ++inner_idx) {
-            for (idx_t n = 0; n < 8; ++n) {
-                if (n < input_axis_dim) {
-                    const idx_t input_offset = ((((outer_idx * input_axis_dim) + n) * inner) + inner_idx) * 2;
-                    buf0_re[n] = input_flat[input_offset];
-                    buf0_im[n] = input_flat[input_offset + 1];
-                } else {
-                    buf0_re[n] = 0.0f;
-                    buf0_im[n] = 0.0f;
+        for (idx_t outer_idx = 0; outer_idx < outer; ++outer_idx) {
+            for (idx_t inner_idx = 0; inner_idx < inner; ++inner_idx) {
+                for (idx_t n = 0; n < 8; ++n) {
+                    if (n < input_axis_dim) {
+                        const idx_t input_offset = ((((outer_idx * input_axis_dim) + n) * inner) + inner_idx) * 2;
+                        buf0_re[n] = input_flat[input_offset];
+                        buf0_im[n] = input_flat[input_offset + 1];
+                    } else {
+                        buf0_re[n] = 0.0f;
+                        buf0_im[n] = 0.0f;
+                    }
                 }
-            }
 
-            float *src_re = buf0_re;
-            float *src_im = buf0_im;
-            float *dst_re = buf1_re;
-            float *dst_im = buf1_im;
-            /* stockham radix-4 stage 0 */
-            for (idx_t j = 0; j < 1; ++j) {
-                const idx_t tw_idx1 = j * 2;
-                const idx_t tw_idx2 = (2 * tw_idx1) % 8;
-                const idx_t tw_idx3 = (3 * tw_idx1) % 8;
-                const float w1_re = twiddle_re[tw_idx1];
-                const float w1_im = twiddle_im[tw_idx1];
-                const float w2_re = twiddle_re[tw_idx2];
-                const float w2_im = twiddle_im[tw_idx2];
-                const float w3_re = twiddle_re[tw_idx3];
-                const float w3_im = twiddle_im[tw_idx3];
-                for (idx_t k = 0; k < 2; ++k) {
-                    const idx_t idx0 = k + 2 * (4 * j);
-                    const idx_t idx1 = idx0 + 2;
-                    const idx_t idx2 = idx1 + 2;
-                    const idx_t idx3 = idx2 + 2;
+                float *src_re = buf0_re;
+                float *src_im = buf0_im;
+                float *dst_re = buf1_re;
+                float *dst_im = buf1_im;
+                /* stockham radix-4 stage 0 */
+                for (idx_t j = 0; j < 1; ++j) {
+                    const idx_t tw_idx1 = j * 2;
+                    const idx_t tw_idx2 = (2 * tw_idx1) % 8;
+                    const idx_t tw_idx3 = (3 * tw_idx1) % 8;
+                    const float w1_re = twiddle_re[tw_idx1];
+                    const float w1_im = twiddle_im[tw_idx1];
+                    const float w2_re = twiddle_re[tw_idx2];
+                    const float w2_im = twiddle_im[tw_idx2];
+                    const float w3_re = twiddle_re[tw_idx3];
+                    const float w3_im = twiddle_im[tw_idx3];
+                    for (idx_t k = 0; k < 2; ++k) {
+                        const idx_t idx0 = k + 2 * (4 * j);
+                        const idx_t idx1 = idx0 + 2;
+                        const idx_t idx2 = idx1 + 2;
+                        const idx_t idx3 = idx2 + 2;
 
-                    const float a0_re = src_re[idx0];
-                    const float a0_im = src_im[idx0];
-                    const float a1_re = src_re[idx1];
-                    const float a1_im = src_im[idx1];
-                    const float a2_re = src_re[idx2];
-                    const float a2_im = src_im[idx2];
-                    const float a3_re = src_re[idx3];
-                    const float a3_im = src_im[idx3];
+                        const float a0_re = src_re[idx0];
+                        const float a0_im = src_im[idx0];
+                        const float a1_re = src_re[idx1];
+                        const float a1_im = src_im[idx1];
+                        const float a2_re = src_re[idx2];
+                        const float a2_im = src_im[idx2];
+                        const float a3_re = src_re[idx3];
+                        const float a3_im = src_im[idx3];
 
-                    const float b1_re = (w1_re * a1_re) - (w1_im * a1_im);
-                    const float b1_im = (w1_re * a1_im) + (w1_im * a1_re);
-                    const float b2_re = (w2_re * a2_re) - (w2_im * a2_im);
-                    const float b2_im = (w2_re * a2_im) + (w2_im * a2_re);
-                    const float b3_re = (w3_re * a3_re) - (w3_im * a3_im);
-                    const float b3_im = (w3_re * a3_im) + (w3_im * a3_re);
+                        const float b1_re = (w1_re * a1_re) - (w1_im * a1_im);
+                        const float b1_im = (w1_re * a1_im) + (w1_im * a1_re);
+                        const float b2_re = (w2_re * a2_re) - (w2_im * a2_im);
+                        const float b2_im = (w2_re * a2_im) + (w2_im * a2_re);
+                        const float b3_re = (w3_re * a3_re) - (w3_im * a3_im);
+                        const float b3_im = (w3_re * a3_im) + (w3_im * a3_re);
 
-                    const float t0_re = a0_re + b2_re;
-                    const float t0_im = a0_im + b2_im;
-                    const float t1_re = a0_re - b2_re;
-                    const float t1_im = a0_im - b2_im;
-                    const float t2_re = b1_re + b3_re;
-                    const float t2_im = b1_im + b3_im;
-                    const float t3_re = b1_re - b3_re;
-                    const float t3_im = b1_im - b3_im;
+                        const float t0_re = a0_re + b2_re;
+                        const float t0_im = a0_im + b2_im;
+                        const float t1_re = a0_re - b2_re;
+                        const float t1_im = a0_im - b2_im;
+                        const float t2_re = b1_re + b3_re;
+                        const float t2_im = b1_im + b3_im;
+                        const float t3_re = b1_re - b3_re;
+                        const float t3_im = b1_im - b3_im;
 
-                    const float y0_re = t0_re + t2_re;
-                    const float y0_im = t0_im + t2_im;
-                    const float y1_re = t1_re + t3_im;
-                    const float y1_im = t1_im - t3_re;
-                    const float y2_re = t0_re - t2_re;
-                    const float y2_im = t0_im - t2_im;
-                    const float y3_re = t1_re - t3_im;
-                    const float y3_im = t1_im + t3_re;
+                        const float y0_re = t0_re + t2_re;
+                        const float y0_im = t0_im + t2_im;
+                        const float y1_re = t1_re + t3_im;
+                        const float y1_im = t1_im - t3_re;
+                        const float y2_re = t0_re - t2_re;
+                        const float y2_im = t0_im - t2_im;
+                        const float y3_re = t1_re - t3_im;
+                        const float y3_im = t1_im + t3_re;
 
-                    dst_re[k + 2 * (j + 1 * 0)] = y0_re;
-                    dst_im[k + 2 * (j + 1 * 0)] = y0_im;
-                    dst_re[k + 2 * (j + 1 * 1)] = y1_re;
-                    dst_im[k + 2 * (j + 1 * 1)] = y1_im;
-                    dst_re[k + 2 * (j + 1 * 2)] = y2_re;
-                    dst_im[k + 2 * (j + 1 * 2)] = y2_im;
-                    dst_re[k + 2 * (j + 1 * 3)] = y3_re;
-                    dst_im[k + 2 * (j + 1 * 3)] = y3_im;
+                        dst_re[k + 2 * (j + 1 * 0)] = y0_re;
+                        dst_im[k + 2 * (j + 1 * 0)] = y0_im;
+                        dst_re[k + 2 * (j + 1 * 1)] = y1_re;
+                        dst_im[k + 2 * (j + 1 * 1)] = y1_im;
+                        dst_re[k + 2 * (j + 1 * 2)] = y2_re;
+                        dst_im[k + 2 * (j + 1 * 2)] = y2_im;
+                        dst_re[k + 2 * (j + 1 * 3)] = y3_re;
+                        dst_im[k + 2 * (j + 1 * 3)] = y3_im;
+                    }
                 }
-            }
-            {
-                float *tmp_re = src_re;
-                float *tmp_im = src_im;
-                src_re = dst_re;
-                src_im = dst_im;
-                dst_re = tmp_re;
-                dst_im = tmp_im;
-            }
-            /* stockham radix-2 stage 1 */
-            for (idx_t j = 0; j < 4; ++j) {
-                const idx_t tw_idx = j * 1;
-                const float w_re = twiddle_re[tw_idx];
-                const float w_im = twiddle_im[tw_idx];
-                for (idx_t k = 0; k < 1; ++k) {
-                    const idx_t idx0 = k + 1 * (2 * j);
-                    const idx_t idx1 = idx0 + 1;
-                    const float a_re = src_re[idx0];
-                    const float a_im = src_im[idx0];
-                    const float b_re = src_re[idx1];
-                    const float b_im = src_im[idx1];
-                    const float t_re = (w_re * b_re) - (w_im * b_im);
-                    const float t_im = (w_re * b_im) + (w_im * b_re);
-                    dst_re[k + 1 * j] = a_re + t_re;
-                    dst_im[k + 1 * j] = a_im + t_im;
-                    dst_re[k + 1 * (j + 4)] = a_re - t_re;
-                    dst_im[k + 1 * (j + 4)] = a_im - t_im;
+                {
+                    float *tmp_re = src_re;
+                    float *tmp_im = src_im;
+                    src_re = dst_re;
+                    src_im = dst_im;
+                    dst_re = tmp_re;
+                    dst_im = tmp_im;
                 }
-            }
-            {
-                float *tmp_re = src_re;
-                float *tmp_im = src_im;
-                src_re = dst_re;
-                src_im = dst_im;
-                dst_re = tmp_re;
-                dst_im = tmp_im;
-            }
+                /* stockham radix-2 stage 1 */
+                for (idx_t j = 0; j < 4; ++j) {
+                    const idx_t tw_idx = j * 1;
+                    const float w_re = twiddle_re[tw_idx];
+                    const float w_im = twiddle_im[tw_idx];
+                    for (idx_t k = 0; k < 1; ++k) {
+                        const idx_t idx0 = k + 1 * (2 * j);
+                        const idx_t idx1 = idx0 + 1;
+                        const float a_re = src_re[idx0];
+                        const float a_im = src_im[idx0];
+                        const float b_re = src_re[idx1];
+                        const float b_im = src_im[idx1];
+                        const float t_re = (w_re * b_re) - (w_im * b_im);
+                        const float t_im = (w_re * b_im) + (w_im * b_re);
+                        dst_re[k + 1 * j] = a_re + t_re;
+                        dst_im[k + 1 * j] = a_im + t_im;
+                        dst_re[k + 1 * (j + 4)] = a_re - t_re;
+                        dst_im[k + 1 * (j + 4)] = a_im - t_im;
+                    }
+                }
+                {
+                    float *tmp_re = src_re;
+                    float *tmp_im = src_im;
+                    src_re = dst_re;
+                    src_im = dst_im;
+                    dst_re = tmp_re;
+                    dst_im = tmp_im;
+                }
 
-            for (idx_t k = 0; k < output_axis_dim; ++k) {
-                const idx_t output_offset = ((((outer_idx * output_axis_dim) + k) * inner) + inner_idx) * 2;
-                output_flat[output_offset] = src_re[k];
-                output_flat[output_offset + 1] = src_im[k];
+                for (idx_t k = 0; k < output_axis_dim; ++k) {
+                    const idx_t output_offset = ((((outer_idx * output_axis_dim) + k) * inner) + inner_idx) * 2;
+                    output_flat[output_offset] = src_re[k];
+                    output_flat[output_offset + 1] = src_im[k];
+                }
             }
         }
     }

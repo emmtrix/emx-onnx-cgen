@@ -2086,9 +2086,12 @@ class CEmitter:
         if isinstance(op, DFTOp):
             return DFTOp(
                 input0=name_map.get(op.input0, op.input0),
+                axis_input=self._map_optional_name(name_map, op.axis_input),
                 output=name_map.get(op.output, op.output),
                 axis=op.axis,
                 dft_length=op.dft_length,
+                axis_variants=op.axis_variants,
+                dft_lengths=op.dft_lengths,
                 inverse=op.inverse,
                 onesided=op.onesided,
                 input_is_complex=op.input_is_complex,
@@ -5984,9 +5987,16 @@ class CEmitter:
         if isinstance(op, DFTOp):
             return DFTOp(
                 input0=temp_map.get(op.input0, op.input0),
+                axis_input=(
+                    temp_map.get(op.axis_input, op.axis_input)
+                    if op.axis_input is not None
+                    else None
+                ),
                 output=temp_map.get(op.output, op.output),
                 axis=op.axis,
                 dft_length=op.dft_length,
+                axis_variants=op.axis_variants,
+                dft_lengths=op.dft_lengths,
                 inverse=op.inverse,
                 onesided=op.onesided,
                 input_is_complex=op.input_is_complex,
@@ -11789,14 +11799,14 @@ class CEmitter:
             dft_dtype = self._ctx_dtype(op.output)
             if dft_dtype != self._ctx_dtype(op.input0):
                 raise CodegenError("DFT input and output dtypes must match")
-            if op.dft_length <= 0:
-                raise CodegenError("DFT length must be > 0")
-            if op.axis < 0 or op.axis >= len(input_shape) - 1:
-                raise CodegenError("DFT axis must target a signal dimension")
+            if not op.axis_variants or len(op.axis_variants) != len(op.dft_lengths):
+                raise CodegenError("DFT requires at least one valid axis variant")
 
+            rank = len(input_shape)
             params = self._shared_param_map(
                 [
                     ("input0", op.input0),
+                    ("axis_input", op.axis_input),
                     ("output", op.output),
                 ]
             )
@@ -11806,20 +11816,13 @@ class CEmitter:
             output_shape_expr = CEmitter._shape_dim_exprs(
                 output_shape, output_dim_names
             )
-            signal_rank = len(input_shape) - 1
-            outer_expr = CEmitter._element_count_expr(input_shape_expr[: op.axis])
-            inner_expr = CEmitter._element_count_expr(
-                input_shape_expr[op.axis + 1 : signal_rank]
-            )
-            stage_plan = self._dft_stockham_stage_plan(op.dft_length)
-            use_fft = bool(stage_plan) and op.dft_length > 1
-            twiddles = self._dft_twiddle_table(
-                op.dft_length, inverse=op.inverse, dtype=dft_dtype
-            )
-            stage_data = [
-                {"kind": kind, "m": m, "l": stage_span}
-                for kind, m, stage_span in stage_plan
-            ]
+            axis_c_type = "int64_t"
+            if op.axis_input is not None:
+                axis_dtype = self._ctx_dtype(op.axis_input)
+                if axis_dtype not in {ScalarType.I32, ScalarType.I64}:
+                    raise CodegenError("DFT axis input must be int32 or int64")
+                axis_c_type = axis_dtype.c_type
+
             input_suffix = self._param_array_suffix(
                 input_shape,
                 input_dim_names,
@@ -11833,35 +11836,77 @@ class CEmitter:
             param_decls = self._build_param_decls(
                 [
                     (params["input0"], dft_dtype.c_type, input_suffix, True),
+                    (
+                        params["axis_input"],
+                        axis_c_type,
+                        self._param_array_suffix(()),
+                        True,
+                    ),
                     (params["output"], dft_dtype.c_type, output_suffix, False),
                 ]
             )
+            axis_variants: list[dict[str, object]] = []
+            signal_rank = rank - 1
+            for axis, fft_length in zip(op.axis_variants, op.dft_lengths):
+                if axis < 0 or axis >= signal_rank:
+                    raise CodegenError("DFT axis must target a signal dimension")
+                if fft_length <= 0:
+                    raise CodegenError("DFT length must be > 0")
+                stage_plan = self._dft_stockham_stage_plan(fft_length)
+                use_fft = bool(stage_plan) and fft_length > 1
+                twiddles = self._dft_twiddle_table(
+                    fft_length,
+                    inverse=op.inverse,
+                    dtype=dft_dtype,
+                )
+                axis_variants.append(
+                    {
+                        "axis": axis,
+                        "outer_expr": CEmitter._element_count_expr(
+                            input_shape_expr[:axis]
+                        ),
+                        "inner_expr": CEmitter._element_count_expr(
+                            input_shape_expr[axis + 1 : signal_rank]
+                        ),
+                        "input_axis_expr": str(input_shape_expr[axis]),
+                        "output_axis_expr": str(output_shape_expr[axis]),
+                        "fft_length": fft_length,
+                        "use_fft": use_fft,
+                        "stage_data": [
+                            {"kind": kind, "m": m, "l": stage_span}
+                            for kind, m, stage_span in stage_plan
+                        ],
+                        "twiddle_re_values": [real for real, _ in twiddles],
+                        "twiddle_im_values": [imag for _, imag in twiddles],
+                        "twiddle_len": fft_length,
+                        "inverse_scale": CEmitter._format_literal(
+                            dft_dtype, 1.0 / float(fft_length)
+                        ),
+                    }
+                )
+
+            if op.axis_input is None and len(axis_variants) != 1:
+                raise CodegenError(
+                    "DFT with constant axis must lower to exactly one axis variant"
+                )
+
             rendered = dft_template.render(
                 model_name=model.name,
                 op_name=op_name,
                 params=param_decls,
                 input0=params["input0"],
+                axis_input=params["axis_input"],
+                axis_c_type=axis_c_type,
                 output=params["output"],
                 c_type=dft_dtype.c_type,
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
-                outer_expr=outer_expr,
-                inner_expr=inner_expr,
-                input_axis_expr=str(input_shape_expr[op.axis]),
-                output_axis_expr=str(output_shape_expr[op.axis]),
+                rank=rank,
+                axis_variants=axis_variants,
                 input_components=2 if op.input_is_complex else 1,
-                fft_length=op.dft_length,
                 inverse=op.inverse,
                 onesided=op.onesided,
-                use_fft=use_fft,
-                stage_data=stage_data,
-                twiddle_re_values=[real for real, _ in twiddles],
-                twiddle_im_values=[imag for _, imag in twiddles],
-                twiddle_len=op.dft_length,
                 zero_literal=dft_dtype.zero_literal,
-                inverse_scale=CEmitter._format_literal(
-                    dft_dtype, 1.0 / float(op.dft_length)
-                ),
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)

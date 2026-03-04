@@ -1,20 +1,19 @@
-EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-    const {{ c_type }} *input_flat = (const {{ c_type }} *){{ input0 }};
-    {{ c_type }} *output_flat = ({{ c_type }} *){{ output }};
-    const idx_t outer = {{ outer_expr }};
-    const idx_t inner = {{ inner_expr }};
-    const idx_t input_axis_dim = {{ input_axis_expr }};
-    const idx_t output_axis_dim = {{ output_axis_expr }};
-    static const {{ c_type }} twiddle_re[{{ twiddle_len }}] = { {% for value in twiddle_re_values %}{{ value }}{% if not loop.last %}, {% endif %}{% endfor %} };
-    static const {{ c_type }} twiddle_im[{{ twiddle_len }}] = { {% for value in twiddle_im_values %}{{ value }}{% if not loop.last %}, {% endif %}{% endfor %} };
-    {{ c_type }} buf0_re[{{ fft_length }}];
-    {{ c_type }} buf0_im[{{ fft_length }}];
-    {{ c_type }} buf1_re[{{ fft_length }}];
-    {{ c_type }} buf1_im[{{ fft_length }}];
+{% macro emit_axis_variant(v) -%}
+{
+    const idx_t outer = {{ v.outer_expr }};
+    const idx_t inner = {{ v.inner_expr }};
+    const idx_t input_axis_dim = {{ v.input_axis_expr }};
+    const idx_t output_axis_dim = {{ v.output_axis_expr }};
+    static const {{ c_type }} twiddle_re[{{ v.twiddle_len }}] = { {% for value in v.twiddle_re_values %}{{ value }}{% if not loop.last %}, {% endif %}{% endfor %} };
+    static const {{ c_type }} twiddle_im[{{ v.twiddle_len }}] = { {% for value in v.twiddle_im_values %}{{ value }}{% if not loop.last %}, {% endif %}{% endfor %} };
+    {{ c_type }} buf0_re[{{ v.fft_length }}];
+    {{ c_type }} buf0_im[{{ v.fft_length }}];
+    {{ c_type }} buf1_re[{{ v.fft_length }}];
+    {{ c_type }} buf1_im[{{ v.fft_length }}];
 
     for (idx_t outer_idx = 0; outer_idx < outer; ++outer_idx) {
         for (idx_t inner_idx = 0; inner_idx < inner; ++inner_idx) {
-            for (idx_t n = 0; n < {{ fft_length }}; ++n) {
+            for (idx_t n = 0; n < {{ v.fft_length }}; ++n) {
                 if (n < input_axis_dim) {
                     const idx_t input_offset = ((((outer_idx * input_axis_dim) + n) * inner) + inner_idx) * {{ input_components }};
                     buf0_re[n] = input_flat[input_offset];
@@ -29,12 +28,12 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                 }
             }
 
-{% if use_fft %}
+{% if v.use_fft %}
             {{ c_type }} *src_re = buf0_re;
             {{ c_type }} *src_im = buf0_im;
             {{ c_type }} *dst_re = buf1_re;
             {{ c_type }} *dst_im = buf1_im;
-{% for stage in stage_data %}
+{% for stage in v.stage_data %}
 {% if stage.kind == "radix2" %}
             /* stockham radix-2 stage {{ loop.index0 }} */
             for (idx_t j = 0; j < {{ stage.m }}; ++j) {
@@ -60,8 +59,8 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             /* stockham radix-4 stage {{ loop.index0 }} */
             for (idx_t j = 0; j < {{ stage.m }}; ++j) {
                 const idx_t tw_idx1 = j * {{ stage.l }};
-                const idx_t tw_idx2 = (2 * tw_idx1) % {{ fft_length }};
-                const idx_t tw_idx3 = (3 * tw_idx1) % {{ fft_length }};
+                const idx_t tw_idx2 = (2 * tw_idx1) % {{ v.fft_length }};
+                const idx_t tw_idx3 = (3 * tw_idx1) % {{ v.fft_length }};
                 const {{ c_type }} w1_re = twiddle_re[tw_idx1];
                 const {{ c_type }} w1_im = twiddle_im[tw_idx1];
                 const {{ c_type }} w2_re = twiddle_re[tw_idx2];
@@ -139,17 +138,17 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             }
 {% endfor %}
 {% if inverse %}
-            for (idx_t k = 0; k < {{ fft_length }}; ++k) {
-                src_re[k] *= {{ inverse_scale }};
-                src_im[k] *= {{ inverse_scale }};
+            for (idx_t k = 0; k < {{ v.fft_length }}; ++k) {
+                src_re[k] *= {{ v.inverse_scale }};
+                src_im[k] *= {{ v.inverse_scale }};
             }
 {% endif %}
 {% else %}
-            for (idx_t k = 0; k < {{ fft_length }}; ++k) {
+            for (idx_t k = 0; k < {{ v.fft_length }}; ++k) {
                 {{ c_type }} acc_re = {{ zero_literal }};
                 {{ c_type }} acc_im = {{ zero_literal }};
-                for (idx_t n = 0; n < {{ fft_length }}; ++n) {
-                    const idx_t tw_idx = (k * n) % {{ fft_length }};
+                for (idx_t n = 0; n < {{ v.fft_length }}; ++n) {
+                    const idx_t tw_idx = (k * n) % {{ v.fft_length }};
                     const {{ c_type }} w_re = twiddle_re[tw_idx];
                     const {{ c_type }} w_im = twiddle_im[tw_idx];
                     const {{ c_type }} x_re = buf0_re[n];
@@ -158,8 +157,8 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     acc_im += (x_re * w_im) + (x_im * w_re);
                 }
 {% if inverse %}
-                buf1_re[k] = acc_re * {{ inverse_scale }};
-                buf1_im[k] = acc_im * {{ inverse_scale }};
+                buf1_re[k] = acc_re * {{ v.inverse_scale }};
+                buf1_im[k] = acc_im * {{ v.inverse_scale }};
 {% else %}
                 buf1_re[k] = acc_re;
                 buf1_im[k] = acc_im;
@@ -176,4 +175,26 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             }
         }
     }
+}
+{%- endmacro %}
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const {{ c_type }} *input_flat = (const {{ c_type }} *){{ input0 }};
+    {{ c_type }} *output_flat = ({{ c_type }} *){{ output }};
+{% if axis_input %}
+    int axis = (int){{ axis_input }}[0];
+    if (axis < 0) {
+        axis += {{ rank }};
+    }
+    switch (axis) {
+{% for v in axis_variants %}
+    case {{ v.axis }}:
+{{ emit_axis_variant(v)|indent(8, true) }}
+        break;
+{% endfor %}
+    default:
+        return;
+    }
+{% else %}
+{{ emit_axis_variant(axis_variants[0])|indent(4, true) }}
+{% endif %}
 }
