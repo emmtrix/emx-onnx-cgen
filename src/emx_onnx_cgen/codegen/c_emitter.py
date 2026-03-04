@@ -6228,10 +6228,10 @@ class CEmitter:
             update_expr = None
             init_literal = None
             final_expr = "acc"
-            fabs_fn = CEmitter._math_fn(output_dtype, "fabsf", "fabs")
-            exp_fn = CEmitter._math_fn(output_dtype, "expf", "exp")
-            log_fn = CEmitter._math_fn(output_dtype, "logf", "log")
-            sqrt_fn = CEmitter._math_fn(output_dtype, "sqrtf", "sqrt")
+            fabs_fn = _resolve_math_fn("fabs", output_dtype)
+            exp_fn = _resolve_math_fn("exp", output_dtype)
+            log_fn = _resolve_math_fn("log", output_dtype)
+            sqrt_fn = _resolve_math_fn("sqrt", output_dtype)
             if op.reduce_kind == "sum":
                 init_literal = zero_literal
                 update_expr = f"acc += {value_expr};"
@@ -6490,10 +6490,10 @@ class CEmitter:
             init_literal = None
             post_expr = None
             reduce_dtype = self._ctx_dtype(op.output)
-            fabs_fn = CEmitter._math_fn(reduce_dtype, "fabsf", "fabs")
-            exp_fn = CEmitter._math_fn(reduce_dtype, "expf", "exp")
-            log_fn = CEmitter._math_fn(reduce_dtype, "logf", "log")
-            sqrt_fn = CEmitter._math_fn(reduce_dtype, "sqrtf", "sqrt")
+            fabs_fn = _resolve_math_fn("fabs", reduce_dtype)
+            exp_fn = _resolve_math_fn("exp", reduce_dtype)
+            log_fn = _resolve_math_fn("log", reduce_dtype)
+            sqrt_fn = _resolve_math_fn("sqrt", reduce_dtype)
             if op.reduce_kind == "sum":
                 init_literal = zero_literal
                 update_expr = f"*out_ptr += {value_expr};"
@@ -6747,9 +6747,9 @@ class CEmitter:
                 ]
             )
             scalar_operator = None
-            if scalar_registry is not None and op.function not in COMPARE_FUNCTIONS:
-                scalar_operator = self._scalar_function_name(
-                    op.function, input_dtype, scalar_registry
+            if op.function not in COMPARE_FUNCTIONS:
+                scalar_operator = self._env.globals["scalar_fn"](
+                    op.function, input_dtype
                 )
             op_spec = binary_op_symbol(
                 op.function,
@@ -6857,12 +6857,11 @@ class CEmitter:
             )
             scalar_operator = None
             if (
-                scalar_registry is not None
-                and op.function not in COMPARE_FUNCTIONS
+                op.function not in COMPARE_FUNCTIONS
                 and op.function != ScalarFunction.MEAN
             ):
-                scalar_operator = self._scalar_function_name(
-                    op.function, input_dtype, scalar_registry
+                scalar_operator = self._env.globals["scalar_fn"](
+                    op.function, input_dtype
                 )
             op_spec = binary_op_symbol(
                 op.function,
@@ -14159,10 +14158,9 @@ class CEmitter:
                 [("input0", op.input0), ("output", op.output)]
             )
             scalar_operator = None
-            if scalar_registry is not None:
-                scalar_operator = self._scalar_function_name(
-                    op.function, input_dtype, scalar_registry, params=op.params
-                )
+            scalar_operator = self._env.globals["scalar_fn"](
+                op.function, input_dtype, params=op.params
+            )
             output_dim_names = _dim_names_for(op.output)
             shape = CEmitter._shape_dim_exprs(output_shape_raw, output_dim_names)
             loop_vars = CEmitter._loop_vars(output_shape_raw)
