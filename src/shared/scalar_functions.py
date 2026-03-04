@@ -2505,7 +2505,7 @@ class ScalarFunctionRegistry:
             lines.append("")
             emitted.add(key)
 
-        for key in self._requested:
+        for key in sorted(self._requested, key=_function_name_for_key):
             emit(key)
         while lines and lines[-1] == "":
             lines.pop()
