@@ -46,6 +46,7 @@ _LOWERING_MODULES = [
     "hamming_window",
     "hann_window",
     "identity",
+    "if_op",
     "instance_normalization",
     "layer_normalization",
     "logsoftmax",

@@ -5,6 +5,7 @@ import onnx
 from ..ir.ops import CastOp
 from ..dtypes import scalar_type_from_onnx
 from ..errors import ShapeInferenceError, UnsupportedOpError
+from ..ir.context import GraphContext
 from ..ir.model import Graph, Node
 from .common import ensure_supported_dtype, value_dtype, value_shape
 from .registry import register_lowering
@@ -32,8 +33,12 @@ def lower_cast(graph: Graph, node: Node) -> CastOp:
         )
     input_shape = value_shape(graph, node.inputs[0], node)
     output_shape = value_shape(graph, node.outputs[0], node)
+    if output_shape == () and input_shape:
+        output_shape = input_shape
     if input_shape != output_shape:
         raise ShapeInferenceError("Cast input and output shapes must match")
+    if isinstance(graph, GraphContext):
+        graph.set_shape(node.outputs[0], output_shape)
     return CastOp(
         input0=node.inputs[0],
         output=node.outputs[0],
@@ -54,8 +59,12 @@ def lower_castlike(graph: Graph, node: Node) -> CastOp:
         )
     input_shape = value_shape(graph, node.inputs[0], node)
     output_shape = value_shape(graph, node.outputs[0], node)
+    if output_shape == () and input_shape:
+        output_shape = input_shape
     if input_shape != output_shape:
         raise ShapeInferenceError("CastLike input and output shapes must match")
+    if isinstance(graph, GraphContext):
+        graph.set_shape(node.outputs[0], output_shape)
     return CastOp(
         input0=node.inputs[0],
         output=node.outputs[0],
