@@ -4,7 +4,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const {{ compute_type }} pi = {{ pi_literal }};
     for (idx_t idx = 0; idx < {{ length }}; ++idx) {
         const {{ compute_type }} phase = ({{ two_literal }} * pi * ({{ compute_type }})idx) / denom;
-        const {{ compute_type }} value = {{ c042_literal }} - {{ c05_literal }} * {{ cos_fn }}(phase) + {{ c008_literal }} * {{ cos_fn }}({{ two_literal }} * phase);
+        const {{ compute_type }} value = {{ c042_literal }} - {{ c05_literal }} * {{ scalar_fn(ScalarFunction.COS, compute_type) }}(phase) + {{ c008_literal }} * {{ scalar_fn(ScalarFunction.COS, compute_type) }}({{ two_literal }} * phase);
         {{ output }}[idx] = ({{ c_type }})value;
     }
 }

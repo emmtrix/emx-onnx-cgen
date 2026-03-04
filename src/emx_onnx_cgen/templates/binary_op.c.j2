@@ -2,7 +2,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% for dim in shape %}
 for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}
-{{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {% if operator_kind == "func" %}{{ operator }}({{ left_expr }}, {{ right_expr }}){% elif operator_kind == "expr" %}{{ operator_expr }}{% else %}{{ left_expr }} {{ operator }} {{ right_expr }}{% endif %};
+{{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {% if operator_kind == "func" %}{{ scalar_fn(operator, input_c_type) }}({{ left_expr }}, {{ right_expr }}){% elif operator_kind == "expr" %}{{ operator_expr }}{% else %}{{ left_expr }} {{ operator }} {{ right_expr }}{% endif %};
 {% for _ in shape %}
 }
 {% endfor %}

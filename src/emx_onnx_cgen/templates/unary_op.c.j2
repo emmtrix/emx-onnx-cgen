@@ -14,6 +14,8 @@ for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ d
 {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = isinf({{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %}) && signbit({{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %});
 {% elif operator == "isposinf" %}
 {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = isinf({{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %}) && !signbit({{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %});
+{% elif operator_kind == "func" %}
+{{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {{ scalar_fn(operator, input_c_type, operator_params) }}({{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %});
 {% else %}
 {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {{ operator }}({{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %});
 {% endif %}

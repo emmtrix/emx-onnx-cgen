@@ -4,7 +4,7 @@ for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ d
 {% endfor %}
 {{ output_expr }} = {{ input_exprs[0] }};
 {% for expr in input_exprs[1:] %}
-{{ output_expr }} = {% if operator_kind == "func" %}{{ operator }}({{ output_expr }}, {{ expr }}){% elif operator_kind == "expr" %}{{ operator_expr }}{% else %}{{ output_expr }} {{ operator }} {{ expr }}{% endif %};
+{{ output_expr }} = {% if operator_kind == "func" %}{{ scalar_fn(operator, input_c_type) }}({{ output_expr }}, {{ expr }}){% elif operator_kind == "expr" %}{{ operator_expr }}{% else %}{{ output_expr }} {{ operator }} {{ expr }}{% endif %};
 {% endfor %}
 {% if is_mean %}
 {{ output_expr }} = {{ output_expr }} / {{ mean_scale }};

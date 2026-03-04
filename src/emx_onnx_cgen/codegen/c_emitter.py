@@ -208,13 +208,21 @@ _SCALAR_TYPE_BY_DTYPE: dict[str, ScalarType] = {
     "float": ScalarType.F32,
     "double": ScalarType.F64,
     "int8": ScalarType.I8,
+    "int8_t": ScalarType.I8,
     "int16": ScalarType.I16,
+    "int16_t": ScalarType.I16,
     "int32": ScalarType.I32,
+    "int32_t": ScalarType.I32,
     "int64": ScalarType.I64,
+    "int64_t": ScalarType.I64,
     "uint8": ScalarType.U8,
+    "uint8_t": ScalarType.U8,
     "uint16": ScalarType.U16,
+    "uint16_t": ScalarType.U16,
     "uint32": ScalarType.U32,
+    "uint32_t": ScalarType.U32,
     "uint64": ScalarType.U64,
+    "uint64_t": ScalarType.U64,
     "bool": ScalarType.BOOL,
 }
 
@@ -394,6 +402,48 @@ class CEmitter:
         self._large_weight_threshold = large_weight_threshold
         self._replicate_ort_bugs = replicate_ort_bugs
         self._emit_state: _EmitState | None = None
+        self._env.globals["ScalarFunction"] = ScalarFunction
+        self._env.globals["scalar_fn"] = self._template_scalar_function_name
+
+    @staticmethod
+    def _template_scalar_function_type(dtype: ScalarType | str) -> ScalarType:
+        if isinstance(dtype, ScalarType):
+            return dtype
+        try:
+            return _SCALAR_TYPE_BY_DTYPE[dtype]
+        except KeyError as exc:
+            raise CodegenError(
+                f"Unsupported scalar function dtype for template resolver: {dtype}"
+            ) from exc
+
+    @staticmethod
+    def _template_scalar_function_kind(function: ScalarFunction | str) -> ScalarFunction:
+        if isinstance(function, ScalarFunction):
+            return function
+        try:
+            return ScalarFunction.from_onnx_op(function)
+        except ScalarFunctionError:
+            return ScalarFunction.from_op_name(function)
+
+    def _template_scalar_function_name(
+        self,
+        function: ScalarFunction | str,
+        dtype: ScalarType | str,
+        params: Sequence[float] | None = None,
+    ) -> str:
+        if self._emit_state is None:
+            raise CodegenError("Scalar function resolver requires active emit state.")
+        scalar_name = self._scalar_function_name(
+            self._template_scalar_function_kind(function),
+            self._template_scalar_function_type(dtype),
+            self._emit_state.scalar_registry,
+            params=tuple(params or ()),
+        )
+        if scalar_name is None:
+            raise CodegenError(
+                f"Failed to resolve scalar function: {function} for dtype {dtype}"
+            )
+        return scalar_name
 
     @staticmethod
     def _sanitize_identifier(name: str) -> str:
@@ -6694,10 +6744,11 @@ class CEmitter:
                     ("output", op.output),
                 ]
             )
-            scalar_operator = None
+            scalar_operator = False
             if scalar_registry is not None and op.function not in COMPARE_FUNCTIONS:
-                scalar_operator = self._scalar_function_name(
-                    op.function, input_dtype, scalar_registry
+                scalar_operator = (
+                    self._scalar_function_name(op.function, input_dtype, scalar_registry)
+                    is not None
                 )
             op_spec = binary_op_symbol(
                 op.function,
@@ -6764,8 +6815,8 @@ class CEmitter:
             operator_expr = None
             operator = op_spec.operator
             operator_kind = op.operator_kind
-            if scalar_operator is not None:
-                operator = scalar_operator
+            if scalar_operator:
+                operator = op.function
                 operator_kind = OperatorKind.FUNC
             if input_dtype == ScalarType.STRING:
                 if op.function == ScalarFunction.EQ:
@@ -6803,14 +6854,15 @@ class CEmitter:
                     ("output", op.output),
                 ]
             )
-            scalar_operator = None
+            scalar_operator = False
             if (
                 scalar_registry is not None
                 and op.function not in COMPARE_FUNCTIONS
                 and op.function != ScalarFunction.MEAN
             ):
-                scalar_operator = self._scalar_function_name(
-                    op.function, input_dtype, scalar_registry
+                scalar_operator = (
+                    self._scalar_function_name(op.function, input_dtype, scalar_registry)
+                    is not None
                 )
             op_spec = binary_op_symbol(
                 op.function,
@@ -6879,8 +6931,8 @@ class CEmitter:
                 operator = "+"
                 operator_kind = OperatorKind.INFIX
                 mean_scale = len(op.inputs)
-            if scalar_operator is not None:
-                operator = scalar_operator
+            if scalar_operator:
+                operator = op.function
                 operator_kind = OperatorKind.FUNC
             if operator_kind == OperatorKind.EXPR:
                 raise CodegenError(
@@ -7593,7 +7645,6 @@ class CEmitter:
                 scale_literal=CEmitter._format_floating(op.scale, op.dtype),
                 softcap_literal=CEmitter._format_floating(op.softcap, op.dtype),
                 one_literal=CEmitter._format_literal(op.dtype, 1),
-                max_fn=max_fn,
                 exp_fn=CEmitter._math_fn(op.dtype, "expf", "exp"),
                 tanh_fn=CEmitter._math_fn(op.dtype, "tanhf", "tanh"),
                 is_causal=int(op.is_causal),
@@ -8083,8 +8134,6 @@ class CEmitter:
                 min_literal=op.dtype.min_literal,
                 max_literal=op.dtype.max_literal,
                 round_fn=round_fn,
-                min_fn=min_fn,
-                max_fn=max_fn,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ConvTransposeOp):
@@ -8251,7 +8300,6 @@ class CEmitter:
                 acc_zero_literal=acc_zero_literal,
                 zero_literal=acc_zero_literal,
                 one_literal=acc_one_literal,
-                floor_fn=floor_fn,
                 batch=op.batch,
                 in_channels=op.in_channels,
                 out_channels=op.out_channels,
@@ -9426,7 +9474,6 @@ class CEmitter:
                 outer=outer,
                 axis_size=axis_size,
                 inner=inner,
-                max_fn=max_fn,
                 exp_fn=CEmitter._math_fn(output_dtype, "expf", "exp"),
             ).rstrip()
             return with_node_comment(rendered)
@@ -9468,7 +9515,6 @@ class CEmitter:
                 outer=outer,
                 axis_size=axis_size,
                 inner=inner,
-                max_fn=max_fn,
                 exp_fn=CEmitter._math_fn(output_dtype, "expf", "exp"),
                 log_fn=CEmitter._math_fn(output_dtype, "logf", "log"),
             ).rstrip()
@@ -9513,7 +9559,6 @@ class CEmitter:
                 inner=inner,
                 zero_literal=zero_literal,
                 one_literal=CEmitter._format_literal(output_dtype, 1),
-                max_fn=max_fn,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, NegativeLogLikelihoodLossOp):
@@ -9670,7 +9715,6 @@ class CEmitter:
                 acc_one_literal=acc_one_literal,
                 acc_exp_fn=acc_exp_fn,
                 acc_log_fn=acc_log_fn,
-                max_fn=max_fn,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, MaxPoolOp):
@@ -9731,7 +9775,6 @@ class CEmitter:
                 output_suffix=output_suffix,
                 indices_suffix=indices_suffix,
                 indices_c_type=indices_c_type,
-                max_fn=max_fn,
                 batch=op.batch,
                 channels=op.channels,
                 spatial_rank=op.spatial_rank,
@@ -11638,8 +11681,6 @@ class CEmitter:
                 num_boxes=boxes_shape[1],
                 num_classes=scores_shape[1],
                 center_point_box=op.center_point_box,
-                min_fn=min_fn,
-                max_fn=max_fn,
                 iou_threshold_default=boxes_dtype.zero_literal,
                 score_threshold_default=boxes_dtype.zero_literal,
                 score_threshold_enabled=op.score_threshold is not None,
@@ -11886,7 +11927,6 @@ class CEmitter:
                 c05_literal=self._format_literal(compute_dtype, 0.5),
                 c008_literal=self._format_literal(compute_dtype, 0.08),
                 pi_literal=self._format_literal(compute_dtype, math.pi),
-                cos_fn=cos_fn,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, LoopSequenceMapOp):
@@ -12083,7 +12123,6 @@ class CEmitter:
                 alpha_literal=self._format_literal(compute_dtype, 25.0 / 46.0),
                 beta_literal=self._format_literal(compute_dtype, 1.0 - (25.0 / 46.0)),
                 pi_literal=self._format_literal(compute_dtype, math.pi),
-                cos_fn=cos_fn,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, HannWindowOp):
@@ -12139,7 +12178,6 @@ class CEmitter:
                 alpha_literal=self._format_literal(compute_dtype, 0.5),
                 beta_literal=self._format_literal(compute_dtype, 0.5),
                 pi_literal=self._format_literal(compute_dtype, math.pi),
-                cos_fn=cos_fn,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, OneHotOp):
@@ -13340,8 +13378,6 @@ class CEmitter:
                 round_fn=round_fn,
                 min_literal=output_dtype.min_literal,
                 max_literal=output_dtype.max_literal,
-                min_fn=min_fn,
-                max_fn=max_fn,
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
@@ -13513,8 +13549,6 @@ class CEmitter:
                 output_expr=output_expr,
                 scale_expr=f"{params['scale']}[0]",
                 zero_point_expr=f"{params['zero_point']}[0]",
-                min_fn=min_fn,
-                max_fn=max_fn,
                 round_fn=round_fn,
                 dim_args=dim_args,
             ).rstrip()
@@ -13652,8 +13686,6 @@ class CEmitter:
                 round_fn=round_fn,
                 min_literal=op.dtype.min_literal,
                 max_literal=op.dtype.max_literal,
-                min_fn=min_fn,
-                max_fn=max_fn,
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
@@ -13811,8 +13843,6 @@ class CEmitter:
                 round_fn=round_fn,
                 min_literal=op.dtype.min_literal,
                 max_literal=op.dtype.max_literal,
-                min_fn=min_fn,
-                max_fn=max_fn,
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
@@ -13914,8 +13944,6 @@ class CEmitter:
                 params=param_decls,
                 compute_type=compute_type,
                 round_fn=round_fn,
-                min_fn=min_fn,
-                max_fn=max_fn,
                 min_literal=op.dtype.min_literal,
                 max_literal=op.dtype.max_literal,
                 input_scale_expr=f"{params['input_scale']}[0]",
@@ -14118,8 +14146,6 @@ class CEmitter:
                 output_index_expr=output_index_expr,
                 k=op.k,
                 round_fn=round_fn,
-                min_fn=min_fn,
-                max_fn=max_fn,
                 min_literal=min_literal,
                 max_literal=max_literal,
                 enable_integer_requant=scale_dtype != ScalarType.F16,
@@ -14220,8 +14246,6 @@ class CEmitter:
                 exp_fn=exp_fn,
                 round_fn=round_fn,
                 round_to_int_fn=round_to_int_fn,
-                min_fn=min_fn,
-                max_fn=max_fn,
                 output_wrap=self._replicate_ort_bugs,
                 output_is_signed=op.dtype.is_signed,
                 dim_args=dim_args,
@@ -14356,8 +14380,6 @@ class CEmitter:
                 input_expr=input_expr,
                 min_expr=min_expr,
                 max_expr=max_expr,
-                min_fn=min_fn,
-                max_fn=max_fn,
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
@@ -14368,10 +14390,13 @@ class CEmitter:
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
-            scalar_operator = None
+            scalar_operator = False
             if scalar_registry is not None:
-                scalar_operator = self._scalar_function_name(
-                    op.function, input_dtype, scalar_registry, params=op.params
+                scalar_operator = (
+                    self._scalar_function_name(
+                        op.function, input_dtype, scalar_registry, params=op.params
+                    )
+                    is not None
                 )
             output_dim_names = _dim_names_for(op.output)
             shape = CEmitter._shape_dim_exprs(output_shape_raw, output_dim_names)
@@ -14400,7 +14425,7 @@ class CEmitter:
                 operator_symbol = (
                     "isinf" if op.function == ScalarFunction.ISINF else "isnan"
                 )
-            if operator_symbol is None and scalar_operator is None:
+            if operator_symbol is None and not scalar_operator:
                 raise CodegenError(
                     f"Unsupported unary operator for rendering: {op.function.value}"
                 )
@@ -14421,7 +14446,9 @@ class CEmitter:
                 **common,
                 input0=params["input0"],
                 output=params["output"],
-                operator=scalar_operator or operator_symbol,
+                operator=op.function if scalar_operator else operator_symbol,
+                operator_kind="func" if scalar_operator else "builtin",
+                operator_params=op.params,
             ).rstrip()
             return with_node_comment(rendered)
         raise CodegenError(f"Unsupported op for rendering: {type(op).__name__}")

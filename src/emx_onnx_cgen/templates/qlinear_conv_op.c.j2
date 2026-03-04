@@ -33,8 +33,8 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     }
                     {{ compute_type }} scaled = (({{ compute_type }})acc) * scale;
                     {{ compute_type }} rounded = {{ round_fn }}(scaled) + ({{ compute_type }})({{ output_zero_expr }});
-                    rounded = {{ max_fn }}(rounded, ({{ compute_type }}){{ min_literal }});
-                    rounded = {{ min_fn }}(rounded, ({{ compute_type }}){{ max_literal }});
+                    rounded = {{ scalar_fn(ScalarFunction.MAXIMUM, compute_type) }}(rounded, ({{ compute_type }}){{ min_literal }});
+                    rounded = {{ scalar_fn(ScalarFunction.MINIMUM, compute_type) }}(rounded, ({{ compute_type }}){{ max_literal }});
                     {{ output }}[n][oc_global]{% for dim in range(spatial_rank) %}[{{ out_indices[dim] }}]{% endfor %} = ({{ output_c_type }})rounded;
                 {% for dim in range(spatial_rank) %}
                 }

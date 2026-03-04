@@ -135,7 +135,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     }
                     {% endif %}
                     scores[ki] = score_softcap;
-                    max_score = {{ max_fn }}(max_score, score_softcap);
+                    max_score = {{ scalar_fn(ScalarFunction.MAXIMUM, c_type) }}(max_score, score_softcap);
                 }
                 {{ c_type }} weights[{{ total_seq }}];
                 {{ c_type }} sum = {{ zero_literal }};

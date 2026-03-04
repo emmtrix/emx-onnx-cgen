@@ -16,7 +16,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             for (idx_t axis_idx = 1; axis_idx < {{ axis_size }}; ++axis_idx) {
                 idx_t axis_offset = base + axis_idx * {{ inner }};
                 {{ compute_type }} value = ((({{ compute_type }})((int32_t)input_flat[axis_offset] - input_zero)) * input_scale_value);
-                max_value = {{ max_fn }}(max_value, value);
+                max_value = {{ scalar_fn(ScalarFunction.MAXIMUM, compute_type) }}(max_value, value);
             }
             {{ compute_type }} sum = ({{ compute_type }})0;
             for (idx_t axis_idx = 0; axis_idx < {{ axis_size }}; ++axis_idx) {
@@ -39,8 +39,8 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                 output_flat[axis_offset] = ({{ output_c_type }})wrapped_u8;
 {% else %}
                 {{ compute_type }} rounded = {{ round_fn }}(scaled);
-                rounded = {{ max_fn }}(rounded, output_min);
-                rounded = {{ min_fn }}(rounded, output_max);
+                rounded = {{ scalar_fn(ScalarFunction.MAXIMUM, compute_type) }}(rounded, output_min);
+                rounded = {{ scalar_fn(ScalarFunction.MINIMUM, compute_type) }}(rounded, output_max);
                 output_flat[axis_offset] = ({{ output_c_type }})rounded;
 {% endif %}
             }

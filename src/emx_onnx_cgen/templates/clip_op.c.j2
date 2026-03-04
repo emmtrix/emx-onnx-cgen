@@ -5,8 +5,8 @@ for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ d
 {{ output_c_type }} value = {{ input_expr }};
 const {{ output_c_type }} min_value = {{ min_expr }};
 const {{ output_c_type }} max_value = {{ max_expr }};
-value = {{ max_fn }}(value, min_value);
-value = {{ min_fn }}(value, max_value);
+value = {{ scalar_fn(ScalarFunction.MAXIMUM, output_c_type) }}(value, min_value);
+value = {{ scalar_fn(ScalarFunction.MINIMUM, output_c_type) }}(value, max_value);
 {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = value;
 {% for _ in shape %}
 }
