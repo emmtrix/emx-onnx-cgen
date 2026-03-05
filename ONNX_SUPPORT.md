@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1601 / 1802, 88.8% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1603 / 1802, 89.0% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1601 / 1802 ONNX files (88.8%).
+Coverage 1603 / 1802 ONNX files (89.0%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -41,8 +41,8 @@ Coverage 1601 / 1802 ONNX files (88.8%).
 | node/test_acosh_example/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_adagrad/model.onnx |  | Data | ✅ | OK (max ULP 0) |
 | node/test_adagrad_multiple/model.onnx |  | Data | ✅ | OK (max ULP 0) |
-| node/test_adam/model.onnx |  | Data | ❌ | Unsupported op Adam |
-| node/test_adam_multiple/model.onnx |  | Data | ❌ | Unsupported op Adam |
+| node/test_adam/model.onnx |  | Data | ✅ |  |
+| node/test_adam_multiple/model.onnx |  | Data | ✅ |  |
 | node/test_add/model.onnx | 14 | Data | ✅ | OK (max ULP 0) |
 | node/test_add_bcast/model.onnx | 14 | Data | ✅ | OK (max ULP 0) |
 | node/test_add_int16/model.onnx | 14 | Data | ✅ | OK (max abs diff 0) |
