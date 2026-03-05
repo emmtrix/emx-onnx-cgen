@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import dataclasses
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import ClassVar, Protocol
@@ -66,6 +67,37 @@ class OpBase(ABC):
     @abstractmethod
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         raise NotImplementedError
+
+    def remap_names(self, name_map: dict[str, str]) -> OpBase:
+        """Return a copy with I/O tensor-name fields remapped via *name_map*.
+
+        Fields declared in ``__io_inputs__`` / ``__io_outputs__`` (and the
+        optional ``__io_remap_extra__``) are touched.  Handles ``str``,
+        ``str | None`` and ``tuple[str, ...]`` / ``tuple[str | None, ...]``.
+        """
+        input_fields, output_fields = _io_field_names(type(self))
+        io_fields = set(input_fields + output_fields)
+        extra = getattr(type(self), "__io_remap_extra__", None)
+        if extra:
+            io_fields.update(extra)
+        changes: dict[str, object] = {}
+        for field_name in io_fields:
+            value = getattr(self, field_name)
+            if value is None:
+                continue
+            if isinstance(value, str):
+                new_value = name_map.get(value, value)
+            elif isinstance(value, tuple):
+                new_value = tuple(
+                    name_map.get(v, v) if v is not None else None for v in value
+                )
+            else:
+                continue
+            if new_value is not value and new_value != value:
+                changes[field_name] = new_value
+        if not changes:
+            return self
+        return dataclasses.replace(self, **changes)  # type: ignore[type-var]
 
 
 class RenderableOpBase(OpBase):
@@ -715,6 +747,8 @@ def _resolve_io_names(op: OpBase, field_names: tuple[str, ...]) -> tuple[str, ..
             continue
         if isinstance(value, tuple):
             for entry in value:
+                if entry is None:
+                    continue
                 if not isinstance(entry, str):
                     raise UnsupportedOpError(
                         f"{op.kind} {field_name} must be a tuple of tensor names"

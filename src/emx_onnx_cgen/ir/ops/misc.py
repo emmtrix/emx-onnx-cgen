@@ -1056,6 +1056,8 @@ class LoopSequenceInsertOp(RenderableOpBase):
 class LoopSequenceMapOp(RenderableOpBase):
     __io_inputs__ = ("trip_count", "cond")
     __io_outputs__ = ("output_sequences",)
+    __io_remap_extra__ = ("input_sequences", "input_tensors",
+                          "output_input0", "output_input1")
     trip_count: str
     cond: str
     input_sequences: tuple[str, ...]
@@ -1240,6 +1242,7 @@ class StringSplitOp(RenderableOpBase):
 class TreeEnsembleClassifierOp(RenderableOpBase):
     __io_inputs__ = ("input0",)
     __io_outputs__ = ("label", "probabilities")
+    __io_remap_extra__ = ("output",)
     input0: str
     label: str
     probabilities: str
@@ -1380,6 +1383,7 @@ class SequenceLengthOp(RenderableOpBase):
 class SequenceIdentityOp(RenderableOpBase):
     __io_inputs__ = ("input_sequence",)
     __io_outputs__ = ("output_sequence",)
+    __io_remap_extra__ = ("input_present", "output_present")
     input_sequence: str
     output_sequence: str
     input_present: str | None = None
@@ -1418,6 +1422,7 @@ class SequenceInsertOp(RenderableOpBase):
 class IfOptionalSequenceConstOp(RenderableOpBase):
     __io_inputs__ = ("cond",)
     __io_outputs__ = ("output_sequence",)
+    __io_remap_extra__ = ("output_present",)
     cond: str
     output_sequence: str
     output_present: str | None
