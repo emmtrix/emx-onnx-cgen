@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import dataclasses
 from abc import ABC, abstractmethod
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import ClassVar, Protocol
 
+from shared.scalar_functions import ScalarFunction
 from shared.scalar_types import ScalarType
 
 from ..errors import ShapeInferenceError, UnsupportedOpError
@@ -19,8 +22,47 @@ class Emitter(Protocol):
     def ctx_shape(self, name: str) -> tuple[int, ...]: ...
     def ctx_dtype(self, name: str): ...
     def derived(self, op: "OpBase", key: str): ...
-    def param_array_suffix(self, shape: tuple[int, ...]) -> str: ...
+    def param_array_suffix(
+        self,
+        shape: tuple[int, ...],
+        dim_names: Mapping[int, str] | None = ...,
+        *,
+        dtype: "ScalarType | None" = ...,
+    ) -> str: ...
     def build_param_decls(self, params): ...
+    def accumulation_dtype(self, dtype) -> "ScalarType": ...
+    def format_literal(self, dtype, value: float | int | bool) -> str: ...
+    def format_floating(self, value: float, dtype) -> str: ...
+    def dim_names_for(self, name: str) -> Mapping[int, str]: ...
+    def dim_args_str(self) -> str: ...
+    def rnn_activation_function_name(
+        self, kind: str, alpha: float, beta: float, dtype: "ScalarType"
+    ) -> str: ...
+    def scalar_registry(self): ...
+    @property
+    def replicate_ort_bugs(self) -> bool: ...
+    def op_output_dtype(self, op: "OpBase") -> "ScalarType": ...
+    def unique_param_map(self, items: list[tuple[str, str | None]]): ...
+    def optional_input_flag_map(self, model) -> dict[str, str]: ...
+    def ctx_sequence_elem_type(self, name: str): ...
+    def sequence_storage_shape(self, name: str) -> tuple[int, ...]: ...
+    def format_value(self, value: float | int | bool, dtype: "ScalarType") -> str: ...
+    def dft_stockham_stage_plan(self, fft_length: int): ...
+    def dft_twiddle_table(
+        self, fft_length: int, *, inverse: bool, dtype: "ScalarType"
+    ): ...
+    def format_c_string_literal(self, value: str) -> str: ...
+    def format_double(self, value: float) -> str: ...
+    def emit_initializer_lines(self, values, shape: tuple[int, ...]) -> list[str]: ...
+    def index_expr(self, shape: tuple[int, ...], loop_vars: tuple[str, ...]) -> str: ...
+    def format_c_indentation(self, text: str) -> str: ...
+    def scalar_fn(
+        self,
+        function: "ScalarFunction",
+        dtype: "ScalarType",
+        params: tuple[float, ...] = ...,
+    ) -> str | None: ...
+    def maybe_derived(self, op: "OpBase", key: str) -> object | None: ...
 
 
 @dataclass(frozen=True)
@@ -44,6 +86,24 @@ class OpBase(ABC):
         _, output_fields = _io_field_names(type(self))
         return _resolve_io_names(self, output_fields)
 
+    @property
+    def primary_output_name(self) -> str | None:
+        """Tensor name of the primary output for dtype/shape queries.
+
+        Returns the value of the first ``__io_outputs__`` field, or ``None``
+        for ops that don't have a simple primary output (e.g. sequence ops).
+        Subclasses may override to select a different output field.
+        """
+        _, output_fields = _io_field_names(type(self))
+        if not output_fields:
+            return None
+        value = getattr(self, output_fields[0])
+        if isinstance(value, str):
+            return value
+        if isinstance(value, tuple) and value:
+            return value[0]
+        return None
+
     def call_args(self) -> tuple[str, ...]:
         return self.input_names + self.output_names
 
@@ -54,6 +114,21 @@ class OpBase(ABC):
             f"'{self.__class__.__name__}' object has no attribute '{name}'"
         )
 
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        """Return C include directives needed by this op (e.g. ``{'#include <math.h>'}``)."""
+        return set()
+
+    def extra_model_dtypes(self, ctx: OpContext) -> set[ScalarType]:
+        """Return additional dtypes beyond the primary output needed for include resolution."""
+        return set()
+
+    def resolved_output_dtype(self, ctx: OpContext) -> "ScalarType":
+        """Return the primary output dtype using OpContext (for include resolution)."""
+        name = self.primary_output_name
+        if name is not None:
+            return ctx.dtype(name)
+        return self.dtype
+
     def validate(self, ctx: OpContext) -> None:
         return None
 
@@ -63,9 +138,79 @@ class OpBase(ABC):
     def infer_shapes(self, ctx: OpContext) -> None:
         return None
 
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        """Return (name, shape) pairs for C function input parameters."""
+        return tuple(
+            (name, emitter.ctx_shape(name))
+            for name in self.input_names
+            if name is not None
+        )
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> "tuple[tuple[str, tuple[int, ...], ScalarType], ...]":
+        """Return (name, shape, dtype) triples for C function output parameters."""
+        name = self.primary_output_name
+        if name is not None:
+            return (
+                (
+                    name,
+                    self.computed_output_shape(emitter),
+                    self.computed_output_dtype(emitter),
+                ),
+            )
+        raise UnsupportedOpError(f"Cannot determine outputs for {self.kind}")
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        """Return the output shape for this op. Default: ctx_shape(primary_output_name)."""
+        name = self.primary_output_name
+        if name is not None:
+            return emitter.ctx_shape(name)
+        raise UnsupportedOpError(f"Cannot determine output shape for {self.kind}")
+
+    def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
+        """Return the output dtype for this op. Default: ctx_dtype(primary_output_name)."""
+        name = self.primary_output_name
+        if name is not None:
+            return emitter.ctx_dtype(name)
+        return self.dtype
+
     @abstractmethod
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         raise NotImplementedError
+
+    def remap_names(self, name_map: dict[str, str]) -> OpBase:
+        """Return a copy with I/O tensor-name fields remapped via *name_map*.
+
+        Fields declared in ``__io_inputs__`` / ``__io_outputs__`` (and the
+        optional ``__io_remap_extra__``) are touched.  Handles ``str``,
+        ``str | None`` and ``tuple[str, ...]`` / ``tuple[str | None, ...]``.
+        """
+        input_fields, output_fields = _io_field_names(type(self))
+        io_fields = set(input_fields + output_fields)
+        extra = getattr(type(self), "__io_remap_extra__", None)
+        if extra:
+            io_fields.update(extra)
+        changes: dict[str, object] = {}
+        for field_name in io_fields:
+            value = getattr(self, field_name)
+            if value is None:
+                continue
+            if isinstance(value, str):
+                new_value = name_map.get(value, value)
+            elif isinstance(value, tuple):
+                new_value = tuple(
+                    name_map.get(v, v) if v is not None else None for v in value
+                )
+            else:
+                continue
+            if new_value is not value and new_value != value:
+                changes[field_name] = new_value
+        if not changes:
+            return self
+        return dataclasses.replace(self, **changes)  # type: ignore[type-var]
 
 
 class RenderableOpBase(OpBase):
@@ -676,17 +821,124 @@ class ConvLikeOpBase(RenderableOpBase):
     __io_inputs__ = ("input0", "weights", "bias")
     __io_outputs__ = ("output",)
 
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return (self.batch, self.out_channels, *self.out_spatial)
+
 
 class CEmitterCompat:
     @staticmethod
     def codegen_shape(shape: tuple[int, ...]) -> tuple[int | str, ...]:
+        if not shape:
+            return (1,)
         return tuple(
             dim if dim >= 0 else f"dim_{index}" for index, dim in enumerate(shape)
         )
 
     @staticmethod
     def loop_vars(shape: tuple[int | str, ...]) -> tuple[str, ...]:
+        if not shape:
+            shape = (1,)
         return tuple(f"i{idx}" for idx in range(len(shape)))
+
+    @staticmethod
+    def element_count(shape: tuple[int, ...]) -> int:
+        if not shape:
+            return 1
+        count = 1
+        for dim in shape:
+            if dim < 0:
+                raise ValueError("Dynamic dims are not supported for element_count")
+            if dim == 0:
+                return 0
+            count *= dim
+        return count
+
+    @staticmethod
+    def shape_dim_exprs(
+        shape: tuple[int, ...],
+        dim_names: Mapping[int, str] | None,
+    ) -> tuple[str | int, ...]:
+        dim_names = dim_names or {}
+        if not shape:
+            shape = (1,)
+        return tuple(dim_names.get(index, dim) for index, dim in enumerate(shape))
+
+    @staticmethod
+    def element_count_expr(shape_exprs: Sequence[str | int]) -> str:
+        if not shape_exprs:
+            return "1"
+        return " * ".join(str(dim) for dim in shape_exprs)
+
+    @staticmethod
+    def broadcast_index_expr(
+        name: str,
+        input_shape: tuple[int, ...],
+        output_shape: tuple[int, ...],
+        loop_vars: tuple[str, ...],
+    ) -> str:
+        if not input_shape:
+            return f"{name}[0]"
+        output_shape = CEmitterCompat.codegen_shape(output_shape)
+        if len(output_shape) != len(loop_vars):
+            raise ValueError("Loop variables must match output shape rank")
+        offset = len(output_shape) - len(input_shape)
+        indices: list[str] = []
+        for input_dim, dim_size in enumerate(input_shape):
+            output_dim = input_dim + offset
+            if dim_size == 1:
+                indices.append("[0]")
+            else:
+                indices.append(f"[{loop_vars[output_dim]}]")
+        return f"{name}{''.join(indices)}"
+
+    @staticmethod
+    def matmul_index_exprs(
+        batch_vars: tuple[str, ...],
+        row_var: str | None,
+        col_var: str | None,
+        batch_rank: int,
+        *,
+        input0: str,
+        input1: str,
+        left_vector: bool,
+        right_vector: bool,
+        input0_shape: tuple[int, ...],
+        input1_shape: tuple[int, ...],
+        input0_batch_shape: tuple[int, ...],
+        input1_batch_shape: tuple[int, ...],
+    ) -> tuple[str, str]:
+        def batch_indices(batch_shape: tuple[int, ...], actual_rank: int) -> list[str]:
+            if actual_rank == 0:
+                return []
+            offset = batch_rank - actual_rank
+            indices: list[str] = []
+            for idx in range(actual_rank):
+                dim = batch_shape[offset + idx]
+                var = batch_vars[offset + idx]
+                indices.append("0" if dim == 1 else var)
+            return indices
+
+        if left_vector:
+            input0_indices = ["k"]
+        else:
+            input0_batch_rank = len(input0_shape) - 2
+            input0_indices = batch_indices(input0_batch_shape, input0_batch_rank)
+            input0_indices.append(row_var if row_var is not None else "0")
+            input0_indices.append("k")
+        if right_vector:
+            input1_indices = ["k"]
+        else:
+            input1_batch_rank = len(input1_shape) - 2
+            input1_indices = batch_indices(input1_batch_shape, input1_batch_rank)
+            input1_indices.append("k")
+            input1_indices.append(col_var if col_var is not None else "0")
+        input0_index_expr = f"{input0}" + "".join(
+            f"[{index}]" for index in input0_indices
+        )
+        input1_index_expr = f"{input1}" + "".join(
+            f"[{index}]" for index in input1_indices
+        )
+        return input0_index_expr, input1_index_expr
 
 
 def _io_field_names(op_type: type[OpBase]) -> tuple[tuple[str, ...], tuple[str, ...]]:
@@ -715,6 +967,8 @@ def _resolve_io_names(op: OpBase, field_names: tuple[str, ...]) -> tuple[str, ..
             continue
         if isinstance(value, tuple):
             for entry in value:
+                if entry is None:
+                    continue
                 if not isinstance(entry, str):
                     raise UnsupportedOpError(
                         f"{op.kind} {field_name} must be a tuple of tensor names"
