@@ -37,7 +37,7 @@ from .verification import worst_ulp_diff
 LOGGER = logging.getLogger(__name__)
 _NONDETERMINISTIC_OPERATORS = {"Bernoulli"}
 _EMX_STRING_MAX_LEN = 256
-_DISABLE_SANITIZE_ENV = "EMX_DISABLE_SANITIZE"
+_ENABLE_SANITIZE_ENV = "EMX_ENABLE_SANITIZE"
 
 
 def _serialize_string_tensor(array: np.ndarray) -> bytes:
@@ -92,6 +92,16 @@ def _env_flag(name: str) -> bool:
     if value is None:
         return False
     return value.strip().lower() not in {"", "0", "false", "no", "off"}
+
+
+def _resolve_sanitize_enabled(cli_requested: bool) -> tuple[bool, str | None]:
+    env_value = os.environ.get(_ENABLE_SANITIZE_ENV)
+    if env_value is None:
+        return cli_requested, None
+    env_enabled = _env_flag(_ENABLE_SANITIZE_ENV)
+    if env_enabled == cli_requested:
+        return env_enabled, None
+    return env_enabled, f"{_ENABLE_SANITIZE_ENV}={env_value!r}"
 
 
 def _parse_testbench_output_format_arg(value: str) -> str:
@@ -723,8 +733,8 @@ def _build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help=(
             "Build the verification binary with sanitizers enabled "
-            "(-fsanitize=address,undefined); set "
-            f"{_DISABLE_SANITIZE_ENV}=1 to force-disable sanitizers"
+            "(-fsanitize=address,undefined); when set, "
+            f"{_ENABLE_SANITIZE_ENV} overrides this flag"
         ),
     )
     verify_parser.add_argument(
@@ -1661,10 +1671,12 @@ def _verify_model(
                 "-std=c99",
                 "-O1",
             ]
-            sanitize_enabled = args.sanitize and not _env_flag(_DISABLE_SANITIZE_ENV)
-            if args.sanitize and not sanitize_enabled:
+            sanitize_enabled, sanitize_override = _resolve_sanitize_enabled(
+                args.sanitize
+            )
+            if sanitize_override is not None:
                 active_reporter.note(
-                    f"--sanitize requested but disabled via {_DISABLE_SANITIZE_ENV}."
+                    f"Sanitizer mode overridden by {sanitize_override}."
                 )
             if sanitize_enabled:
                 compile_cmd.append("-fsanitize=address,undefined")
