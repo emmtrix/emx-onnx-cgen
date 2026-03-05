@@ -4681,6 +4681,196 @@ class LstmOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class AdamOp(RenderableOpBase):
+    __io_inputs__ = (
+        "rate",
+        "timestep",
+        "inputs",
+        "gradients",
+        "velocities",
+        "accumulators",
+    )
+    __io_outputs__ = ("outputs", "velocity_outputs", "accumulator_outputs")
+    rate: str
+    timestep: str
+    inputs: tuple[str, ...]
+    gradients: tuple[str, ...]
+    velocities: tuple[str, ...]
+    accumulators: tuple[str, ...]
+    outputs: tuple[str, ...]
+    velocity_outputs: tuple[str, ...]
+    accumulator_outputs: tuple[str, ...]
+    rate_shape: tuple[int, ...]
+    timestep_shape: tuple[int, ...]
+    tensor_shapes: tuple[tuple[int, ...], ...]
+    output_shapes: tuple[tuple[int, ...], ...]
+    dtype: ScalarType
+    rate_dtype: ScalarType
+    timestep_dtype: ScalarType
+    alpha: float
+    beta: float
+    epsilon: float
+    norm_coefficient: float
+    norm_coefficient_post: float
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def call_args(self) -> tuple[str, ...]:
+        args = [self.rate, self.timestep]
+        for index in range(len(self.inputs)):
+            args.extend(
+                [
+                    self.inputs[index],
+                    self.gradients[index],
+                    self.velocities[index],
+                    self.accumulators[index],
+                    self.outputs[index],
+                    self.velocity_outputs[index],
+                    self.accumulator_outputs[index],
+                ]
+            )
+        return tuple(args)
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.outputs[0])
+        c_type = output_dtype.c_type
+        params = emitter.shared_param_map(
+            [
+                ("rate", self.rate),
+                ("timestep", self.timestep),
+                *((f"input{idx}", name) for idx, name in enumerate(self.inputs)),
+                *((f"grad{idx}", name) for idx, name in enumerate(self.gradients)),
+                *((f"vel{idx}", name) for idx, name in enumerate(self.velocities)),
+                *((f"acc{idx}", name) for idx, name in enumerate(self.accumulators)),
+                *((f"output{idx}", name) for idx, name in enumerate(self.outputs)),
+                *(
+                    (f"vel_output{idx}", name)
+                    for idx, name in enumerate(self.velocity_outputs)
+                ),
+                *(
+                    (f"acc_output{idx}", name)
+                    for idx, name in enumerate(self.accumulator_outputs)
+                ),
+            ]
+        )
+        rate_suffix = emitter.param_array_suffix(
+            self.rate_shape, emitter.dim_names_for(self.rate)
+        )
+        timestep_suffix = emitter.param_array_suffix(
+            self.timestep_shape, emitter.dim_names_for(self.timestep)
+        )
+        param_specs = [
+            (params["rate"], self.rate_dtype.c_type, rate_suffix, True),
+            (
+                params["timestep"],
+                self.timestep_dtype.c_type,
+                timestep_suffix,
+                True,
+            ),
+        ]
+        tensor_specs = []
+        for idx, shape in enumerate(self.output_shapes):
+            input_suffix = emitter.param_array_suffix(
+                self.tensor_shapes[idx], emitter.dim_names_for(self.inputs[idx])
+            )
+            grad_suffix = emitter.param_array_suffix(
+                self.tensor_shapes[idx], emitter.dim_names_for(self.gradients[idx])
+            )
+            vel_suffix = emitter.param_array_suffix(
+                self.tensor_shapes[idx], emitter.dim_names_for(self.velocities[idx])
+            )
+            acc_suffix = emitter.param_array_suffix(
+                self.tensor_shapes[idx], emitter.dim_names_for(self.accumulators[idx])
+            )
+            output_suffix = emitter.param_array_suffix(
+                self.output_shapes[idx], emitter.dim_names_for(self.outputs[idx])
+            )
+            vel_output_suffix = emitter.param_array_suffix(
+                self.output_shapes[idx],
+                emitter.dim_names_for(self.velocity_outputs[idx]),
+            )
+            acc_output_suffix = emitter.param_array_suffix(
+                self.output_shapes[idx],
+                emitter.dim_names_for(self.accumulator_outputs[idx]),
+            )
+            param_specs.extend(
+                [
+                    (params[f"input{idx}"], c_type, input_suffix, True),
+                    (params[f"grad{idx}"], c_type, grad_suffix, True),
+                    (params[f"vel{idx}"], c_type, vel_suffix, True),
+                    (params[f"acc{idx}"], c_type, acc_suffix, True),
+                    (params[f"output{idx}"], c_type, output_suffix, False),
+                    (params[f"vel_output{idx}"], c_type, vel_output_suffix, False),
+                    (params[f"acc_output{idx}"], c_type, acc_output_suffix, False),
+                ]
+            )
+            output_dim_names = emitter.dim_names_for(self.outputs[idx])
+            shape_exprs = CEmitterCompat.shape_dim_exprs(shape, output_dim_names)
+            loop_vars = CEmitterCompat.loop_vars(shape)
+            index_suffix = "".join(f"[{var}]" for var in loop_vars)
+            tensor_specs.append(
+                {
+                    "shape": shape_exprs,
+                    "loop_vars": loop_vars,
+                    "input_expr": f"{params[f'input{idx}']}{index_suffix}",
+                    "grad_expr": f"{params[f'grad{idx}']}{index_suffix}",
+                    "vel_expr": f"{params[f'vel{idx}']}{index_suffix}",
+                    "acc_expr": f"{params[f'acc{idx}']}{index_suffix}",
+                    "output_expr": f"{params[f'output{idx}']}{index_suffix}",
+                    "vel_output_expr": f"{params[f'vel_output{idx}']}{index_suffix}",
+                    "acc_output_expr": f"{params[f'acc_output{idx}']}{index_suffix}",
+                }
+            )
+        param_decls = emitter.build_param_decls(param_specs)
+        rendered = (
+            state.templates["adam"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                rate=params["rate"],
+                timestep=params["timestep"],
+                params=param_decls,
+                c_type=c_type,
+                one_literal=emitter.format_literal(self.dtype, 1),
+                alpha_literal=emitter.format_floating(self.alpha, self.dtype),
+                beta_literal=emitter.format_floating(self.beta, self.dtype),
+                epsilon_literal=emitter.format_floating(self.epsilon, self.dtype),
+                norm_coefficient_literal=emitter.format_floating(
+                    self.norm_coefficient, self.dtype
+                ),
+                norm_coefficient_post_literal=emitter.format_floating(
+                    self.norm_coefficient_post, self.dtype
+                ),
+                dtype=self.dtype,
+                tensors=tensor_specs,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        outputs = [
+            (name, shape, self.dtype)
+            for name, shape in zip(self.outputs, self.output_shapes)
+        ]
+        outputs.extend(
+            (name, shape, self.dtype)
+            for name, shape in zip(self.velocity_outputs, self.output_shapes)
+        )
+        outputs.extend(
+            (name, shape, self.dtype)
+            for name, shape in zip(self.accumulator_outputs, self.output_shapes)
+        )
+        return tuple(outputs)
+
+
+@dataclass(frozen=True)
 class AdagradOp(RenderableOpBase):
     __io_inputs__ = ("rate", "timestep", "inputs", "gradients", "accumulators")
     __io_outputs__ = ("outputs", "accumulator_outputs")

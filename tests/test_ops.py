@@ -21,6 +21,7 @@ from shared.scalar_functions import ScalarFunction
 from shared.scalar_types import ScalarType
 
 from emx_onnx_cgen.ir.ops import (
+    AdamOp,
     EinsumKind,
     EinsumOp,
     MultiInputBinaryOp,
@@ -210,6 +211,77 @@ def _make_string_concat_model(
         opset_imports=[helper.make_operatorsetid("", 20)],
     )
     model.ir_version = 9
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_adam_model(
+    *, tensor_shape: list[int], tensor_count: int = 1
+) -> onnx.ModelProto:
+    rate = helper.make_tensor_value_info("R", TensorProto.FLOAT, [])
+    timestep = helper.make_tensor_value_info("T", TensorProto.INT64, [])
+    x_inputs = [
+        helper.make_tensor_value_info(f"X{idx}", TensorProto.FLOAT, tensor_shape)
+        for idx in range(tensor_count)
+    ]
+    g_inputs = [
+        helper.make_tensor_value_info(f"G{idx}", TensorProto.FLOAT, tensor_shape)
+        for idx in range(tensor_count)
+    ]
+    v_inputs = [
+        helper.make_tensor_value_info(f"V{idx}", TensorProto.FLOAT, tensor_shape)
+        for idx in range(tensor_count)
+    ]
+    h_inputs = [
+        helper.make_tensor_value_info(f"H{idx}", TensorProto.FLOAT, tensor_shape)
+        for idx in range(tensor_count)
+    ]
+    outputs = [
+        helper.make_tensor_value_info(f"X_new{idx}", TensorProto.FLOAT, tensor_shape)
+        for idx in range(tensor_count)
+    ]
+    outputs.extend(
+        helper.make_tensor_value_info(f"V_new{idx}", TensorProto.FLOAT, tensor_shape)
+        for idx in range(tensor_count)
+    )
+    outputs.extend(
+        helper.make_tensor_value_info(f"H_new{idx}", TensorProto.FLOAT, tensor_shape)
+        for idx in range(tensor_count)
+    )
+
+    node_inputs = [
+        rate.name,
+        timestep.name,
+        *(value.name for value in x_inputs),
+        *(value.name for value in g_inputs),
+        *(value.name for value in v_inputs),
+        *(value.name for value in h_inputs),
+    ]
+    node_outputs = [value.name for value in outputs]
+    node = helper.make_node(
+        "Adam",
+        inputs=node_inputs,
+        outputs=node_outputs,
+        domain="ai.onnx.preview.training",
+        alpha=0.9,
+        beta=0.999,
+        epsilon=1e-8,
+    )
+    graph = helper.make_graph(
+        [node],
+        "adam_graph",
+        [rate, timestep, *x_inputs, *g_inputs, *v_inputs, *h_inputs],
+        outputs,
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[
+            helper.make_operatorsetid("", 13),
+            helper.make_operatorsetid("ai.onnx.preview.training", 1),
+        ],
+    )
+    model.ir_version = 7
     onnx.checker.check_model(model)
     return model
 
@@ -5695,6 +5767,32 @@ def test_lower_shape_missing_value() -> None:
     )
     with pytest.raises(ShapeInferenceError, match="Missing shape for value 'missing'"):
         lower_shape(graph, node)
+
+
+def test_lower_adam_builds_spec() -> None:
+    model = _make_adam_model(tensor_shape=[2, 3], tensor_count=2)
+    graph = import_onnx(model)
+    lowering = get_lowering("Adam")
+    assert lowering is not None
+    op = lowering(graph, graph.nodes[0])
+    assert isinstance(op, AdamOp)
+    assert len(op.inputs) == 2
+    assert op.tensor_shapes == ((2, 3), (2, 3))
+
+
+def test_adam_op_matches_onnxruntime() -> None:
+    model = _make_adam_model(tensor_shape=[2, 3])
+    _run_ort_compare_or_skip(
+        model,
+        skip_substrings=("NOT_IMPLEMENTED", "ai.onnx.preview.training:Adam"),
+    )
+
+
+def test_adam_op_compiles() -> None:
+    model = _make_adam_model(tensor_shape=[2, 3])
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "EMX_NODE_FN void" in generated
+    assert "sqrt" in generated
 
 
 @pytest.mark.parametrize("case", OPERATOR_CASES, ids=lambda case: case["name"])
