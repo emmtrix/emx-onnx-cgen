@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-import itertools
 import math
 from math import prod
 from pathlib import Path
@@ -18,12 +17,8 @@ from jinja2 import (
 )
 import numpy as np
 
-from ..errors import CodegenError, UnsupportedOpError
+from ..errors import CodegenError
 from ..testbench_output_format import parse_testbench_output_format
-from ..ops import (
-    COMPARE_FUNCTIONS,
-    OperatorKind,
-)
 from ..ir.op_base import (
     OpBase,
     EmitContext,
@@ -31,13 +26,10 @@ from ..ir.op_base import (
 from ..ir.op_context import OpContext
 from ..ir.model import SequenceType, TensorType, ValueType
 from ..ir.ops import (
-    AdagradOp,
     ArgReduceOp,
     AttentionOp,
     AveragePoolOp,
     BatchNormOp,
-    BernoulliOp,
-    DropoutOp,
     BinaryOp,
     BlackmanWindowOp,
     CastOp,
@@ -53,11 +45,8 @@ from ..ir.ops import (
     DeformConvOp,
     CumSumOp,
     DFTOp,
-    STFTOp,
     DepthToSpaceOp,
     DequantizeLinearOp,
-    DynamicQuantizeLinearOp,
-    EinsumKind,
     EinsumOp,
     ExpandOp,
     EyeLikeOp,
@@ -71,59 +60,40 @@ from ..ir.ops import (
     GroupNormalizationOp,
     HammingWindowOp,
     HannWindowOp,
-    MelWeightMatrixOp,
     IfOptionalSequenceConstOp,
     HardmaxOp,
     IdentityOp,
     InstanceNormalizationOp,
-    LabelEncoderOp,
     LayerNormalizationOp,
     LogSoftmaxOp,
     LpNormalizationOp,
     LpPoolOp,
     LrnOp,
     LstmOp,
-    MatMulIntegerOp,
     MatMulOp,
     MaxPoolOp,
     MeanVarianceNormalizationOp,
-    MomentumOp,
-    MultiInputBinaryOp,
     NegativeLogLikelihoodLossOp,
     NonMaxSuppressionOp,
     NonZeroOp,
     OneHotOp,
-    OptionalGetElementOp,
-    OptionalHasElementOp,
-    PadOp,
     QuantizeLinearOp,
-    PowOp,
     QLinearAddOp,
-    QLinearAveragePoolOp,
     QLinearMulOp,
     QLinearMatMulOp,
     QLinearSoftmaxOp,
-    QLinearConvOp,
-    LoopRangeOp,
     LoopSequenceInsertOp,
-    LoopSequenceMapOp,
     RangeOp,
-    ReverseSequenceOp,
     SequenceAtOp,
     SequenceConstructOp,
     SequenceEmptyOp,
     SequenceEraseOp,
     SequenceInsertOp,
-    SequenceIdentityOp,
     SequenceLengthOp,
     ReduceOp,
     ReshapeOp,
     ResizeOp,
     RMSNormalizationOp,
-    RotaryEmbeddingOp,
-    ScatterElementsOp,
-    ScatterOp,
-    ScatterNDOp,
     ShapeOp,
     SizeOp,
     SliceOp,
@@ -132,12 +102,6 @@ from ..ir.ops import (
     SpaceToDepthOp,
     SplitOp,
     SplitToSequenceOp,
-    TensorScatterOp,
-    TfIdfVectorizerOp,
-    StringConcatOp,
-    StringNormalizerOp,
-    StringSplitOp,
-    TreeEnsembleOp,
     TreeEnsembleClassifierOp,
     TileOp,
     CenterCropPadOp,
@@ -2277,7 +2241,6 @@ class CEmitter:
         max_literal: str,
     ) -> str | None:
         model = state.model
-        dim_args = state.dim_args
         templates = state.templates
         if isinstance(op, ReduceOp) and op.axes_input is None:
             input_shape = self._ctx_shape(op.input0)
@@ -2543,16 +2506,11 @@ class CEmitter:
         index: int,
     ) -> str:
         model = state.model
-        templates = state.templates
-        scalar_registry = state.scalar_registry
-        dim_args = state.dim_args
         dtype = self._op_output_dtype(op)
         c_type = dtype.c_type
         zero_literal = dtype.zero_literal
         min_literal = dtype.min_literal
         max_literal = dtype.max_literal
-        array_suffix = ""
-        loop_vars: tuple[str, ...] = ()
         node_info = model.node_infos[index]
         node_comment = CEmitter._emit_node_comment(node_info, index)
         op_name = self._op_function_name(model, index)

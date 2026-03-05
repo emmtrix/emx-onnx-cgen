@@ -154,9 +154,6 @@ class QuantizeLinearOp(RenderableOpBase):
             ]
         )
         compute_type = "double" if input_dtype == ScalarType.F64 else "float"
-        compute_dtype = (
-            ScalarType.F64 if compute_type == "double" else ScalarType.F32
-        )
         scale_index = "0" if self.axis is None else loop_vars[self.axis]
         input_expr = f"{params['input0']}" + "".join(
             f"[{var}]" for var in loop_vars
@@ -254,9 +251,6 @@ class DynamicQuantizeLinearOp(RenderableOpBase):
             ]
         )
         compute_type = "double" if input_dtype == ScalarType.F64 else "float"
-        compute_dtype = (
-            ScalarType.F64 if compute_type == "double" else ScalarType.F32
-        )
         input_expr = f"{params['input0']}" + "".join(
             f"[{var}]" for var in loop_vars
         )
@@ -586,7 +580,7 @@ class GatherElementsOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         params = emitter.shared_param_map(
@@ -674,7 +668,7 @@ class GatherNDOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         params = emitter.shared_param_map(
@@ -774,7 +768,7 @@ class ScatterNDOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         params = emitter.shared_param_map(
@@ -891,7 +885,7 @@ class ScatterElementsOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         params = emitter.shared_param_map(
@@ -961,7 +955,7 @@ class ScatterOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         params = emitter.shared_param_map(
@@ -1095,7 +1089,7 @@ class TensorScatterOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         param_pairs = [
@@ -1361,7 +1355,7 @@ class EyeLikeOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         zero_literal = output_dtype.zero_literal
@@ -1418,7 +1412,6 @@ class BernoulliOp(RenderableOpBase):
         op_name = emitter.op_function_name(model, ctx.op_index)
         dim_args = emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
-        c_type = output_dtype.c_type
         zero_literal = output_dtype.zero_literal
         output_dim_names = emitter.dim_names_for(self.output)
         output_shape = emitter.ctx_shape(self.output)
@@ -1485,6 +1478,11 @@ class DropoutOp(RenderableOpBase):
         return set()
 
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        output_shape = emitter.ctx_shape(self.output)
         output_dim_names = emitter.dim_names_for(self.output)
         loop_vars = CEmitterCompat.loop_vars(output_shape)
         shape = CEmitterCompat.shape_dim_exprs(output_shape, output_dim_names)
@@ -1607,13 +1605,13 @@ class TriluOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         zero_literal = output_dtype.zero_literal
         input_shape = emitter.ctx_shape(self.input0)
         output_shape = emitter.ctx_shape(self.output)
-        input_dtype = emitter.ctx_dtype(self.input0)
+        emitter.ctx_dtype(self.input0)
         param_specs = [("input0", self.input0), ("output", self.output)]
         if self.k_input is not None:
             param_specs.append(("k_input", self.k_input))
@@ -1693,7 +1691,7 @@ class TileOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         input_shape = emitter.ctx_shape(self.input0)
@@ -1771,7 +1769,7 @@ class CenterCropPadOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         input_shape_raw = list(self.input_shape)
@@ -1871,7 +1869,7 @@ class PadOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         input_shape_raw = emitter.ctx_shape(self.input0)
@@ -1998,7 +1996,7 @@ class DepthToSpaceOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         input_shape = emitter.ctx_shape(self.input0)
@@ -2048,7 +2046,7 @@ class SpaceToDepthOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         input_shape = emitter.ctx_shape(self.input0)
@@ -2116,7 +2114,7 @@ class SliceOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         name_params = emitter.shared_param_map(
@@ -2263,7 +2261,7 @@ class ResizeOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         name_params = emitter.shared_param_map(
@@ -2466,7 +2464,7 @@ class GridSampleOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         input_shape = emitter.ctx_shape(self.input0)
@@ -2574,7 +2572,7 @@ class AffineGridOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         grid_shape = emitter.ctx_shape(self.grid)
@@ -2625,9 +2623,8 @@ class ConstantOfShapeOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
-        c_type = output_dtype.c_type
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
@@ -2676,9 +2673,8 @@ class ShapeOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
-        c_type = output_dtype.c_type
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
@@ -2728,9 +2724,8 @@ class SizeOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
-        c_type = output_dtype.c_type
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
@@ -2779,9 +2774,8 @@ class OptionalHasElementOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
-        c_type = output_dtype.c_type
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
@@ -2872,7 +2866,7 @@ class OptionalGetElementOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         output_shape_raw = emitter.ctx_shape(self.output)
@@ -2947,10 +2941,9 @@ class NonZeroOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
-        zero_literal = output_dtype.zero_literal
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
@@ -3103,8 +3096,7 @@ class UniqueOp(RenderableOpBase):
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
         dim_args = emitter.dim_args_str()
-        output_dtype = emitter.op_output_dtype(self)
-        c_type = output_dtype.c_type
+        emitter.op_output_dtype(self)
         params = emitter.shared_param_map(
             [
                 ("input0", self.input0),
@@ -3325,8 +3317,6 @@ class NonMaxSuppressionOp(RenderableOpBase):
         op_name = emitter.op_function_name(model, ctx.op_index)
         dim_args = emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
-        c_type = output_dtype.c_type
-        zero_literal = output_dtype.zero_literal
         boxes_shape = emitter.ctx_shape(self.boxes)
         scores_shape = emitter.ctx_shape(self.scores)
         output_shape = emitter.ctx_shape(self.output)
@@ -3628,9 +3618,7 @@ class STFTOp(RenderableOpBase):
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
         dim_args = emitter.dim_args_str()
-        output_dtype = emitter.op_output_dtype(self)
-        c_type = output_dtype.c_type
-        zero_literal = output_dtype.zero_literal
+        emitter.op_output_dtype(self)
         signal_shape = emitter.ctx_shape(self.signal)
         output_shape = emitter.ctx_shape(self.output)
         stft_dtype = emitter.ctx_dtype(self.output)
@@ -3887,8 +3875,7 @@ class LoopSequenceInsertOp(RenderableOpBase):
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
         dim_args = emitter.dim_args_str()
-        output_dtype = emitter.op_output_dtype(self)
-        c_type = output_dtype.c_type
+        emitter.op_output_dtype(self)
         params = emitter.shared_param_map(
             [
                 ("trip_count", self.trip_count),
@@ -4009,8 +3996,7 @@ class LoopSequenceMapOp(RenderableOpBase):
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
         dim_args = emitter.dim_args_str()
-        output_dtype = emitter.op_output_dtype(self)
-        c_type = output_dtype.c_type
+        emitter.op_output_dtype(self)
         params = emitter.shared_param_map(
             [
                 ("trip_count", self.trip_count),
@@ -4195,7 +4181,7 @@ class RangeOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         params = emitter.shared_param_map(
@@ -4260,9 +4246,7 @@ class DFTOp(RenderableOpBase):
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
         dim_args = emitter.dim_args_str()
-        output_dtype = emitter.op_output_dtype(self)
-        c_type = output_dtype.c_type
-        zero_literal = output_dtype.zero_literal
+        emitter.op_output_dtype(self)
         input_shape = emitter.ctx_shape(self.input0)
         output_shape = emitter.ctx_shape(self.output)
         dft_dtype = emitter.ctx_dtype(self.output)
@@ -4402,7 +4386,7 @@ class HammingWindowOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         params = emitter.shared_param_map(
@@ -4473,7 +4457,7 @@ class BlackmanWindowOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         params = emitter.shared_param_map(
@@ -4545,7 +4529,7 @@ class HannWindowOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         params = emitter.shared_param_map(
@@ -4626,7 +4610,7 @@ class MelWeightMatrixOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         params = emitter.shared_param_map(
@@ -4719,7 +4703,7 @@ class OneHotOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         params = emitter.shared_param_map(
@@ -4820,10 +4804,8 @@ class TfIdfVectorizerOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
-        c_type = output_dtype.c_type
-        zero_literal = output_dtype.zero_literal
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
@@ -5071,7 +5053,6 @@ class LabelEncoderOp(RenderableOpBase):
         op_name = emitter.op_function_name(model, ctx.op_index)
         dim_args = emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
-        c_type = output_dtype.c_type
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
@@ -5260,8 +5241,7 @@ class TreeEnsembleClassifierOp(RenderableOpBase):
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
         dim_args = emitter.dim_args_str()
-        output_dtype = emitter.op_output_dtype(self)
-        c_type = output_dtype.c_type
+        emitter.op_output_dtype(self)
         params = emitter.shared_param_map(
             [
                 ("input0", self.input0),
@@ -5394,8 +5374,6 @@ class TreeEnsembleOp(RenderableOpBase):
         op_name = emitter.op_function_name(model, ctx.op_index)
         dim_args = emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
-        c_type = output_dtype.c_type
-        zero_literal = output_dtype.zero_literal
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
@@ -5495,7 +5473,7 @@ class SplitOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
+        emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         input_shape = emitter.ctx_shape(self.input0)
@@ -5936,7 +5914,6 @@ class SequenceLengthOp(RenderableOpBase):
         op_name = emitter.op_function_name(model, ctx.op_index)
         dim_args = emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
-        c_type = output_dtype.c_type
         output_shape = emitter.ctx_shape(self.output)
         params = emitter.shared_param_map(
             [
@@ -6005,8 +5982,7 @@ class SequenceIdentityOp(RenderableOpBase):
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
         dim_args = emitter.dim_args_str()
-        output_dtype = emitter.op_output_dtype(self)
-        c_type = output_dtype.c_type
+        emitter.op_output_dtype(self)
         elem_type = emitter.ctx_sequence_elem_type(self.input_sequence)
         elem_shape = emitter.sequence_storage_shape(self.input_sequence)
         tensor_suffix = emitter.param_array_suffix(
@@ -6222,8 +6198,7 @@ class IfOptionalSequenceConstOp(RenderableOpBase):
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
         dim_args = emitter.dim_args_str()
-        output_dtype = emitter.op_output_dtype(self)
-        c_type = output_dtype.c_type
+        emitter.op_output_dtype(self)
         elem_type = emitter.ctx_sequence_elem_type(self.output_sequence)
         elem_shape = CEmitterCompat.codegen_shape(elem_type.shape)
         true_has_values = len(self.true_values) > 0
@@ -6569,8 +6544,7 @@ class SequenceEmptyOp(RenderableOpBase):
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
         dim_args = emitter.dim_args_str()
-        output_dtype = emitter.op_output_dtype(self)
-        c_type = output_dtype.c_type
+        emitter.op_output_dtype(self)
         elem_type = emitter.ctx_sequence_elem_type(self.output_sequence)
         tensor_suffix = emitter.param_array_suffix(
             emitter.sequence_storage_shape(self.output_sequence),

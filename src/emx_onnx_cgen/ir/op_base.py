@@ -6,6 +6,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import ClassVar, Protocol
 
+from shared.scalar_functions import ScalarFunction
 from shared.scalar_types import ScalarType
 
 from ..errors import ShapeInferenceError, UnsupportedOpError

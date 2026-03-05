@@ -88,7 +88,6 @@ class ArgReduceOp(ReduceOpBase):
         op_name = emitter.op_function_name(model, ctx.op_index)
         dim_args = emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
-        c_type = output_dtype.c_type
         input_shape = emitter.ctx_shape(self.input0)
         output_shape_raw = emitter.ctx_shape(self.output)
         axis = emitter.derived(self, "axis")
@@ -202,8 +201,7 @@ class TopKOp(ReduceOpBase):
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
         dim_args = emitter.dim_args_str()
-        output_dtype = emitter.op_output_dtype(self)
-        c_type = output_dtype.c_type
+        emitter.op_output_dtype(self)
         input_shape = emitter.ctx_shape(self.input0)
         output_shape_raw = emitter.ctx_shape(self.output_values)
         input_dtype = emitter.ctx_dtype(self.input0)
