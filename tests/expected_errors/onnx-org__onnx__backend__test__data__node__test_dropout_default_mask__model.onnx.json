@@ -1,9 +1,10 @@
 {
-  "error": "Dropout mask output is not supported",
+  "error": "OK (max abs diff 0, max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_dropout_default_mask model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Dropout"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "efd5d09bd7697c9e6a945faeacfdc6c08dd33e5c33bdaa694bae668afd8e4234"
 }
