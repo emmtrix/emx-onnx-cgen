@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op Adam",
+  "error": "",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_adam model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
