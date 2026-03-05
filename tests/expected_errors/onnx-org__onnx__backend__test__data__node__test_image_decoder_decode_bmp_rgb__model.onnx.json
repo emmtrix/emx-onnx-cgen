@@ -1,12 +1,9 @@
 {
-  "error": "OK (max abs diff 0)",
-  "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_bmp_rgb model.onnx --test-data-dir test_data_set_0",
-  "error": "Unsupported op ImageDecoder",
+  "error": "Failed to decode image for ImageDecoder input 'data': No module named 'PIL'",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_bmp_rgb model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "ImageDecoder"
   ],
-  "opset_version": 20,
-  "generated_checksum": "6390ec84109bbfb9115a27f878cc26c01e1a3f398fbd3f79a2f8e2e14c3d762f"
+  "opset_version": 20
 }
