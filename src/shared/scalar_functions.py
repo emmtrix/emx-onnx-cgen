@@ -184,6 +184,7 @@ class ScalarFunction(str, Enum):
     FRAC = _bool_unary_from_f32_spec("frac", supports_unsigned_int=False)
     GE = _scalar_function_spec("ge")
     GELU = _common_unary_from_f32_spec("gelu")
+    GELU_TANH = _common_unary_from_f32_spec("gelu_tanh")
     GT = _scalar_function_spec("gt")
     HARDSIGMOID = _common_unary_from_f32_spec("hardsigmoid")
     HARDSWISH = _common_unary_from_f32_spec("hardswish")
@@ -735,6 +736,24 @@ def _float_gelu(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
         f"static inline {dtype_info.c_type} {dtype_info.prefix}gelu({dtype_info.c_type} a) {{",
         f"    const {dtype_info.c_type} inv_sqrt2 = {inv_sqrt2};",
         f"    return {half} * a * ({one} + {_math_fn('erf', dtype_info)}(a * inv_sqrt2));",
+        "}",
+    ]
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+
+
+def _float_gelu_tanh(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
+    half = _float_literal(0.5, dtype_info)
+    one = _float_literal(1.0, dtype_info)
+    sqrt_two_over_pi = _float_literal(0.7978845608028654, dtype_info)
+    coeff = _float_literal(0.044715, dtype_info)
+    lines = [
+        f"static inline {dtype_info.c_type} {dtype_info.prefix}gelu_tanh({dtype_info.c_type} a) {{",
+        f"    const {dtype_info.c_type} half = {half};",
+        f"    const {dtype_info.c_type} one = {one};",
+        f"    const {dtype_info.c_type} sqrt_two_over_pi = {sqrt_two_over_pi};",
+        f"    const {dtype_info.c_type} coeff = {coeff};",
+        "    return half * a * (one + "
+        + f"{_math_fn('tanh', dtype_info)}(sqrt_two_over_pi * (a + coeff * a * a * a)));",
         "}",
     ]
     return _GeneratedScalar(lines=lines, deps=set(), includes=set())
@@ -1495,6 +1514,7 @@ _FLOAT_OP_DISPATCH: Mapping[str, Callable[[_ScalarTypeInfo], _GeneratedScalar]] 
     "sigmoid": _float_sigmoid,
     "log_sigmoid": _float_log_sigmoid,
     "gelu": _float_gelu,
+    "gelu_tanh": _float_gelu_tanh,
     "elu": _float_elu,
     "leaky_relu": _float_leaky_relu,
     "softplus": _float_softplus,

@@ -121,6 +121,37 @@ def lower_elu(graph: Graph, node: Node) -> UnaryOp:
     )
 
 
+@register_lowering("Gelu")
+def lower_gelu(graph: Graph, node: Node) -> UnaryOp:
+    if len(node.inputs) != 1 or len(node.outputs) != 1:
+        raise UnsupportedOpError("Gelu must have 1 input and 1 output")
+    dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
+    if not dtype.is_float:
+        raise UnsupportedOpError("Gelu only supports floating-point inputs")
+    for key in node.attrs:
+        if key != "approximate":
+            raise UnsupportedOpError(f"Gelu does not support attribute {key}")
+    approximate_attr = node.attrs.get("approximate", "none")
+    if isinstance(approximate_attr, bytes):
+        approximate = approximate_attr.decode()
+    else:
+        approximate = str(approximate_attr)
+    if approximate == "none":
+        function = ScalarFunction.GELU
+    elif approximate == "tanh":
+        function = ScalarFunction.GELU_TANH
+    else:
+        raise UnsupportedOpError(
+            f"Gelu only supports approximate=none or approximate=tanh, got {approximate}"
+        )
+    return UnaryOp(
+        input0=node.inputs[0],
+        output=node.outputs[0],
+        function=function,
+        params=(),
+    )
+
+
 @register_lowering("LeakyRelu")
 def lower_leaky_relu(graph: Graph, node: Node) -> UnaryOp:
     if len(node.inputs) != 1 or len(node.outputs) != 1:
