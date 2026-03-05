@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported op RoiAlign",
+  "error": "Failed to build testbench.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_roialign_mode_max model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "RoiAlign"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "8aeaf9b8213817a7ec86e0ab2f7bb4e109fb740923f59ed1ff52dbcf877145ff"
 }

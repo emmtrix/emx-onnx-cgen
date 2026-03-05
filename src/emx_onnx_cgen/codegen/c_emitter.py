@@ -94,6 +94,7 @@ from ..ir.ops import (
     ReshapeOp,
     ResizeOp,
     RMSNormalizationOp,
+    RoiAlignOp,
     ShapeOp,
     SizeOp,
     SliceOp,
@@ -826,6 +827,7 @@ class CEmitter:
                     "softmax_cross_entropy_loss_op.c.j2"
                 ),
                 "maxpool": self._env.get_template("maxpool_op.c.j2"),
+                "roi_align": self._env.get_template("roi_align_op.c.j2"),
                 "concat": self._env.get_template("concat_op.c.j2"),
                 "concat_from_sequence": self._env.get_template(
                     "concat_from_sequence_op.c.j2"
@@ -1801,6 +1803,7 @@ class CEmitter:
             | NegativeLogLikelihoodLossOp
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
+            | RoiAlignOp
             | ConcatOp
             | ConcatFromSequenceOp
             | CompressOp
