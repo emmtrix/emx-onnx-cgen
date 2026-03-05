@@ -1201,6 +1201,31 @@ class StringNormalizerOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class LabelEncoderOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
+    input0: str
+    output: str
+    keys_strings: tuple[str, ...]
+    keys_int64s: tuple[int, ...]
+    keys_floats: tuple[float, ...]
+    values_strings: tuple[str, ...]
+    values_int64s: tuple[int, ...]
+    values_floats: tuple[float, ...]
+    default_string: str
+    default_int64: int
+    default_float: float
+
+    def infer_types(self, ctx: OpContext) -> None:
+        ctx.dtype(self.input0)
+        ctx.dtype(self.output)
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        shape = ctx.shape(self.input0)
+        ctx.set_shape(self.output, shape)
+
+
+@dataclass(frozen=True)
 class StringSplitOp(RenderableOpBase):
     __io_inputs__ = ("input0",)
     __io_outputs__ = ("output_y", "output_z")

@@ -1,0 +1,22 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% for dim in shape %}
+    for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+{% endfor %}
+{% if key_type == "string" %}
+        const char *key = {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %};
+{% else %}
+        const {{ key_c_type }} key = {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %};
+{% endif %}
+        {{ output_c_type }} value = {{ default_value }};
+{% for i in range(num_entries) %}
+{% if key_type == "string" %}
+        if (strcmp(key, {{ keys[i] }}) == 0) { value = {{ values[i] }}; }
+{% else %}
+        if (key == {{ keys[i] }}) { value = {{ values[i] }}; }
+{% endif %}
+{% endfor %}
+        {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = value;
+{% for _ in shape %}
+    }
+{% endfor %}
+}
