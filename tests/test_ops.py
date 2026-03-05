@@ -17,6 +17,7 @@ from onnx.reference import ReferenceEvaluator
 
 from onnx import TensorProto, helper, numpy_helper
 
+from shared.scalar_functions import ScalarFunction
 from shared.scalar_types import ScalarType
 
 from emx_onnx_cgen.ir.ops import (
@@ -25,7 +26,7 @@ from emx_onnx_cgen.ir.ops import (
     MultiInputBinaryOp,
 )
 from emx_onnx_cgen.compiler import Compiler, CompilerOptions
-from emx_onnx_cgen.errors import ShapeInferenceError
+from emx_onnx_cgen.errors import ShapeInferenceError, UnsupportedOpError
 from emx_onnx_cgen.ir.context import GraphContext
 from emx_onnx_cgen.ir.op_context import OpContext
 from emx_onnx_cgen.ir.ops import CompressOp, NonMaxSuppressionOp, NonZeroOp, ResizeOp
@@ -6942,3 +6943,34 @@ def test_softmax_uses_axis_dimension_from_opset13() -> None:
     assert op_ctx.require_derived(op, "outer") == 2
     assert op_ctx.require_derived(op, "axis_size") == 3
     assert op_ctx.require_derived(op, "inner") == 4
+
+
+def test_lower_hardsigmoid_accepts_custom_alpha_beta() -> None:
+    model = _make_operator_model(
+        op_type="HardSigmoid",
+        input_shapes=[[2, 3]],
+        output_shape=[2, 3],
+        dtype=TensorProto.FLOAT,
+        attrs={"alpha": 0.25, "beta": 0.4},
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+
+    op = get_lowering("HardSigmoid")(graph, graph.nodes[0])
+
+    assert op.function == ScalarFunction.HARDSIGMOID
+    assert op.params == pytest.approx((0.25, 0.4))
+
+
+def test_lower_hardsigmoid_rejects_integer_input() -> None:
+    model = _make_operator_model(
+        op_type="HardSigmoid",
+        input_shapes=[[2, 3]],
+        output_shape=[2, 3],
+        dtype=TensorProto.INT32,
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+
+    with pytest.raises(UnsupportedOpError, match="floating-point inputs"):
+        get_lowering("HardSigmoid")(graph, graph.nodes[0])
