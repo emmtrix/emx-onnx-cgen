@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1587 / 1802, 88.1% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1591 / 1802, 88.3% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1587 / 1802 ONNX files (88.1%).
+Coverage 1591 / 1802 ONNX files (88.3%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -907,14 +907,14 @@ Coverage 1587 / 1802 ONNX files (88.1%).
 | node/test_loop13_seq/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_loop16_seq_none/model.onnx | 16 | Data | ❌ | Unsupported op Loop |
 | node/test_lpnormalization_default/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
-| node/test_lppool_1d_default/model.onnx | 22 | Data | ❌ | LpPool expects 2D kernel_shape |
+| node/test_lppool_1d_default/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_lppool_2d_default/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_lppool_2d_dilations/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_lppool_2d_pads/model.onnx | 22 | Data | ✅ | OK (max ULP 1) |
-| node/test_lppool_2d_same_lower/model.onnx | 22 | Data | ❌ | LpPool supports auto_pad=NOTSET only |
-| node/test_lppool_2d_same_upper/model.onnx | 22 | Data | ❌ | LpPool supports auto_pad=NOTSET only |
+| node/test_lppool_2d_same_lower/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
+| node/test_lppool_2d_same_upper/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_lppool_2d_strides/model.onnx | 22 | Data | ✅ | OK (max ULP 2) |
-| node/test_lppool_3d_default/model.onnx | 22 | Data | ❌ | LpPool expects 2D kernel_shape |
+| node/test_lppool_3d_default/model.onnx | 22 | Data | ✅ | OK (max ULP 2) |
 | node/test_lrn/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_lrn_default/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_lstm_batchwise/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
