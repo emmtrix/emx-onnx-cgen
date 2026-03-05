@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 193 / 205
+Supported operators: 192 / 205
 
 | Operator | Supported |
 | --- | --- |
@@ -85,7 +85,7 @@ Supported operators: 193 / 205
 | Hardmax | ✅ |
 | Identity | ✅ |
 | If | ✅ |
-| ImageDecoder | ✅ |
+| ImageDecoder | ❌ |
 | InstanceNormalization | ✅ |
 | IsInf | ✅ |
 | IsNaN | ✅ |
