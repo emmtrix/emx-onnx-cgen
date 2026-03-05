@@ -25,7 +25,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op RoiAlign | 3 | 22 |
 | '*' | 2 |  |
 | QuantizeLinear block_size is not supported | 2 | 25 |
-| ThresholdedRelu only supports alpha=1.0 | 2 | 22 |
 | Unsupported op Adam | 2 |  |
 | Unsupported op Det | 2 | 22 |
 | Unsupported op MaxUnpool | 2 | 22 |
@@ -52,7 +51,6 @@ Aggregates non-success verification outcomes.
 | Out of tolerance | 22 | 3 |
 | Unsupported op RandomUniformLike | 22 | 3 |
 | Unsupported op RoiAlign | 22 | 3 |
-| ThresholdedRelu only supports alpha=1.0 | 22 | 2 |
 | Unsupported op Det | 22 | 2 |
 | Unsupported op MaxUnpool | 22 | 2 |
 | ConvTranspose output shape must be fully defined and non-negative | 22 | 1 |
