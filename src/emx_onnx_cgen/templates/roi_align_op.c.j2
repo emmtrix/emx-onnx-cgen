@@ -1,0 +1,109 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    for (idx_t roi_idx = 0; roi_idx < {{ num_rois }}; ++roi_idx) {
+        const int64_t batch_index = {{ batch_indices }}[roi_idx];
+        const {{ c_type }} x1 = {{ rois }}[roi_idx][0] * ({{ c_type }})({{ spatial_scale }});
+        const {{ c_type }} y1 = {{ rois }}[roi_idx][1] * ({{ c_type }})({{ spatial_scale }});
+        const {{ c_type }} x2 = {{ rois }}[roi_idx][2] * ({{ c_type }})({{ spatial_scale }});
+        const {{ c_type }} y2 = {{ rois }}[roi_idx][3] * ({{ c_type }})({{ spatial_scale }});
+{% if coordinate_transformation_mode == "half_pixel" %}
+        const {{ c_type }} roi_start_w = x1 - ({{ c_type }})0.5;
+        const {{ c_type }} roi_start_h = y1 - ({{ c_type }})0.5;
+        const {{ c_type }} roi_end_w = x2 - ({{ c_type }})0.5;
+        const {{ c_type }} roi_end_h = y2 - ({{ c_type }})0.5;
+        const {{ c_type }} roi_width = roi_end_w - roi_start_w;
+        const {{ c_type }} roi_height = roi_end_h - roi_start_h;
+{% else %}
+        const {{ c_type }} roi_start_w = x1;
+        const {{ c_type }} roi_start_h = y1;
+        const {{ c_type }} roi_end_w = x2;
+        const {{ c_type }} roi_end_h = y2;
+        const {{ c_type }} roi_width = {{ scalar_fn(SF.MAXIMUM, dtype) }}(roi_end_w - roi_start_w, ({{ c_type }})1.0);
+        const {{ c_type }} roi_height = {{ scalar_fn(SF.MAXIMUM, dtype) }}(roi_end_h - roi_start_h, ({{ c_type }})1.0);
+{% endif %}
+        const {{ c_type }} bin_w = roi_width / ({{ c_type }}){{ output_width }};
+        const {{ c_type }} bin_h = roi_height / ({{ c_type }}){{ output_height }};
+
+        int64_t grid_h = {{ sampling_ratio }};
+        int64_t grid_w = {{ sampling_ratio }};
+        if (grid_h <= 0) {
+            grid_h = (int64_t)ceil((double)(roi_height / ({{ c_type }}){{ output_height }}));
+        }
+        if (grid_w <= 0) {
+            grid_w = (int64_t)ceil((double)(roi_width / ({{ c_type }}){{ output_width }}));
+        }
+        if (grid_h < 1) {
+            grid_h = 1;
+        }
+        if (grid_w < 1) {
+            grid_w = 1;
+        }
+
+        for (idx_t c = 0; c < {{ channels }}; ++c) {
+            for (idx_t ph = 0; ph < {{ output_height }}; ++ph) {
+                for (idx_t pw = 0; pw < {{ output_width }}; ++pw) {
+{% if mode == "max" %}
+                    {{ c_type }} out_value = {{ minus_inf }};
+{% else %}
+                    {{ c_type }} out_value = ({{ c_type }})0;
+{% endif %}
+
+                    for (idx_t iy = 0; iy < {{ max_sampling_points }}; ++iy) {
+                        if (iy >= grid_h) {
+                            continue;
+                        }
+                        const {{ c_type }} yy = roi_start_h +
+                            (({{ c_type }})ph + (({{ c_type }})iy + ({{ c_type }})0.5) / ({{ c_type }})grid_h) * bin_h;
+                        for (idx_t ix = 0; ix < {{ max_sampling_points }}; ++ix) {
+                            if (ix >= grid_w) {
+                                continue;
+                            }
+                            const {{ c_type }} xx = roi_start_w +
+                                (({{ c_type }})pw + (({{ c_type }})ix + ({{ c_type }})0.5) / ({{ c_type }})grid_w) * bin_w;
+                            {{ c_type }} sample = ({{ c_type }})0;
+                            if (!(yy < ({{ c_type }})-1.0 || yy > ({{ c_type }}){{ input_height }} || xx < ({{ c_type }})-1.0 || xx > ({{ c_type }}){{ input_width }})) {
+                                const {{ c_type }} y = {{ scalar_fn(SF.MAXIMUM, dtype) }}(({{ c_type }})0, {{ scalar_fn(SF.MINIMUM, dtype) }}(yy, ({{ c_type }})({{ input_height }} - 1)));
+                                const idx_t y_low = (idx_t)floor((double)y);
+                                const idx_t y_high = (y_low >= {{ input_height }} - 1) ? y_low : (y_low + 1);
+                                const {{ c_type }} ly = y - ({{ c_type }})y_low;
+                                const {{ c_type }} hy = ({{ c_type }})1.0 - ly;
+                                const {{ c_type }} x = {{ scalar_fn(SF.MAXIMUM, dtype) }}(({{ c_type }})0, {{ scalar_fn(SF.MINIMUM, dtype) }}(xx, ({{ c_type }})({{ input_width }} - 1)));
+                                const idx_t x_low = (idx_t)floor((double)x);
+                                const idx_t x_high = (x_low >= {{ input_width }} - 1) ? x_low : (x_low + 1);
+                                const {{ c_type }} lx = x - ({{ c_type }})x_low;
+                                const {{ c_type }} hx = ({{ c_type }})1.0 - lx;
+
+                                const {{ c_type }} v1 = {{ input0 }}[batch_index][c][y_low][x_low];
+                                const {{ c_type }} v2 = {{ input0 }}[batch_index][c][y_low][x_high];
+                                const {{ c_type }} v3 = {{ input0 }}[batch_index][c][y_high][x_low];
+                                const {{ c_type }} v4 = {{ input0 }}[batch_index][c][y_high][x_high];
+                                const {{ c_type }} bilinear =
+                                    hy * hx * v1 +
+                                    hy * lx * v2 +
+                                    ly * hx * v3 +
+                                    ly * lx * v4;
+{% if mode == "max" %}
+                                const {{ c_type }} w1v = hy * hx * v1;
+                                const {{ c_type }} w2v = hy * lx * v2;
+                                const {{ c_type }} w3v = ly * hx * v3;
+                                const {{ c_type }} w4v = ly * lx * v4;
+                                sample = {{ scalar_fn(SF.MAXIMUM, dtype) }}({{ scalar_fn(SF.MAXIMUM, dtype) }}(w1v, w2v), {{ scalar_fn(SF.MAXIMUM, dtype) }}(w3v, w4v));
+{% else %}
+                                sample = bilinear;
+{% endif %}
+                            }
+{% if mode == "max" %}
+                            out_value = {{ scalar_fn(SF.MAXIMUM, dtype) }}(out_value, sample);
+{% else %}
+                            out_value += sample;
+{% endif %}
+                        }
+                    }
+{% if mode == "avg" %}
+                    out_value /= ({{ c_type }})(grid_h * grid_w);
+{% endif %}
+                    {{ output }}[roi_idx][c][ph][pw] = out_value;
+                }
+            }
+        }
+    }
+}

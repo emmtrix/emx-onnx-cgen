@@ -34,6 +34,7 @@ from emx_onnx_cgen.ir.model import Graph, Node, TensorType, Value
 from emx_onnx_cgen.lowering.flatten import lower_flatten
 from emx_onnx_cgen.lowering.affine_grid import lower_affine_grid
 from emx_onnx_cgen.lowering.grid_sample import lower_grid_sample
+from emx_onnx_cgen.lowering.roi_align import lower_roi_align
 from emx_onnx_cgen.lowering.conv_integer import lower_conv_integer
 from emx_onnx_cgen.lowering.concat_from_sequence import lower_concat_from_sequence
 from emx_onnx_cgen.lowering.matmul_integer import lower_matmul_integer
@@ -2256,6 +2257,62 @@ def _make_gridsample_model(
         opset_imports=[helper.make_operatorsetid("", opset)],
     )
     model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_roi_align_model(
+    *,
+    input_shape: list[int],
+    rois: np.ndarray,
+    batch_indices: np.ndarray,
+    output_height: int,
+    output_width: int,
+    sampling_ratio: int = 0,
+    spatial_scale: float = 1.0,
+    mode: str = "avg",
+    coordinate_transformation_mode: str = "half_pixel",
+    opset: int = 22,
+) -> onnx.ModelProto:
+    num_rois = rois.shape[0]
+    output_shape = [num_rois, input_shape[1], output_height, output_width]
+    input_info = helper.make_tensor_value_info("x", TensorProto.FLOAT, input_shape)
+    rois_info = helper.make_tensor_value_info(
+        "rois", TensorProto.FLOAT, list(rois.shape)
+    )
+    batch_indices_info = helper.make_tensor_value_info(
+        "batch_indices", TensorProto.INT64, list(batch_indices.shape)
+    )
+    output = helper.make_tensor_value_info("y", TensorProto.FLOAT, output_shape)
+    node = helper.make_node(
+        "RoiAlign",
+        inputs=["x", "rois", "batch_indices"],
+        outputs=[output.name],
+        output_height=output_height,
+        output_width=output_width,
+        sampling_ratio=sampling_ratio,
+        spatial_scale=spatial_scale,
+        mode=mode,
+        coordinate_transformation_mode=coordinate_transformation_mode,
+    )
+    graph = helper.make_graph(
+        [node],
+        "roi_align_graph",
+        [input_info, rois_info, batch_indices_info],
+        [output],
+        initializer=[
+            numpy_helper.from_array(rois.astype(np.float32), name="rois"),
+            numpy_helper.from_array(
+                batch_indices.astype(np.int64), name="batch_indices"
+            ),
+        ],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 9
     onnx.checker.check_model(model)
     return model
 
@@ -5668,6 +5725,25 @@ def test_lower_gridsample_builds_spec() -> None:
     assert op.mode == "linear"
 
 
+def test_lower_roialign_builds_spec() -> None:
+    model = _make_roi_align_model(
+        input_shape=[2, 3, 8, 8],
+        rois=np.array([[1.0, 1.0, 6.0, 6.0], [0.5, 0.5, 5.0, 7.0]], dtype=np.float32),
+        batch_indices=np.array([0, 1], dtype=np.int64),
+        output_height=3,
+        output_width=2,
+        sampling_ratio=2,
+    )
+    graph = import_onnx(model)
+    op = lower_roi_align(graph, graph.nodes[0])
+    op_ctx = OpContext(GraphContext(graph))
+    op.infer_types(op_ctx)
+    op.infer_shapes(op_ctx)
+    assert op.mode == "avg"
+    assert op.coordinate_transformation_mode == "half_pixel"
+    assert op_ctx.shape(op.output) == (2, 3, 3, 2)
+
+
 def test_lower_affine_grid_2d_builds_spec() -> None:
     model = _make_affine_grid_model(
         theta_shape=[2, 2, 3],
@@ -6627,6 +6703,24 @@ def test_gridsample_op_matches_onnxruntime() -> None:
         align_corners=0,
     )
     _run_testbench_compare(model)
+
+
+@pytest.mark.parametrize("mode", ["avg", "max"])
+def test_roialign_op_matches_reference(mode: str) -> None:
+    model = _make_roi_align_model(
+        input_shape=[2, 2, 8, 8],
+        rois=np.array(
+            [[1.0, 1.0, 6.0, 6.0], [0.0, 0.0, 7.0, 7.0], [2.0, 1.0, 7.0, 5.0]],
+            dtype=np.float32,
+        ),
+        batch_indices=np.array([0, 1, 0], dtype=np.int64),
+        output_height=3,
+        output_width=3,
+        sampling_ratio=2,
+        mode=mode,
+        coordinate_transformation_mode="half_pixel",
+    )
+    _run_reference_testbench_compare(model)
 
 
 def test_shape_op_matches_onnxruntime() -> None:
