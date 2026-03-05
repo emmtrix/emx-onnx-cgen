@@ -91,6 +91,59 @@ class ConcatOp(RenderableOpBase):
     output: str
     axis: int
 
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        c_type = emitter.ctx_dtype(self.output).c_type
+        input_params = [
+            (f"input_{index}", name) for index, name in enumerate(self.inputs)
+        ]
+        params = emitter.shared_param_map([*input_params, ("output", self.output)])
+        input_names = tuple(
+            params[f"input_{index}"] for index in range(len(self.inputs))
+        )
+        output_shape = emitter.ctx_shape(self.output)
+        input_shapes = tuple(emitter.ctx_shape(name) for name in self.inputs)
+        axis = self.axis
+        if axis < 0:
+            axis += len(output_shape)
+        outer = CEmitterCompat.element_count(output_shape[:axis] or (1,))
+        inner = CEmitterCompat.element_count(output_shape[axis + 1 :] or (1,))
+        axis_sizes = tuple(shape[axis] for shape in input_shapes)
+        input_suffixes = tuple(
+            emitter.param_array_suffix(shape) for shape in input_shapes
+        )
+        output_suffix = emitter.param_array_suffix(output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                *(
+                    (name, c_type, suffix, True)
+                    for name, suffix in zip(input_names, input_suffixes)
+                ),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        rendered = (
+            state.templates["concat"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                inputs=input_names,
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                input_suffixes=input_suffixes,
+                output_suffix=output_suffix,
+                axis_sizes=axis_sizes,
+                input_count=len(self.inputs),
+                outer=outer,
+                inner=inner,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
 
 @dataclass(frozen=True)
 class CompressOp(RenderableOpBase):

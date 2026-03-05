@@ -6,7 +6,15 @@ from enum import Enum
 from shared.scalar_types import ScalarType
 
 from ...errors import ShapeInferenceError, UnsupportedOpError
-from ..op_base import ConvLikeOpBase, GemmLikeOpBase, MatMulLikeOpBase, RenderableOpBase
+from ..op_base import (
+    CEmitterCompat,
+    ConvLikeOpBase,
+    EmitContext,
+    Emitter,
+    GemmLikeOpBase,
+    MatMulLikeOpBase,
+    RenderableOpBase,
+)
 from ..op_context import OpContext
 
 
@@ -487,6 +495,91 @@ class ConvOp(ConvLikeOpBase):
             raise ValueError("Conv output width is undefined for spatial_rank < 2")
         return self.out_spatial[1]
 
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        c_type = emitter.ctx_dtype(self.output).c_type
+        zero_literal = emitter.ctx_dtype(self.output).zero_literal
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("weights", self.weights),
+                ("bias", self.bias),
+                ("output", self.output),
+            ]
+        )
+        acc_dtype = emitter.accumulation_dtype(self.dtype)
+        acc_type = acc_dtype.c_type
+        acc_zero_literal = emitter.format_literal(acc_dtype, 0)
+        input_shape = (self.batch, self.in_channels, *self.in_spatial)
+        weight_shape = (
+            self.out_channels,
+            self.in_channels // self.group,
+            *self.kernel_shape,
+        )
+        output_shape = (self.batch, self.out_channels, *self.out_spatial)
+        out_indices = tuple(f"od{dim}" for dim in range(self.spatial_rank))
+        kernel_indices = tuple(f"kd{dim}" for dim in range(self.spatial_rank))
+        in_indices = tuple(f"id{dim}" for dim in range(self.spatial_rank))
+        pad_begin = self.pads[: self.spatial_rank]
+        group_in_channels = self.in_channels // self.group
+        group_out_channels = self.out_channels // self.group
+        input_suffix = emitter.param_array_suffix(input_shape)
+        weight_suffix = emitter.param_array_suffix(weight_shape)
+        bias_suffix = emitter.param_array_suffix((self.out_channels,))
+        output_suffix = emitter.param_array_suffix(output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["weights"], c_type, weight_suffix, True),
+                (
+                    (params["bias"], c_type, bias_suffix, True)
+                    if params["bias"]
+                    else (None, "", "", True)
+                ),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        rendered = (
+            state.templates["conv"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                weights=params["weights"],
+                bias=params["bias"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                acc_type=acc_type,
+                acc_zero_literal=acc_zero_literal,
+                zero_literal=zero_literal,
+                input_suffix=input_suffix,
+                weight_suffix=weight_suffix,
+                bias_suffix=bias_suffix,
+                output_suffix=output_suffix,
+                batch=self.batch,
+                in_channels=self.in_channels,
+                out_channels=self.out_channels,
+                spatial_rank=self.spatial_rank,
+                in_spatial=self.in_spatial,
+                out_spatial=self.out_spatial,
+                kernel_shape=self.kernel_shape,
+                strides=self.strides,
+                pads_begin=pad_begin,
+                dilations=self.dilations,
+                group=self.group,
+                group_in_channels=group_in_channels,
+                group_out_channels=group_out_channels,
+                out_indices=out_indices,
+                kernel_indices=kernel_indices,
+                in_indices=in_indices,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
 
 @dataclass(frozen=True)
 class ConvIntegerOp(ConvLikeOpBase):
@@ -753,6 +846,44 @@ class SoftmaxOp(RenderableOpBase):
     axis: int | None
     use_legacy_axis_semantics: bool = False
 
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_shape = emitter.ctx_shape(self.output)
+        output_dtype = emitter.ctx_dtype(self.output)
+        outer = emitter.derived(self, "outer")
+        axis_size = emitter.derived(self, "axis_size")
+        inner = emitter.derived(self, "inner")
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        array_suffix = emitter.param_array_suffix(output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], output_dtype.c_type, array_suffix, True),
+                (params["output"], output_dtype.c_type, array_suffix, False),
+            ]
+        )
+        rendered = (
+            state.templates["softmax"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                c_type=output_dtype.c_type,
+                array_suffix=array_suffix,
+                outer=outer,
+                axis_size=axis_size,
+                inner=inner,
+                dtype=output_dtype,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
     def infer_types(self, ctx: OpContext) -> None:
         input_dtype = ctx.dtype(self.input0)
         if not input_dtype.is_float:
@@ -864,6 +995,44 @@ class LogSoftmaxOp(RenderableOpBase):
     axis: int | None
     use_legacy_axis_semantics: bool = False
 
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_shape = emitter.ctx_shape(self.output)
+        output_dtype = emitter.ctx_dtype(self.output)
+        outer = emitter.derived(self, "outer")
+        axis_size = emitter.derived(self, "axis_size")
+        inner = emitter.derived(self, "inner")
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        array_suffix = emitter.param_array_suffix(output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], output_dtype.c_type, array_suffix, True),
+                (params["output"], output_dtype.c_type, array_suffix, False),
+            ]
+        )
+        rendered = (
+            state.templates["logsoftmax"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                c_type=output_dtype.c_type,
+                array_suffix=array_suffix,
+                outer=outer,
+                axis_size=axis_size,
+                inner=inner,
+                dtype=output_dtype,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
     def infer_types(self, ctx: OpContext) -> None:
         input_dtype = ctx.dtype(self.input0)
         if not input_dtype.is_float:
@@ -917,6 +1086,47 @@ class HardmaxOp(RenderableOpBase):
     input0: str
     output: str
     axis: int | None
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_shape = emitter.ctx_shape(self.output)
+        output_dtype = emitter.ctx_dtype(self.output)
+        zero_literal = output_dtype.zero_literal
+        outer = emitter.derived(self, "outer")
+        axis_size = emitter.derived(self, "axis_size")
+        inner = emitter.derived(self, "inner")
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        array_suffix = emitter.param_array_suffix(output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], output_dtype.c_type, array_suffix, True),
+                (params["output"], output_dtype.c_type, array_suffix, False),
+            ]
+        )
+        rendered = (
+            state.templates["hardmax"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                c_type=output_dtype.c_type,
+                array_suffix=array_suffix,
+                outer=outer,
+                axis_size=axis_size,
+                inner=inner,
+                zero_literal=zero_literal,
+                one_literal=emitter.format_literal(output_dtype, 1),
+                dtype=output_dtype,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def infer_types(self, ctx: OpContext) -> None:
         input_dtype = ctx.dtype(self.input0)
