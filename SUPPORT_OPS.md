@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 192 / 205
+Supported operators: 193 / 205
 
 | Operator | Supported |
 | --- | --- |
@@ -37,7 +37,7 @@ Supported operators: 192 / 205
 | Celu | ✅ |
 | CenterCropPad | ✅ |
 | Clip | ✅ |
-| Col2Im | ❌ |
+| Col2Im | ✅ |
 | Compress | ✅ |
 | Concat | ✅ |
 | ConcatFromSequence | ✅ |
