@@ -460,6 +460,10 @@ class QLinearMatMulOp(MatMulLikeOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.output_shape
+
+
 
 @dataclass(frozen=True)
 class MatMulIntegerOp(MatMulLikeOpBase):
@@ -602,6 +606,10 @@ class MatMulIntegerOp(MatMulLikeOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.output_shape
+
+
 
 @dataclass(frozen=True)
 class EinsumOp(MatMulLikeOpBase):
@@ -742,6 +750,17 @@ class EinsumOp(MatMulLikeOpBase):
             input1_expr=input1_expr,
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.output_shape
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return tuple(
+            (name, shape) for name, shape in zip(self.inputs, self.input_shapes)
+        )
+
 
 
 @dataclass(frozen=True)
@@ -1287,6 +1306,44 @@ class AttentionOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        if self.output_rank == 3:
+            return (self.batch, self.q_seq, self.q_heads * self.v_head_size)
+        return (self.batch, self.q_heads, self.q_seq, self.v_head_size)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        outputs: list[tuple[str, tuple[int, ...], ScalarType]] = [
+            (self.output, self.computed_output_shape(emitter), self.dtype)
+        ]
+        if self.output_present_key is not None:
+            outputs.append(
+                (
+                    self.output_present_key,
+                    (self.batch, self.kv_heads, self.total_seq, self.qk_head_size),
+                    self.dtype,
+                )
+            )
+        if self.output_present_value is not None:
+            outputs.append(
+                (
+                    self.output_present_value,
+                    (self.batch, self.kv_heads, self.total_seq, self.v_head_size),
+                    self.dtype,
+                )
+            )
+        if self.output_qk_matmul is not None:
+            outputs.append(
+                (
+                    self.output_qk_matmul,
+                    (self.batch, self.q_heads, self.q_seq, self.total_seq),
+                    self.dtype,
+                )
+            )
+        return tuple(outputs)
+
+
 
 @dataclass(frozen=True)
 class RotaryEmbeddingOp(RenderableOpBase):
@@ -1384,6 +1441,10 @@ class RotaryEmbeddingOp(RenderableOpBase):
             has_position_ids=int(self.position_ids is not None),
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.input_shape
+
 
 
 @dataclass(frozen=True)
@@ -2066,6 +2127,10 @@ class Col2ImOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return (self.batch, self.channels, *self.image_shape)
+
+
 
 @dataclass(frozen=True)
 class DeformConvOp(ConvLikeOpBase):
@@ -2201,6 +2266,10 @@ class DeformConvOp(ConvLikeOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return (self.batch, self.out_channels, self.out_h, self.out_w)
+
+
 
 @dataclass(frozen=True)
 class AveragePoolOp(RenderableOpBase):
@@ -2310,6 +2379,14 @@ class AveragePoolOp(RenderableOpBase):
             count_include_pad=int(self.count_include_pad),
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        if self.spatial_rank == 3:
+            return (self.batch, self.channels, self.out_d, self.out_h, self.out_w)
+        if self.spatial_rank == 1:
+            return (self.batch, self.channels, self.out_w)
+        return (self.batch, self.channels, self.out_h, self.out_w)
+
 
 
 @dataclass(frozen=True)
@@ -2483,6 +2560,14 @@ class QLinearAveragePoolOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        if self.spatial_rank == 3:
+            return (self.batch, self.channels, self.out_d, self.out_h, self.out_w)
+        if self.spatial_rank == 1:
+            return (self.batch, self.channels, self.out_w)
+        return (self.batch, self.channels, self.out_h, self.out_w)
+
+
 
 @dataclass(frozen=True)
 class LpPoolOp(RenderableOpBase):
@@ -2558,6 +2643,10 @@ class LpPoolOp(RenderableOpBase):
             dtype=self.dtype,
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return (self.batch, self.channels, self.out_h, self.out_w)
+
 
 
 @dataclass(frozen=True)
@@ -2790,6 +2879,10 @@ class QLinearSoftmaxOp(RenderableOpBase):
             dim_args=emitter.dim_args_str(),
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.output_shape
+
 
 
 @dataclass(frozen=True)
@@ -3076,6 +3169,10 @@ class NegativeLogLikelihoodLossOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.output_shape
+
+
 
 @dataclass(frozen=True)
 class SoftmaxCrossEntropyLossOp(RenderableOpBase):
@@ -3191,6 +3288,20 @@ class SoftmaxCrossEntropyLossOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.output_shape
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        outputs: list[tuple[str, tuple[int, ...], ScalarType]] = [
+            (self.output, self.output_shape, self.dtype)
+        ]
+        if self.log_prob is not None and self.log_prob_shape is not None:
+            outputs.append((self.log_prob, self.log_prob_shape, self.dtype))
+        return tuple(outputs)
+
+
 
 @dataclass(frozen=True)
 class BatchNormOp(RenderableOpBase):
@@ -3284,6 +3395,10 @@ class BatchNormOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.shape
+
+
 
 @dataclass(frozen=True)
 class LpNormalizationOp(RenderableOpBase):
@@ -3332,6 +3447,15 @@ class LpNormalizationOp(RenderableOpBase):
             dtype=self.dtype,
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.shape
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ((self.input0, self.shape),)
+
 
 
 @dataclass(frozen=True)
@@ -3397,6 +3521,19 @@ class InstanceNormalizationOp(RenderableOpBase):
             dtype=self.dtype,
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.shape
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return (
+            (self.input0, self.shape),
+            (self.scale, (self.channels,)),
+            (self.bias, (self.channels,)),
+        )
+
 
 
 @dataclass(frozen=True)
@@ -3466,6 +3603,19 @@ class GroupNormalizationOp(RenderableOpBase):
             dtype=self.dtype,
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.shape
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return (
+            (self.input0, self.shape),
+            (self.scale, (self.channels,)),
+            (self.bias, (self.channels,)),
+        )
+
 
 
 @dataclass(frozen=True)
@@ -3623,6 +3773,35 @@ class LayerNormalizationOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.shape
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        inputs: list[tuple[str, tuple[int, ...]]] = [
+            (self.input0, self.shape),
+            (self.scale, self.scale_shape),
+        ]
+        if self.bias is not None and self.bias_shape is not None:
+            inputs.append((self.bias, self.bias_shape))
+        return tuple(inputs)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        outputs: list[tuple[str, tuple[int, ...], ScalarType]] = [
+            (self.output, self.shape, self.dtype)
+        ]
+        if self.mean_output is not None:
+            mean_shape = self.shape[: self.axis] + (1,) * len(self.normalized_shape)
+            outputs.append((self.mean_output, mean_shape, self.dtype))
+        if self.invstd_output is not None:
+            invstd_shape = self.shape[: self.axis] + (1,) * len(self.normalized_shape)
+            outputs.append((self.invstd_output, invstd_shape, self.dtype))
+        return tuple(outputs)
+
+
 
 @dataclass(frozen=True)
 class MeanVarianceNormalizationOp(RenderableOpBase):
@@ -3676,6 +3855,15 @@ class MeanVarianceNormalizationOp(RenderableOpBase):
             dtype=self.dtype,
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.shape
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ((self.input0, self.shape),)
+
 
 
 @dataclass(frozen=True)
@@ -3749,6 +3937,15 @@ class RMSNormalizationOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.shape
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ((self.input0, self.shape), (self.scale, self.scale_shape))
+
+
 
 @dataclass(frozen=True)
 class LrnOp(RenderableOpBase):
@@ -3807,6 +4004,10 @@ class LrnOp(RenderableOpBase):
             dtype=self.dtype,
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.shape
+
 
 
 @dataclass(frozen=True)
@@ -4005,6 +4206,43 @@ class GruOp(RenderableOpBase):
             activation_functions=activation_functions,
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        outputs: list[tuple[str, tuple[int, ...], ScalarType]] = []
+        if self.output_y is not None:
+            if self.layout == 0:
+                y_shape = (
+                    self.seq_length,
+                    self.num_directions,
+                    self.batch_size,
+                    self.hidden_size,
+                )
+            else:
+                y_shape = (
+                    self.batch_size,
+                    self.seq_length,
+                    self.num_directions,
+                    self.hidden_size,
+                )
+            outputs.append((self.output_y, y_shape, self.dtype))
+        if self.output_y_h is not None:
+            if self.layout == 0:
+                state_shape = (
+                    self.num_directions,
+                    self.batch_size,
+                    self.hidden_size,
+                )
+            else:
+                state_shape = (
+                    self.batch_size,
+                    self.num_directions,
+                    self.hidden_size,
+                )
+            outputs.append((self.output_y_h, state_shape, self.dtype))
+        return tuple(outputs)
+
 
 
 @dataclass(frozen=True)
@@ -4255,6 +4493,45 @@ class LstmOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        outputs: list[tuple[str, tuple[int, ...], ScalarType]] = []
+        if self.output_y is not None:
+            if self.layout == 0:
+                y_shape = (
+                    self.seq_length,
+                    self.num_directions,
+                    self.batch_size,
+                    self.hidden_size,
+                )
+            else:
+                y_shape = (
+                    self.batch_size,
+                    self.seq_length,
+                    self.num_directions,
+                    self.hidden_size,
+                )
+            outputs.append((self.output_y, y_shape, self.dtype))
+        if self.output_y_h is not None:
+            outputs.append(
+                (
+                    self.output_y_h,
+                    (self.num_directions, self.batch_size, self.hidden_size),
+                    self.dtype,
+                )
+            )
+        if self.output_y_c is not None:
+            outputs.append(
+                (
+                    self.output_y_c,
+                    (self.num_directions, self.batch_size, self.hidden_size),
+                    self.dtype,
+                )
+            )
+        return tuple(outputs)
+
+
 
 @dataclass(frozen=True)
 class AdagradOp(RenderableOpBase):
@@ -4395,6 +4672,20 @@ class AdagradOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        outputs = [
+            (name, shape, self.dtype)
+            for name, shape in zip(self.outputs, self.output_shapes)
+        ]
+        outputs.extend(
+            (name, shape, self.dtype)
+            for name, shape in zip(self.accumulator_outputs, self.output_shapes)
+        )
+        return tuple(outputs)
+
+
 
 @dataclass(frozen=True)
 class MomentumOp(RenderableOpBase):
@@ -4534,6 +4825,20 @@ class MomentumOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        outputs = [
+            (name, shape, self.dtype)
+            for name, shape in zip(self.outputs, self.output_shapes)
+        ]
+        outputs.extend(
+            (name, shape, self.dtype)
+            for name, shape in zip(self.velocity_outputs, self.output_shapes)
+        )
+        return tuple(outputs)
+
+
 
 @dataclass(frozen=True)
 class MaxPoolOp(RenderableOpBase):
@@ -4623,3 +4928,18 @@ class MaxPoolOp(RenderableOpBase):
             storage_order=self.storage_order,
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return (self.batch, self.channels, *self.out_spatial)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        shape = self.computed_output_shape(emitter)
+        outputs: list[tuple[str, tuple[int, ...], ScalarType]] = [
+            (self.output, shape, self.dtype)
+        ]
+        if self.indices is not None and self.indices_dtype is not None:
+            outputs.append((self.indices, shape, self.indices_dtype))
+        return tuple(outputs)
+

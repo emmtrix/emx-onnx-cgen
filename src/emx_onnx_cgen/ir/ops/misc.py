@@ -186,6 +186,21 @@ class QuantizeLinearOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        scale_shape = (
+            () if self.axis is None else (emitter.ctx_shape(self.input0)[self.axis],)
+        )
+        inputs: list[tuple[str, tuple[int, ...]]] = [
+            (self.input0, emitter.ctx_shape(self.input0)),
+            (self.scale, scale_shape),
+        ]
+        if self.zero_point is not None:
+            inputs.append((self.zero_point, scale_shape))
+        return tuple(inputs)
+
+
 
 @dataclass(frozen=True)
 class DynamicQuantizeLinearOp(RenderableOpBase):
@@ -256,6 +271,16 @@ class DynamicQuantizeLinearOp(RenderableOpBase):
             dim_args=dim_args,
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        return (
+            (self.output, emitter.ctx_shape(self.output), emitter.ctx_dtype(self.output)),
+            (self.scale, emitter.ctx_shape(self.scale), emitter.ctx_dtype(self.scale)),
+            (self.zero_point, emitter.ctx_shape(self.zero_point), emitter.ctx_dtype(self.zero_point)),
+        )
+
 
 
 @dataclass(frozen=True)
@@ -376,6 +401,27 @@ class DequantizeLinearOp(RenderableOpBase):
             dim_args=dim_args,
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        if self.axis is None:
+            scale_shape: tuple[int, ...] = ()
+        elif self.block_size:
+            input_shape = emitter.ctx_shape(self.input0)
+            scale_shape_list = list(input_shape)
+            scale_shape_list[self.axis] = input_shape[self.axis] // self.block_size
+            scale_shape = tuple(scale_shape_list)
+        else:
+            scale_shape = (emitter.ctx_shape(self.input0)[self.axis],)
+        inputs: list[tuple[str, tuple[int, ...]]] = [
+            (self.input0, emitter.ctx_shape(self.input0)),
+            (self.scale, scale_shape),
+        ]
+        if self.zero_point is not None:
+            inputs.append((self.zero_point, scale_shape))
+        return tuple(inputs)
+
 
 
 @dataclass(frozen=True)
@@ -810,6 +856,12 @@ class ScatterNDOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ((self.data, emitter.ctx_shape(self.data)),)
+
+
 
 @dataclass(frozen=True)
 class ScatterElementsOp(RenderableOpBase):
@@ -1143,6 +1195,18 @@ class TensorScatterOp(RenderableOpBase):
             circular=self.mode == "circular",
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        inputs: list[tuple[str, tuple[int, ...]]] = [
+            (self.past_cache, emitter.ctx_shape(self.past_cache)),
+            (self.update, emitter.ctx_shape(self.update)),
+        ]
+        if self.write_indices is not None:
+            inputs.append((self.write_indices, emitter.ctx_shape(self.write_indices)))
+        return tuple(inputs)
+
 
 
 @dataclass(frozen=True)
@@ -1490,6 +1554,19 @@ class DropoutOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        outputs: list[tuple[str, tuple[int, ...], ScalarType]] = [
+            (self.output, emitter.ctx_shape(self.output), emitter.ctx_dtype(self.output))
+        ]
+        if self.mask is not None:
+            outputs.append(
+                (self.mask, emitter.ctx_shape(self.mask), emitter.ctx_dtype(self.mask))
+            )
+        return tuple(outputs)
+
+
 
 @dataclass(frozen=True)
 class TriluOp(RenderableOpBase):
@@ -1572,6 +1649,17 @@ class TriluOp(RenderableOpBase):
             zero_literal=zero_literal,
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        inputs: list[tuple[str, tuple[int, ...]]] = [
+            (self.input0, emitter.ctx_shape(self.input0))
+        ]
+        if self.k_input is not None:
+            inputs.append((self.k_input, emitter.ctx_shape(self.k_input)))
+        return tuple(inputs)
+
 
 
 @dataclass(frozen=True)
@@ -1858,6 +1946,21 @@ class PadOp(RenderableOpBase):
             reflect_vars=reflect_vars,
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        inputs: list[tuple[str, tuple[int, ...]]] = [
+            (self.input0, emitter.ctx_shape(self.input0))
+        ]
+        if self.pads_input is not None:
+            inputs.append((self.pads_input, emitter.ctx_shape(self.pads_input)))
+        if self.axes_input is not None:
+            inputs.append((self.axes_input, emitter.ctx_shape(self.axes_input)))
+        if self.value_input is not None:
+            inputs.append((self.value_input, emitter.ctx_shape(self.value_input)))
+        return tuple(inputs)
+
 
 
 @dataclass(frozen=True)
@@ -3039,6 +3142,17 @@ class UniqueOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        return (
+            (self.y, emitter.ctx_shape(self.y), emitter.ctx_dtype(self.y)),
+            (self.indices, emitter.ctx_shape(self.indices), emitter.ctx_dtype(self.indices)),
+            (self.inverse_indices, emitter.ctx_shape(self.inverse_indices), emitter.ctx_dtype(self.inverse_indices)),
+            (self.counts, emitter.ctx_shape(self.counts), emitter.ctx_dtype(self.counts)),
+        )
+
+
 
 @dataclass(frozen=True)
 class NonMaxSuppressionOp(RenderableOpBase):
@@ -3316,6 +3430,24 @@ class NonMaxSuppressionOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        inputs: list[tuple[str, tuple[int, ...]]] = [
+            (self.boxes, emitter.ctx_shape(self.boxes)),
+            (self.scores, emitter.ctx_shape(self.scores)),
+        ]
+        if self.max_output_boxes_per_class is not None:
+            inputs.append(
+                (self.max_output_boxes_per_class, emitter.ctx_shape(self.max_output_boxes_per_class))
+            )
+        if self.iou_threshold is not None:
+            inputs.append((self.iou_threshold, emitter.ctx_shape(self.iou_threshold)))
+        if self.score_threshold is not None:
+            inputs.append((self.score_threshold, emitter.ctx_shape(self.score_threshold)))
+        return tuple(inputs)
+
+
 
 @dataclass(frozen=True)
 class ExpandOp(ShapeLikeOpBase):
@@ -3424,6 +3556,12 @@ class CumSumOp(RenderableOpBase):
             dim_args=dim_args,
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ((self.input0, emitter.ctx_shape(self.input0)),)
+
 
 
 @dataclass(frozen=True)
@@ -3571,6 +3709,20 @@ class STFTOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        inputs: list[tuple[str, tuple[int, ...]]] = [
+            (self.signal, emitter.ctx_shape(self.signal)),
+            (self.frame_step, ()),
+        ]
+        if self.window is not None:
+            inputs.append((self.window, emitter.ctx_shape(self.window)))
+        if self.frame_length_input is not None:
+            inputs.append((self.frame_length_input, ()))
+        return tuple(inputs)
+
+
 
 @dataclass(frozen=True)
 class LoopRangeOp(RenderableOpBase):
@@ -3643,6 +3795,25 @@ class LoopRangeOp(RenderableOpBase):
             state_size=state_size,
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return (
+            (self.trip_count, ()),
+            (self.cond, ()),
+            (self.start, ()),
+            (self.delta, ()),
+        )
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        return (
+            (self.final, emitter.ctx_shape(self.final), emitter.ctx_dtype(self.final)),
+            (self.output, emitter.ctx_shape(self.output), emitter.ctx_dtype(self.output)),
+        )
+
 
 
 @dataclass(frozen=True)
@@ -3739,6 +3910,23 @@ class LoopSequenceInsertOp(RenderableOpBase):
             c_type=seq_dtype.c_type,
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.elem_shape
+
+    def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
+        return self.elem_dtype
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ((self.trip_count, ()), (self.cond, ()))
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        return ((self.output_sequence, self.elem_shape, self.elem_dtype),)
+
 
 
 @dataclass(frozen=True)
@@ -3918,6 +4106,32 @@ class LoopSequenceMapOp(RenderableOpBase):
         lines.append("}")
         return emitter.with_node_comment(model, ctx.op_index, "\n".join(lines))
 
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.output_elem_shapes[0]
+
+    def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
+        return self.output_elem_dtypes[0]
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ((self.trip_count, ()), (self.cond, ()))
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        return tuple(
+            (
+                output_name,
+                emitter.sequence_storage_shape(output_name),
+                output_dtype,
+            )
+            for output_name, output_dtype in zip(
+                self.output_sequences, self.output_elem_dtypes
+            )
+        )
+
+
 
 @dataclass(frozen=True)
 class RangeOp(RenderableOpBase):
@@ -3968,6 +4182,12 @@ class RangeOp(RenderableOpBase):
             length=output_shape[0],
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ((self.start, ()), (self.limit, ()), (self.delta, ()))
+
 
 
 @dataclass(frozen=True)
@@ -4111,6 +4331,12 @@ class DFTOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ((self.input0, emitter.ctx_shape(self.input0)),)
+
+
 
 @dataclass(frozen=True)
 class HammingWindowOp(RenderableOpBase):
@@ -4172,6 +4398,12 @@ class HammingWindowOp(RenderableOpBase):
             compute_scalar_dtype=compute_dtype,
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ((self.size, ()),)
+
 
 
 @dataclass(frozen=True)
@@ -4236,6 +4468,12 @@ class BlackmanWindowOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ((self.size, ()),)
+
+
 
 @dataclass(frozen=True)
 class HannWindowOp(RenderableOpBase):
@@ -4297,6 +4535,12 @@ class HannWindowOp(RenderableOpBase):
             compute_scalar_dtype=compute_dtype,
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ((self.size, ()),)
+
 
 
 @dataclass(frozen=True)
@@ -4485,6 +4729,16 @@ class OneHotOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return (
+            (self.indices, emitter.ctx_shape(self.indices)),
+            (self.depth, ()),
+            (self.values, emitter.ctx_shape(self.values)),
+        )
+
+
 
 @dataclass(frozen=True)
 class TfIdfVectorizerOp(RenderableOpBase):
@@ -4649,6 +4903,10 @@ class StringConcatOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
+        return ScalarType.STRING
+
+
 
 @dataclass(frozen=True)
 class StringNormalizerOp(RenderableOpBase):
@@ -4700,6 +4958,10 @@ class StringNormalizerOp(RenderableOpBase):
             case_mode=case_mode,
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
+        return ScalarType.STRING
+
 
 
 @dataclass(frozen=True)
@@ -4868,6 +5130,18 @@ class StringSplitOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
+        return ScalarType.STRING
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        return (
+            (self.output_y, emitter.ctx_shape(self.output_y), ScalarType.STRING),
+            (self.output_z, emitter.ctx_shape(self.output_z), emitter.ctx_dtype(self.output_z)),
+        )
+
+
 
 @dataclass(frozen=True)
 class TreeEnsembleClassifierOp(RenderableOpBase):
@@ -4997,6 +5271,15 @@ class TreeEnsembleClassifierOp(RenderableOpBase):
             input_c_type=input_dtype.c_type,
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        return (
+            (self.label, emitter.ctx_shape(self.label), emitter.ctx_dtype(self.label)),
+            (self.probabilities, emitter.ctx_shape(self.probabilities), emitter.ctx_dtype(self.probabilities)),
+        )
+
 
 
 @dataclass(frozen=True)
@@ -5177,6 +5460,15 @@ class SplitOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        return tuple(
+            (name, emitter.ctx_shape(name), emitter.ctx_dtype(name))
+            for name in self.outputs
+        )
+
+
 
 @dataclass(frozen=True)
 class SplitToSequenceOp(RenderableOpBase):
@@ -5291,6 +5583,25 @@ class SplitToSequenceOp(RenderableOpBase):
             c_type=c_type,
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return emitter.ctx_sequence_elem_type(self.output_sequence).shape
+
+    def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
+        return emitter.ctx_sequence_elem_type(self.output_sequence).dtype
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        elem_type = emitter.ctx_sequence_elem_type(self.output_sequence)
+        return (
+            (
+                self.output_sequence,
+                emitter.sequence_storage_shape(self.output_sequence),
+                elem_type.dtype,
+            ),
+        )
+
 
 
 @dataclass(frozen=True)
@@ -5429,6 +5740,12 @@ class ConcatFromSequenceOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ()
+
+
 
 @dataclass(frozen=True)
 class SequenceAtOp(RenderableOpBase):
@@ -5499,10 +5816,14 @@ class SequenceAtOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ()
+
 
 @dataclass(frozen=True)
 class SequenceLengthOp(RenderableOpBase):
-    __io_inputs__ = ("input_sequence",)
     __io_outputs__ = ("output",)
     input_sequence: str
     output: str
@@ -5556,6 +5877,11 @@ class SequenceLengthOp(RenderableOpBase):
             c_type=output_dtype.c_type,
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ()
 
 
 @dataclass(frozen=True)
@@ -5637,6 +5963,26 @@ class SequenceIdentityOp(RenderableOpBase):
             c_type=elem_type.dtype.c_type,
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
+        return emitter.ctx_sequence_elem_type(self.output_sequence).dtype
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        return (
+            (
+                self.output_sequence,
+                emitter.sequence_storage_shape(self.output_sequence),
+                emitter.ctx_sequence_elem_type(self.output_sequence).dtype,
+            ),
+        )
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ()
+
 
 
 @dataclass(frozen=True)
@@ -5727,13 +6073,32 @@ class SequenceInsertOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return emitter.sequence_storage_shape(self.output_sequence)
+
+    def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
+        return emitter.ctx_sequence_elem_type(self.output_sequence).dtype
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        return (
+            (
+                self.output_sequence,
+                emitter.sequence_storage_shape(self.output_sequence),
+                emitter.ctx_sequence_elem_type(self.output_sequence).dtype,
+            ),
+        )
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ()
+
+
 
 @dataclass(frozen=True)
 class IfOptionalSequenceConstOp(RenderableOpBase):
-    __io_inputs__ = ("cond",)
-    __io_outputs__ = ("output_sequence",)
-    __io_remap_extra__ = ("output_present",)
-    cond: str
     output_sequence: str
     output_present: str | None
     true_present: bool
@@ -5871,6 +6236,24 @@ class IfOptionalSequenceConstOp(RenderableOpBase):
         lines.append("}")
         return emitter.with_node_comment(model, ctx.op_index, emitter.format_c_indentation("\n".join(lines)))
 
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return emitter.sequence_storage_shape(self.output_sequence)
+
+    def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
+        return emitter.ctx_sequence_elem_type(self.output_sequence).dtype
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        return (
+            (
+                self.output_sequence,
+                emitter.sequence_storage_shape(self.output_sequence),
+                emitter.ctx_sequence_elem_type(self.output_sequence).dtype,
+            ),
+        )
+
+
 
 @dataclass(frozen=True)
 class SequenceEraseOp(RenderableOpBase):
@@ -5953,6 +6336,30 @@ class SequenceEraseOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return emitter.sequence_storage_shape(self.input_sequence)
+
+    def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
+        return emitter.ctx_sequence_elem_type(self.input_sequence).dtype
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        elem_type = emitter.ctx_sequence_elem_type(self.input_sequence)
+        return (
+            (
+                self.output_sequence,
+                emitter.sequence_storage_shape(self.input_sequence),
+                elem_type.dtype,
+            ),
+        )
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ()
+
+
 
 @dataclass(frozen=True)
 class SequenceConstructOp(RenderableOpBase):
@@ -6013,6 +6420,21 @@ class SequenceConstructOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
+        return emitter.ctx_dtype(self.inputs[0])
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        return (
+            (
+                self.output_sequence,
+                emitter.ctx_shape(self.inputs[0]),
+                emitter.ctx_dtype(self.inputs[0]),
+            ),
+        )
+
+
 
 @dataclass(frozen=True)
 class SequenceEmptyOp(RenderableOpBase):
@@ -6054,3 +6476,22 @@ class SequenceEmptyOp(RenderableOpBase):
             output_sequence=params["output_sequence"],
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return emitter.ctx_sequence_elem_type(self.output_sequence).shape
+
+    def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
+        return emitter.ctx_sequence_elem_type(self.output_sequence).dtype
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        elem_type = emitter.ctx_sequence_elem_type(self.output_sequence)
+        return (
+            (
+                self.output_sequence,
+                emitter.sequence_storage_shape(self.output_sequence),
+                elem_type.dtype,
+            ),
+        )
+

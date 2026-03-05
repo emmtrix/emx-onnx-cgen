@@ -34,6 +34,12 @@ class ReduceOp(ReduceOpBase):
         ctx.set_shape(self.output, output_shape)
         ctx.set_derived(self, "axes", axes)
 
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ((self.input0, emitter.ctx_shape(self.input0)),)
+
+
 
 @dataclass(frozen=True)
 class ArgReduceOp(ReduceOpBase):
@@ -251,3 +257,13 @@ class TopKOp(ReduceOpBase):
             dim_args=dim_args,
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        shape = self.computed_output_shape(emitter)
+        return (
+            (self.output_values, shape, emitter.ctx_dtype(self.output_values)),
+            (self.output_indices, shape, emitter.ctx_dtype(self.output_indices)),
+        )
+

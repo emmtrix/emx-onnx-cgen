@@ -753,6 +753,19 @@ class ClipOp(ElementwiseOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        inputs: list[tuple[str, tuple[int, ...]]] = [
+            (self.input0, emitter.ctx_shape(self.input0))
+        ]
+        if self.input_min is not None:
+            inputs.append((self.input_min, emitter.ctx_shape(self.input_min)))
+        if self.input_max is not None:
+            inputs.append((self.input_max, emitter.ctx_shape(self.input_max)))
+        return tuple(inputs)
+
+
 
 @dataclass(frozen=True)
 class IdentityOp(ElementwiseOpBase):
@@ -1006,6 +1019,10 @@ class QLinearMulOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.output_shape
+
+
 
 @dataclass(frozen=True)
 class QLinearAddOp(RenderableOpBase):
@@ -1170,3 +1187,7 @@ class QLinearAddOp(RenderableOpBase):
             dim_args=emitter.dim_args_str(),
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.output_shape
+

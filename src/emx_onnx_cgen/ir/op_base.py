@@ -120,6 +120,47 @@ class OpBase(ABC):
     def infer_shapes(self, ctx: OpContext) -> None:
         return None
 
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        """Return (name, shape) pairs for C function input parameters."""
+        return tuple(
+            (name, emitter.ctx_shape(name))
+            for name in self.input_names
+            if name is not None
+        )
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> "tuple[tuple[str, tuple[int, ...], ScalarType], ...]":
+        """Return (name, shape, dtype) triples for C function output parameters."""
+        name = self.primary_output_name
+        if name is not None:
+            return (
+                (
+                    name,
+                    self.computed_output_shape(emitter),
+                    self.computed_output_dtype(emitter),
+                ),
+            )
+        raise UnsupportedOpError(f"Cannot determine outputs for {self.kind}")
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        """Return the output shape for this op. Default: ctx_shape(primary_output_name)."""
+        name = self.primary_output_name
+        if name is not None:
+            return emitter.ctx_shape(name)
+        raise UnsupportedOpError(
+            f"Cannot determine output shape for {self.kind}"
+        )
+
+    def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
+        """Return the output dtype for this op. Default: ctx_dtype(primary_output_name)."""
+        name = self.primary_output_name
+        if name is not None:
+            return emitter.ctx_dtype(name)
+        return self.dtype
+
     @abstractmethod
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         raise NotImplementedError
@@ -763,6 +804,9 @@ class GemmLikeOpBase(RenderableOpBase):
 class ConvLikeOpBase(RenderableOpBase):
     __io_inputs__ = ("input0", "weights", "bias")
     __io_outputs__ = ("output",)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return (self.batch, self.out_channels, *self.out_spatial)
 
 
 class CEmitterCompat:
