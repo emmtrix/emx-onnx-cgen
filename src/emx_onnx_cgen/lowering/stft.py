@@ -118,7 +118,9 @@ def lower_stft(graph: Graph | GraphContext, node: Node) -> STFTOp:
 
     onesided = bool(int(node.attrs.get("onesided", 1)))
     if signal_shape[2] == 2 and onesided:
-        raise UnsupportedOpError("STFT onesided output is not supported for complex input")
+        raise UnsupportedOpError(
+            "STFT onesided output is not supported for complex input"
+        )
 
     frame_step_const = _read_scalar_int_initializer(
         graph, frame_step_name, node, "frame_step"
@@ -126,7 +128,9 @@ def lower_stft(graph: Graph | GraphContext, node: Node) -> STFTOp:
     if frame_step_const is None:
         _require_scalar_int_tensor(graph, frame_step_name, node, "frame_step")
     elif frame_step_const <= 0:
-        raise ShapeInferenceError(f"STFT frame_step must be > 0, got {frame_step_const}")
+        raise ShapeInferenceError(
+            f"STFT frame_step must be > 0, got {frame_step_const}"
+        )
 
     window_length: int | None = None
     if window_name is not None:
@@ -180,11 +184,15 @@ def lower_stft(graph: Graph | GraphContext, node: Node) -> STFTOp:
     if frame_length_const is not None:
         frame_length_for_count = frame_length_const
     elif frame_length_name is None:
-        frame_length_for_count = window_length if window_length is not None else signal_length
+        frame_length_for_count = (
+            window_length if window_length is not None else signal_length
+        )
     else:
         frame_length_for_count = None
     if frame_step_const is not None and frame_length_for_count is not None:
-        expected_frames = 1 + (signal_length - frame_length_for_count) // frame_step_const
+        expected_frames = (
+            1 + (signal_length - frame_length_for_count) // frame_step_const
+        )
         if expected_frames <= 0:
             raise ShapeInferenceError(
                 "STFT inferred a non-positive frame count; check frame_step and frame_length"
@@ -195,11 +203,15 @@ def lower_stft(graph: Graph | GraphContext, node: Node) -> STFTOp:
             )
 
     frame_length_literal: int
-    use_runtime_frame_length = frame_length_name is not None and frame_length_const is None
+    use_runtime_frame_length = (
+        frame_length_name is not None and frame_length_const is None
+    )
     if frame_length_const is not None:
         frame_length_literal = frame_length_const
     elif frame_length_name is None:
-        frame_length_literal = window_length if window_length is not None else signal_length
+        frame_length_literal = (
+            window_length if window_length is not None else signal_length
+        )
     else:
         frame_length_literal = fft_length
 

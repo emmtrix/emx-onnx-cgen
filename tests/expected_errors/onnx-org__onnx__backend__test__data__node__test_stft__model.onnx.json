@@ -1,10 +1,10 @@
 {
-  "error": "Failed to build testbench.",
+  "error": "OK (max ULP 15)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_stft model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "STFT"
   ],
   "opset_version": 17,
-  "generated_checksum": "59df64074a5acfbe1282bdcda8aea02ea6759805319e19bfbe056c0148bd5864"
+  "generated_checksum": "ccbf1a2f9d2855ca351c3fe8f508f0aa2f76f8fa94e65eccba73a8bb41940e5c"
 }

@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 191 / 205
+Supported operators: 192 / 205
 
 | Operator | Supported |
 | --- | --- |
@@ -151,7 +151,7 @@ Supported operators: 191 / 205
 | RoiAlign | ❌ |
 | RotaryEmbedding | ✅ |
 | Round | ✅ |
-| STFT | ❌ |
+| STFT | ✅ |
 | Scan | ✅ |
 | Scatter | ✅ |
 | ScatterElements | ✅ |

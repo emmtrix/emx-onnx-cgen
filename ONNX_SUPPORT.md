@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1558 / 1802, 86.5% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1560 / 1802, 86.6% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1558 / 1802 ONNX files (86.5%).
+Coverage 1560 / 1802 ONNX files (86.6%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1569,8 +1569,8 @@ Coverage 1558 / 1802 ONNX files (86.5%).
 | node/test_sqrt_example/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_squeeze/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_squeeze_negative_axes/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
-| node/test_stft/model.onnx | 17 | Data | ❌ | Failed to build testbench. |
-| node/test_stft_with_window/model.onnx | 17 | Data | ❌ | Failed to build testbench. |
+| node/test_stft/model.onnx | 17 | Data | ✅ | OK (max ULP 15) |
+| node/test_stft_with_window/model.onnx | 17 | Data | ✅ | OK (max ULP 99) |
 | node/test_string_concat/model.onnx | 20 | Data | ✅ | OK (max abs diff 0) |
 | node/test_string_concat_broadcasting/model.onnx | 20 | Data | ✅ | OK (max abs diff 0) |
 | node/test_string_concat_empty_string/model.onnx | 20 | Data | ✅ | OK (max abs diff 0) |

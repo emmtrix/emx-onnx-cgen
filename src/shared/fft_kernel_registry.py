@@ -4,7 +4,11 @@ from dataclasses import dataclass
 import math
 from typing import Callable, Dict, List, Set
 
-from shared.fft_codegen import FFTCodegenPlan, build_fft_codegen_plan, fft_twiddle_coefficients
+from shared.fft_codegen import (
+    FFTCodegenPlan,
+    build_fft_codegen_plan,
+    fft_twiddle_coefficients,
+)
 from shared.scalar_types import ScalarType
 
 LiteralFormatter = Callable[[ScalarType, float | int | bool], str]
@@ -28,7 +32,9 @@ class _GeneratedFFTKernel:
 
 def _default_literal_formatter(dtype: ScalarType, value: float | int | bool) -> str:
     if not dtype.is_float:
-        raise FFTKernelError(f"FFT kernels require a float dtype, got {dtype.onnx_name}")
+        raise FFTKernelError(
+            f"FFT kernels require a float dtype, got {dtype.onnx_name}"
+        )
     numeric = float(value)
     if math.isnan(numeric):
         return "NAN"
@@ -59,9 +65,7 @@ class FFTKernelRegistry:
         name = self._key_to_name.get(key)
         if name is None:
             plan = build_fft_codegen_plan(key.fft_length)
-            name = (
-                f"emx_fft_kernel_{key.dtype.suffix}_{key.fft_length}_{plan.variant}"
-            )
+            name = f"emx_fft_kernel_{key.dtype.suffix}_{key.fft_length}_{plan.variant}"
             self._key_to_name[key] = name
         if key not in self._requested_set:
             self._requested.append(key)
@@ -120,7 +124,9 @@ class FFTKernelRegistry:
             f"    static const {c_type} twiddle_im[{fft_length}] = {{ {twiddle_im} }};",
         ]
         if plan.variant != "dft":
-            permutation_values = ", ".join(str(value) for value in plan.input_permutation)
+            permutation_values = ", ".join(
+                str(value) for value in plan.input_permutation
+            )
             lines.append(
                 f"    static const idx_t input_perm[{fft_length}] = {{ {permutation_values} }};"
             )
@@ -140,10 +146,8 @@ class FFTKernelRegistry:
                             f"    for (idx_t block = 0; block < {fft_length}; block += {2 * stage.m}) {{",
                             f"        for (idx_t j = 0; j < {stage.m}; ++j) {{",
                             f"            const idx_t tw_index = (idx_t)((j * {stage.stage_span}) % {fft_length});",
-                            "            const "
-                            f"{c_type} w_re = twiddle_re[tw_index];",
-                            "            const "
-                            f"{c_type} w_im = twiddle_im[tw_index];",
+                            f"            const {c_type} w_re = twiddle_re[tw_index];",
+                            f"            const {c_type} w_im = twiddle_im[tw_index];",
                             "            const idx_t i0 = block + j;",
                             f"            const idx_t i1 = i0 + {stage.m};",
                             f"            const {c_type} b_re = output_re[i1];",

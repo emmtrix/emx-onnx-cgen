@@ -11954,8 +11954,12 @@ class CEmitter:
             )
             signal_dim_names = _dim_names_for(op.signal)
             output_dim_names = _dim_names_for(op.output)
-            signal_shape_expr = CEmitter._shape_dim_exprs(signal_shape, signal_dim_names)
-            output_shape_expr = CEmitter._shape_dim_exprs(output_shape, output_dim_names)
+            signal_shape_expr = CEmitter._shape_dim_exprs(
+                signal_shape, signal_dim_names
+            )
+            output_shape_expr = CEmitter._shape_dim_exprs(
+                output_shape, output_dim_names
+            )
 
             signal_suffix = self._param_array_suffix(
                 signal_shape,
