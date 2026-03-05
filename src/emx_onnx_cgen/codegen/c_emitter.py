@@ -48,6 +48,7 @@ from ..ir.ops import (
     ConcatOp,
     ConcatFromSequenceOp,
     ConstantOfShapeOp,
+    Col2ImOp,
     ConvOp,
     ConvIntegerOp,
     ConvTransposeOp,
@@ -730,6 +731,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | Col2ImOp
             | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
@@ -821,6 +823,7 @@ class CEmitter:
         | ConvOp
         | ConvIntegerOp
         | ConvTransposeOp
+        | Col2ImOp
         | DeformConvOp
         | AveragePoolOp
         | LpPoolOp
@@ -1396,6 +1399,21 @@ class CEmitter:
                 output_zero_shape=op.output_zero_shape,
                 weight_scale_per_channel=op.weight_scale_per_channel,
                 weight_zero_per_channel=op.weight_zero_per_channel,
+            )
+        if isinstance(op, Col2ImOp):
+            return Col2ImOp(
+                input0=name_map.get(op.input0, op.input0),
+                output=name_map.get(op.output, op.output),
+                batch=op.batch,
+                channels=op.channels,
+                spatial_rank=op.spatial_rank,
+                image_shape=op.image_shape,
+                block_shape=op.block_shape,
+                col_dims=op.col_dims,
+                strides=op.strides,
+                pads=op.pads,
+                dilations=op.dilations,
+                dtype=op.dtype,
             )
         if isinstance(op, ConvTransposeOp):
             return ConvTransposeOp(
@@ -2513,6 +2531,7 @@ class CEmitter:
                 "rotary_embedding": self._env.get_template("rotary_embedding_op.c.j2"),
                 "conv": self._env.get_template("conv_op.c.j2"),
                 "conv_integer": self._env.get_template("conv_integer_op.c.j2"),
+                "col2im": self._env.get_template("col2im_op.c.j2"),
                 "conv_transpose": self._env.get_template("conv_transpose_op.c.j2"),
                 "deform_conv": self._env.get_template("deform_conv_op.c.j2"),
                 "avg_pool": self._env.get_template("average_pool_op.c.j2"),
@@ -3365,6 +3384,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | Col2ImOp
             | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
@@ -3753,6 +3773,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | Col2ImOp
             | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
@@ -3966,6 +3987,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | Col2ImOp
             | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
@@ -4100,6 +4122,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | Col2ImOp
             | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
@@ -4404,6 +4427,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | Col2ImOp
             | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
@@ -4488,6 +4512,7 @@ class CEmitter:
         | ConvOp
         | ConvIntegerOp
         | ConvTransposeOp
+        | Col2ImOp
         | DeformConvOp
         | AveragePoolOp
         | LpPoolOp
@@ -5202,6 +5227,21 @@ class CEmitter:
                 output_zero_shape=op.output_zero_shape,
                 weight_scale_per_channel=op.weight_scale_per_channel,
                 weight_zero_per_channel=op.weight_zero_per_channel,
+            )
+        if isinstance(op, Col2ImOp):
+            return Col2ImOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                batch=op.batch,
+                channels=op.channels,
+                spatial_rank=op.spatial_rank,
+                image_shape=op.image_shape,
+                block_shape=op.block_shape,
+                col_dims=op.col_dims,
+                strides=op.strides,
+                pads=op.pads,
+                dilations=op.dilations,
+                dtype=op.dtype,
             )
         if isinstance(op, ConvTransposeOp):
             return ConvTransposeOp(
@@ -6278,6 +6318,7 @@ class CEmitter:
             rotary_embedding_template=templates["rotary_embedding"],
             conv_template=templates["conv"],
             conv_integer_template=templates["conv_integer"],
+            col2im_template=templates["col2im"],
             conv_transpose_template=templates["conv_transpose"],
             deform_conv_template=templates["deform_conv"],
             avg_pool_template=templates["avg_pool"],
@@ -6834,6 +6875,7 @@ class CEmitter:
         rotary_embedding_template,
         conv_template,
         conv_integer_template,
+        col2im_template,
         conv_transpose_template,
         deform_conv_template,
         avg_pool_template,
@@ -8330,6 +8372,72 @@ class CEmitter:
                 max_literal=op.dtype.max_literal,
                 round_dtype=ScalarType.F64,
                 compute_dtype=compute_dtype,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, Col2ImOp):
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("output", op.output),
+                ]
+            )
+            kernel_total = 1
+            for b in op.block_shape:
+                kernel_total *= b
+            col_total = 1
+            for c in op.col_dims:
+                col_total *= c
+            input_shape = (op.batch, op.channels * kernel_total, col_total)
+            output_shape = (op.batch, op.channels, *op.image_shape)
+            out_indices = tuple(f"od{dim}" for dim in range(op.spatial_rank))
+            kernel_indices = tuple(f"kd{dim}" for dim in range(op.spatial_rank))
+            col_indices = tuple(f"cd{dim}" for dim in range(op.spatial_rank))
+            im_indices = tuple(f"im{dim}" for dim in range(op.spatial_rank))
+            pad_begin = op.pads[: op.spatial_rank]
+            kernel_multipliers: list[int] = []
+            for dim in range(op.spatial_rank - 1):
+                mul = 1
+                for d in range(dim + 1, op.spatial_rank):
+                    mul *= op.block_shape[d]
+                kernel_multipliers.append(mul)
+            col_multipliers: list[int] = []
+            for dim in range(op.spatial_rank - 1):
+                mul = 1
+                for d in range(dim + 1, op.spatial_rank):
+                    mul *= op.col_dims[d]
+                col_multipliers.append(mul)
+            input_suffix = self._param_array_suffix(input_shape)
+            output_suffix = self._param_array_suffix(output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            rendered = col2im_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                zero_literal=zero_literal,
+                batch=op.batch,
+                channels=op.channels,
+                spatial_rank=op.spatial_rank,
+                image_shape=op.image_shape,
+                block_shape=op.block_shape,
+                col_dims=op.col_dims,
+                strides=op.strides,
+                pads_begin=pad_begin,
+                dilations=op.dilations,
+                kernel_total=kernel_total,
+                kernel_multipliers=kernel_multipliers,
+                col_multipliers=col_multipliers,
+                out_indices=out_indices,
+                kernel_indices=kernel_indices,
+                col_indices=col_indices,
+                im_indices=im_indices,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ConvTransposeOp):
@@ -14954,6 +15062,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | Col2ImOp
             | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
@@ -15039,6 +15148,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | Col2ImOp
             | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
@@ -15325,6 +15435,7 @@ class CEmitter:
             | AttentionOp
             | ConvOp
             | ConvTransposeOp
+            | Col2ImOp
             | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
@@ -15416,6 +15527,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | Col2ImOp
             | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
@@ -15976,6 +16088,8 @@ class CEmitter:
             return (op.batch, op.out_channels, *op.out_spatial)
         if isinstance(op, QLinearConvOp):
             return (op.batch, op.out_channels, *op.out_spatial)
+        if isinstance(op, Col2ImOp):
+            return (op.batch, op.channels, *op.image_shape)
         if isinstance(op, ConvTransposeOp):
             return (op.batch, op.out_channels, *op.out_spatial)
         if isinstance(op, DeformConvOp):
@@ -16165,6 +16279,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | Col2ImOp
             | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
