@@ -8,6 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1589 / 1802, 88.2% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1590 / 1802, 88.2% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
@@ -22,6 +23,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 Test directory: `onnx-org/onnx/backend/test/data`
 
 Coverage 1589 / 1802 ONNX files (88.2%).
+Coverage 1590 / 1802 ONNX files (88.2%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -757,14 +759,14 @@ Coverage 1589 / 1802 ONNX files (88.2%).
 | node/test_hardmax_example/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_hardmax_negative_axis/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_hardmax_one_hot/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
-| node/test_hardsigmoid/model.onnx | 22 | Data | ❌ | HardSigmoid only supports alpha=0.2 |
+| node/test_hardsigmoid/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_hardsigmoid_default/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_hardsigmoid_default_expanded_ver18/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_hardsigmoid_example/model.onnx | 22 | Data | ❌ | HardSigmoid only supports alpha=0.2 |
+| node/test_hardsigmoid_example/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_hardsigmoid_example_expanded_ver18/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_hardsigmoid_expanded_ver18/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_hardswish/model.onnx | 22 | Data | ✅ | OK (max ULP 2) |
-| node/test_hardswish_expanded/model.onnx | 22 | Data | ❌ | HardSigmoid only supports alpha=0.2 |
+| node/test_hardswish_expanded/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_identity/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_identity_opt/model.onnx | 16 | Data | ✅ | OK (max ULP 0) |
 | node/test_identity_sequence/model.onnx | 25 | Data | ✅ | OK (no numeric comparisons) |

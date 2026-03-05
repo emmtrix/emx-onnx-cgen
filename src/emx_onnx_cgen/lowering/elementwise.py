@@ -174,6 +174,29 @@ def lower_leaky_relu(graph: Graph, node: Node) -> UnaryOp:
     )
 
 
+@register_lowering("HardSigmoid")
+def lower_hardsigmoid(graph: Graph, node: Node) -> UnaryOp:
+    if len(node.inputs) != 1 or len(node.outputs) != 1:
+        raise UnsupportedOpError("HardSigmoid must have 1 input and 1 output")
+    dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
+    if not dtype.is_float:
+        raise UnsupportedOpError("HardSigmoid only supports floating-point inputs")
+    for key in node.attrs:
+        if key not in {"alpha", "beta"}:
+            raise UnsupportedOpError(f"HardSigmoid does not support attribute {key}")
+    try:
+        alpha = float(node.attrs.get("alpha", 0.2))
+        beta = float(node.attrs.get("beta", 0.5))
+    except (TypeError, ValueError) as exc:
+        raise UnsupportedOpError("HardSigmoid alpha/beta must be numeric") from exc
+    return UnaryOp(
+        input0=node.inputs[0],
+        output=node.outputs[0],
+        function=ScalarFunction.HARDSIGMOID,
+        params=(alpha, beta),
+    )
+
+
 @register_lowering("Swish")
 def lower_swish(graph: Graph, node: Node) -> UnaryOp:
     if len(node.inputs) != 1 or len(node.outputs) != 1:
