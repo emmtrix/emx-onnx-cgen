@@ -3010,18 +3010,113 @@ def _make_deform_conv_model(
     return model
 
 
-def _make_lp_pool_model() -> onnx.ModelProto:
-    input_shape = [1, 1, 4, 4]
-    output_shape = [1, 1, 2, 2]
+def _lppool_output_shape(
+    input_shape: list[int],
+    kernel_shape: list[int],
+    strides: list[int],
+    pads: list[int],
+    dilations: list[int] | None = None,
+    ceil_mode: int = 0,
+) -> list[int]:
+    spatial_rank = len(input_shape) - 2
+    dilation_values = dilations or [1] * spatial_rank
+    output_spatial = []
+    for dim, kernel, stride, pad_start, pad_end, dilation in zip(
+        input_shape[2:],
+        kernel_shape,
+        strides,
+        pads[:spatial_rank],
+        pads[spatial_rank:],
+        dilation_values,
+    ):
+        effective_kernel = dilation * (kernel - 1) + 1
+        numerator = dim + pad_start + pad_end - effective_kernel
+        if ceil_mode:
+            out_dim = (numerator + stride - 1) // stride + 1
+            if (out_dim - 1) * stride >= dim + pad_start:
+                out_dim -= 1
+        else:
+            out_dim = numerator // stride + 1
+        output_spatial.append(out_dim)
+    return [input_shape[0], input_shape[1], *output_spatial]
+
+
+def _lppool_output_shape_auto_pad(
+    input_shape: list[int],
+    kernel_shape: list[int],
+    strides: list[int],
+    auto_pad: str,
+    dilations: list[int] | None = None,
+) -> list[int]:
+    spatial_rank = len(input_shape) - 2
+    dilation_values = dilations or [1] * spatial_rank
+    output_spatial = []
+    for dim, kernel, stride, dilation in zip(
+        input_shape[2:], kernel_shape, strides, dilation_values
+    ):
+        effective_kernel = dilation * (kernel - 1) + 1
+        if auto_pad == "VALID":
+            output_spatial.append(math.ceil((dim - effective_kernel + 1) / stride))
+        elif auto_pad in {"SAME_UPPER", "SAME_LOWER"}:
+            output_spatial.append(math.ceil(dim / stride))
+        else:
+            raise ValueError(f"Unsupported auto_pad {auto_pad}")
+    return [input_shape[0], input_shape[1], *output_spatial]
+
+
+def _make_lp_pool_model(
+    *,
+    input_shape: list[int] | None = None,
+    kernel_shape: list[int] | None = None,
+    strides: list[int] | None = None,
+    pads: list[int] | None = None,
+    dilations: list[int] | None = None,
+    p: int | float = 2,
+    auto_pad: str | None = None,
+    ceil_mode: int = 0,
+) -> onnx.ModelProto:
+    input_shape = input_shape or [1, 1, 4, 4]
+    spatial_rank = len(input_shape) - 2
+    kernel_shape = kernel_shape or [2, 2]
+    strides = strides or [2, 2]
+    dilations = dilations or [1] * spatial_rank
+    if auto_pad is None:
+        pads = pads or ([0] * (2 * spatial_rank))
+        output_shape = _lppool_output_shape(
+            input_shape,
+            kernel_shape,
+            strides,
+            pads,
+            dilations,
+            ceil_mode,
+        )
+    else:
+        output_shape = _lppool_output_shape_auto_pad(
+            input_shape,
+            kernel_shape,
+            strides,
+            auto_pad,
+            dilations,
+        )
+
     input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
     output = helper.make_tensor_value_info("out", TensorProto.FLOAT, output_shape)
+    attrs: dict[str, object] = {
+        "kernel_shape": kernel_shape,
+        "strides": strides,
+        "dilations": dilations,
+        "p": p,
+        "ceil_mode": ceil_mode,
+    }
+    if auto_pad is None:
+        attrs["pads"] = pads
+    else:
+        attrs["auto_pad"] = auto_pad
     node = helper.make_node(
         "LpPool",
         inputs=["in0"],
         outputs=[output.name],
-        kernel_shape=[2, 2],
-        strides=[2, 2],
-        p=2,
+        **attrs,
     )
     graph = helper.make_graph(
         [node],
@@ -3032,9 +3127,9 @@ def _make_lp_pool_model() -> onnx.ModelProto:
     model = helper.make_model(
         graph,
         producer_name="onnx2c",
-        opset_imports=[helper.make_operatorsetid("", 13)],
+        opset_imports=[helper.make_operatorsetid("", 22)],
     )
-    model.ir_version = 7
+    model.ir_version = 8
     onnx.checker.check_model(model)
     return model
 
@@ -6535,8 +6630,44 @@ def test_deform_conv_with_multiple_offset_groups_matches_onnxruntime() -> None:
     _run_reference_testbench_compare(model)
 
 
-def test_lp_pool_matches_onnxruntime() -> None:
-    model = _make_lp_pool_model()
+@pytest.mark.parametrize(
+    "model",
+    [
+        _make_lp_pool_model(),
+        _make_lp_pool_model(
+            input_shape=[1, 2, 9],
+            kernel_shape=[3],
+            strides=[2],
+            pads=[1, 1],
+            p=3,
+        ),
+        _make_lp_pool_model(
+            input_shape=[1, 1, 5, 6],
+            kernel_shape=[3, 2],
+            strides=[2, 1],
+            auto_pad="SAME_UPPER",
+            p=1,
+        ),
+        _make_lp_pool_model(
+            input_shape=[1, 1, 7, 7],
+            kernel_shape=[2, 3],
+            strides=[2, 2],
+            pads=[1, 0, 1, 0],
+            dilations=[2, 1],
+            ceil_mode=1,
+            p=2,
+        ),
+        _make_lp_pool_model(
+            input_shape=[1, 1, 4, 5, 6],
+            kernel_shape=[2, 2, 3],
+            strides=[1, 2, 2],
+            pads=[0, 1, 1, 0, 1, 0],
+            p=2,
+        ),
+    ],
+    ids=["2d_basic", "1d", "2d_same_upper", "2d_dilated_ceil", "3d"],
+)
+def test_lp_pool_matches_onnxruntime(model: onnx.ModelProto) -> None:
     _run_ort_compare(model)
 
 
