@@ -1,10 +1,11 @@
 {
-  "error": "HardSigmoid only supports alpha=0.2",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_hardswish_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "HardSigmoid",
     "Mul"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "64342e1552ded5f56cddd183b1c2c338fdd9af774350945aaa705a898b1c3262"
 }
