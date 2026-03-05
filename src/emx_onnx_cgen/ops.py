@@ -481,7 +481,6 @@ UNARY_ATTR_DEFAULTS: Mapping[str, Mapping[str, object]] = {
     "HardSigmoid": {"alpha": 0.2, "beta": 0.5},
     "LeakyRelu": {"alpha": 0.01},
     "Softplus": {"beta": 1.0, "threshold": 20.0},
-    "ThresholdedRelu": {"alpha": 1.0},
 }
 
 
