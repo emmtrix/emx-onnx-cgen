@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported op STFT",
+  "error": "OK (max ULP 99)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_stft_with_window model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "STFT"
   ],
-  "opset_version": 17
+  "opset_version": 17,
+  "generated_checksum": "ce38ef77fed23ad9bbc07c3d5c8490cb5f3764b5e887b6e4b3ff2a47f218e236"
 }
