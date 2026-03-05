@@ -6985,3 +6985,36 @@ def test_lower_hardsigmoid_rejects_integer_input() -> None:
 
     with pytest.raises(UnsupportedOpError, match="floating-point inputs"):
         get_lowering("HardSigmoid")(graph, graph.nodes[0])
+
+
+def test_lower_thresholded_relu_accepts_custom_alpha() -> None:
+    model = _make_operator_model(
+        op_type="ThresholdedRelu",
+        input_shapes=[[2, 3]],
+        output_shape=[2, 3],
+        dtype=TensorProto.FLOAT,
+        attrs={"alpha": 0.25},
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+
+    op = get_lowering("ThresholdedRelu")(graph, graph.nodes[0])
+
+    assert op.function == ScalarFunction.THRESHOLDED_RELU
+    assert op.params == pytest.approx((0.25,))
+
+
+def test_lower_thresholded_relu_rejects_integer_input() -> None:
+    model = _make_operator_model(
+        op_type="ThresholdedRelu",
+        input_shapes=[[2, 3]],
+        output_shape=[2, 3],
+        dtype=TensorProto.INT32,
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+
+    with pytest.raises(UnsupportedOpError, match="floating-point inputs"):
+        get_lowering("ThresholdedRelu")(graph, graph.nodes[0])
+
+

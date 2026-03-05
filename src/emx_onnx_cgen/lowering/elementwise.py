@@ -174,6 +174,30 @@ def lower_leaky_relu(graph: Graph, node: Node) -> UnaryOp:
     )
 
 
+@register_lowering("ThresholdedRelu")
+def lower_thresholded_relu(graph: Graph, node: Node) -> UnaryOp:
+    if len(node.inputs) != 1 or len(node.outputs) != 1:
+        raise UnsupportedOpError("ThresholdedRelu must have 1 input and 1 output")
+    dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
+    if not dtype.is_float:
+        raise UnsupportedOpError("ThresholdedRelu only supports floating-point inputs")
+    for key in node.attrs:
+        if key != "alpha":
+            raise UnsupportedOpError(
+                f"ThresholdedRelu does not support attribute {key}"
+            )
+    try:
+        alpha = float(node.attrs.get("alpha", 1.0))
+    except (TypeError, ValueError) as exc:
+        raise UnsupportedOpError("ThresholdedRelu alpha must be numeric") from exc
+    return UnaryOp(
+        input0=node.inputs[0],
+        output=node.outputs[0],
+        function=ScalarFunction.THRESHOLDED_RELU,
+        params=(alpha,),
+    )
+
+
 @register_lowering("Selu")
 def lower_selu(graph: Graph, node: Node) -> UnaryOp:
     if len(node.inputs) != 1 or len(node.outputs) != 1:

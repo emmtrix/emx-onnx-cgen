@@ -1,9 +1,10 @@
 {
-  "error": "ThresholdedRelu only supports alpha=1.0",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_thresholdedrelu_example model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "ThresholdedRelu"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "b5da4134216d21705f4fa55aa06b5fe9c7430dc80c3cf1b8847fc190a673d0be"
 }
