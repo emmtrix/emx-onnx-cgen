@@ -1357,9 +1357,9 @@ Coverage 1601 / 1802 ONNX files (88.8%).
 | node/test_rms_normalization_default_axis/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
 | node/test_rms_normalization_default_axis_expanded/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
 | node/test_rnn_seq_length/model.onnx | 22 | Data | ❌ | Unsupported op RNN |
-| node/test_roialign_aligned_false/model.onnx | 22 | Data | ❌ | Unsupported op RoiAlign |
-| node/test_roialign_aligned_true/model.onnx | 22 | Data | ❌ | Unsupported op RoiAlign |
-| node/test_roialign_mode_max/model.onnx | 22 | Data | ❌ | Unsupported op RoiAlign |
+| node/test_roialign_aligned_false/model.onnx | 22 | Data | ❌ | Out of tolerance (max ULP 3487) |
+| node/test_roialign_aligned_true/model.onnx | 22 | Data | ❌ | Out of tolerance (max ULP 3288) |
+| node/test_roialign_mode_max/model.onnx | 22 | Data | ❌ | Failed to build testbench. |
 | node/test_rotary_embedding/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
 | node/test_rotary_embedding_3d_input/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
 | node/test_rotary_embedding_3d_input_expanded/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |

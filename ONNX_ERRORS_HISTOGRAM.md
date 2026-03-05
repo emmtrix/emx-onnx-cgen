@@ -16,18 +16,18 @@ Aggregates non-success verification outcomes.
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
-| Out of tolerance | 6 | 15, 20, 22 |
+| Out of tolerance | 8 | 15, 20, 22 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op RNN | 4 | 22 |
 | Unsupported op RandomUniformLike | 3 | 22 |
 | Unsupported op RegexFullMatch | 3 | 20 |
-| Unsupported op RoiAlign | 3 | 22 |
 | '*' | 2 |  |
 | ThresholdedRelu only supports alpha=1.0 | 2 | 22 |
 | Unsupported op Adam | 2 |  |
 | Unsupported op Det | 2 | 22 |
 | Unsupported op MaxUnpool | 2 | 22 |
+| Failed to build testbench. | 1 | 22 |
 | Graph must contain at least one node | 1 | 25 |
 | Pad value input must be a scalar | 1 | 24 |
 | Unsupported op ArrayFeatureExtractor | 1 |  |
@@ -46,13 +46,13 @@ Aggregates non-success verification outcomes.
 | OptionalHasElement expects exactly one non-empty input. | 18 | 4 |
 | Unsupported op RegexFullMatch | 20 | 3 |
 | Out of tolerance | 20 | 2 |
+| Out of tolerance | 22 | 5 |
 | Unsupported op RNN | 22 | 4 |
-| Out of tolerance | 22 | 3 |
 | Unsupported op RandomUniformLike | 22 | 3 |
-| Unsupported op RoiAlign | 22 | 3 |
 | ThresholdedRelu only supports alpha=1.0 | 22 | 2 |
 | Unsupported op Det | 22 | 2 |
 | Unsupported op MaxUnpool | 22 | 2 |
+| Failed to build testbench. | 22 | 1 |
 | Unsupported op RandomUniform | 22 | 1 |
 | Pad value input must be a scalar | 24 | 1 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 25 | 22 |
