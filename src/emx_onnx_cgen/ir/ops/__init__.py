@@ -81,6 +81,7 @@ from .misc import (
     UniqueOp,
 )
 from .nn import (
+    AdamOp,
     AdagradOp,
     MomentumOp,
     AttentionOp,
@@ -121,6 +122,7 @@ from .nn import (
 from .reduce import ArgReduceOp, ReduceOp, TopKOp
 
 __all__ = [
+    "AdamOp",
     "AdagradOp",
     "AffineGridOp",
     "ArgReduceOp",
