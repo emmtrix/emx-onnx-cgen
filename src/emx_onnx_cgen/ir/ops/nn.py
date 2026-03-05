@@ -2631,21 +2631,14 @@ class LpPoolOp(RenderableOpBase):
     output: str
     batch: int
     channels: int
-    in_h: int
-    in_w: int
-    out_h: int
-    out_w: int
-    kernel_h: int
-    kernel_w: int
-    dilation_h: int
-    dilation_w: int
-    stride_h: int
-    stride_w: int
-    pad_top: int
-    pad_left: int
-    pad_bottom: int
-    pad_right: int
-    p: int
+    spatial_rank: int
+    in_spatial: tuple[int, ...]
+    out_spatial: tuple[int, ...]
+    kernel_shape: tuple[int, ...]
+    dilations: tuple[int, ...]
+    strides: tuple[int, ...]
+    pads: tuple[int, ...]
+    p: float
     dtype: ScalarType
 
     def required_includes(self, ctx: OpContext) -> set[str]:
@@ -2660,8 +2653,8 @@ class LpPoolOp(RenderableOpBase):
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
-        input_shape = (self.batch, self.channels, self.in_h, self.in_w)
-        output_shape = (self.batch, self.channels, self.out_h, self.out_w)
+        input_shape = (self.batch, self.channels, *self.in_spatial)
+        output_shape = (self.batch, self.channels, *self.out_spatial)
         input_suffix = emitter.param_array_suffix(input_shape)
         output_suffix = emitter.param_array_suffix(output_shape)
         param_decls = emitter.build_param_decls(
@@ -2683,20 +2676,13 @@ class LpPoolOp(RenderableOpBase):
                 output_suffix=output_suffix,
                 batch=self.batch,
                 channels=self.channels,
-                in_h=self.in_h,
-                in_w=self.in_w,
-                out_h=self.out_h,
-                out_w=self.out_w,
-                kernel_h=self.kernel_h,
-                kernel_w=self.kernel_w,
-                dilation_h=self.dilation_h,
-                dilation_w=self.dilation_w,
-                stride_h=self.stride_h,
-                stride_w=self.stride_w,
-                pad_top=self.pad_top,
-                pad_left=self.pad_left,
-                pad_bottom=self.pad_bottom,
-                pad_right=self.pad_right,
+                spatial_rank=self.spatial_rank,
+                in_spatial=self.in_spatial,
+                out_spatial=self.out_spatial,
+                kernel_shape=self.kernel_shape,
+                dilations=self.dilations,
+                strides=self.strides,
+                pads=self.pads,
                 p=self.p,
                 zero_literal=zero_literal,
                 dtype=self.dtype,
@@ -2706,7 +2692,7 @@ class LpPoolOp(RenderableOpBase):
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
-        return (self.batch, self.channels, self.out_h, self.out_w)
+        return (self.batch, self.channels, *self.out_spatial)
 
 
 @dataclass(frozen=True)
