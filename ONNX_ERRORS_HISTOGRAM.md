@@ -17,7 +17,6 @@ Aggregates non-success verification outcomes.
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
 | Unsupported op ImageDecoder | 9 | 20 |
-| Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
 | Out of tolerance | 6 | 15, 20, 22 |
 | Unsupported op Col2Im | 5 | 18 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
@@ -40,7 +39,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op MaxUnpool | 2 | 22 |
 | Unsupported op STFT | 2 | 17 |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | 22 |
-| Dropout mask output is not supported | 1 | 22 |
 | Graph must contain at least one node | 1 | 25 |
 | Pad value input must be a scalar | 1 | 24 |
 | Unsupported op ArrayFeatureExtractor | 1 |  |
@@ -63,7 +61,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op RegexFullMatch | 20 | 3 |
 | Gelu only supports approximate=none | 20 | 2 |
 | Out of tolerance | 20 | 2 |
-| Dropout supports only the data input and 1 or 2 outputs | 22 | 8 |
 | Unsupported op RNN | 22 | 4 |
 | HardSigmoid only supports alpha=0.2 | 22 | 3 |
 | Out of tolerance | 22 | 3 |
@@ -76,7 +73,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op Det | 22 | 2 |
 | Unsupported op MaxUnpool | 22 | 2 |
 | ConvTranspose output shape must be fully defined and non-negative | 22 | 1 |
-| Dropout mask output is not supported | 22 | 1 |
 | Unsupported op RandomUniform | 22 | 1 |
 | Pad value input must be a scalar | 24 | 1 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 25 | 22 |

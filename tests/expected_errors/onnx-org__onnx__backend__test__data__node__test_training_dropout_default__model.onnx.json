@@ -1,9 +1,10 @@
 {
-  "error": "Dropout supports only the data input and 1 or 2 outputs",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_training_dropout_default model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Dropout"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "de42b812c1880e798215fc606f50d9c287c5819d25fdc45237a85f1162f4551b"
 }

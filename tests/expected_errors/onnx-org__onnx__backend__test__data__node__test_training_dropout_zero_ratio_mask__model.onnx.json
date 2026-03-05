@@ -1,9 +1,10 @@
 {
-  "error": "Dropout supports only the data input and 1 or 2 outputs",
+  "error": "OK (max abs diff 0, max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_training_dropout_zero_ratio_mask model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Dropout"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "89be3ad0ad7486866b1b1e61a93661db0ec7b294dab2c2bd02fa6fea151a11e5"
 }

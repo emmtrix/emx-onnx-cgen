@@ -2292,27 +2292,64 @@ def _make_affine_grid_model(
     return model
 
 
-def _make_dropout_model() -> onnx.ModelProto:
+def _make_dropout_model(
+    *,
+    with_ratio: bool = False,
+    with_training_mode: bool = False,
+    with_mask_output: bool = False,
+    ratio: float = 0.5,
+    training_mode: bool = False,
+) -> onnx.ModelProto:
     input_shape = [2, 3, 4]
     input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
+    ratio_info = helper.make_tensor_value_info("ratio", TensorProto.FLOAT, [])
+    training_info = helper.make_tensor_value_info("training", TensorProto.BOOL, [])
     output = helper.make_tensor_value_info("out", TensorProto.FLOAT, input_shape)
+    mask = helper.make_tensor_value_info("mask", TensorProto.BOOL, input_shape)
+
+    node_inputs = ["in0"]
+    graph_inputs = [input_info]
+    initializers: list[onnx.TensorProto] = []
+    if with_ratio:
+        node_inputs.append(ratio_info.name)
+        graph_inputs.append(ratio_info)
+        initializers.append(
+            numpy_helper.from_array(np.array(ratio, dtype=np.float32), "ratio")
+        )
+    if with_training_mode:
+        if not with_ratio:
+            node_inputs.append("")
+        node_inputs.append(training_info.name)
+        graph_inputs.append(training_info)
+        initializers.append(
+            numpy_helper.from_array(np.array(training_mode, dtype=np.bool_), "training")
+        )
+
+    node_outputs = [output.name]
+    graph_outputs = [output]
+    if with_mask_output:
+        node_outputs.append(mask.name)
+        graph_outputs.append(mask)
+
     node = helper.make_node(
         "Dropout",
-        inputs=["in0"],
-        outputs=[output.name],
+        inputs=node_inputs,
+        outputs=node_outputs,
+        seed=0,
     )
     graph = helper.make_graph(
         [node],
         "dropout_graph",
-        [input_info],
-        [output],
+        graph_inputs,
+        graph_outputs,
+        initializer=initializers,
     )
     model = helper.make_model(
         graph,
         producer_name="onnx2c",
-        opset_imports=[helper.make_operatorsetid("", 13)],
+        opset_imports=[helper.make_operatorsetid("", 22)],
     )
-    model.ir_version = 7
+    model.ir_version = 9
     onnx.checker.check_model(model)
     return model
 
@@ -6626,6 +6663,28 @@ def test_dropout_run_matches_numpy() -> None:
     input_data = np.arange(24, dtype=np.float32).reshape(2, 3, 4)
     outputs = _run_reference(model, {"in0": input_data})
     np.testing.assert_allclose(outputs["out"], input_data, rtol=1e-6, atol=1e-6)
+
+
+def test_dropout_mask_run_matches_numpy() -> None:
+    model = _make_dropout_model(with_mask_output=True)
+    input_data = np.arange(24, dtype=np.float32).reshape(2, 3, 4)
+    outputs = _run_reference(model, {"in0": input_data})
+    np.testing.assert_allclose(outputs["out"], input_data, rtol=1e-6, atol=1e-6)
+    np.testing.assert_array_equal(
+        outputs["mask"], np.ones_like(input_data, dtype=np.bool_)
+    )
+
+
+def test_training_dropout_run_matches_numpy() -> None:
+    model = _make_dropout_model(
+        with_ratio=True, with_training_mode=True, ratio=0.75, training_mode=True
+    )
+    input_data = np.arange(24, dtype=np.float32).reshape(2, 3, 4)
+    outputs = _run_reference(model, {"in0": input_data})
+    rng = np.random.RandomState(0)
+    mask = rng.rand(*input_data.shape) >= 0.75
+    expected = input_data * mask / 0.25
+    np.testing.assert_allclose(outputs["out"], expected, rtol=1e-6, atol=1e-6)
 
 
 def test_unsqueeze_run_matches_numpy() -> None:
