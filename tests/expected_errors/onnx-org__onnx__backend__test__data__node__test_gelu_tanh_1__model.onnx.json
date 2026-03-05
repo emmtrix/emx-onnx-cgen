@@ -1,9 +1,10 @@
 {
-  "error": "Gelu only supports approximate=none",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_gelu_tanh_1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Gelu"
   ],
-  "opset_version": 20
+  "opset_version": 20,
+  "generated_checksum": "3de68054dc7596dc0c331768642c0486e2f75346174f4582a5ef0b76039ec72a"
 }
