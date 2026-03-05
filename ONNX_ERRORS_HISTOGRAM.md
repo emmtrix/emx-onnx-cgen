@@ -16,7 +16,7 @@ Aggregates non-success verification outcomes.
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
-| Out of tolerance | 6 | 15, 20, 22 |
+| Out of tolerance | 7 | 15, 20, 22 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op RNN | 4 | 22 |
