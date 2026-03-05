@@ -425,9 +425,14 @@ UNARY_APPLY_FUNCS = {
     "floorf": np.floor,
     "floor": np.floor,
     "gelu": lambda value: 0.5 * value * (1.0 + _NP_ERF(value / np.sqrt(2.0))),
-    "gelu_tanh": lambda value: 0.5
-    * value
-    * (1.0 + np.tanh(0.7978845608028654 * (value + 0.044715 * value * value * value))),
+    "gelu_tanh": lambda value: (
+        0.5
+        * value
+        * (
+            1.0
+            + np.tanh(0.7978845608028654 * (value + 0.044715 * value * value * value))
+        )
+    ),
     "hardsigmoid": lambda value: np.clip(value * 0.2 + 0.5, 0.0, 1.0),
     "hardswish": lambda value: value * np.clip(value + 3.0, 0.0, 6.0) / 6.0,
     "leaky_relu": lambda value: np.where(value > 0.0, value, 0.01 * value),
