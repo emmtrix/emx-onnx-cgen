@@ -1977,6 +1977,72 @@ class NegativeLogLikelihoodLossOp(RenderableOpBase):
     dtype: ScalarType
     target_dtype: ScalarType
 
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.output)
+        c_type = output_dtype.c_type
+        zero_literal = output_dtype.zero_literal
+        acc_dtype = emitter.accumulation_dtype(self.dtype)
+        acc_type = acc_dtype.c_type
+        acc_zero_literal = emitter.format_literal(acc_dtype, 0)
+        acc_one_literal = emitter.format_literal(acc_dtype, 1)
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("target", self.target),
+                ("weight", self.weight),
+                ("output", self.output),
+            ]
+        )
+        input_suffix = emitter.param_array_suffix(self.input_shape)
+        target_suffix = emitter.param_array_suffix(self.target_shape)
+        output_suffix = emitter.param_array_suffix(self.output_shape)
+        weight_suffix = f"[{self.c}]"
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["target"], self.target_dtype.c_type, target_suffix, True),
+                (
+                    (
+                        params["weight"],
+                        c_type,
+                        weight_suffix,
+                        True,
+                    )
+                    if params["weight"]
+                    else (None, "", "", True)
+                ),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        rendered = state.templates["nllloss"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input0=params["input0"],
+            target=params["target"],
+            weight=params["weight"],
+            output=params["output"],
+            params=param_decls,
+            c_type=c_type,
+            target_c_type=self.target_dtype.c_type,
+            input_suffix=input_suffix,
+            target_suffix=target_suffix,
+            output_suffix=output_suffix,
+            n=self.n,
+            c=self.c,
+            d=self.d,
+            reduction=self.reduction,
+            ignore_index=self.ignore_index,
+            zero_literal=zero_literal,
+            one_literal=emitter.format_literal(self.dtype, 1),
+            acc_type=acc_type,
+            acc_zero_literal=acc_zero_literal,
+            acc_one_literal=acc_one_literal,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
 
 @dataclass(frozen=True)
 class SoftmaxCrossEntropyLossOp(RenderableOpBase):
@@ -2001,6 +2067,96 @@ class SoftmaxCrossEntropyLossOp(RenderableOpBase):
     weight_shape: tuple[int, ...] | None
     dtype: ScalarType
     target_dtype: ScalarType
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.output)
+        c_type = output_dtype.c_type
+        zero_literal = output_dtype.zero_literal
+        acc_dtype = emitter.accumulation_dtype(self.dtype)
+        acc_type = acc_dtype.c_type
+        acc_zero_literal = emitter.format_literal(acc_dtype, 0)
+        acc_one_literal = emitter.format_literal(acc_dtype, 1)
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("target", self.target),
+                ("weight", self.weight),
+                ("output", self.output),
+                ("log_prob", self.log_prob),
+            ]
+        )
+        use_ignore_index = int(self.ignore_index is not None)
+        ignore_index = self.ignore_index if self.ignore_index is not None else -1
+        input_suffix = emitter.param_array_suffix(self.input_shape)
+        target_suffix = emitter.param_array_suffix(self.target_shape)
+        output_suffix = emitter.param_array_suffix(self.output_shape)
+        log_prob_suffix = (
+            emitter.param_array_suffix(self.log_prob_shape)
+            if self.log_prob_shape is not None
+            else ""
+        )
+        weight_suffix = f"[{self.c}]"
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["target"], self.target_dtype.c_type, target_suffix, True),
+                (
+                    (
+                        params["weight"],
+                        c_type,
+                        weight_suffix,
+                        True,
+                    )
+                    if params["weight"]
+                    else (None, "", "", True)
+                ),
+                (params["output"], c_type, output_suffix, False),
+                (
+                    (
+                        params["log_prob"],
+                        c_type,
+                        log_prob_suffix,
+                        False,
+                    )
+                    if params["log_prob"]
+                    else (None, "", "", False)
+                ),
+            ]
+        )
+        rendered = state.templates["softmax_cross_entropy_loss"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input0=params["input0"],
+            target=params["target"],
+            weight=params["weight"],
+            output=params["output"],
+            log_prob=params["log_prob"],
+            params=param_decls,
+            c_type=c_type,
+            target_c_type=self.target_dtype.c_type,
+            input_suffix=input_suffix,
+            target_suffix=target_suffix,
+            output_suffix=output_suffix,
+            log_prob_suffix=(
+                log_prob_suffix if self.log_prob_shape is not None else None
+            ),
+            n=self.n,
+            c=self.c,
+            d=self.d,
+            reduction=self.reduction,
+            use_ignore_index=use_ignore_index,
+            ignore_index=ignore_index,
+            zero_literal=zero_literal,
+            one_literal=emitter.format_literal(self.dtype, 1),
+            acc_type=acc_type,
+            acc_zero_literal=acc_zero_literal,
+            acc_one_literal=acc_one_literal,
+            acc_dtype=acc_dtype,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
 @dataclass(frozen=True)
@@ -2299,6 +2455,141 @@ class LayerNormalizationOp(RenderableOpBase):
     epsilon: float
     dtype: ScalarType
 
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.output)
+        c_type = output_dtype.c_type
+        zero_literal = output_dtype.zero_literal
+        acc_dtype = emitter.accumulation_dtype(self.dtype)
+        acc_type = acc_dtype.c_type
+        acc_zero_literal = emitter.format_literal(acc_dtype, 0)
+        acc_one_literal = emitter.format_literal(acc_dtype, 1)
+        acc_epsilon_literal = emitter.format_floating(self.epsilon, acc_dtype)
+        use_kahan = False
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("scale", self.scale),
+                ("bias", self.bias),
+                ("output", self.output),
+                ("mean_output", self.mean_output),
+                ("invstd_output", self.invstd_output),
+            ]
+        )
+        shape = CEmitterCompat.codegen_shape(self.shape)
+        loop_vars = CEmitterCompat.loop_vars(shape)
+        prefix_loop_vars = loop_vars[: self.axis]
+        norm_loop_vars = loop_vars[self.axis :]
+        scale_index_vars = [
+            "0" if dim == 1 else var
+            for dim, var in zip(self.scale_shape, norm_loop_vars)
+        ]
+        bias_index_vars = None
+        if self.bias_shape is not None and self.bias is not None:
+            bias_index_vars = [
+                "0" if dim == 1 else var
+                for dim, var in zip(self.bias_shape, norm_loop_vars)
+            ]
+        mean_index_vars = [
+            *prefix_loop_vars,
+            *("0" for _ in norm_loop_vars),
+        ]
+        input_suffix = emitter.param_array_suffix(shape)
+        output_suffix = emitter.param_array_suffix(shape)
+        scale_suffix = emitter.param_array_suffix(self.scale_shape)
+        bias_suffix = (
+            emitter.param_array_suffix(self.bias_shape)
+            if self.bias_shape is not None
+            else ""
+        )
+        mean_suffix = (
+            emitter.param_array_suffix(
+                self.shape[: self.axis] + (1,) * len(self.normalized_shape)
+            )
+            if self.mean_output is not None
+            else ""
+        )
+        invstd_suffix = (
+            emitter.param_array_suffix(
+                self.shape[: self.axis] + (1,) * len(self.normalized_shape)
+            )
+            if self.invstd_output is not None
+            else ""
+        )
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["scale"], c_type, scale_suffix, True),
+                (
+                    (
+                        params["bias"],
+                        c_type,
+                        bias_suffix,
+                        True,
+                    )
+                    if params["bias"]
+                    else (None, "", "", True)
+                ),
+                (params["output"], c_type, output_suffix, False),
+                (
+                    (
+                        params["mean_output"],
+                        c_type,
+                        mean_suffix,
+                        False,
+                    )
+                    if params["mean_output"]
+                    else (None, "", "", False)
+                ),
+                (
+                    (
+                        params["invstd_output"],
+                        c_type,
+                        invstd_suffix,
+                        False,
+                    )
+                    if params["invstd_output"]
+                    else (None, "", "", False)
+                ),
+            ]
+        )
+        rendered = state.templates["layer_norm"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input0=params["input0"],
+            scale=params["scale"],
+            bias=params["bias"],
+            output=params["output"],
+            mean_output=params["mean_output"],
+            invstd_output=params["invstd_output"],
+            params=param_decls,
+            c_type=c_type,
+            zero_literal=zero_literal,
+            input_suffix=input_suffix,
+            output_suffix=output_suffix,
+            scale_suffix=scale_suffix,
+            bias_suffix=bias_suffix,
+            mean_suffix=mean_suffix,
+            invstd_suffix=invstd_suffix,
+            prefix_shape=shape[: self.axis],
+            norm_shape=shape[self.axis :],
+            prefix_loop_vars=prefix_loop_vars,
+            norm_loop_vars=norm_loop_vars,
+            scale_index_vars=scale_index_vars,
+            bias_index_vars=bias_index_vars,
+            mean_index_vars=mean_index_vars,
+            inner=self.inner,
+            acc_type=acc_type,
+            acc_zero_literal=acc_zero_literal,
+            acc_one_literal=acc_one_literal,
+            acc_epsilon_literal=acc_epsilon_literal,
+            acc_dtype=acc_dtype,
+            use_kahan=use_kahan,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
 
 @dataclass(frozen=True)
 class MeanVarianceNormalizationOp(RenderableOpBase):
@@ -2312,6 +2603,46 @@ class MeanVarianceNormalizationOp(RenderableOpBase):
     reduce_count: int
     epsilon: float
     dtype: ScalarType
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.output)
+        c_type = output_dtype.c_type
+        zero_literal = output_dtype.zero_literal
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        shape = CEmitterCompat.codegen_shape(self.shape)
+        loop_vars = CEmitterCompat.loop_vars(shape)
+        input_suffix = emitter.param_array_suffix(shape)
+        output_suffix = emitter.param_array_suffix(shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        rendered = state.templates["mean_variance_norm"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input0=params["input0"],
+            output=params["output"],
+            params=param_decls,
+            c_type=c_type,
+            zero_literal=zero_literal,
+            input_suffix=input_suffix,
+            output_suffix=output_suffix,
+            shape=shape,
+            loop_vars=loop_vars,
+            axes=self.axes,
+            non_axes=self.non_axes,
+            reduce_count=self.reduce_count,
+            epsilon_literal=emitter.format_floating(self.epsilon, self.dtype),
+            dtype=self.dtype,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
 @dataclass(frozen=True)
@@ -2330,6 +2661,61 @@ class RMSNormalizationOp(RenderableOpBase):
     epsilon: float
     dtype: ScalarType
 
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.output)
+        c_type = output_dtype.c_type
+        zero_literal = output_dtype.zero_literal
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("scale", self.scale),
+                ("output", self.output),
+            ]
+        )
+        shape = CEmitterCompat.codegen_shape(self.shape)
+        loop_vars = CEmitterCompat.loop_vars(shape)
+        prefix_loop_vars = loop_vars[: self.axis]
+        norm_loop_vars = loop_vars[self.axis :]
+        scale_index_vars = [
+            "0" if dim == 1 else var
+            for dim, var in zip(self.scale_shape, norm_loop_vars)
+        ]
+        input_suffix = emitter.param_array_suffix(shape)
+        output_suffix = emitter.param_array_suffix(shape)
+        scale_suffix = emitter.param_array_suffix(self.scale_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["scale"], c_type, scale_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        rendered = state.templates["rms_norm"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input0=params["input0"],
+            scale=params["scale"],
+            output=params["output"],
+            params=param_decls,
+            c_type=c_type,
+            zero_literal=zero_literal,
+            input_suffix=input_suffix,
+            output_suffix=output_suffix,
+            scale_suffix=scale_suffix,
+            prefix_shape=shape[: self.axis],
+            norm_shape=shape[self.axis :],
+            prefix_loop_vars=prefix_loop_vars,
+            norm_loop_vars=norm_loop_vars,
+            scale_index_vars=scale_index_vars,
+            inner=self.inner,
+            epsilon_literal=emitter.format_floating(self.epsilon, self.dtype),
+            dtype=self.dtype,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
 
 @dataclass(frozen=True)
 class LrnOp(RenderableOpBase):
@@ -2345,6 +2731,49 @@ class LrnOp(RenderableOpBase):
     beta: float
     bias: float
     dtype: ScalarType
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.output)
+        c_type = output_dtype.c_type
+        zero_literal = output_dtype.zero_literal
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        shape = CEmitterCompat.codegen_shape(self.shape)
+        loop_vars = CEmitterCompat.loop_vars(shape)
+        input_suffix = emitter.param_array_suffix(shape)
+        output_suffix = emitter.param_array_suffix(shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        rendered = state.templates["lrn"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input0=params["input0"],
+            output=params["output"],
+            params=param_decls,
+            c_type=c_type,
+            input_suffix=input_suffix,
+            output_suffix=output_suffix,
+            shape=shape,
+            channels=self.channels,
+            half=self.half,
+            loop_vars=loop_vars,
+            zero_literal=zero_literal,
+            alpha_div_size_literal=emitter.format_floating(
+                self.alpha / self.size, self.dtype
+            ),
+            beta_literal=emitter.format_floating(self.beta, self.dtype),
+            bias_literal=emitter.format_floating(self.bias, self.dtype),
+            dtype=self.dtype,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
 @dataclass(frozen=True)
@@ -2517,3 +2946,71 @@ class MaxPoolOp(RenderableOpBase):
     storage_order: int
     dtype: ScalarType
     indices_dtype: ScalarType | None
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.output)
+        c_type = output_dtype.c_type
+        min_literal = output_dtype.min_literal
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("output", self.output),
+                ("indices", self.indices),
+            ]
+        )
+        input_shape = (self.batch, self.channels, *self.in_spatial)
+        output_shape = (self.batch, self.channels, *self.out_spatial)
+        indices_c_type = (
+            self.indices_dtype.c_type
+            if self.indices is not None and self.indices_dtype is not None
+            else None
+        )
+        input_suffix = emitter.param_array_suffix(input_shape)
+        output_suffix = emitter.param_array_suffix(output_shape)
+        indices_suffix = emitter.param_array_suffix(output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+                (
+                    (
+                        params["indices"],
+                        indices_c_type or ScalarType.I64.c_type,
+                        indices_suffix,
+                        False,
+                    )
+                    if params["indices"]
+                    else (None, "", "", False)
+                ),
+            ]
+        )
+        rendered = state.templates["maxpool"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input0=params["input0"],
+            output=params["output"],
+            indices=params["indices"],
+            params=param_decls,
+            c_type=c_type,
+            min_literal=min_literal,
+            input_suffix=input_suffix,
+            output_suffix=output_suffix,
+            indices_suffix=indices_suffix,
+            indices_c_type=indices_c_type,
+            dtype=self.dtype,
+            batch=self.batch,
+            channels=self.channels,
+            spatial_rank=self.spatial_rank,
+            in_spatial=self.in_spatial,
+            out_spatial=self.out_spatial,
+            kernel_shape=self.kernel_shape,
+            strides=self.strides,
+            pads=self.pads,
+            dilations=self.dilations,
+            ceil_mode=int(self.ceil_mode),
+            storage_order=self.storage_order,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
