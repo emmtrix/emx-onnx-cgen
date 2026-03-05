@@ -100,6 +100,7 @@ _LOWERING_MODULES = [
     "string_concat",
     "string_normalizer",
     "string_split",
+    "stft",
     "squeeze",
     "tensor_scatter",
     "tfidf_vectorizer",
