@@ -24,7 +24,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op RoiAlign | 3 | 22 |
 | '*' | 2 |  |
-| QuantizeLinear block_size is not supported | 2 | 25 |
 | ThresholdedRelu only supports alpha=1.0 | 2 | 22 |
 | Unsupported op Adam | 2 |  |
 | Unsupported op Det | 2 | 22 |
@@ -68,5 +67,4 @@ Aggregates non-success verification outcomes.
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 25 | 17 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 25 | 14 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 25 | 4 |
-| QuantizeLinear block_size is not supported | 25 | 2 |
 | Graph must contain at least one node | 25 | 1 |
