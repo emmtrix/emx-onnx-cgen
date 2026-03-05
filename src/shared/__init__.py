@@ -9,6 +9,10 @@ from .fft_codegen import (
     fft_input_permutation,
     fft_twiddle_coefficients,
 )
+from .fft_kernel_registry import (
+    FFTKernelError,
+    FFTKernelRegistry,
+)
 
 __all__ = [
     "FFTCodegenPlan",
@@ -18,4 +22,6 @@ __all__ = [
     "build_fft_codegen_plan",
     "fft_input_permutation",
     "fft_twiddle_coefficients",
+    "FFTKernelError",
+    "FFTKernelRegistry",
 ]

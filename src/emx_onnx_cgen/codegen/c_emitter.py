@@ -18,7 +18,6 @@ from jinja2 import (
 )
 import numpy as np
 
-from shared.fft_codegen import build_fft_codegen_plan, fft_twiddle_coefficients
 from ..errors import CodegenError
 from ..testbench_output_format import parse_testbench_output_format
 from ..ops import (
@@ -151,6 +150,7 @@ from shared.scalar_functions import (
     ScalarFunctionKey,
     ScalarFunctionRegistry,
 )
+from shared.fft_kernel_registry import FFTKernelRegistry
 from shared.scalar_types import ScalarFunctionError, ScalarType
 
 
@@ -349,6 +349,7 @@ class _EmitState:
     model: LoweredModel
     templates: dict[str, Template]
     scalar_registry: ScalarFunctionRegistry
+    fft_kernel_registry: FFTKernelRegistry
     dim_args: str
     tensor_dim_names: Mapping[str, Mapping[int, str]]
     op_context: OpContext
@@ -399,7 +400,9 @@ class CEmitter:
         self._emit_state: _EmitState | None = None
 
     def _setup_template_resolvers(
-        self, scalar_registry: ScalarFunctionRegistry
+        self,
+        scalar_registry: ScalarFunctionRegistry,
+        fft_kernel_registry: FFTKernelRegistry,
     ) -> None:
         def scalar_fn(
             function: ScalarFunction,
@@ -410,7 +413,11 @@ class CEmitter:
                 function, dtype, scalar_registry, params=params
             )
 
+        def fft_kernel(dtype: ScalarType, fft_length: int) -> str:
+            return fft_kernel_registry.request(dtype=dtype, fft_length=fft_length)
+
         self._env.globals["scalar_fn"] = scalar_fn
+        self._env.globals["fft_kernel"] = fft_kernel
         self._env.globals["SF"] = ScalarFunction
         self._env.globals["ST"] = ScalarType
 
@@ -2583,13 +2590,17 @@ class CEmitter:
         self._env.globals["dim_args"] = dim_args
         templates = self._load_templates(emit_testbench)
         scalar_registry = ScalarFunctionRegistry()
-        self._setup_template_resolvers(scalar_registry)
+        fft_kernel_registry = FFTKernelRegistry(
+            literal_formatter=CEmitter._format_literal
+        )
+        self._setup_template_resolvers(scalar_registry, fft_kernel_registry)
         testbench_template = templates.get("testbench")
         initial_name_map = self._build_value_name_map(name_map, {})
         self._emit_state = _EmitState(
             model=model,
             templates=templates,
             scalar_registry=scalar_registry,
+            fft_kernel_registry=fft_kernel_registry,
             dim_args=dim_args,
             tensor_dim_names=tensor_dim_names,
             op_context=model.op_context,
@@ -2634,6 +2645,18 @@ class CEmitter:
         scalar_preamble = [
             line for line in scalar_include_lines if not line.startswith("#include ")
         ]
+        fft_kernel_functions = fft_kernel_registry.render()
+        fft_kernel_include_lines = (
+            fft_kernel_registry.include_lines() if fft_kernel_functions else []
+        )
+        fft_kernel_includes = {
+            line for line in fft_kernel_include_lines if line.startswith("#include ")
+        }
+        fft_kernel_preamble = [
+            line
+            for line in fft_kernel_include_lines
+            if not line.startswith("#include ")
+        ]
         testbench_math_include = set()
         if emit_testbench and self._testbench_requires_math(model, testbench_inputs):
             testbench_math_include.add("#include <math.h>")
@@ -2641,7 +2664,9 @@ class CEmitter:
             original_model,
             list(original_model.ops),
             emit_testbench=emit_testbench,
-            extra_includes=scalar_includes | testbench_math_include,
+            extra_includes=(
+                scalar_includes | fft_kernel_includes | testbench_math_include
+            ),
             needs_weight_loader=bool(large_constants),
         )
         sections = [
@@ -2657,6 +2682,8 @@ class CEmitter:
         ]
         if scalar_preamble:
             sections.extend(("", *scalar_preamble))
+        if fft_kernel_preamble:
+            sections.extend(("", *fft_kernel_preamble))
         sections.append("")
         constants_section = self._emit_constant_declarations(inline_constants)
         if constants_section:
@@ -2676,6 +2703,8 @@ class CEmitter:
             sections.extend((large_constants_section.rstrip(), ""))
         if scalar_functions:
             sections.extend(("\n".join(scalar_functions), ""))
+        if fft_kernel_functions:
+            sections.extend(("\n".join(fft_kernel_functions), ""))
         weight_loader = self._emit_weight_loader(model, large_constants)
         sections.extend(
             (
@@ -2746,13 +2775,17 @@ class CEmitter:
         self._env.globals["dim_args"] = dim_args
         templates = self._load_templates(emit_testbench)
         scalar_registry = ScalarFunctionRegistry()
-        self._setup_template_resolvers(scalar_registry)
+        fft_kernel_registry = FFTKernelRegistry(
+            literal_formatter=CEmitter._format_literal
+        )
+        self._setup_template_resolvers(scalar_registry, fft_kernel_registry)
         testbench_template = templates.get("testbench")
         initial_name_map = self._build_value_name_map(name_map, {})
         self._emit_state = _EmitState(
             model=model,
             templates=templates,
             scalar_registry=scalar_registry,
+            fft_kernel_registry=fft_kernel_registry,
             dim_args=dim_args,
             tensor_dim_names=tensor_dim_names,
             op_context=model.op_context,
@@ -2797,6 +2830,18 @@ class CEmitter:
         scalar_preamble = [
             line for line in scalar_include_lines if not line.startswith("#include ")
         ]
+        fft_kernel_functions = fft_kernel_registry.render()
+        fft_kernel_include_lines = (
+            fft_kernel_registry.include_lines() if fft_kernel_functions else []
+        )
+        fft_kernel_includes = {
+            line for line in fft_kernel_include_lines if line.startswith("#include ")
+        }
+        fft_kernel_preamble = [
+            line
+            for line in fft_kernel_include_lines
+            if not line.startswith("#include ")
+        ]
         testbench_math_include = set()
         if emit_testbench and self._testbench_requires_math(model, testbench_inputs):
             testbench_math_include.add("#include <math.h>")
@@ -2804,7 +2849,9 @@ class CEmitter:
             original_model,
             list(original_model.ops),
             emit_testbench=emit_testbench,
-            extra_includes=scalar_includes | testbench_math_include,
+            extra_includes=(
+                scalar_includes | fft_kernel_includes | testbench_math_include
+            ),
             needs_weight_loader=bool(large_constants),
         )
         sections = [
@@ -2820,6 +2867,8 @@ class CEmitter:
         ]
         if scalar_preamble:
             sections.extend(("", *scalar_preamble))
+        if fft_kernel_preamble:
+            sections.extend(("", *fft_kernel_preamble))
         sections.append("")
         constants_section = self._emit_constant_declarations(inline_constants)
         if constants_section:
@@ -2834,6 +2883,8 @@ class CEmitter:
             sections.extend((large_constants_section.rstrip(), ""))
         if scalar_functions:
             sections.extend(("\n".join(scalar_functions), ""))
+        if fft_kernel_functions:
+            sections.extend(("\n".join(fft_kernel_functions), ""))
         weight_loader = self._emit_weight_loader(model, large_constants)
         sections.extend(
             (
@@ -2911,13 +2962,17 @@ class CEmitter:
         if testbench_template is None:
             raise CodegenError("Failed to load testbench template")
         scalar_registry = ScalarFunctionRegistry()
-        self._setup_template_resolvers(scalar_registry)
+        fft_kernel_registry = FFTKernelRegistry(
+            literal_formatter=CEmitter._format_literal
+        )
+        self._setup_template_resolvers(scalar_registry, fft_kernel_registry)
         tensor_dim_names = self._build_tensor_dim_names(model, {}, {})
         initial_name_map = self._build_value_name_map(name_map, {})
         self._emit_state = _EmitState(
             model=model,
             templates=templates,
             scalar_registry=scalar_registry,
+            fft_kernel_registry=fft_kernel_registry,
             dim_args=dim_args,
             tensor_dim_names=tensor_dim_names,
             op_context=model.op_context,
@@ -11826,23 +11881,6 @@ class CEmitter:
                 ]
             )
 
-            try:
-                fft_plan = build_fft_codegen_plan(op.fft_length)
-                twiddle_factors = fft_twiddle_coefficients(op.fft_length)
-            except ValueError as exc:
-                raise CodegenError(f"STFT FFT configuration is invalid: {exc}") from exc
-            use_fft = fft_plan.variant != "dft"
-            twiddles = tuple(
-                (
-                    CEmitter._format_literal(stft_dtype, real),
-                    CEmitter._format_literal(stft_dtype, imag),
-                )
-                for real, imag in twiddle_factors
-            )
-            stage_data = [
-                {"kind": stage.kind, "m": stage.m, "l": stage.stage_span}
-                for stage in fft_plan.stages
-            ]
             rendered = stft_template.render(
                 model_name=model.name,
                 op_name=op_name,
@@ -11865,18 +11903,12 @@ class CEmitter:
                 output_frames_expr=str(output_shape_expr[1]),
                 output_bins_expr=str(output_shape_expr[2]),
                 input_components=2 if op.input_is_complex else 1,
+                fft_dtype=stft_dtype,
                 fft_length=op.fft_length,
                 window_length=op.window_length,
                 frame_length_literal=op.frame_length_literal,
                 use_runtime_frame_length=op.use_runtime_frame_length,
                 use_window=op.window is not None,
-                use_fft=use_fft,
-                fft_variant=fft_plan.variant,
-                stage_data=stage_data,
-                twiddle_re_values=[real for real, _ in twiddles],
-                twiddle_im_values=[imag for _, imag in twiddles],
-                twiddle_len=op.fft_length,
-                fft_input_permutation=fft_plan.input_permutation,
                 zero_literal=stft_dtype.zero_literal,
                 dim_args=dim_args,
             ).rstrip()
