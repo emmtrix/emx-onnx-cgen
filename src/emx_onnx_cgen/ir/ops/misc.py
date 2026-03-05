@@ -5897,6 +5897,7 @@ class SequenceAtOp(RenderableOpBase):
 
 @dataclass(frozen=True)
 class SequenceLengthOp(RenderableOpBase):
+    __io_inputs__ = ("input_sequence",)
     __io_outputs__ = ("output",)
     input_sequence: str
     output: str
@@ -6179,6 +6180,9 @@ class SequenceInsertOp(RenderableOpBase):
 
 @dataclass(frozen=True)
 class IfOptionalSequenceConstOp(RenderableOpBase):
+    __io_inputs__ = ("cond",)
+    __io_outputs__ = ("output_sequence", "output_present")
+    cond: str
     output_sequence: str
     output_present: str | None
     true_present: bool

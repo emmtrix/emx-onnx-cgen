@@ -1,11 +1,13 @@
 from .c_emitter import (
-    BinaryOp,
     CEmitter,
-    CastOp,
     ConstTensor,
+    LoweredModel,
+)
+from ..ir.ops import (
+    BinaryOp,
+    CastOp,
     ConstantOfShapeOp,
     GemmOp,
-    LoweredModel,
     MatMulIntegerOp,
     MatMulOp,
     QLinearAddOp,

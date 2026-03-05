@@ -828,12 +828,16 @@ class ConvLikeOpBase(RenderableOpBase):
 class CEmitterCompat:
     @staticmethod
     def codegen_shape(shape: tuple[int, ...]) -> tuple[int | str, ...]:
+        if not shape:
+            return (1,)
         return tuple(
             dim if dim >= 0 else f"dim_{index}" for index, dim in enumerate(shape)
         )
 
     @staticmethod
     def loop_vars(shape: tuple[int | str, ...]) -> tuple[str, ...]:
+        if not shape:
+            shape = (1,)
         return tuple(f"i{idx}" for idx in range(len(shape)))
 
     @staticmethod

@@ -19,7 +19,7 @@ from onnx import TensorProto, helper, numpy_helper
 
 from shared.scalar_types import ScalarType
 
-from emx_onnx_cgen.codegen.c_emitter import (
+from emx_onnx_cgen.ir.ops import (
     EinsumKind,
     EinsumOp,
     MultiInputBinaryOp,
