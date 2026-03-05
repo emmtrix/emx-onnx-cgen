@@ -2167,6 +2167,8 @@ def _decode_image_decoder_inputs(
     """
     if testbench_inputs is None:
         return
+    import io
+
     for node in model.graph.node:
         if node.op_type != "ImageDecoder":
             continue
@@ -2179,8 +2181,6 @@ def _decode_image_decoder_inputs(
             continue
         encoded = testbench_inputs[input_name]
         try:
-            import io
-
             from PIL import Image
 
             img = Image.open(io.BytesIO(encoded.tobytes()))

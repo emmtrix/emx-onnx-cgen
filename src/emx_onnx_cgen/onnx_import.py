@@ -1583,7 +1583,7 @@ def _expand_image_decoder_nodes(
                 break
 
         if pixel_format == "BGR":
-            indices_name = f"_image_decoder_bgr_indices_{input_name}"
+            indices_name = f"_image_decoder_bgr_indices_{output_name}"
             indices_tensor = numpy_helper.from_array(
                 np.array([2, 1, 0], dtype=np.int64), name=indices_name
             )
