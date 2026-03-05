@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported op Col2Im",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_col2im_strides model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Col2Im"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "ac5b66f0dfb7eadac2b12f304088dddbd1be28cd8559039996bc5095505410a9"
 }

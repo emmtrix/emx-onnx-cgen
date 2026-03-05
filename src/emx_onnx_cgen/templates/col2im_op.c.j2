@@ -1,0 +1,37 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    for (idx_t n = 0; n < {{ batch }}; ++n) {
+        for (idx_t c = 0; c < {{ channels }}; ++c) {
+            {% for dim in range(spatial_rank) %}
+            for (idx_t {{ out_indices[dim] }} = 0; {{ out_indices[dim] }} < {{ image_shape[dim] }}; ++{{ out_indices[dim] }}) {
+            {% endfor %}
+                {{ output }}[n][c]{% for dim in range(spatial_rank) %}[{{ out_indices[dim] }}]{% endfor %} = {{ zero_literal }};
+            {% for dim in range(spatial_rank) %}
+            }
+            {% endfor %}
+        }
+    }
+    for (idx_t n = 0; n < {{ batch }}; ++n) {
+        for (idx_t c = 0; c < {{ channels }}; ++c) {
+            {% for dim in range(spatial_rank) %}
+            for (idx_t {{ kernel_indices[dim] }} = 0; {{ kernel_indices[dim] }} < {{ block_shape[dim] }}; ++{{ kernel_indices[dim] }}) {
+            {% endfor %}
+                const idx_t k_flat = {% for dim in range(spatial_rank) %}{{ kernel_indices[dim] }}{% if not loop.last %} * {{ kernel_multipliers[dim] }} + {% endif %}{% endfor %};
+                {% for dim in range(spatial_rank) %}
+                for (idx_t {{ col_indices[dim] }} = 0; {{ col_indices[dim] }} < {{ col_dims[dim] }}; ++{{ col_indices[dim] }}) {
+                {% endfor %}
+                    const idx_t col_flat = {% for dim in range(spatial_rank) %}{{ col_indices[dim] }}{% if not loop.last %} * {{ col_multipliers[dim] }} + {% endif %}{% endfor %};
+                    {% for dim in range(spatial_rank) %}
+                    const idx_t {{ im_indices[dim] }} = {{ col_indices[dim] }} * {{ strides[dim] }} - {{ pads_begin[dim] }} + {{ kernel_indices[dim] }} * {{ dilations[dim] }};
+                    {% endfor %}
+                    if ({% for dim in range(spatial_rank) %}{{ im_indices[dim] }} >= 0 && {{ im_indices[dim] }} < {{ image_shape[dim] }}{% if not loop.last %} && {% endif %}{% endfor %}) {
+                        {{ output }}[n][c]{% for dim in range(spatial_rank) %}[{{ im_indices[dim] }}]{% endfor %} += {{ input0 }}[n][c * {{ kernel_total }} + k_flat][col_flat];
+                    }
+                {% for dim in range(spatial_rank) %}
+                }
+                {% endfor %}
+            {% for dim in range(spatial_rank) %}
+            }
+            {% endfor %}
+        }
+    }
+}

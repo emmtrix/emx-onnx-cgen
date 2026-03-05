@@ -587,6 +587,24 @@ class ConvTransposeOp(ConvLikeOpBase):
 
 
 @dataclass(frozen=True)
+class Col2ImOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
+    input0: str
+    output: str
+    batch: int
+    channels: int
+    spatial_rank: int
+    image_shape: tuple[int, ...]
+    block_shape: tuple[int, ...]
+    col_dims: tuple[int, ...]
+    strides: tuple[int, ...]
+    pads: tuple[int, ...]
+    dilations: tuple[int, ...]
+    dtype: ScalarType
+
+
+@dataclass(frozen=True)
 class DeformConvOp(ConvLikeOpBase):
     __io_inputs__ = ("input0", "weights", "offset", "bias", "mask")
     input0: str

@@ -61,10 +61,10 @@ Coverage 1578 / 1802 ONNX files (87.6%).
 | node/test_affine_grid_3d_expanded/model.onnx | 20 | Data | ❌ | Out of tolerance (max ULP 169) |
 | node/test_ai_onnx_ml_array_feature_extractor/model.onnx |  | Data | ❌ | Unsupported op ArrayFeatureExtractor |
 | node/test_ai_onnx_ml_binarizer/model.onnx |  | Data | ❌ | Unsupported op Binarizer |
-| node/test_ai_onnx_ml_label_encoder_string_int/model.onnx |  | Data | ❌ | Unsupported op LabelEncoder |
-| node/test_ai_onnx_ml_label_encoder_string_int_no_default/model.onnx |  | Data | ❌ | Unsupported op LabelEncoder |
-| node/test_ai_onnx_ml_label_encoder_tensor_mapping/model.onnx |  | Data | ❌ | Unsupported op LabelEncoder |
-| node/test_ai_onnx_ml_label_encoder_tensor_value_only_mapping/model.onnx |  | Data | ❌ | Unsupported op LabelEncoder |
+| node/test_ai_onnx_ml_label_encoder_string_int/model.onnx |  | Data | ✅ | OK (max abs diff 0) |
+| node/test_ai_onnx_ml_label_encoder_string_int_no_default/model.onnx |  | Data | ✅ | OK (max abs diff 0) |
+| node/test_ai_onnx_ml_label_encoder_tensor_mapping/model.onnx |  | Data | ✅ | OK (max abs diff 0) |
+| node/test_ai_onnx_ml_label_encoder_tensor_value_only_mapping/model.onnx |  | Data | ✅ | OK (max abs diff 0) |
 | node/test_ai_onnx_ml_tree_ensemble_set_membership/model.onnx |  | Data | ✅ | OK (max ULP 0) |
 | node/test_ai_onnx_ml_tree_ensemble_single_tree/model.onnx |  | Data | ✅ | OK (max ULP 0) |
 | node/test_and2d/model.onnx | 7 | Data | ✅ | OK (max abs diff 0) |
@@ -512,11 +512,11 @@ Coverage 1578 / 1802 ONNX files (87.6%).
 | node/test_clip_outbounds_expanded/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_clip_splitbounds/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_clip_splitbounds_expanded/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
-| node/test_col2im/model.onnx | 18 | Data | ❌ | Unsupported op Col2Im |
-| node/test_col2im_5d/model.onnx | 18 | Data | ❌ | Unsupported op Col2Im |
-| node/test_col2im_dilations/model.onnx | 18 | Data | ❌ | Unsupported op Col2Im |
-| node/test_col2im_pads/model.onnx | 18 | Data | ❌ | Unsupported op Col2Im |
-| node/test_col2im_strides/model.onnx | 18 | Data | ❌ | Unsupported op Col2Im |
+| node/test_col2im/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_col2im_5d/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_col2im_dilations/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_col2im_pads/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_col2im_strides/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_compress_0/model.onnx | 11 | Data | ✅ | OK (max ULP 0) |
 | node/test_compress_1/model.onnx | 11 | Data | ✅ | OK (max ULP 0) |
 | node/test_compress_default_axis/model.onnx | 11 | Data | ✅ | OK (max ULP 0) |

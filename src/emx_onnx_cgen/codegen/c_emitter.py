@@ -48,6 +48,7 @@ from ..ir.ops import (
     ConcatOp,
     ConcatFromSequenceOp,
     ConstantOfShapeOp,
+    Col2ImOp,
     ConvOp,
     ConvIntegerOp,
     ConvTransposeOp,
@@ -77,6 +78,7 @@ from ..ir.ops import (
     HardmaxOp,
     IdentityOp,
     InstanceNormalizationOp,
+    LabelEncoderOp,
     LayerNormalizationOp,
     LogSoftmaxOp,
     LpNormalizationOp,
@@ -730,6 +732,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | Col2ImOp
             | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
@@ -821,6 +824,7 @@ class CEmitter:
         | ConvOp
         | ConvIntegerOp
         | ConvTransposeOp
+        | Col2ImOp
         | DeformConvOp
         | AveragePoolOp
         | LpPoolOp
@@ -1396,6 +1400,21 @@ class CEmitter:
                 output_zero_shape=op.output_zero_shape,
                 weight_scale_per_channel=op.weight_scale_per_channel,
                 weight_zero_per_channel=op.weight_zero_per_channel,
+            )
+        if isinstance(op, Col2ImOp):
+            return Col2ImOp(
+                input0=name_map.get(op.input0, op.input0),
+                output=name_map.get(op.output, op.output),
+                batch=op.batch,
+                channels=op.channels,
+                spatial_rank=op.spatial_rank,
+                image_shape=op.image_shape,
+                block_shape=op.block_shape,
+                col_dims=op.col_dims,
+                strides=op.strides,
+                pads=op.pads,
+                dilations=op.dilations,
+                dtype=op.dtype,
             )
         if isinstance(op, ConvTransposeOp):
             return ConvTransposeOp(
@@ -2231,6 +2250,20 @@ class CEmitter:
                 is_case_sensitive=op.is_case_sensitive,
                 stopwords=op.stopwords,
             )
+        if isinstance(op, LabelEncoderOp):
+            return LabelEncoderOp(
+                input0=name_map.get(op.input0, op.input0),
+                output=name_map.get(op.output, op.output),
+                keys_strings=op.keys_strings,
+                keys_int64s=op.keys_int64s,
+                keys_floats=op.keys_floats,
+                values_strings=op.values_strings,
+                values_int64s=op.values_int64s,
+                values_floats=op.values_floats,
+                default_string=op.default_string,
+                default_int64=op.default_int64,
+                default_float=op.default_float,
+            )
         if isinstance(op, StringSplitOp):
             return StringSplitOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -2513,6 +2546,7 @@ class CEmitter:
                 "rotary_embedding": self._env.get_template("rotary_embedding_op.c.j2"),
                 "conv": self._env.get_template("conv_op.c.j2"),
                 "conv_integer": self._env.get_template("conv_integer_op.c.j2"),
+                "col2im": self._env.get_template("col2im_op.c.j2"),
                 "conv_transpose": self._env.get_template("conv_transpose_op.c.j2"),
                 "deform_conv": self._env.get_template("deform_conv_op.c.j2"),
                 "avg_pool": self._env.get_template("average_pool_op.c.j2"),
@@ -2613,6 +2647,7 @@ class CEmitter:
                 "string_normalizer": self._env.get_template(
                     "string_normalizer_op.c.j2"
                 ),
+                "label_encoder": self._env.get_template("label_encoder_op.c.j2"),
                 "string_split": self._env.get_template("string_split_op.c.j2"),
                 "tree_ensemble": self._env.get_template("tree_ensemble_op.c.j2"),
                 "tree_ensemble_classifier": self._env.get_template(
@@ -3365,6 +3400,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | Col2ImOp
             | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
@@ -3635,7 +3671,11 @@ class CEmitter:
             includes.add("#include <strings.h>")
             includes.add("#include <ctype.h>")
             includes.add("#include <stdbool.h>")
-        if any(isinstance(op, (StringConcatOp, StringSplitOp)) for op in resolved_ops):
+        if any(
+            isinstance(op, (StringConcatOp, StringSplitOp))
+            or (isinstance(op, LabelEncoderOp) and op.keys_strings)
+            for op in resolved_ops
+        ):
             includes.add("#include <string.h>")
         ordered_includes = (
             "#include <stdint.h>",
@@ -3753,6 +3793,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | Col2ImOp
             | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
@@ -3966,6 +4007,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | Col2ImOp
             | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
@@ -4100,6 +4142,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | Col2ImOp
             | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
@@ -4404,6 +4447,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | Col2ImOp
             | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
@@ -4488,6 +4532,7 @@ class CEmitter:
         | ConvOp
         | ConvIntegerOp
         | ConvTransposeOp
+        | Col2ImOp
         | DeformConvOp
         | AveragePoolOp
         | LpPoolOp
@@ -5203,6 +5248,21 @@ class CEmitter:
                 weight_scale_per_channel=op.weight_scale_per_channel,
                 weight_zero_per_channel=op.weight_zero_per_channel,
             )
+        if isinstance(op, Col2ImOp):
+            return Col2ImOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                batch=op.batch,
+                channels=op.channels,
+                spatial_rank=op.spatial_rank,
+                image_shape=op.image_shape,
+                block_shape=op.block_shape,
+                col_dims=op.col_dims,
+                strides=op.strides,
+                pads=op.pads,
+                dilations=op.dilations,
+                dtype=op.dtype,
+            )
         if isinstance(op, ConvTransposeOp):
             return ConvTransposeOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -5770,6 +5830,20 @@ class CEmitter:
                 is_case_sensitive=op.is_case_sensitive,
                 stopwords=op.stopwords,
             )
+        if isinstance(op, LabelEncoderOp):
+            return LabelEncoderOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                keys_strings=op.keys_strings,
+                keys_int64s=op.keys_int64s,
+                keys_floats=op.keys_floats,
+                values_strings=op.values_strings,
+                values_int64s=op.values_int64s,
+                values_floats=op.values_floats,
+                default_string=op.default_string,
+                default_int64=op.default_int64,
+                default_float=op.default_float,
+            )
         if isinstance(op, StringSplitOp):
             return StringSplitOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -6278,6 +6352,7 @@ class CEmitter:
             rotary_embedding_template=templates["rotary_embedding"],
             conv_template=templates["conv"],
             conv_integer_template=templates["conv_integer"],
+            col2im_template=templates["col2im"],
             conv_transpose_template=templates["conv_transpose"],
             deform_conv_template=templates["deform_conv"],
             avg_pool_template=templates["avg_pool"],
@@ -6354,6 +6429,7 @@ class CEmitter:
             tfidf_vectorizer_template=templates["tfidf_vectorizer"],
             string_concat_template=templates["string_concat"],
             string_normalizer_template=templates["string_normalizer"],
+            label_encoder_template=templates["label_encoder"],
             string_split_template=templates["string_split"],
             tree_ensemble_template=templates["tree_ensemble"],
             tree_ensemble_classifier_template=templates["tree_ensemble_classifier"],
@@ -6834,6 +6910,7 @@ class CEmitter:
         rotary_embedding_template,
         conv_template,
         conv_integer_template,
+        col2im_template,
         conv_transpose_template,
         deform_conv_template,
         avg_pool_template,
@@ -6910,6 +6987,7 @@ class CEmitter:
         tfidf_vectorizer_template,
         string_concat_template,
         string_normalizer_template,
+        label_encoder_template,
         string_split_template,
         tree_ensemble_template,
         tree_ensemble_classifier_template,
@@ -8330,6 +8408,72 @@ class CEmitter:
                 max_literal=op.dtype.max_literal,
                 round_dtype=ScalarType.F64,
                 compute_dtype=compute_dtype,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, Col2ImOp):
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("output", op.output),
+                ]
+            )
+            kernel_total = 1
+            for b in op.block_shape:
+                kernel_total *= b
+            col_total = 1
+            for c in op.col_dims:
+                col_total *= c
+            input_shape = (op.batch, op.channels * kernel_total, col_total)
+            output_shape = (op.batch, op.channels, *op.image_shape)
+            out_indices = tuple(f"od{dim}" for dim in range(op.spatial_rank))
+            kernel_indices = tuple(f"kd{dim}" for dim in range(op.spatial_rank))
+            col_indices = tuple(f"cd{dim}" for dim in range(op.spatial_rank))
+            im_indices = tuple(f"im{dim}" for dim in range(op.spatial_rank))
+            pad_begin = op.pads[: op.spatial_rank]
+            kernel_multipliers: list[int] = []
+            for dim in range(op.spatial_rank - 1):
+                mul = 1
+                for d in range(dim + 1, op.spatial_rank):
+                    mul *= op.block_shape[d]
+                kernel_multipliers.append(mul)
+            col_multipliers: list[int] = []
+            for dim in range(op.spatial_rank - 1):
+                mul = 1
+                for d in range(dim + 1, op.spatial_rank):
+                    mul *= op.col_dims[d]
+                col_multipliers.append(mul)
+            input_suffix = self._param_array_suffix(input_shape)
+            output_suffix = self._param_array_suffix(output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            rendered = col2im_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                zero_literal=zero_literal,
+                batch=op.batch,
+                channels=op.channels,
+                spatial_rank=op.spatial_rank,
+                image_shape=op.image_shape,
+                block_shape=op.block_shape,
+                col_dims=op.col_dims,
+                strides=op.strides,
+                pads_begin=pad_begin,
+                dilations=op.dilations,
+                kernel_total=kernel_total,
+                kernel_multipliers=kernel_multipliers,
+                col_multipliers=col_multipliers,
+                out_indices=out_indices,
+                kernel_indices=kernel_indices,
+                col_indices=col_indices,
+                im_indices=im_indices,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ConvTransposeOp):
@@ -12999,6 +13143,81 @@ class CEmitter:
                 case_mode=case_mode,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, LabelEncoderOp):
+            params = self._shared_param_map(
+                [("input0", op.input0), ("output", op.output)]
+            )
+            input_dtype = self._ctx_dtype(op.input0)
+            output_dtype = self._ctx_dtype(op.output)
+            output_shape_raw = self._ctx_shape(op.output)
+            output_dim_names = _dim_names_for(op.output)
+            shape = CEmitter._shape_dim_exprs(output_shape_raw, output_dim_names)
+            loop_vars = CEmitter._loop_vars(output_shape_raw)
+            if input_dtype == ScalarType.STRING:
+                input_suffix = self._param_array_suffix(
+                    output_shape_raw, output_dim_names, dtype=ScalarType.STRING
+                )
+            else:
+                input_suffix = self._param_array_suffix(
+                    output_shape_raw, output_dim_names
+                )
+            output_suffix = self._param_array_suffix(output_shape_raw, output_dim_names)
+            input_c_type = input_dtype.c_type
+            output_c_type = output_dtype.c_type
+            if input_dtype == ScalarType.STRING:
+                input_c_type = "char"
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], input_c_type, input_suffix, True),
+                    (params["output"], output_c_type, output_suffix, False),
+                ]
+            )
+            if op.keys_strings:
+                key_type = "string"
+                key_c_type = "char"
+                keys = tuple(
+                    CEmitter._format_c_string_literal(k) for k in op.keys_strings
+                )
+            elif op.keys_int64s:
+                key_type = "int64"
+                key_c_type = input_dtype.c_type
+                keys = tuple(str(k) for k in op.keys_int64s)
+            else:
+                key_type = "float"
+                key_c_type = input_dtype.c_type
+                keys = tuple(
+                    self._format_literal(input_dtype, k) for k in op.keys_floats
+                )
+            if op.values_int64s:
+                values = tuple(str(v) for v in op.values_int64s)
+                default_value = str(op.default_int64)
+            elif op.values_floats:
+                values = tuple(
+                    self._format_literal(output_dtype, v) for v in op.values_floats
+                )
+                default_value = self._format_literal(output_dtype, op.default_float)
+            else:
+                values = tuple(
+                    CEmitter._format_c_string_literal(v) for v in op.values_strings
+                )
+                default_value = CEmitter._format_c_string_literal(op.default_string)
+            rendered = label_encoder_template.render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                output=params["output"],
+                shape=shape,
+                loop_vars=loop_vars,
+                key_type=key_type,
+                key_c_type=key_c_type,
+                output_c_type=output_c_type,
+                keys=keys,
+                values=values,
+                default_value=default_value,
+                num_entries=len(keys),
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, StringSplitOp):
             params = self._shared_param_map(
                 [
@@ -14954,6 +15173,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | Col2ImOp
             | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
@@ -15039,6 +15259,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | Col2ImOp
             | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
@@ -15325,6 +15546,7 @@ class CEmitter:
             | AttentionOp
             | ConvOp
             | ConvTransposeOp
+            | Col2ImOp
             | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
@@ -15416,6 +15638,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | Col2ImOp
             | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
@@ -15923,6 +16146,7 @@ class CEmitter:
             | TfIdfVectorizerOp
             | StringConcatOp
             | StringNormalizerOp
+            | LabelEncoderOp
             | DepthToSpaceOp
             | SpaceToDepthOp
             | RotaryEmbeddingOp
@@ -15976,6 +16200,8 @@ class CEmitter:
             return (op.batch, op.out_channels, *op.out_spatial)
         if isinstance(op, QLinearConvOp):
             return (op.batch, op.out_channels, *op.out_spatial)
+        if isinstance(op, Col2ImOp):
+            return (op.batch, op.channels, *op.image_shape)
         if isinstance(op, ConvTransposeOp):
             return (op.batch, op.out_channels, *op.out_spatial)
         if isinstance(op, DeformConvOp):
@@ -16108,6 +16334,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, StringNormalizerOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, LabelEncoderOp):
+            return self._ctx_shape(op.output)
         if isinstance(op, StringSplitOp):
             return self._ctx_shape(op.output_y)
         if isinstance(op, SplitOp):
@@ -16165,6 +16393,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | Col2ImOp
             | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
@@ -16218,6 +16447,7 @@ class CEmitter:
             | TfIdfVectorizerOp
             | StringConcatOp
             | StringNormalizerOp
+            | LabelEncoderOp
             | DepthToSpaceOp
             | SpaceToDepthOp
             | SplitOp
@@ -16246,6 +16476,8 @@ class CEmitter:
             return ScalarType.STRING
         if isinstance(op, StringNormalizerOp):
             return ScalarType.STRING
+        if isinstance(op, LabelEncoderOp):
+            return self._ctx_dtype(op.output)
         if isinstance(op, StringSplitOp):
             return ScalarType.STRING
         if isinstance(op, TreeEnsembleOp):
