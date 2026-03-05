@@ -152,9 +152,7 @@ def lower_hardsigmoid(graph: Graph, node: Node) -> UnaryOp:
         raise UnsupportedOpError("HardSigmoid only supports floating-point inputs")
     for key in node.attrs:
         if key not in {"alpha", "beta"}:
-            raise UnsupportedOpError(
-                f"HardSigmoid does not support attribute {key}"
-            )
+            raise UnsupportedOpError(f"HardSigmoid does not support attribute {key}")
     try:
         alpha = float(node.attrs.get("alpha", 0.2))
         beta = float(node.attrs.get("beta", 0.5))
