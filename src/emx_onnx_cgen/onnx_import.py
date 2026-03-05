@@ -1540,9 +1540,84 @@ def _constant_initializer(node: onnx.NodeProto) -> Initializer:
     raise UnsupportedOpError(f"Constant '{output_name}' requires a value attribute")
 
 
+def _expand_image_decoder_nodes(
+    model: onnx.ModelProto,
+) -> tuple[onnx.ModelProto, bool]:
+    graph = model.graph
+    new_nodes: list[onnx.NodeProto] = []
+    new_initializers: list[onnx.TensorProto] = []
+    expanded = False
+
+    for node in graph.node:
+        if node.op_type != "ImageDecoder":
+            new_nodes.append(node)
+            continue
+
+        pixel_format = "RGB"
+        for attr in node.attribute:
+            if attr.name == "pixel_format":
+                pixel_format = attr.s.decode()
+
+        input_name = node.input[0]
+        output_name = node.output[0]
+
+        # Determine the decoded output shape from graph outputs or value_info.
+        output_shape: list[int] | None = None
+        for out in list(graph.output) + list(graph.value_info):
+            if out.name == output_name and out.type.HasField("tensor_type"):
+                dims = out.type.tensor_type.shape.dim
+                if all(d.HasField("dim_value") for d in dims):
+                    output_shape = [int(d.dim_value) for d in dims]
+                break
+        if output_shape is None:
+            new_nodes.append(node)
+            continue
+
+        # Rewrite the graph input that feeds ImageDecoder so it carries
+        # the decoded pixel tensor instead of the raw encoded bytes.
+        for inp in graph.input:
+            if inp.name == input_name:
+                del inp.type.tensor_type.shape.dim[:]
+                for dim_value in output_shape:
+                    inp.type.tensor_type.shape.dim.add().dim_value = dim_value
+                break
+
+        if pixel_format == "BGR":
+            indices_name = f"_image_decoder_bgr_indices_{output_name}"
+            indices_tensor = numpy_helper.from_array(
+                np.array([2, 1, 0], dtype=np.int64), name=indices_name
+            )
+            new_initializers.append(indices_tensor)
+            gather_node = helper.make_node(
+                "Gather",
+                inputs=[input_name, indices_name],
+                outputs=[output_name],
+                axis=2,
+            )
+            new_nodes.append(gather_node)
+        else:
+            identity_node = helper.make_node(
+                "Identity",
+                inputs=[input_name],
+                outputs=[output_name],
+            )
+            new_nodes.append(identity_node)
+
+        expanded = True
+
+    if expanded:
+        del graph.node[:]
+        graph.node.extend(new_nodes)
+        if new_initializers:
+            graph.initializer.extend(new_initializers)
+
+    return model, expanded
+
+
 def prepare_onnx_model(model: onnx.ModelProto) -> onnx.ModelProto:
     prepared = onnx.ModelProto()
     prepared.CopyFrom(model)
+    prepared, _ = _expand_image_decoder_nodes(prepared)
     prepared, _ = _expand_scan_nodes(prepared)
     prepared, _ = _expand_if_nodes(prepared)
     prepared, _ = _expand_sequence_map_nodes(prepared)
