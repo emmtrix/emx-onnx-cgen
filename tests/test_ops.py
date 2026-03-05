@@ -3173,6 +3173,48 @@ def _make_quantize_linear_model() -> onnx.ModelProto:
     return model
 
 
+def _make_quantize_linear_blocked_model() -> onnx.ModelProto:
+    input_shape = [2, 4]
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
+    output = helper.make_tensor_value_info("out", TensorProto.UINT8, input_shape)
+    scale_values = np.array([[0.5, 0.25], [0.1, 0.2]], dtype=np.float32)
+    scale_tensor = helper.make_tensor(
+        "scale",
+        TensorProto.FLOAT,
+        dims=list(scale_values.shape),
+        vals=scale_values.flatten().tolist(),
+    )
+    zero_point_values = np.array([[4, 8], [10, 12]], dtype=np.uint8)
+    zero_point_tensor = helper.make_tensor(
+        "zero_point",
+        TensorProto.UINT8,
+        dims=list(zero_point_values.shape),
+        vals=zero_point_values.flatten().tolist(),
+    )
+    node = helper.make_node(
+        "QuantizeLinear",
+        inputs=["in0", "scale", "zero_point"],
+        outputs=[output.name],
+        axis=1,
+        block_size=2,
+    )
+    graph = helper.make_graph(
+        [node],
+        "quantize_linear_blocked_graph",
+        [input_info],
+        [output],
+        initializer=[scale_tensor, zero_point_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 21)],
+    )
+    model.ir_version = 10
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_dynamic_quantize_linear_model() -> onnx.ModelProto:
     input_shape = [2, 3]
     input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
@@ -6685,6 +6727,11 @@ def test_lp_pool_matches_onnxruntime(model: onnx.ModelProto) -> None:
 
 def test_quantize_linear_matches_onnxruntime() -> None:
     model = _make_quantize_linear_model()
+    _run_ort_compare(model)
+
+
+def test_quantize_linear_blocked_matches_onnxruntime() -> None:
+    model = _make_quantize_linear_blocked_model()
     _run_ort_compare(model)
 
 
