@@ -119,6 +119,13 @@ class OpBase(ABC):
         """Return additional dtypes beyond the primary output needed for include resolution."""
         return set()
 
+    def resolved_output_dtype(self, ctx: OpContext) -> "ScalarType":
+        """Return the primary output dtype using OpContext (for include resolution)."""
+        name = self.primary_output_name
+        if name is not None:
+            return ctx.dtype(name)
+        return self.dtype
+
     def validate(self, ctx: OpContext) -> None:
         return None
 

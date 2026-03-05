@@ -10,6 +10,7 @@ import numpy as np
 from shared.scalar_types import ScalarType
 
 from ...errors import CodegenError, ShapeInferenceError, UnsupportedOpError
+from ..model import SequenceType
 from ..op_base import (
     CEmitterCompat,
     EmitContext,
@@ -3953,6 +3954,9 @@ class LoopSequenceInsertOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def resolved_output_dtype(self, ctx: OpContext) -> ScalarType:
+        return self.elem_dtype
+
     def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
         return self.elem_shape
 
@@ -4147,6 +4151,9 @@ class LoopSequenceMapOp(RenderableOpBase):
             )
         lines.append("}")
         return emitter.with_node_comment(model, ctx.op_index, "\n".join(lines))
+
+    def resolved_output_dtype(self, ctx: OpContext) -> ScalarType:
+        return self.output_elem_dtypes[0]
 
     def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
         return self.output_elem_shapes[0]
@@ -5203,6 +5210,9 @@ class StringSplitOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def resolved_output_dtype(self, ctx: OpContext) -> ScalarType:
+        return ctx.dtype(self.output_z)
+
     def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
         return ScalarType.STRING
 
@@ -5663,6 +5673,12 @@ class SplitToSequenceOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def resolved_output_dtype(self, ctx: OpContext) -> ScalarType:
+        value = ctx.find_value(self.output_sequence)
+        if isinstance(value.type, SequenceType):
+            return value.type.elem.dtype
+        raise CodegenError("SplitToSequence output must be a sequence")
+
     def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
         return emitter.ctx_sequence_elem_type(self.output_sequence).shape
 
@@ -6043,6 +6059,12 @@ class SequenceIdentityOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def resolved_output_dtype(self, ctx: OpContext) -> ScalarType:
+        value = ctx.find_value(self.output_sequence)
+        if isinstance(value.type, SequenceType):
+            return value.type.elem.dtype
+        raise CodegenError("SequenceIdentity output must be a sequence")
+
     def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
         return emitter.ctx_sequence_elem_type(self.output_sequence).dtype
 
@@ -6151,6 +6173,9 @@ class SequenceInsertOp(RenderableOpBase):
             c_type=c_type,
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def resolved_output_dtype(self, ctx: OpContext) -> ScalarType:
+        return ctx.dtype(self.tensor)
 
     def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
         return emitter.sequence_storage_shape(self.output_sequence)
@@ -6315,6 +6340,12 @@ class IfOptionalSequenceConstOp(RenderableOpBase):
         lines.append("}")
         return emitter.with_node_comment(model, ctx.op_index, emitter.format_c_indentation("\n".join(lines)))
 
+    def resolved_output_dtype(self, ctx: OpContext) -> ScalarType:
+        value = ctx.find_value(self.output_sequence)
+        if isinstance(value.type, SequenceType):
+            return value.type.elem.dtype
+        raise CodegenError("IfOptionalSequenceConst output must be a sequence")
+
     def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
         return emitter.sequence_storage_shape(self.output_sequence)
 
@@ -6415,6 +6446,12 @@ class SequenceEraseOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def resolved_output_dtype(self, ctx: OpContext) -> ScalarType:
+        value = ctx.find_value(self.input_sequence)
+        if isinstance(value.type, SequenceType):
+            return value.type.elem.dtype
+        raise CodegenError("SequenceErase input must be a sequence")
+
     def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
         return emitter.sequence_storage_shape(self.input_sequence)
 
@@ -6499,6 +6536,9 @@ class SequenceConstructOp(RenderableOpBase):
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def resolved_output_dtype(self, ctx: OpContext) -> ScalarType:
+        return ctx.dtype(self.inputs[0])
+
     def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
         return emitter.ctx_dtype(self.inputs[0])
 
@@ -6555,6 +6595,12 @@ class SequenceEmptyOp(RenderableOpBase):
             output_sequence=params["output_sequence"],
         ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def resolved_output_dtype(self, ctx: OpContext) -> ScalarType:
+        value = ctx.find_value(self.output_sequence)
+        if isinstance(value.type, SequenceType):
+            return value.type.elem.dtype
+        raise CodegenError("SequenceEmpty output must be a sequence")
 
     def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
         return emitter.ctx_sequence_elem_type(self.output_sequence).shape

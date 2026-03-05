@@ -1,0 +1,336 @@
+diff --git a/README.md b/README.md
+index b6adff3b..71194fcc 100644
+--- a/README.md
++++ b/README.md
+@@ -140,9 +140,15 @@ Verify an ONNX model end-to-end against ONNX Runtime (default):
+ emx-onnx-cgen verify path/to/model.onnx
+ ```
+ 
++Print an ONNX model graph as an ASCII DAG:
++
++```bash
++emx-onnx-cgen graph path/to/model.onnx
++```
++
+ ## CLI Reference
+ 
+-`emx-onnx-cgen` provides two subcommands: `compile` and `verify`.
++`emx-onnx-cgen` provides three subcommands: `compile`, `verify`, and `graph`.
+ 
+ ### Common options
+ 
+@@ -185,6 +191,18 @@ Options:
+ - `--temp-dir`: Exact directory to use for temporary verification files (default: create a temporary directory).
+ - `--keep-temp-dir`: Keep the temporary verification directory instead of deleting it.
+ 
++### `graph`
++
++```bash
++emx-onnx-cgen graph <model.onnx> [options]
++```
++
++Options:
++
++- `--model-base-dir`: Base directory for resolving the model path.
++- `--full-node-names`: Render full ONNX node names in graph labels (default output uses compact `n<idx> [OpType]` labels plus a legend).
++- `--hide-initializers`: Hide initializer nodes from graph output.
++
+ How verification works:
+ 
+ 1. **Compile with a testbench**: the compiler is invoked with `--emit-testbench`,
+diff --git a/requirements-ci.txt b/requirements-ci.txt
+index 5c00f2a0..e9dd9234 100644
+--- a/requirements-ci.txt
++++ b/requirements-ci.txt
+@@ -8,6 +8,7 @@ numpy==2.2.6
+ 
+ # Code generation
+ Jinja2==3.1.6
++asciidag
+ 
+ # Testing
+ pytest==8.2.0
+diff --git a/src/emx_onnx_cgen/cli.py b/src/emx_onnx_cgen/cli.py
+index 275c739a..8e3a4c20 100644
+--- a/src/emx_onnx_cgen/cli.py
++++ b/src/emx_onnx_cgen/cli.py
+@@ -271,7 +271,7 @@ def run_cli_command(
+     _apply_base_dir(args, parser)
+ 
+     try:
+-        if args.command != "compile":
++        if args.command == "verify":
+             (
+                 success_message,
+                 error,
+@@ -289,6 +289,13 @@ def run_cli_command(
+                 opset_version=opset_version,
+                 generated_checksum=generated_checksum,
+             )
++        if args.command == "graph":
++            graph_text, error = _render_graph_asciidag(args)
++            return CliResult(
++                exit_code=0 if error is None else 1,
++                command_line=args.command_line,
++                result=error or graph_text,
++            )
+         generated, _testbench, data_source, _weight_data, error = _compile_model(
+             args, testbench_inputs=testbench_inputs
+         )
+@@ -595,6 +602,32 @@ def _build_parser() -> argparse.ArgumentParser:
+     add_restrict_flags(verify_parser)
+     add_fp32_accumulation_strategy_flag(verify_parser)
+     add_fp16_accumulation_strategy_flag(verify_parser)
++
++    graph_parser = subparsers.add_parser(
++        "graph",
++        help="Print an ONNX model graph as an ASCII DAG",
++    )
++    graph_parser.add_argument(
++        "--model-base-dir",
++        "-B",
++        type=Path,
++        default=None,
++        help=(
++            "Base directory for resolving the model path "
++            "(example: tool graph --model-base-dir /data model.onnx)"
++        ),
++    )
++    graph_parser.add_argument("model", type=Path, help="Path to the ONNX model")
++    graph_parser.add_argument(
++        "--full-node-names",
++        action="store_true",
++        help="Render full ONNX node names in the graph labels",
++    )
++    graph_parser.add_argument(
++        "--hide-initializers",
++        action="store_true",
++        help="Hide initializer nodes from graph output",
++    )
+     return parser
+ 
+ 
+@@ -635,10 +668,172 @@ def main(argv: Sequence[str] | None = None) -> int:
+         return _handle_compile(args)
+     if args.command == "verify":
+         return _handle_verify(args)
++    if args.command == "graph":
++        return _handle_graph(args)
+     parser.error(f"Unknown command {args.command}")
+     return 1
+ 
+ 
++def _render_graph_asciidag(
++    args: argparse.Namespace,
++) -> tuple[str | None, str | None]:
++    model_path: Path = args.model
++    try:
++        model = onnx.load_model(model_path)
++    except OSError as exc:
++        return None, str(exc)
++    return _format_onnx_graph_asciidag(
++        model,
++        full_node_names=bool(args.full_node_names),
++        hide_initializers=bool(args.hide_initializers),
++    ), None
++
++
++def _format_onnx_graph_asciidag(
++    model: onnx.ModelProto,
++    *,
++    full_node_names: bool = False,
++    hide_initializers: bool = False,
++) -> str:
++    graph = model.graph
++    nodes = list(graph.node)
++    if not nodes:
++        graph_name = graph.name or "(unnamed graph)"
++        return f"Graph: {graph_name}\n(no nodes)"
++
++    producer_by_tensor: dict[str, int] = {}
++    for index, node in enumerate(nodes):
++        for output_name in node.output:
++            if output_name:
++                producer_by_tensor[output_name] = index
++
++    input_names = {value.name for value in graph.input if value.name}
++    initializer_names = {value.name for value in graph.initializer if value.name}
++    external_names: list[str] = []
++    external_index_by_name: dict[str, int] = {}
++
++    def _ensure_external(name: str) -> int:
++        existing = external_index_by_name.get(name)
++        if existing is not None:
++            return existing
++        external_index = len(external_names)
++        external_names.append(name)
++        external_index_by_name[name] = external_index
++        return external_index
++
++    dependencies: dict[int, set[tuple[str, int]]] = {
++        index: set() for index in range(len(nodes))
++    }
++    for index, node in enumerate(nodes):
++        for input_name in node.input:
++            if not input_name:
++                continue
++            producer_index = producer_by_tensor.get(input_name)
++            if producer_index is not None and producer_index != index:
++                dependencies[index].add(("op", producer_index))
++                continue
++            if hide_initializers and input_name in initializer_names:
++                continue
++            external_index = _ensure_external(input_name)
++            dependencies[index].add(("ext", external_index))
++
++    child_count: dict[tuple[str, int], int] = {
++        ("op", index): 0 for index in range(len(nodes))
++    }
++    for ext_index in range(len(external_names)):
++        child_count[("ext", ext_index)] = 0
++    for parent_refs in dependencies.values():
++        for parent_ref in parent_refs:
++            child_count[parent_ref] += 1
++
++    labels: dict[tuple[str, int], str] = {}
++    parent_map: dict[tuple[str, int], list[tuple[str, int]]] = {}
++    for index, node in enumerate(nodes):
++        if full_node_names:
++            labels[("op", index)] = f"n{index} [{node.op_type}] {node.name or '(unnamed)'}"
++        else:
++            labels[("op", index)] = f"n{index} [{node.op_type}]"
++        parent_map[("op", index)] = []
++
++    for ext_index, name in enumerate(external_names):
++        if name in initializer_names:
++            kind = "Init"
++        elif name in input_names:
++            kind = "Input"
++        else:
++            kind = "External"
++        if full_node_names:
++            labels[("ext", ext_index)] = f"e{ext_index} [{kind}] {name}"
++        else:
++            labels[("ext", ext_index)] = f"e{ext_index} [{kind}]"
++        parent_map[("ext", ext_index)] = []
++
++    for child_index, parent_refs in dependencies.items():
++        sorted_refs = sorted(parent_refs, key=lambda ref: (ref[0], ref[1]))
++        parent_map[("op", child_index)] = sorted_refs
++
++    tips: list[tuple[str, int]] = [
++        ("op", index) for index in range(len(nodes)) if child_count[("op", index)] == 0
++    ]
++    if not tips:
++        tips = [("op", len(nodes) - 1)]
++
++    lines: list[str] = [f"Graph: {graph.name or '(unnamed graph)'}"]
++    visited: set[tuple[str, int]] = set()
++
++    def append_parents(
++        node_ref: tuple[str, int],
++        prefix: str,
++        is_last: bool,
++    ) -> None:
++        connector = "`- " if is_last else "|- "
++        label = labels[node_ref]
++        if node_ref in visited:
++            lines.append(f"{prefix}{connector}{label} (shared)")
++            return
++        lines.append(f"{prefix}{connector}{label}")
++        visited.add(node_ref)
++        parent_refs = parent_map[node_ref]
++        if not parent_refs:
++            return
++        child_prefix = f"{prefix}{'   ' if is_last else '|  '}"
++        for pos, parent_ref in enumerate(parent_refs):
++            append_parents(
++                parent_ref,
++                child_prefix,
++                pos == len(parent_refs) - 1,
++            )
++
++    for tip_pos, tip_ref in enumerate(tips):
++        append_parents(tip_ref, "", tip_pos == len(tips) - 1)
++
++    if not full_node_names:
++        lines.append("")
++        lines.append("Node legend:")
++        for index, node in enumerate(nodes):
++            lines.append(f"  n{index}: {node.name or '(unnamed)'}")
++        for ext_index, name in enumerate(external_names):
++            if name in initializer_names:
++                kind = "init"
++            elif name in input_names:
++                kind = "input"
++            else:
++                kind = "external"
++            lines.append(f"  e{ext_index}: {kind} {name}")
++
++    return "\n".join(lines)
++
++
++def _handle_graph(args: argparse.Namespace) -> int:
++    graph_text, error = _render_graph_asciidag(args)
++    if error:
++        print(error, file=sys.stderr)
++        return 1
++    if graph_text:
++        print(graph_text)
++    return 0
++
++
+ def _handle_compile(args: argparse.Namespace) -> int:
+     reporter = _VerifyReporter(color_mode=args.color)
+     model_path: Path = args.model
+diff --git a/tests/test_cli.py b/tests/test_cli.py
+index c76f5354..5b244171 100644
+--- a/tests/test_cli.py
++++ b/tests/test_cli.py
+@@ -174,3 +174,46 @@ def test_cli_verify_sanitize_flag_can_be_enabled() -> None:
+     parser = cli._build_parser()
+     args = parser.parse_args(["verify", "model.onnx", "--sanitize"])
+     assert args.sanitize is True
++
++
++def test_cli_graph_model_base_dir_resolves_relative_paths(tmp_path: Path) -> None:
++    base_dir = tmp_path / "base"
++    base_dir.mkdir()
++    parser = cli._build_parser()
++    args = parser.parse_args(
++        ["graph", "model.onnx", "--model-base-dir", str(base_dir)]
++    )
++    cli._apply_base_dir(args, parser)
++    assert args.model == base_dir / "model.onnx"
++
++
++def test_cli_graph_command_outputs_asciidag(tmp_path: Path) -> None:
++    model = _make_operator_model(
++        op_type="Add",
++        input_shapes=[[2, 3], [2, 3]],
++        output_shape=[2, 3],
++        dtype=TensorProto.FLOAT,
++        attrs={},
++    )
++    model_path = tmp_path / "graph_model.onnx"
++    onnx.save_model(model, model_path)
++    result = cli.run_cli_command(
++        ["emx-onnx-cgen", "graph", str(model_path)]
++    )
++    assert result.exit_code == 0
++    assert result.result is not None
++    assert "Graph:" in result.result
++    assert "n0 [Add]" in result.result
++    assert "Node legend:" in result.result
++
++
++def test_cli_graph_full_node_names_flag_can_be_enabled() -> None:
++    parser = cli._build_parser()
++    args = parser.parse_args(["graph", "model.onnx", "--full-node-names"])
++    assert args.full_node_names is True
++
++
++def test_cli_graph_hide_initializers_flag_can_be_enabled() -> None:
++    parser = cli._build_parser()
++    args = parser.parse_args(["graph", "model.onnx", "--hide-initializers"])
++    assert args.hide_initializers is True

@@ -1687,71 +1687,14 @@ class CEmitter:
             *(const.dtype for const in model.constants),
         }
 
-        def _resolved_output_dtype(op: OpBase) -> ScalarType:
-            if isinstance(op, MultiInputBinaryOp):
-                return model.op_context.dtype(op.inputs[0])
-            if isinstance(op, GatherOp):
-                return model.op_context.dtype(op.data)
-            if isinstance(op, ExpandOp):
-                return model.op_context.dtype(op.input0)
-            if isinstance(op, SplitOp):
-                return model.op_context.dtype(op.outputs[0])
-            if isinstance(op, SplitToSequenceOp):
-                sequence_value = model.op_context.find_value(op.output_sequence)
-                if not isinstance(sequence_value.type, SequenceType):
-                    raise CodegenError("SplitToSequence output must be a sequence")
-                return sequence_value.type.elem.dtype
-            if isinstance(op, UniqueOp):
-                return model.op_context.dtype(op.y)
-            if isinstance(op, SequenceAtOp):
-                return model.op_context.dtype(op.output)
-            if isinstance(op, SequenceConstructOp):
-                return model.op_context.dtype(op.inputs[0])
-            if isinstance(op, SequenceEmptyOp):
-                sequence_value = model.op_context.find_value(op.output_sequence)
-                if not isinstance(sequence_value.type, SequenceType):
-                    raise CodegenError("SequenceEmpty output must be a sequence")
-                return sequence_value.type.elem.dtype
-            if isinstance(op, SequenceEraseOp):
-                sequence_value = model.op_context.find_value(op.input_sequence)
-                if not isinstance(sequence_value.type, SequenceType):
-                    raise CodegenError("SequenceErase input must be a sequence")
-                return sequence_value.type.elem.dtype
-            if isinstance(op, SequenceInsertOp):
-                return model.op_context.dtype(op.tensor)
-            if isinstance(op, IfOptionalSequenceConstOp):
-                sequence_value = model.op_context.find_value(op.output_sequence)
-                if not isinstance(sequence_value.type, SequenceType):
-                    raise CodegenError(
-                        "IfOptionalSequenceConst output must be a sequence"
-                    )
-                return sequence_value.type.elem.dtype
-            if isinstance(op, SequenceIdentityOp):
-                sequence_value = model.op_context.find_value(op.output_sequence)
-                if not isinstance(sequence_value.type, SequenceType):
-                    raise CodegenError("SequenceIdentity output must be a sequence")
-                return sequence_value.type.elem.dtype
-            if isinstance(op, LoopSequenceInsertOp):
-                return op.elem_dtype
-            if isinstance(op, LoopSequenceMapOp):
-                return op.output_elem_dtypes[0]
-            if isinstance(op, AffineGridOp):
-                return model.op_context.dtype(op.grid)
-            if isinstance(op, StringSplitOp):
-                return model.op_context.dtype(op.output_z)
-            if hasattr(op, "output") and isinstance(op.output, str):
-                return model.op_context.dtype(op.output)
-            return op.dtype
-
         ctx = model.op_context
         for op in resolved_ops:
             includes.update(op.required_includes(ctx))
             model_dtypes.update(op.extra_model_dtypes(ctx))
 
         model_dtypes.update(
-            _resolved_output_dtype(op)
+            op.resolved_output_dtype(ctx)
             for op in resolved_ops
-            if not isinstance(op, (ArgReduceOp, TopKOp))
         )
         if CEmitter._needs_stdint(model_dtypes, (), has_resize=False):
             includes.add("#include <stdint.h>")
@@ -2634,94 +2577,6 @@ class CEmitter:
             return with_node_comment(reduce_like_rendered)
 
         raise CodegenError(f"Unsupported op for rendering: {type(op).__name__}")
-
-    @staticmethod
-    def _op_output(
-        op: (
-            BinaryOp
-            | MultiInputBinaryOp
-            | WhereOp
-            | UnaryOp
-            | ClipOp
-            | CastOp
-            | QuantizeLinearOp
-            | QLinearAddOp
-            | QLinearMulOp
-            | QLinearMatMulOp
-            | QLinearSoftmaxOp
-            | MatMulOp
-            | EinsumOp
-            | GemmOp
-            | AttentionOp
-            | ConvOp
-            | ConvIntegerOp
-            | ConvTransposeOp
-            | Col2ImOp
-            | DeformConvOp
-            | AveragePoolOp
-            | LpPoolOp
-            | BatchNormOp
-            | LpNormalizationOp
-            | InstanceNormalizationOp
-            | GroupNormalizationOp
-            | LayerNormalizationOp
-            | MeanVarianceNormalizationOp
-            | RMSNormalizationOp
-            | LrnOp
-            | GruOp
-            | LstmOp
-            | SoftmaxOp
-            | LogSoftmaxOp
-            | HardmaxOp
-            | NegativeLogLikelihoodLossOp
-            | SoftmaxCrossEntropyLossOp
-            | MaxPoolOp
-            | ConcatOp
-            | ConcatFromSequenceOp
-            | GatherElementsOp
-            | GatherOp
-            | GatherNDOp
-            | ScatterOp
-            | ScatterElementsOp
-            | ScatterNDOp
-            | TensorScatterOp
-            | TransposeOp
-            | ReshapeOp
-            | IdentityOp
-            | EyeLikeOp
-            | TriluOp
-            | TileOp
-            | CenterCropPadOp
-            | PadOp
-            | DepthToSpaceOp
-            | SpaceToDepthOp
-            | ResizeOp
-            | GridSampleOp
-            | AffineGridOp
-            | ReduceOp
-            | ArgReduceOp
-            | TopKOp
-            | ConstantOfShapeOp
-            | ShapeOp
-            | SizeOp
-            | OptionalHasElementOp
-            | OptionalGetElementOp
-            | ExpandOp
-            | CumSumOp
-            | RangeOp
-            | LoopRangeOp
-            | BlackmanWindowOp
-            | HammingWindowOp
-            | HannWindowOp
-            | OneHotOp
-            | SplitOp
-        ),
-    ) -> str:
-        if isinstance(op, SplitOp):
-            return op.outputs[0]
-        if isinstance(op, TopKOp):
-            return op.output_values
-        return op.output
 
     def _op_inputs(
         self,
