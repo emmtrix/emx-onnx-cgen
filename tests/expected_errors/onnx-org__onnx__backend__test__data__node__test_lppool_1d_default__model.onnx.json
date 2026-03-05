@@ -1,9 +1,10 @@
 {
-  "error": "LpPool expects 2D kernel_shape",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_lppool_1d_default model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "LpPool"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "5c84d5e82da2c4b942eab17438992d77839c7b0b5a391c50f16631f7565aab46"
 }
