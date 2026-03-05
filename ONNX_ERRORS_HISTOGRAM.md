@@ -57,8 +57,6 @@ Aggregates non-success verification outcomes.
 | Out of tolerance | 15 | 1 |
 | Unsupported op Loop | 16 | 1 |
 | Failed to build testbench. | 17 | 2 |
-| Unsupported op MelWeightMatrix | 17 | 1 |
-| Unsupported op STFT | 17 | 2 |
 | Unsupported op Col2Im | 18 | 5 |
 | OptionalHasElement expects exactly one non-empty input. | 18 | 4 |
 | Unsupported op ImageDecoder | 20 | 9 |
