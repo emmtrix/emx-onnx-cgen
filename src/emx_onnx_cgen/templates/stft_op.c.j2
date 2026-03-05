@@ -1,0 +1,72 @@
+{% set fft_fn = fft_kernel(dtype=fft_dtype, fft_length=fft_length) %}
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const idx_t batch_count = (idx_t)({{ batch_expr }});
+    const idx_t signal_length = (idx_t)({{ signal_length_expr }});
+    const idx_t frame_count = (idx_t)({{ output_frames_expr }});
+    const idx_t output_bins = (idx_t)({{ output_bins_expr }});
+    const idx_t frame_step_value = (idx_t){{ frame_step }}[0];
+    idx_t runtime_frame_length = (idx_t)({{ frame_length_literal }});
+{% if use_runtime_frame_length %}
+    runtime_frame_length = (idx_t){{ frame_length_input }}[0];
+{% endif %}
+    if (frame_step_value <= 0 || runtime_frame_length <= 0) {
+        for (idx_t batch = 0; batch < batch_count; ++batch) {
+            for (idx_t frame = 0; frame < frame_count; ++frame) {
+                for (idx_t bin = 0; bin < output_bins; ++bin) {
+                    {{ output }}[batch][frame][bin][0] = {{ zero_literal }};
+                    {{ output }}[batch][frame][bin][1] = {{ zero_literal }};
+                }
+            }
+        }
+        return;
+    }
+    for (idx_t batch = 0; batch < batch_count; ++batch) {
+        for (idx_t frame = 0; frame < frame_count; ++frame) {
+            {{ c_type }} frame_re[{{ fft_length }}];
+            {{ c_type }} frame_im[{{ fft_length }}];
+            {{ c_type }} spectrum_re[{{ fft_length }}];
+            {{ c_type }} spectrum_im[{{ fft_length }}];
+            idx_t effective_frame_length = runtime_frame_length;
+            const idx_t frame_start = frame * frame_step_value;
+            if (effective_frame_length > {{ fft_length }}) {
+                effective_frame_length = {{ fft_length }};
+            }
+{% if use_window %}
+            idx_t sample_count = {{ window_length }};
+            if (sample_count > effective_frame_length) {
+                sample_count = effective_frame_length;
+            }
+{% else %}
+            const idx_t sample_count = effective_frame_length;
+{% endif %}
+            for (idx_t n = 0; n < {{ fft_length }}; ++n) {
+                frame_re[n] = {{ zero_literal }};
+                frame_im[n] = {{ zero_literal }};
+            }
+            for (idx_t n = 0; n < sample_count; ++n) {
+                const idx_t signal_index = frame_start + n;
+                if (signal_index < 0 || signal_index >= signal_length) {
+                    continue;
+                }
+                {{ c_type }} value_re = {{ signal }}[batch][signal_index][0];
+{% if input_components == 2 %}
+                {{ c_type }} value_im = {{ signal }}[batch][signal_index][1];
+{% else %}
+                {{ c_type }} value_im = {{ zero_literal }};
+{% endif %}
+{% if use_window %}
+                const {{ c_type }} window_value = {{ window }}[n];
+                value_re = value_re * window_value;
+                value_im = value_im * window_value;
+{% endif %}
+                frame_re[n] = value_re;
+                frame_im[n] = value_im;
+            }
+            {{ fft_fn }}(frame_re, frame_im, spectrum_re, spectrum_im);
+            for (idx_t bin = 0; bin < output_bins; ++bin) {
+                {{ output }}[batch][frame][bin][0] = spectrum_re[bin];
+                {{ output }}[batch][frame][bin][1] = spectrum_im[bin];
+            }
+        }
+    }
+}

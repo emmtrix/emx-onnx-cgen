@@ -151,7 +151,7 @@ Supported operators: 192 / 205
 | RoiAlign | ❌ |
 | RotaryEmbedding | ✅ |
 | Round | ✅ |
-| STFT | ❌ |
+| STFT | ✅ |
 | Scan | ✅ |
 | Scatter | ✅ |
 | ScatterElements | ✅ |

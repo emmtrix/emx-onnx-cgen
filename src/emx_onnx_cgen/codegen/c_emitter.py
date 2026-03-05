@@ -39,6 +39,7 @@ from ..ir.ops import (
     AveragePoolOp,
     BatchNormOp,
     BernoulliOp,
+    DropoutOp,
     BinaryOp,
     BlackmanWindowOp,
     CastOp,
@@ -53,6 +54,7 @@ from ..ir.ops import (
     DeformConvOp,
     CumSumOp,
     DFTOp,
+    STFTOp,
     DepthToSpaceOp,
     DequantizeLinearOp,
     DynamicQuantizeLinearOp,
@@ -151,6 +153,7 @@ from shared.scalar_functions import (
     ScalarFunctionKey,
     ScalarFunctionRegistry,
 )
+from shared.fft_kernel_registry import FFTKernelRegistry
 from shared.scalar_types import ScalarFunctionError, ScalarType
 
 
@@ -349,6 +352,7 @@ class _EmitState:
     model: LoweredModel
     templates: dict[str, Template]
     scalar_registry: ScalarFunctionRegistry
+    fft_kernel_registry: FFTKernelRegistry
     dim_args: str
     tensor_dim_names: Mapping[str, Mapping[int, str]]
     op_context: OpContext
@@ -399,7 +403,9 @@ class CEmitter:
         self._emit_state: _EmitState | None = None
 
     def _setup_template_resolvers(
-        self, scalar_registry: ScalarFunctionRegistry
+        self,
+        scalar_registry: ScalarFunctionRegistry,
+        fft_kernel_registry: FFTKernelRegistry,
     ) -> None:
         def scalar_fn(
             function: ScalarFunction,
@@ -410,7 +416,11 @@ class CEmitter:
                 function, dtype, scalar_registry, params=params
             )
 
+        def fft_kernel(dtype: ScalarType, fft_length: int) -> str:
+            return fft_kernel_registry.request(dtype=dtype, fft_length=fft_length)
+
         self._env.globals["scalar_fn"] = scalar_fn
+        self._env.globals["fft_kernel"] = fft_kernel
         self._env.globals["SF"] = ScalarFunction
         self._env.globals["ST"] = ScalarType
 
@@ -2084,6 +2094,22 @@ class CEmitter:
                 exclusive=op.exclusive,
                 reverse=op.reverse,
             )
+        if isinstance(op, STFTOp):
+            return STFTOp(
+                signal=name_map.get(op.signal, op.signal),
+                frame_step=name_map.get(op.frame_step, op.frame_step),
+                window=self._map_optional_name(name_map, op.window),
+                frame_length_input=self._map_optional_name(
+                    name_map, op.frame_length_input
+                ),
+                output=name_map.get(op.output, op.output),
+                onesided=op.onesided,
+                input_is_complex=op.input_is_complex,
+                fft_length=op.fft_length,
+                window_length=op.window_length,
+                frame_length_literal=op.frame_length_literal,
+                use_runtime_frame_length=op.use_runtime_frame_length,
+            )
         if isinstance(op, DFTOp):
             return DFTOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -2159,6 +2185,15 @@ class CEmitter:
             return BernoulliOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
+                seed=op.seed,
+            )
+        if isinstance(op, DropoutOp):
+            return DropoutOp(
+                input0=name_map.get(op.input0, op.input0),
+                output=name_map.get(op.output, op.output),
+                ratio=name_map.get(op.ratio, op.ratio),
+                training_mode=name_map.get(op.training_mode, op.training_mode),
+                mask=name_map.get(op.mask, op.mask),
                 seed=op.seed,
             )
         if isinstance(op, OneHotOp):
@@ -2524,6 +2559,7 @@ class CEmitter:
                 "reshape": self._env.get_template("reshape_op.c.j2"),
                 "identity": self._env.get_template("identity_op.c.j2"),
                 "bernoulli": self._env.get_template("bernoulli_op.c.j2"),
+                "dropout": self._env.get_template("dropout_op.c.j2"),
                 "eye_like": self._env.get_template("eye_like_op.c.j2"),
                 "trilu": self._env.get_template("trilu_op.c.j2"),
                 "tile": self._env.get_template("tile_op.c.j2"),
@@ -2558,6 +2594,7 @@ class CEmitter:
                 ),
                 "expand": self._env.get_template("expand_op.c.j2"),
                 "cumsum": self._env.get_template("cumsum_op.c.j2"),
+                "stft": self._env.get_template("stft_op.c.j2"),
                 "dft": self._env.get_template("dft_op.c.j2"),
                 "range": self._env.get_template("range_op.c.j2"),
                 "loop_range": self._env.get_template("loop_range_op.c.j2"),
@@ -2642,13 +2679,17 @@ class CEmitter:
         self._env.globals["dim_args"] = dim_args
         templates = self._load_templates(emit_testbench)
         scalar_registry = ScalarFunctionRegistry()
-        self._setup_template_resolvers(scalar_registry)
+        fft_kernel_registry = FFTKernelRegistry(
+            literal_formatter=CEmitter._format_literal
+        )
+        self._setup_template_resolvers(scalar_registry, fft_kernel_registry)
         testbench_template = templates.get("testbench")
         initial_name_map = self._build_value_name_map(name_map, {})
         self._emit_state = _EmitState(
             model=model,
             templates=templates,
             scalar_registry=scalar_registry,
+            fft_kernel_registry=fft_kernel_registry,
             dim_args=dim_args,
             tensor_dim_names=tensor_dim_names,
             op_context=model.op_context,
@@ -2693,6 +2734,18 @@ class CEmitter:
         scalar_preamble = [
             line for line in scalar_include_lines if not line.startswith("#include ")
         ]
+        fft_kernel_functions = fft_kernel_registry.render()
+        fft_kernel_include_lines = (
+            fft_kernel_registry.include_lines() if fft_kernel_functions else []
+        )
+        fft_kernel_includes = {
+            line for line in fft_kernel_include_lines if line.startswith("#include ")
+        }
+        fft_kernel_preamble = [
+            line
+            for line in fft_kernel_include_lines
+            if not line.startswith("#include ")
+        ]
         testbench_math_include = set()
         if emit_testbench and self._testbench_requires_math(model, testbench_inputs):
             testbench_math_include.add("#include <math.h>")
@@ -2700,7 +2753,9 @@ class CEmitter:
             original_model,
             list(original_model.ops),
             emit_testbench=emit_testbench,
-            extra_includes=scalar_includes | testbench_math_include,
+            extra_includes=(
+                scalar_includes | fft_kernel_includes | testbench_math_include
+            ),
             needs_weight_loader=bool(large_constants),
         )
         sections = [
@@ -2716,6 +2771,8 @@ class CEmitter:
         ]
         if scalar_preamble:
             sections.extend(("", *scalar_preamble))
+        if fft_kernel_preamble:
+            sections.extend(("", *fft_kernel_preamble))
         sections.append("")
         constants_section = self._emit_constant_declarations(inline_constants)
         if constants_section:
@@ -2735,6 +2792,8 @@ class CEmitter:
             sections.extend((large_constants_section.rstrip(), ""))
         if scalar_functions:
             sections.extend(("\n".join(scalar_functions), ""))
+        if fft_kernel_functions:
+            sections.extend(("\n".join(fft_kernel_functions), ""))
         weight_loader = self._emit_weight_loader(model, large_constants)
         sections.extend(
             (
@@ -2805,13 +2864,17 @@ class CEmitter:
         self._env.globals["dim_args"] = dim_args
         templates = self._load_templates(emit_testbench)
         scalar_registry = ScalarFunctionRegistry()
-        self._setup_template_resolvers(scalar_registry)
+        fft_kernel_registry = FFTKernelRegistry(
+            literal_formatter=CEmitter._format_literal
+        )
+        self._setup_template_resolvers(scalar_registry, fft_kernel_registry)
         testbench_template = templates.get("testbench")
         initial_name_map = self._build_value_name_map(name_map, {})
         self._emit_state = _EmitState(
             model=model,
             templates=templates,
             scalar_registry=scalar_registry,
+            fft_kernel_registry=fft_kernel_registry,
             dim_args=dim_args,
             tensor_dim_names=tensor_dim_names,
             op_context=model.op_context,
@@ -2856,6 +2919,18 @@ class CEmitter:
         scalar_preamble = [
             line for line in scalar_include_lines if not line.startswith("#include ")
         ]
+        fft_kernel_functions = fft_kernel_registry.render()
+        fft_kernel_include_lines = (
+            fft_kernel_registry.include_lines() if fft_kernel_functions else []
+        )
+        fft_kernel_includes = {
+            line for line in fft_kernel_include_lines if line.startswith("#include ")
+        }
+        fft_kernel_preamble = [
+            line
+            for line in fft_kernel_include_lines
+            if not line.startswith("#include ")
+        ]
         testbench_math_include = set()
         if emit_testbench and self._testbench_requires_math(model, testbench_inputs):
             testbench_math_include.add("#include <math.h>")
@@ -2863,7 +2938,9 @@ class CEmitter:
             original_model,
             list(original_model.ops),
             emit_testbench=emit_testbench,
-            extra_includes=scalar_includes | testbench_math_include,
+            extra_includes=(
+                scalar_includes | fft_kernel_includes | testbench_math_include
+            ),
             needs_weight_loader=bool(large_constants),
         )
         sections = [
@@ -2879,6 +2956,8 @@ class CEmitter:
         ]
         if scalar_preamble:
             sections.extend(("", *scalar_preamble))
+        if fft_kernel_preamble:
+            sections.extend(("", *fft_kernel_preamble))
         sections.append("")
         constants_section = self._emit_constant_declarations(inline_constants)
         if constants_section:
@@ -2893,6 +2972,8 @@ class CEmitter:
             sections.extend((large_constants_section.rstrip(), ""))
         if scalar_functions:
             sections.extend(("\n".join(scalar_functions), ""))
+        if fft_kernel_functions:
+            sections.extend(("\n".join(fft_kernel_functions), ""))
         weight_loader = self._emit_weight_loader(model, large_constants)
         sections.extend(
             (
@@ -2970,13 +3051,17 @@ class CEmitter:
         if testbench_template is None:
             raise CodegenError("Failed to load testbench template")
         scalar_registry = ScalarFunctionRegistry()
-        self._setup_template_resolvers(scalar_registry)
+        fft_kernel_registry = FFTKernelRegistry(
+            literal_formatter=CEmitter._format_literal
+        )
+        self._setup_template_resolvers(scalar_registry, fft_kernel_registry)
         tensor_dim_names = self._build_tensor_dim_names(model, {}, {})
         initial_name_map = self._build_value_name_map(name_map, {})
         self._emit_state = _EmitState(
             model=model,
             templates=templates,
             scalar_registry=scalar_registry,
+            fft_kernel_registry=fft_kernel_registry,
             dim_args=dim_args,
             tensor_dim_names=tensor_dim_names,
             op_context=model.op_context,
@@ -3500,6 +3585,12 @@ class CEmitter:
         ):
             includes.add("#include <stdint.h>")
         if ScalarType.BOOL in model_dtypes:
+            includes.add("#include <stdbool.h>")
+        if any(
+            isinstance(op, DropoutOp)
+            and (op.training_mode is not None or op.mask is not None)
+            for op in resolved_ops
+        ):
             includes.add("#include <stdbool.h>")
         if any(
             isinstance(op, ReduceOp) and op.axes_input is not None
@@ -5571,6 +5662,22 @@ class CEmitter:
                 exclusive=op.exclusive,
                 reverse=op.reverse,
             )
+        if isinstance(op, STFTOp):
+            return STFTOp(
+                signal=temp_map.get(op.signal, op.signal),
+                frame_step=temp_map.get(op.frame_step, op.frame_step),
+                window=CEmitter._map_optional_name(temp_map, op.window),
+                frame_length_input=CEmitter._map_optional_name(
+                    temp_map, op.frame_length_input
+                ),
+                output=temp_map.get(op.output, op.output),
+                onesided=op.onesided,
+                input_is_complex=op.input_is_complex,
+                fft_length=op.fft_length,
+                window_length=op.window_length,
+                frame_length_literal=op.frame_length_literal,
+                use_runtime_frame_length=op.use_runtime_frame_length,
+            )
         if isinstance(op, RangeOp):
             return RangeOp(
                 start=temp_map.get(op.start, op.start),
@@ -6034,6 +6141,15 @@ class CEmitter:
                 output=temp_map.get(op.output, op.output),
                 seed=op.seed,
             )
+        if isinstance(op, DropoutOp):
+            return DropoutOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                ratio=temp_map.get(op.ratio, op.ratio),
+                training_mode=temp_map.get(op.training_mode, op.training_mode),
+                mask=temp_map.get(op.mask, op.mask),
+                seed=op.seed,
+            )
         if isinstance(op, QLinearSoftmaxOp):
             return QLinearSoftmaxOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -6198,6 +6314,7 @@ class CEmitter:
             reshape_template=templates["reshape"],
             identity_template=templates["identity"],
             bernoulli_template=templates["bernoulli"],
+            dropout_template=templates["dropout"],
             eye_like_template=templates["eye_like"],
             trilu_template=templates["trilu"],
             tile_template=templates["tile"],
@@ -6224,6 +6341,7 @@ class CEmitter:
             nonmax_suppression_template=templates["nonmax_suppression"],
             expand_template=templates["expand"],
             cumsum_template=templates["cumsum"],
+            stft_template=templates["stft"],
             dft_template=templates["dft"],
             range_template=templates["range"],
             loop_range_template=templates["loop_range"],
@@ -6752,6 +6870,7 @@ class CEmitter:
         reshape_template,
         identity_template,
         bernoulli_template,
+        dropout_template,
         eye_like_template,
         trilu_template,
         tile_template,
@@ -6778,6 +6897,7 @@ class CEmitter:
         nonmax_suppression_template,
         expand_template,
         cumsum_template,
+        stft_template,
         dft_template,
         range_template,
         loop_range_template,
@@ -10596,6 +10716,90 @@ class CEmitter:
                 params=param_decls,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, DropoutOp):
+            output_shape = self._ctx_shape(op.output)
+            output_dim_names = _dim_names_for(op.output)
+            loop_vars = CEmitter._loop_vars(output_shape)
+            shape = CEmitter._shape_dim_exprs(output_shape, output_dim_names)
+            input_dtype = self._ctx_dtype(op.input0)
+            output_dtype = self._ctx_dtype(op.output)
+            output_suffix = self._param_array_suffix(output_shape, output_dim_names)
+            input_suffix = self._param_array_suffix(
+                output_shape, _dim_names_for(op.input0), dtype=input_dtype
+            )
+            ratio_shape = self._ctx_shape(op.ratio) if op.ratio is not None else ()
+            training_shape = (
+                self._ctx_shape(op.training_mode)
+                if op.training_mode is not None
+                else ()
+            )
+            ratio_suffix = (
+                self._param_array_suffix(ratio_shape, _dim_names_for(op.ratio))
+                if op.ratio is not None
+                else ""
+            )
+            training_suffix = (
+                self._param_array_suffix(
+                    training_shape,
+                    _dim_names_for(op.training_mode),
+                    dtype=ScalarType.BOOL,
+                )
+                if op.training_mode is not None
+                else ""
+            )
+            mask_suffix = (
+                self._param_array_suffix(
+                    output_shape, _dim_names_for(op.mask), dtype=ScalarType.BOOL
+                )
+                if op.mask is not None
+                else ""
+            )
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("ratio", op.ratio),
+                    ("training_mode", op.training_mode),
+                    ("output", op.output),
+                    ("mask", op.mask),
+                ]
+            )
+            param_decl_specs = [
+                (params["input0"], input_dtype.c_type, input_suffix, True),
+            ]
+            if op.ratio is not None:
+                ratio_dtype = self._ctx_dtype(op.ratio)
+                param_decl_specs.append(
+                    (params["ratio"], ratio_dtype.c_type, ratio_suffix, True)
+                )
+            if op.training_mode is not None:
+                param_decl_specs.append(
+                    (params["training_mode"], "bool", training_suffix, True)
+                )
+            param_decl_specs.append(
+                (params["output"], output_dtype.c_type, output_suffix, False)
+            )
+            if op.mask is not None:
+                param_decl_specs.append((params["mask"], "bool", mask_suffix, False))
+            param_decls = self._build_param_decls(param_decl_specs)
+            rendered = dropout_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                ratio=params.get("ratio"),
+                training_mode=params.get("training_mode"),
+                output=params["output"],
+                mask=params.get("mask"),
+                params=param_decls,
+                dim_args=dim_args,
+                shape=shape,
+                loop_vars=loop_vars,
+                c_type=output_dtype.c_type,
+                ratio_index_expr="[0]" if op.ratio is not None else "",
+                training_index_expr="[0]" if op.training_mode is not None else "",
+                index_expr="".join(f"[{var}]" for var in loop_vars),
+                seed=op.seed if op.seed is not None else 0,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, EyeLikeOp):
             input_dtype = self._ctx_dtype(op.input0)
             output_shape = self._ctx_shape(op.output)
@@ -11818,6 +12022,127 @@ class CEmitter:
                 rank=len(input_shape),
                 exclusive=op.exclusive,
                 reverse=op.reverse,
+                dim_args=dim_args,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, STFTOp):
+            signal_shape = self._ctx_shape(op.signal)
+            output_shape = self._ctx_shape(op.output)
+            stft_dtype = self._ctx_dtype(op.output)
+            if stft_dtype != self._ctx_dtype(op.signal):
+                raise CodegenError("STFT signal and output dtypes must match")
+            if len(signal_shape) != 3 or len(output_shape) != 4:
+                raise CodegenError("STFT expects signal rank 3 and output rank 4")
+            if signal_shape[2] not in {1, 2}:
+                raise CodegenError("STFT signal last dimension must be 1 or 2")
+            if output_shape[3] != 2:
+                raise CodegenError("STFT output last dimension must be 2")
+            if op.onesided and op.input_is_complex:
+                raise CodegenError("STFT onesided output is invalid for complex input")
+            if op.fft_length <= 0:
+                raise CodegenError("STFT frame_length must be > 0")
+            if op.window_length <= 0:
+                raise CodegenError("STFT window length must be > 0")
+
+            frame_step_dtype = self._ctx_dtype(op.frame_step)
+            if frame_step_dtype not in {ScalarType.I32, ScalarType.I64}:
+                raise CodegenError("STFT frame_step must be int32 or int64")
+
+            frame_length_c_type = frame_step_dtype.c_type
+            if op.frame_length_input is not None:
+                frame_length_dtype = self._ctx_dtype(op.frame_length_input)
+                if frame_length_dtype not in {ScalarType.I32, ScalarType.I64}:
+                    raise CodegenError("STFT frame_length input must be int32 or int64")
+                frame_length_c_type = frame_length_dtype.c_type
+
+            params = self._unique_param_map(
+                [
+                    ("signal", op.signal),
+                    ("frame_step", op.frame_step),
+                    ("window", op.window),
+                    ("frame_length_input", op.frame_length_input),
+                    ("output", op.output),
+                ]
+            )
+            signal_dim_names = _dim_names_for(op.signal)
+            output_dim_names = _dim_names_for(op.output)
+            signal_shape_expr = CEmitter._shape_dim_exprs(
+                signal_shape, signal_dim_names
+            )
+            output_shape_expr = CEmitter._shape_dim_exprs(
+                output_shape, output_dim_names
+            )
+
+            signal_suffix = self._param_array_suffix(
+                signal_shape,
+                signal_dim_names,
+                dtype=stft_dtype,
+            )
+            output_suffix = self._param_array_suffix(
+                output_shape,
+                output_dim_names,
+                dtype=stft_dtype,
+            )
+            window_suffix = None
+            if op.window is not None:
+                window_shape = self._ctx_shape(op.window)
+                window_suffix = self._param_array_suffix(
+                    window_shape,
+                    dtype=stft_dtype,
+                )
+                if self._ctx_dtype(op.window) != stft_dtype:
+                    raise CodegenError("STFT window dtype must match signal dtype")
+
+            scalar_suffix = self._param_array_suffix(())
+            param_decls = self._build_param_decls(
+                [
+                    (params["signal"], stft_dtype.c_type, signal_suffix, True),
+                    (
+                        params["frame_step"],
+                        frame_step_dtype.c_type,
+                        scalar_suffix,
+                        True,
+                    ),
+                    (params["window"], stft_dtype.c_type, window_suffix or "", True),
+                    (
+                        params["frame_length_input"],
+                        frame_length_c_type,
+                        scalar_suffix,
+                        True,
+                    ),
+                    (params["output"], stft_dtype.c_type, output_suffix, False),
+                ]
+            )
+
+            rendered = stft_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                params=param_decls,
+                signal=params["signal"],
+                frame_step=params["frame_step"],
+                window=params["window"],
+                frame_length_input=params["frame_length_input"],
+                output=params["output"],
+                c_type=stft_dtype.c_type,
+                signal_suffix=signal_suffix,
+                frame_step_suffix=scalar_suffix,
+                window_suffix=window_suffix,
+                frame_length_suffix=scalar_suffix,
+                output_suffix=output_suffix,
+                frame_step_c_type=frame_step_dtype.c_type,
+                frame_length_c_type=frame_length_c_type,
+                batch_expr=str(signal_shape_expr[0]),
+                signal_length_expr=str(signal_shape_expr[1]),
+                output_frames_expr=str(output_shape_expr[1]),
+                output_bins_expr=str(output_shape_expr[2]),
+                input_components=2 if op.input_is_complex else 1,
+                fft_dtype=stft_dtype,
+                fft_length=op.fft_length,
+                window_length=op.window_length,
+                frame_length_literal=op.frame_length_literal,
+                use_runtime_frame_length=op.use_runtime_frame_length,
+                use_window=op.window is not None,
+                zero_literal=stft_dtype.zero_literal,
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
@@ -14935,6 +15260,16 @@ class CEmitter:
             return tuple(inputs)
         if isinstance(op, CumSumOp):
             return ((op.input0, self._ctx_shape(op.input0)),)
+        if isinstance(op, STFTOp):
+            inputs: list[tuple[str, tuple[int, ...]]] = [
+                (op.signal, self._ctx_shape(op.signal)),
+                (op.frame_step, ()),
+            ]
+            if op.window is not None:
+                inputs.append((op.window, self._ctx_shape(op.window)))
+            if op.frame_length_input is not None:
+                inputs.append((op.frame_length_input, ()))
+            return tuple(inputs)
         if isinstance(op, DFTOp):
             return ((op.input0, self._ctx_shape(op.input0)),)
         if isinstance(op, RangeOp):
@@ -15499,6 +15834,15 @@ class CEmitter:
             )
         if isinstance(op, AffineGridOp):
             return ((op.grid, self._ctx_shape(op.grid), self._ctx_dtype(op.grid)),)
+        if isinstance(op, DropoutOp):
+            outputs = [
+                (op.output, self._ctx_shape(op.output), self._ctx_dtype(op.output))
+            ]
+            if op.mask is not None:
+                outputs.append(
+                    (op.mask, self._ctx_shape(op.mask), self._ctx_dtype(op.mask))
+                )
+            return tuple(outputs)
         return (
             (
                 op.output,
@@ -15696,6 +16040,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, BernoulliOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, DropoutOp):
+            return self._ctx_shape(op.output)
         if isinstance(op, EyeLikeOp):
             return self._ctx_shape(op.output)
         if isinstance(op, TriluOp):
@@ -15740,7 +16086,7 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, CumSumOp):
             return self._ctx_shape(op.output)
-        if isinstance(op, DFTOp):
+        if isinstance(op, (STFTOp, DFTOp)):
             return self._ctx_shape(op.output)
         if isinstance(op, RangeOp):
             return self._ctx_shape(op.output)
@@ -15863,6 +16209,7 @@ class CEmitter:
             | NonMaxSuppressionOp
             | ExpandOp
             | CumSumOp
+            | STFTOp
             | RangeOp
             | BlackmanWindowOp
             | HammingWindowOp
@@ -15909,7 +16256,7 @@ class CEmitter:
             op, (QuantizeLinearOp, DequantizeLinearOp, DynamicQuantizeLinearOp)
         ):
             return self._ctx_dtype(op.output)
-        if isinstance(op, (TriluOp, TileOp, CenterCropPadOp, CumSumOp)):
+        if isinstance(op, (TriluOp, TileOp, CenterCropPadOp, CumSumOp, STFTOp)):
             return self._ctx_dtype(op.output)
         if isinstance(op, DFTOp):
             return self._ctx_dtype(op.output)
@@ -15977,6 +16324,7 @@ class CEmitter:
                 ShapeOp,
                 SizeOp,
                 BernoulliOp,
+                DropoutOp,
                 EyeLikeOp,
                 RangeOp,
                 ReverseSequenceOp,
