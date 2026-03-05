@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify --sanitize --model-base-dir tests/onnx micro_kws_m_static_qdq.onnx",
+  "command_line": "verify --model-base-dir tests/onnx micro_kws_m_static_qdq.onnx",
   "verification_mode": "Random+ORT",
   "operators": [
     "DequantizeLinear",
