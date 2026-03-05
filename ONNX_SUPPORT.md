@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1599 / 1802, 88.7% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1601 / 1802, 88.8% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1599 / 1802 ONNX files (88.7%).
+Coverage 1601 / 1802 ONNX files (88.8%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1113,8 +1113,8 @@ Coverage 1599 / 1802 ONNX files (88.7%).
 | node/test_qlinearmatmul_3D_uint8_float32/model.onnx | 21 | Data | ✅ | OK (max abs diff 0) |
 | node/test_quantizelinear/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_quantizelinear_axis/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
-| node/test_quantizelinear_blocked_asymmetric/model.onnx | 25 | Data | ❌ | QuantizeLinear block_size is not supported |
-| node/test_quantizelinear_blocked_symmetric/model.onnx | 25 | Data | ❌ | QuantizeLinear block_size is not supported |
+| node/test_quantizelinear_blocked_asymmetric/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
+| node/test_quantizelinear_blocked_symmetric/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_quantizelinear_e4m3fn/model.onnx | 25 | Data | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_e5m2/model.onnx | 25 | Data | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_float4e2m1/model.onnx | 25 | Data | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'y_zero_point'. |
