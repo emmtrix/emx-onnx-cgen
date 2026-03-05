@@ -8,6 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1600 / 1802, 88.8% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1599 / 1802, 88.7% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
@@ -22,6 +23,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 Test directory: `onnx-org/onnx/backend/test/data`
 
 Coverage 1600 / 1802 ONNX files (88.8%).
+Coverage 1599 / 1802 ONNX files (88.7%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -554,7 +556,7 @@ Coverage 1600 / 1802 ONNX files (88.8%).
 | node/test_convtranspose_group_2/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_convtranspose_group_2_image_3/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_convtranspose_kernel_shape/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
-| node/test_convtranspose_output_shape/model.onnx | 22 | Data | ❌ | ConvTranspose output shape must be fully defined and non-negative |
+| node/test_convtranspose_output_shape/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_convtranspose_pad/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_convtranspose_pads/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_cos/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
