@@ -1471,6 +1471,7 @@ def _verify_model(
         testbench_inputs, testbench_optional_inputs, reshaped_tensor_inputs = (
             _load_test_data_inputs(model, args.test_data_dir)
         )
+        _decode_image_decoder_inputs(model, testbench_inputs)
         if args.test_data_dir is not None and testbench_inputs is None:
             raise CodegenError(
                 "Failed to load test inputs from --test-data-dir; "
@@ -2162,6 +2163,49 @@ def _verify_model(
     finally:
         active_reporter.info("")
         _cleanup_temp()
+
+
+def _decode_image_decoder_inputs(
+    model: onnx.ModelProto,
+    testbench_inputs: dict[str, "np.ndarray"] | None,
+) -> None:
+    """Decode encoded image byte inputs consumed by ImageDecoder nodes.
+
+    ``_expand_image_decoder_nodes`` rewrites ImageDecoder into Identity /
+    Gather, expecting decoded pixel tensors as graph inputs.  This helper
+    applies the corresponding Python-side decoding so that the raw test
+    data (encoded bytes) is converted to the pixel arrays the rewritten
+    graph expects.
+    """
+    if testbench_inputs is None:
+        return
+    import io
+
+    for node in model.graph.node:
+        if node.op_type != "ImageDecoder":
+            continue
+        pixel_format = "RGB"
+        for attr in node.attribute:
+            if attr.name == "pixel_format":
+                pixel_format = attr.s.decode()
+        input_name = node.input[0]
+        if input_name not in testbench_inputs:
+            continue
+        encoded = testbench_inputs[input_name]
+        try:
+            from PIL import Image
+
+            img = Image.open(io.BytesIO(encoded.tobytes()))
+            if pixel_format == "Grayscale":
+                img = img.convert("L")
+                decoded = np.expand_dims(np.array(img), axis=2)
+            else:
+                decoded = np.array(img)
+        except Exception as exc:
+            raise CodegenError(
+                f"Failed to decode image for ImageDecoder input '{input_name}': {exc}"
+            ) from exc
+        testbench_inputs[input_name] = decoded
 
 
 def _load_test_data_inputs(
