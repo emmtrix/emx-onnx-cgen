@@ -480,7 +480,6 @@ UNARY_ATTR_DEFAULTS: Mapping[str, Mapping[str, object]] = {
     "Gelu": {"approximate": "none"},
     "HardSigmoid": {"alpha": 0.2, "beta": 0.5},
     "LeakyRelu": {"alpha": 0.01},
-    "Selu": {"alpha": 1.6732632423543772, "gamma": 1.0507009873554805},
     "Softplus": {"beta": 1.0, "threshold": 20.0},
     "ThresholdedRelu": {"alpha": 1.0},
 }

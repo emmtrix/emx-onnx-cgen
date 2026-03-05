@@ -940,6 +940,31 @@ def _float_hardsigmoid_param(
     return _GeneratedScalar(lines=lines, deps=set(), includes=set())
 
 
+def _float_selu_param(
+    dtype_info: _ScalarTypeInfo,
+    params: tuple[float, ...],
+    function_name: str,
+) -> _GeneratedScalar:
+    if params and len(params) != 2:
+        raise ScalarFunctionError("selu expects 2 parameters: alpha, gamma")
+    alpha_value = params[0] if params else 1.6732632423543772
+    gamma_value = params[1] if len(params) > 1 else 1.0507009873554805
+    alpha = _float_literal(alpha_value, dtype_info)
+    gamma = _float_literal(gamma_value, dtype_info)
+    one = _float_literal(1.0, dtype_info)
+    lines = [
+        f"static inline {dtype_info.c_type} {function_name}({dtype_info.c_type} a) {{",
+        f"    const {dtype_info.c_type} alpha = {alpha};",
+        f"    const {dtype_info.c_type} gamma = {gamma};",
+        "    if (a > 0) {",
+        "        return gamma * a;",
+        "    }",
+        f"    return gamma * alpha * ({_math_fn('exp', dtype_info)}(a) - {one});",
+        "}",
+    ]
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+
+
 def _float_shrink(
     dtype_info: _ScalarTypeInfo,
     params: tuple[float, ...],
@@ -1560,6 +1585,7 @@ _PARAMETERIZED_FLOAT_OPS: Mapping[
     ScalarFunction.ELU: _float_elu_param,
     ScalarFunction.HARDSIGMOID: _float_hardsigmoid_param,
     ScalarFunction.LEAKY_RELU: _float_leaky_relu_param,
+    ScalarFunction.SELU: _float_selu_param,
     ScalarFunction.SCALED_TANH: _float_scaled_tanh,
     ScalarFunction.SHRINK: _float_shrink,
     ScalarFunction.SWISH: _float_swish,

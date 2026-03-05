@@ -1,9 +1,10 @@
 {
-  "error": "Selu only supports alpha=1.6732632423543772",
+  "error": "OK (max ULP 2)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_selu_example model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Selu"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "1a4f36902e76cdf6f78c1334c760d783f46c48df08540de3aabcd570506cc6d9"
 }
