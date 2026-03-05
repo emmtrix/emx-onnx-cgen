@@ -18,7 +18,7 @@ from jinja2 import (
 )
 import numpy as np
 
-from ..errors import CodegenError
+from ..errors import CodegenError, UnsupportedOpError
 from ..testbench_output_format import parse_testbench_output_format
 from ..ops import (
     COMPARE_FUNCTIONS,
@@ -12523,505 +12523,122 @@ class CEmitter:
             ),
         )
 
-    def _op_output_shape(
-        self,
-        op: (
-            BinaryOp
-            | MultiInputBinaryOp
-            | WhereOp
-            | UnaryOp
-            | ClipOp
-            | CastOp
-            | QuantizeLinearOp
-            | DequantizeLinearOp
-            | QLinearMatMulOp
-            | QLinearSoftmaxOp
-            | MatMulOp
-            | EinsumOp
-            | GemmOp
-            | AttentionOp
-            | ConvOp
-            | ConvIntegerOp
-            | AveragePoolOp
-            | BatchNormOp
-            | LpNormalizationOp
-            | InstanceNormalizationOp
-            | GroupNormalizationOp
-            | LayerNormalizationOp
-            | MeanVarianceNormalizationOp
-            | RMSNormalizationOp
-            | LrnOp
-            | GruOp
-            | LstmOp
-            | SoftmaxOp
-            | LogSoftmaxOp
-            | HardmaxOp
-            | NegativeLogLikelihoodLossOp
-            | SoftmaxCrossEntropyLossOp
-            | MaxPoolOp
-            | ConcatOp
-            | ConcatFromSequenceOp
-            | GatherElementsOp
-            | GatherOp
-            | GatherNDOp
-            | TransposeOp
-            | ReshapeOp
-            | IdentityOp
-            | BernoulliOp
-            | EyeLikeOp
-            | TriluOp
-            | TileOp
-            | CenterCropPadOp
-            | SliceOp
-            | ResizeOp
-            | GridSampleOp
-            | AffineGridOp
-            | ReduceOp
-            | ArgReduceOp
-            | TopKOp
-            | ConstantOfShapeOp
-            | ShapeOp
-            | SizeOp
-            | NonZeroOp
-            | UniqueOp
-            | NonMaxSuppressionOp
-            | ExpandOp
-            | CumSumOp
-            | RangeOp
-            | BlackmanWindowOp
-            | HammingWindowOp
-            | HannWindowOp
-            | OneHotOp
-            | TfIdfVectorizerOp
-            | StringConcatOp
-            | StringNormalizerOp
-            | LabelEncoderOp
-            | DepthToSpaceOp
-            | SpaceToDepthOp
-            | RotaryEmbeddingOp
-            | SplitOp
-            | PadOp
-        ),
-    ) -> tuple[int, ...]:
-        if isinstance(op, BinaryOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, MultiInputBinaryOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, WhereOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, UnaryOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, ClipOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, QuantizeLinearOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, DequantizeLinearOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, DynamicQuantizeLinearOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, CastOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, QLinearAddOp):
-            return op.output_shape
-        if isinstance(op, QLinearMulOp):
-            return op.output_shape
-        if isinstance(op, QLinearMatMulOp):
-            return op.output_shape
+    def _op_output_shape(self, op: OpBase) -> tuple[int, ...]:
+        # Computed shapes that can't be resolved from context
+        if isinstance(op, (ConvOp, ConvIntegerOp, ConvTransposeOp, QLinearConvOp)):
+            return (op.batch, op.out_channels, *op.out_spatial)
+        if isinstance(op, Col2ImOp):
+            return (op.batch, op.channels, *op.image_shape)
+        if isinstance(op, DeformConvOp):
+            return (op.batch, op.out_channels, op.out_h, op.out_w)
+        if isinstance(op, MaxPoolOp):
+            return (op.batch, op.channels, *op.out_spatial)
+        if isinstance(op, AveragePoolOp):
+            if op.spatial_rank == 3:
+                return (op.batch, op.channels, op.out_d, op.out_h, op.out_w)
+            if op.spatial_rank == 1:
+                return (op.batch, op.channels, op.out_w)
+            return (op.batch, op.channels, op.out_h, op.out_w)
+        if isinstance(op, LpPoolOp):
+            return (op.batch, op.channels, op.out_h, op.out_w)
         if isinstance(op, QLinearAveragePoolOp):
             if op.spatial_rank == 3:
                 return (op.batch, op.channels, op.out_d, op.out_h, op.out_w)
             if op.spatial_rank == 1:
                 return (op.batch, op.channels, op.out_w)
             return (op.batch, op.channels, op.out_h, op.out_w)
-        if isinstance(op, QLinearSoftmaxOp):
-            return op.output_shape
-        if isinstance(op, MatMulOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, MatMulIntegerOp):
-            return op.output_shape
-        if isinstance(op, EinsumOp):
-            return op.output_shape
-        if isinstance(op, GemmOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, ConvOp):
-            return (op.batch, op.out_channels, *op.out_spatial)
-        if isinstance(op, ConvIntegerOp):
-            return (op.batch, op.out_channels, *op.out_spatial)
-        if isinstance(op, QLinearConvOp):
-            return (op.batch, op.out_channels, *op.out_spatial)
-        if isinstance(op, Col2ImOp):
-            return (op.batch, op.channels, *op.image_shape)
-        if isinstance(op, ConvTransposeOp):
-            return (op.batch, op.out_channels, *op.out_spatial)
-        if isinstance(op, DeformConvOp):
-            return (op.batch, op.out_channels, op.out_h, op.out_w)
-        if isinstance(op, AveragePoolOp):
-            if op.spatial_rank == 3:
-                return (op.batch, op.channels, op.out_d, op.out_h, op.out_w)
-            return (op.batch, op.channels, op.out_h, op.out_w)
-        if isinstance(op, LpPoolOp):
-            return (op.batch, op.channels, op.out_h, op.out_w)
-        if isinstance(op, BatchNormOp):
-            return op.shape
+        # Ops with precomputed shape fields
         if isinstance(
             op,
             (
+                BatchNormOp,
                 LpNormalizationOp,
                 InstanceNormalizationOp,
                 GroupNormalizationOp,
                 LayerNormalizationOp,
                 MeanVarianceNormalizationOp,
                 RMSNormalizationOp,
+                LrnOp,
             ),
         ):
             return op.shape
-        if isinstance(op, LrnOp):
-            return op.shape
-        if isinstance(op, SoftmaxOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, LogSoftmaxOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, HardmaxOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, NegativeLogLikelihoodLossOp):
+        if isinstance(
+            op,
+            (
+                QLinearAddOp,
+                QLinearMulOp,
+                QLinearMatMulOp,
+                QLinearSoftmaxOp,
+                MatMulIntegerOp,
+                EinsumOp,
+                NegativeLogLikelihoodLossOp,
+                SoftmaxCrossEntropyLossOp,
+            ),
+        ):
             return op.output_shape
-        if isinstance(op, SoftmaxCrossEntropyLossOp):
-            return op.output_shape
-        if isinstance(op, MaxPoolOp):
-            return (op.batch, op.channels, *op.out_spatial)
-        if isinstance(op, ConcatOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, CompressOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, GatherElementsOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, GatherOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, GatherNDOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, ScatterElementsOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, ScatterOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, ScatterNDOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, TensorScatterOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, TransposeOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, ReshapeOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, IdentityOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, BernoulliOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, DropoutOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, EyeLikeOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, TriluOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, TileOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, CenterCropPadOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, PadOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, DepthToSpaceOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, SpaceToDepthOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, SliceOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, ResizeOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, GridSampleOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, AffineGridOp):
-            return self._ctx_shape(op.grid)
-        if isinstance(op, ReduceOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, ArgReduceOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, TopKOp):
-            return self._ctx_shape(op.output_values)
-        if isinstance(op, (ConstantOfShapeOp, ShapeOp, SizeOp)):
-            return self._ctx_shape(op.output)
-        if isinstance(op, OptionalHasElementOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, OptionalGetElementOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, NonZeroOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, UniqueOp):
-            return self._ctx_shape(op.y)
-        if isinstance(op, NonMaxSuppressionOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, ExpandOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, CumSumOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, (STFTOp, DFTOp)):
-            return self._ctx_shape(op.output)
-        if isinstance(op, RangeOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, LoopRangeOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, BlackmanWindowOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, HammingWindowOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, HannWindowOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, MelWeightMatrixOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, OneHotOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, TfIdfVectorizerOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, StringConcatOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, StringNormalizerOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, LabelEncoderOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, StringSplitOp):
-            return self._ctx_shape(op.output_y)
-        if isinstance(op, SplitOp):
-            return self._ctx_shape(op.outputs[0])
-        if isinstance(op, SplitToSequenceOp):
-            return self._ctx_sequence_elem_type(op.output_sequence).shape
-        if isinstance(op, TreeEnsembleOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, TreeEnsembleClassifierOp):
-            return self._ctx_shape(op.probabilities)
-        if isinstance(op, ReverseSequenceOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, ConcatFromSequenceOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, SequenceAtOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, SequenceLengthOp):
-            return self._ctx_shape(op.output)
-        if isinstance(op, SequenceConstructOp):
-            return self._ctx_shape(op.inputs[0])
-        if isinstance(op, SequenceEmptyOp):
-            return self._sequence_storage_shape(op.output_sequence)
-        if isinstance(op, SequenceEraseOp):
-            return self._sequence_storage_shape(op.input_sequence)
-        if isinstance(op, SequenceInsertOp):
-            return self._sequence_storage_shape(op.output_sequence)
-        if isinstance(op, IfOptionalSequenceConstOp):
-            return self._sequence_storage_shape(op.output_sequence)
+        if isinstance(op, RotaryEmbeddingOp):
+            return op.input_shape
         if isinstance(op, LoopSequenceInsertOp):
             return op.elem_shape
         if isinstance(op, LoopSequenceMapOp):
             return op.output_elem_shapes[0]
-        if isinstance(op, RotaryEmbeddingOp):
-            return op.input_shape
-        if op.output_rank == 3:
-            return (op.batch, op.q_seq, op.q_heads * op.v_head_size)
-        return (op.batch, op.q_heads, op.q_seq, op.v_head_size)
+        # Sequence ops (use sequence element type shape)
+        if isinstance(op, (SplitToSequenceOp, SequenceEmptyOp)):
+            return self._ctx_sequence_elem_type(op.output_sequence).shape
+        if isinstance(op, (SequenceEraseOp, SequenceInsertOp)):
+            return self._sequence_storage_shape(
+                op.input_sequence if isinstance(op, SequenceEraseOp)
+                else op.output_sequence
+            )
+        if isinstance(op, IfOptionalSequenceConstOp):
+            return self._sequence_storage_shape(op.output_sequence)
+        # AttentionOp has conditional computed shape
+        if isinstance(op, AttentionOp):
+            if op.output_rank == 3:
+                return (op.batch, op.q_seq, op.q_heads * op.v_head_size)
+            return (op.batch, op.q_heads, op.q_seq, op.v_head_size)
+        # Default: resolve from context via primary_output_name
+        name = op.primary_output_name
+        if name is not None:
+            return self._ctx_shape(name)
+        raise UnsupportedOpError(
+            f"Cannot determine output shape for {op.kind}"
+        )
 
-    def _op_output_dtype(
-        self,
-        op: (
-            BinaryOp
-            | MultiInputBinaryOp
-            | WhereOp
-            | UnaryOp
-            | ClipOp
-            | CastOp
-            | QuantizeLinearOp
-            | DequantizeLinearOp
-            | QLinearSoftmaxOp
-            | MatMulOp
-            | EinsumOp
-            | GemmOp
-            | AttentionOp
-            | ConvOp
-            | ConvIntegerOp
-            | ConvTransposeOp
-            | Col2ImOp
-            | DeformConvOp
-            | AveragePoolOp
-            | LpPoolOp
-            | BatchNormOp
-            | LpNormalizationOp
-            | InstanceNormalizationOp
-            | GroupNormalizationOp
-            | LayerNormalizationOp
-            | MeanVarianceNormalizationOp
-            | RMSNormalizationOp
-            | SoftmaxOp
-            | LogSoftmaxOp
-            | HardmaxOp
-            | AdagradOp
-            | MomentumOp
-            | NegativeLogLikelihoodLossOp
-            | SoftmaxCrossEntropyLossOp
-            | MaxPoolOp
-            | ConcatOp
-            | ConcatFromSequenceOp
-            | GatherElementsOp
-            | GatherOp
-            | GatherNDOp
-            | TransposeOp
-            | ReshapeOp
-            | IdentityOp
-            | BernoulliOp
-            | EyeLikeOp
-            | TriluOp
-            | TileOp
-            | CenterCropPadOp
-            | ResizeOp
-            | GridSampleOp
-            | AffineGridOp
-            | ReduceOp
-            | ArgReduceOp
-            | ConstantOfShapeOp
-            | ShapeOp
-            | SizeOp
-            | NonZeroOp
-            | UniqueOp
-            | NonMaxSuppressionOp
-            | ExpandOp
-            | CumSumOp
-            | STFTOp
-            | RangeOp
-            | BlackmanWindowOp
-            | HammingWindowOp
-            | HannWindowOp
-            | OneHotOp
-            | TfIdfVectorizerOp
-            | StringConcatOp
-            | StringNormalizerOp
-            | LabelEncoderOp
-            | DepthToSpaceOp
-            | SpaceToDepthOp
-            | SplitOp
-            | PadOp
-        ),
-    ) -> ScalarType:
-        if isinstance(op, ArgReduceOp):
-            return self._ctx_dtype(op.output)
-        if isinstance(op, TopKOp):
-            return self._ctx_dtype(op.output_values)
-        if isinstance(op, LoopRangeOp):
-            return self._ctx_dtype(op.output)
-        if isinstance(op, OptionalHasElementOp):
-            return self._ctx_dtype(op.output)
-        if isinstance(op, OptionalGetElementOp):
-            return self._ctx_dtype(op.output)
-        if isinstance(op, NonZeroOp):
-            return self._ctx_dtype(op.output)
-        if isinstance(op, UniqueOp):
-            return self._ctx_dtype(op.y)
-        if isinstance(op, NonMaxSuppressionOp):
-            return self._ctx_dtype(op.output)
-        if isinstance(op, TfIdfVectorizerOp):
-            return self._ctx_dtype(op.output)
-        if isinstance(op, StringConcatOp):
+    def _op_output_dtype(self, op: OpBase) -> ScalarType:
+        # String ops
+        if isinstance(op, (StringConcatOp, StringNormalizerOp, StringSplitOp)):
             return ScalarType.STRING
-        if isinstance(op, StringNormalizerOp):
-            return ScalarType.STRING
-        if isinstance(op, LabelEncoderOp):
-            return self._ctx_dtype(op.output)
-        if isinstance(op, StringSplitOp):
-            return ScalarType.STRING
-        if isinstance(op, TreeEnsembleOp):
-            return self._ctx_dtype(op.output)
-        if isinstance(op, TreeEnsembleClassifierOp):
-            return self._ctx_dtype(op.probabilities)
+        # Sequence ops (use sequence element type)
         if isinstance(
-            op, (QuantizeLinearOp, DequantizeLinearOp, DynamicQuantizeLinearOp)
+            op,
+            (
+                SplitToSequenceOp,
+                SequenceEmptyOp,
+                SequenceEraseOp,
+                SequenceInsertOp,
+                IfOptionalSequenceConstOp,
+                SequenceIdentityOp,
+            ),
         ):
-            return self._ctx_dtype(op.output)
-        if isinstance(op, (TriluOp, TileOp, CenterCropPadOp, CumSumOp, STFTOp)):
-            return self._ctx_dtype(op.output)
-        if isinstance(op, DFTOp):
-            return self._ctx_dtype(op.output)
-        if isinstance(op, SplitOp):
-            return self._ctx_dtype(op.outputs[0])
-        if isinstance(op, SplitToSequenceOp):
-            return self._ctx_sequence_elem_type(op.output_sequence).dtype
-        if isinstance(op, ConcatFromSequenceOp):
-            return self._ctx_dtype(op.output)
-        if isinstance(op, SequenceAtOp):
-            return self._ctx_dtype(op.output)
-        if isinstance(op, SequenceLengthOp):
-            return self._ctx_dtype(op.output)
+            seq = (
+                op.input_sequence
+                if isinstance(op, SequenceEraseOp)
+                else op.output_sequence
+            )
+            return self._ctx_sequence_elem_type(seq).dtype
         if isinstance(op, SequenceConstructOp):
             return self._ctx_dtype(op.inputs[0])
-        if isinstance(op, SequenceEmptyOp):
-            return self._ctx_sequence_elem_type(op.output_sequence).dtype
-        if isinstance(op, SequenceEraseOp):
-            return self._ctx_sequence_elem_type(op.input_sequence).dtype
-        if isinstance(op, SequenceInsertOp):
-            return self._ctx_sequence_elem_type(op.output_sequence).dtype
-        if isinstance(op, IfOptionalSequenceConstOp):
-            return self._ctx_sequence_elem_type(op.output_sequence).dtype
+        # Ops with direct dtype fields (no context lookup needed)
         if isinstance(op, LoopSequenceInsertOp):
             return op.elem_dtype
         if isinstance(op, LoopSequenceMapOp):
             return op.output_elem_dtypes[0]
-        if isinstance(op, (DepthToSpaceOp, SpaceToDepthOp)):
-            return self._ctx_dtype(op.output)
-        if isinstance(op, OneHotOp):
-            return self._ctx_dtype(op.output)
-        if isinstance(op, SequenceIdentityOp):
-            return self._ctx_sequence_elem_type(op.output_sequence).dtype
-        if isinstance(
-            op,
-            (
-                BinaryOp,
-                MultiInputBinaryOp,
-                WhereOp,
-                UnaryOp,
-                ClipOp,
-                CastOp,
-                SoftmaxOp,
-                LogSoftmaxOp,
-                HardmaxOp,
-                MatMulIntegerOp,
-                MatMulOp,
-                GemmOp,
-                GatherOp,
-                ConcatOp,
-                ConcatFromSequenceOp,
-                CompressOp,
-                GatherElementsOp,
-                GatherNDOp,
-                ScatterElementsOp,
-                ScatterOp,
-                ScatterNDOp,
-                TensorScatterOp,
-                TransposeOp,
-                ReshapeOp,
-                IdentityOp,
-                ReduceOp,
-                ExpandOp,
-                ConstantOfShapeOp,
-                ShapeOp,
-                SizeOp,
-                BernoulliOp,
-                DropoutOp,
-                EyeLikeOp,
-                RangeOp,
-                ReverseSequenceOp,
-                BlackmanWindowOp,
-                HammingWindowOp,
-                HannWindowOp,
-                MelWeightMatrixOp,
-                GridSampleOp,
-                ResizeOp,
-                PadOp,
-                SliceOp,
-            ),
-        ):
-            return self._ctx_dtype(op.output)
-        if isinstance(op, AffineGridOp):
-            return self._ctx_dtype(op.grid)
+        # Default: resolve from context via primary_output_name
+        name = op.primary_output_name
+        if name is not None:
+            return self._ctx_dtype(name)
+        # Last resort: op.dtype attribute
         return op.dtype
 
     @staticmethod

@@ -45,6 +45,24 @@ class OpBase(ABC):
         _, output_fields = _io_field_names(type(self))
         return _resolve_io_names(self, output_fields)
 
+    @property
+    def primary_output_name(self) -> str | None:
+        """Tensor name of the primary output for dtype/shape queries.
+
+        Returns the value of the first ``__io_outputs__`` field, or ``None``
+        for ops that don't have a simple primary output (e.g. sequence ops).
+        Subclasses may override to select a different output field.
+        """
+        _, output_fields = _io_field_names(type(self))
+        if not output_fields:
+            return None
+        value = getattr(self, output_fields[0])
+        if isinstance(value, str):
+            return value
+        if isinstance(value, tuple) and value:
+            return value[0]
+        return None
+
     def call_args(self) -> tuple[str, ...]:
         return self.input_names + self.output_names
 

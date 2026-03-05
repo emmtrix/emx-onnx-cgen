@@ -1263,6 +1263,10 @@ class TreeEnsembleClassifierOp(RenderableOpBase):
     dtype: ScalarType = ScalarType.F32
     output_shape: tuple[int, ...] = ()
 
+    @property
+    def primary_output_name(self) -> str:
+        return self.probabilities
+
 
 @dataclass(frozen=True)
 class TreeEnsembleOp(RenderableOpBase):
