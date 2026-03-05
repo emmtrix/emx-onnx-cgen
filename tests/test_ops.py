@@ -7016,5 +7016,3 @@ def test_lower_thresholded_relu_rejects_integer_input() -> None:
 
     with pytest.raises(UnsupportedOpError, match="floating-point inputs"):
         get_lowering("ThresholdedRelu")(graph, graph.nodes[0])
-
-
