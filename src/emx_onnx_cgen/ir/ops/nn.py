@@ -188,6 +188,186 @@ class QLinearMatMulOp(MatMulLikeOpBase):
     input1_zero_shape: tuple[int, ...]
     output_zero_shape: tuple[int, ...]
 
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("input0_scale", self.input0_scale),
+                ("input0_zero_point", self.input0_zero_point),
+                ("input1", self.input1),
+                ("input1_scale", self.input1_scale),
+                ("input1_zero_point", self.input1_zero_point),
+                ("output_scale", self.output_scale),
+                ("output_zero_point", self.output_zero_point),
+                ("output", self.output),
+            ]
+        )
+        output_shape = CEmitterCompat.codegen_shape(self.output_shape)
+        output_loop_vars = CEmitterCompat.loop_vars(output_shape)
+        output_index_expr = f"{params['output']}" + "".join(
+            f"[{var}]" for var in output_loop_vars
+        )
+        batch_rank = len(self.batch_shape)
+        batch_vars = output_loop_vars[:batch_rank]
+        if self.left_vector and self.right_vector:
+            row_var = None
+            col_var = None
+        elif self.left_vector:
+            row_var = None
+            col_var = output_loop_vars[-1]
+        elif self.right_vector:
+            row_var = output_loop_vars[-1]
+            col_var = None
+        else:
+            row_var = output_loop_vars[-2]
+            col_var = output_loop_vars[-1]
+        input0_index_expr, input1_index_expr = CEmitterCompat.matmul_index_exprs(
+            batch_vars,
+            row_var,
+            col_var,
+            batch_rank,
+            input0=params["input0"],
+            input1=params["input1"],
+            left_vector=self.left_vector,
+            right_vector=self.right_vector,
+            input0_shape=self.input0_shape,
+            input1_shape=self.input1_shape,
+            input0_batch_shape=self.input0_batch_shape,
+            input1_batch_shape=self.input1_batch_shape,
+        )
+        input0_suffix = emitter.param_array_suffix(self.input0_shape)
+        input1_suffix = emitter.param_array_suffix(self.input1_shape)
+        input0_scale_suffix = emitter.param_array_suffix(self.input0_scale_shape)
+        input1_scale_suffix = emitter.param_array_suffix(self.input1_scale_shape)
+        output_scale_suffix = emitter.param_array_suffix(self.output_scale_shape)
+        input0_zero_suffix = emitter.param_array_suffix(self.input0_zero_shape)
+        input1_zero_suffix = emitter.param_array_suffix(self.input1_zero_shape)
+        output_zero_suffix = emitter.param_array_suffix(self.output_zero_shape)
+        output_suffix = emitter.param_array_suffix(self.output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (
+                    params["input0"],
+                    self.input0_dtype.c_type,
+                    input0_suffix,
+                    True,
+                ),
+                (
+                    params["input0_scale"],
+                    self.input0_scale_dtype.c_type,
+                    input0_scale_suffix,
+                    True,
+                ),
+                (
+                    params["input0_zero_point"],
+                    self.input0_dtype.c_type,
+                    input0_zero_suffix,
+                    True,
+                ),
+                (
+                    params["input1"],
+                    self.input1_dtype.c_type,
+                    input1_suffix,
+                    True,
+                ),
+                (
+                    params["input1_scale"],
+                    self.input1_scale_dtype.c_type,
+                    input1_scale_suffix,
+                    True,
+                ),
+                (
+                    params["input1_zero_point"],
+                    self.input1_dtype.c_type,
+                    input1_zero_suffix,
+                    True,
+                ),
+                (
+                    params["output_scale"],
+                    self.output_scale_dtype.c_type,
+                    output_scale_suffix,
+                    True,
+                ),
+                (
+                    params["output_zero_point"],
+                    self.dtype.c_type,
+                    output_zero_suffix,
+                    True,
+                ),
+                (
+                    params["output"],
+                    self.dtype.c_type,
+                    output_suffix,
+                    False,
+                ),
+            ]
+        )
+        if ScalarType.F64 in {
+            self.input0_scale_dtype,
+            self.input1_scale_dtype,
+            self.output_scale_dtype,
+        }:
+            scale_dtype = ScalarType.F64
+        elif ScalarType.F32 in {
+            self.input0_scale_dtype,
+            self.input1_scale_dtype,
+            self.output_scale_dtype,
+        }:
+            scale_dtype = ScalarType.F32
+        else:
+            scale_dtype = ScalarType.F16
+        compute_dtype = ScalarType.F64
+        compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
+        scale_index = "0"
+        if self.dtype.is_signed:
+            min_literal = "-128.0"
+            max_literal = "127.0"
+        else:
+            min_literal = "0.0"
+            max_literal = "255.0"
+        rendered = state.templates["qlinear_matmul"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input0=params["input0"],
+            input1=params["input1"],
+            input0_scale=params["input0_scale"],
+            input0_zero_point=params["input0_zero_point"],
+            input1_scale=params["input1_scale"],
+            input1_zero_point=params["input1_zero_point"],
+            output_scale=params["output_scale"],
+            output_zero_point=params["output_zero_point"],
+            output=params["output"],
+            params=param_decls,
+            scale_type=scale_dtype.c_type,
+            scale_is_float16=scale_dtype == ScalarType.F16,
+            compute_type=compute_type,
+            output_c_type=self.dtype.c_type,
+            input0_index_expr=input0_index_expr,
+            input1_index_expr=input1_index_expr,
+            input0_scale_expr=f"{params['input0_scale']}[{scale_index}]",
+            input1_scale_expr=f"{params['input1_scale']}[{scale_index}]",
+            output_scale_expr=f"{params['output_scale']}[{scale_index}]",
+            input0_zero_expr=f"{params['input0_zero_point']}[{scale_index}]",
+            input1_zero_expr=f"{params['input1_zero_point']}[{scale_index}]",
+            output_zero_expr=f"{params['output_zero_point']}[{scale_index}]",
+            output_loop_vars=output_loop_vars,
+            output_loop_bounds=output_shape,
+            output_index_expr=output_index_expr,
+            k=self.k,
+            compute_dtype=compute_dtype,
+            dtype=self.dtype,
+            min_literal=min_literal,
+            max_literal=max_literal,
+            enable_integer_requant=scale_dtype != ScalarType.F16,
+            output_wrap=not emitter.replicate_ort_bugs,
+            output_is_signed=self.dtype.is_signed,
+            dim_args=emitter.dim_args_str(),
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
 
 @dataclass(frozen=True)
 class MatMulIntegerOp(MatMulLikeOpBase):
@@ -531,6 +711,250 @@ class AttentionOp(RenderableOpBase):
     head_group_size: int
     dtype: ScalarType
 
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.output)
+        c_type = output_dtype.c_type
+        zero_literal = output_dtype.zero_literal
+        min_literal = output_dtype.min_literal
+        params = emitter.shared_param_map(
+            [
+                ("input_q", self.input_q),
+                ("input_k", self.input_k),
+                ("input_v", self.input_v),
+                ("input_attn_mask", self.input_attn_mask),
+                ("input_past_key", self.input_past_key),
+                ("input_past_value", self.input_past_value),
+                ("input_nonpad_kv_seqlen", self.input_nonpad_kv_seqlen),
+                ("output", self.output),
+                ("output_present_key", self.output_present_key),
+                ("output_present_value", self.output_present_value),
+                ("output_qk_matmul", self.output_qk_matmul),
+            ]
+        )
+        if self.q_rank == 4:
+            input_q_shape = (self.batch, self.q_heads, self.q_seq, self.qk_head_size)
+        else:
+            input_q_shape = (self.batch, self.q_seq, self.q_hidden_size)
+        if self.k_rank == 4:
+            input_k_shape = (self.batch, self.kv_heads, self.kv_seq, self.qk_head_size)
+        else:
+            input_k_shape = (self.batch, self.kv_seq, self.k_hidden_size)
+        if self.v_rank == 4:
+            input_v_shape = (self.batch, self.kv_heads, self.kv_seq, self.v_head_size)
+        else:
+            input_v_shape = (self.batch, self.kv_seq, self.v_hidden_size)
+        if self.output_rank == 4:
+            output_shape = (self.batch, self.q_heads, self.q_seq, self.v_head_size)
+        else:
+            output_shape = (
+                self.batch,
+                self.q_seq,
+                self.q_heads * self.v_head_size,
+            )
+        present_key_shape = (
+            (self.batch, self.kv_heads, self.total_seq, self.qk_head_size)
+            if self.output_present_key is not None
+            else None
+        )
+        present_value_shape = (
+            (self.batch, self.kv_heads, self.total_seq, self.v_head_size)
+            if self.output_present_value is not None
+            else None
+        )
+        qk_matmul_shape = (
+            (self.batch, self.q_heads, self.q_seq, self.total_seq)
+            if self.output_qk_matmul is not None
+            else None
+        )
+        input_q_suffix = emitter.param_array_suffix(input_q_shape)
+        input_k_suffix = emitter.param_array_suffix(input_k_shape)
+        input_v_suffix = emitter.param_array_suffix(input_v_shape)
+        input_mask_suffix = (
+            emitter.param_array_suffix(self.mask_shape)
+            if self.input_attn_mask is not None
+            else ""
+        )
+        input_past_key_suffix = (
+            emitter.param_array_suffix(
+                (self.batch, self.kv_heads, self.past_seq, self.qk_head_size)
+            )
+            if self.input_past_key is not None
+            else ""
+        )
+        input_past_value_suffix = (
+            emitter.param_array_suffix(
+                (self.batch, self.kv_heads, self.past_seq, self.v_head_size)
+            )
+            if self.input_past_value is not None
+            else ""
+        )
+        input_nonpad_suffix = (
+            emitter.param_array_suffix((self.batch,))
+            if self.input_nonpad_kv_seqlen is not None
+            else ""
+        )
+        output_suffix = emitter.param_array_suffix(output_shape)
+        output_present_key_suffix = (
+            emitter.param_array_suffix(present_key_shape)
+            if present_key_shape is not None
+            else ""
+        )
+        output_present_value_suffix = (
+            emitter.param_array_suffix(present_value_shape)
+            if present_value_shape is not None
+            else ""
+        )
+        output_qk_matmul_suffix = (
+            emitter.param_array_suffix(qk_matmul_shape)
+            if qk_matmul_shape is not None
+            else ""
+        )
+        mask_c_type = "bool" if self.mask_is_bool else c_type
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input_q"], c_type, input_q_suffix, True),
+                (params["input_k"], c_type, input_k_suffix, True),
+                (params["input_v"], c_type, input_v_suffix, True),
+                (
+                    (
+                        params["input_attn_mask"],
+                        mask_c_type,
+                        input_mask_suffix,
+                        True,
+                    )
+                    if params["input_attn_mask"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (
+                        params["input_past_key"],
+                        c_type,
+                        input_past_key_suffix,
+                        True,
+                    )
+                    if params["input_past_key"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (
+                        params["input_past_value"],
+                        c_type,
+                        input_past_value_suffix,
+                        True,
+                    )
+                    if params["input_past_value"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (
+                        params["input_nonpad_kv_seqlen"],
+                        ScalarType.I64.c_type,
+                        input_nonpad_suffix,
+                        True,
+                    )
+                    if params["input_nonpad_kv_seqlen"]
+                    else (None, "", "", True)
+                ),
+                (params["output"], c_type, output_suffix, False),
+                (
+                    (
+                        params["output_present_key"],
+                        c_type,
+                        output_present_key_suffix,
+                        False,
+                    )
+                    if params["output_present_key"]
+                    else (None, "", "", False)
+                ),
+                (
+                    (
+                        params["output_present_value"],
+                        c_type,
+                        output_present_value_suffix,
+                        False,
+                    )
+                    if params["output_present_value"]
+                    else (None, "", "", False)
+                ),
+                (
+                    (
+                        params["output_qk_matmul"],
+                        c_type,
+                        output_qk_matmul_suffix,
+                        False,
+                    )
+                    if params["output_qk_matmul"]
+                    else (None, "", "", False)
+                ),
+            ]
+        )
+        rendered = state.templates["attention"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input_q=params["input_q"],
+            input_k=params["input_k"],
+            input_v=params["input_v"],
+            input_attn_mask=params["input_attn_mask"],
+            input_past_key=params["input_past_key"],
+            input_past_value=params["input_past_value"],
+            input_nonpad_kv_seqlen=params["input_nonpad_kv_seqlen"],
+            output=params["output"],
+            output_present_key=params["output_present_key"],
+            output_present_value=params["output_present_value"],
+            output_qk_matmul=params["output_qk_matmul"],
+            params=param_decls,
+            c_type=c_type,
+            nonpad_c_type=ScalarType.I64.c_type,
+            zero_literal=zero_literal,
+            min_literal=min_literal,
+            scale_literal=emitter.format_floating(self.scale, self.dtype),
+            softcap_literal=emitter.format_floating(self.softcap, self.dtype),
+            one_literal=emitter.format_literal(self.dtype, 1),
+            dtype=self.dtype,
+            is_causal=int(self.is_causal),
+            qk_matmul_output_mode=self.qk_matmul_output_mode,
+            batch=self.batch,
+            q_heads=self.q_heads,
+            kv_heads=self.kv_heads,
+            q_seq=self.q_seq,
+            kv_seq=self.kv_seq,
+            total_seq=self.total_seq,
+            past_seq=self.past_seq,
+            qk_head_size=self.qk_head_size,
+            v_head_size=self.v_head_size,
+            head_group_size=self.head_group_size,
+            q_rank=self.q_rank,
+            k_rank=self.k_rank,
+            v_rank=self.v_rank,
+            output_rank=self.output_rank,
+            q_hidden_size=self.q_hidden_size,
+            k_hidden_size=self.k_hidden_size,
+            v_hidden_size=self.v_hidden_size,
+            has_attn_mask=int(self.input_attn_mask is not None),
+            mask_rank=self.mask_rank or 0,
+            mask_is_bool=int(self.mask_is_bool),
+            mask_broadcast_batch=int(self.mask_broadcast_batch),
+            mask_broadcast_heads=int(self.mask_broadcast_heads),
+            mask_broadcast_q_seq=int(self.mask_broadcast_q_seq),
+            mask_q_seq=self.mask_q_seq or 0,
+            mask_kv_seq=self.mask_kv_seq or 0,
+            input_q_suffix=input_q_suffix,
+            input_k_suffix=input_k_suffix,
+            input_v_suffix=input_v_suffix,
+            input_mask_suffix=input_mask_suffix,
+            input_past_key_suffix=input_past_key_suffix,
+            input_past_value_suffix=input_past_value_suffix,
+            input_nonpad_suffix=input_nonpad_suffix,
+            output_suffix=output_suffix,
+            output_present_key_suffix=output_present_key_suffix,
+            output_present_value_suffix=output_present_value_suffix,
+            output_qk_matmul_suffix=output_qk_matmul_suffix,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
 
 @dataclass(frozen=True)
 class RotaryEmbeddingOp(RenderableOpBase):
@@ -555,6 +979,79 @@ class RotaryEmbeddingOp(RenderableOpBase):
     batch: int
     input_rank: int
     interleaved: bool
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.output)
+        c_type = output_dtype.c_type
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("cos_cache", self.cos_cache),
+                ("sin_cache", self.sin_cache),
+                ("position_ids", self.position_ids),
+                ("output", self.output),
+            ]
+        )
+        input_suffix = emitter.param_array_suffix(
+            self.input_shape, emitter.dim_names_for(self.input0)
+        )
+        cos_suffix = emitter.param_array_suffix(self.cos_shape)
+        sin_suffix = emitter.param_array_suffix(self.sin_shape)
+        position_suffix = (
+            emitter.param_array_suffix(self.position_ids_shape)
+            if self.position_ids_shape is not None
+            else ""
+        )
+        output_suffix = emitter.param_array_suffix(
+            self.input_shape, emitter.dim_names_for(self.output)
+        )
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["cos_cache"], c_type, cos_suffix, True),
+                (params["sin_cache"], c_type, sin_suffix, True),
+                (
+                    (
+                        params["position_ids"],
+                        self.position_ids_dtype.c_type,
+                        position_suffix,
+                        True,
+                    )
+                    if params["position_ids"]
+                    else (None, "", "", True)
+                ),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        rendered = state.templates["rotary_embedding"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input0=params["input0"],
+            cos_cache=params["cos_cache"],
+            sin_cache=params["sin_cache"],
+            position_ids=params["position_ids"],
+            output=params["output"],
+            params=param_decls,
+            c_type=c_type,
+            input_suffix=input_suffix,
+            cos_suffix=cos_suffix,
+            sin_suffix=sin_suffix,
+            position_suffix=position_suffix,
+            output_suffix=output_suffix,
+            batch=self.batch,
+            seq_len=self.seq_len,
+            num_heads=self.num_heads,
+            head_size=self.head_size,
+            rotary_dim=self.rotary_dim,
+            rotary_dim_half=self.rotary_dim_half,
+            input_rank=self.input_rank,
+            interleaved=int(self.interleaved),
+            has_position_ids=int(self.position_ids is not None),
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
 @dataclass(frozen=True)
@@ -1533,6 +2030,127 @@ class QLinearAveragePoolOp(RenderableOpBase):
     pad_front: int = 0
     pad_back: int = 0
 
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("input_scale", self.input_scale),
+                ("input_zero_point", self.input_zero_point),
+                ("output_scale", self.output_scale),
+                ("output_zero_point", self.output_zero_point),
+                ("output", self.output),
+            ]
+        )
+        input_shape = (
+            (self.batch, self.channels, self.in_d, self.in_h, self.in_w)
+            if self.spatial_rank == 3
+            else (
+                (self.batch, self.channels, self.in_w)
+                if self.spatial_rank == 1
+                else (self.batch, self.channels, self.in_h, self.in_w)
+            )
+        )
+        output_shape = (
+            (self.batch, self.channels, self.out_d, self.out_h, self.out_w)
+            if self.spatial_rank == 3
+            else (
+                (self.batch, self.channels, self.out_w)
+                if self.spatial_rank == 1
+                else (self.batch, self.channels, self.out_h, self.out_w)
+            )
+        )
+        input_suffix = emitter.param_array_suffix(input_shape)
+        output_suffix = emitter.param_array_suffix(output_shape)
+        input_scale_suffix = emitter.param_array_suffix(self.input_scale_shape)
+        output_scale_suffix = emitter.param_array_suffix(self.output_scale_shape)
+        input_zero_suffix = emitter.param_array_suffix(self.input_zero_shape)
+        output_zero_suffix = emitter.param_array_suffix(self.output_zero_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], self.input_dtype.c_type, input_suffix, True),
+                (
+                    params["input_scale"],
+                    self.input_scale_dtype.c_type,
+                    input_scale_suffix,
+                    True,
+                ),
+                (
+                    params["input_zero_point"],
+                    self.input_dtype.c_type,
+                    input_zero_suffix,
+                    True,
+                ),
+                (
+                    params["output_scale"],
+                    self.output_scale_dtype.c_type,
+                    output_scale_suffix,
+                    True,
+                ),
+                (
+                    params["output_zero_point"],
+                    self.dtype.c_type,
+                    output_zero_suffix,
+                    True,
+                ),
+                (params["output"], self.dtype.c_type, output_suffix, False),
+            ]
+        )
+        compute_dtype = (
+            ScalarType.F64
+            if ScalarType.F64 in {self.input_scale_dtype, self.output_scale_dtype}
+            else ScalarType.F32
+        )
+        compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
+
+        rendered = state.templates["qlinear_avg_pool"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input0=params["input0"],
+            input_scale=params["input_scale"],
+            input_zero_point=params["input_zero_point"],
+            output_scale=params["output_scale"],
+            output_zero_point=params["output_zero_point"],
+            output=params["output"],
+            params=param_decls,
+            compute_type=compute_type,
+            compute_dtype=compute_dtype,
+            dtype=self.dtype,
+            min_literal=self.dtype.min_literal,
+            max_literal=self.dtype.max_literal,
+            input_scale_expr=f"{params['input_scale']}[0]",
+            input_zero_expr=f"{params['input_zero_point']}[0]",
+            output_scale_expr=f"{params['output_scale']}[0]",
+            output_zero_expr=f"{params['output_zero_point']}[0]",
+            spatial_rank=self.spatial_rank,
+            batch=self.batch,
+            channels=self.channels,
+            in_d=self.in_d,
+            in_h=self.in_h,
+            in_w=self.in_w,
+            out_d=self.out_d,
+            out_h=self.out_h,
+            out_w=self.out_w,
+            kernel_d=self.kernel_d,
+            kernel_h=self.kernel_h,
+            kernel_w=self.kernel_w,
+            dilation_d=self.dilation_d,
+            dilation_h=self.dilation_h,
+            dilation_w=self.dilation_w,
+            stride_d=self.stride_d,
+            stride_h=self.stride_h,
+            stride_w=self.stride_w,
+            pad_front=self.pad_front,
+            pad_top=self.pad_top,
+            pad_left=self.pad_left,
+            count_include_pad=self.count_include_pad,
+            dim_args=emitter.dim_args_str(),
+            output_c_type=self.dtype.c_type,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
 
 @dataclass(frozen=True)
 class LpPoolOp(RenderableOpBase):
@@ -1757,6 +2375,89 @@ class QLinearSoftmaxOp(RenderableOpBase):
             raise ShapeInferenceError(
                 f"QLinearSoftmax output shape must be {input_shape}, got {output_shape}"
             )
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("input_scale", self.input_scale),
+                ("input_zero_point", self.input_zero_point),
+                ("output_scale", self.output_scale),
+                ("output_zero_point", self.output_zero_point),
+                ("output", self.output),
+            ]
+        )
+        input_suffix = emitter.param_array_suffix(self.input_shape)
+        output_suffix = emitter.param_array_suffix(self.output_shape)
+        input_scale_suffix = emitter.param_array_suffix(self.input_scale_shape)
+        output_scale_suffix = emitter.param_array_suffix(self.output_scale_shape)
+        input_zero_suffix = emitter.param_array_suffix(self.input_zero_shape)
+        output_zero_suffix = emitter.param_array_suffix(self.output_zero_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], self.input_dtype.c_type, input_suffix, True),
+                (
+                    params["input_scale"],
+                    self.input_scale_dtype.c_type,
+                    input_scale_suffix,
+                    True,
+                ),
+                (
+                    params["input_zero_point"],
+                    self.input_dtype.c_type,
+                    input_zero_suffix,
+                    True,
+                ),
+                (
+                    params["output_scale"],
+                    self.output_scale_dtype.c_type,
+                    output_scale_suffix,
+                    True,
+                ),
+                (
+                    params["output_zero_point"],
+                    self.dtype.c_type,
+                    output_zero_suffix,
+                    True,
+                ),
+                (params["output"], self.dtype.c_type, output_suffix, False),
+            ]
+        )
+        compute_dtype = ScalarType.F32
+        if (
+            self.input_scale_dtype == ScalarType.F64
+            or self.output_scale_dtype == ScalarType.F64
+        ):
+            compute_dtype = ScalarType.F64
+        compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
+
+        rendered = state.templates["qlinear_softmax"].render(
+            model_name=model.name,
+            op_name=op_name,
+            params=param_decls,
+            compute_type=compute_type,
+            input_c_type=self.input_dtype.c_type,
+            output_c_type=self.dtype.c_type,
+            input0=params["input0"],
+            output=params["output"],
+            input_scale_expr=f"{params['input_scale']}[0]",
+            output_scale_expr=f"{params['output_scale']}[0]",
+            input_zero_expr=f"{params['input_zero_point']}[0]",
+            output_zero_expr=f"{params['output_zero_point']}[0]",
+            outer=self.outer,
+            axis_size=self.axis_size,
+            inner=self.inner,
+            min_literal=self.dtype.min_literal,
+            max_literal=self.dtype.max_literal,
+            compute_dtype=compute_dtype,
+            output_wrap=emitter.replicate_ort_bugs,
+            output_is_signed=self.dtype.is_signed,
+            dim_args=emitter.dim_args_str(),
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
 @dataclass(frozen=True)
@@ -2810,6 +3511,169 @@ class GruOp(RenderableOpBase):
     dtype: ScalarType
     sequence_lens_dtype: ScalarType | None
 
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.output_y or self.output_y_h)
+        c_type = output_dtype.c_type
+        zero_literal = output_dtype.zero_literal
+        params = emitter.shared_param_map(
+            [
+                ("input_x", self.input_x),
+                ("input_w", self.input_w),
+                ("input_r", self.input_r),
+                ("input_b", self.input_b),
+                ("input_sequence_lens", self.input_sequence_lens),
+                ("input_initial_h", self.input_initial_h),
+                ("output_y", self.output_y),
+                ("output_y_h", self.output_y_h),
+            ]
+        )
+        input_x_shape = (
+            (self.seq_length, self.batch_size, self.input_size)
+            if self.layout == 0
+            else (self.batch_size, self.seq_length, self.input_size)
+        )
+        w_shape = (self.num_directions, 3 * self.hidden_size, self.input_size)
+        r_shape = (self.num_directions, 3 * self.hidden_size, self.hidden_size)
+        b_shape = (
+            (self.num_directions, 6 * self.hidden_size)
+            if self.input_b is not None
+            else None
+        )
+        seq_shape = (self.batch_size,) if self.input_sequence_lens is not None else None
+        state_shape = (
+            (self.num_directions, self.batch_size, self.hidden_size)
+            if self.layout == 0
+            else (self.batch_size, self.num_directions, self.hidden_size)
+        )
+        h_shape = (
+            state_shape
+            if self.input_initial_h is not None or self.output_y_h is not None
+            else None
+        )
+        y_shape = (
+            (self.seq_length, self.num_directions, self.batch_size, self.hidden_size)
+            if self.layout == 0
+            else (self.batch_size, self.seq_length, self.num_directions, self.hidden_size)
+        )
+        param_decls = emitter.build_param_decls(
+            [
+                (
+                    params["input_x"],
+                    c_type,
+                    emitter.param_array_suffix(input_x_shape),
+                    True,
+                ),
+                (
+                    params["input_w"],
+                    c_type,
+                    emitter.param_array_suffix(w_shape),
+                    True,
+                ),
+                (
+                    params["input_r"],
+                    c_type,
+                    emitter.param_array_suffix(r_shape),
+                    True,
+                ),
+                (
+                    (
+                        params["input_b"],
+                        c_type,
+                        emitter.param_array_suffix(b_shape),
+                        True,
+                    )
+                    if params["input_b"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (
+                        params["input_sequence_lens"],
+                        (self.sequence_lens_dtype or ScalarType.I64).c_type,
+                        emitter.param_array_suffix(seq_shape),
+                        True,
+                    )
+                    if params["input_sequence_lens"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (
+                        params["input_initial_h"],
+                        c_type,
+                        emitter.param_array_suffix(h_shape),
+                        True,
+                    )
+                    if params["input_initial_h"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (
+                        params["output_y"],
+                        c_type,
+                        emitter.param_array_suffix(y_shape),
+                        False,
+                    )
+                    if params["output_y"]
+                    else (None, "", "", False)
+                ),
+                (
+                    (
+                        params["output_y_h"],
+                        c_type,
+                        emitter.param_array_suffix(h_shape),
+                        False,
+                    )
+                    if params["output_y_h"]
+                    else (None, "", "", False)
+                ),
+            ]
+        )
+        activation_functions = tuple(
+            emitter.rnn_activation_function_name(
+                kind, alpha, beta, self.dtype
+            )
+            for kind, alpha, beta in zip(
+                self.activation_kinds,
+                self.activation_alphas,
+                self.activation_betas,
+            )
+        )
+        rendered = state.templates["gru"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input_x=params["input_x"],
+            input_w=params["input_w"],
+            input_r=params["input_r"],
+            input_b=params["input_b"],
+            input_sequence_lens=params["input_sequence_lens"],
+            input_initial_h=params["input_initial_h"],
+            output_y=params["output_y"],
+            output_y_h=params["output_y_h"],
+            params=param_decls,
+            c_type=c_type,
+            seq_c_type=(self.sequence_lens_dtype or ScalarType.I64).c_type,
+            zero_literal=zero_literal,
+            one_literal=emitter.format_literal(self.dtype, 1),
+            clip_literal=(
+                emitter.format_floating(self.clip, self.dtype)
+                if self.clip is not None
+                else emitter.format_literal(self.dtype, 0)
+            ),
+            use_clip=int(self.clip is not None and self.clip > 0),
+            seq_length=self.seq_length,
+            batch_size=self.batch_size,
+            input_size=self.input_size,
+            hidden_size=self.hidden_size,
+            num_directions=self.num_directions,
+            layout=self.layout,
+            direction=self.direction,
+            linear_before_reset=self.linear_before_reset,
+            activation_functions=activation_functions,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
 
 @dataclass(frozen=True)
 class LstmOp(RenderableOpBase):
@@ -2850,6 +3714,215 @@ class LstmOp(RenderableOpBase):
     dtype: ScalarType
     sequence_lens_dtype: ScalarType | None
 
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.output_y or self.output_y_h or self.output_y_c)
+        c_type = output_dtype.c_type
+        zero_literal = output_dtype.zero_literal
+        params = emitter.shared_param_map(
+            [
+                ("input_x", self.input_x),
+                ("input_w", self.input_w),
+                ("input_r", self.input_r),
+                ("input_b", self.input_b),
+                ("input_sequence_lens", self.input_sequence_lens),
+                ("input_initial_h", self.input_initial_h),
+                ("input_initial_c", self.input_initial_c),
+                ("input_p", self.input_p),
+                ("output_y", self.output_y),
+                ("output_y_h", self.output_y_h),
+                ("output_y_c", self.output_y_c),
+            ]
+        )
+        input_x_shape = (
+            (self.seq_length, self.batch_size, self.input_size)
+            if self.layout == 0
+            else (self.batch_size, self.seq_length, self.input_size)
+        )
+        w_shape = (self.num_directions, 4 * self.hidden_size, self.input_size)
+        r_shape = (self.num_directions, 4 * self.hidden_size, self.hidden_size)
+        b_shape = (
+            (self.num_directions, 8 * self.hidden_size)
+            if self.input_b is not None
+            else None
+        )
+        seq_shape = (self.batch_size,) if self.input_sequence_lens is not None else None
+        state_shape = (
+            (self.num_directions, self.batch_size, self.hidden_size)
+            if self.layout == 0
+            else (self.batch_size, self.num_directions, self.hidden_size)
+        )
+        h_shape = (
+            state_shape
+            if self.input_initial_h is not None or self.output_y_h is not None
+            else None
+        )
+        c_shape = (
+            state_shape
+            if self.input_initial_c is not None or self.output_y_c is not None
+            else None
+        )
+        p_shape = (
+            (self.num_directions, 3 * self.hidden_size)
+            if self.input_p is not None
+            else None
+        )
+        y_shape = (
+            (self.seq_length, self.num_directions, self.batch_size, self.hidden_size)
+            if self.layout == 0
+            else (self.batch_size, self.seq_length, self.num_directions, self.hidden_size)
+        )
+        param_decls = emitter.build_param_decls(
+            [
+                (
+                    params["input_x"],
+                    c_type,
+                    emitter.param_array_suffix(input_x_shape),
+                    True,
+                ),
+                (
+                    params["input_w"],
+                    c_type,
+                    emitter.param_array_suffix(w_shape),
+                    True,
+                ),
+                (
+                    params["input_r"],
+                    c_type,
+                    emitter.param_array_suffix(r_shape),
+                    True,
+                ),
+                (
+                    (
+                        params["input_b"],
+                        c_type,
+                        emitter.param_array_suffix(b_shape),
+                        True,
+                    )
+                    if params["input_b"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (
+                        params["input_sequence_lens"],
+                        (self.sequence_lens_dtype or ScalarType.I64).c_type,
+                        emitter.param_array_suffix(seq_shape),
+                        True,
+                    )
+                    if params["input_sequence_lens"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (
+                        params["input_initial_h"],
+                        c_type,
+                        emitter.param_array_suffix(h_shape),
+                        True,
+                    )
+                    if params["input_initial_h"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (
+                        params["input_initial_c"],
+                        c_type,
+                        emitter.param_array_suffix(c_shape),
+                        True,
+                    )
+                    if params["input_initial_c"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (
+                        params["input_p"],
+                        c_type,
+                        emitter.param_array_suffix(p_shape),
+                        True,
+                    )
+                    if params["input_p"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (
+                        params["output_y"],
+                        c_type,
+                        emitter.param_array_suffix(y_shape),
+                        False,
+                    )
+                    if params["output_y"]
+                    else (None, "", "", False)
+                ),
+                (
+                    (
+                        params["output_y_h"],
+                        c_type,
+                        emitter.param_array_suffix(h_shape),
+                        False,
+                    )
+                    if params["output_y_h"]
+                    else (None, "", "", False)
+                ),
+                (
+                    (
+                        params["output_y_c"],
+                        c_type,
+                        emitter.param_array_suffix(c_shape),
+                        False,
+                    )
+                    if params["output_y_c"]
+                    else (None, "", "", False)
+                ),
+            ]
+        )
+        activation_functions = tuple(
+            emitter.rnn_activation_function_name(
+                kind, alpha, beta, self.dtype
+            )
+            for kind, alpha, beta in zip(
+                self.activation_kinds,
+                self.activation_alphas,
+                self.activation_betas,
+            )
+        )
+        rendered = state.templates["lstm"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input_x=params["input_x"],
+            input_w=params["input_w"],
+            input_r=params["input_r"],
+            input_b=params["input_b"],
+            input_sequence_lens=params["input_sequence_lens"],
+            input_initial_h=params["input_initial_h"],
+            input_initial_c=params["input_initial_c"],
+            input_p=params["input_p"],
+            output_y=params["output_y"],
+            output_y_h=params["output_y_h"],
+            output_y_c=params["output_y_c"],
+            params=param_decls,
+            c_type=c_type,
+            seq_c_type=(self.sequence_lens_dtype or ScalarType.I64).c_type,
+            zero_literal=zero_literal,
+            one_literal=emitter.format_literal(self.dtype, 1),
+            clip_literal=(
+                emitter.format_floating(self.clip, self.dtype)
+                if self.clip is not None
+                else emitter.format_literal(self.dtype, 0)
+            ),
+            use_clip=int(self.clip is not None and self.clip > 0),
+            seq_length=self.seq_length,
+            batch_size=self.batch_size,
+            input_size=self.input_size,
+            hidden_size=self.hidden_size,
+            num_directions=self.num_directions,
+            layout=self.layout,
+            direction=self.direction,
+            input_forget=self.input_forget,
+            activation_functions=activation_functions,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
 
 @dataclass(frozen=True)
 class AdagradOp(RenderableOpBase):
@@ -2886,6 +3959,109 @@ class AdagradOp(RenderableOpBase):
                 ]
             )
         return tuple(args)
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.outputs[0])
+        c_type = output_dtype.c_type
+        params = emitter.shared_param_map(
+            [
+                ("rate", self.rate),
+                ("timestep", self.timestep),
+                *((f"input{idx}", name) for idx, name in enumerate(self.inputs)),
+                *((f"grad{idx}", name) for idx, name in enumerate(self.gradients)),
+                *((f"acc{idx}", name) for idx, name in enumerate(self.accumulators)),
+                *((f"output{idx}", name) for idx, name in enumerate(self.outputs)),
+                *(
+                    (f"acc_output{idx}", name)
+                    for idx, name in enumerate(self.accumulator_outputs)
+                ),
+            ]
+        )
+        rate_suffix = emitter.param_array_suffix(
+            self.rate_shape, emitter.dim_names_for(self.rate)
+        )
+        timestep_suffix = emitter.param_array_suffix(
+            self.timestep_shape, emitter.dim_names_for(self.timestep)
+        )
+        param_specs = [
+            (params["rate"], self.rate_dtype.c_type, rate_suffix, True),
+            (
+                params["timestep"],
+                self.timestep_dtype.c_type,
+                timestep_suffix,
+                True,
+            ),
+        ]
+        tensor_specs = []
+        for idx, shape in enumerate(self.output_shapes):
+            input_suffix = emitter.param_array_suffix(
+                self.tensor_shapes[idx], emitter.dim_names_for(self.inputs[idx])
+            )
+            grad_suffix = emitter.param_array_suffix(
+                self.tensor_shapes[idx], emitter.dim_names_for(self.gradients[idx])
+            )
+            acc_suffix = emitter.param_array_suffix(
+                self.tensor_shapes[idx], emitter.dim_names_for(self.accumulators[idx])
+            )
+            output_suffix = emitter.param_array_suffix(
+                self.output_shapes[idx], emitter.dim_names_for(self.outputs[idx])
+            )
+            acc_output_suffix = emitter.param_array_suffix(
+                self.output_shapes[idx],
+                emitter.dim_names_for(self.accumulator_outputs[idx]),
+            )
+            param_specs.extend(
+                [
+                    (params[f"input{idx}"], c_type, input_suffix, True),
+                    (params[f"grad{idx}"], c_type, grad_suffix, True),
+                    (params[f"acc{idx}"], c_type, acc_suffix, True),
+                    (params[f"output{idx}"], c_type, output_suffix, False),
+                    (
+                        params[f"acc_output{idx}"],
+                        c_type,
+                        acc_output_suffix,
+                        False,
+                    ),
+                ]
+            )
+            output_dim_names = emitter.dim_names_for(self.outputs[idx])
+            shape_exprs = CEmitterCompat.shape_dim_exprs(shape, output_dim_names)
+            loop_vars = CEmitterCompat.loop_vars(shape)
+            index_suffix = "".join(f"[{var}]" for var in loop_vars)
+            tensor_specs.append(
+                {
+                    "shape": shape_exprs,
+                    "loop_vars": loop_vars,
+                    "input_expr": f"{params[f'input{idx}']}{index_suffix}",
+                    "grad_expr": f"{params[f'grad{idx}']}{index_suffix}",
+                    "acc_expr": f"{params[f'acc{idx}']}{index_suffix}",
+                    "output_expr": f"{params[f'output{idx}']}{index_suffix}",
+                    "acc_output_expr": f"{params[f'acc_output{idx}']}{index_suffix}",
+                }
+            )
+        param_decls = emitter.build_param_decls(param_specs)
+        rendered = state.templates["adagrad"].render(
+            model_name=model.name,
+            op_name=op_name,
+            rate=params["rate"],
+            timestep=params["timestep"],
+            params=param_decls,
+            c_type=c_type,
+            one_literal=emitter.format_literal(self.dtype, 1),
+            decay_factor_literal=emitter.format_floating(
+                self.decay_factor, self.dtype
+            ),
+            norm_coefficient_literal=emitter.format_floating(
+                self.norm_coefficient, self.dtype
+            ),
+            epsilon_literal=emitter.format_floating(self.epsilon, self.dtype),
+            dtype=self.dtype,
+            tensors=tensor_specs,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
 @dataclass(frozen=True)
@@ -2924,6 +4100,107 @@ class MomentumOp(RenderableOpBase):
                 ]
             )
         return tuple(args)
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.outputs[0])
+        c_type = output_dtype.c_type
+        params = emitter.shared_param_map(
+            [
+                ("rate", self.rate),
+                ("timestep", self.timestep),
+                *((f"input{idx}", name) for idx, name in enumerate(self.inputs)),
+                *((f"grad{idx}", name) for idx, name in enumerate(self.gradients)),
+                *((f"vel{idx}", name) for idx, name in enumerate(self.velocities)),
+                *((f"output{idx}", name) for idx, name in enumerate(self.outputs)),
+                *(
+                    (f"vel_output{idx}", name)
+                    for idx, name in enumerate(self.velocity_outputs)
+                ),
+            ]
+        )
+        rate_suffix = emitter.param_array_suffix(
+            self.rate_shape, emitter.dim_names_for(self.rate)
+        )
+        timestep_suffix = emitter.param_array_suffix(
+            self.timestep_shape, emitter.dim_names_for(self.timestep)
+        )
+        param_specs = [
+            (params["rate"], self.rate_dtype.c_type, rate_suffix, True),
+            (
+                params["timestep"],
+                self.timestep_dtype.c_type,
+                timestep_suffix,
+                True,
+            ),
+        ]
+        tensor_specs = []
+        for idx, shape in enumerate(self.output_shapes):
+            input_suffix = emitter.param_array_suffix(
+                self.tensor_shapes[idx], emitter.dim_names_for(self.inputs[idx])
+            )
+            grad_suffix = emitter.param_array_suffix(
+                self.tensor_shapes[idx], emitter.dim_names_for(self.gradients[idx])
+            )
+            vel_suffix = emitter.param_array_suffix(
+                self.tensor_shapes[idx], emitter.dim_names_for(self.velocities[idx])
+            )
+            output_suffix = emitter.param_array_suffix(
+                self.output_shapes[idx], emitter.dim_names_for(self.outputs[idx])
+            )
+            vel_output_suffix = emitter.param_array_suffix(
+                self.output_shapes[idx],
+                emitter.dim_names_for(self.velocity_outputs[idx]),
+            )
+            param_specs.extend(
+                [
+                    (params[f"input{idx}"], c_type, input_suffix, True),
+                    (params[f"grad{idx}"], c_type, grad_suffix, True),
+                    (params[f"vel{idx}"], c_type, vel_suffix, True),
+                    (params[f"output{idx}"], c_type, output_suffix, False),
+                    (
+                        params[f"vel_output{idx}"],
+                        c_type,
+                        vel_output_suffix,
+                        False,
+                    ),
+                ]
+            )
+            output_dim_names = emitter.dim_names_for(self.outputs[idx])
+            shape_exprs = CEmitterCompat.shape_dim_exprs(shape, output_dim_names)
+            loop_vars = CEmitterCompat.loop_vars(shape)
+            index_suffix = "".join(f"[{var}]" for var in loop_vars)
+            tensor_specs.append(
+                {
+                    "shape": shape_exprs,
+                    "loop_vars": loop_vars,
+                    "input_expr": f"{params[f'input{idx}']}{index_suffix}",
+                    "grad_expr": f"{params[f'grad{idx}']}{index_suffix}",
+                    "vel_expr": f"{params[f'vel{idx}']}{index_suffix}",
+                    "output_expr": f"{params[f'output{idx}']}{index_suffix}",
+                    "vel_output_expr": f"{params[f'vel_output{idx}']}{index_suffix}",
+                }
+            )
+        param_decls = emitter.build_param_decls(param_specs)
+        rendered = state.templates["momentum"].render(
+            model_name=model.name,
+            op_name=op_name,
+            rate=params["rate"],
+            timestep=params["timestep"],
+            params=param_decls,
+            c_type=c_type,
+            one_literal=emitter.format_literal(self.dtype, 1),
+            norm_coefficient_literal=emitter.format_floating(
+                self.norm_coefficient, self.dtype
+            ),
+            alpha_literal=emitter.format_floating(self.alpha, self.dtype),
+            beta_literal=emitter.format_floating(self.beta, self.dtype),
+            mode=self.mode,
+            tensors=tensor_specs,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
 @dataclass(frozen=True)

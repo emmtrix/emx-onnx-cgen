@@ -9,7 +9,10 @@ from ...ops import COMPARE_FUNCTIONS, OperatorKind, binary_op_symbol
 from ...errors import ShapeInferenceError, UnsupportedOpError
 from ..op_base import (
     BroadcastingOpBase,
+    CEmitterCompat,
     ElementwiseOpBase,
+    EmitContext,
+    Emitter,
     RenderableOpBase,
     VariadicLikeOpBase,
 )
@@ -292,6 +295,153 @@ class QLinearMulOp(RenderableOpBase):
     input1_zero_shape: tuple[int, ...]
     output_zero_shape: tuple[int, ...]
 
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("input0_scale", self.input0_scale),
+                ("input0_zero_point", self.input0_zero_point),
+                ("input1", self.input1),
+                ("input1_scale", self.input1_scale),
+                ("input1_zero_point", self.input1_zero_point),
+                ("output_scale", self.output_scale),
+                ("output_zero_point", self.output_zero_point),
+                ("output", self.output),
+            ]
+        )
+        output_shape = CEmitterCompat.codegen_shape(self.output_shape)
+        output_loop_vars = CEmitterCompat.loop_vars(self.output_shape)
+        output_index_expr = f"{params['output']}" + "".join(
+            f"[{var}]" for var in output_loop_vars
+        )
+        input0_index_expr = CEmitterCompat.broadcast_index_expr(
+            params["input0"],
+            self.input0_shape,
+            self.output_shape,
+            output_loop_vars,
+        )
+        input1_index_expr = CEmitterCompat.broadcast_index_expr(
+            params["input1"],
+            self.input1_shape,
+            self.output_shape,
+            output_loop_vars,
+        )
+        input0_suffix = emitter.param_array_suffix(self.input0_shape)
+        input1_suffix = emitter.param_array_suffix(self.input1_shape)
+        input0_scale_suffix = emitter.param_array_suffix(self.input0_scale_shape)
+        input1_scale_suffix = emitter.param_array_suffix(self.input1_scale_shape)
+        output_scale_suffix = emitter.param_array_suffix(self.output_scale_shape)
+        input0_zero_suffix = emitter.param_array_suffix(self.input0_zero_shape)
+        input1_zero_suffix = emitter.param_array_suffix(self.input1_zero_shape)
+        output_zero_suffix = emitter.param_array_suffix(self.output_zero_shape)
+        output_suffix = emitter.param_array_suffix(self.output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (
+                    params["input0"],
+                    self.input0_dtype.c_type,
+                    input0_suffix,
+                    True,
+                ),
+                (
+                    params["input0_scale"],
+                    self.input0_scale_dtype.c_type,
+                    input0_scale_suffix,
+                    True,
+                ),
+                (
+                    params["input0_zero_point"],
+                    self.input0_dtype.c_type,
+                    input0_zero_suffix,
+                    True,
+                ),
+                (
+                    params["input1"],
+                    self.input1_dtype.c_type,
+                    input1_suffix,
+                    True,
+                ),
+                (
+                    params["input1_scale"],
+                    self.input1_scale_dtype.c_type,
+                    input1_scale_suffix,
+                    True,
+                ),
+                (
+                    params["input1_zero_point"],
+                    self.input1_dtype.c_type,
+                    input1_zero_suffix,
+                    True,
+                ),
+                (
+                    params["output_scale"],
+                    self.output_scale_dtype.c_type,
+                    output_scale_suffix,
+                    True,
+                ),
+                (
+                    params["output_zero_point"],
+                    self.dtype.c_type,
+                    output_zero_suffix,
+                    True,
+                ),
+                (
+                    params["output"],
+                    self.dtype.c_type,
+                    output_suffix,
+                    False,
+                ),
+            ]
+        )
+        compute_dtype = (
+            ScalarType.F64
+            if ScalarType.F64
+            in {
+                self.input0_scale_dtype,
+                self.input1_scale_dtype,
+                self.output_scale_dtype,
+            }
+            else ScalarType.F32
+        )
+        compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
+
+        scale_index = "0"
+        rendered = state.templates["qlinear_mul"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input0=params["input0"],
+            input1=params["input1"],
+            input0_scale=params["input0_scale"],
+            input0_zero_point=params["input0_zero_point"],
+            input1_scale=params["input1_scale"],
+            input1_zero_point=params["input1_zero_point"],
+            output_scale=params["output_scale"],
+            output_zero_point=params["output_zero_point"],
+            output=params["output"],
+            params=param_decls,
+            compute_type=compute_type,
+            output_c_type=self.dtype.c_type,
+            input0_index_expr=input0_index_expr,
+            input1_index_expr=input1_index_expr,
+            input0_scale_expr=f"{params['input0_scale']}[{scale_index}]",
+            input1_scale_expr=f"{params['input1_scale']}[{scale_index}]",
+            output_scale_expr=f"{params['output_scale']}[{scale_index}]",
+            input0_zero_expr=f"{params['input0_zero_point']}[{scale_index}]",
+            input1_zero_expr=f"{params['input1_zero_point']}[{scale_index}]",
+            output_zero_expr=f"{params['output_zero_point']}[{scale_index}]",
+            output_loop_vars=output_loop_vars,
+            output_loop_bounds=output_shape,
+            output_index_expr=output_index_expr,
+            compute_dtype=compute_dtype,
+            min_literal=self.dtype.min_literal,
+            max_literal=self.dtype.max_literal,
+            dim_args=emitter.dim_args_str(),
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
 
 @dataclass(frozen=True)
 class QLinearAddOp(RenderableOpBase):
@@ -330,3 +480,129 @@ class QLinearAddOp(RenderableOpBase):
     input0_zero_shape: tuple[int, ...]
     input1_zero_shape: tuple[int, ...]
     output_zero_shape: tuple[int, ...]
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("input0_scale", self.input0_scale),
+                ("input0_zero_point", self.input0_zero_point),
+                ("input1", self.input1),
+                ("input1_scale", self.input1_scale),
+                ("input1_zero_point", self.input1_zero_point),
+                ("output_scale", self.output_scale),
+                ("output_zero_point", self.output_zero_point),
+                ("output", self.output),
+            ]
+        )
+        output_shape = CEmitterCompat.codegen_shape(self.output_shape)
+        output_loop_vars = CEmitterCompat.loop_vars(output_shape)
+        output_index_expr = f"{params['output']}" + "".join(
+            f"[{var}]" for var in output_loop_vars
+        )
+        input0_index_expr = CEmitterCompat.broadcast_index_expr(
+            params["input0"], self.input0_shape, self.output_shape, output_loop_vars
+        )
+        input1_index_expr = CEmitterCompat.broadcast_index_expr(
+            params["input1"], self.input1_shape, self.output_shape, output_loop_vars
+        )
+        input0_suffix = emitter.param_array_suffix(self.input0_shape)
+        input1_suffix = emitter.param_array_suffix(self.input1_shape)
+        input0_scale_suffix = emitter.param_array_suffix(self.input0_scale_shape)
+        input1_scale_suffix = emitter.param_array_suffix(self.input1_scale_shape)
+        output_scale_suffix = emitter.param_array_suffix(self.output_scale_shape)
+        input0_zero_suffix = emitter.param_array_suffix(self.input0_zero_shape)
+        input1_zero_suffix = emitter.param_array_suffix(self.input1_zero_shape)
+        output_zero_suffix = emitter.param_array_suffix(self.output_zero_shape)
+        output_suffix = emitter.param_array_suffix(self.output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], self.input0_dtype.c_type, input0_suffix, True),
+                (
+                    params["input0_scale"],
+                    self.input0_scale_dtype.c_type,
+                    input0_scale_suffix,
+                    True,
+                ),
+                (
+                    params["input0_zero_point"],
+                    self.input0_dtype.c_type,
+                    input0_zero_suffix,
+                    True,
+                ),
+                (params["input1"], self.input1_dtype.c_type, input1_suffix, True),
+                (
+                    params["input1_scale"],
+                    self.input1_scale_dtype.c_type,
+                    input1_scale_suffix,
+                    True,
+                ),
+                (
+                    params["input1_zero_point"],
+                    self.input1_dtype.c_type,
+                    input1_zero_suffix,
+                    True,
+                ),
+                (
+                    params["output_scale"],
+                    self.output_scale_dtype.c_type,
+                    output_scale_suffix,
+                    True,
+                ),
+                (
+                    params["output_zero_point"],
+                    self.dtype.c_type,
+                    output_zero_suffix,
+                    True,
+                ),
+                (params["output"], self.dtype.c_type, output_suffix, False),
+            ]
+        )
+        compute_dtype = (
+            ScalarType.F64
+            if ScalarType.F64
+            in {
+                self.input0_scale_dtype,
+                self.input1_scale_dtype,
+                self.output_scale_dtype,
+            }
+            else ScalarType.F32
+        )
+        compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
+
+        scale_index = "0"
+        rendered = state.templates["qlinear_add"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input0=params["input0"],
+            input1=params["input1"],
+            input0_scale=params["input0_scale"],
+            input0_zero_point=params["input0_zero_point"],
+            input1_scale=params["input1_scale"],
+            input1_zero_point=params["input1_zero_point"],
+            output_scale=params["output_scale"],
+            output_zero_point=params["output_zero_point"],
+            output=params["output"],
+            params=param_decls,
+            compute_type=compute_type,
+            output_c_type=self.dtype.c_type,
+            input0_index_expr=input0_index_expr,
+            input1_index_expr=input1_index_expr,
+            input0_scale_expr=f"{params['input0_scale']}[{scale_index}]",
+            input1_scale_expr=f"{params['input1_scale']}[{scale_index}]",
+            output_scale_expr=f"{params['output_scale']}[{scale_index}]",
+            input0_zero_expr=f"{params['input0_zero_point']}[{scale_index}]",
+            input1_zero_expr=f"{params['input1_zero_point']}[{scale_index}]",
+            output_zero_expr=f"{params['output_zero_point']}[{scale_index}]",
+            output_loop_vars=output_loop_vars,
+            output_loop_bounds=output_shape,
+            output_index_expr=output_index_expr,
+            compute_dtype=compute_dtype,
+            min_literal=self.dtype.min_literal,
+            max_literal=self.dtype.max_literal,
+            dim_args=emitter.dim_args_str(),
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)

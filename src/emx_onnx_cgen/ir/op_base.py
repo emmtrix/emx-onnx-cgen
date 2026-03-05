@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 from abc import ABC, abstractmethod
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import ClassVar, Protocol
 
@@ -20,11 +21,25 @@ class Emitter(Protocol):
     def ctx_shape(self, name: str) -> tuple[int, ...]: ...
     def ctx_dtype(self, name: str): ...
     def derived(self, op: "OpBase", key: str): ...
-    def param_array_suffix(self, shape: tuple[int, ...]) -> str: ...
+    def param_array_suffix(
+        self,
+        shape: tuple[int, ...],
+        dim_names: Mapping[int, str] | None = ...,
+        *,
+        dtype: "ScalarType | None" = ...,
+    ) -> str: ...
     def build_param_decls(self, params): ...
     def accumulation_dtype(self, dtype) -> "ScalarType": ...
     def format_literal(self, dtype, value: float | int | bool) -> str: ...
     def format_floating(self, value: float, dtype) -> str: ...
+    def dim_names_for(self, name: str) -> Mapping[int, str]: ...
+    def dim_args_str(self) -> str: ...
+    def rnn_activation_function_name(
+        self, kind: str, alpha: float, beta: float, dtype: "ScalarType"
+    ) -> str: ...
+    def scalar_registry(self): ...
+    @property
+    def replicate_ort_bugs(self) -> bool: ...
 
 
 @dataclass(frozen=True)
@@ -753,6 +768,93 @@ class CEmitterCompat:
                 return 0
             count *= dim
         return count
+
+    @staticmethod
+    def shape_dim_exprs(
+        shape: tuple[int, ...],
+        dim_names: Mapping[int, str] | None,
+    ) -> tuple[str | int, ...]:
+        dim_names = dim_names or {}
+        if not shape:
+            shape = (1,)
+        return tuple(dim_names.get(index, dim) for index, dim in enumerate(shape))
+
+    @staticmethod
+    def element_count_expr(shape_exprs: Sequence[str | int]) -> str:
+        if not shape_exprs:
+            return "1"
+        return " * ".join(str(dim) for dim in shape_exprs)
+
+    @staticmethod
+    def broadcast_index_expr(
+        name: str,
+        input_shape: tuple[int, ...],
+        output_shape: tuple[int, ...],
+        loop_vars: tuple[str, ...],
+    ) -> str:
+        if not input_shape:
+            return f"{name}[0]"
+        output_shape = CEmitterCompat.codegen_shape(output_shape)
+        if len(output_shape) != len(loop_vars):
+            raise ValueError("Loop variables must match output shape rank")
+        offset = len(output_shape) - len(input_shape)
+        indices: list[str] = []
+        for input_dim, dim_size in enumerate(input_shape):
+            output_dim = input_dim + offset
+            if dim_size == 1:
+                indices.append("[0]")
+            else:
+                indices.append(f"[{loop_vars[output_dim]}]")
+        return f"{name}{''.join(indices)}"
+
+    @staticmethod
+    def matmul_index_exprs(
+        batch_vars: tuple[str, ...],
+        row_var: str | None,
+        col_var: str | None,
+        batch_rank: int,
+        *,
+        input0: str,
+        input1: str,
+        left_vector: bool,
+        right_vector: bool,
+        input0_shape: tuple[int, ...],
+        input1_shape: tuple[int, ...],
+        input0_batch_shape: tuple[int, ...],
+        input1_batch_shape: tuple[int, ...],
+    ) -> tuple[str, str]:
+        def batch_indices(batch_shape: tuple[int, ...], actual_rank: int) -> list[str]:
+            if actual_rank == 0:
+                return []
+            offset = batch_rank - actual_rank
+            indices: list[str] = []
+            for idx in range(actual_rank):
+                dim = batch_shape[offset + idx]
+                var = batch_vars[offset + idx]
+                indices.append("0" if dim == 1 else var)
+            return indices
+
+        if left_vector:
+            input0_indices = ["k"]
+        else:
+            input0_batch_rank = len(input0_shape) - 2
+            input0_indices = batch_indices(input0_batch_shape, input0_batch_rank)
+            input0_indices.append(row_var if row_var is not None else "0")
+            input0_indices.append("k")
+        if right_vector:
+            input1_indices = ["k"]
+        else:
+            input1_batch_rank = len(input1_shape) - 2
+            input1_indices = batch_indices(input1_batch_shape, input1_batch_rank)
+            input1_indices.append("k")
+            input1_indices.append(col_var if col_var is not None else "0")
+        input0_index_expr = f"{input0}" + "".join(
+            f"[{index}]" for index in input0_indices
+        )
+        input1_index_expr = f"{input1}" + "".join(
+            f"[{index}]" for index in input1_indices
+        )
+        return input0_index_expr, input1_index_expr
 
 
 def _io_field_names(op_type: type[OpBase]) -> tuple[tuple[str, ...], tuple[str, ...]]:
