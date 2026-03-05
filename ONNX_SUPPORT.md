@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1558 / 1802, 86.5% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1567 / 1802, 87.0% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1558 / 1802 ONNX files (86.5%).
+Coverage 1567 / 1802 ONNX files (87.0%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -606,10 +606,10 @@ Coverage 1558 / 1802 ONNX files (86.5%).
 | node/test_div_uint64/model.onnx | 14 | Data | ✅ | OK (max abs diff 0) |
 | node/test_div_uint8/model.onnx | 14 | Data | ✅ | OK (max abs diff 0) |
 | node/test_dropout_default/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
-| node/test_dropout_default_mask/model.onnx | 22 | Data | ❌ | Dropout mask output is not supported |
-| node/test_dropout_default_mask_ratio/model.onnx | 22 | Data | ❌ | Dropout supports only the data input and 1 or 2 outputs |
+| node/test_dropout_default_mask/model.onnx | 22 | Data | ✅ | OK (max abs diff 0, max ULP 0) |
+| node/test_dropout_default_mask_ratio/model.onnx | 22 | Data | ✅ | OK (max abs diff 0, max ULP 0) |
 | node/test_dropout_default_old/model.onnx | 11 | Data | ✅ | OK (max ULP 0) |
-| node/test_dropout_default_ratio/model.onnx | 22 | Data | ❌ | Dropout supports only the data input and 1 or 2 outputs |
+| node/test_dropout_default_ratio/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_dropout_random_old/model.onnx | 11 | Data | ✅ | OK (max ULP 0) |
 | node/test_dynamicquantizelinear/model.onnx | 11 | Data | ✅ | OK (max abs diff 0, max ULP 0) |
 | node/test_dynamicquantizelinear_expanded/model.onnx | 11 | Data | ✅ | OK (max abs diff 0, max ULP 0) |
@@ -1631,12 +1631,12 @@ Coverage 1558 / 1802 ONNX files (86.5%).
 | node/test_top_k_same_values_largest/model.onnx | 24 | Data | ✅ | OK (max abs diff 0) |
 | node/test_top_k_smallest/model.onnx | 24 | Data | ✅ | OK (max abs diff 0, max ULP 0) |
 | node/test_top_k_uint64/model.onnx | 24 | Data | ✅ | OK (max abs diff 0) |
-| node/test_training_dropout/model.onnx | 22 | Data | ❌ | Dropout supports only the data input and 1 or 2 outputs |
-| node/test_training_dropout_default/model.onnx | 22 | Data | ❌ | Dropout supports only the data input and 1 or 2 outputs |
-| node/test_training_dropout_default_mask/model.onnx | 22 | Data | ❌ | Dropout supports only the data input and 1 or 2 outputs |
-| node/test_training_dropout_mask/model.onnx | 22 | Data | ❌ | Dropout supports only the data input and 1 or 2 outputs |
-| node/test_training_dropout_zero_ratio/model.onnx | 22 | Data | ❌ | Dropout supports only the data input and 1 or 2 outputs |
-| node/test_training_dropout_zero_ratio_mask/model.onnx | 22 | Data | ❌ | Dropout supports only the data input and 1 or 2 outputs |
+| node/test_training_dropout/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
+| node/test_training_dropout_default/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
+| node/test_training_dropout_default_mask/model.onnx | 22 | Data | ✅ | OK (max abs diff 0, max ULP 0) |
+| node/test_training_dropout_mask/model.onnx | 22 | Data | ✅ | OK (max abs diff 0, max ULP 0) |
+| node/test_training_dropout_zero_ratio/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
+| node/test_training_dropout_zero_ratio_mask/model.onnx | 22 | Data | ✅ | OK (max abs diff 0, max ULP 0) |
 | node/test_transpose_all_permutations_0/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_transpose_all_permutations_1/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_transpose_all_permutations_2/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |

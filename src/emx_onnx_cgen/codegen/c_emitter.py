@@ -39,6 +39,7 @@ from ..ir.ops import (
     AveragePoolOp,
     BatchNormOp,
     BernoulliOp,
+    DropoutOp,
     BinaryOp,
     BlackmanWindowOp,
     CastOp,
@@ -2161,6 +2162,15 @@ class CEmitter:
                 output=name_map.get(op.output, op.output),
                 seed=op.seed,
             )
+        if isinstance(op, DropoutOp):
+            return DropoutOp(
+                input0=name_map.get(op.input0, op.input0),
+                output=name_map.get(op.output, op.output),
+                ratio=name_map.get(op.ratio, op.ratio),
+                training_mode=name_map.get(op.training_mode, op.training_mode),
+                mask=name_map.get(op.mask, op.mask),
+                seed=op.seed,
+            )
         if isinstance(op, OneHotOp):
             return OneHotOp(
                 indices=name_map.get(op.indices, op.indices),
@@ -2524,6 +2534,7 @@ class CEmitter:
                 "reshape": self._env.get_template("reshape_op.c.j2"),
                 "identity": self._env.get_template("identity_op.c.j2"),
                 "bernoulli": self._env.get_template("bernoulli_op.c.j2"),
+                "dropout": self._env.get_template("dropout_op.c.j2"),
                 "eye_like": self._env.get_template("eye_like_op.c.j2"),
                 "trilu": self._env.get_template("trilu_op.c.j2"),
                 "tile": self._env.get_template("tile_op.c.j2"),
@@ -3500,6 +3511,12 @@ class CEmitter:
         ):
             includes.add("#include <stdint.h>")
         if ScalarType.BOOL in model_dtypes:
+            includes.add("#include <stdbool.h>")
+        if any(
+            isinstance(op, DropoutOp)
+            and (op.training_mode is not None or op.mask is not None)
+            for op in resolved_ops
+        ):
             includes.add("#include <stdbool.h>")
         if any(
             isinstance(op, ReduceOp) and op.axes_input is not None
@@ -6034,6 +6051,15 @@ class CEmitter:
                 output=temp_map.get(op.output, op.output),
                 seed=op.seed,
             )
+        if isinstance(op, DropoutOp):
+            return DropoutOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                ratio=temp_map.get(op.ratio, op.ratio),
+                training_mode=temp_map.get(op.training_mode, op.training_mode),
+                mask=temp_map.get(op.mask, op.mask),
+                seed=op.seed,
+            )
         if isinstance(op, QLinearSoftmaxOp):
             return QLinearSoftmaxOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -6198,6 +6224,7 @@ class CEmitter:
             reshape_template=templates["reshape"],
             identity_template=templates["identity"],
             bernoulli_template=templates["bernoulli"],
+            dropout_template=templates["dropout"],
             eye_like_template=templates["eye_like"],
             trilu_template=templates["trilu"],
             tile_template=templates["tile"],
@@ -6752,6 +6779,7 @@ class CEmitter:
         reshape_template,
         identity_template,
         bernoulli_template,
+        dropout_template,
         eye_like_template,
         trilu_template,
         tile_template,
@@ -10594,6 +10622,90 @@ class CEmitter:
                 zero_literal=zero_literal,
                 dim_args=dim_args,
                 params=param_decls,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, DropoutOp):
+            output_shape = self._ctx_shape(op.output)
+            output_dim_names = _dim_names_for(op.output)
+            loop_vars = CEmitter._loop_vars(output_shape)
+            shape = CEmitter._shape_dim_exprs(output_shape, output_dim_names)
+            input_dtype = self._ctx_dtype(op.input0)
+            output_dtype = self._ctx_dtype(op.output)
+            output_suffix = self._param_array_suffix(output_shape, output_dim_names)
+            input_suffix = self._param_array_suffix(
+                output_shape, _dim_names_for(op.input0), dtype=input_dtype
+            )
+            ratio_shape = self._ctx_shape(op.ratio) if op.ratio is not None else ()
+            training_shape = (
+                self._ctx_shape(op.training_mode)
+                if op.training_mode is not None
+                else ()
+            )
+            ratio_suffix = (
+                self._param_array_suffix(ratio_shape, _dim_names_for(op.ratio))
+                if op.ratio is not None
+                else ""
+            )
+            training_suffix = (
+                self._param_array_suffix(
+                    training_shape,
+                    _dim_names_for(op.training_mode),
+                    dtype=ScalarType.BOOL,
+                )
+                if op.training_mode is not None
+                else ""
+            )
+            mask_suffix = (
+                self._param_array_suffix(
+                    output_shape, _dim_names_for(op.mask), dtype=ScalarType.BOOL
+                )
+                if op.mask is not None
+                else ""
+            )
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("ratio", op.ratio),
+                    ("training_mode", op.training_mode),
+                    ("output", op.output),
+                    ("mask", op.mask),
+                ]
+            )
+            param_decl_specs = [
+                (params["input0"], input_dtype.c_type, input_suffix, True),
+            ]
+            if op.ratio is not None:
+                ratio_dtype = self._ctx_dtype(op.ratio)
+                param_decl_specs.append(
+                    (params["ratio"], ratio_dtype.c_type, ratio_suffix, True)
+                )
+            if op.training_mode is not None:
+                param_decl_specs.append(
+                    (params["training_mode"], "bool", training_suffix, True)
+                )
+            param_decl_specs.append(
+                (params["output"], output_dtype.c_type, output_suffix, False)
+            )
+            if op.mask is not None:
+                param_decl_specs.append((params["mask"], "bool", mask_suffix, False))
+            param_decls = self._build_param_decls(param_decl_specs)
+            rendered = dropout_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                ratio=params.get("ratio"),
+                training_mode=params.get("training_mode"),
+                output=params["output"],
+                mask=params.get("mask"),
+                params=param_decls,
+                dim_args=dim_args,
+                shape=shape,
+                loop_vars=loop_vars,
+                c_type=output_dtype.c_type,
+                ratio_index_expr="[0]" if op.ratio is not None else "",
+                training_index_expr="[0]" if op.training_mode is not None else "",
+                index_expr="".join(f"[{var}]" for var in loop_vars),
+                seed=op.seed if op.seed is not None else 0,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, EyeLikeOp):
@@ -15499,6 +15611,15 @@ class CEmitter:
             )
         if isinstance(op, AffineGridOp):
             return ((op.grid, self._ctx_shape(op.grid), self._ctx_dtype(op.grid)),)
+        if isinstance(op, DropoutOp):
+            outputs = [
+                (op.output, self._ctx_shape(op.output), self._ctx_dtype(op.output))
+            ]
+            if op.mask is not None:
+                outputs.append(
+                    (op.mask, self._ctx_shape(op.mask), self._ctx_dtype(op.mask))
+                )
+            return tuple(outputs)
         return (
             (
                 op.output,
@@ -15695,6 +15816,8 @@ class CEmitter:
         if isinstance(op, IdentityOp):
             return self._ctx_shape(op.output)
         if isinstance(op, BernoulliOp):
+            return self._ctx_shape(op.output)
+        if isinstance(op, DropoutOp):
             return self._ctx_shape(op.output)
         if isinstance(op, EyeLikeOp):
             return self._ctx_shape(op.output)
@@ -15977,6 +16100,7 @@ class CEmitter:
                 ShapeOp,
                 SizeOp,
                 BernoulliOp,
+                DropoutOp,
                 EyeLikeOp,
                 RangeOp,
                 ReverseSequenceOp,
