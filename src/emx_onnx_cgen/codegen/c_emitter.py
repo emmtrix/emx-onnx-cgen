@@ -52,6 +52,7 @@ from ..ir.ops import (
     ConvTransposeOp,
     DeformConvOp,
     CumSumOp,
+    DFTOp,
     STFTOp,
     DepthToSpaceOp,
     DequantizeLinearOp,
@@ -70,6 +71,7 @@ from ..ir.ops import (
     GroupNormalizationOp,
     HammingWindowOp,
     HannWindowOp,
+    MelWeightMatrixOp,
     IfOptionalSequenceConstOp,
     HardmaxOp,
     IdentityOp,
@@ -614,6 +616,52 @@ class CEmitter:
         return decls
 
     @staticmethod
+    def _dft_stockham_stage_plan(
+        fft_length: int,
+    ) -> tuple[tuple[str, int, int], ...]:
+        stages: list[tuple[str, int, int]] = []
+        m = 1
+        while m < fft_length:
+            remainder = fft_length // m
+            if remainder % 4 == 0:
+                stage_span = fft_length // (4 * m)
+                stages.append(("radix4", m, stage_span))
+                m *= 4
+                continue
+            if remainder % 2 == 0:
+                stage_span = fft_length // (2 * m)
+                stages.append(("radix2", m, stage_span))
+                m *= 2
+                continue
+            return ()
+        return tuple(stages)
+
+    @staticmethod
+    def _dft_twiddle_table(
+        fft_length: int,
+        *,
+        inverse: bool,
+        dtype: ScalarType,
+    ) -> tuple[tuple[str, str], ...]:
+        sign = 1.0 if inverse else -1.0
+        twiddles: list[tuple[str, str]] = []
+        for index in range(fft_length):
+            angle = sign * 2.0 * math.pi * (index / fft_length)
+            real = math.cos(angle)
+            imag = math.sin(angle)
+            if abs(real) < 1e-15:
+                real = 0.0
+            if abs(imag) < 1e-15:
+                imag = 0.0
+            twiddles.append(
+                (
+                    CEmitter._format_literal(dtype, real),
+                    CEmitter._format_literal(dtype, imag),
+                )
+            )
+        return tuple(twiddles)
+
+    @staticmethod
     def _op_names(op: OpBase) -> tuple[str, ...]:
         names = (*op.input_names, *op.output_names)
         if any(not isinstance(name, str) for name in names):
@@ -739,6 +787,7 @@ class CEmitter:
             | NonMaxSuppressionOp
             | ExpandOp
             | CumSumOp
+            | DFTOp
             | RangeOp
             | BlackmanWindowOp
             | HammingWindowOp
@@ -829,6 +878,7 @@ class CEmitter:
         | NonMaxSuppressionOp
         | ExpandOp
         | CumSumOp
+        | DFTOp
         | RangeOp
         | BlackmanWindowOp
         | HammingWindowOp
@@ -2059,6 +2109,20 @@ class CEmitter:
                 frame_length_literal=op.frame_length_literal,
                 use_runtime_frame_length=op.use_runtime_frame_length,
             )
+        if isinstance(op, DFTOp):
+            return DFTOp(
+                input0=name_map.get(op.input0, op.input0),
+                axis_input=self._map_optional_name(name_map, op.axis_input),
+                output=name_map.get(op.output, op.output),
+                axis=op.axis,
+                dft_length=op.dft_length,
+                axis_variants=op.axis_variants,
+                dft_lengths=op.dft_lengths,
+                inverse=op.inverse,
+                onesided=op.onesided,
+                input_is_complex=op.input_is_complex,
+                fft_mode=op.fft_mode,
+            )
         if isinstance(op, LoopRangeOp):
             return LoopRangeOp(
                 trip_count=name_map.get(op.trip_count, op.trip_count),
@@ -2105,6 +2169,16 @@ class CEmitter:
                 size=name_map.get(op.size, op.size),
                 output=name_map.get(op.output, op.output),
                 periodic=op.periodic,
+            )
+        if isinstance(op, MelWeightMatrixOp):
+            return MelWeightMatrixOp(
+                num_mel_bins=name_map.get(op.num_mel_bins, op.num_mel_bins),
+                dft_length=name_map.get(op.dft_length, op.dft_length),
+                sample_rate=name_map.get(op.sample_rate, op.sample_rate),
+                lower_edge_hertz=name_map.get(op.lower_edge_hertz, op.lower_edge_hertz),
+                upper_edge_hertz=name_map.get(op.upper_edge_hertz, op.upper_edge_hertz),
+                output=name_map.get(op.output, op.output),
+                values=op.values,
             )
         if isinstance(op, BernoulliOp):
             return BernoulliOp(
@@ -2510,6 +2584,7 @@ class CEmitter:
                 "expand": self._env.get_template("expand_op.c.j2"),
                 "cumsum": self._env.get_template("cumsum_op.c.j2"),
                 "stft": self._env.get_template("stft_op.c.j2"),
+                "dft": self._env.get_template("dft_op.c.j2"),
                 "range": self._env.get_template("range_op.c.j2"),
                 "loop_range": self._env.get_template("loop_range_op.c.j2"),
                 "loop_sequence_insert": self._env.get_template(
@@ -2518,6 +2593,9 @@ class CEmitter:
                 "blackman_window": self._env.get_template("blackman_window_op.c.j2"),
                 "hamming_window": self._env.get_template("hamming_window_op.c.j2"),
                 "hann_window": self._env.get_template("hann_window_op.c.j2"),
+                "mel_weight_matrix": self._env.get_template(
+                    "mel_weight_matrix_op.c.j2"
+                ),
                 "one_hot": self._env.get_template("one_hot_op.c.j2"),
                 "tfidf_vectorizer": self._env.get_template("tfidf_vectorizer_op.c.j2"),
                 "string_concat": self._env.get_template("string_concat_op.c.j2"),
@@ -3333,6 +3411,7 @@ class CEmitter:
             | NonMaxSuppressionOp
             | ExpandOp
             | CumSumOp
+            | DFTOp
             | RangeOp
             | BlackmanWindowOp
             | HammingWindowOp
@@ -3362,6 +3441,8 @@ class CEmitter:
             and op.function in {ScalarFunction.ISINF, ScalarFunction.ISNAN}
             for op in resolved_ops
         ):
+            includes.add("#include <math.h>")
+        if any(isinstance(op, MelWeightMatrixOp) for op in resolved_ops):
             includes.add("#include <math.h>")
         constant_of_shape_inputs = {
             model.op_context.dtype(op.input0)
@@ -3712,6 +3793,7 @@ class CEmitter:
             | NonMaxSuppressionOp
             | ExpandOp
             | CumSumOp
+            | DFTOp
             | RangeOp
             | BlackmanWindowOp
             | HammingWindowOp
@@ -3918,6 +4000,7 @@ class CEmitter:
             | NonMaxSuppressionOp
             | ExpandOp
             | CumSumOp
+            | DFTOp
             | RangeOp
             | BlackmanWindowOp
             | HammingWindowOp
@@ -4049,6 +4132,7 @@ class CEmitter:
             | NonMaxSuppressionOp
             | ExpandOp
             | CumSumOp
+            | DFTOp
             | RangeOp
             | BlackmanWindowOp
             | HammingWindowOp
@@ -4441,6 +4525,7 @@ class CEmitter:
         | NonMaxSuppressionOp
         | ExpandOp
         | CumSumOp
+        | DFTOp
         | RangeOp
         | BlackmanWindowOp
         | HammingWindowOp
@@ -5623,6 +5708,16 @@ class CEmitter:
                 output=temp_map.get(op.output, op.output),
                 periodic=op.periodic,
             )
+        if isinstance(op, MelWeightMatrixOp):
+            return MelWeightMatrixOp(
+                num_mel_bins=temp_map.get(op.num_mel_bins, op.num_mel_bins),
+                dft_length=temp_map.get(op.dft_length, op.dft_length),
+                sample_rate=temp_map.get(op.sample_rate, op.sample_rate),
+                lower_edge_hertz=temp_map.get(op.lower_edge_hertz, op.lower_edge_hertz),
+                upper_edge_hertz=temp_map.get(op.upper_edge_hertz, op.upper_edge_hertz),
+                output=temp_map.get(op.output, op.output),
+                values=op.values,
+            )
         if isinstance(op, OneHotOp):
             return OneHotOp(
                 indices=temp_map.get(op.indices, op.indices),
@@ -6005,6 +6100,24 @@ class CEmitter:
                 largest=op.largest,
                 sorted=op.sorted,
             )
+        if isinstance(op, DFTOp):
+            return DFTOp(
+                input0=temp_map.get(op.input0, op.input0),
+                axis_input=(
+                    temp_map.get(op.axis_input, op.axis_input)
+                    if op.axis_input is not None
+                    else None
+                ),
+                output=temp_map.get(op.output, op.output),
+                axis=op.axis,
+                dft_length=op.dft_length,
+                axis_variants=op.axis_variants,
+                dft_lengths=op.dft_lengths,
+                inverse=op.inverse,
+                onesided=op.onesided,
+                input_is_complex=op.input_is_complex,
+                fft_mode=op.fft_mode,
+            )
         if isinstance(op, BernoulliOp):
             return BernoulliOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -6202,12 +6315,14 @@ class CEmitter:
             expand_template=templates["expand"],
             cumsum_template=templates["cumsum"],
             stft_template=templates["stft"],
+            dft_template=templates["dft"],
             range_template=templates["range"],
             loop_range_template=templates["loop_range"],
             loop_sequence_insert_template=templates["loop_sequence_insert"],
             blackman_window_template=templates["blackman_window"],
             hamming_window_template=templates["hamming_window"],
             hann_window_template=templates["hann_window"],
+            mel_weight_matrix_template=templates["mel_weight_matrix"],
             one_hot_template=templates["one_hot"],
             tfidf_vectorizer_template=templates["tfidf_vectorizer"],
             string_concat_template=templates["string_concat"],
@@ -6755,12 +6870,14 @@ class CEmitter:
         expand_template,
         cumsum_template,
         stft_template,
+        dft_template,
         range_template,
         loop_range_template,
         loop_sequence_insert_template,
         blackman_window_template,
         hamming_window_template,
         hann_window_template,
+        mel_weight_matrix_template,
         one_hot_template,
         tfidf_vectorizer_template,
         string_concat_template,
@@ -11913,6 +12030,123 @@ class CEmitter:
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, DFTOp):
+            input_shape = self._ctx_shape(op.input0)
+            output_shape = self._ctx_shape(op.output)
+            dft_dtype = self._ctx_dtype(op.output)
+            if dft_dtype != self._ctx_dtype(op.input0):
+                raise CodegenError("DFT input and output dtypes must match")
+            if not op.axis_variants or len(op.axis_variants) != len(op.dft_lengths):
+                raise CodegenError("DFT requires at least one valid axis variant")
+
+            rank = len(input_shape)
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("axis_input", op.axis_input),
+                    ("output", op.output),
+                ]
+            )
+            input_dim_names = _dim_names_for(op.input0)
+            output_dim_names = _dim_names_for(op.output)
+            input_shape_expr = CEmitter._shape_dim_exprs(input_shape, input_dim_names)
+            output_shape_expr = CEmitter._shape_dim_exprs(
+                output_shape, output_dim_names
+            )
+            axis_c_type = "int64_t"
+            if op.axis_input is not None:
+                axis_dtype = self._ctx_dtype(op.axis_input)
+                if axis_dtype not in {ScalarType.I32, ScalarType.I64}:
+                    raise CodegenError("DFT axis input must be int32 or int64")
+                axis_c_type = axis_dtype.c_type
+
+            input_suffix = self._param_array_suffix(
+                input_shape,
+                input_dim_names,
+                dtype=dft_dtype,
+            )
+            output_suffix = self._param_array_suffix(
+                output_shape,
+                output_dim_names,
+                dtype=dft_dtype,
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], dft_dtype.c_type, input_suffix, True),
+                    (
+                        params["axis_input"],
+                        axis_c_type,
+                        self._param_array_suffix(()),
+                        True,
+                    ),
+                    (params["output"], dft_dtype.c_type, output_suffix, False),
+                ]
+            )
+            axis_variants: list[dict[str, object]] = []
+            signal_rank = rank - 1
+            for axis, fft_length in zip(op.axis_variants, op.dft_lengths):
+                if axis < 0 or axis >= signal_rank:
+                    raise CodegenError("DFT axis must target a signal dimension")
+                if fft_length <= 0:
+                    raise CodegenError("DFT length must be > 0")
+                stage_plan = self._dft_stockham_stage_plan(fft_length)
+                use_fft = bool(stage_plan) and fft_length > 1
+                twiddles = self._dft_twiddle_table(
+                    fft_length,
+                    inverse=op.inverse,
+                    dtype=dft_dtype,
+                )
+                axis_variants.append(
+                    {
+                        "axis": axis,
+                        "outer_expr": CEmitter._element_count_expr(
+                            input_shape_expr[:axis]
+                        ),
+                        "inner_expr": CEmitter._element_count_expr(
+                            input_shape_expr[axis + 1 : signal_rank]
+                        ),
+                        "input_axis_expr": str(input_shape_expr[axis]),
+                        "output_axis_expr": str(output_shape_expr[axis]),
+                        "fft_length": fft_length,
+                        "use_fft": use_fft,
+                        "stage_data": [
+                            {"kind": kind, "m": m, "l": stage_span}
+                            for kind, m, stage_span in stage_plan
+                        ],
+                        "twiddle_re_values": [real for real, _ in twiddles],
+                        "twiddle_im_values": [imag for _, imag in twiddles],
+                        "twiddle_len": fft_length,
+                        "inverse_scale": CEmitter._format_literal(
+                            dft_dtype, 1.0 / float(fft_length)
+                        ),
+                    }
+                )
+
+            if op.axis_input is None and len(axis_variants) != 1:
+                raise CodegenError(
+                    "DFT with constant axis must lower to exactly one axis variant"
+                )
+
+            rendered = dft_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                params=param_decls,
+                input0=params["input0"],
+                axis_input=params["axis_input"],
+                axis_c_type=axis_c_type,
+                output=params["output"],
+                c_type=dft_dtype.c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                rank=rank,
+                axis_variants=axis_variants,
+                input_components=2 if op.input_is_complex else 1,
+                inverse=op.inverse,
+                onesided=op.onesided,
+                zero_literal=dft_dtype.zero_literal,
+                dim_args=dim_args,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, RangeOp):
             params = self._shared_param_map(
                 [
@@ -12342,6 +12576,81 @@ class CEmitter:
                 beta_literal=self._format_literal(compute_dtype, 0.5),
                 pi_literal=self._format_literal(compute_dtype, math.pi),
                 compute_scalar_dtype=compute_dtype,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, MelWeightMatrixOp):
+            params = self._shared_param_map(
+                [
+                    ("num_mel_bins", op.num_mel_bins),
+                    ("dft_length", op.dft_length),
+                    ("sample_rate", op.sample_rate),
+                    ("lower_edge_hertz", op.lower_edge_hertz),
+                    ("upper_edge_hertz", op.upper_edge_hertz),
+                    ("output", op.output),
+                ]
+            )
+            scalar_suffix = self._param_array_suffix(())
+            output_shape = self._ctx_shape(op.output)
+            output_suffix = self._param_array_suffix(output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (
+                        params["num_mel_bins"],
+                        self._ctx_dtype(op.num_mel_bins).c_type,
+                        scalar_suffix,
+                        True,
+                    ),
+                    (
+                        params["dft_length"],
+                        self._ctx_dtype(op.dft_length).c_type,
+                        scalar_suffix,
+                        True,
+                    ),
+                    (
+                        params["sample_rate"],
+                        self._ctx_dtype(op.sample_rate).c_type,
+                        scalar_suffix,
+                        True,
+                    ),
+                    (
+                        params["lower_edge_hertz"],
+                        self._ctx_dtype(op.lower_edge_hertz).c_type,
+                        scalar_suffix,
+                        True,
+                    ),
+                    (
+                        params["upper_edge_hertz"],
+                        self._ctx_dtype(op.upper_edge_hertz).c_type,
+                        scalar_suffix,
+                        True,
+                    ),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            output_dtype = self._ctx_dtype(op.output)
+            compute_dtype = (
+                ScalarType.F64 if output_dtype == ScalarType.F64 else ScalarType.F32
+            )
+            compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
+            rendered = mel_weight_matrix_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                num_mel_bins=params["num_mel_bins"],
+                dft_length=params["dft_length"],
+                sample_rate=params["sample_rate"],
+                lower_edge_hertz=params["lower_edge_hertz"],
+                upper_edge_hertz=params["upper_edge_hertz"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                output_suffix=output_suffix,
+                num_spectrogram_bins=output_shape[0],
+                num_mel_bins_dim=output_shape[1],
+                compute_type=compute_type,
+                seven_hundred_literal=self._format_literal(compute_dtype, 700.0),
+                mel_scale_literal=self._format_literal(compute_dtype, 2595.0),
+                ten_literal=self._format_literal(compute_dtype, 10.0),
+                one_literal=self._format_literal(compute_dtype, 1.0),
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, OneHotOp):
@@ -14845,6 +15154,8 @@ class CEmitter:
             if op.frame_length_input is not None:
                 inputs.append((op.frame_length_input, ()))
             return tuple(inputs)
+        if isinstance(op, DFTOp):
+            return ((op.input0, self._ctx_shape(op.input0)),)
         if isinstance(op, RangeOp):
             return ((op.start, ()), (op.limit, ()), (op.delta, ()))
         if isinstance(op, LoopRangeOp):
@@ -14945,6 +15256,7 @@ class CEmitter:
             | UniqueOp
             | NonMaxSuppressionOp
             | ExpandOp
+            | DFTOp
             | RangeOp
             | BlackmanWindowOp
             | HammingWindowOp
@@ -15039,6 +15351,7 @@ class CEmitter:
             | UniqueOp
             | NonMaxSuppressionOp
             | ExpandOp
+            | DFTOp
             | RangeOp
             | BlackmanWindowOp
             | HammingWindowOp
@@ -15079,6 +15392,7 @@ class CEmitter:
                 LogSoftmaxOp,
                 HardmaxOp,
                 ReduceOp,
+                DFTOp,
             ),
         ):
             return (
@@ -15645,7 +15959,7 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, CumSumOp):
             return self._ctx_shape(op.output)
-        if isinstance(op, STFTOp):
+        if isinstance(op, (STFTOp, DFTOp)):
             return self._ctx_shape(op.output)
         if isinstance(op, RangeOp):
             return self._ctx_shape(op.output)
@@ -15656,6 +15970,8 @@ class CEmitter:
         if isinstance(op, HammingWindowOp):
             return self._ctx_shape(op.output)
         if isinstance(op, HannWindowOp):
+            return self._ctx_shape(op.output)
+        if isinstance(op, MelWeightMatrixOp):
             return self._ctx_shape(op.output)
         if isinstance(op, OneHotOp):
             return self._ctx_shape(op.output)
@@ -15815,6 +16131,8 @@ class CEmitter:
             return self._ctx_dtype(op.output)
         if isinstance(op, (TriluOp, TileOp, CenterCropPadOp, CumSumOp, STFTOp)):
             return self._ctx_dtype(op.output)
+        if isinstance(op, DFTOp):
+            return self._ctx_dtype(op.output)
         if isinstance(op, SplitOp):
             return self._ctx_dtype(op.outputs[0])
         if isinstance(op, SplitToSequenceOp):
@@ -15885,6 +16203,7 @@ class CEmitter:
                 BlackmanWindowOp,
                 HammingWindowOp,
                 HannWindowOp,
+                MelWeightMatrixOp,
                 GridSampleOp,
                 ResizeOp,
                 PadOp,
@@ -16386,8 +16705,9 @@ class CEmitter:
     @staticmethod
     def _testbench_requires_math(
         model: LoweredModel,
-        testbench_inputs: Mapping[str, tuple[float | int | bool, ...] | np.ndarray]
-        | None,
+        testbench_inputs: (
+            Mapping[str, tuple[float | int | bool, ...] | np.ndarray] | None
+        ),
     ) -> bool:
         if not testbench_inputs:
             return False

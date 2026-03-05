@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1547 / 1802, 85.8% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1558 / 1802, 86.5% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1547 / 1802 ONNX files (85.8%).
+Coverage 1558 / 1802 ONNX files (86.5%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -286,8 +286,8 @@ Coverage 1547 / 1802 ONNX files (85.8%).
 | node/test_bitwise_and_ui64_bcast_3v1d/model.onnx | 18 | Data | ✅ | OK (max abs diff 0) |
 | node/test_bitwise_and_ui8_bcast_4v3d/model.onnx | 18 | Data | ✅ | OK (max abs diff 0) |
 | node/test_bitwise_not_2d/model.onnx | 18 | Data | ✅ | OK (max abs diff 0) |
-| node/test_bitwise_not_3d/model.onnx | 18 | Data | ❌ | Unsupported op BitwiseNot |
-| node/test_bitwise_not_4d/model.onnx | 18 | Data | ❌ | Unsupported op BitwiseNot |
+| node/test_bitwise_not_3d/model.onnx | 18 | Data | ✅ | OK (max abs diff 0) |
+| node/test_bitwise_not_4d/model.onnx | 18 | Data | ✅ | OK (max abs diff 0) |
 | node/test_bitwise_or_i16_4d/model.onnx | 18 | Data | ✅ | OK (max abs diff 0) |
 | node/test_bitwise_or_i32_2d/model.onnx | 18 | Data | ✅ | OK (max abs diff 0) |
 | node/test_bitwise_or_ui64_bcast_3v1d/model.onnx | 18 | Data | ✅ | OK (max abs diff 0) |
@@ -590,12 +590,12 @@ Coverage 1547 / 1802 ONNX files (85.8%).
 | node/test_dequantizelinear_uint4/model.onnx | 25 | Data | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'x'. |
 | node/test_det_2d/model.onnx | 22 | Data | ❌ | Unsupported op Det |
 | node/test_det_nd/model.onnx | 22 | Data | ❌ | Unsupported op Det |
-| node/test_dft/model.onnx | 20 | Data | ❌ | Unsupported op DFT |
-| node/test_dft_axis/model.onnx | 20 | Data | ❌ | Unsupported op DFT |
-| node/test_dft_axis_opset19/model.onnx | 19 | Data | ❌ | Unsupported op DFT |
-| node/test_dft_inverse/model.onnx | 20 | Data | ❌ | Unsupported op DFT |
-| node/test_dft_inverse_opset19/model.onnx | 19 | Data | ❌ | Unsupported op DFT |
-| node/test_dft_opset19/model.onnx | 19 | Data | ❌ | Unsupported op DFT |
+| node/test_dft/model.onnx | 20 | Data | ✅ | OK (max ULP 4) |
+| node/test_dft_axis/model.onnx | 20 | Data | ✅ | OK (max ULP 72) |
+| node/test_dft_axis_opset19/model.onnx | 19 | Data | ✅ | OK (max ULP 72) |
+| node/test_dft_inverse/model.onnx | 20 | Data | ✅ | OK (max ULP 8) |
+| node/test_dft_inverse_opset19/model.onnx | 19 | Data | ✅ | OK (max ULP 8) |
+| node/test_dft_opset19/model.onnx | 19 | Data | ✅ | OK (max ULP 4) |
 | node/test_div/model.onnx | 14 | Data | ✅ | OK (max ULP 0) |
 | node/test_div_bcast/model.onnx | 14 | Data | ✅ | OK (max ULP 0) |
 | node/test_div_example/model.onnx | 14 | Data | ✅ | OK (max ULP 0) |
@@ -967,7 +967,7 @@ Coverage 1547 / 1802 ONNX files (85.8%).
 | node/test_mean_example/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_mean_one_input/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_mean_two_inputs/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
-| node/test_melweightmatrix/model.onnx | 17 | Data | ❌ | Unsupported op MelWeightMatrix |
+| node/test_melweightmatrix/model.onnx | 17 | Data | ✅ | OK (max ULP 0) |
 | node/test_min_example/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_min_float16/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_min_float32/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
@@ -1194,7 +1194,7 @@ Coverage 1547 / 1802 ONNX files (85.8%).
 | node/test_reduce_log_sum_exp_negative_axes_keepdims_random_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_log_sum_negative_axes/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_log_sum_negative_axes_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_max_bool_inputs/model.onnx | 20 | Data | ❌ | ReduceMax does not support dtype bool |
+| node/test_reduce_max_bool_inputs/model.onnx | 20 | Data | ✅ | OK (max abs diff 0) |
 | node/test_reduce_max_default_axes_keepdim_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_max_default_axes_keepdims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_max_do_not_keepdims_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
@@ -1212,7 +1212,7 @@ Coverage 1547 / 1802 ONNX files (85.8%).
 | node/test_reduce_mean_keepdims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_mean_negative_axes_keepdims_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_mean_negative_axes_keepdims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_min_bool_inputs/model.onnx | 20 | Data | ❌ | ReduceMin does not support dtype bool |
+| node/test_reduce_min_bool_inputs/model.onnx | 20 | Data | ✅ | OK (max abs diff 0) |
 | node/test_reduce_min_default_axes_keepdims_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_min_default_axes_keepdims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_min_do_not_keepdims_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |

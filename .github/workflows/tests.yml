@@ -44,6 +44,24 @@ jobs:
         if: github.event_name == 'push'
         run: pytest -n auto -q
 
+      - name: Generate markdown references (phase 1)
+        if: github.event_name == 'pull_request'
+        run: |
+          UPDATE_REFS=1 pytest -q tests/test_official_onnx_files_docs.py::test_official_onnx_file_support_doc
+
+      - name: Commit markdown reference updates (phase 1)
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          if git status --porcelain -- ONNX_SUPPORT.md ONNX_ERRORS_HISTOGRAM.md SUPPORT_OPS.md | grep -q .; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add ONNX_SUPPORT.md ONNX_ERRORS_HISTOGRAM.md SUPPORT_OPS.md
+            git commit -m "tests: refresh ONNX support markdown docs"
+            git push origin "HEAD:${GITHUB_HEAD_REF}"
+          else
+            echo "No markdown reference updates."
+          fi
+
       - name: Run tests (update refs for PRs)
         if: github.event_name == 'pull_request'
         run: UPDATE_REFS=3 pytest -n auto -q

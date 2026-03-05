@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 189 / 205
+Supported operators: 191 / 205
 
 | Operator | Supported |
 | --- | --- |
@@ -49,7 +49,7 @@ Supported operators: 189 / 205
 | Cos | ✅ |
 | Cosh | ✅ |
 | CumSum | ✅ |
-| DFT | ❌ |
+| DFT | ✅ |
 | DeformConv | ✅ |
 | DepthToSpace | ✅ |
 | DequantizeLinear | ✅ |
@@ -107,7 +107,7 @@ Supported operators: 189 / 205
 | MaxUnpool | ❌ |
 | Mean | ✅ |
 | MeanVarianceNormalization | ✅ |
-| MelWeightMatrix | ❌ |
+| MelWeightMatrix | ✅ |
 | Min | ✅ |
 | Mish | ✅ |
 | Mod | ✅ |

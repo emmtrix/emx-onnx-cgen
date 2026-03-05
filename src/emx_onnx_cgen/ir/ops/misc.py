@@ -1079,6 +1079,23 @@ class RangeOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class DFTOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "axis_input")
+    __io_outputs__ = ("output",)
+    input0: str
+    axis_input: str | None
+    output: str
+    axis: int | None
+    dft_length: int | None
+    axis_variants: tuple[int, ...]
+    dft_lengths: tuple[int, ...]
+    inverse: bool
+    onesided: bool
+    input_is_complex: bool
+    fft_mode: str = "stockham_auto"
+
+
+@dataclass(frozen=True)
 class HammingWindowOp(RenderableOpBase):
     __io_inputs__ = ("size",)
     __io_outputs__ = ("output",)
@@ -1103,6 +1120,25 @@ class HannWindowOp(RenderableOpBase):
     size: str
     output: str
     periodic: bool
+
+
+@dataclass(frozen=True)
+class MelWeightMatrixOp(RenderableOpBase):
+    __io_inputs__ = (
+        "num_mel_bins",
+        "dft_length",
+        "sample_rate",
+        "lower_edge_hertz",
+        "upper_edge_hertz",
+    )
+    __io_outputs__ = ("output",)
+    num_mel_bins: str
+    dft_length: str
+    sample_rate: str
+    lower_edge_hertz: str
+    upper_edge_hertz: str
+    output: str
+    values: tuple[float, ...]
 
 
 @dataclass(frozen=True)
