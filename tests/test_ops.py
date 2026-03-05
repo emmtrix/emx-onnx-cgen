@@ -3912,6 +3912,17 @@ def test_rotary_embedding_ort_compare() -> None:
     )
 
 
+def test_selu_custom_attributes_testbench_compare() -> None:
+    model = _make_operator_model(
+        op_type="Selu",
+        input_shapes=[[2, 3]],
+        output_shape=[2, 3],
+        dtype=TensorProto.FLOAT,
+        attrs={"alpha": 1.1, "gamma": 0.9},
+    )
+    _run_testbench_compare(model)
+
+
 def _run_ort_compare_or_skip(
     model: onnx.ModelProto, *, skip_substrings: tuple[str, ...]
 ) -> None:
