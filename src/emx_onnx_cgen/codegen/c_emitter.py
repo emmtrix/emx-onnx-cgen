@@ -2628,9 +2628,7 @@ class CEmitter:
                 "string_normalizer": self._env.get_template(
                     "string_normalizer_op.c.j2"
                 ),
-                "label_encoder": self._env.get_template(
-                    "label_encoder_op.c.j2"
-                ),
+                "label_encoder": self._env.get_template("label_encoder_op.c.j2"),
                 "string_split": self._env.get_template("string_split_op.c.j2"),
                 "tree_ensemble": self._env.get_template("tree_ensemble_op.c.j2"),
                 "tree_ensemble_classifier": self._env.get_template(
@@ -13055,9 +13053,7 @@ class CEmitter:
                 input_suffix = self._param_array_suffix(
                     output_shape_raw, output_dim_names
                 )
-            output_suffix = self._param_array_suffix(
-                output_shape_raw, output_dim_names
-            )
+            output_suffix = self._param_array_suffix(output_shape_raw, output_dim_names)
             input_c_type = input_dtype.c_type
             output_c_type = output_dtype.c_type
             if input_dtype == ScalarType.STRING:
@@ -13081,7 +13077,9 @@ class CEmitter:
             else:
                 key_type = "float"
                 key_c_type = input_dtype.c_type
-                keys = tuple(self._format_literal(input_dtype, k) for k in op.keys_floats)
+                keys = tuple(
+                    self._format_literal(input_dtype, k) for k in op.keys_floats
+                )
             if op.values_int64s:
                 values = tuple(str(v) for v in op.values_int64s)
                 default_value = str(op.default_int64)

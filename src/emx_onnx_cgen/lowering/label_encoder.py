@@ -64,9 +64,7 @@ def _decode_floats(values: object | None) -> tuple[float, ...]:
         return ()
 
 
-def _decode_tensor_attr(
-    node: Node, attr_name: str
-) -> np.ndarray | None:
+def _decode_tensor_attr(node: Node, attr_name: str) -> np.ndarray | None:
     attr_val = node.attrs.get(attr_name)
     if attr_val is None:
         return None
@@ -119,7 +117,12 @@ def lower_label_encoder(graph: Graph, node: Node) -> LabelEncoderOp:
         elif np.issubdtype(keys_tensor.dtype, np.floating):
             keys_floats = tuple(float(v) for v in keys_tensor.reshape(-1))
 
-    if values_tensor is not None and not values_strings and not values_int64s and not values_floats:
+    if (
+        values_tensor is not None
+        and not values_strings
+        and not values_int64s
+        and not values_floats
+    ):
         if values_tensor.dtype == object:
             values_strings = tuple(str(s) for s in values_tensor.reshape(-1))
         elif np.issubdtype(values_tensor.dtype, np.integer):
@@ -151,21 +154,25 @@ def lower_label_encoder(graph: Graph, node: Node) -> LabelEncoderOp:
     if raw_default_float is not None:
         default_float = float(raw_default_float)
 
-    num_key_sets = sum([
-        len(keys_strings) > 0,
-        len(keys_int64s) > 0,
-        len(keys_floats) > 0,
-    ])
+    num_key_sets = sum(
+        [
+            len(keys_strings) > 0,
+            len(keys_int64s) > 0,
+            len(keys_floats) > 0,
+        ]
+    )
     if num_key_sets == 0:
         raise UnsupportedOpError("LabelEncoder requires at least one set of keys")
     if num_key_sets > 1:
         raise UnsupportedOpError("LabelEncoder requires exactly one set of keys")
 
-    num_value_sets = sum([
-        len(values_strings) > 0,
-        len(values_int64s) > 0,
-        len(values_floats) > 0,
-    ])
+    num_value_sets = sum(
+        [
+            len(values_strings) > 0,
+            len(values_int64s) > 0,
+            len(values_floats) > 0,
+        ]
+    )
     if num_value_sets == 0:
         raise UnsupportedOpError("LabelEncoder requires at least one set of values")
     if num_value_sets > 1:
@@ -192,14 +199,10 @@ def lower_label_encoder(graph: Graph, node: Node) -> LabelEncoderOp:
         )
 
     if output_dtype == ScalarType.STRING:
-        raise UnsupportedOpError(
-            "LabelEncoder with string output is not supported"
-        )
+        raise UnsupportedOpError("LabelEncoder with string output is not supported")
 
     if keys_strings and input_dtype != ScalarType.STRING:
-        raise UnsupportedOpError(
-            "LabelEncoder string keys require string input dtype"
-        )
+        raise UnsupportedOpError("LabelEncoder string keys require string input dtype")
 
     return LabelEncoderOp(
         input0=input_name,
