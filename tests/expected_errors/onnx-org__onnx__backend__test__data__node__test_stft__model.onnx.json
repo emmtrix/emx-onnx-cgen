@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported op STFT",
+  "error": "Failed to build testbench.",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_stft model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "STFT"
   ],
-  "opset_version": 17
+  "opset_version": 17,
+  "generated_checksum": "59df64074a5acfbe1282bdcda8aea02ea6759805319e19bfbe056c0148bd5864"
 }
