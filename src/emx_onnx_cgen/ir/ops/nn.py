@@ -299,6 +299,99 @@ class GemmOp(GemmLikeOpBase):
             f"Gemm bias input must be rank 1 or 2, got {bias_shape}"
         )
 
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        c_type = emitter.ctx_dtype(self.output).c_type
+        params = emitter.shared_param_map(
+            [
+                ("input_a", self.input_a),
+                ("input_b", self.input_b),
+                ("input_c", self.input_c),
+                ("output", self.output),
+            ]
+        )
+        m = int(emitter.derived(self, "m"))
+        n = int(emitter.derived(self, "n"))
+        k = int(emitter.derived(self, "k"))
+        trans_a = bool(emitter.derived(self, "trans_a"))
+        trans_b = bool(emitter.derived(self, "trans_b"))
+        c_shape = emitter.derived(self, "c_shape")
+        c_axis = str(emitter.derived(self, "c_axis"))
+        input_a_shape = (k, m) if trans_a else (m, k)
+        input_b_shape = (n, k) if trans_b else (k, n)
+        input_a_suffix = emitter.param_array_suffix(input_a_shape)
+        input_b_suffix = emitter.param_array_suffix(input_b_shape)
+        output_suffix = emitter.param_array_suffix((m, n))
+        c_suffix = emitter.param_array_suffix(c_shape) if c_shape is not None else ""
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input_a"], c_type, input_a_suffix, True),
+                (params["input_b"], c_type, input_b_suffix, True),
+                (
+                    (
+                        params["input_c"],
+                        c_type,
+                        c_suffix,
+                        True,
+                    )
+                    if params["input_c"]
+                    else (None, "", "", True)
+                ),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        dtype = emitter.ctx_dtype(self.output)
+        alpha_literal = emitter.format_literal(dtype, emitter.derived(self, "alpha"))
+        beta_literal = emitter.format_literal(dtype, emitter.derived(self, "beta"))
+        acc_dtype = emitter.accumulation_dtype(dtype)
+        acc_zero_literal = emitter.format_literal(acc_dtype, 0)
+        if c_shape is None:
+            c_rank = 0
+            c_dim0 = 0
+            c_dim1 = 0
+        elif len(c_shape) == 0:
+            c_rank = 0
+            c_dim0 = 0
+            c_dim1 = 0
+        elif len(c_shape) == 1:
+            c_rank = 1
+            c_dim0 = 1
+            c_dim1 = c_shape[0]
+        else:
+            c_rank = 2
+            c_dim0 = c_shape[0]
+            c_dim1 = c_shape[1]
+        rendered = state.templates["gemm"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input_a=params["input_a"],
+            input_b=params["input_b"],
+            input_c=params["input_c"],
+            output=params["output"],
+            params=param_decls,
+            c_type=dtype.c_type,
+            acc_type=acc_dtype.c_type,
+            zero_literal=acc_zero_literal,
+            alpha_literal=alpha_literal,
+            beta_literal=beta_literal,
+            trans_a=int(trans_a),
+            trans_b=int(trans_b),
+            m=m,
+            n=n,
+            k=k,
+            input_a_suffix=input_a_suffix,
+            input_b_suffix=input_b_suffix,
+            output_suffix=output_suffix,
+            c_suffix=(c_suffix if c_shape is not None else None),
+            c_rank=c_rank,
+            c_dim0=c_dim0,
+            c_dim1=c_dim1,
+            c_axis=c_axis,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
     def infer_types(self, ctx: OpContext) -> None:
         input_a_dtype = ctx.dtype(self.input_a)
         input_b_dtype = ctx.dtype(self.input_b)
@@ -607,6 +700,134 @@ class ConvIntegerOp(ConvLikeOpBase):
     w_zero_point_shape: tuple[int, ...] | None
     w_zero_point_per_channel: bool
 
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        c_type = emitter.ctx_dtype(self.output).c_type
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("weights", self.weights),
+                ("x_zero_point", self.x_zero_point),
+                ("w_zero_point", self.w_zero_point),
+                ("output", self.output),
+            ]
+        )
+        acc_dtype = self.dtype
+        acc_type = acc_dtype.c_type
+        acc_zero_literal = emitter.format_literal(acc_dtype, 0)
+        input_shape = (self.batch, self.in_channels, *self.in_spatial)
+        weight_shape = (
+            self.out_channels,
+            self.in_channels // self.group,
+            *self.kernel_shape,
+        )
+        output_shape = (self.batch, self.out_channels, *self.out_spatial)
+        out_indices = tuple(f"od{dim}" for dim in range(self.spatial_rank))
+        kernel_indices = tuple(f"kd{dim}" for dim in range(self.spatial_rank))
+        in_indices = tuple(f"id{dim}" for dim in range(self.spatial_rank))
+        pad_begin = self.pads[: self.spatial_rank]
+        group_in_channels = self.in_channels // self.group
+        group_out_channels = self.out_channels // self.group
+        input_suffix = emitter.param_array_suffix(input_shape)
+        weight_suffix = emitter.param_array_suffix(weight_shape)
+        output_suffix = emitter.param_array_suffix(output_shape)
+        x_zero_suffix = (
+            emitter.param_array_suffix(self.x_zero_point_shape)
+            if self.x_zero_point_shape is not None
+            else ""
+        )
+        w_zero_suffix = (
+            emitter.param_array_suffix(self.w_zero_point_shape)
+            if self.w_zero_point_shape is not None
+            else ""
+        )
+        param_decls = emitter.build_param_decls(
+            [
+                (
+                    params["input0"],
+                    self.input_dtype.c_type,
+                    input_suffix,
+                    True,
+                ),
+                (
+                    params["weights"],
+                    self.weight_dtype.c_type,
+                    weight_suffix,
+                    True,
+                ),
+                (
+                    (
+                        params["x_zero_point"],
+                        self.input_dtype.c_type,
+                        x_zero_suffix,
+                        True,
+                    )
+                    if params["x_zero_point"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (
+                        params["w_zero_point"],
+                        self.weight_dtype.c_type,
+                        w_zero_suffix,
+                        True,
+                    )
+                    if params["w_zero_point"]
+                    else (None, "", "", True)
+                ),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        x_zero_expr = (
+            f"{params['x_zero_point']}[0]" if params["x_zero_point"] else "0"
+        )
+        if params["w_zero_point"]:
+            if self.w_zero_point_per_channel:
+                w_zero_expr = f"{params['w_zero_point']}[oc_global]"
+            else:
+                w_zero_expr = f"{params['w_zero_point']}[0]"
+        else:
+            w_zero_expr = "0"
+        rendered = state.templates["conv_integer"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input0=params["input0"],
+            weights=params["weights"],
+            x_zero_point=params["x_zero_point"],
+            w_zero_point=params["w_zero_point"],
+            output=params["output"],
+            params=param_decls,
+            c_type=c_type,
+            acc_type=acc_type,
+            acc_zero_literal=acc_zero_literal,
+            input_suffix=input_suffix,
+            weight_suffix=weight_suffix,
+            x_zero_suffix=x_zero_suffix,
+            w_zero_suffix=w_zero_suffix,
+            output_suffix=output_suffix,
+            batch=self.batch,
+            in_channels=self.in_channels,
+            out_channels=self.out_channels,
+            spatial_rank=self.spatial_rank,
+            in_spatial=self.in_spatial,
+            out_spatial=self.out_spatial,
+            kernel_shape=self.kernel_shape,
+            strides=self.strides,
+            pads_begin=pad_begin,
+            dilations=self.dilations,
+            group=self.group,
+            group_in_channels=group_in_channels,
+            group_out_channels=group_out_channels,
+            out_indices=out_indices,
+            kernel_indices=kernel_indices,
+            in_indices=in_indices,
+            x_zero_expr=x_zero_expr,
+            w_zero_expr=w_zero_expr,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
 
 @dataclass(frozen=True)
 class QLinearConvOp(ConvLikeOpBase):
@@ -657,6 +878,173 @@ class QLinearConvOp(ConvLikeOpBase):
     weight_scale_per_channel: bool
     weight_zero_per_channel: bool
 
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("input_scale", self.input_scale),
+                ("input_zero_point", self.input_zero_point),
+                ("weights", self.weights),
+                ("weight_scale", self.weight_scale),
+                ("weight_zero_point", self.weight_zero_point),
+                ("output_scale", self.output_scale),
+                ("output_zero_point", self.output_zero_point),
+                ("bias", self.bias),
+                ("output", self.output),
+            ]
+        )
+        input_shape = (self.batch, self.in_channels, *self.in_spatial)
+        weight_shape = (
+            self.out_channels,
+            self.in_channels // self.group,
+            *self.kernel_shape,
+        )
+        output_shape = (self.batch, self.out_channels, *self.out_spatial)
+        out_indices = tuple(f"od{dim}" for dim in range(self.spatial_rank))
+        kernel_indices = tuple(f"kd{dim}" for dim in range(self.spatial_rank))
+        in_indices = tuple(f"id{dim}" for dim in range(self.spatial_rank))
+        pad_begin = self.pads[: self.spatial_rank]
+        group_in_channels = self.in_channels // self.group
+        group_out_channels = self.out_channels // self.group
+        input_suffix = emitter.param_array_suffix(input_shape)
+        weight_suffix = emitter.param_array_suffix(weight_shape)
+        output_suffix = emitter.param_array_suffix(output_shape)
+        input_scale_suffix = emitter.param_array_suffix(self.input_scale_shape)
+        weight_scale_suffix = emitter.param_array_suffix(self.weight_scale_shape)
+        output_scale_suffix = emitter.param_array_suffix(self.output_scale_shape)
+        input_zero_suffix = emitter.param_array_suffix(self.input_zero_shape)
+        weight_zero_suffix = emitter.param_array_suffix(self.weight_zero_shape)
+        output_zero_suffix = emitter.param_array_suffix(self.output_zero_shape)
+        bias_suffix = emitter.param_array_suffix((self.out_channels,))
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], self.input_dtype.c_type, input_suffix, True),
+                (
+                    params["input_scale"],
+                    self.input_scale_dtype.c_type,
+                    input_scale_suffix,
+                    True,
+                ),
+                (
+                    params["input_zero_point"],
+                    self.input_dtype.c_type,
+                    input_zero_suffix,
+                    True,
+                ),
+                (params["weights"], self.weight_dtype.c_type, weight_suffix, True),
+                (
+                    params["weight_scale"],
+                    self.weight_scale_dtype.c_type,
+                    weight_scale_suffix,
+                    True,
+                ),
+                (
+                    params["weight_zero_point"],
+                    self.weight_dtype.c_type,
+                    weight_zero_suffix,
+                    True,
+                ),
+                (
+                    params["output_scale"],
+                    self.output_scale_dtype.c_type,
+                    output_scale_suffix,
+                    True,
+                ),
+                (
+                    params["output_zero_point"],
+                    self.dtype.c_type,
+                    output_zero_suffix,
+                    True,
+                ),
+                (
+                    (params["bias"], ScalarType.I32.c_type, bias_suffix, True)
+                    if params["bias"]
+                    else (None, "", "", True)
+                ),
+                (params["output"], self.dtype.c_type, output_suffix, False),
+            ]
+        )
+
+        compute_dtype = (
+            ScalarType.F64
+            if ScalarType.F64
+            in {
+                self.input_scale_dtype,
+                self.weight_scale_dtype,
+                self.output_scale_dtype,
+            }
+            else ScalarType.F32
+        )
+        compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
+
+        weight_scale_expr = (
+            f"{params['weight_scale']}[oc_global]"
+            if self.weight_scale_per_channel
+            else f"{params['weight_scale']}[0]"
+        )
+        weight_zero_expr = (
+            f"{params['weight_zero_point']}[oc_global]"
+            if self.weight_zero_per_channel
+            else f"{params['weight_zero_point']}[0]"
+        )
+        rendered = state.templates["qlinear_conv"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input0=params["input0"],
+            input_scale=params["input_scale"],
+            input_zero_point=params["input_zero_point"],
+            weights=params["weights"],
+            weight_scale=params["weight_scale"],
+            weight_zero_point=params["weight_zero_point"],
+            output_scale=params["output_scale"],
+            output_zero_point=params["output_zero_point"],
+            bias=params["bias"],
+            output=params["output"],
+            params=param_decls,
+            output_c_type=self.dtype.c_type,
+            compute_type=compute_type,
+            input_suffix=input_suffix,
+            weight_suffix=weight_suffix,
+            input_scale_suffix=input_scale_suffix,
+            weight_scale_suffix=weight_scale_suffix,
+            output_scale_suffix=output_scale_suffix,
+            input_zero_suffix=input_zero_suffix,
+            weight_zero_suffix=weight_zero_suffix,
+            output_zero_suffix=output_zero_suffix,
+            bias_suffix=bias_suffix,
+            output_suffix=output_suffix,
+            batch=self.batch,
+            in_channels=self.in_channels,
+            out_channels=self.out_channels,
+            spatial_rank=self.spatial_rank,
+            in_spatial=self.in_spatial,
+            out_spatial=self.out_spatial,
+            kernel_shape=self.kernel_shape,
+            strides=self.strides,
+            pads_begin=pad_begin,
+            dilations=self.dilations,
+            group=self.group,
+            group_in_channels=group_in_channels,
+            group_out_channels=group_out_channels,
+            out_indices=out_indices,
+            kernel_indices=kernel_indices,
+            in_indices=in_indices,
+            input_scale_expr=f"{params['input_scale']}[0]",
+            weight_scale_expr=weight_scale_expr,
+            output_scale_expr=f"{params['output_scale']}[0]",
+            input_zero_expr=f"{params['input_zero_point']}[0]",
+            weight_zero_expr=weight_zero_expr,
+            output_zero_expr=f"{params['output_zero_point']}[0]",
+            min_literal=self.dtype.min_literal,
+            max_literal=self.dtype.max_literal,
+            round_dtype=ScalarType.F64,
+            compute_dtype=compute_dtype,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
 
 @dataclass(frozen=True)
 class ConvTransposeOp(ConvLikeOpBase):
@@ -678,6 +1066,87 @@ class ConvTransposeOp(ConvLikeOpBase):
     group: int
     dtype: ScalarType
 
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        c_type = emitter.ctx_dtype(self.output).c_type
+        zero_literal = emitter.ctx_dtype(self.output).zero_literal
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("weights", self.weights),
+                ("bias", self.bias),
+                ("output", self.output),
+            ]
+        )
+        input_shape = (self.batch, self.in_channels, *self.in_spatial)
+        weight_shape = (
+            self.in_channels,
+            self.out_channels // self.group,
+            *self.kernel_shape,
+        )
+        output_shape = (self.batch, self.out_channels, *self.out_spatial)
+        in_indices = tuple(f"id{dim}" for dim in range(self.spatial_rank))
+        kernel_indices = tuple(f"kd{dim}" for dim in range(self.spatial_rank))
+        out_indices = tuple(f"od{dim}" for dim in range(self.spatial_rank))
+        pad_begin = self.pads[: self.spatial_rank]
+        group_in_channels = self.in_channels // self.group
+        group_out_channels = self.out_channels // self.group
+        input_suffix = emitter.param_array_suffix(input_shape)
+        weight_suffix = emitter.param_array_suffix(weight_shape)
+        bias_suffix = emitter.param_array_suffix((self.out_channels,))
+        output_suffix = emitter.param_array_suffix(output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["weights"], c_type, weight_suffix, True),
+                (
+                    (
+                        params["bias"],
+                        c_type,
+                        bias_suffix,
+                        True,
+                    )
+                    if params["bias"]
+                    else (None, "", "", True)
+                ),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        rendered = state.templates["conv_transpose"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input0=params["input0"],
+            weights=params["weights"],
+            bias=params["bias"],
+            output=params["output"],
+            params=param_decls,
+            c_type=c_type,
+            zero_literal=zero_literal,
+            input_suffix=input_suffix,
+            weight_suffix=weight_suffix,
+            bias_suffix=bias_suffix,
+            output_suffix=output_suffix,
+            batch=self.batch,
+            in_channels=self.in_channels,
+            out_channels=self.out_channels,
+            spatial_rank=self.spatial_rank,
+            in_spatial=self.in_spatial,
+            out_spatial=self.out_spatial,
+            kernel_shape=self.kernel_shape,
+            strides=self.strides,
+            pads_begin=pad_begin,
+            dilations=self.dilations,
+            group=self.group,
+            group_in_channels=group_in_channels,
+            group_out_channels=group_out_channels,
+            in_indices=in_indices,
+            kernel_indices=kernel_indices,
+            out_indices=out_indices,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
 
 @dataclass(frozen=True)
 class Col2ImOp(RenderableOpBase):
@@ -695,6 +1164,78 @@ class Col2ImOp(RenderableOpBase):
     pads: tuple[int, ...]
     dilations: tuple[int, ...]
     dtype: ScalarType
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        c_type = emitter.ctx_dtype(self.output).c_type
+        zero_literal = emitter.ctx_dtype(self.output).zero_literal
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("output", self.output),
+            ]
+        )
+        kernel_total = 1
+        for b in self.block_shape:
+            kernel_total *= b
+        col_total = 1
+        for c in self.col_dims:
+            col_total *= c
+        input_shape = (self.batch, self.channels * kernel_total, col_total)
+        output_shape = (self.batch, self.channels, *self.image_shape)
+        out_indices = tuple(f"od{dim}" for dim in range(self.spatial_rank))
+        kernel_indices = tuple(f"kd{dim}" for dim in range(self.spatial_rank))
+        col_indices = tuple(f"cd{dim}" for dim in range(self.spatial_rank))
+        im_indices = tuple(f"im{dim}" for dim in range(self.spatial_rank))
+        pad_begin = self.pads[: self.spatial_rank]
+        kernel_multipliers: list[int] = []
+        for dim in range(self.spatial_rank - 1):
+            mul = 1
+            for d in range(dim + 1, self.spatial_rank):
+                mul *= self.block_shape[d]
+            kernel_multipliers.append(mul)
+        col_multipliers: list[int] = []
+        for dim in range(self.spatial_rank - 1):
+            mul = 1
+            for d in range(dim + 1, self.spatial_rank):
+                mul *= self.col_dims[d]
+            col_multipliers.append(mul)
+        input_suffix = emitter.param_array_suffix(input_shape)
+        output_suffix = emitter.param_array_suffix(output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        rendered = state.templates["col2im"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input0=params["input0"],
+            output=params["output"],
+            params=param_decls,
+            c_type=c_type,
+            zero_literal=zero_literal,
+            batch=self.batch,
+            channels=self.channels,
+            spatial_rank=self.spatial_rank,
+            image_shape=self.image_shape,
+            block_shape=self.block_shape,
+            col_dims=self.col_dims,
+            strides=self.strides,
+            pads_begin=pad_begin,
+            dilations=self.dilations,
+            kernel_total=kernel_total,
+            kernel_multipliers=kernel_multipliers,
+            col_multipliers=col_multipliers,
+            out_indices=out_indices,
+            kernel_indices=kernel_indices,
+            col_indices=col_indices,
+            im_indices=im_indices,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
 @dataclass(frozen=True)
@@ -724,6 +1265,112 @@ class DeformConvOp(ConvLikeOpBase):
     group: int
     offset_group: int
     dtype: ScalarType
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        c_type = emitter.ctx_dtype(self.output).c_type
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("weights", self.weights),
+                ("offset", self.offset),
+                ("bias", self.bias),
+                ("mask", self.mask),
+                ("output", self.output),
+            ]
+        )
+        acc_dtype = emitter.accumulation_dtype(self.dtype)
+        acc_type = acc_dtype.c_type
+        acc_zero_literal = emitter.format_literal(acc_dtype, 0)
+        acc_one_literal = emitter.format_literal(acc_dtype, 1)
+        input_shape = (self.batch, self.in_channels, self.in_h, self.in_w)
+        weight_shape = (
+            self.out_channels,
+            self.in_channels // self.group,
+            self.kernel_h,
+            self.kernel_w,
+        )
+        offset_shape = (
+            self.batch,
+            self.offset_group * self.kernel_h * self.kernel_w * 2,
+            self.out_h,
+            self.out_w,
+        )
+        bias_shape = (self.out_channels,)
+        mask_shape = (
+            self.batch,
+            self.offset_group * self.kernel_h * self.kernel_w,
+            self.out_h,
+            self.out_w,
+        )
+        output_shape = (self.batch, self.out_channels, self.out_h, self.out_w)
+        group_in_channels = self.in_channels // self.group
+        group_out_channels = self.out_channels // self.group
+        ics_per_offset_group = self.in_channels // self.offset_group
+        input_suffix = emitter.param_array_suffix(input_shape)
+        weight_suffix = emitter.param_array_suffix(weight_shape)
+        offset_suffix = emitter.param_array_suffix(offset_shape)
+        bias_suffix = emitter.param_array_suffix(bias_shape)
+        mask_suffix = emitter.param_array_suffix(mask_shape)
+        output_suffix = emitter.param_array_suffix(output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["weights"], c_type, weight_suffix, True),
+                (params["offset"], c_type, offset_suffix, True),
+                (
+                    (params["bias"], c_type, bias_suffix, True)
+                    if params["bias"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (params["mask"], c_type, mask_suffix, True)
+                    if params["mask"]
+                    else (None, "", "", True)
+                ),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        rendered = state.templates["deform_conv"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input0=params["input0"],
+            weights=params["weights"],
+            offset=params["offset"],
+            bias=params["bias"],
+            mask=params["mask"],
+            output=params["output"],
+            params=param_decls,
+            c_type=c_type,
+            acc_type=acc_type,
+            acc_zero_literal=acc_zero_literal,
+            zero_literal=acc_zero_literal,
+            one_literal=acc_one_literal,
+            acc_scalar_dtype=acc_dtype,
+            batch=self.batch,
+            in_channels=self.in_channels,
+            out_channels=self.out_channels,
+            in_h=self.in_h,
+            in_w=self.in_w,
+            out_h=self.out_h,
+            out_w=self.out_w,
+            kernel_h=self.kernel_h,
+            kernel_w=self.kernel_w,
+            stride_h=self.stride_h,
+            stride_w=self.stride_w,
+            pad_top=self.pad_top,
+            pad_left=self.pad_left,
+            dilation_h=self.dilation_h,
+            dilation_w=self.dilation_w,
+            group=self.group,
+            offset_group=self.offset_group,
+            group_in_channels=group_in_channels,
+            group_out_channels=group_out_channels,
+            ics_per_offset_group=ics_per_offset_group,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
 @dataclass(frozen=True)
@@ -758,6 +1405,82 @@ class AveragePoolOp(RenderableOpBase):
     stride_d: int = 1
     pad_front: int = 0
     pad_back: int = 0
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        c_type = emitter.ctx_dtype(self.output).c_type
+        zero_literal = emitter.ctx_dtype(self.output).zero_literal
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        if self.spatial_rank == 3:
+            input_shape = (
+                self.batch,
+                self.channels,
+                self.in_d,
+                self.in_h,
+                self.in_w,
+            )
+            output_shape = (
+                self.batch,
+                self.channels,
+                self.out_d,
+                self.out_h,
+                self.out_w,
+            )
+        elif self.spatial_rank == 1:
+            input_shape = (self.batch, self.channels, self.in_w)
+            output_shape = (self.batch, self.channels, self.out_w)
+        else:
+            input_shape = (self.batch, self.channels, self.in_h, self.in_w)
+            output_shape = (self.batch, self.channels, self.out_h, self.out_w)
+        input_suffix = emitter.param_array_suffix(input_shape)
+        output_suffix = emitter.param_array_suffix(output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        rendered = state.templates["avg_pool"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input0=params["input0"],
+            output=params["output"],
+            params=param_decls,
+            c_type=c_type,
+            zero_literal=zero_literal,
+            input_suffix=input_suffix,
+            output_suffix=output_suffix,
+            batch=self.batch,
+            channels=self.channels,
+            spatial_rank=self.spatial_rank,
+            in_d=self.in_d,
+            in_h=self.in_h,
+            in_w=self.in_w,
+            out_d=self.out_d,
+            out_h=self.out_h,
+            out_w=self.out_w,
+            kernel_d=self.kernel_d,
+            kernel_h=self.kernel_h,
+            kernel_w=self.kernel_w,
+            dilation_d=self.dilation_d,
+            dilation_h=self.dilation_h,
+            dilation_w=self.dilation_w,
+            stride_d=self.stride_d,
+            stride_h=self.stride_h,
+            stride_w=self.stride_w,
+            pad_front=self.pad_front,
+            pad_top=self.pad_top,
+            pad_left=self.pad_left,
+            pad_back=self.pad_back,
+            pad_bottom=self.pad_bottom,
+            pad_right=self.pad_right,
+            count_include_pad=int(self.count_include_pad),
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
 @dataclass(frozen=True)
@@ -835,6 +1558,56 @@ class LpPoolOp(RenderableOpBase):
     pad_right: int
     p: int
     dtype: ScalarType
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        c_type = emitter.ctx_dtype(self.output).c_type
+        zero_literal = emitter.ctx_dtype(self.output).zero_literal
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        input_shape = (self.batch, self.channels, self.in_h, self.in_w)
+        output_shape = (self.batch, self.channels, self.out_h, self.out_w)
+        input_suffix = emitter.param_array_suffix(input_shape)
+        output_suffix = emitter.param_array_suffix(output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        rendered = state.templates["lp_pool"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input0=params["input0"],
+            output=params["output"],
+            params=param_decls,
+            c_type=c_type,
+            input_suffix=input_suffix,
+            output_suffix=output_suffix,
+            batch=self.batch,
+            channels=self.channels,
+            in_h=self.in_h,
+            in_w=self.in_w,
+            out_h=self.out_h,
+            out_w=self.out_w,
+            kernel_h=self.kernel_h,
+            kernel_w=self.kernel_w,
+            dilation_h=self.dilation_h,
+            dilation_w=self.dilation_w,
+            stride_h=self.stride_h,
+            stride_w=self.stride_w,
+            pad_top=self.pad_top,
+            pad_left=self.pad_left,
+            pad_bottom=self.pad_bottom,
+            pad_right=self.pad_right,
+            p=self.p,
+            zero_literal=zero_literal,
+            dtype=self.dtype,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
 @dataclass(frozen=True)
@@ -1249,6 +2022,79 @@ class BatchNormOp(RenderableOpBase):
     training_mode: bool
     dtype: ScalarType
 
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        c_type = emitter.ctx_dtype(self.output).c_type
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("scale", self.scale),
+                ("bias", self.bias),
+                ("mean", self.mean),
+                ("variance", self.variance),
+                ("output", self.output),
+                ("running_mean", self.running_mean),
+                ("running_variance", self.running_variance),
+            ]
+        )
+        shape = CEmitterCompat.codegen_shape(self.shape)
+        loop_vars = CEmitterCompat.loop_vars(shape)
+        input_suffix = emitter.param_array_suffix(shape)
+        output_suffix = emitter.param_array_suffix(shape)
+        scale_suffix = emitter.param_array_suffix((self.channels,))
+        bias_suffix = emitter.param_array_suffix((self.channels,))
+        mean_suffix = emitter.param_array_suffix((self.channels,))
+        variance_suffix = emitter.param_array_suffix((self.channels,))
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["scale"], c_type, scale_suffix, True),
+                (params["bias"], c_type, bias_suffix, True),
+                (params["mean"], c_type, mean_suffix, True),
+                (params["variance"], c_type, variance_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+                (params.get("running_mean"), c_type, mean_suffix, False),
+                (params.get("running_variance"), c_type, variance_suffix, False),
+            ]
+        )
+        reduce_count_expr = " * ".join(
+            str(dim) for idx, dim in enumerate(shape) if idx != 1
+        )
+        rendered = state.templates["batch_norm"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input0=params["input0"],
+            scale=params["scale"],
+            bias=params["bias"],
+            mean=params["mean"],
+            variance=params["variance"],
+            output=params["output"],
+            running_mean=params.get("running_mean"),
+            running_variance=params.get("running_variance"),
+            params=param_decls,
+            c_type=c_type,
+            input_suffix=input_suffix,
+            output_suffix=output_suffix,
+            scale_suffix=scale_suffix,
+            bias_suffix=bias_suffix,
+            mean_suffix=mean_suffix,
+            variance_suffix=variance_suffix,
+            shape=shape,
+            loop_vars=loop_vars,
+            channels=self.channels,
+            reduce_count_expr=reduce_count_expr or "1",
+            training_mode=self.training_mode,
+            momentum_literal=emitter.format_floating(self.momentum, self.dtype),
+            one_minus_momentum_literal=emitter.format_floating(
+                1.0 - self.momentum, self.dtype
+            ),
+            epsilon_literal=emitter.format_floating(self.epsilon, self.dtype),
+            dtype=self.dtype,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
 
 @dataclass(frozen=True)
 class LpNormalizationOp(RenderableOpBase):
@@ -1264,6 +2110,40 @@ class LpNormalizationOp(RenderableOpBase):
     inner: int
     dtype: ScalarType
 
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        c_type = emitter.ctx_dtype(self.output).c_type
+        zero_literal = emitter.ctx_dtype(self.output).zero_literal
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        shape = CEmitterCompat.codegen_shape(self.shape)
+        array_suffix = emitter.param_array_suffix(shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, array_suffix, True),
+                (params["output"], c_type, array_suffix, False),
+            ]
+        )
+        rendered = state.templates["lp_norm"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input0=params["input0"],
+            output=params["output"],
+            params=param_decls,
+            c_type=c_type,
+            array_suffix=array_suffix,
+            outer=self.outer,
+            axis_size=self.axis_size,
+            inner=self.inner,
+            p=self.p,
+            zero_literal=zero_literal,
+            dtype=self.dtype,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
 
 @dataclass(frozen=True)
 class InstanceNormalizationOp(RenderableOpBase):
@@ -1278,6 +2158,56 @@ class InstanceNormalizationOp(RenderableOpBase):
     spatial_size: int
     epsilon: float
     dtype: ScalarType
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        c_type = emitter.ctx_dtype(self.output).c_type
+        zero_literal = emitter.ctx_dtype(self.output).zero_literal
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("scale", self.scale),
+                ("bias", self.bias),
+                ("output", self.output),
+            ]
+        )
+        shape = CEmitterCompat.codegen_shape(self.shape)
+        loop_vars = CEmitterCompat.loop_vars(shape)
+        input_suffix = emitter.param_array_suffix(shape)
+        output_suffix = emitter.param_array_suffix(shape)
+        scale_suffix = emitter.param_array_suffix((self.channels,))
+        bias_suffix = emitter.param_array_suffix((self.channels,))
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["scale"], c_type, scale_suffix, True),
+                (params["bias"], c_type, bias_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        rendered = state.templates["instance_norm"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input0=params["input0"],
+            scale=params["scale"],
+            bias=params["bias"],
+            output=params["output"],
+            params=param_decls,
+            c_type=c_type,
+            zero_literal=zero_literal,
+            input_suffix=input_suffix,
+            output_suffix=output_suffix,
+            scale_suffix=scale_suffix,
+            bias_suffix=bias_suffix,
+            shape=shape,
+            loop_vars=loop_vars,
+            spatial_size=self.spatial_size,
+            epsilon_literal=emitter.format_floating(self.epsilon, self.dtype),
+            dtype=self.dtype,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
 @dataclass(frozen=True)
@@ -1295,6 +2225,58 @@ class GroupNormalizationOp(RenderableOpBase):
     spatial_size: int
     epsilon: float
     dtype: ScalarType
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        c_type = emitter.ctx_dtype(self.output).c_type
+        zero_literal = emitter.ctx_dtype(self.output).zero_literal
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("scale", self.scale),
+                ("bias", self.bias),
+                ("output", self.output),
+            ]
+        )
+        shape = CEmitterCompat.codegen_shape(self.shape)
+        loop_vars = CEmitterCompat.loop_vars(shape)
+        input_suffix = emitter.param_array_suffix(shape)
+        output_suffix = emitter.param_array_suffix(shape)
+        scale_suffix = emitter.param_array_suffix((self.channels,))
+        bias_suffix = emitter.param_array_suffix((self.channels,))
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["scale"], c_type, scale_suffix, True),
+                (params["bias"], c_type, bias_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        rendered = state.templates["group_norm"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input0=params["input0"],
+            scale=params["scale"],
+            bias=params["bias"],
+            output=params["output"],
+            params=param_decls,
+            c_type=c_type,
+            zero_literal=zero_literal,
+            input_suffix=input_suffix,
+            output_suffix=output_suffix,
+            scale_suffix=scale_suffix,
+            bias_suffix=bias_suffix,
+            shape=shape,
+            loop_vars=loop_vars,
+            num_groups=self.num_groups,
+            group_size=self.group_size,
+            spatial_size=self.spatial_size,
+            epsilon_literal=emitter.format_floating(self.epsilon, self.dtype),
+            dtype=self.dtype,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
 @dataclass(frozen=True)
