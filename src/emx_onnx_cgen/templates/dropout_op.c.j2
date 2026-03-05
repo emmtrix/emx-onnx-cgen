@@ -1,0 +1,76 @@
+static inline void {{ op_name }}_rng_seed(uint32_t state[624], uint32_t seed) {
+    state[0] = seed;
+    for (uint32_t i = 1; i < 624; ++i) {
+        state[i] = (uint32_t)(1812433253u * (state[i - 1] ^ (state[i - 1] >> 30)) + i);
+    }
+}
+
+static inline uint32_t {{ op_name }}_rng_next_u32(uint32_t state[624], uint32_t *index) {
+    if (*index >= 624u) {
+        for (uint32_t i = 0; i < 624; ++i) {
+            const uint32_t y = (state[i] & 0x80000000u) | (state[(i + 1u) % 624u] & 0x7fffffffu);
+            state[i] = state[(i + 397u) % 624u] ^ (y >> 1);
+            if ((y & 1u) != 0u) {
+                state[i] ^= 0x9908b0dfu;
+            }
+        }
+        *index = 0u;
+    }
+    uint32_t y = state[*index];
+    ++(*index);
+    y ^= y >> 11;
+    y ^= (y << 7) & 0x9d2c5680u;
+    y ^= (y << 15) & 0xefc60000u;
+    y ^= y >> 18;
+    return y;
+}
+
+static inline double {{ op_name }}_rng_next_double(uint32_t state[624], uint32_t *index) {
+    const uint32_t a = {{ op_name }}_rng_next_u32(state, index) >> 5;
+    const uint32_t b = {{ op_name }}_rng_next_u32(state, index) >> 6;
+    return ((double)a * 67108864.0 + (double)b) * (1.0 / 9007199254740992.0);
+}
+
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    float ratio_value = 0.5f;
+{% if ratio %}
+    ratio_value = (float){{ ratio }}{{ ratio_index_expr }};
+{% endif %}
+    if (ratio_value < 0.0f) {
+        ratio_value = 0.0f;
+    }
+    if (ratio_value > 1.0f) {
+        ratio_value = 1.0f;
+    }
+
+    int training = 0;
+{% if training_mode %}
+    training = {{ training_mode }}{{ training_index_expr }} ? 1 : 0;
+{% endif %}
+
+    const float keep_prob = 1.0f - ratio_value;
+    const float scale = (keep_prob > 0.0f) ? (1.0f / keep_prob) : 0.0f;
+    uint32_t rng_state[624];
+    uint32_t rng_index = 624u;
+    {{ op_name }}_rng_seed(rng_state, (uint32_t){{ seed }}u);
+
+{% for dim in shape %}
+    for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+{% endfor %}
+        const int keep = !training || (ratio_value <= 0.0f)
+            ? 1
+            : ({{ op_name }}_rng_next_double(rng_state, &rng_index) >= (double)ratio_value);
+{% if mask %}
+        {{ mask }}{{ index_expr }} = keep;
+{% endif %}
+        if (keep) {
+            {{ output }}{{ index_expr }} = training && ratio_value > 0.0f
+                ? ({{ c_type }})(((float){{ input0 }}{{ index_expr }}) * scale)
+                : {{ input0 }}{{ index_expr }};
+        } else {
+            {{ output }}{{ index_expr }} = ({{ c_type }})0;
+        }
+{% for _ in shape %}
+    }
+{% endfor %}
+}

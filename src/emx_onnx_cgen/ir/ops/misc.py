@@ -313,6 +313,18 @@ class BernoulliOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class DropoutOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "ratio", "training_mode")
+    __io_outputs__ = ("output", "mask")
+    input0: str
+    output: str
+    ratio: str | None
+    training_mode: str | None
+    mask: str | None
+    seed: int | None
+
+
+@dataclass(frozen=True)
 class TriluOp(RenderableOpBase):
     __io_inputs__ = ("input0", "k_input")
     __io_outputs__ = ("output",)
