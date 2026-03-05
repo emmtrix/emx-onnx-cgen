@@ -23,7 +23,9 @@ def _product(values: tuple[int, ...] | list[int]) -> int:
 
 
 def _read_const_int_values(
-    graph: Graph, name: str, node: Node,
+    graph: Graph,
+    name: str,
+    node: Node,
 ) -> tuple[int, ...] | None:
     values = _shape_values_from_input(graph, name, node)
     if values is not None:
@@ -128,27 +130,21 @@ def resolve_col2im_spec(graph: Graph, node: Node) -> Col2ImSpec:
             f"spatial rank ({spatial_rank})"
         )
 
-    strides = tuple(
-        int(v) for v in node.attrs.get("strides", (1,) * spatial_rank)
-    )
+    strides = tuple(int(v) for v in node.attrs.get("strides", (1,) * spatial_rank))
     if len(strides) != spatial_rank:
         raise UnsupportedOpError(
             f"Col2Im strides rank ({len(strides)}) must match "
             f"spatial rank ({spatial_rank})"
         )
 
-    dilations = tuple(
-        int(v) for v in node.attrs.get("dilations", (1,) * spatial_rank)
-    )
+    dilations = tuple(int(v) for v in node.attrs.get("dilations", (1,) * spatial_rank))
     if len(dilations) != spatial_rank:
         raise UnsupportedOpError(
             f"Col2Im dilations rank ({len(dilations)}) must match "
             f"spatial rank ({spatial_rank})"
         )
 
-    pads = tuple(
-        int(v) for v in node.attrs.get("pads", (0,) * (2 * spatial_rank))
-    )
+    pads = tuple(int(v) for v in node.attrs.get("pads", (0,) * (2 * spatial_rank)))
     if len(pads) != 2 * spatial_rank:
         raise UnsupportedOpError(
             f"Col2Im pads rank ({len(pads)}) must be "
@@ -207,8 +203,7 @@ def resolve_col2im_spec(graph: Graph, node: Node) -> Col2ImSpec:
     expected_output_shape = (batch, channels, *image_shape)
     if output_shape != expected_output_shape:
         raise ShapeInferenceError(
-            f"Col2Im output shape must be {expected_output_shape}, "
-            f"got {output_shape}"
+            f"Col2Im output shape must be {expected_output_shape}, got {output_shape}"
         )
 
     return Col2ImSpec(
