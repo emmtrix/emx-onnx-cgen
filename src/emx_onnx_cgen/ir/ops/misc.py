@@ -103,6 +103,7 @@ class QuantizeLinearOp(RenderableOpBase):
     zero_point: str | None
     output: str
     axis: int | None
+    block_size: int | None
 
     def required_includes(self, ctx: OpContext) -> set[str]:
         includes: set[str] = {"#include <math.h>"}
@@ -133,7 +134,14 @@ class QuantizeLinearOp(RenderableOpBase):
         input_suffix = emitter.param_array_suffix(
             input_shape, emitter.dim_names_for(self.input0)
         )
-        scale_shape = () if self.axis is None else (input_shape[self.axis],)
+        if self.axis is None:
+            scale_shape = ()
+        elif self.block_size:
+            scale_shape_list = list(input_shape)
+            scale_shape_list[self.axis] = input_shape[self.axis] // self.block_size
+            scale_shape = tuple(scale_shape_list)
+        else:
+            scale_shape = (input_shape[self.axis],)
         scale_suffix = emitter.param_array_suffix(
             scale_shape, emitter.dim_names_for(self.scale)
         )
@@ -158,12 +166,32 @@ class QuantizeLinearOp(RenderableOpBase):
             ]
         )
         compute_type = "double" if input_dtype == ScalarType.F64 else "float"
-        scale_index = "0" if self.axis is None else loop_vars[self.axis]
         input_expr = f"{params['input0']}" + "".join(f"[{var}]" for var in loop_vars)
         output_expr = f"{params['output']}" + "".join(f"[{var}]" for var in loop_vars)
-        scale_expr = f"{params['scale']}[{scale_index}]"
+        if self.axis is None:
+            scale_expr = f"{params['scale']}[0]"
+        elif self.block_size:
+            scale_indices = list(loop_vars)
+            scale_indices[self.axis] = f"({loop_vars[self.axis]}) / {self.block_size}"
+            scale_expr = f"{params['scale']}" + "".join(
+                f"[{index}]" for index in scale_indices
+            )
+        else:
+            scale_index = loop_vars[self.axis]
+            scale_expr = f"{params['scale']}[{scale_index}]"
         if params["zero_point"]:
-            zero_expr = f"{params['zero_point']}[{scale_index}]"
+            if self.axis is None:
+                zero_expr = f"{params['zero_point']}[0]"
+            elif self.block_size:
+                scale_indices = list(loop_vars)
+                scale_indices[self.axis] = (
+                    f"({loop_vars[self.axis]}) / {self.block_size}"
+                )
+                zero_expr = f"{params['zero_point']}" + "".join(
+                    f"[{index}]" for index in scale_indices
+                )
+            else:
+                zero_expr = f"{params['zero_point']}[{scale_index}]"
         else:
             zero_expr = "0"
         rendered = (
@@ -197,9 +225,15 @@ class QuantizeLinearOp(RenderableOpBase):
     def c_op_inputs(
         self, emitter: "Emitter"
     ) -> tuple[tuple[str, tuple[int, ...]], ...]:
-        scale_shape = (
-            () if self.axis is None else (emitter.ctx_shape(self.input0)[self.axis],)
-        )
+        if self.axis is None:
+            scale_shape = ()
+        elif self.block_size:
+            input_shape = emitter.ctx_shape(self.input0)
+            scale_shape_list = list(input_shape)
+            scale_shape_list[self.axis] = input_shape[self.axis] // self.block_size
+            scale_shape = tuple(scale_shape_list)
+        else:
+            scale_shape = (emitter.ctx_shape(self.input0)[self.axis],)
         inputs: list[tuple[str, tuple[int, ...]]] = [
             (self.input0, emitter.ctx_shape(self.input0)),
             (self.scale, scale_shape),

@@ -22,6 +22,7 @@ class QuantizeSpec:
     input_shape: tuple[int, ...]
     scale_shape: tuple[int, ...]
     axis: int | None
+    block_size: int | None
     output_dtype: ScalarType
 
 
@@ -53,8 +54,8 @@ def resolve_quantize_spec(graph: Graph, node: Node) -> QuantizeSpec:
     if set(node.attrs) - supported_attrs:
         raise UnsupportedOpError("QuantizeLinear has unsupported attributes")
     block_size = int(node.attrs.get("block_size", 0))
-    if block_size != 0:
-        raise UnsupportedOpError("QuantizeLinear block_size is not supported")
+    if block_size < 0:
+        raise UnsupportedOpError("QuantizeLinear block_size must be >= 0")
     precision = int(node.attrs.get("precision", 0))
     if precision != 0:
         raise UnsupportedOpError("QuantizeLinear precision is not supported")
@@ -81,27 +82,50 @@ def resolve_quantize_spec(graph: Graph, node: Node) -> QuantizeSpec:
                 "QuantizeLinear zero_point dtype must match output dtype"
             )
         zero_point_shape = _value_shape(graph, zero_point_name, node)
-        if zero_point_shape != scale_shape:
+        if zero_point_shape != scale_shape and {
+            zero_point_shape,
+            scale_shape,
+        } != {(), (1,)}:
             raise ShapeInferenceError(
                 "QuantizeLinear zero_point shape must match scale shape"
             )
     if scale_shape not in {(), (1,)}:
-        if len(scale_shape) != 1:
-            raise UnsupportedOpError(
-                "QuantizeLinear supports per-tensor and per-axis scales only"
-            )
         axis = int(node.attrs.get("axis", 1))
         axis = normalize_axis(axis, input_shape, node)
-        if scale_shape[0] != input_shape[axis]:
-            raise ShapeInferenceError(
-                "QuantizeLinear scale length must match input axis size"
-            )
+        if block_size > 0:
+            if len(scale_shape) != len(input_shape):
+                raise UnsupportedOpError(
+                    "QuantizeLinear blocked scales must match input rank"
+                )
+            if input_shape[axis] % block_size != 0:
+                raise ShapeInferenceError(
+                    "QuantizeLinear block_size must evenly divide axis length"
+                )
+            expected = list(input_shape)
+            expected[axis] = input_shape[axis] // block_size
+            if scale_shape != tuple(expected):
+                raise ShapeInferenceError(
+                    "QuantizeLinear blocked scale shape must match "
+                    "input shape with a reduced axis"
+                )
+        else:
+            if len(scale_shape) != 1:
+                raise UnsupportedOpError(
+                    "QuantizeLinear supports per-tensor, per-axis, "
+                    "and blocked scales only"
+                )
+            if scale_shape[0] != input_shape[axis]:
+                raise ShapeInferenceError(
+                    "QuantizeLinear scale length must match input axis size"
+                )
     else:
         axis = None
+        block_size = 0
     return QuantizeSpec(
         input_shape=input_shape,
         scale_shape=scale_shape,
         axis=axis,
+        block_size=block_size or None,
         output_dtype=output_dtype,
     )
 
@@ -121,4 +145,5 @@ def lower_quantize_linear(graph: Graph, node: Node) -> QuantizeLinearOp:
         zero_point=optional_name(node.inputs, 2),
         output=node.outputs[0],
         axis=spec.axis,
+        block_size=spec.block_size,
     )
