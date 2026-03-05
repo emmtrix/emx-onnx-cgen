@@ -203,7 +203,7 @@ Supported operators: 193 / 205
 | Xor | ✅ |
 | ai.onnx.ml::ArrayFeatureExtractor | ❌ |
 | ai.onnx.ml::Binarizer | ❌ |
-| ai.onnx.ml::LabelEncoder | ❌ |
+| ai.onnx.ml::LabelEncoder | ✅ |
 | ai.onnx.ml::TreeEnsemble | ✅ |
 | ai.onnx.ml::TreeEnsembleClassifier | ✅ |
 | ai.onnx.preview.training::Adagrad | ✅ |
