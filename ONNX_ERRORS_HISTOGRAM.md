@@ -16,7 +16,6 @@ Aggregates non-success verification outcomes.
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
-| Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
 | Out of tolerance | 6 | 15, 20, 22 |
 | Unsupported op Col2Im | 5 | 18 |
@@ -59,7 +58,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op STFT | 17 | 2 |
 | Unsupported op Col2Im | 18 | 5 |
 | OptionalHasElement expects exactly one non-empty input. | 18 | 4 |
-| Unsupported op ImageDecoder | 20 | 9 |
 | Unsupported op RegexFullMatch | 20 | 3 |
 | Gelu only supports approximate=none | 20 | 2 |
 | Out of tolerance | 20 | 2 |
