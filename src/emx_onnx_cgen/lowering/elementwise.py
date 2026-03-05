@@ -197,8 +197,9 @@ def lower_selu(graph: Graph, node: Node) -> UnaryOp:
         output=node.outputs[0],
         function=ScalarFunction.SELU,
         params=(alpha, gamma),
-      
-      
+    )
+
+
 @register_lowering("HardSigmoid")
 def lower_hardsigmoid(graph: Graph, node: Node) -> UnaryOp:
     if len(node.inputs) != 1 or len(node.outputs) != 1:
