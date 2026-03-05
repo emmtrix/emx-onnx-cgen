@@ -1,9 +1,10 @@
 {
-  "error": "LpPool supports auto_pad=NOTSET only",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_lppool_2d_same_lower model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "LpPool"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "bd39e433537d08ea474bab8a40c306802fdd428c23c76ff5cdb58cb93d836ff7"
 }

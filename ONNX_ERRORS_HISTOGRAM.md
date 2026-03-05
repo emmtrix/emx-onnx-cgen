@@ -24,6 +24,7 @@ Aggregates non-success verification outcomes.
 | Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op RoiAlign | 3 | 22 |
 | '*' | 2 |  |
+| Gelu only supports approximate=none | 2 | 20 |
 | LpPool expects 2D kernel_shape | 2 | 22 |
 | LpPool supports auto_pad=NOTSET only | 2 | 22 |
 | QuantizeLinear block_size is not supported | 2 | 25 |
@@ -55,8 +56,6 @@ Aggregates non-success verification outcomes.
 | Out of tolerance | 22 | 3 |
 | Unsupported op RandomUniformLike | 22 | 3 |
 | Unsupported op RoiAlign | 22 | 3 |
-| LpPool expects 2D kernel_shape | 22 | 2 |
-| LpPool supports auto_pad=NOTSET only | 22 | 2 |
 | Selu only supports alpha=1.6732632423543772 | 22 | 2 |
 | ThresholdedRelu only supports alpha=1.0 | 22 | 2 |
 | Unsupported op Det | 22 | 2 |
