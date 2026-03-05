@@ -181,6 +181,38 @@ def test_cli_verify_sanitize_flag_can_be_enabled() -> None:
     assert args.sanitize is True
 
 
+def test_cli_resolve_sanitize_enabled_uses_cli_flag_without_env(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv(cli._ENABLE_SANITIZE_ENV, raising=False)
+    enabled, override = cli._resolve_sanitize_enabled(cli_requested=False)
+    assert enabled is False
+    assert override is None
+
+    enabled, override = cli._resolve_sanitize_enabled(cli_requested=True)
+    assert enabled is True
+    assert override is None
+
+
+@pytest.mark.parametrize(
+    ("env_value", "cli_requested", "expected_enabled"),
+    [
+        ("1", False, True),
+        ("0", True, False),
+    ],
+)
+def test_cli_resolve_sanitize_enabled_env_overrides_cli_flag(
+    monkeypatch: pytest.MonkeyPatch,
+    env_value: str,
+    cli_requested: bool,
+    expected_enabled: bool,
+) -> None:
+    monkeypatch.setenv(cli._ENABLE_SANITIZE_ENV, env_value)
+    enabled, override = cli._resolve_sanitize_enabled(cli_requested=cli_requested)
+    assert enabled is expected_enabled
+    assert override == f"{cli._ENABLE_SANITIZE_ENV}={env_value!r}"
+
+
 def test_cli_verify_per_node_accuracy_flag_defaults_to_false() -> None:
     parser = cli._build_parser()
     args = parser.parse_args(["verify", "model.onnx"])

@@ -437,7 +437,6 @@ def _run_expected_error_test(
     verify_args = [
         "emx-onnx-cgen",
         "verify",
-        "--sanitize",
         "--model-base-dir",
         str(base_dir.relative_to(repo_root)),
         model_argument,
@@ -504,6 +503,44 @@ def _run_expected_error_test(
             f"Unexpected result for {expectation_path}. Expected: {expected_error!r}. "
             f"Got: {actual_error!r}."
         )
+
+
+def test_run_expected_error_test_does_not_add_sanitize_flag(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    repo_root = tmp_path / "repo"
+    model_dir = repo_root / "tests" / "onnx"
+    model_dir.mkdir(parents=True)
+    model_path = model_dir / "model.onnx"
+    model_path.write_bytes(b"")
+
+    captured_args: list[list[str]] = []
+
+    def _fake_run_cli_command(argv: list[str]) -> cli.CliResult:
+        captured_args.append(argv)
+        return cli.CliResult(
+            exit_code=0,
+            command_line="verify --model-base-dir tests/onnx model.onnx",
+            result="OK",
+        )
+
+    monkeypatch.setattr(cli, "run_cli_command", _fake_run_cli_command)
+    monkeypatch.delenv("UPDATE_REFS", raising=False)
+
+    _run_expected_error_test(
+        repo_root=repo_root,
+        repo_relative_path="tests/onnx/model.onnx",
+        model_path=model_path,
+        expectation=OnnxFileExpectation(
+            path="tests/onnx/model.onnx",
+            error="OK",
+        ),
+        expectation_path="tests/onnx/model.onnx",
+    )
+
+    assert captured_args
+    assert "--sanitize" not in captured_args[0]
 
 
 @pytest.mark.order(1)
