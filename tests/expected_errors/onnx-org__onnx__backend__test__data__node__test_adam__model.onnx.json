@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op Adam",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_adam model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "ai.onnx.preview.training::Adam"
-  ]
+  ],
+  "generated_checksum": "8e3fa00be7421d60e9775944dc8010b52ecdf69520a2dcc97659dc4281eec952"
 }
