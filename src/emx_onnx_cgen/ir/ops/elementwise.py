@@ -35,9 +35,7 @@ class BinaryOp(ElementwiseOpBase):
         dtype = ctx.dtype(self.input0)
         if dtype == ScalarType.STRING:
             includes.add("#include <string.h>")
-        op_spec = binary_op_symbol(
-            self.function, dtype=dtype, validate_attrs=False
-        )
+        op_spec = binary_op_symbol(self.function, dtype=dtype, validate_attrs=False)
         if op_spec is not None and op_spec.operator in self._BINARY_MATH_OPS:
             includes.add("#include <math.h>")
         return includes
@@ -177,17 +175,21 @@ class BinaryOp(ElementwiseOpBase):
                 operator_expr = op_spec.operator.format(
                     left=left_expr, right=right_expr
                 )
-        rendered = state.templates["binary"].render(
-            **common,
-            input0=params["input0"],
-            input1=params["input1"],
-            output=params["output"],
-            operator=operator,
-            operator_kind=operator_kind.value,
-            left_expr=left_expr,
-            right_expr=right_expr,
-            operator_expr=operator_expr,
-        ).rstrip()
+        rendered = (
+            state.templates["binary"]
+            .render(
+                **common,
+                input0=params["input0"],
+                input1=params["input1"],
+                output=params["output"],
+                operator=operator,
+                operator_kind=operator_kind.value,
+                left_expr=left_expr,
+                right_expr=right_expr,
+                operator_expr=operator_expr,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -334,8 +336,7 @@ class MultiInputBinaryOp(VariadicOp):
         )
         if op_spec is None:
             raise CodegenError(
-                "Unsupported multi-input operator for rendering: "
-                f"{self.function.value}"
+                f"Unsupported multi-input operator for rendering: {self.function.value}"
             )
         output_dim_names = emitter.dim_names_for(self.output)
         shape = CEmitterCompat.shape_dim_exprs(output_shape_raw, output_dim_names)
@@ -385,9 +386,7 @@ class MultiInputBinaryOp(VariadicOp):
             )
             for name, shape in zip(input_names, input_shapes)
         ]
-        output_expr = f"{params['output']}" + "".join(
-            f"[{var}]" for var in loop_vars
-        )
+        output_expr = f"{params['output']}" + "".join(f"[{var}]" for var in loop_vars)
         operator = op_spec.operator
         operator_kind = self.operator_kind
         operator_expr = None
@@ -403,18 +402,22 @@ class MultiInputBinaryOp(VariadicOp):
             raise CodegenError(
                 "Multi-input operators do not support expression operators."
             )
-        rendered = state.templates["multi_input"].render(
-            **common,
-            inputs=input_names,
-            input_exprs=input_exprs,
-            output=params["output"],
-            output_expr=output_expr,
-            operator=operator,
-            operator_kind=operator_kind.value,
-            operator_expr=operator_expr,
-            mean_scale=mean_scale,
-            is_mean=self.function == ScalarFunction.MEAN,
-        ).rstrip()
+        rendered = (
+            state.templates["multi_input"]
+            .render(
+                **common,
+                inputs=input_names,
+                input_exprs=input_exprs,
+                output=params["output"],
+                output_expr=output_expr,
+                operator=operator,
+                operator_kind=operator_kind.value,
+                operator_expr=operator_expr,
+                mean_scale=mean_scale,
+                is_mean=self.function == ScalarFunction.MEAN,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -454,7 +457,9 @@ class WhereOp(ElementwiseOpBase):
             ]
         )
         output_dim_names = emitter.dim_names_for(self.output)
-        output_shape = CEmitterCompat.shape_dim_exprs(output_shape_raw, output_dim_names)
+        output_shape = CEmitterCompat.shape_dim_exprs(
+            output_shape_raw, output_dim_names
+        )
         loop_vars = CEmitterCompat.loop_vars(output_shape_raw)
         output_array_suffix = emitter.param_array_suffix(
             output_shape_raw, output_dim_names
@@ -480,9 +485,7 @@ class WhereOp(ElementwiseOpBase):
         y_expr = CEmitterCompat.broadcast_index_expr(
             params["input_y"], y_shape, output_shape_raw, loop_vars
         )
-        output_expr = f"{params['output']}" + "".join(
-            f"[{var}]" for var in loop_vars
-        )
+        output_expr = f"{params['output']}" + "".join(f"[{var}]" for var in loop_vars)
         param_decls = emitter.build_param_decls(
             [
                 (
@@ -501,29 +504,33 @@ class WhereOp(ElementwiseOpBase):
                 ),
             ]
         )
-        rendered = state.templates["where"].render(
-            model_name=model.name,
-            op_name=op_name,
-            output_shape=output_shape,
-            loop_vars=loop_vars,
-            condition=params["condition"],
-            input_x=params["input_x"],
-            input_y=params["input_y"],
-            output=params["output"],
-            condition_array_suffix=condition_array_suffix,
-            x_array_suffix=x_array_suffix,
-            y_array_suffix=y_array_suffix,
-            output_array_suffix=output_array_suffix,
-            condition_expr=condition_expr,
-            x_expr=x_expr,
-            y_expr=y_expr,
-            output_expr=output_expr,
-            input_c_type=output_dtype.c_type,
-            output_c_type=output_dtype.c_type,
-            condition_c_type=ScalarType.BOOL.c_type,
-            dim_args=dim_args,
-            params=param_decls,
-        ).rstrip()
+        rendered = (
+            state.templates["where"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                output_shape=output_shape,
+                loop_vars=loop_vars,
+                condition=params["condition"],
+                input_x=params["input_x"],
+                input_y=params["input_y"],
+                output=params["output"],
+                condition_array_suffix=condition_array_suffix,
+                x_array_suffix=x_array_suffix,
+                y_array_suffix=y_array_suffix,
+                output_array_suffix=output_array_suffix,
+                condition_expr=condition_expr,
+                x_expr=x_expr,
+                y_expr=y_expr,
+                output_expr=output_expr,
+                input_c_type=output_dtype.c_type,
+                output_c_type=output_dtype.c_type,
+                condition_c_type=ScalarType.BOOL.c_type,
+                dim_args=dim_args,
+                params=param_decls,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -535,10 +542,21 @@ class UnaryOp(ElementwiseOpBase):
     function: ScalarFunction
     params: tuple[float, ...] = ()
 
-    _MATH_OPS = frozenset({
-        "atanhf", "ceilf", "cosf", "expf", "fabsf", "floorf",
-        "logf", "sinf", "sqrtf", "tanf", "tanhf",
-    })
+    _MATH_OPS = frozenset(
+        {
+            "atanhf",
+            "ceilf",
+            "cosf",
+            "expf",
+            "fabsf",
+            "floorf",
+            "logf",
+            "sinf",
+            "sqrtf",
+            "tanf",
+            "tanhf",
+        }
+    )
 
     def required_includes(self, ctx: OpContext) -> set[str]:
         includes: set[str] = set()
@@ -628,12 +646,16 @@ class UnaryOp(ElementwiseOpBase):
             "dim_args": dim_args,
             "params": param_decls,
         }
-        rendered = state.templates["unary"].render(
-            **common,
-            input0=params["input0"],
-            output=params["output"],
-            operator=scalar_operator or operator_symbol,
-        ).rstrip()
+        rendered = (
+            state.templates["unary"]
+            .render(
+                **common,
+                input0=params["input0"],
+                output=params["output"],
+                operator=scalar_operator or operator_symbol,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -696,7 +718,9 @@ class ClipOp(ElementwiseOpBase):
             ]
         )
         output_dim_names = emitter.dim_names_for(self.output)
-        output_shape = CEmitterCompat.shape_dim_exprs(output_shape_raw, output_dim_names)
+        output_shape = CEmitterCompat.shape_dim_exprs(
+            output_shape_raw, output_dim_names
+        )
         loop_vars = CEmitterCompat.loop_vars(output_shape_raw)
         input_expr = CEmitterCompat.broadcast_index_expr(
             params["input0"],
@@ -772,28 +796,32 @@ class ClipOp(ElementwiseOpBase):
                 (params["output"], output_dtype.c_type, output_suffix, False),
             ]
         )
-        rendered = state.templates["clip"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=params["input0"],
-            input_min=params["input_min"],
-            input_max=params["input_max"],
-            output=params["output"],
-            params=param_decls,
-            input_c_type=input_dtype.c_type,
-            output_c_type=output_dtype.c_type,
-            input_suffix=input_suffix,
-            min_suffix=min_suffix,
-            max_suffix=max_suffix,
-            output_suffix=output_suffix,
-            shape=output_shape,
-            loop_vars=loop_vars,
-            input_expr=input_expr,
-            min_expr=min_expr,
-            max_expr=max_expr,
-            dtype=input_dtype,
-            dim_args=dim_args,
-        ).rstrip()
+        rendered = (
+            state.templates["clip"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                input_min=params["input_min"],
+                input_max=params["input_max"],
+                output=params["output"],
+                params=param_decls,
+                input_c_type=input_dtype.c_type,
+                output_c_type=output_dtype.c_type,
+                input_suffix=input_suffix,
+                min_suffix=min_suffix,
+                max_suffix=max_suffix,
+                output_suffix=output_suffix,
+                shape=output_shape,
+                loop_vars=loop_vars,
+                input_expr=input_expr,
+                min_expr=min_expr,
+                max_expr=max_expr,
+                dtype=input_dtype,
+                dim_args=dim_args,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_inputs(
@@ -807,7 +835,6 @@ class ClipOp(ElementwiseOpBase):
         if self.input_max is not None:
             inputs.append((self.input_max, emitter.ctx_shape(self.input_max)))
         return tuple(inputs)
-
 
 
 @dataclass(frozen=True)
@@ -865,18 +892,22 @@ class IdentityOp(ElementwiseOpBase):
                 )
             )
         else:
-            rendered = state.templates["identity"].render(
-                model_name=model.name,
-                op_name=op_name,
-                input0=params["input0"],
-                output=params["output"],
-                params=param_decls,
-                c_type=c_type,
-                input_suffix=input_suffix,
-                output_suffix=output_suffix,
-                shape=shape,
-                loop_vars=loop_vars,
-            ).rstrip()
+            rendered = (
+                state.templates["identity"]
+                .render(
+                    model_name=model.name,
+                    op_name=op_name,
+                    input0=params["input0"],
+                    output=params["output"],
+                    params=param_decls,
+                    c_type=c_type,
+                    input_suffix=input_suffix,
+                    output_suffix=output_suffix,
+                    shape=shape,
+                    loop_vars=loop_vars,
+                )
+                .rstrip()
+            )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -1038,42 +1069,45 @@ class QLinearMulOp(RenderableOpBase):
         compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
 
         scale_index = "0"
-        rendered = state.templates["qlinear_mul"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=params["input0"],
-            input1=params["input1"],
-            input0_scale=params["input0_scale"],
-            input0_zero_point=params["input0_zero_point"],
-            input1_scale=params["input1_scale"],
-            input1_zero_point=params["input1_zero_point"],
-            output_scale=params["output_scale"],
-            output_zero_point=params["output_zero_point"],
-            output=params["output"],
-            params=param_decls,
-            compute_type=compute_type,
-            output_c_type=self.dtype.c_type,
-            input0_index_expr=input0_index_expr,
-            input1_index_expr=input1_index_expr,
-            input0_scale_expr=f"{params['input0_scale']}[{scale_index}]",
-            input1_scale_expr=f"{params['input1_scale']}[{scale_index}]",
-            output_scale_expr=f"{params['output_scale']}[{scale_index}]",
-            input0_zero_expr=f"{params['input0_zero_point']}[{scale_index}]",
-            input1_zero_expr=f"{params['input1_zero_point']}[{scale_index}]",
-            output_zero_expr=f"{params['output_zero_point']}[{scale_index}]",
-            output_loop_vars=output_loop_vars,
-            output_loop_bounds=output_shape,
-            output_index_expr=output_index_expr,
-            compute_dtype=compute_dtype,
-            min_literal=self.dtype.min_literal,
-            max_literal=self.dtype.max_literal,
-            dim_args=emitter.dim_args_str(),
-        ).rstrip()
+        rendered = (
+            state.templates["qlinear_mul"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                input1=params["input1"],
+                input0_scale=params["input0_scale"],
+                input0_zero_point=params["input0_zero_point"],
+                input1_scale=params["input1_scale"],
+                input1_zero_point=params["input1_zero_point"],
+                output_scale=params["output_scale"],
+                output_zero_point=params["output_zero_point"],
+                output=params["output"],
+                params=param_decls,
+                compute_type=compute_type,
+                output_c_type=self.dtype.c_type,
+                input0_index_expr=input0_index_expr,
+                input1_index_expr=input1_index_expr,
+                input0_scale_expr=f"{params['input0_scale']}[{scale_index}]",
+                input1_scale_expr=f"{params['input1_scale']}[{scale_index}]",
+                output_scale_expr=f"{params['output_scale']}[{scale_index}]",
+                input0_zero_expr=f"{params['input0_zero_point']}[{scale_index}]",
+                input1_zero_expr=f"{params['input1_zero_point']}[{scale_index}]",
+                output_zero_expr=f"{params['output_zero_point']}[{scale_index}]",
+                output_loop_vars=output_loop_vars,
+                output_loop_bounds=output_shape,
+                output_index_expr=output_index_expr,
+                compute_dtype=compute_dtype,
+                min_literal=self.dtype.min_literal,
+                max_literal=self.dtype.max_literal,
+                dim_args=emitter.dim_args_str(),
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
         return self.output_shape
-
 
 
 @dataclass(frozen=True)
@@ -1213,39 +1247,42 @@ class QLinearAddOp(RenderableOpBase):
         compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
 
         scale_index = "0"
-        rendered = state.templates["qlinear_add"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=params["input0"],
-            input1=params["input1"],
-            input0_scale=params["input0_scale"],
-            input0_zero_point=params["input0_zero_point"],
-            input1_scale=params["input1_scale"],
-            input1_zero_point=params["input1_zero_point"],
-            output_scale=params["output_scale"],
-            output_zero_point=params["output_zero_point"],
-            output=params["output"],
-            params=param_decls,
-            compute_type=compute_type,
-            output_c_type=self.dtype.c_type,
-            input0_index_expr=input0_index_expr,
-            input1_index_expr=input1_index_expr,
-            input0_scale_expr=f"{params['input0_scale']}[{scale_index}]",
-            input1_scale_expr=f"{params['input1_scale']}[{scale_index}]",
-            output_scale_expr=f"{params['output_scale']}[{scale_index}]",
-            input0_zero_expr=f"{params['input0_zero_point']}[{scale_index}]",
-            input1_zero_expr=f"{params['input1_zero_point']}[{scale_index}]",
-            output_zero_expr=f"{params['output_zero_point']}[{scale_index}]",
-            output_loop_vars=output_loop_vars,
-            output_loop_bounds=output_shape,
-            output_index_expr=output_index_expr,
-            compute_dtype=compute_dtype,
-            min_literal=self.dtype.min_literal,
-            max_literal=self.dtype.max_literal,
-            dim_args=emitter.dim_args_str(),
-        ).rstrip()
+        rendered = (
+            state.templates["qlinear_add"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                input1=params["input1"],
+                input0_scale=params["input0_scale"],
+                input0_zero_point=params["input0_zero_point"],
+                input1_scale=params["input1_scale"],
+                input1_zero_point=params["input1_zero_point"],
+                output_scale=params["output_scale"],
+                output_zero_point=params["output_zero_point"],
+                output=params["output"],
+                params=param_decls,
+                compute_type=compute_type,
+                output_c_type=self.dtype.c_type,
+                input0_index_expr=input0_index_expr,
+                input1_index_expr=input1_index_expr,
+                input0_scale_expr=f"{params['input0_scale']}[{scale_index}]",
+                input1_scale_expr=f"{params['input1_scale']}[{scale_index}]",
+                output_scale_expr=f"{params['output_scale']}[{scale_index}]",
+                input0_zero_expr=f"{params['input0_zero_point']}[{scale_index}]",
+                input1_zero_expr=f"{params['input1_zero_point']}[{scale_index}]",
+                output_zero_expr=f"{params['output_zero_point']}[{scale_index}]",
+                output_loop_vars=output_loop_vars,
+                output_loop_bounds=output_shape,
+                output_index_expr=output_index_expr,
+                compute_dtype=compute_dtype,
+                min_literal=self.dtype.min_literal,
+                max_literal=self.dtype.max_literal,
+                dim_args=emitter.dim_args_str(),
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
         return self.output_shape
-

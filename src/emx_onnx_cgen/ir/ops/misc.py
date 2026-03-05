@@ -74,19 +74,23 @@ class CastOp(RenderableOpBase):
                 (params["output"], output_dtype.c_type, array_suffix, False),
             ]
         )
-        rendered = state.templates["cast"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=params["input0"],
-            output=params["output"],
-            params=param_decls,
-            input_c_type=input_dtype.c_type,
-            output_c_type=output_dtype.c_type,
-            array_suffix=array_suffix,
-            shape=shape,
-            loop_vars=loop_vars,
-            dim_args=dim_args,
-        ).rstrip()
+        rendered = (
+            state.templates["cast"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                input_c_type=input_dtype.c_type,
+                output_c_type=output_dtype.c_type,
+                array_suffix=array_suffix,
+                shape=shape,
+                loop_vars=loop_vars,
+                dim_args=dim_args,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -155,39 +159,39 @@ class QuantizeLinearOp(RenderableOpBase):
         )
         compute_type = "double" if input_dtype == ScalarType.F64 else "float"
         scale_index = "0" if self.axis is None else loop_vars[self.axis]
-        input_expr = f"{params['input0']}" + "".join(
-            f"[{var}]" for var in loop_vars
-        )
-        output_expr = f"{params['output']}" + "".join(
-            f"[{var}]" for var in loop_vars
-        )
+        input_expr = f"{params['input0']}" + "".join(f"[{var}]" for var in loop_vars)
+        output_expr = f"{params['output']}" + "".join(f"[{var}]" for var in loop_vars)
         scale_expr = f"{params['scale']}[{scale_index}]"
         if params["zero_point"]:
             zero_expr = f"{params['zero_point']}[{scale_index}]"
         else:
             zero_expr = "0"
-        rendered = state.templates["quantize_linear"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=params["input0"],
-            scale=params["scale"],
-            zero_point=params["zero_point"],
-            output=params["output"],
-            params=param_decls,
-            compute_type=compute_type,
-            input_c_type=input_dtype.c_type,
-            output_c_type=output_dtype.c_type,
-            shape=shape,
-            loop_vars=loop_vars,
-            input_expr=input_expr,
-            scale_expr=scale_expr,
-            zero_expr=zero_expr,
-            output_expr=output_expr,
-            compute_dtype=input_dtype,
-            min_literal=output_dtype.min_literal,
-            max_literal=output_dtype.max_literal,
-            dim_args=dim_args,
-        ).rstrip()
+        rendered = (
+            state.templates["quantize_linear"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                scale=params["scale"],
+                zero_point=params["zero_point"],
+                output=params["output"],
+                params=param_decls,
+                compute_type=compute_type,
+                input_c_type=input_dtype.c_type,
+                output_c_type=output_dtype.c_type,
+                shape=shape,
+                loop_vars=loop_vars,
+                input_expr=input_expr,
+                scale_expr=scale_expr,
+                zero_expr=zero_expr,
+                output_expr=output_expr,
+                compute_dtype=input_dtype,
+                min_literal=output_dtype.min_literal,
+                max_literal=output_dtype.max_literal,
+                dim_args=dim_args,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_inputs(
@@ -203,7 +207,6 @@ class QuantizeLinearOp(RenderableOpBase):
         if self.zero_point is not None:
             inputs.append((self.zero_point, scale_shape))
         return tuple(inputs)
-
 
 
 @dataclass(frozen=True)
@@ -251,40 +254,47 @@ class DynamicQuantizeLinearOp(RenderableOpBase):
             ]
         )
         compute_type = "double" if input_dtype == ScalarType.F64 else "float"
-        input_expr = f"{params['input0']}" + "".join(
-            f"[{var}]" for var in loop_vars
+        input_expr = f"{params['input0']}" + "".join(f"[{var}]" for var in loop_vars)
+        output_expr = f"{params['output']}" + "".join(f"[{var}]" for var in loop_vars)
+        rendered = (
+            state.templates["dynamic_quantize_linear"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                params=param_decls,
+                compute_type=compute_type,
+                output_c_type=output_dtype.c_type,
+                scale_c_type=scale_dtype.c_type,
+                zero_point_c_type=zero_point_dtype.c_type,
+                shape=shape,
+                loop_vars=loop_vars,
+                input_expr=input_expr,
+                output_expr=output_expr,
+                scale_expr=f"{params['scale']}[0]",
+                zero_point_expr=f"{params['zero_point']}[0]",
+                compute_dtype=input_dtype,
+                dim_args=dim_args,
+            )
+            .rstrip()
         )
-        output_expr = f"{params['output']}" + "".join(
-            f"[{var}]" for var in loop_vars
-        )
-        rendered = state.templates["dynamic_quantize_linear"].render(
-            model_name=model.name,
-            op_name=op_name,
-            params=param_decls,
-            compute_type=compute_type,
-            output_c_type=output_dtype.c_type,
-            scale_c_type=scale_dtype.c_type,
-            zero_point_c_type=zero_point_dtype.c_type,
-            shape=shape,
-            loop_vars=loop_vars,
-            input_expr=input_expr,
-            output_expr=output_expr,
-            scale_expr=f"{params['scale']}[0]",
-            zero_point_expr=f"{params['zero_point']}[0]",
-            compute_dtype=input_dtype,
-            dim_args=dim_args,
-        ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_outputs(
         self, emitter: "Emitter"
     ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
         return (
-            (self.output, emitter.ctx_shape(self.output), emitter.ctx_dtype(self.output)),
+            (
+                self.output,
+                emitter.ctx_shape(self.output),
+                emitter.ctx_dtype(self.output),
+            ),
             (self.scale, emitter.ctx_shape(self.scale), emitter.ctx_dtype(self.scale)),
-            (self.zero_point, emitter.ctx_shape(self.zero_point), emitter.ctx_dtype(self.zero_point)),
+            (
+                self.zero_point,
+                emitter.ctx_shape(self.zero_point),
+                emitter.ctx_dtype(self.zero_point),
+            ),
         )
-
 
 
 @dataclass(frozen=True)
@@ -353,12 +363,8 @@ class DequantizeLinearOp(RenderableOpBase):
             ]
         )
         compute_type = "double" if output_dtype == ScalarType.F64 else "float"
-        input_expr = f"{params['input0']}" + "".join(
-            f"[{var}]" for var in loop_vars
-        )
-        output_expr = f"{params['output']}" + "".join(
-            f"[{var}]" for var in loop_vars
-        )
+        input_expr = f"{params['input0']}" + "".join(f"[{var}]" for var in loop_vars)
+        output_expr = f"{params['output']}" + "".join(f"[{var}]" for var in loop_vars)
         if self.axis is None:
             scale_expr = f"{params['scale']}[0]"
         elif self.block_size:
@@ -385,25 +391,29 @@ class DequantizeLinearOp(RenderableOpBase):
                 zero_expr = f"{params['zero_point']}[{scale_index}]"
         else:
             zero_expr = "0"
-        rendered = state.templates["dequantize_linear"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=params["input0"],
-            scale=params["scale"],
-            zero_point=params["zero_point"],
-            output=params["output"],
-            params=param_decls,
-            compute_type=compute_type,
-            input_c_type=input_dtype.c_type,
-            output_c_type=output_dtype.c_type,
-            shape=shape,
-            loop_vars=loop_vars,
-            input_expr=input_expr,
-            scale_expr=scale_expr,
-            zero_expr=zero_expr,
-            output_expr=output_expr,
-            dim_args=dim_args,
-        ).rstrip()
+        rendered = (
+            state.templates["dequantize_linear"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                scale=params["scale"],
+                zero_point=params["zero_point"],
+                output=params["output"],
+                params=param_decls,
+                compute_type=compute_type,
+                input_c_type=input_dtype.c_type,
+                output_c_type=output_dtype.c_type,
+                shape=shape,
+                loop_vars=loop_vars,
+                input_expr=input_expr,
+                scale_expr=scale_expr,
+                zero_expr=zero_expr,
+                output_expr=output_expr,
+                dim_args=dim_args,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_inputs(
@@ -425,7 +435,6 @@ class DequantizeLinearOp(RenderableOpBase):
         if self.zero_point is not None:
             inputs.append((self.zero_point, scale_shape))
         return tuple(inputs)
-
 
 
 @dataclass(frozen=True)
@@ -544,26 +553,30 @@ class CompressOp(RenderableOpBase):
                 (params["output"], c_type, output_suffix, False),
             ]
         )
-        rendered = state.templates["compress"].render(
-            model_name=model.name,
-            op_name=op_name,
-            data=params["data"],
-            condition=params["condition"],
-            output=params["output"],
-            params=param_decls,
-            c_type=c_type,
-            data_suffix=data_suffix,
-            condition_suffix=condition_suffix,
-            output_suffix=output_suffix,
-            output_shape=output_shape,
-            output_size=output_size,
-            output_strides=output_strides,
-            condition_length=condition_length,
-            axis=self.axis,
-            axis_is_none=self.axis is None,
-            loop_vars=loop_vars,
-            dim_args=dim_args,
-        ).rstrip()
+        rendered = (
+            state.templates["compress"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                data=params["data"],
+                condition=params["condition"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                data_suffix=data_suffix,
+                condition_suffix=condition_suffix,
+                output_suffix=output_suffix,
+                output_shape=output_shape,
+                output_size=output_size,
+                output_strides=output_strides,
+                condition_length=condition_length,
+                axis=self.axis,
+                axis_is_none=self.axis is None,
+                loop_vars=loop_vars,
+                dim_args=dim_args,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -612,23 +625,27 @@ class GatherElementsOp(RenderableOpBase):
                 (params["output"], c_type, output_suffix, False),
             ]
         )
-        rendered = state.templates["gather_elements"].render(
-            model_name=model.name,
-            op_name=op_name,
-            data=params["data"],
-            indices=params["indices"],
-            output=params["output"],
-            params=param_decls,
-            c_type=c_type,
-            indices_c_type=emitter.ctx_dtype(self.indices).c_type,
-            data_suffix=data_suffix,
-            indices_suffix=indices_suffix,
-            output_suffix=output_suffix,
-            output_shape=output_shape,
-            loop_vars=loop_vars,
-            data_indices=data_indices,
-            axis_dim=data_shape[self.axis],
-        ).rstrip()
+        rendered = (
+            state.templates["gather_elements"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                data=params["data"],
+                indices=params["indices"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                indices_c_type=emitter.ctx_dtype(self.indices).c_type,
+                data_suffix=data_suffix,
+                indices_suffix=indices_suffix,
+                output_suffix=output_suffix,
+                output_shape=output_shape,
+                loop_vars=loop_vars,
+                data_indices=data_indices,
+                axis_dim=data_shape[self.axis],
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -696,9 +713,7 @@ class GatherNDOp(RenderableOpBase):
         index_depth = indices_shape_raw[-1]
         tail_shape = data_shape[self.batch_dims + index_depth :]
         tail_loop_vars = (
-            tuple(f"t{index}" for index in range(len(tail_shape)))
-            if tail_shape
-            else ()
+            tuple(f"t{index}" for index in range(len(tail_shape))) if tail_shape else ()
         )
         output_loop_vars = (*indices_prefix_loop_vars, *tail_loop_vars)
         if output_loop_vars:
@@ -730,27 +745,31 @@ class GatherNDOp(RenderableOpBase):
                 (params["output"], c_type, output_suffix, False),
             ]
         )
-        rendered = state.templates["gather_nd"].render(
-            model_name=model.name,
-            op_name=op_name,
-            data=params["data"],
-            indices=params["indices"],
-            output=params["output"],
-            params=param_decls,
-            c_type=c_type,
-            data_suffix=data_suffix,
-            indices_suffix=indices_suffix,
-            output_suffix=output_suffix,
-            indices_prefix_shape=indices_prefix_shape,
-            indices_prefix_loop_vars=indices_prefix_loop_vars,
-            index_depth=index_depth,
-            tail_shape=tail_shape,
-            tail_loop_vars=tail_loop_vars,
-            output_index_expr=output_index_expr,
-            data_index_expr=data_index_expr,
-            batch_dims=self.batch_dims,
-            data_shape=data_shape,
-        ).rstrip()
+        rendered = (
+            state.templates["gather_nd"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                data=params["data"],
+                indices=params["indices"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                data_suffix=data_suffix,
+                indices_suffix=indices_suffix,
+                output_suffix=output_suffix,
+                indices_prefix_shape=indices_prefix_shape,
+                indices_prefix_loop_vars=indices_prefix_loop_vars,
+                index_depth=index_depth,
+                tail_shape=tail_shape,
+                tail_loop_vars=tail_loop_vars,
+                output_index_expr=output_index_expr,
+                data_index_expr=data_index_expr,
+                batch_dims=self.batch_dims,
+                data_shape=data_shape,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -787,7 +806,9 @@ class ScatterNDOp(RenderableOpBase):
         data_shape_raw = emitter.ctx_shape(self.data)
         indices_shape_raw = emitter.ctx_shape(self.indices)
         updates_shape_raw = emitter.ctx_shape(self.updates)
-        output_shape = CEmitterCompat.shape_dim_exprs(output_shape_raw, output_dim_names)
+        output_shape = CEmitterCompat.shape_dim_exprs(
+            output_shape_raw, output_dim_names
+        )
         data_shape = CEmitterCompat.shape_dim_exprs(data_shape_raw, data_dim_names)
         indices_shape = CEmitterCompat.shape_dim_exprs(
             indices_shape_raw, indices_dim_names
@@ -802,9 +823,7 @@ class ScatterNDOp(RenderableOpBase):
         index_depth = indices_shape_raw[-1]
         tail_shape = output_shape[index_depth:]
         tail_loop_vars = (
-            tuple(
-                f"t{index}" for index in range(len(output_shape_raw[index_depth:]))
-            )
+            tuple(f"t{index}" for index in range(len(output_shape_raw[index_depth:])))
             if output_shape_raw[index_depth:]
             else ()
         )
@@ -840,34 +859,37 @@ class ScatterNDOp(RenderableOpBase):
                 (params["output"], c_type, output_suffix, False),
             ]
         )
-        rendered = state.templates["scatter_nd"].render(
-            model_name=model.name,
-            op_name=op_name,
-            data=params["data"],
-            indices=params["indices"],
-            updates=params["updates"],
-            output=params["output"],
-            params=param_decls,
-            c_type=c_type,
-            output_shape=output_shape,
-            output_loop_vars=output_loop_vars,
-            indices_prefix_shape=indices_prefix_shape,
-            indices_prefix_loop_vars=indices_prefix_loop_vars,
-            index_depth=index_depth,
-            data_shape=data_shape,
-            tail_shape=tail_shape,
-            tail_loop_vars=tail_loop_vars,
-            output_index_expr=output_index_expr,
-            updates_index_expr=updates_index_expr,
-            reduction=self.reduction,
-        ).rstrip()
+        rendered = (
+            state.templates["scatter_nd"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                data=params["data"],
+                indices=params["indices"],
+                updates=params["updates"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                output_shape=output_shape,
+                output_loop_vars=output_loop_vars,
+                indices_prefix_shape=indices_prefix_shape,
+                indices_prefix_loop_vars=indices_prefix_loop_vars,
+                index_depth=index_depth,
+                data_shape=data_shape,
+                tail_shape=tail_shape,
+                tail_loop_vars=tail_loop_vars,
+                output_index_expr=output_index_expr,
+                updates_index_expr=updates_index_expr,
+                reduction=self.reduction,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_inputs(
         self, emitter: "Emitter"
     ) -> tuple[tuple[str, tuple[int, ...]], ...]:
         return ((self.data, emitter.ctx_shape(self.data)),)
-
 
 
 @dataclass(frozen=True)
@@ -922,22 +944,26 @@ class ScatterElementsOp(RenderableOpBase):
                 (params["output"], c_type, output_suffix, False),
             ]
         )
-        rendered = state.templates["scatter_elements"].render(
-            model_name=model.name,
-            op_name=op_name,
-            data=params["data"],
-            indices=params["indices"],
-            updates=params["updates"],
-            output=params["output"],
-            params=param_decls,
-            c_type=c_type,
-            output_shape=output_shape,
-            updates_shape=updates_shape,
-            loop_vars=loop_vars,
-            output_indices=output_indices,
-            axis_dim=data_shape[self.axis],
-            reduction=self.reduction,
-        ).rstrip()
+        rendered = (
+            state.templates["scatter_elements"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                data=params["data"],
+                indices=params["indices"],
+                updates=params["updates"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                output_shape=output_shape,
+                updates_shape=updates_shape,
+                loop_vars=loop_vars,
+                output_indices=output_indices,
+                axis_dim=data_shape[self.axis],
+                reduction=self.reduction,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -992,21 +1018,25 @@ class ScatterOp(RenderableOpBase):
                 (params["output"], c_type, output_suffix, False),
             ]
         )
-        rendered = state.templates["scatter"].render(
-            model_name=model.name,
-            op_name=op_name,
-            data=params["data"],
-            indices=params["indices"],
-            updates=params["updates"],
-            output=params["output"],
-            params=param_decls,
-            c_type=c_type,
-            output_shape=output_shape,
-            updates_shape=updates_shape,
-            loop_vars=loop_vars,
-            output_indices=output_indices,
-            axis_dim=data_shape[self.axis],
-        ).rstrip()
+        rendered = (
+            state.templates["scatter"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                data=params["data"],
+                indices=params["indices"],
+                updates=params["updates"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                output_shape=output_shape,
+                updates_shape=updates_shape,
+                loop_vars=loop_vars,
+                output_indices=output_indices,
+                axis_dim=data_shape[self.axis],
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -1124,8 +1154,7 @@ class TensorScatterOp(RenderableOpBase):
         tail_shape = output_shape[self.axis + 1 :]
         tail_loop_vars = (
             tuple(
-                f"t{index}"
-                for index in range(len(output_shape_tuple[self.axis + 1 :]))
+                f"t{index}" for index in range(len(output_shape_tuple[self.axis + 1 :]))
             )
             if output_shape_tuple[self.axis + 1 :]
             else ()
@@ -1147,12 +1176,8 @@ class TensorScatterOp(RenderableOpBase):
             f"[{var}]" for var in update_index_vars
         )
         past_suffix = emitter.param_array_suffix(past_shape_tuple, past_dim_names)
-        update_suffix = emitter.param_array_suffix(
-            update_shape_tuple, update_dim_names
-        )
-        output_suffix = emitter.param_array_suffix(
-            output_shape_tuple, output_dim_names
-        )
+        update_suffix = emitter.param_array_suffix(update_shape_tuple, update_dim_names)
+        output_suffix = emitter.param_array_suffix(output_shape_tuple, output_dim_names)
         param_decls = [
             (params["past_cache"], c_type, past_suffix, True),
             (params["update"], c_type, update_suffix, True),
@@ -1173,34 +1198,38 @@ class TensorScatterOp(RenderableOpBase):
             )
         param_decls.append((params["output"], c_type, output_suffix, False))
         param_decls_rendered = emitter.build_param_decls(param_decls)
-        rendered = state.templates["tensor_scatter"].render(
-            model_name=model.name,
-            op_name=op_name,
-            past_cache=params["past_cache"],
-            update=params["update"],
-            write_indices=(
-                params.get("write_indices") if self.write_indices else None
-            ),
-            output=params["output"],
-            params=param_decls_rendered,
-            c_type=c_type,
-            output_shape=output_shape,
-            output_loop_vars=output_loop_vars,
-            prefix_shape=prefix_shape,
-            prefix_loop_vars=prefix_loop_vars,
-            sequence_dim=update_shape[self.axis],
-            sequence_loop_var=sequence_loop_var,
-            tail_shape=tail_shape,
-            tail_loop_vars=tail_loop_vars,
-            output_index_expr=output_index_expr,
-            update_index_expr=update_index_expr,
-            max_sequence_length=output_shape[self.axis],
-            write_indices_present=self.write_indices is not None,
-            batch_index_var=prefix_loop_vars[0] if prefix_loop_vars else "0",
-            write_index_var=write_index_var,
-            cache_index_var=cache_index_var,
-            circular=self.mode == "circular",
-        ).rstrip()
+        rendered = (
+            state.templates["tensor_scatter"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                past_cache=params["past_cache"],
+                update=params["update"],
+                write_indices=(
+                    params.get("write_indices") if self.write_indices else None
+                ),
+                output=params["output"],
+                params=param_decls_rendered,
+                c_type=c_type,
+                output_shape=output_shape,
+                output_loop_vars=output_loop_vars,
+                prefix_shape=prefix_shape,
+                prefix_loop_vars=prefix_loop_vars,
+                sequence_dim=update_shape[self.axis],
+                sequence_loop_var=sequence_loop_var,
+                tail_shape=tail_shape,
+                tail_loop_vars=tail_loop_vars,
+                output_index_expr=output_index_expr,
+                update_index_expr=update_index_expr,
+                max_sequence_length=output_shape[self.axis],
+                write_indices_present=self.write_indices is not None,
+                batch_index_var=prefix_loop_vars[0] if prefix_loop_vars else "0",
+                write_index_var=write_index_var,
+                cache_index_var=cache_index_var,
+                circular=self.mode == "circular",
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_inputs(
@@ -1213,7 +1242,6 @@ class TensorScatterOp(RenderableOpBase):
         if self.write_indices is not None:
             inputs.append((self.write_indices, emitter.ctx_shape(self.write_indices)))
         return tuple(inputs)
-
 
 
 @dataclass(frozen=True)
@@ -1378,23 +1406,27 @@ class EyeLikeOp(RenderableOpBase):
                 (params["output"], c_type, output_suffix, False),
             ]
         )
-        rendered = state.templates["eye_like"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=params["input0"],
-            output=params["output"],
-            params=param_decls,
-            c_type=c_type,
-            input_suffix=input_suffix,
-            output_suffix=output_suffix,
-            shape=shape,
-            batch_size=batch_size,
-            rows=output_shape[-2],
-            cols=output_shape[-1],
-            k=self.k,
-            zero_literal=zero_literal,
-            one_literal=f"(({c_type})1)",
-        ).rstrip()
+        rendered = (
+            state.templates["eye_like"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                shape=shape,
+                batch_size=batch_size,
+                rows=output_shape[-2],
+                cols=output_shape[-1],
+                k=self.k,
+                zero_literal=zero_literal,
+                one_literal=f"(({c_type})1)",
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -1434,30 +1466,30 @@ class BernoulliOp(RenderableOpBase):
             ]
         )
         one_literal = (
-            "true"
-            if output_dtype == ScalarType.BOOL
-            else f"({output_dtype.c_type})1"
+            "true" if output_dtype == ScalarType.BOOL else f"({output_dtype.c_type})1"
         )
         zero_literal = (
-            "false"
-            if output_dtype == ScalarType.BOOL
-            else output_dtype.zero_literal
+            "false" if output_dtype == ScalarType.BOOL else output_dtype.zero_literal
         )
-        rendered = state.templates["bernoulli"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=params["input0"],
-            output=params["output"],
-            input_index_expr="".join(f"[{var}]" for var in loop_vars),
-            output_index_expr="".join(f"[{var}]" for var in loop_vars),
-            shape=shape,
-            loop_vars=loop_vars,
-            seed=self.seed if self.seed is not None else 0,
-            one_literal=one_literal,
-            zero_literal=zero_literal,
-            dim_args=dim_args,
-            params=param_decls,
-        ).rstrip()
+        rendered = (
+            state.templates["bernoulli"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                input_index_expr="".join(f"[{var}]" for var in loop_vars),
+                output_index_expr="".join(f"[{var}]" for var in loop_vars),
+                shape=shape,
+                loop_vars=loop_vars,
+                seed=self.seed if self.seed is not None else 0,
+                one_literal=one_literal,
+                zero_literal=zero_literal,
+                dim_args=dim_args,
+                params=param_decls,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -1546,38 +1578,45 @@ class DropoutOp(RenderableOpBase):
         if self.mask is not None:
             param_decl_specs.append((params["mask"], "bool", mask_suffix, False))
         param_decls = emitter.build_param_decls(param_decl_specs)
-        rendered = state.templates["dropout"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=params["input0"],
-            ratio=params.get("ratio"),
-            training_mode=params.get("training_mode"),
-            output=params["output"],
-            mask=params.get("mask"),
-            params=param_decls,
-            dim_args=dim_args,
-            shape=shape,
-            loop_vars=loop_vars,
-            c_type=output_dtype.c_type,
-            ratio_index_expr="[0]" if self.ratio is not None else "",
-            training_index_expr="[0]" if self.training_mode is not None else "",
-            index_expr="".join(f"[{var}]" for var in loop_vars),
-            seed=self.seed if self.seed is not None else 0,
-        ).rstrip()
+        rendered = (
+            state.templates["dropout"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                ratio=params.get("ratio"),
+                training_mode=params.get("training_mode"),
+                output=params["output"],
+                mask=params.get("mask"),
+                params=param_decls,
+                dim_args=dim_args,
+                shape=shape,
+                loop_vars=loop_vars,
+                c_type=output_dtype.c_type,
+                ratio_index_expr="[0]" if self.ratio is not None else "",
+                training_index_expr="[0]" if self.training_mode is not None else "",
+                index_expr="".join(f"[{var}]" for var in loop_vars),
+                seed=self.seed if self.seed is not None else 0,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_outputs(
         self, emitter: "Emitter"
     ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
         outputs: list[tuple[str, tuple[int, ...], ScalarType]] = [
-            (self.output, emitter.ctx_shape(self.output), emitter.ctx_dtype(self.output))
+            (
+                self.output,
+                emitter.ctx_shape(self.output),
+                emitter.ctx_dtype(self.output),
+            )
         ]
         if self.mask is not None:
             outputs.append(
                 (self.mask, emitter.ctx_shape(self.mask), emitter.ctx_dtype(self.mask))
             )
         return tuple(outputs)
-
 
 
 @dataclass(frozen=True)
@@ -1642,29 +1681,33 @@ class TriluOp(RenderableOpBase):
                     True,
                 )
             )
-        rendered = state.templates["trilu"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=params["input0"],
-            output=params["output"],
-            k_input=params.get("k_input"),
-            params=emitter.build_param_decls(param_decls),
-            c_type=c_type,
-            k_c_type=(
-                emitter.ctx_dtype(self.k_input).c_type
-                if self.k_input is not None
-                else ScalarType.I64.c_type
-            ),
-            input_suffix=input_suffix,
-            output_suffix=output_suffix,
-            shape=shape,
-            batch_size=batch_size,
-            rows=output_shape[-2],
-            cols=output_shape[-1],
-            k_value=self.k_value,
-            upper=self.upper,
-            zero_literal=zero_literal,
-        ).rstrip()
+        rendered = (
+            state.templates["trilu"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                k_input=params.get("k_input"),
+                params=emitter.build_param_decls(param_decls),
+                c_type=c_type,
+                k_c_type=(
+                    emitter.ctx_dtype(self.k_input).c_type
+                    if self.k_input is not None
+                    else ScalarType.I64.c_type
+                ),
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                shape=shape,
+                batch_size=batch_size,
+                rows=output_shape[-2],
+                cols=output_shape[-1],
+                k_value=self.k_value,
+                upper=self.upper,
+                zero_literal=zero_literal,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_inputs(
@@ -1676,7 +1719,6 @@ class TriluOp(RenderableOpBase):
         if self.k_input is not None:
             inputs.append((self.k_input, emitter.ctx_shape(self.k_input)))
         return tuple(inputs)
-
 
 
 @dataclass(frozen=True)
@@ -1704,7 +1746,9 @@ class TileOp(RenderableOpBase):
             ]
         )
         output_dim_names = emitter.dim_names_for(self.output)
-        output_shape = CEmitterCompat.shape_dim_exprs(output_shape_raw, output_dim_names)
+        output_shape = CEmitterCompat.shape_dim_exprs(
+            output_shape_raw, output_dim_names
+        )
         loop_vars = CEmitterCompat.loop_vars(output_shape_raw)
         input_suffix = emitter.param_array_suffix(
             input_shape, emitter.dim_names_for(self.input0)
@@ -1736,19 +1780,23 @@ class TileOp(RenderableOpBase):
             for var, dim, stride in zip(loop_vars, input_shape, input_strides)
         ]
         input_index_expr = " + ".join(input_index_terms) or "0"
-        rendered = state.templates["tile"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=params["input0"],
-            output=params["output"],
-            params=param_decls,
-            c_type=c_type,
-            input_suffix=input_suffix,
-            output_suffix=output_suffix,
-            output_shape=output_shape,
-            loop_vars=loop_vars,
-            input_index_expr=input_index_expr,
-        ).rstrip()
+        rendered = (
+            state.templates["tile"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                output_shape=output_shape,
+                loop_vars=loop_vars,
+                input_index_expr=input_index_expr,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -1827,23 +1875,27 @@ class CenterCropPadOp(RenderableOpBase):
             input_strides.append(stride)
             stride *= dim
         input_strides = list(reversed(input_strides))
-        rendered = state.templates["center_crop_pad"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=params["input0"],
-            shape_input=params["shape_input"],
-            output=params["output"],
-            params=param_decls,
-            c_type=c_type,
-            input_suffix=input_suffix,
-            output_suffix=output_suffix,
-            output_shape=output_shape,
-            input_shape=input_shape_raw,
-            out_loop_vars=out_loop_vars,
-            crop_starts=crop_starts,
-            pad_starts=pad_starts,
-            input_strides=input_strides,
-        ).rstrip()
+        rendered = (
+            state.templates["center_crop_pad"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                shape_input=params["shape_input"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                output_shape=output_shape,
+                input_shape=input_shape_raw,
+                out_loop_vars=out_loop_vars,
+                crop_starts=crop_starts,
+                pad_starts=pad_starts,
+                input_strides=input_strides,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -1877,12 +1929,12 @@ class PadOp(RenderableOpBase):
         input_dim_names = emitter.dim_names_for(self.input0)
         output_dim_names = emitter.dim_names_for(self.output)
         input_shape = CEmitterCompat.shape_dim_exprs(input_shape_raw, input_dim_names)
-        output_shape = CEmitterCompat.shape_dim_exprs(output_shape_raw, output_dim_names)
+        output_shape = CEmitterCompat.shape_dim_exprs(
+            output_shape_raw, output_dim_names
+        )
         in_loop_vars = CEmitterCompat.loop_vars(input_shape_raw)
         out_loop_vars = CEmitterCompat.loop_vars(output_shape_raw)
-        idx_vars = tuple(
-            f"pad_idx{index}" for index in range(len(output_shape_raw))
-        )
+        idx_vars = tuple(f"pad_idx{index}" for index in range(len(output_shape_raw)))
         reflect_vars = tuple(
             f"pad_reflect{index}" for index in range(len(output_shape_raw))
         )
@@ -1892,7 +1944,8 @@ class PadOp(RenderableOpBase):
         if self.pads_input is not None:
             pads_c_type = emitter.ctx_dtype(self.pads_input).c_type
             pads_suffix = emitter.param_array_suffix(
-                emitter.ctx_shape(self.pads_input), emitter.dim_names_for(self.pads_input)
+                emitter.ctx_shape(self.pads_input),
+                emitter.dim_names_for(self.pads_input),
             )
         elif pads_values is not None:
             pads_c_type = "int64_t"
@@ -1903,7 +1956,8 @@ class PadOp(RenderableOpBase):
         if self.axes_input is not None:
             axes_c_type = emitter.ctx_dtype(self.axes_input).c_type
             axes_suffix = emitter.param_array_suffix(
-                emitter.ctx_shape(self.axes_input), emitter.dim_names_for(self.axes_input)
+                emitter.ctx_shape(self.axes_input),
+                emitter.dim_names_for(self.axes_input),
             )
             axes_length = emitter.ctx_shape(self.axes_input)[0]
             pad_begin_exprs = tuple(
@@ -1911,14 +1965,14 @@ class PadOp(RenderableOpBase):
             )
         elif self.pads_input is not None:
             pad_begin_exprs = tuple(
-                f"{self.pads_input}[{index}]"
-                for index in range(len(output_shape_raw))
+                f"{self.pads_input}[{index}]" for index in range(len(output_shape_raw))
             )
         else:
             pad_begin_exprs = tuple(str(value) for value in (self.pads_begin or ()))
         if self.value_input is not None:
             value_suffix = emitter.param_array_suffix(
-                emitter.ctx_shape(self.value_input), emitter.dim_names_for(self.value_input)
+                emitter.ctx_shape(self.value_input),
+                emitter.dim_names_for(self.value_input),
             )
             pad_value_expr = f"{self.value_input}[0]"
         else:
@@ -1932,39 +1986,45 @@ class PadOp(RenderableOpBase):
             input_strides.append(stride)
             stride *= dim
         input_strides = list(reversed(input_strides))
-        rendered = state.templates["pad"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=self.input0,
-            pads_input=self.pads_input,
-            axes_input=self.axes_input,
-            value_input=self.value_input,
-            output=self.output,
-            c_type=c_type,
-            pads_c_type=pads_c_type,
-            axes_c_type=axes_c_type,
-            input_suffix=emitter.param_array_suffix(input_shape_raw, input_dim_names),
-            pads_suffix=pads_suffix,
-            axes_suffix=axes_suffix,
-            value_suffix=value_suffix,
-            output_suffix=emitter.param_array_suffix(
-                output_shape_raw, output_dim_names
-            ),
-            input_shape=input_shape,
-            output_shape=output_shape,
-            in_loop_vars=in_loop_vars,
-            out_loop_vars=out_loop_vars,
-            pad_begin_exprs=pad_begin_exprs,
-            axes_length=axes_length,
-            pads_values=pads_values,
-            input_strides=tuple(input_strides),
-            mode=self.mode,
-            pad_value_expr=pad_value_expr,
-            input0_flat="input_flat",
-            base_index="pad_index",
-            idx_vars=idx_vars,
-            reflect_vars=reflect_vars,
-        ).rstrip()
+        rendered = (
+            state.templates["pad"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=self.input0,
+                pads_input=self.pads_input,
+                axes_input=self.axes_input,
+                value_input=self.value_input,
+                output=self.output,
+                c_type=c_type,
+                pads_c_type=pads_c_type,
+                axes_c_type=axes_c_type,
+                input_suffix=emitter.param_array_suffix(
+                    input_shape_raw, input_dim_names
+                ),
+                pads_suffix=pads_suffix,
+                axes_suffix=axes_suffix,
+                value_suffix=value_suffix,
+                output_suffix=emitter.param_array_suffix(
+                    output_shape_raw, output_dim_names
+                ),
+                input_shape=input_shape,
+                output_shape=output_shape,
+                in_loop_vars=in_loop_vars,
+                out_loop_vars=out_loop_vars,
+                pad_begin_exprs=pad_begin_exprs,
+                axes_length=axes_length,
+                pads_values=pads_values,
+                input_strides=tuple(input_strides),
+                mode=self.mode,
+                pad_value_expr=pad_value_expr,
+                input0_flat="input_flat",
+                base_index="pad_index",
+                idx_vars=idx_vars,
+                reflect_vars=reflect_vars,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_inputs(
@@ -1980,7 +2040,6 @@ class PadOp(RenderableOpBase):
         if self.value_input is not None:
             inputs.append((self.value_input, emitter.ctx_shape(self.value_input)))
         return tuple(inputs)
-
 
 
 @dataclass(frozen=True)
@@ -2012,25 +2071,29 @@ class DepthToSpaceOp(RenderableOpBase):
                 (params["output"], c_type, output_suffix, False),
             ]
         )
-        rendered = state.templates["depth_to_space"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=params["input0"],
-            output=params["output"],
-            params=param_decls,
-            c_type=c_type,
-            input_suffix=input_suffix,
-            output_suffix=output_suffix,
-            batch=input_shape[0],
-            in_channels=input_shape[1],
-            out_channels=output_shape[1],
-            in_h=input_shape[2],
-            in_w=input_shape[3],
-            out_h=output_shape[2],
-            out_w=output_shape[3],
-            blocksize=self.blocksize,
-            mode=self.mode,
-        ).rstrip()
+        rendered = (
+            state.templates["depth_to_space"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                batch=input_shape[0],
+                in_channels=input_shape[1],
+                out_channels=output_shape[1],
+                in_h=input_shape[2],
+                in_w=input_shape[3],
+                out_h=output_shape[2],
+                out_w=output_shape[3],
+                blocksize=self.blocksize,
+                mode=self.mode,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -2062,24 +2125,28 @@ class SpaceToDepthOp(RenderableOpBase):
                 (params["output"], c_type, output_suffix, False),
             ]
         )
-        rendered = state.templates["space_to_depth"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=params["input0"],
-            output=params["output"],
-            params=param_decls,
-            c_type=c_type,
-            input_suffix=input_suffix,
-            output_suffix=output_suffix,
-            batch=input_shape[0],
-            in_channels=input_shape[1],
-            out_channels=output_shape[1],
-            in_h=input_shape[2],
-            in_w=input_shape[3],
-            out_h=output_shape[2],
-            out_w=output_shape[3],
-            blocksize=self.blocksize,
-        ).rstrip()
+        rendered = (
+            state.templates["space_to_depth"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                batch=input_shape[0],
+                in_channels=input_shape[1],
+                out_channels=output_shape[1],
+                in_h=input_shape[2],
+                in_w=input_shape[3],
+                out_h=output_shape[2],
+                out_w=output_shape[3],
+                blocksize=self.blocksize,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -2105,7 +2172,12 @@ class SliceOp(RenderableOpBase):
 
     def extra_model_dtypes(self, ctx: OpContext) -> set["ScalarType"]:
         dtypes: set[ScalarType] = set()
-        for name in (self.starts_input, self.ends_input, self.axes_input, self.steps_input):
+        for name in (
+            self.starts_input,
+            self.ends_input,
+            self.axes_input,
+            self.steps_input,
+        ):
             if name is not None:
                 dtypes.add(ctx.dtype(name))
         return dtypes
@@ -2149,19 +2221,23 @@ class SliceOp(RenderableOpBase):
                     (name_params["output"], c_type, output_suffix, False),
                 ]
             )
-            rendered = state.templates["slice"].render(
-                model_name=model.name,
-                op_name=op_name,
-                input0=name_params["input0"],
-                output=name_params["output"],
-                params=param_decls,
-                c_type=c_type,
-                input_suffix=input_suffix,
-                output_suffix=output_suffix,
-                output_shape=output_shape,
-                loop_vars=loop_vars,
-                input_indices=input_indices,
-            ).rstrip()
+            rendered = (
+                state.templates["slice"]
+                .render(
+                    model_name=model.name,
+                    op_name=op_name,
+                    input0=name_params["input0"],
+                    output=name_params["output"],
+                    params=param_decls,
+                    c_type=c_type,
+                    input_suffix=input_suffix,
+                    output_suffix=output_suffix,
+                    output_shape=output_shape,
+                    loop_vars=loop_vars,
+                    input_indices=input_indices,
+                )
+                .rstrip()
+            )
             return emitter.with_node_comment(model, ctx.op_index, rendered)
         input_suffix = emitter.param_array_suffix(input_shape_raw)
         output_suffix = emitter.param_array_suffix(output_shape_raw)
@@ -2172,7 +2248,9 @@ class SliceOp(RenderableOpBase):
                     (
                         name_params["starts_input"],
                         emitter.ctx_dtype(self.starts_input).c_type,
-                        emitter.param_array_suffix(emitter.ctx_shape(self.starts_input)),
+                        emitter.param_array_suffix(
+                            emitter.ctx_shape(self.starts_input)
+                        ),
                         True,
                     )
                     if self.starts_input
@@ -2212,25 +2290,29 @@ class SliceOp(RenderableOpBase):
             ]
         )
         input_dims = CEmitterCompat.codegen_shape(input_shape_raw)
-        rendered = state.templates["slice_dynamic"].render(
-            model_name=model.name,
-            op_name=op_name,
-            params=params,
-            input0=name_params["input0"],
-            starts_input=name_params["starts_input"],
-            ends_input=name_params["ends_input"],
-            axes_input=name_params["axes_input"],
-            steps_input=name_params["steps_input"],
-            output=name_params["output"],
-            c_type=c_type,
-            input_shape=input_dims,
-            output_shape=output_shape,
-            output_loop_vars=loop_vars,
-            input_rank=len(input_shape_raw),
-            starts_len=(
-                emitter.ctx_shape(self.starts_input)[0] if self.starts_input else 0
-            ),
-        ).rstrip()
+        rendered = (
+            state.templates["slice_dynamic"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                params=params,
+                input0=name_params["input0"],
+                starts_input=name_params["starts_input"],
+                ends_input=name_params["ends_input"],
+                axes_input=name_params["axes_input"],
+                steps_input=name_params["steps_input"],
+                output=name_params["output"],
+                c_type=c_type,
+                input_shape=input_dims,
+                output_shape=output_shape,
+                output_loop_vars=loop_vars,
+                input_rank=len(input_shape_raw),
+                starts_len=(
+                    emitter.ctx_shape(self.starts_input)[0] if self.starts_input else 0
+                ),
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -2292,7 +2374,9 @@ class ResizeOp(RenderableOpBase):
             )
             scales_c_type = emitter.ctx_dtype(self.scales_input).c_type
         if self.sizes_input:
-            sizes_suffix = emitter.param_array_suffix(emitter.ctx_shape(self.sizes_input))
+            sizes_suffix = emitter.param_array_suffix(
+                emitter.ctx_shape(self.sizes_input)
+            )
             sizes_c_type = emitter.ctx_dtype(self.sizes_input).c_type
         params = emitter.build_param_decls(
             [
@@ -2355,42 +2439,46 @@ class ResizeOp(RenderableOpBase):
                 if roi_len == 2 * rank
                 else tuple(range(len(self.axes)))
             )
-        rendered = state.templates["resize"].render(
-            model_name=model.name,
-            op_name=op_name,
-            params=params,
-            input0=name_params["input0"],
-            output=name_params["output"],
-            c_type=c_type,
-            input_suffix=input_suffix,
-            output_suffix=output_suffix,
-            input_shape=input_shape_raw,
-            output_shape=output_shape_raw,
-            rank=len(input_shape_raw),
-            loop_vars=CEmitterCompat.loop_vars(output_shape_raw),
-            scales=self.scales,
-            scales_input=name_params["scales_input"],
-            sizes_input=name_params["sizes_input"],
-            roi_input=name_params["roi_input"],
-            roi_suffix=roi_suffix,
-            scales_suffix=scales_suffix,
-            sizes_suffix=sizes_suffix,
-            roi_c_type=roi_c_type,
-            scales_c_type=scales_c_type,
-            sizes_c_type=sizes_c_type,
-            axes=self.axes,
-            scales_axis_map=scales_axis_map,
-            sizes_axis_map=sizes_axis_map,
-            roi_axis_map=roi_axis_map,
-            mode=self.mode,
-            coordinate_transformation_mode=self.coordinate_transformation_mode,
-            nearest_mode=self.nearest_mode,
-            cubic_coeff_a=emitter.format_double(self.cubic_coeff_a),
-            exclude_outside=self.exclude_outside,
-            extrapolation_value=emitter.format_double(self.extrapolation_value),
-            antialias=self.antialias,
-            keep_aspect_ratio_policy=self.keep_aspect_ratio_policy,
-        ).rstrip()
+        rendered = (
+            state.templates["resize"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                params=params,
+                input0=name_params["input0"],
+                output=name_params["output"],
+                c_type=c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                input_shape=input_shape_raw,
+                output_shape=output_shape_raw,
+                rank=len(input_shape_raw),
+                loop_vars=CEmitterCompat.loop_vars(output_shape_raw),
+                scales=self.scales,
+                scales_input=name_params["scales_input"],
+                sizes_input=name_params["sizes_input"],
+                roi_input=name_params["roi_input"],
+                roi_suffix=roi_suffix,
+                scales_suffix=scales_suffix,
+                sizes_suffix=sizes_suffix,
+                roi_c_type=roi_c_type,
+                scales_c_type=scales_c_type,
+                sizes_c_type=sizes_c_type,
+                axes=self.axes,
+                scales_axis_map=scales_axis_map,
+                sizes_axis_map=sizes_axis_map,
+                roi_axis_map=roi_axis_map,
+                mode=self.mode,
+                coordinate_transformation_mode=self.coordinate_transformation_mode,
+                nearest_mode=self.nearest_mode,
+                cubic_coeff_a=emitter.format_double(self.cubic_coeff_a),
+                exclude_outside=self.exclude_outside,
+                extrapolation_value=emitter.format_double(self.extrapolation_value),
+                antialias=self.antialias,
+                keep_aspect_ratio_policy=self.keep_aspect_ratio_policy,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -2483,31 +2571,35 @@ class GridSampleOp(RenderableOpBase):
             f"{c_type} {self.output}{output_suffix}",
         ]
         output_loop_vars = CEmitterCompat.loop_vars(output_shape)
-        rendered = state.templates["grid_sample"].render(
-            model_name=model.name,
-            op_name=op_name,
-            params=params,
-            input0=self.input0,
-            grid=self.grid,
-            output=self.output,
-            c_type=c_type,
-            grid_c_type=grid_dtype.c_type,
-            input_suffix=input_suffix,
-            grid_suffix=grid_suffix,
-            output_suffix=output_suffix,
-            input_shape=input_shape,
-            grid_shape=grid_shape,
-            output_shape=output_shape,
-            spatial_rank=spatial_rank,
-            input_spatial=input_spatial,
-            output_spatial=output_spatial,
-            output_loop_vars=output_loop_vars,
-            mode=self.mode,
-            padding_mode=self.padding_mode,
-            align_corners=self.align_corners,
-            linear_offsets=tuple(itertools.product((0, 1), repeat=spatial_rank)),
-            cubic_offsets=tuple(itertools.product(range(4), repeat=spatial_rank)),
-        ).rstrip()
+        rendered = (
+            state.templates["grid_sample"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                params=params,
+                input0=self.input0,
+                grid=self.grid,
+                output=self.output,
+                c_type=c_type,
+                grid_c_type=grid_dtype.c_type,
+                input_suffix=input_suffix,
+                grid_suffix=grid_suffix,
+                output_suffix=output_suffix,
+                input_shape=input_shape,
+                grid_shape=grid_shape,
+                output_shape=output_shape,
+                spatial_rank=spatial_rank,
+                input_spatial=input_spatial,
+                output_spatial=output_spatial,
+                output_loop_vars=output_loop_vars,
+                mode=self.mode,
+                padding_mode=self.padding_mode,
+                align_corners=self.align_corners,
+                linear_offsets=tuple(itertools.product((0, 1), repeat=spatial_rank)),
+                cubic_offsets=tuple(itertools.product(range(4), repeat=spatial_rank)),
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -2588,23 +2680,27 @@ class AffineGridOp(RenderableOpBase):
             f"const int64_t {self.size}[{size_len}]",
             f"{c_type} {self.grid}{grid_suffix}",
         ]
-        rendered = state.templates["affine_grid"].render(
-            model_name=model.name,
-            op_name=op_name,
-            params=params,
-            theta=self.theta,
-            size=self.size,
-            grid=self.grid,
-            c_type=c_type,
-            theta_shape=theta_shape,
-            grid_shape=grid_shape,
-            theta_suffix=theta_suffix,
-            grid_suffix=grid_suffix,
-            n=n,
-            spatial_dims=spatial_dims,
-            spatial_rank=spatial_rank,
-            align_corners=self.align_corners,
-        ).rstrip()
+        rendered = (
+            state.templates["affine_grid"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                params=params,
+                theta=self.theta,
+                size=self.size,
+                grid=self.grid,
+                c_type=c_type,
+                theta_shape=theta_shape,
+                grid_shape=grid_shape,
+                theta_suffix=theta_suffix,
+                grid_suffix=grid_suffix,
+                n=n,
+                spatial_dims=spatial_dims,
+                spatial_rank=spatial_rank,
+                align_corners=self.align_corners,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -2642,20 +2738,24 @@ class ConstantOfShapeOp(RenderableOpBase):
                 (params["output"], output_dtype.c_type, array_suffix, False),
             ]
         )
-        rendered = state.templates["constant_of_shape"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=params["input0"],
-            output=params["output"],
-            params=param_decls,
-            input_c_type=input_dtype.c_type,
-            c_type=output_dtype.c_type,
-            input_suffix=input_suffix,
-            array_suffix=array_suffix,
-            shape=shape,
-            loop_vars=loop_vars,
-            value_literal=emitter.format_literal(output_dtype, self.value),
-        ).rstrip()
+        rendered = (
+            state.templates["constant_of_shape"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                input_c_type=input_dtype.c_type,
+                c_type=output_dtype.c_type,
+                input_suffix=input_suffix,
+                array_suffix=array_suffix,
+                shape=shape,
+                loop_vars=loop_vars,
+                value_literal=emitter.format_literal(output_dtype, self.value),
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -2667,7 +2767,6 @@ class ShapeOp(RenderableOpBase):
     output: str
     start: int | None
     end: int | None
-
 
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
@@ -2699,27 +2798,30 @@ class ShapeOp(RenderableOpBase):
             end_index += rank
         start_index = max(0, min(start_index, rank))
         end_index = max(0, min(end_index, rank))
-        rendered = state.templates["shape"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=params["input0"],
-            output=params["output"],
-            params=param_decls,
-            input_c_type=input_dtype.c_type,
-            c_type=output_dtype.c_type,
-            input_suffix=input_suffix,
-            output_suffix=output_suffix,
-            values=[
-                emitter.format_literal(output_dtype, value)
-                for value in input_shape[start_index:end_index]
-            ],
-        ).rstrip()
+        rendered = (
+            state.templates["shape"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                input_c_type=input_dtype.c_type,
+                c_type=output_dtype.c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                values=[
+                    emitter.format_literal(output_dtype, value)
+                    for value in input_shape[start_index:end_index]
+                ],
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
 @dataclass(frozen=True)
 class SizeOp(RenderableOpBase):
-
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -2741,21 +2843,26 @@ class SizeOp(RenderableOpBase):
                 (params["output"], output_dtype.c_type, output_suffix, False),
             ]
         )
-        rendered = state.templates["size"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=params["input0"],
-            output=params["output"],
-            params=param_decls,
-            input_c_type=input_dtype.c_type,
-            c_type=output_dtype.c_type,
-            input_suffix=input_suffix,
-            output_suffix=output_suffix,
-            value=emitter.format_literal(
-                output_dtype, CEmitterCompat.element_count(input_shape)
-            ),
-        ).rstrip()
+        rendered = (
+            state.templates["size"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                input_c_type=input_dtype.c_type,
+                c_type=output_dtype.c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                value=emitter.format_literal(
+                    output_dtype, CEmitterCompat.element_count(input_shape)
+                ),
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
     __io_inputs__ = ("input0",)
     __io_outputs__ = ("output",)
     input0: str
@@ -2768,7 +2875,6 @@ class OptionalHasElementOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-
 
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
@@ -2798,19 +2904,24 @@ class OptionalHasElementOp(RenderableOpBase):
                 (params["output"], output_dtype.c_type, output_suffix, False),
             ]
         )
-        rendered = state.templates["optional_has_element"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=params["input0"],
-            input_present=input_flag,
-            output=params["output"],
-            params=param_decls,
-            input_c_type=input_dtype.c_type,
-            output_c_type=output_dtype.c_type,
-            input_suffix=input_suffix,
-            output_suffix=output_suffix,
-        ).rstrip()
+        rendered = (
+            state.templates["optional_has_element"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                input_present=input_flag,
+                output=params["output"],
+                params=param_decls,
+                input_c_type=input_dtype.c_type,
+                output_c_type=output_dtype.c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
     def call_args(self) -> tuple[str, ...]:
         return (self.input0, f"{self.input0}_present", self.output)
 
@@ -2861,7 +2972,6 @@ class OptionalGetElementOp(RenderableOpBase):
     input0: str
     output: str
 
-
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -2889,19 +2999,24 @@ class OptionalGetElementOp(RenderableOpBase):
                 (params["output"], c_type, output_suffix, False),
             ]
         )
-        rendered = state.templates["optional_get_element"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=params["input0"],
-            output=params["output"],
-            params=param_decls,
-            c_type=c_type,
-            input_suffix=input_suffix,
-            output_suffix=output_suffix,
-            shape=shape,
-            loop_vars=loop_vars,
-        ).rstrip()
+        rendered = (
+            state.templates["optional_get_element"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                shape=shape,
+                loop_vars=loop_vars,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
     def infer_types(self, ctx: OpContext) -> None:
         input_dtype = ctx.dtype(self.input0)
         try:
@@ -2936,7 +3051,6 @@ class NonZeroOp(RenderableOpBase):
     input0: str
     output: str
 
-
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -2962,25 +3076,28 @@ class NonZeroOp(RenderableOpBase):
                 (params["output"], c_type, output_suffix, False),
             ]
         )
-        input_expr = f"{params['input0']}" + "".join(
-            f"[{var}]" for var in loop_vars
+        input_expr = f"{params['input0']}" + "".join(f"[{var}]" for var in loop_vars)
+        rendered = (
+            state.templates["nonzero"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                input_c_type=input_dtype.c_type,
+                output_c_type=c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                input_shape=input_shape,
+                loop_vars=loop_vars,
+                input_expr=input_expr,
+                zero_literal=input_dtype.zero_literal,
+            )
+            .rstrip()
         )
-        rendered = state.templates["nonzero"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=params["input0"],
-            output=params["output"],
-            params=param_decls,
-            input_c_type=input_dtype.c_type,
-            output_c_type=c_type,
-            input_suffix=input_suffix,
-            output_suffix=output_suffix,
-            input_shape=input_shape,
-            loop_vars=loop_vars,
-            input_expr=input_expr,
-            zero_literal=input_dtype.zero_literal,
-        ).rstrip()
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
     def validate(self, ctx: OpContext) -> None:
         if len(ctx.shape(self.input0)) == 0:
             raise UnsupportedOpError(f"{self.kind} does not support scalar inputs")
@@ -3121,7 +3238,8 @@ class UniqueOp(RenderableOpBase):
             emitter.ctx_shape(self.indices), emitter.dim_names_for(self.indices)
         )
         inverse_suffix = emitter.param_array_suffix(
-            emitter.ctx_shape(self.inverse_indices), emitter.dim_names_for(self.inverse_indices)
+            emitter.ctx_shape(self.inverse_indices),
+            emitter.dim_names_for(self.inverse_indices),
         )
         counts_suffix = emitter.param_array_suffix(
             emitter.ctx_shape(self.counts), emitter.dim_names_for(self.counts)
@@ -3140,38 +3258,44 @@ class UniqueOp(RenderableOpBase):
                 (params["counts"], counts_dtype.c_type, counts_suffix, False),
             ]
         )
-        rendered = state.templates["unique"].render(
-            model_name=model.name,
-            op_name=op_name,
-            params=param_decls,
-            dim_args=dim_args,
-            input0=params["input0"],
-            y=params["y"],
-            indices=params["indices"],
-            inverse_indices=params["inverse_indices"],
-            counts=params["counts"],
-            input_shape=CEmitterCompat.shape_dim_exprs(
-                input_shape, emitter.dim_names_for(self.input0)
-            ),
-            y_shape=CEmitterCompat.shape_dim_exprs(y_shape, emitter.dim_names_for(self.y)),
-            input_rank=len(input_shape),
-            axis=-1 if self.axis is None else self.axis,
-            flat_size=CEmitterCompat.element_count_expr(input_shape),
-            axis_dim=(0 if self.axis is None else input_shape[self.axis]),
-            y_axis_dim=(y_shape[0] if self.axis is None else y_shape[self.axis]),
-            outer=(
-                0
-                if self.axis is None
-                else CEmitterCompat.element_count_expr(input_shape[: self.axis])
-            ),
-            inner=(
-                0
-                if self.axis is None
-                else CEmitterCompat.element_count_expr(input_shape[self.axis + 1 :])
-            ),
-            sorted_output=1 if self.sorted else 0,
-            input_c_type=input_dtype.c_type,
-        ).rstrip()
+        rendered = (
+            state.templates["unique"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                params=param_decls,
+                dim_args=dim_args,
+                input0=params["input0"],
+                y=params["y"],
+                indices=params["indices"],
+                inverse_indices=params["inverse_indices"],
+                counts=params["counts"],
+                input_shape=CEmitterCompat.shape_dim_exprs(
+                    input_shape, emitter.dim_names_for(self.input0)
+                ),
+                y_shape=CEmitterCompat.shape_dim_exprs(
+                    y_shape, emitter.dim_names_for(self.y)
+                ),
+                input_rank=len(input_shape),
+                axis=-1 if self.axis is None else self.axis,
+                flat_size=CEmitterCompat.element_count_expr(input_shape),
+                axis_dim=(0 if self.axis is None else input_shape[self.axis]),
+                y_axis_dim=(y_shape[0] if self.axis is None else y_shape[self.axis]),
+                outer=(
+                    0
+                    if self.axis is None
+                    else CEmitterCompat.element_count_expr(input_shape[: self.axis])
+                ),
+                inner=(
+                    0
+                    if self.axis is None
+                    else CEmitterCompat.element_count_expr(input_shape[self.axis + 1 :])
+                ),
+                sorted_output=1 if self.sorted else 0,
+                input_c_type=input_dtype.c_type,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_outputs(
@@ -3179,11 +3303,22 @@ class UniqueOp(RenderableOpBase):
     ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
         return (
             (self.y, emitter.ctx_shape(self.y), emitter.ctx_dtype(self.y)),
-            (self.indices, emitter.ctx_shape(self.indices), emitter.ctx_dtype(self.indices)),
-            (self.inverse_indices, emitter.ctx_shape(self.inverse_indices), emitter.ctx_dtype(self.inverse_indices)),
-            (self.counts, emitter.ctx_shape(self.counts), emitter.ctx_dtype(self.counts)),
+            (
+                self.indices,
+                emitter.ctx_shape(self.indices),
+                emitter.ctx_dtype(self.indices),
+            ),
+            (
+                self.inverse_indices,
+                emitter.ctx_shape(self.inverse_indices),
+                emitter.ctx_dtype(self.inverse_indices),
+            ),
+            (
+                self.counts,
+                emitter.ctx_shape(self.counts),
+                emitter.ctx_dtype(self.counts),
+            ),
         )
-
 
 
 @dataclass(frozen=True)
@@ -3423,11 +3558,7 @@ class NonMaxSuppressionOp(RenderableOpBase):
                 (
                     (
                         params["score_threshold"],
-                        (
-                            score_threshold_dtype.c_type
-                            if score_threshold_dtype
-                            else ""
-                        ),
+                        (score_threshold_dtype.c_type if score_threshold_dtype else ""),
                         score_threshold_suffix,
                         True,
                     )
@@ -3437,30 +3568,34 @@ class NonMaxSuppressionOp(RenderableOpBase):
                 (params["output"], output_dtype.c_type, output_suffix, False),
             ]
         )
-        rendered = state.templates["nonmax_suppression"].render(
-            model_name=model.name,
-            op_name=op_name,
-            boxes=params["boxes"],
-            scores=params["scores"],
-            max_output_boxes_per_class=params["max_output_boxes_per_class"],
-            iou_threshold=params["iou_threshold"],
-            score_threshold=params["score_threshold"],
-            output=params["output"],
-            params=param_decls,
-            input_c_type=boxes_dtype.c_type,
-            output_c_type=output_dtype.c_type,
-            compute_type=boxes_dtype.c_type,
-            output_capacity=output_shape[0],
-            num_batches=boxes_shape[0],
-            num_boxes=boxes_shape[1],
-            num_classes=scores_shape[1],
-            center_point_box=self.center_point_box,
-            compute_scalar_dtype=boxes_dtype,
-            iou_threshold_default=boxes_dtype.zero_literal,
-            score_threshold_default=boxes_dtype.zero_literal,
-            score_threshold_enabled=self.score_threshold is not None,
-            dim_args=dim_args,
-        ).rstrip()
+        rendered = (
+            state.templates["nonmax_suppression"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                boxes=params["boxes"],
+                scores=params["scores"],
+                max_output_boxes_per_class=params["max_output_boxes_per_class"],
+                iou_threshold=params["iou_threshold"],
+                score_threshold=params["score_threshold"],
+                output=params["output"],
+                params=param_decls,
+                input_c_type=boxes_dtype.c_type,
+                output_c_type=output_dtype.c_type,
+                compute_type=boxes_dtype.c_type,
+                output_capacity=output_shape[0],
+                num_batches=boxes_shape[0],
+                num_boxes=boxes_shape[1],
+                num_classes=scores_shape[1],
+                center_point_box=self.center_point_box,
+                compute_scalar_dtype=boxes_dtype,
+                iou_threshold_default=boxes_dtype.zero_literal,
+                score_threshold_default=boxes_dtype.zero_literal,
+                score_threshold_enabled=self.score_threshold is not None,
+                dim_args=dim_args,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_inputs(
@@ -3472,14 +3607,18 @@ class NonMaxSuppressionOp(RenderableOpBase):
         ]
         if self.max_output_boxes_per_class is not None:
             inputs.append(
-                (self.max_output_boxes_per_class, emitter.ctx_shape(self.max_output_boxes_per_class))
+                (
+                    self.max_output_boxes_per_class,
+                    emitter.ctx_shape(self.max_output_boxes_per_class),
+                )
             )
         if self.iou_threshold is not None:
             inputs.append((self.iou_threshold, emitter.ctx_shape(self.iou_threshold)))
         if self.score_threshold is not None:
-            inputs.append((self.score_threshold, emitter.ctx_shape(self.score_threshold)))
+            inputs.append(
+                (self.score_threshold, emitter.ctx_shape(self.score_threshold))
+            )
         return tuple(inputs)
-
 
 
 @dataclass(frozen=True)
@@ -3570,31 +3709,36 @@ class CumSumOp(RenderableOpBase):
             if self.axis_input is not None
             else "int64_t"
         )
-        rendered = state.templates["cumsum"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=params["input0"],
-            axis_input=params["axis_input"],
-            axis_c_type=axis_c_type,
-            axis_suffix=emitter.param_array_suffix(()),
-            axis_literal=self.axis,
-            output=params["output"],
-            c_type=c_type,
-            input_suffix=emitter.param_array_suffix(input_shape, input_dim_names),
-            output_suffix=emitter.param_array_suffix(input_shape, output_dim_names),
-            input_shape=CEmitterCompat.shape_dim_exprs(input_shape, input_dim_names),
-            rank=len(input_shape),
-            exclusive=self.exclusive,
-            reverse=self.reverse,
-            dim_args=dim_args,
-        ).rstrip()
+        rendered = (
+            state.templates["cumsum"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                axis_input=params["axis_input"],
+                axis_c_type=axis_c_type,
+                axis_suffix=emitter.param_array_suffix(()),
+                axis_literal=self.axis,
+                output=params["output"],
+                c_type=c_type,
+                input_suffix=emitter.param_array_suffix(input_shape, input_dim_names),
+                output_suffix=emitter.param_array_suffix(input_shape, output_dim_names),
+                input_shape=CEmitterCompat.shape_dim_exprs(
+                    input_shape, input_dim_names
+                ),
+                rank=len(input_shape),
+                exclusive=self.exclusive,
+                reverse=self.reverse,
+                dim_args=dim_args,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_inputs(
         self, emitter: "Emitter"
     ) -> tuple[tuple[str, tuple[int, ...]], ...]:
         return ((self.input0, emitter.ctx_shape(self.input0)),)
-
 
 
 @dataclass(frozen=True)
@@ -3707,37 +3851,41 @@ class STFTOp(RenderableOpBase):
             ]
         )
 
-        rendered = state.templates["stft"].render(
-            model_name=model.name,
-            op_name=op_name,
-            params=param_decls,
-            signal=params["signal"],
-            frame_step=params["frame_step"],
-            window=params["window"],
-            frame_length_input=params["frame_length_input"],
-            output=params["output"],
-            c_type=stft_dtype.c_type,
-            signal_suffix=signal_suffix,
-            frame_step_suffix=scalar_suffix,
-            window_suffix=window_suffix,
-            frame_length_suffix=scalar_suffix,
-            output_suffix=output_suffix,
-            frame_step_c_type=frame_step_dtype.c_type,
-            frame_length_c_type=frame_length_c_type,
-            batch_expr=str(signal_shape_expr[0]),
-            signal_length_expr=str(signal_shape_expr[1]),
-            output_frames_expr=str(output_shape_expr[1]),
-            output_bins_expr=str(output_shape_expr[2]),
-            input_components=2 if self.input_is_complex else 1,
-            fft_dtype=stft_dtype,
-            fft_length=self.fft_length,
-            window_length=self.window_length,
-            frame_length_literal=self.frame_length_literal,
-            use_runtime_frame_length=self.use_runtime_frame_length,
-            use_window=self.window is not None,
-            zero_literal=stft_dtype.zero_literal,
-            dim_args=dim_args,
-        ).rstrip()
+        rendered = (
+            state.templates["stft"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                params=param_decls,
+                signal=params["signal"],
+                frame_step=params["frame_step"],
+                window=params["window"],
+                frame_length_input=params["frame_length_input"],
+                output=params["output"],
+                c_type=stft_dtype.c_type,
+                signal_suffix=signal_suffix,
+                frame_step_suffix=scalar_suffix,
+                window_suffix=window_suffix,
+                frame_length_suffix=scalar_suffix,
+                output_suffix=output_suffix,
+                frame_step_c_type=frame_step_dtype.c_type,
+                frame_length_c_type=frame_length_c_type,
+                batch_expr=str(signal_shape_expr[0]),
+                signal_length_expr=str(signal_shape_expr[1]),
+                output_frames_expr=str(output_shape_expr[1]),
+                output_bins_expr=str(output_shape_expr[2]),
+                input_components=2 if self.input_is_complex else 1,
+                fft_dtype=stft_dtype,
+                fft_length=self.fft_length,
+                window_length=self.window_length,
+                frame_length_literal=self.frame_length_literal,
+                use_runtime_frame_length=self.use_runtime_frame_length,
+                use_window=self.window is not None,
+                zero_literal=stft_dtype.zero_literal,
+                dim_args=dim_args,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_inputs(
@@ -3752,7 +3900,6 @@ class STFTOp(RenderableOpBase):
         if self.frame_length_input is not None:
             inputs.append((self.frame_length_input, ()))
         return tuple(inputs)
-
 
 
 @dataclass(frozen=True)
@@ -3809,22 +3956,26 @@ class LoopRangeOp(RenderableOpBase):
             ]
             start_shape = emitter.ctx_shape(self.start)
             state_size = int(math.prod(start_shape)) if start_shape else 1
-        rendered = state.templates["loop_range"].render(
-            model_name=model.name,
-            op_name=op_name,
-            trip_count=params["trip_count"],
-            cond=params["cond"],
-            start=params["start"],
-            delta=params["delta"],
-            final=params["final"],
-            output=params["output"],
-            params=param_decls,
-            c_type=c_type,
-            output_suffix=output_suffix,
-            dim_args=dim_args,
-            add_table_data=add_table_data,
-            state_size=state_size,
-        ).rstrip()
+        rendered = (
+            state.templates["loop_range"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                trip_count=params["trip_count"],
+                cond=params["cond"],
+                start=params["start"],
+                delta=params["delta"],
+                final=params["final"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                output_suffix=output_suffix,
+                dim_args=dim_args,
+                add_table_data=add_table_data,
+                state_size=state_size,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_inputs(
@@ -3842,9 +3993,12 @@ class LoopRangeOp(RenderableOpBase):
     ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
         return (
             (self.final, emitter.ctx_shape(self.final), emitter.ctx_dtype(self.final)),
-            (self.output, emitter.ctx_shape(self.output), emitter.ctx_dtype(self.output)),
+            (
+                self.output,
+                emitter.ctx_shape(self.output),
+                emitter.ctx_dtype(self.output),
+            ),
         )
-
 
 
 @dataclass(frozen=True)
@@ -3926,19 +4080,23 @@ class LoopSequenceInsertOp(RenderableOpBase):
         table_data = [
             emitter.format_value(value, seq_dtype) for value in self.table_data
         ]
-        rendered = state.templates["loop_sequence_insert"].render(
-            op_name=op_name,
-            dim_args=dim_args,
-            params=param_decls,
-            trip_count=params["trip_count"],
-            cond=params["cond"],
-            input_sequence=params["input_sequence"],
-            output_sequence=params["output_sequence"],
-            table_data=table_data,
-            table_len=self.table_shape[0],
-            element_count=CEmitterCompat.element_count_expr(elem_shape),
-            c_type=seq_dtype.c_type,
-        ).rstrip()
+        rendered = (
+            state.templates["loop_sequence_insert"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                trip_count=params["trip_count"],
+                cond=params["cond"],
+                input_sequence=params["input_sequence"],
+                output_sequence=params["output_sequence"],
+                table_data=table_data,
+                table_len=self.table_shape[0],
+                element_count=CEmitterCompat.element_count_expr(elem_shape),
+                c_type=seq_dtype.c_type,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def resolved_output_dtype(self, ctx: OpContext) -> ScalarType:
@@ -3961,13 +4119,16 @@ class LoopSequenceInsertOp(RenderableOpBase):
         return ((self.output_sequence, self.elem_shape, self.elem_dtype),)
 
 
-
 @dataclass(frozen=True)
 class LoopSequenceMapOp(RenderableOpBase):
     __io_inputs__ = ("trip_count", "cond")
     __io_outputs__ = ("output_sequences",)
-    __io_remap_extra__ = ("input_sequences", "input_tensors",
-                          "output_input0", "output_input1")
+    __io_remap_extra__ = (
+        "input_sequences",
+        "input_tensors",
+        "output_input0",
+        "output_input1",
+    )
     trip_count: str
     cond: str
     input_sequences: tuple[str, ...]
@@ -4107,9 +4268,7 @@ class LoopSequenceMapOp(RenderableOpBase):
                     else emitter.ctx_shape(in0)
                 )
                 for dim_idx, dim in enumerate(source_shape):
-                    lines.append(
-                        f"        {out_param}[(idx_t)i][{dim_idx}] = {dim};"
-                    )
+                    lines.append(f"        {out_param}[(idx_t)i][{dim_idx}] = {dim};")
             elif kind == "identity":
                 src_name = (
                     seq_param_by_name[in0] if in0_seq else tensor_param_by_name[in0]
@@ -4167,7 +4326,6 @@ class LoopSequenceMapOp(RenderableOpBase):
         )
 
 
-
 @dataclass(frozen=True)
 class RangeOp(RenderableOpBase):
     __io_inputs__ = ("start", "limit", "delta")
@@ -4203,26 +4361,29 @@ class RangeOp(RenderableOpBase):
                 (params["output"], c_type, output_suffix, False),
             ]
         )
-        rendered = state.templates["range"].render(
-            model_name=model.name,
-            op_name=op_name,
-            start=params["start"],
-            limit=params["limit"],
-            delta=params["delta"],
-            output=params["output"],
-            params=param_decls,
-            c_type=c_type,
-            input_suffix=scalar_suffix,
-            output_suffix=output_suffix,
-            length=output_shape[0],
-        ).rstrip()
+        rendered = (
+            state.templates["range"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                start=params["start"],
+                limit=params["limit"],
+                delta=params["delta"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                input_suffix=scalar_suffix,
+                output_suffix=output_suffix,
+                length=output_shape[0],
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_inputs(
         self, emitter: "Emitter"
     ) -> tuple[tuple[str, tuple[int, ...]], ...]:
         return ((self.start, ()), (self.limit, ()), (self.delta, ()))
-
 
 
 @dataclass(frozen=True)
@@ -4343,32 +4504,35 @@ class DFTOp(RenderableOpBase):
                 "DFT with constant axis must lower to exactly one axis variant"
             )
 
-        rendered = state.templates["dft"].render(
-            model_name=model.name,
-            op_name=op_name,
-            params=param_decls,
-            input0=params["input0"],
-            axis_input=params["axis_input"],
-            axis_c_type=axis_c_type,
-            output=params["output"],
-            c_type=dft_dtype.c_type,
-            input_suffix=input_suffix,
-            output_suffix=output_suffix,
-            rank=rank,
-            axis_variants=axis_variants,
-            input_components=2 if self.input_is_complex else 1,
-            inverse=self.inverse,
-            onesided=self.onesided,
-            zero_literal=dft_dtype.zero_literal,
-            dim_args=dim_args,
-        ).rstrip()
+        rendered = (
+            state.templates["dft"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                params=param_decls,
+                input0=params["input0"],
+                axis_input=params["axis_input"],
+                axis_c_type=axis_c_type,
+                output=params["output"],
+                c_type=dft_dtype.c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                rank=rank,
+                axis_variants=axis_variants,
+                input_components=2 if self.input_is_complex else 1,
+                inverse=self.inverse,
+                onesided=self.onesided,
+                zero_literal=dft_dtype.zero_literal,
+                dim_args=dim_args,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_inputs(
         self, emitter: "Emitter"
     ) -> tuple[tuple[str, tuple[int, ...]], ...]:
         return ((self.input0, emitter.ctx_shape(self.input0)),)
-
 
 
 @dataclass(frozen=True)
@@ -4415,31 +4579,34 @@ class HammingWindowOp(RenderableOpBase):
         )
         compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
 
-        rendered = state.templates["hamming_window"].render(
-            model_name=model.name,
-            op_name=op_name,
-            size=params["size"],
-            output=params["output"],
-            params=param_decls,
-            c_type=c_type,
-            output_suffix=output_suffix,
-            length=output_shape[0],
-            periodic_literal="1" if self.periodic else "0",
-            compute_type=compute_type,
-            one_literal=emitter.format_literal(compute_dtype, 1.0),
-            two_literal=emitter.format_literal(compute_dtype, 2.0),
-            alpha_literal=emitter.format_literal(compute_dtype, 25.0 / 46.0),
-            beta_literal=emitter.format_literal(compute_dtype, 1.0 - (25.0 / 46.0)),
-            pi_literal=emitter.format_literal(compute_dtype, math.pi),
-            compute_scalar_dtype=compute_dtype,
-        ).rstrip()
+        rendered = (
+            state.templates["hamming_window"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                size=params["size"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                output_suffix=output_suffix,
+                length=output_shape[0],
+                periodic_literal="1" if self.periodic else "0",
+                compute_type=compute_type,
+                one_literal=emitter.format_literal(compute_dtype, 1.0),
+                two_literal=emitter.format_literal(compute_dtype, 2.0),
+                alpha_literal=emitter.format_literal(compute_dtype, 25.0 / 46.0),
+                beta_literal=emitter.format_literal(compute_dtype, 1.0 - (25.0 / 46.0)),
+                pi_literal=emitter.format_literal(compute_dtype, math.pi),
+                compute_scalar_dtype=compute_dtype,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_inputs(
         self, emitter: "Emitter"
     ) -> tuple[tuple[str, tuple[int, ...]], ...]:
         return ((self.size, ()),)
-
 
 
 @dataclass(frozen=True)
@@ -4486,32 +4653,35 @@ class BlackmanWindowOp(RenderableOpBase):
         )
         compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
 
-        rendered = state.templates["blackman_window"].render(
-            model_name=model.name,
-            op_name=op_name,
-            size=params["size"],
-            output=params["output"],
-            params=param_decls,
-            c_type=c_type,
-            output_suffix=output_suffix,
-            length=output_shape[0],
-            periodic_literal="1" if self.periodic else "0",
-            compute_type=compute_type,
-            one_literal=emitter.format_literal(compute_dtype, 1.0),
-            two_literal=emitter.format_literal(compute_dtype, 2.0),
-            c042_literal=emitter.format_literal(compute_dtype, 0.42),
-            c05_literal=emitter.format_literal(compute_dtype, 0.5),
-            c008_literal=emitter.format_literal(compute_dtype, 0.08),
-            pi_literal=emitter.format_literal(compute_dtype, math.pi),
-            compute_scalar_dtype=compute_dtype,
-        ).rstrip()
+        rendered = (
+            state.templates["blackman_window"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                size=params["size"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                output_suffix=output_suffix,
+                length=output_shape[0],
+                periodic_literal="1" if self.periodic else "0",
+                compute_type=compute_type,
+                one_literal=emitter.format_literal(compute_dtype, 1.0),
+                two_literal=emitter.format_literal(compute_dtype, 2.0),
+                c042_literal=emitter.format_literal(compute_dtype, 0.42),
+                c05_literal=emitter.format_literal(compute_dtype, 0.5),
+                c008_literal=emitter.format_literal(compute_dtype, 0.08),
+                pi_literal=emitter.format_literal(compute_dtype, math.pi),
+                compute_scalar_dtype=compute_dtype,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_inputs(
         self, emitter: "Emitter"
     ) -> tuple[tuple[str, tuple[int, ...]], ...]:
         return ((self.size, ()),)
-
 
 
 @dataclass(frozen=True)
@@ -4558,31 +4728,34 @@ class HannWindowOp(RenderableOpBase):
         )
         compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
 
-        rendered = state.templates["hann_window"].render(
-            model_name=model.name,
-            op_name=op_name,
-            size=params["size"],
-            output=params["output"],
-            params=param_decls,
-            c_type=c_type,
-            output_suffix=output_suffix,
-            length=output_shape[0],
-            periodic_literal="1" if self.periodic else "0",
-            compute_type=compute_type,
-            one_literal=emitter.format_literal(compute_dtype, 1.0),
-            two_literal=emitter.format_literal(compute_dtype, 2.0),
-            alpha_literal=emitter.format_literal(compute_dtype, 0.5),
-            beta_literal=emitter.format_literal(compute_dtype, 0.5),
-            pi_literal=emitter.format_literal(compute_dtype, math.pi),
-            compute_scalar_dtype=compute_dtype,
-        ).rstrip()
+        rendered = (
+            state.templates["hann_window"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                size=params["size"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                output_suffix=output_suffix,
+                length=output_shape[0],
+                periodic_literal="1" if self.periodic else "0",
+                compute_type=compute_type,
+                one_literal=emitter.format_literal(compute_dtype, 1.0),
+                two_literal=emitter.format_literal(compute_dtype, 2.0),
+                alpha_literal=emitter.format_literal(compute_dtype, 0.5),
+                beta_literal=emitter.format_literal(compute_dtype, 0.5),
+                pi_literal=emitter.format_literal(compute_dtype, math.pi),
+                compute_scalar_dtype=compute_dtype,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_inputs(
         self, emitter: "Emitter"
     ) -> tuple[tuple[str, tuple[int, ...]], ...]:
         return ((self.size, ()),)
-
 
 
 @dataclass(frozen=True)
@@ -4666,26 +4839,30 @@ class MelWeightMatrixOp(RenderableOpBase):
             ScalarType.F64 if output_dtype == ScalarType.F64 else ScalarType.F32
         )
         compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
-        rendered = state.templates["mel_weight_matrix"].render(
-            model_name=model.name,
-            op_name=op_name,
-            num_mel_bins=params["num_mel_bins"],
-            dft_length=params["dft_length"],
-            sample_rate=params["sample_rate"],
-            lower_edge_hertz=params["lower_edge_hertz"],
-            upper_edge_hertz=params["upper_edge_hertz"],
-            output=params["output"],
-            params=param_decls,
-            c_type=c_type,
-            output_suffix=output_suffix,
-            num_spectrogram_bins=output_shape[0],
-            num_mel_bins_dim=output_shape[1],
-            compute_type=compute_type,
-            seven_hundred_literal=emitter.format_literal(compute_dtype, 700.0),
-            mel_scale_literal=emitter.format_literal(compute_dtype, 2595.0),
-            ten_literal=emitter.format_literal(compute_dtype, 10.0),
-            one_literal=emitter.format_literal(compute_dtype, 1.0),
-        ).rstrip()
+        rendered = (
+            state.templates["mel_weight_matrix"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                num_mel_bins=params["num_mel_bins"],
+                dft_length=params["dft_length"],
+                sample_rate=params["sample_rate"],
+                lower_edge_hertz=params["lower_edge_hertz"],
+                upper_edge_hertz=params["upper_edge_hertz"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                output_suffix=output_suffix,
+                num_spectrogram_bins=output_shape[0],
+                num_mel_bins_dim=output_shape[1],
+                compute_type=compute_type,
+                seven_hundred_literal=emitter.format_literal(compute_dtype, 700.0),
+                mel_scale_literal=emitter.format_literal(compute_dtype, 2595.0),
+                ten_literal=emitter.format_literal(compute_dtype, 10.0),
+                one_literal=emitter.format_literal(compute_dtype, 1.0),
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -4752,26 +4929,30 @@ class OneHotOp(RenderableOpBase):
                 (params["output"], c_type, output_suffix, False),
             ]
         )
-        rendered = state.templates["one_hot"].render(
-            model_name=model.name,
-            op_name=op_name,
-            indices=params["indices"],
-            depth=params["depth"],
-            values=params["values"],
-            output=params["output"],
-            params=param_decls,
-            indices_suffix=indices_suffix,
-            depth_suffix=depth_suffix,
-            values_suffix=values_suffix,
-            output_suffix=output_suffix,
-            output_shape=output_shape,
-            loop_vars=loop_vars,
-            indices_indices=indices_indices,
-            axis_index=loop_vars[self.axis],
-            depth_dim=output_shape_raw[self.axis],
-            indices_c_type=emitter.ctx_dtype(self.indices).c_type,
-            c_type=c_type,
-        ).rstrip()
+        rendered = (
+            state.templates["one_hot"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                indices=params["indices"],
+                depth=params["depth"],
+                values=params["values"],
+                output=params["output"],
+                params=param_decls,
+                indices_suffix=indices_suffix,
+                depth_suffix=depth_suffix,
+                values_suffix=values_suffix,
+                output_suffix=output_suffix,
+                output_shape=output_shape,
+                loop_vars=loop_vars,
+                indices_indices=indices_indices,
+                axis_index=loop_vars[self.axis],
+                depth_dim=output_shape_raw[self.axis],
+                indices_c_type=emitter.ctx_dtype(self.indices).c_type,
+                c_type=c_type,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_inputs(
@@ -4782,7 +4963,6 @@ class OneHotOp(RenderableOpBase):
             (self.depth, ()),
             (self.values, emitter.ctx_shape(self.values)),
         )
-
 
 
 @dataclass(frozen=True)
@@ -4836,12 +5016,10 @@ class TfIdfVectorizerOp(RenderableOpBase):
         output_dim = output_shape[-1] if output_shape else 0
         mode_id = {"TF": 0, "IDF": 1, "TFIDF": 2}[self.mode]
         pool_values = [
-            emitter.format_literal(ScalarType.I64, value)
-            for value in self.pool_int64s
+            emitter.format_literal(ScalarType.I64, value) for value in self.pool_int64s
         ]
         ngram_counts_values = [
-            emitter.format_literal(ScalarType.I64, value)
-            for value in self.ngram_counts
+            emitter.format_literal(ScalarType.I64, value) for value in self.ngram_counts
         ]
         ngram_indexes_values = [
             emitter.format_literal(ScalarType.I64, value)
@@ -4852,34 +5030,38 @@ class TfIdfVectorizerOp(RenderableOpBase):
             if self.weights is not None
             else None
         )
-        rendered = state.templates["tfidf_vectorizer"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=params["input0"],
-            output=params["output"],
-            params=param_decls,
-            input_suffix=input_suffix,
-            output_suffix=output_suffix,
-            input_shape=input_shape,
-            output_shape=output_shape,
-            input_rank=len(input_shape),
-            output_dim=output_dim,
-            min_gram_length=self.min_gram_length,
-            max_gram_length=self.max_gram_length,
-            max_skip_count=self.max_skip_count,
-            mode_id=mode_id,
-            ngram_counts_len=len(self.ngram_counts),
-            pool_size=len(self.pool_int64s),
-            ngram_index_len=len(self.ngram_indexes),
-            pool_values=pool_values,
-            ngram_counts_values=ngram_counts_values,
-            ngram_indexes_values=ngram_indexes_values,
-            weights_values=weights_values,
-            zero_literal=output_dtype.zero_literal,
-            one_literal=emitter.format_literal(output_dtype, 1.0),
-            c_type=output_dtype.c_type,
-            input_c_type=input_dtype.c_type,
-        ).rstrip()
+        rendered = (
+            state.templates["tfidf_vectorizer"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                input_shape=input_shape,
+                output_shape=output_shape,
+                input_rank=len(input_shape),
+                output_dim=output_dim,
+                min_gram_length=self.min_gram_length,
+                max_gram_length=self.max_gram_length,
+                max_skip_count=self.max_skip_count,
+                mode_id=mode_id,
+                ngram_counts_len=len(self.ngram_counts),
+                pool_size=len(self.pool_int64s),
+                ngram_index_len=len(self.ngram_indexes),
+                pool_values=pool_values,
+                ngram_counts_values=ngram_counts_values,
+                ngram_indexes_values=ngram_indexes_values,
+                weights_values=weights_values,
+                zero_literal=output_dtype.zero_literal,
+                one_literal=emitter.format_literal(output_dtype, 1.0),
+                c_type=output_dtype.c_type,
+                input_c_type=input_dtype.c_type,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -4937,21 +5119,24 @@ class StringConcatOp(RenderableOpBase):
         output_expr = CEmitterCompat.broadcast_index_expr(
             params["output"], output_shape, output_shape, loop_vars
         )
-        rendered = state.templates["string_concat"].render(
-            op_name=op_name,
-            dim_args=dim_args,
-            params=param_decls,
-            shape=shape,
-            loop_vars=loop_vars,
-            input0_expr=input0_expr,
-            input1_expr=input1_expr,
-            output_expr=output_expr,
-        ).rstrip()
+        rendered = (
+            state.templates["string_concat"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                shape=shape,
+                loop_vars=loop_vars,
+                input0_expr=input0_expr,
+                input1_expr=input1_expr,
+                output_expr=output_expr,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
         return ScalarType.STRING
-
 
 
 @dataclass(frozen=True)
@@ -5000,22 +5185,25 @@ class StringNormalizerOp(RenderableOpBase):
             for stopword in self.stopwords
         )
         case_mode = {"NONE": 0, "LOWER": 1, "UPPER": 2}[self.case_change_action]
-        rendered = state.templates["string_normalizer"].render(
-            op_name=op_name,
-            dim_args=dim_args,
-            params=param_decls,
-            input0=params["input0"],
-            output=params["output"],
-            input_count=CEmitterCompat.element_count_expr(input_shape),
-            output_count=CEmitterCompat.element_count_expr(output_shape),
-            stopword_checks=stopword_checks,
-            case_mode=case_mode,
-        ).rstrip()
+        rendered = (
+            state.templates["string_normalizer"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                output=params["output"],
+                input_count=CEmitterCompat.element_count_expr(input_shape),
+                output_count=CEmitterCompat.element_count_expr(output_shape),
+                stopword_checks=stopword_checks,
+                case_mode=case_mode,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
         return ScalarType.STRING
-
 
 
 @dataclass(frozen=True)
@@ -5084,9 +5272,7 @@ class LabelEncoderOp(RenderableOpBase):
         if self.keys_strings:
             key_type = "string"
             key_c_type = "char"
-            keys = tuple(
-                emitter.format_c_string_literal(k) for k in self.keys_strings
-            )
+            keys = tuple(emitter.format_c_string_literal(k) for k in self.keys_strings)
         elif self.keys_int64s:
             key_type = "int64"
             key_c_type = input_dtype.c_type
@@ -5110,22 +5296,26 @@ class LabelEncoderOp(RenderableOpBase):
                 emitter.format_c_string_literal(v) for v in self.values_strings
             )
             default_value = emitter.format_c_string_literal(self.default_string)
-        rendered = state.templates["label_encoder"].render(
-            op_name=op_name,
-            dim_args=dim_args,
-            params=param_decls,
-            input0=params["input0"],
-            output=params["output"],
-            shape=shape,
-            loop_vars=loop_vars,
-            key_type=key_type,
-            key_c_type=key_c_type,
-            output_c_type=output_c_type,
-            keys=keys,
-            values=values,
-            default_value=default_value,
-            num_entries=len(keys),
-        ).rstrip()
+        rendered = (
+            state.templates["label_encoder"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                output=params["output"],
+                shape=shape,
+                loop_vars=loop_vars,
+                key_type=key_type,
+                key_c_type=key_c_type,
+                output_c_type=output_c_type,
+                keys=keys,
+                values=values,
+                default_value=default_value,
+                num_entries=len(keys),
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -5161,7 +5351,9 @@ class StringSplitOp(RenderableOpBase):
             input_shape, emitter.dim_names_for(self.input0), dtype=ScalarType.STRING
         )
         output_y_suffix = emitter.param_array_suffix(
-            output_y_shape, emitter.dim_names_for(self.output_y), dtype=ScalarType.STRING
+            output_y_shape,
+            emitter.dim_names_for(self.output_y),
+            dtype=ScalarType.STRING,
         )
         output_z_suffix = emitter.param_array_suffix(
             output_z_shape, emitter.dim_names_for(self.output_z)
@@ -5175,20 +5367,24 @@ class StringSplitOp(RenderableOpBase):
         )
         is_whitespace = not self.delimiter
         max_count = output_y_shape[-1] if output_y_shape else 0
-        rendered = state.templates["string_split"].render(
-            op_name=op_name,
-            dim_args=dim_args,
-            params=param_decls,
-            input0=params["input0"],
-            output_y=params["output_y"],
-            output_z=params["output_z"],
-            input_count=CEmitterCompat.element_count_expr(input_shape),
-            max_count=max_count,
-            is_whitespace=is_whitespace,
-            maxsplit=self.maxsplit,
-            delimiter_literal=emitter.format_c_string_literal(self.delimiter),
-            delimiter_len=len(self.delimiter),
-        ).rstrip()
+        rendered = (
+            state.templates["string_split"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                output_y=params["output_y"],
+                output_z=params["output_z"],
+                input_count=CEmitterCompat.element_count_expr(input_shape),
+                max_count=max_count,
+                is_whitespace=is_whitespace,
+                maxsplit=self.maxsplit,
+                delimiter_literal=emitter.format_c_string_literal(self.delimiter),
+                delimiter_len=len(self.delimiter),
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def resolved_output_dtype(self, ctx: OpContext) -> ScalarType:
@@ -5202,9 +5398,12 @@ class StringSplitOp(RenderableOpBase):
     ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
         return (
             (self.output_y, emitter.ctx_shape(self.output_y), ScalarType.STRING),
-            (self.output_z, emitter.ctx_shape(self.output_z), emitter.ctx_dtype(self.output_z)),
+            (
+                self.output_z,
+                emitter.ctx_shape(self.output_z),
+                emitter.ctx_dtype(self.output_z),
+            ),
         )
-
 
 
 @dataclass(frozen=True)
@@ -5275,64 +5474,68 @@ class TreeEnsembleClassifierOp(RenderableOpBase):
         tree_id_literals = [
             emitter.format_literal(ScalarType.I64, value) for value in tree_ids
         ]
-        rendered = state.templates["tree_ensemble_classifier"].render(
-            op_name=op_name,
-            dim_args=dim_args,
-            params=param_decls,
-            input0=params["input0"],
-            label=params["label"],
-            probabilities=params["probabilities"],
-            class_labels=[
-                emitter.format_literal(ScalarType.I64, v) for v in self.class_labels
-            ],
-            node_tree_ids=[
-                emitter.format_literal(ScalarType.I64, v)
-                for v in self.node_tree_ids
-            ],
-            node_node_ids=[
-                emitter.format_literal(ScalarType.I64, v)
-                for v in self.node_node_ids
-            ],
-            node_feature_ids=[
-                emitter.format_literal(ScalarType.I64, v)
-                for v in self.node_feature_ids
-            ],
-            node_modes=[str(v) for v in self.node_modes],
-            node_values=[
-                emitter.format_literal(input_dtype, v) for v in self.node_values
-            ],
-            node_true_ids=[
-                emitter.format_literal(ScalarType.I64, v)
-                for v in self.node_true_ids
-            ],
-            node_false_ids=[
-                emitter.format_literal(ScalarType.I64, v)
-                for v in self.node_false_ids
-            ],
-            class_tree_ids=[
-                emitter.format_literal(ScalarType.I64, v)
-                for v in self.class_tree_ids
-            ],
-            class_node_ids=[
-                emitter.format_literal(ScalarType.I64, v)
-                for v in self.class_node_ids
-            ],
-            class_ids=[
-                emitter.format_literal(ScalarType.I64, v) for v in self.class_ids
-            ],
-            class_weights=[
-                emitter.format_literal(ScalarType.F32, v)
-                for v in self.class_weights
-            ],
-            batch_size=input_shape[0],
-            class_count=len(self.class_labels),
-            node_count=len(self.node_node_ids),
-            leaf_value_count=len(self.class_ids),
-            tree_count=len(tree_ids),
-            tree_ids=tree_id_literals,
-            logistic=self.post_transform == "LOGISTIC",
-            input_c_type=input_dtype.c_type,
-        ).rstrip()
+        rendered = (
+            state.templates["tree_ensemble_classifier"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                label=params["label"],
+                probabilities=params["probabilities"],
+                class_labels=[
+                    emitter.format_literal(ScalarType.I64, v) for v in self.class_labels
+                ],
+                node_tree_ids=[
+                    emitter.format_literal(ScalarType.I64, v)
+                    for v in self.node_tree_ids
+                ],
+                node_node_ids=[
+                    emitter.format_literal(ScalarType.I64, v)
+                    for v in self.node_node_ids
+                ],
+                node_feature_ids=[
+                    emitter.format_literal(ScalarType.I64, v)
+                    for v in self.node_feature_ids
+                ],
+                node_modes=[str(v) for v in self.node_modes],
+                node_values=[
+                    emitter.format_literal(input_dtype, v) for v in self.node_values
+                ],
+                node_true_ids=[
+                    emitter.format_literal(ScalarType.I64, v)
+                    for v in self.node_true_ids
+                ],
+                node_false_ids=[
+                    emitter.format_literal(ScalarType.I64, v)
+                    for v in self.node_false_ids
+                ],
+                class_tree_ids=[
+                    emitter.format_literal(ScalarType.I64, v)
+                    for v in self.class_tree_ids
+                ],
+                class_node_ids=[
+                    emitter.format_literal(ScalarType.I64, v)
+                    for v in self.class_node_ids
+                ],
+                class_ids=[
+                    emitter.format_literal(ScalarType.I64, v) for v in self.class_ids
+                ],
+                class_weights=[
+                    emitter.format_literal(ScalarType.F32, v)
+                    for v in self.class_weights
+                ],
+                batch_size=input_shape[0],
+                class_count=len(self.class_labels),
+                node_count=len(self.node_node_ids),
+                leaf_value_count=len(self.class_ids),
+                tree_count=len(tree_ids),
+                tree_ids=tree_id_literals,
+                logistic=self.post_transform == "LOGISTIC",
+                input_c_type=input_dtype.c_type,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_outputs(
@@ -5340,9 +5543,12 @@ class TreeEnsembleClassifierOp(RenderableOpBase):
     ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
         return (
             (self.label, emitter.ctx_shape(self.label), emitter.ctx_dtype(self.label)),
-            (self.probabilities, emitter.ctx_shape(self.probabilities), emitter.ctx_dtype(self.probabilities)),
+            (
+                self.probabilities,
+                emitter.ctx_shape(self.probabilities),
+                emitter.ctx_dtype(self.probabilities),
+            ),
         )
-
 
 
 @dataclass(frozen=True)
@@ -5393,67 +5599,71 @@ class TreeEnsembleOp(RenderableOpBase):
                 (params["output"], output_dtype.c_type, output_suffix, False),
             ]
         )
-        rendered = state.templates["tree_ensemble"].render(
-            op_name=op_name,
-            dim_args=dim_args,
-            params=param_decls,
-            input0=params["input0"],
-            output=params["output"],
-            tree_roots=[
-                emitter.format_literal(ScalarType.I64, v) for v in self.tree_roots
-            ],
-            node_feature_ids=[
-                emitter.format_literal(ScalarType.I64, v)
-                for v in self.node_feature_ids
-            ],
-            node_modes=[str(v) for v in self.node_modes],
-            node_splits=[
-                emitter.format_literal(input_dtype, v) for v in self.node_splits
-            ],
-            node_true_ids=[
-                emitter.format_literal(ScalarType.I64, v)
-                for v in self.node_true_ids
-            ],
-            node_true_leafs=[
-                emitter.format_literal(ScalarType.I64, v)
-                for v in self.node_true_leafs
-            ],
-            node_false_ids=[
-                emitter.format_literal(ScalarType.I64, v)
-                for v in self.node_false_ids
-            ],
-            node_false_leafs=[
-                emitter.format_literal(ScalarType.I64, v)
-                for v in self.node_false_leafs
-            ],
-            membership_values=[
-                emitter.format_literal(input_dtype, v)
-                for v in (self.membership_values or ())
-            ],
-            member_range_starts=[
-                emitter.format_literal(ScalarType.I64, v)
-                for v in self.member_range_starts
-            ],
-            member_range_ends=[
-                emitter.format_literal(ScalarType.I64, v)
-                for v in self.member_range_ends
-            ],
-            leaf_target_ids=[
-                emitter.format_literal(ScalarType.I64, v)
-                for v in self.leaf_target_ids
-            ],
-            leaf_weights=[
-                emitter.format_literal(output_dtype, v) for v in self.leaf_weights
-            ],
-            batch_size=input_shape[0],
-            tree_count=len(self.tree_roots),
-            target_count=self.n_targets,
-            node_count=len(self.node_modes),
-            leaf_count=len(self.leaf_target_ids),
-            zero_literal=output_dtype.zero_literal,
-            input_c_type=input_dtype.c_type,
-            output_c_type=output_dtype.c_type,
-        ).rstrip()
+        rendered = (
+            state.templates["tree_ensemble"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                output=params["output"],
+                tree_roots=[
+                    emitter.format_literal(ScalarType.I64, v) for v in self.tree_roots
+                ],
+                node_feature_ids=[
+                    emitter.format_literal(ScalarType.I64, v)
+                    for v in self.node_feature_ids
+                ],
+                node_modes=[str(v) for v in self.node_modes],
+                node_splits=[
+                    emitter.format_literal(input_dtype, v) for v in self.node_splits
+                ],
+                node_true_ids=[
+                    emitter.format_literal(ScalarType.I64, v)
+                    for v in self.node_true_ids
+                ],
+                node_true_leafs=[
+                    emitter.format_literal(ScalarType.I64, v)
+                    for v in self.node_true_leafs
+                ],
+                node_false_ids=[
+                    emitter.format_literal(ScalarType.I64, v)
+                    for v in self.node_false_ids
+                ],
+                node_false_leafs=[
+                    emitter.format_literal(ScalarType.I64, v)
+                    for v in self.node_false_leafs
+                ],
+                membership_values=[
+                    emitter.format_literal(input_dtype, v)
+                    for v in (self.membership_values or ())
+                ],
+                member_range_starts=[
+                    emitter.format_literal(ScalarType.I64, v)
+                    for v in self.member_range_starts
+                ],
+                member_range_ends=[
+                    emitter.format_literal(ScalarType.I64, v)
+                    for v in self.member_range_ends
+                ],
+                leaf_target_ids=[
+                    emitter.format_literal(ScalarType.I64, v)
+                    for v in self.leaf_target_ids
+                ],
+                leaf_weights=[
+                    emitter.format_literal(output_dtype, v) for v in self.leaf_weights
+                ],
+                batch_size=input_shape[0],
+                tree_count=len(self.tree_roots),
+                target_count=self.n_targets,
+                node_count=len(self.node_modes),
+                leaf_count=len(self.leaf_target_ids),
+                zero_literal=output_dtype.zero_literal,
+                input_c_type=input_dtype.c_type,
+                output_c_type=output_dtype.c_type,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -5507,21 +5717,25 @@ class SplitOp(RenderableOpBase):
                 ),
             ]
         )
-        rendered = state.templates["split"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=params["input0"],
-            outputs=output_names,
-            params=param_decls,
-            output_suffixes=output_suffixes,
-            c_type=c_type,
-            input_suffix=input_suffix,
-            axis_sizes=self.split_sizes,
-            axis_total=input_shape[self.axis],
-            outer=outer,
-            inner=inner,
-            output_count=len(output_names),
-        ).rstrip()
+        rendered = (
+            state.templates["split"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                outputs=output_names,
+                params=param_decls,
+                output_suffixes=output_suffixes,
+                c_type=c_type,
+                input_suffix=input_suffix,
+                axis_sizes=self.split_sizes,
+                axis_total=input_shape[self.axis],
+                outer=outer,
+                inner=inner,
+                output_count=len(output_names),
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_outputs(
@@ -5531,7 +5745,6 @@ class SplitOp(RenderableOpBase):
             (name, emitter.ctx_shape(name), emitter.ctx_dtype(name))
             for name in self.outputs
         )
-
 
 
 @dataclass(frozen=True)
@@ -5600,7 +5813,9 @@ class SplitToSequenceOp(RenderableOpBase):
                 (
                     params["split"],
                     split_dtype.c_type,
-                    emitter.param_array_suffix(split_shape, emitter.dim_names_for(self.split)),
+                    emitter.param_array_suffix(
+                        split_shape, emitter.dim_names_for(self.split)
+                    ),
                     True,
                 )
             )
@@ -5627,28 +5842,32 @@ class SplitToSequenceOp(RenderableOpBase):
             if self.split is not None and len(emitter.ctx_shape(self.split)) == 1
             else 0
         )
-        rendered = state.templates["split_to_sequence"].render(
-            op_name=op_name,
-            dim_args=dim_args,
-            params=param_decls,
-            input0=params["input0"],
-            split=params["split"],
-            split_dtype=(
-                emitter.ctx_dtype(self.split).c_type
-                if self.split is not None
-                else "int64_t"
-            ),
-            split_scalar=self.split_scalar,
-            split_len=split_len,
-            axis_sizes=self.split_sizes,
-            output_sequence=params["output_sequence"],
-            axis_total=input_shape[self.axis],
-            outer=outer,
-            inner=inner,
-            keepdims=self.keepdims,
-            output_axis_capacity=(output_shape[self.axis] if self.keepdims else 1),
-            c_type=c_type,
-        ).rstrip()
+        rendered = (
+            state.templates["split_to_sequence"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                split=params["split"],
+                split_dtype=(
+                    emitter.ctx_dtype(self.split).c_type
+                    if self.split is not None
+                    else "int64_t"
+                ),
+                split_scalar=self.split_scalar,
+                split_len=split_len,
+                axis_sizes=self.split_sizes,
+                output_sequence=params["output_sequence"],
+                axis_total=input_shape[self.axis],
+                outer=outer,
+                inner=inner,
+                keepdims=self.keepdims,
+                output_axis_capacity=(output_shape[self.axis] if self.keepdims else 1),
+                c_type=c_type,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def resolved_output_dtype(self, ctx: OpContext) -> ScalarType:
@@ -5674,7 +5893,6 @@ class SplitToSequenceOp(RenderableOpBase):
                 elem_type.dtype,
             ),
         )
-
 
 
 @dataclass(frozen=True)
@@ -5724,20 +5942,26 @@ class ReverseSequenceOp(RenderableOpBase):
                 (params["output"], c_type, output_suffix, False),
             ]
         )
-        rendered = state.templates["reverse_sequence"].render(
-            op_name=op_name,
-            dim_args=dim_args,
-            params=param_decls,
-            input0=params["input0"],
-            sequence_lens=params["sequence_lens"],
-            output=params["output"],
-            rank=len(input_shape),
-            dims=CEmitterCompat.shape_dim_exprs(input_shape, emitter.dim_names_for(self.input0)),
-            batch_axis=self.batch_axis,
-            time_axis=self.time_axis,
-            seq_c_type=seq_dtype.c_type,
-            c_type=c_type,
-        ).rstrip()
+        rendered = (
+            state.templates["reverse_sequence"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                sequence_lens=params["sequence_lens"],
+                output=params["output"],
+                rank=len(input_shape),
+                dims=CEmitterCompat.shape_dim_exprs(
+                    input_shape, emitter.dim_names_for(self.input0)
+                ),
+                batch_axis=self.batch_axis,
+                time_axis=self.time_axis,
+                seq_c_type=seq_dtype.c_type,
+                c_type=c_type,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -5799,25 +6023,28 @@ class ConcatFromSequenceOp(RenderableOpBase):
             outer = CEmitterCompat.element_count(elem_shape[: self.axis] or (1,))
             inner = CEmitterCompat.element_count(elem_shape[self.axis + 1 :] or (1,))
             axis_extent = elem_shape[self.axis]
-        rendered = state.templates["concat_from_sequence"].render(
-            op_name=op_name,
-            dim_args=dim_args,
-            params=param_decls,
-            input_sequence=params["input_sequence"],
-            output=params["output"],
-            c_type=c_type,
-            outer=outer,
-            inner=inner,
-            axis_extent=axis_extent,
-            new_axis=self.new_axis,
-        ).rstrip()
+        rendered = (
+            state.templates["concat_from_sequence"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input_sequence=params["input_sequence"],
+                output=params["output"],
+                c_type=c_type,
+                outer=outer,
+                inner=inner,
+                axis_extent=axis_extent,
+                new_axis=self.new_axis,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_inputs(
         self, emitter: "Emitter"
     ) -> tuple[tuple[str, tuple[int, ...]], ...]:
         return ()
-
 
 
 @dataclass(frozen=True)
@@ -5877,16 +6104,20 @@ class SequenceAtOp(RenderableOpBase):
                 (params["output"], c_type, tensor_suffix, False),
             ]
         )
-        rendered = state.templates["sequence_at"].render(
-            op_name=op_name,
-            dim_args=dim_args,
-            params=param_decls,
-            input_sequence=params["input_sequence"],
-            position=params["position"],
-            output=params["output"],
-            element_count=CEmitterCompat.element_count_expr(output_shape),
-            c_type=c_type,
-        ).rstrip()
+        rendered = (
+            state.templates["sequence_at"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input_sequence=params["input_sequence"],
+                position=params["position"],
+                output=params["output"],
+                element_count=CEmitterCompat.element_count_expr(output_shape),
+                c_type=c_type,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_inputs(
@@ -5941,14 +6172,18 @@ class SequenceLengthOp(RenderableOpBase):
                 (params["output"], output_dtype.c_type, output_suffix, False),
             ]
         )
-        rendered = state.templates["sequence_length"].render(
-            op_name=op_name,
-            dim_args=dim_args,
-            params=param_decls,
-            input_sequence=params["input_sequence"],
-            output=params["output"],
-            c_type=output_dtype.c_type,
-        ).rstrip()
+        rendered = (
+            state.templates["sequence_length"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input_sequence=params["input_sequence"],
+                output=params["output"],
+                c_type=output_dtype.c_type,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_inputs(
@@ -6013,27 +6248,28 @@ class SequenceIdentityOp(RenderableOpBase):
             ),
             (f"{params['output_sequence']}__count", "idx_t *", "", False),
         ]
-        if (
-            params["input_present"] is not None
-            and params["output_present"] is not None
-        ):
+        if params["input_present"] is not None and params["output_present"] is not None:
             param_specs.extend(
                 [
                     (params["input_present"], "_Bool", "", True),
                     (params["output_present"], "_Bool *", "", False),
                 ]
             )
-        rendered = state.templates["sequence_identity"].render(
-            op_name=op_name,
-            dim_args=dim_args,
-            params=emitter.build_param_decls(param_specs),
-            input_sequence=params["input_sequence"],
-            output_sequence=params["output_sequence"],
-            input_present=params["input_present"],
-            output_present=params["output_present"],
-            element_count=CEmitterCompat.element_count_expr(elem_shape),
-            c_type=elem_type.dtype.c_type,
-        ).rstrip()
+        rendered = (
+            state.templates["sequence_identity"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=emitter.build_param_decls(param_specs),
+                input_sequence=params["input_sequence"],
+                output_sequence=params["output_sequence"],
+                input_present=params["input_present"],
+                output_present=params["output_present"],
+                element_count=CEmitterCompat.element_count_expr(elem_shape),
+                c_type=elem_type.dtype.c_type,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def resolved_output_dtype(self, ctx: OpContext) -> ScalarType:
@@ -6060,7 +6296,6 @@ class SequenceIdentityOp(RenderableOpBase):
         self, emitter: "Emitter"
     ) -> tuple[tuple[str, tuple[int, ...]], ...]:
         return ()
-
 
 
 @dataclass(frozen=True)
@@ -6138,17 +6373,21 @@ class SequenceInsertOp(RenderableOpBase):
             ]
         )
         param_decls = emitter.build_param_decls(param_specs)
-        rendered = state.templates["sequence_insert"].render(
-            op_name=op_name,
-            dim_args=dim_args,
-            params=param_decls,
-            input_sequence=params["input_sequence"],
-            tensor=params["tensor"],
-            position=params["position"],
-            output_sequence=params["output_sequence"],
-            element_count=CEmitterCompat.element_count_expr(tensor_shape),
-            c_type=c_type,
-        ).rstrip()
+        rendered = (
+            state.templates["sequence_insert"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input_sequence=params["input_sequence"],
+                tensor=params["tensor"],
+                position=params["position"],
+                output_sequence=params["output_sequence"],
+                element_count=CEmitterCompat.element_count_expr(tensor_shape),
+                c_type=c_type,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def resolved_output_dtype(self, ctx: OpContext) -> ScalarType:
@@ -6175,7 +6414,6 @@ class SequenceInsertOp(RenderableOpBase):
         self, emitter: "Emitter"
     ) -> tuple[tuple[str, tuple[int, ...]], ...]:
         return ()
-
 
 
 @dataclass(frozen=True)
@@ -6251,9 +6489,7 @@ class IfOptionalSequenceConstOp(RenderableOpBase):
             lines.append(
                 f"const {elem_type.dtype.c_type} {true_values_name}[{elem_count}] = {{"
             )
-            lines.extend(
-                emitter.emit_initializer_lines(true_literals, (elem_count,))
-            )
+            lines.extend(emitter.emit_initializer_lines(true_literals, (elem_count,)))
             lines.append("};")
         if false_has_values:
             false_literals = [
@@ -6263,9 +6499,7 @@ class IfOptionalSequenceConstOp(RenderableOpBase):
             lines.append(
                 f"const {elem_type.dtype.c_type} {false_values_name}[{elem_count}] = {{"
             )
-            lines.extend(
-                emitter.emit_initializer_lines(false_literals, (elem_count,))
-            )
+            lines.extend(emitter.emit_initializer_lines(false_literals, (elem_count,)))
             lines.append("};")
         lines.append(f"if ({params['cond']}[0]) {{")
         if self.true_present:
@@ -6317,7 +6551,9 @@ class IfOptionalSequenceConstOp(RenderableOpBase):
             )
         lines.append("}")
         lines.append("}")
-        return emitter.with_node_comment(model, ctx.op_index, emitter.format_c_indentation("\n".join(lines)))
+        return emitter.with_node_comment(
+            model, ctx.op_index, emitter.format_c_indentation("\n".join(lines))
+        )
 
     def resolved_output_dtype(self, ctx: OpContext) -> ScalarType:
         value = ctx.find_value(self.output_sequence)
@@ -6341,7 +6577,6 @@ class IfOptionalSequenceConstOp(RenderableOpBase):
                 emitter.ctx_sequence_elem_type(self.output_sequence).dtype,
             ),
         )
-
 
 
 @dataclass(frozen=True)
@@ -6413,16 +6648,20 @@ class SequenceEraseOp(RenderableOpBase):
             ]
         )
         param_decls = emitter.build_param_decls(param_specs)
-        rendered = state.templates["sequence_erase"].render(
-            op_name=op_name,
-            dim_args=dim_args,
-            params=param_decls,
-            input_sequence=params["input_sequence"],
-            position=params["position"],
-            output_sequence=params["output_sequence"],
-            element_count=CEmitterCompat.element_count_expr(elem_shape),
-            c_type=c_type,
-        ).rstrip()
+        rendered = (
+            state.templates["sequence_erase"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input_sequence=params["input_sequence"],
+                position=params["position"],
+                output_sequence=params["output_sequence"],
+                element_count=CEmitterCompat.element_count_expr(elem_shape),
+                c_type=c_type,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def resolved_output_dtype(self, ctx: OpContext) -> ScalarType:
@@ -6453,7 +6692,6 @@ class SequenceEraseOp(RenderableOpBase):
         self, emitter: "Emitter"
     ) -> tuple[tuple[str, tuple[int, ...]], ...]:
         return ()
-
 
 
 @dataclass(frozen=True)
@@ -6501,18 +6739,22 @@ class SequenceConstructOp(RenderableOpBase):
             ]
         )
         param_decls = emitter.build_param_decls(param_specs)
-        rendered = state.templates["sequence_construct"].render(
-            op_name=op_name,
-            dim_args=dim_args,
-            params=param_decls,
-            inputs=tuple(
-                params[f"input_{index}"] for index in range(len(self.inputs))
-            ),
-            output_sequence=params["output_sequence"],
-            element_count=CEmitterCompat.element_count_expr(elem_shape),
-            c_type=c_type,
-            input_count=len(self.inputs),
-        ).rstrip()
+        rendered = (
+            state.templates["sequence_construct"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                inputs=tuple(
+                    params[f"input_{index}"] for index in range(len(self.inputs))
+                ),
+                output_sequence=params["output_sequence"],
+                element_count=CEmitterCompat.element_count_expr(elem_shape),
+                c_type=c_type,
+                input_count=len(self.inputs),
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def resolved_output_dtype(self, ctx: OpContext) -> ScalarType:
@@ -6531,7 +6773,6 @@ class SequenceConstructOp(RenderableOpBase):
                 emitter.ctx_dtype(self.inputs[0]),
             ),
         )
-
 
 
 @dataclass(frozen=True)
@@ -6566,12 +6807,16 @@ class SequenceEmptyOp(RenderableOpBase):
                 (f"{params['output_sequence']}__count", "idx_t *", "", False),
             ]
         )
-        rendered = state.templates["sequence_empty"].render(
-            op_name=op_name,
-            dim_args=dim_args,
-            params=param_decls,
-            output_sequence=params["output_sequence"],
-        ).rstrip()
+        rendered = (
+            state.templates["sequence_empty"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                output_sequence=params["output_sequence"],
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def resolved_output_dtype(self, ctx: OpContext) -> ScalarType:
@@ -6597,4 +6842,3 @@ class SequenceEmptyOp(RenderableOpBase):
                 elem_type.dtype,
             ),
         )
-

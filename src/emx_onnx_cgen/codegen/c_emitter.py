@@ -673,7 +673,6 @@ class CEmitter:
     def _map_op_names(op: OpBase, name_map: dict[str, str]) -> OpBase:
         return op.remap_names(name_map)
 
-
     def _sanitize_model_names_with_map(
         self, model: LoweredModel
     ) -> tuple[LoweredModel, dict[str, str]]:
@@ -1656,10 +1655,7 @@ class CEmitter:
             includes.update(op.required_includes(ctx))
             model_dtypes.update(op.extra_model_dtypes(ctx))
 
-        model_dtypes.update(
-            op.resolved_output_dtype(ctx)
-            for op in resolved_ops
-        )
+        model_dtypes.update(op.resolved_output_dtype(ctx) for op in resolved_ops)
         if CEmitter._needs_stdint(model_dtypes, (), has_resize=False):
             includes.add("#include <stdint.h>")
         if ScalarType.BOOL in model_dtypes:
@@ -2161,7 +2157,6 @@ class CEmitter:
     def replicate_ort_bugs(self) -> bool:
         return self._replicate_ort_bugs
 
-
     def op_output_dtype(self, op: OpBase) -> ScalarType:
         return self._op_output_dtype(op)
 
@@ -2194,9 +2189,7 @@ class CEmitter:
     def format_double(self, value: float) -> str:
         return self._format_double(value)
 
-    def emit_initializer_lines(
-        self, values, shape: tuple[int, ...]
-    ) -> list[str]:
+    def emit_initializer_lines(self, values, shape: tuple[int, ...]) -> list[str]:
         return self._emit_initializer_lines(values, shape)
 
     def index_expr(self, shape: tuple[int, ...], loop_vars: tuple[str, ...]) -> str:
@@ -2344,27 +2337,31 @@ class CEmitter:
                     (params["output"], c_type, output_suffix, False),
                 ]
             )
-            return templates["reduce"].render(
-                model_name=model.name,
-                op_name=op_name,
-                input0=params["input0"],
-                output=params["output"],
-                params=param_decls,
-                c_type=c_type,
-                input_suffix=input_suffix,
-                output_suffix=output_suffix,
-                output_shape=output_shape,
-                output_loop_vars=output_loop_vars,
-                reduce_loop_vars=reduce_loop_vars,
-                reduce_dims=reduce_dims,
-                output_index_expr=output_index_expr,
-                init_literal=init_literal,
-                zero_literal=zero_literal,
-                update_expr=update_expr,
-                final_expr=final_expr,
-                use_kahan=False,
-                kahan_value_expr=None,
-            ).rstrip()
+            return (
+                templates["reduce"]
+                .render(
+                    model_name=model.name,
+                    op_name=op_name,
+                    input0=params["input0"],
+                    output=params["output"],
+                    params=param_decls,
+                    c_type=c_type,
+                    input_suffix=input_suffix,
+                    output_suffix=output_suffix,
+                    output_shape=output_shape,
+                    output_loop_vars=output_loop_vars,
+                    reduce_loop_vars=reduce_loop_vars,
+                    reduce_dims=reduce_dims,
+                    output_index_expr=output_index_expr,
+                    init_literal=init_literal,
+                    zero_literal=zero_literal,
+                    update_expr=update_expr,
+                    final_expr=final_expr,
+                    use_kahan=False,
+                    kahan_value_expr=None,
+                )
+                .rstrip()
+            )
         if isinstance(op, ReduceOp):
             name_params = self._shared_param_map(
                 [
@@ -2470,33 +2467,37 @@ class CEmitter:
                     (name_params["output"], c_type, output_suffix, False),
                 ]
             )
-            return templates["reduce_dynamic"].render(
-                model_name=model.name,
-                op_name=op_name,
-                params=params,
-                input0=name_params["input0"],
-                axes_input=name_params["axes_input"],
-                output=name_params["output"],
-                c_type=c_type,
-                axes_c_type=axes_c_type,
-                input_shape=input_shape,
-                output_shape=output_shape,
-                input_loop_vars=input_loop_vars,
-                output_loop_vars=output_loop_vars,
-                output_index_expr=output_indices,
-                output_loop_index_expr=output_loop_index_expr,
-                input_index_expr=input_indices,
-                init_literal=init_literal,
-                update_expr=update_expr,
-                post_expr=post_expr,
-                keepdims=op.keepdims,
-                noop_with_empty_axes=op.noop_with_empty_axes,
-                axes_count=axes_count,
-                reduce_mask_vars=tuple(
-                    f"reduce_mask_{idx}" for idx in range(len(input_shape))
-                ),
-                output_rank=len(output_shape),
-            ).rstrip()
+            return (
+                templates["reduce_dynamic"]
+                .render(
+                    model_name=model.name,
+                    op_name=op_name,
+                    params=params,
+                    input0=name_params["input0"],
+                    axes_input=name_params["axes_input"],
+                    output=name_params["output"],
+                    c_type=c_type,
+                    axes_c_type=axes_c_type,
+                    input_shape=input_shape,
+                    output_shape=output_shape,
+                    input_loop_vars=input_loop_vars,
+                    output_loop_vars=output_loop_vars,
+                    output_index_expr=output_indices,
+                    output_loop_index_expr=output_loop_index_expr,
+                    input_index_expr=input_indices,
+                    init_literal=init_literal,
+                    update_expr=update_expr,
+                    post_expr=post_expr,
+                    keepdims=op.keepdims,
+                    noop_with_empty_axes=op.noop_with_empty_axes,
+                    axes_count=axes_count,
+                    reduce_mask_vars=tuple(
+                        f"reduce_mask_{idx}" for idx in range(len(input_shape))
+                    ),
+                    output_rank=len(output_shape),
+                )
+                .rstrip()
+            )
         return None
 
     def _render_op(

@@ -22,7 +22,9 @@ class ReduceOp(ReduceOpBase):
     reduce_kind: str
     reduce_count: int | None
 
-    _INT_TYPES = frozenset({ScalarType.I64, ScalarType.I32, ScalarType.I16, ScalarType.I8})
+    _INT_TYPES = frozenset(
+        {ScalarType.I64, ScalarType.I32, ScalarType.I16, ScalarType.I8}
+    )
 
     def required_includes(self, ctx: OpContext) -> set[str]:
         includes: set[str] = set()
@@ -56,7 +58,6 @@ class ReduceOp(ReduceOpBase):
         self, emitter: "Emitter"
     ) -> tuple[tuple[str, tuple[int, ...]], ...]:
         return ((self.input0, emitter.ctx_shape(self.input0)),)
-
 
 
 @dataclass(frozen=True)
@@ -140,26 +141,30 @@ class ArgReduceOp(ReduceOpBase):
                 (params["output"], output_dtype.c_type, output_suffix, False),
             ]
         )
-        rendered = state.templates["arg_reduce"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=params["input0"],
-            output=params["output"],
-            params=param_decls,
-            input_c_type=input_dtype.c_type,
-            output_c_type=output_dtype.c_type,
-            input_suffix=input_suffix,
-            output_suffix=output_suffix,
-            output_shape=output_shape,
-            output_loop_vars=output_loop_vars,
-            reduce_var=reduce_var,
-            reduce_dim=reduce_dim,
-            input_index_expr=input_index_expr,
-            init_index_expr=init_index_expr,
-            output_index_expr=output_index_expr,
-            compare_op=compare_op,
-            dim_args=dim_args,
-        ).rstrip()
+        rendered = (
+            state.templates["arg_reduce"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                input_c_type=input_dtype.c_type,
+                output_c_type=output_dtype.c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                output_shape=output_shape,
+                output_loop_vars=output_loop_vars,
+                reduce_var=reduce_var,
+                reduce_dim=reduce_dim,
+                input_index_expr=input_index_expr,
+                init_index_expr=init_index_expr,
+                output_index_expr=output_index_expr,
+                compare_op=compare_op,
+                dim_args=dim_args,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
@@ -258,30 +263,34 @@ class TopKOp(ReduceOpBase):
                 ),
             ]
         )
-        rendered = state.templates["topk"].render(
-            model_name=model.name,
-            op_name=op_name,
-            input0=params["input0"],
-            output_values=params["output_values"],
-            output_indices=params["output_indices"],
-            params=param_decls,
-            input_c_type=input_dtype.c_type,
-            output_values_c_type=output_values_dtype.c_type,
-            output_indices_c_type=output_indices_dtype.c_type,
-            input_suffix=input_suffix,
-            output_suffix=output_suffix,
-            output_shape=output_shape,
-            outer_shape=outer_shape,
-            outer_loop_vars=outer_loop_vars,
-            reduce_var=reduce_var,
-            k_var=k_var,
-            axis_dim=input_shape[self.axis],
-            k=self.k,
-            input_index_expr=input_index_expr,
-            output_index_expr=output_index_expr,
-            compare_expr=compare_expr,
-            dim_args=dim_args,
-        ).rstrip()
+        rendered = (
+            state.templates["topk"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output_values=params["output_values"],
+                output_indices=params["output_indices"],
+                params=param_decls,
+                input_c_type=input_dtype.c_type,
+                output_values_c_type=output_values_dtype.c_type,
+                output_indices_c_type=output_indices_dtype.c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                output_shape=output_shape,
+                outer_shape=outer_shape,
+                outer_loop_vars=outer_loop_vars,
+                reduce_var=reduce_var,
+                k_var=k_var,
+                axis_dim=input_shape[self.axis],
+                k=self.k,
+                input_index_expr=input_index_expr,
+                output_index_expr=output_index_expr,
+                compare_expr=compare_expr,
+                dim_args=dim_args,
+            )
+            .rstrip()
+        )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def c_op_outputs(
@@ -292,4 +301,3 @@ class TopKOp(ReduceOpBase):
             (self.output_values, shape, emitter.ctx_dtype(self.output_values)),
             (self.output_indices, shape, emitter.ctx_dtype(self.output_indices)),
         )
-
