@@ -3653,10 +3653,9 @@ class CEmitter:
             includes.add("#include <strings.h>")
             includes.add("#include <ctype.h>")
             includes.add("#include <stdbool.h>")
-        if any(isinstance(op, (StringConcatOp, StringSplitOp)) for op in resolved_ops):
-            includes.add("#include <string.h>")
         if any(
-            isinstance(op, LabelEncoderOp) and op.keys_strings
+            isinstance(op, (StringConcatOp, StringSplitOp))
+            or (isinstance(op, LabelEncoderOp) and op.keys_strings)
             for op in resolved_ops
         ):
             includes.add("#include <string.h>")
