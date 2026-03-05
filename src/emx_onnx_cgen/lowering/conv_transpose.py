@@ -26,11 +26,7 @@ class ConvTransposeSpec:
     group: int
 
 
-def _split_padding(total_padding: int, auto_pad: str, *, dim: int) -> tuple[int, int]:
-    if total_padding < 0:
-        raise ShapeInferenceError(
-            "ConvTranspose output shape must be fully defined and non-negative"
-        )
+def _split_padding(total_padding: int, auto_pad: str) -> tuple[int, int]:
     pad_end = total_padding // 2
     pad_begin = total_padding - pad_end
     if auto_pad == "SAME_UPPER":
@@ -38,10 +34,6 @@ def _split_padding(total_padding: int, auto_pad: str, *, dim: int) -> tuple[int,
     elif auto_pad not in {"SAME_LOWER", "NOTSET", ""}:
         raise UnsupportedOpError(
             f"ConvTranspose has unsupported auto_pad mode '{auto_pad}'"
-        )
-    if pad_begin < 0 or pad_end < 0:
-        raise ShapeInferenceError(
-            f"ConvTranspose pads must be non-negative for dim {dim}"
         )
     return pad_begin, pad_end
 
@@ -170,7 +162,7 @@ def resolve_conv_transpose_spec(graph: Graph, node: Node) -> ConvTransposeSpec:
         ):
             effective_kernel = dilation * (kernel - 1) + 1
             total_padding = stride * (in_dim - 1) + out_pad + effective_kernel - out_dim
-            pad_start, pad_finish = _split_padding(total_padding, auto_pad, dim=dim)
+            pad_start, pad_finish = _split_padding(total_padding, auto_pad)
             pad_begin.append(pad_start)
             pad_end.append(pad_finish)
         out_spatial = output_shape
@@ -189,7 +181,7 @@ def resolve_conv_transpose_spec(graph: Graph, node: Node) -> ConvTransposeSpec:
                 total_padding = (
                     stride * (in_dim - 1) + out_pad + effective_kernel - out_dim
                 )
-                pad_start, pad_finish = _split_padding(total_padding, auto_pad, dim=dim)
+                pad_start, pad_finish = _split_padding(total_padding, auto_pad)
                 pad_begin.append(pad_start)
                 pad_end.append(pad_finish)
         elif auto_pad in {"NOTSET"}:

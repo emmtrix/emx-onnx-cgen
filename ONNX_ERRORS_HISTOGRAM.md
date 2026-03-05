@@ -25,10 +25,10 @@ Aggregates non-success verification outcomes.
 | Unsupported op RoiAlign | 3 | 22 |
 | '*' | 2 |  |
 | QuantizeLinear block_size is not supported | 2 | 25 |
+| ThresholdedRelu only supports alpha=1.0 | 2 | 22 |
 | Unsupported op Adam | 2 |  |
 | Unsupported op Det | 2 | 22 |
 | Unsupported op MaxUnpool | 2 | 22 |
-| ConvTranspose output shape must be fully defined and non-negative | 1 | 22 |
 | Graph must contain at least one node | 1 | 25 |
 | Pad value input must be a scalar | 1 | 24 |
 | Unsupported op ArrayFeatureExtractor | 1 |  |
@@ -53,7 +53,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op RoiAlign | 22 | 3 |
 | Unsupported op Det | 22 | 2 |
 | Unsupported op MaxUnpool | 22 | 2 |
-| ConvTranspose output shape must be fully defined and non-negative | 22 | 1 |
 | Unsupported op RandomUniform | 22 | 1 |
 | Pad value input must be a scalar | 24 | 1 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 25 | 22 |
@@ -66,5 +65,4 @@ Aggregates non-success verification outcomes.
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 25 | 17 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 25 | 14 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 25 | 4 |
-| QuantizeLinear block_size is not supported | 25 | 2 |
 | Graph must contain at least one node | 25 | 1 |
