@@ -21,7 +21,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op Col2Im | 5 | 18 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
-| Unsupported op LabelEncoder | 4 |  |
 | Unsupported op RNN | 4 | 22 |
 | HardSigmoid only supports alpha=0.2 | 3 | 22 |
 | Unsupported op RandomUniformLike | 3 | 22 |

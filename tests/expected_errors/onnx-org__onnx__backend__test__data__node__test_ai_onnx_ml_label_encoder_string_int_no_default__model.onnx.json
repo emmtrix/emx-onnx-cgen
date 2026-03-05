@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op LabelEncoder",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_label_encoder_string_int_no_default model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "ai.onnx.ml::LabelEncoder"
-  ]
+  ],
+  "generated_checksum": "90c1f567273e4b08f8e10b41f6929be7d3ca8275752685f06ffece6a1d8e3850"
 }
