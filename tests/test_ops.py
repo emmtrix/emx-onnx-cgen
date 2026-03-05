@@ -2900,6 +2900,43 @@ def _make_conv_transpose_model() -> onnx.ModelProto:
     return model
 
 
+def _make_conv_transpose_with_output_shape_model() -> onnx.ModelProto:
+    input_shape = [1, 1, 3, 3]
+    weight_shape = [1, 2, 3, 3]
+    output_shape = [1, 2, 10, 8]
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
+    weight_values = np.arange(18, dtype=np.float32).reshape(weight_shape)
+    weight_tensor = helper.make_tensor(
+        "weight",
+        TensorProto.FLOAT,
+        dims=weight_shape,
+        vals=weight_values.flatten().tolist(),
+    )
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, output_shape)
+    conv_node = helper.make_node(
+        "ConvTranspose",
+        inputs=["in0", "weight"],
+        outputs=[output.name],
+        output_shape=[10, 8],
+        strides=[3, 2],
+    )
+    graph = helper.make_graph(
+        [conv_node],
+        "convtranspose_output_shape_graph",
+        [input_info],
+        [output],
+        initializer=[weight_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_deform_conv_model(
     *,
     with_mask_bias: bool = False,
@@ -6624,6 +6661,11 @@ def test_qlinearconv_op_matches_onnxruntime() -> None:
 
 def test_conv_transpose_op_matches_onnxruntime() -> None:
     model = _make_conv_transpose_model()
+    _run_ort_compare(model)
+
+
+def test_conv_transpose_output_shape_op_matches_onnxruntime() -> None:
+    model = _make_conv_transpose_with_output_shape_model()
     _run_ort_compare(model)
 
 
