@@ -16,8 +16,6 @@ Aggregates non-success verification outcomes.
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
-| Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
-| Unsupported op ImageDecoder | 9 | 20 |
 | Out of tolerance | 6 | 15, 20, 22 |
 | Unsupported op Col2Im | 5 | 18 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
