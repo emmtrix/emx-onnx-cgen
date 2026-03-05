@@ -49,6 +49,7 @@ _LOWERING_MODULES = [
     "identity",
     "if_op",
     "instance_normalization",
+    "label_encoder",
     "layer_normalization",
     "logsoftmax",
     "loop",
