@@ -1,9 +1,10 @@
 {
-  "error": "Failed to decode image for ImageDecoder input 'data': No module named 'PIL'",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_jpeg_bgr model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "ImageDecoder"
   ],
-  "opset_version": 20
+  "opset_version": 20,
+  "generated_checksum": "87b70e4004ffa8e84f49eb272b6724fa985ed6024e5ae7a5e912d93aa1c2bf05"
 }
