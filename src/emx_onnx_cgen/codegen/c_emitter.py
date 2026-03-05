@@ -2760,6 +2760,12 @@ class CEmitter:
     ) -> tuple[str, ...]:
         return self._build_param_decls(params)
 
+    def accumulation_dtype(self, dtype: ScalarType) -> ScalarType:
+        return self._accumulation_dtype(dtype)
+
+    def format_literal(self, dtype: ScalarType, value: float | int | bool) -> str:
+        return CEmitter._format_literal(dtype, value)
+
     def emit_generic_op(self, op: OpBase, ctx: EmitContext) -> str:
         if self._emit_state is None:
             if isinstance(op, TreeEnsembleClassifierOp):
@@ -6902,72 +6908,6 @@ class CEmitter:
                 write_index_var=write_index_var,
                 cache_index_var=cache_index_var,
                 circular=op.mode == "circular",
-            ).rstrip()
-            return with_node_comment(rendered)
-        if isinstance(op, TransposeOp):
-            input_shape = self._ctx_shape(op.input0)
-            output_shape_raw = self._ctx_shape(op.output)
-            params = self._shared_param_map(
-                [("input0", op.input0), ("output", op.output)]
-            )
-            output_shape = CEmitter._codegen_shape(output_shape_raw)
-            loop_vars = CEmitter._loop_vars(output_shape)
-            output_suffix = self._param_array_suffix(output_shape)
-            input_suffix = self._param_array_suffix(input_shape)
-            param_decls = self._build_param_decls(
-                [
-                    (params["input0"], c_type, input_suffix, True),
-                    (params["output"], c_type, output_suffix, False),
-                ]
-            )
-            if not input_shape:
-                input_indices = [loop_vars[0]]
-            else:
-                input_indices = [None] * len(op.perm)
-                for output_axis, input_axis in enumerate(op.perm):
-                    input_indices[input_axis] = loop_vars[output_axis]
-            rendered = templates["transpose"].render(
-                model_name=model.name,
-                op_name=op_name,
-                input0=params["input0"],
-                output=params["output"],
-                params=param_decls,
-                c_type=c_type,
-                input_suffix=input_suffix,
-                output_suffix=output_suffix,
-                output_shape=output_shape,
-                loop_vars=loop_vars,
-                input_indices=input_indices,
-            ).rstrip()
-            return with_node_comment(rendered)
-        if isinstance(op, ReshapeOp):
-            input_shape = self._ctx_shape(op.input0)
-            output_shape_raw = self._ctx_shape(op.output)
-            params = self._shared_param_map(
-                [("input0", op.input0), ("output", op.output)]
-            )
-            input_suffix = self._param_array_suffix(input_shape)
-            output_shape = CEmitter._codegen_shape(output_shape_raw)
-            output_suffix = self._param_array_suffix(output_shape_raw)
-            param_decls = self._build_param_decls(
-                [
-                    (params["input0"], c_type, input_suffix, True),
-                    (params["output"], c_type, output_suffix, False),
-                ]
-            )
-            loop_vars = CEmitter._loop_vars(output_shape_raw)
-            rendered = templates["reshape"].render(
-                model_name=model.name,
-                op_name=op_name,
-                input0=params["input0"],
-                output=params["output"],
-                params=param_decls,
-                c_type=c_type,
-                input_suffix=input_suffix,
-                output_suffix=output_suffix,
-                element_count=CEmitter._element_count(output_shape_raw),
-                output_shape=output_shape,
-                loop_vars=loop_vars,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, IdentityOp):

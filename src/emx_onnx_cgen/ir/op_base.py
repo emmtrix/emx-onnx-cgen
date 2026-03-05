@@ -22,6 +22,8 @@ class Emitter(Protocol):
     def derived(self, op: "OpBase", key: str): ...
     def param_array_suffix(self, shape: tuple[int, ...]) -> str: ...
     def build_param_decls(self, params): ...
+    def accumulation_dtype(self, dtype) -> "ScalarType": ...
+    def format_literal(self, dtype, value: float | int | bool) -> str: ...
 
 
 @dataclass(frozen=True)
@@ -737,6 +739,19 @@ class CEmitterCompat:
     @staticmethod
     def loop_vars(shape: tuple[int | str, ...]) -> tuple[str, ...]:
         return tuple(f"i{idx}" for idx in range(len(shape)))
+
+    @staticmethod
+    def element_count(shape: tuple[int, ...]) -> int:
+        if not shape:
+            return 1
+        count = 1
+        for dim in shape:
+            if dim < 0:
+                raise ValueError("Dynamic dims are not supported for element_count")
+            if dim == 0:
+                return 0
+            count *= dim
+        return count
 
 
 def _io_field_names(op_type: type[OpBase]) -> tuple[tuple[str, ...], tuple[str, ...]]:

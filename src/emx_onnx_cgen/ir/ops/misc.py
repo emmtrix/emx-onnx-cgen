@@ -8,6 +8,7 @@ from shared.scalar_types import ScalarType
 
 from ...errors import ShapeInferenceError, UnsupportedOpError
 from ..op_base import (
+    CEmitterCompat,
     EmitContext,
     Emitter,
     GatherLikeOpBase,
@@ -262,6 +263,51 @@ class TransposeOp(RenderableOpBase):
     output: str
     perm: tuple[int, ...]
 
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        c_type = emitter.ctx_dtype(self.output).c_type
+        input_shape = emitter.ctx_shape(self.input0)
+        output_shape_raw = emitter.ctx_shape(self.output)
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        output_shape = CEmitterCompat.codegen_shape(output_shape_raw)
+        loop_vars = CEmitterCompat.loop_vars(output_shape)
+        output_suffix = emitter.param_array_suffix(output_shape_raw)
+        input_suffix = emitter.param_array_suffix(input_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        if not input_shape:
+            input_indices = [loop_vars[0]]
+        else:
+            input_indices = [None] * len(self.perm)
+            for output_axis, input_axis in enumerate(self.perm):
+                input_indices[input_axis] = loop_vars[output_axis]
+        rendered = (
+            state.templates["transpose"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                output_shape=output_shape,
+                loop_vars=loop_vars,
+                input_indices=input_indices,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
     def infer_shapes(self, ctx: OpContext) -> None:
         input_shape = ctx.shape(self.input0)
         if len(self.perm) != len(input_shape):
@@ -279,6 +325,45 @@ class ReshapeOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        c_type = emitter.ctx_dtype(self.output).c_type
+        input_shape = emitter.ctx_shape(self.input0)
+        output_shape_raw = emitter.ctx_shape(self.output)
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        input_suffix = emitter.param_array_suffix(input_shape)
+        output_shape = CEmitterCompat.codegen_shape(output_shape_raw)
+        output_suffix = emitter.param_array_suffix(output_shape_raw)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        loop_vars = CEmitterCompat.loop_vars(output_shape_raw)
+        rendered = (
+            state.templates["reshape"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                element_count=CEmitterCompat.element_count(output_shape_raw),
+                output_shape=output_shape,
+                loop_vars=loop_vars,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def infer_shapes(self, ctx: OpContext) -> None:
         input_shape = ctx.shape(self.input0)
