@@ -280,6 +280,12 @@ class QLinearMatMulOp(MatMulLikeOpBase):
     input1_zero_shape: tuple[int, ...]
     output_zero_shape: tuple[int, ...]
 
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        includes: set[str] = {"#include <math.h>"}
+        if ctx.dtype(self.output).is_integer:
+            includes.add("#include <limits.h>")
+        return includes
+
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -1062,6 +1068,9 @@ class AttentionOp(RenderableOpBase):
     head_group_size: int
     dtype: ScalarType
 
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -1768,6 +1777,9 @@ class QLinearConvOp(ConvLikeOpBase):
     weight_scale_per_channel: bool
     weight_zero_per_channel: bool
 
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -2159,6 +2171,9 @@ class DeformConvOp(ConvLikeOpBase):
     group: int
     offset_group: int
     dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
@@ -2594,6 +2609,9 @@ class LpPoolOp(RenderableOpBase):
     p: int
     dtype: ScalarType
 
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -2657,6 +2675,9 @@ class SoftmaxOp(RenderableOpBase):
     output: str
     axis: int | None
     use_legacy_axis_semantics: bool = False
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
@@ -2772,6 +2793,12 @@ class QLinearSoftmaxOp(RenderableOpBase):
     output_scale_shape: tuple[int, ...]
     input_zero_shape: tuple[int, ...]
     output_zero_shape: tuple[int, ...]
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        includes: set[str] = {"#include <math.h>"}
+        if ctx.dtype(self.output).is_integer:
+            includes.add("#include <limits.h>")
+        return includes
 
     def infer_types(self, ctx: OpContext) -> None:
         input_dtype = ctx.dtype(self.input0)
@@ -2893,6 +2920,9 @@ class LogSoftmaxOp(RenderableOpBase):
     output: str
     axis: int | None
     use_legacy_axis_semantics: bool = False
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
@@ -3103,6 +3133,9 @@ class NegativeLogLikelihoodLossOp(RenderableOpBase):
     dtype: ScalarType
     target_dtype: ScalarType
 
+    def extra_model_dtypes(self, ctx: OpContext) -> set["ScalarType"]:
+        return {self.target_dtype}
+
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -3197,6 +3230,15 @@ class SoftmaxCrossEntropyLossOp(RenderableOpBase):
     weight_shape: tuple[int, ...] | None
     dtype: ScalarType
     target_dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        includes: set[str] = {"#include <math.h>"}
+        if self.ignore_index is not None:
+            includes.add("#include <stdbool.h>")
+        return includes
+
+    def extra_model_dtypes(self, ctx: OpContext) -> set["ScalarType"]:
+        return {self.target_dtype}
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
@@ -3322,6 +3364,9 @@ class BatchNormOp(RenderableOpBase):
     training_mode: bool
     dtype: ScalarType
 
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -3414,6 +3459,9 @@ class LpNormalizationOp(RenderableOpBase):
     inner: int
     dtype: ScalarType
 
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -3471,6 +3519,9 @@ class InstanceNormalizationOp(RenderableOpBase):
     spatial_size: int
     epsilon: float
     dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
@@ -3551,6 +3602,9 @@ class GroupNormalizationOp(RenderableOpBase):
     spatial_size: int
     epsilon: float
     dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
@@ -3637,6 +3691,9 @@ class LayerNormalizationOp(RenderableOpBase):
     axis: int
     epsilon: float
     dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
@@ -3816,6 +3873,9 @@ class MeanVarianceNormalizationOp(RenderableOpBase):
     epsilon: float
     dtype: ScalarType
 
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -3881,6 +3941,9 @@ class RMSNormalizationOp(RenderableOpBase):
     axis: int
     epsilon: float
     dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
@@ -3961,6 +4024,9 @@ class LrnOp(RenderableOpBase):
     beta: float
     bias: float
     dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
@@ -4043,6 +4109,9 @@ class GruOp(RenderableOpBase):
     activation_betas: tuple[float, ...]
     dtype: ScalarType
     sequence_lens_dtype: ScalarType | None
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
@@ -4283,6 +4352,9 @@ class LstmOp(RenderableOpBase):
     activation_betas: tuple[float, ...]
     dtype: ScalarType
     sequence_lens_dtype: ScalarType | None
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
@@ -4555,6 +4627,9 @@ class AdagradOp(RenderableOpBase):
     epsilon: float
     decay_factor: float
 
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
     def call_args(self) -> tuple[str, ...]:
         args = [self.rate, self.timestep]
         for index in range(len(self.inputs)):
@@ -4710,6 +4785,9 @@ class MomentumOp(RenderableOpBase):
     beta: float
     mode: str
 
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
     def call_args(self) -> tuple[str, ...]:
         args = [self.rate, self.timestep]
         for index in range(len(self.inputs)):
@@ -4860,6 +4938,21 @@ class MaxPoolOp(RenderableOpBase):
     storage_order: int
     dtype: ScalarType
     indices_dtype: ScalarType | None
+
+    _INT_TYPES = frozenset({ScalarType.I64, ScalarType.I32, ScalarType.I16, ScalarType.I8})
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        includes: set[str] = set()
+        if self.dtype.is_float:
+            includes.add("#include <math.h>")
+        if self.dtype in self._INT_TYPES:
+            includes.add("#include <limits.h>")
+        return includes
+
+    def extra_model_dtypes(self, ctx: OpContext) -> set["ScalarType"]:
+        if self.indices_dtype is not None:
+            return {self.indices_dtype}
+        return set()
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()

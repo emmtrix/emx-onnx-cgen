@@ -99,6 +99,12 @@ class QuantizeLinearOp(RenderableOpBase):
     output: str
     axis: int | None
 
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        includes: set[str] = {"#include <math.h>"}
+        if ctx.dtype(self.output).is_integer:
+            includes.add("#include <limits.h>")
+        return includes
+
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -210,6 +216,9 @@ class DynamicQuantizeLinearOp(RenderableOpBase):
     output: str
     scale: str
     zero_point: str
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
@@ -431,6 +440,9 @@ class ConcatOp(RenderableOpBase):
     inputs: tuple[str, ...]
     output: str
     axis: int
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <string.h>"}
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
@@ -1280,6 +1292,9 @@ class ReshapeOp(RenderableOpBase):
     input0: str
     output: str
 
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <string.h>"}
+
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -1463,14 +1478,12 @@ class DropoutOp(RenderableOpBase):
     mask: str | None
     seed: int | None
 
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        if self.training_mode is not None or self.mask is not None:
+            return {"#include <stdbool.h>"}
+        return set()
+
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
-        state = emitter.require_emit_state()
-        model = state.model
-        op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
-        output_dtype = emitter.op_output_dtype(self)
-        c_type = output_dtype.c_type
-        output_shape = emitter.ctx_shape(self.output)
         output_dim_names = emitter.dim_names_for(self.output)
         loop_vars = CEmitterCompat.loop_vars(output_shape)
         shape = CEmitterCompat.shape_dim_exprs(output_shape, output_dim_names)
@@ -1577,6 +1590,11 @@ class TriluOp(RenderableOpBase):
     upper: bool
     k_value: int
     k_input: str | None
+
+    def extra_model_dtypes(self, ctx: OpContext) -> set["ScalarType"]:
+        if self.k_input is not None:
+            return {ctx.dtype(self.k_input)}
+        return set()
 
     def call_args(self) -> tuple[str, ...]:
         args = [self.input0, self.output]
@@ -1845,6 +1863,9 @@ class PadOp(RenderableOpBase):
     value: float | int | bool
     value_input: str | None
 
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <stddef.h>"}
+
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -2083,6 +2104,13 @@ class SliceOp(RenderableOpBase):
     axes_input: str | None
     steps_input: str | None
 
+    def extra_model_dtypes(self, ctx: OpContext) -> set["ScalarType"]:
+        dtypes: set[ScalarType] = set()
+        for name in (self.starts_input, self.ends_input, self.axes_input, self.steps_input):
+            if name is not None:
+                dtypes.add(ctx.dtype(name))
+        return dtypes
+
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -2226,6 +2254,9 @@ class ResizeOp(RenderableOpBase):
     extrapolation_value: float
     antialias: bool
     keep_aspect_ratio_policy: str
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
 
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
@@ -2375,6 +2406,9 @@ class GridSampleOp(RenderableOpBase):
     padding_mode: str
     align_corners: bool
 
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
     def infer_types(self, ctx: OpContext) -> None:
         input_dtype = ctx.dtype(self.input0)
         grid_dtype = ctx.dtype(self.grid)
@@ -2488,6 +2522,9 @@ class AffineGridOp(RenderableOpBase):
     align_corners: bool
     spatial_rank: int  # 2 or 3
 
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
     def infer_types(self, ctx: OpContext) -> None:
         theta_dtype = ctx.dtype(self.theta)
         if not theta_dtype.is_float:
@@ -2580,6 +2617,8 @@ class ConstantOfShapeOp(RenderableOpBase):
     output: str
     value: float | int | bool
 
+    def extra_model_dtypes(self, ctx: OpContext) -> set["ScalarType"]:
+        return {ctx.dtype(self.input0)}
 
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
@@ -3171,6 +3210,9 @@ class NonMaxSuppressionOp(RenderableOpBase):
     score_threshold: str | None
     output: str
     center_point_box: int
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <limits.h>"}
 
     def _validate_scalar_input(
         self,
@@ -4346,6 +4388,9 @@ class HammingWindowOp(RenderableOpBase):
     output: str
     periodic: bool
 
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -4413,6 +4458,9 @@ class BlackmanWindowOp(RenderableOpBase):
     size: str
     output: str
     periodic: bool
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
 
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
@@ -4482,6 +4530,9 @@ class HannWindowOp(RenderableOpBase):
     size: str
     output: str
     periodic: bool
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
 
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
@@ -4560,6 +4611,9 @@ class MelWeightMatrixOp(RenderableOpBase):
     upper_edge_hertz: str
     output: str
     values: tuple[float, ...]
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
 
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
@@ -4848,6 +4902,9 @@ class StringConcatOp(RenderableOpBase):
     input1: str
     output: str
 
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <string.h>"}
+
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -4918,6 +4975,14 @@ class StringNormalizerOp(RenderableOpBase):
     is_case_sensitive: bool
     stopwords: tuple[str, ...]
 
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {
+            "#include <string.h>",
+            "#include <strings.h>",
+            "#include <ctype.h>",
+            "#include <stdbool.h>",
+        }
+
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -4979,6 +5044,11 @@ class LabelEncoderOp(RenderableOpBase):
     default_string: str
     default_int64: int
     default_float: float
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        if self.keys_strings:
+            return {"#include <string.h>"}
+        return set()
 
     def infer_types(self, ctx: OpContext) -> None:
         ctx.dtype(self.input0)
@@ -5080,6 +5150,9 @@ class StringSplitOp(RenderableOpBase):
     output_z: str
     delimiter: str
     maxsplit: int
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <string.h>"}
 
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
@@ -5405,6 +5478,9 @@ class SplitOp(RenderableOpBase):
     axis: int
     split_sizes: tuple[int, ...]
 
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <string.h>"}
+
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -5481,6 +5557,9 @@ class SplitToSequenceOp(RenderableOpBase):
     keepdims: bool
     split_sizes: tuple[int, ...] | None
     split_scalar: bool
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <string.h>"}
 
     def call_args(self) -> tuple[str, ...]:
         args = [self.input0]

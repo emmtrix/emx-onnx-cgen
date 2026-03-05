@@ -28,6 +28,20 @@ class BinaryOp(ElementwiseOpBase):
     function: ScalarFunction
     operator_kind: OperatorKind
 
+    _BINARY_MATH_OPS = frozenset({"fmaxf", "fminf", "fmodf", "powf"})
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        includes: set[str] = set()
+        dtype = ctx.dtype(self.input0)
+        if dtype == ScalarType.STRING:
+            includes.add("#include <string.h>")
+        op_spec = binary_op_symbol(
+            self.function, dtype=dtype, validate_attrs=False
+        )
+        if op_spec is not None and op_spec.operator in self._BINARY_MATH_OPS:
+            includes.add("#include <math.h>")
+        return includes
+
     def _elementwise_inputs(self) -> tuple[str, ...]:
         return (self.input0, self.input1)
 
@@ -521,6 +535,25 @@ class UnaryOp(ElementwiseOpBase):
     function: ScalarFunction
     params: tuple[float, ...] = ()
 
+    _MATH_OPS = frozenset({
+        "atanhf", "ceilf", "cosf", "expf", "fabsf", "floorf",
+        "logf", "sinf", "sqrtf", "tanf", "tanhf",
+    })
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        includes: set[str] = set()
+        if self.function in {ScalarFunction.ISINF, ScalarFunction.ISNAN}:
+            includes.add("#include <math.h>")
+        if self.function in {ScalarFunction.CELU, ScalarFunction.SWISH}:
+            includes.add("#include <math.h>")
+        output_dtype = ctx.dtype(self.output)
+        symbol = unary_op_symbol(self.function, dtype=output_dtype)
+        if symbol in self._MATH_OPS:
+            includes.add("#include <math.h>")
+        if symbol in {"abs", "llabs"}:
+            includes.add("#include <stdlib.h>")
+        return includes
+
     def _elementwise_inputs(self) -> tuple[str, ...]:
         return (self.input0,)
 
@@ -613,6 +646,16 @@ class ClipOp(ElementwiseOpBase):
     output: str
     min_value: float | None = None
     max_value: float | None = None
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        includes: set[str] = set()
+        if self.input_min is None or self.input_max is None:
+            output_dtype = ctx.dtype(self.output)
+            if output_dtype.is_float:
+                includes.add("#include <math.h>")
+            if output_dtype.is_integer:
+                includes.add("#include <limits.h>")
+        return includes
 
     def _elementwise_inputs(self) -> tuple[str, ...]:
         inputs = [self.input0]
@@ -773,6 +816,9 @@ class IdentityOp(ElementwiseOpBase):
     input0: str
     output: str
 
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <string.h>"}
+
     def _elementwise_inputs(self) -> tuple[str, ...]:
         return (self.input0,)
 
@@ -871,6 +917,12 @@ class QLinearMulOp(RenderableOpBase):
     input0_zero_shape: tuple[int, ...]
     input1_zero_shape: tuple[int, ...]
     output_zero_shape: tuple[int, ...]
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        includes: set[str] = {"#include <math.h>"}
+        if ctx.dtype(self.output).is_integer:
+            includes.add("#include <limits.h>")
+        return includes
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
@@ -1061,6 +1113,12 @@ class QLinearAddOp(RenderableOpBase):
     input0_zero_shape: tuple[int, ...]
     input1_zero_shape: tuple[int, ...]
     output_zero_shape: tuple[int, ...]
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        includes: set[str] = {"#include <math.h>"}
+        if ctx.dtype(self.output).is_integer:
+            includes.add("#include <limits.h>")
+        return includes
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()

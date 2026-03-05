@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from shared.scalar_types import ScalarType
+
 from ..op_base import CEmitterCompat, Emitter, EmitContext, ReduceOpBase
 from ..op_context import OpContext
 
@@ -19,6 +21,22 @@ class ReduceOp(ReduceOpBase):
     noop_with_empty_axes: bool
     reduce_kind: str
     reduce_count: int | None
+
+    _INT_TYPES = frozenset({ScalarType.I64, ScalarType.I32, ScalarType.I16, ScalarType.I8})
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        includes: set[str] = set()
+        if self.axes_input is not None:
+            includes.add("#include <stdbool.h>")
+        if self.reduce_kind in {"l1", "l2", "logsum", "logsumexp"}:
+            includes.add("#include <math.h>")
+        if self.reduce_kind in {"min", "max"}:
+            output_dtype = ctx.dtype(self.output)
+            if output_dtype.is_float:
+                includes.add("#include <math.h>")
+            if output_dtype in self._INT_TYPES:
+                includes.add("#include <limits.h>")
+        return includes
 
     def infer_types(self, ctx: OpContext) -> None:
         ctx.dtype(self.output)
@@ -49,6 +67,9 @@ class ArgReduceOp(ReduceOpBase):
     keepdims: bool
     select_last_index: bool
     reduce_kind: str
+
+    def extra_model_dtypes(self, ctx: OpContext) -> set["ScalarType"]:
+        return {ctx.dtype(self.input0), ctx.dtype(self.output)}
 
     def infer_types(self, ctx: OpContext) -> None:
         ctx.dtype(self.input0)
@@ -155,6 +176,13 @@ class TopKOp(ReduceOpBase):
     k: int
     largest: bool
     sorted: bool
+
+    def extra_model_dtypes(self, ctx: OpContext) -> set["ScalarType"]:
+        return {
+            ctx.dtype(self.input0),
+            ctx.dtype(self.output_values),
+            ctx.dtype(self.output_indices),
+        }
 
     def call_args(self) -> tuple[str, ...]:
         return (self.input0, self.output_values, self.output_indices)

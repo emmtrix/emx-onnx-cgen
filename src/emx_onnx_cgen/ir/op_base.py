@@ -111,6 +111,14 @@ class OpBase(ABC):
             f"'{self.__class__.__name__}' object has no attribute '{name}'"
         )
 
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        """Return C include directives needed by this op (e.g. ``{'#include <math.h>'}``)."""
+        return set()
+
+    def extra_model_dtypes(self, ctx: OpContext) -> set[ScalarType]:
+        """Return additional dtypes beyond the primary output needed for include resolution."""
+        return set()
+
     def validate(self, ctx: OpContext) -> None:
         return None
 
