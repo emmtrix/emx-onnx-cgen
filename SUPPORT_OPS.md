@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 195 / 205
+Supported operators: 196 / 205
 
 | Operator | Supported |
 | --- | --- |
@@ -207,7 +207,7 @@ Supported operators: 195 / 205
 | ai.onnx.ml::TreeEnsemble | ✅ |
 | ai.onnx.ml::TreeEnsembleClassifier | ✅ |
 | ai.onnx.preview.training::Adagrad | ✅ |
-| ai.onnx.preview.training::Adam | ❌ |
+| ai.onnx.preview.training::Adam | ✅ |
 | ai.onnx.preview.training::Gradient | ✅ |
 | ai.onnx.preview.training::Momentum | ✅ |
 | com.microsoft::QLinearAdd | ✅ |

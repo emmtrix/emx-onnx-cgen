@@ -1,0 +1,28 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const {{ c_type }} r = {{ rate }}[0];
+    const int64_t t = {{ timestep }}[0];
+    const {{ c_type }} one_minus_alpha = {{ one_literal }} - {{ alpha_literal }};
+    const {{ c_type }} one_minus_beta = {{ one_literal }} - {{ beta_literal }};
+    const {{ c_type }} one_minus_norm_post = {{ one_literal }} - {{ norm_coefficient_post_literal }};
+    const {{ c_type }} r_adjusted =
+        (t > 0)
+            ? r * {{ scalar_fn(SF.SQRT, dtype) }}({{ one_literal }} - {{ scalar_fn(SF.POW, dtype) }}({{ beta_literal }}, ({{ c_type }})t))
+                  / ({{ one_literal }} - {{ scalar_fn(SF.POW, dtype) }}({{ alpha_literal }}, ({{ c_type }})t))
+            : r;
+{% for tensor in tensors %}
+{% for dim in tensor.shape %}
+    for (idx_t {{ tensor.loop_vars[loop.index0] }} = 0; {{ tensor.loop_vars[loop.index0] }} < {{ dim }}; ++{{ tensor.loop_vars[loop.index0] }}) {
+{% endfor %}
+        {{ c_type }} g_reg = {{ norm_coefficient_literal }} * {{ tensor.input_expr }} + {{ tensor.grad_expr }};
+        {{ c_type }} v_new = {{ alpha_literal }} * {{ tensor.vel_expr }} + one_minus_alpha * g_reg;
+        {{ c_type }} h_new = {{ beta_literal }} * {{ tensor.acc_expr }} + one_minus_beta * g_reg * g_reg;
+        {{ tensor.vel_output_expr }} = v_new;
+        {{ tensor.acc_output_expr }} = h_new;
+        {{ c_type }} h_adaptive = {{ scalar_fn(SF.SQRT, dtype) }}(h_new) + {{ epsilon_literal }};
+        {{ c_type }} x_new = {{ tensor.input_expr }} - r_adjusted * v_new / h_adaptive;
+        {{ tensor.output_expr }} = one_minus_norm_post * x_new;
+{% for _ in tensor.shape %}
+    }
+{% endfor %}
+{% endfor %}
+}
