@@ -934,6 +934,7 @@ def _make_pad_model(
     pads: list[int],
     value: float | int | None,
     dtype: int,
+    mode: str = "constant",
     opset: int = 13,
 ) -> onnx.ModelProto:
     input_info = helper.make_tensor_value_info("input", dtype, input_shape)
@@ -963,7 +964,7 @@ def _make_pad_model(
         "Pad",
         inputs=inputs,
         outputs=[output.name],
-        mode="constant",
+        mode=mode,
     )
     graph = helper.make_graph(
         [node],
@@ -5057,6 +5058,36 @@ REARRANGE_ORT_CASES = [
         ),
     },
     {
+        "name": "PadEdge",
+        "model": lambda: _make_pad_model(
+            input_shape=[2, 3],
+            pads=[1, 1, 0, 2],
+            value=None,
+            dtype=TensorProto.FLOAT,
+            mode="edge",
+        ),
+    },
+    {
+        "name": "PadReflect",
+        "model": lambda: _make_pad_model(
+            input_shape=[2, 3],
+            pads=[1, 2, 1, 2],
+            value=None,
+            dtype=TensorProto.FLOAT,
+            mode="reflect",
+        ),
+    },
+    {
+        "name": "PadWrap",
+        "model": lambda: _make_pad_model(
+            input_shape=[2, 3],
+            pads=[1, 2, 1, 2],
+            value=None,
+            dtype=TensorProto.FLOAT,
+            mode="wrap",
+        ),
+    },
+    {
         "name": "DepthToSpace",
         "model": lambda: _make_operator_model(
             op_type="DepthToSpace",
@@ -5150,8 +5181,29 @@ REARRANGE_UNIT_CASES = [
         ),
     },
     {
-        "name": "DepthToSpace",
+        "name": "PadEdge",
         "model": REARRANGE_ORT_CASES[7]["model"],
+        "input_name": "input",
+        "input_shape": (2, 3),
+        "expected": lambda value: np.pad(value, ((1, 0), (1, 2)), mode="edge"),
+    },
+    {
+        "name": "PadReflect",
+        "model": REARRANGE_ORT_CASES[8]["model"],
+        "input_name": "input",
+        "input_shape": (2, 3),
+        "expected": lambda value: np.pad(value, ((1, 1), (2, 2)), mode="reflect"),
+    },
+    {
+        "name": "PadWrap",
+        "model": REARRANGE_ORT_CASES[9]["model"],
+        "input_name": "input",
+        "input_shape": (2, 3),
+        "expected": lambda value: np.pad(value, ((1, 1), (2, 2)), mode="wrap"),
+    },
+    {
+        "name": "DepthToSpace",
+        "model": REARRANGE_ORT_CASES[10]["model"],
         "input_name": "in0",
         "input_shape": (1, 8, 2, 2),
         "expected": lambda value: _depth_to_space_reference(
@@ -5160,7 +5212,7 @@ REARRANGE_UNIT_CASES = [
     },
     {
         "name": "SpaceToDepth",
-        "model": REARRANGE_ORT_CASES[8]["model"],
+        "model": REARRANGE_ORT_CASES[11]["model"],
         "input_name": "in0",
         "input_shape": (1, 2, 4, 4),
         "expected": lambda value: _space_to_depth_reference(value, blocksize=2),
@@ -5179,7 +5231,7 @@ REARRANGE_UNIT_CASES = [
     },
     {
         "name": "ReverseSequence",
-        "model": REARRANGE_ORT_CASES[10]["model"],
+        "model": REARRANGE_ORT_CASES[13]["model"],
         "input_name": "input",
         "input_shape": (4, 3, 2),
         "expected": lambda value: _reverse_sequence_reference(
@@ -5513,6 +5565,21 @@ def test_lower_pad_dynamic_axes_input() -> None:
     assert op_ctx.shape(op.axes_input) == (2,)
     assert op.pads_begin is None
     assert op.pads_end is None
+
+
+def test_lower_pad_reflect_mode() -> None:
+    model = _make_pad_model(
+        input_shape=[2, 3],
+        pads=[1, 2, 1, 2],
+        value=None,
+        dtype=TensorProto.FLOAT,
+        mode="reflect",
+    )
+    graph = import_onnx(model)
+    op = get_lowering("Pad")(graph, graph.nodes[0])
+    assert op.mode == "reflect"
+    assert op.pads_begin == (1, 2)
+    assert op.pads_end == (1, 2)
 
 
 def test_lower_scatter_shapes() -> None:
