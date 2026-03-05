@@ -1,9 +1,10 @@
 {
-  "error": "QuantizeLinear block_size is not supported",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_quantizelinear_blocked_asymmetric model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "QuantizeLinear"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "0e37e0c2606ccc4f70e6639c2c2c15437e7bbb8d19d55b1b4537bad09b922dae"
 }
