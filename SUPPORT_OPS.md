@@ -85,7 +85,7 @@ Supported operators: 192 / 205
 | Hardmax | ✅ |
 | Identity | ✅ |
 | If | ✅ |
-| ImageDecoder | ❌ |
+| ImageDecoder | ✅ |
 | InstanceNormalization | ✅ |
 | IsInf | ✅ |
 | IsNaN | ✅ |

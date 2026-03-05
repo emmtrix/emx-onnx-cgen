@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported op ImageDecoder",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_jpeg_bgr model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "ImageDecoder"
   ],
-  "opset_version": 20
+  "opset_version": 20,
+  "generated_checksum": "c3e713e643779cccc07356d42c4e20ac88e3c8c0279c4169946ec6bb8bf1a69b"
 }
