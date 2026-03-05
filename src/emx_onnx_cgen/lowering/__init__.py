@@ -5,6 +5,7 @@ import importlib
 from .registry import get_lowering, register_lowering
 
 _LOWERING_MODULES = [
+    "adam",
     "adagrad",
     "affine_grid",
     "momentum",
