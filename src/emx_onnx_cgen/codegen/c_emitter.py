@@ -1544,6 +1544,7 @@ class CEmitter:
             ScalarFunction.FMAX,
             ScalarFunction.FMIN,
             ScalarFunction.GELU,
+            ScalarFunction.GELU_TANH,
             ScalarFunction.HARDSIGMOID,
             ScalarFunction.HARDSWISH,
             ScalarFunction.LLRINT,

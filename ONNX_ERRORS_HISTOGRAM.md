@@ -24,7 +24,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op RoiAlign | 3 | 22 |
 | '*' | 2 |  |
-| Gelu only supports approximate=none | 2 | 20 |
 | LpPool expects 2D kernel_shape | 2 | 22 |
 | LpPool supports auto_pad=NOTSET only | 2 | 22 |
 | QuantizeLinear block_size is not supported | 2 | 25 |
@@ -51,7 +50,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op Loop | 16 | 1 |
 | OptionalHasElement expects exactly one non-empty input. | 18 | 4 |
 | Unsupported op RegexFullMatch | 20 | 3 |
-| Gelu only supports approximate=none | 20 | 2 |
 | Out of tolerance | 20 | 2 |
 | Unsupported op RNN | 22 | 4 |
 | Out of tolerance | 22 | 3 |

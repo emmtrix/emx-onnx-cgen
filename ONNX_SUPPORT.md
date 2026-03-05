@@ -7,6 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1589 / 1802, 88.2% | 1.20.1 |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1590 / 1802, 88.2% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
@@ -21,6 +22,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
+Coverage 1589 / 1802 ONNX files (88.2%).
 Coverage 1590 / 1802 ONNX files (88.2%).
 
 | File | Opset | Verification | Supported | Error |
@@ -673,9 +675,9 @@ Coverage 1590 / 1802 ONNX files (88.2%).
 | node/test_gelu_default_1_expanded/model.onnx | 20 | Data | ✅ | OK (max ULP 0) |
 | node/test_gelu_default_2/model.onnx | 20 | Data | ✅ | OK (max ULP 0) |
 | node/test_gelu_default_2_expanded/model.onnx | 20 | Data | ✅ | OK (max ULP 0) |
-| node/test_gelu_tanh_1/model.onnx | 20 | Data | ❌ | Gelu only supports approximate=none |
+| node/test_gelu_tanh_1/model.onnx | 20 | Data | ✅ | OK (max ULP 0) |
 | node/test_gelu_tanh_1_expanded/model.onnx | 20 | Data | ✅ | OK (max ULP 0) |
-| node/test_gelu_tanh_2/model.onnx | 20 | Data | ❌ | Gelu only supports approximate=none |
+| node/test_gelu_tanh_2/model.onnx | 20 | Data | ✅ | OK (max ULP 0) |
 | node/test_gelu_tanh_2_expanded/model.onnx | 20 | Data | ✅ | OK (max ULP 0) |
 | node/test_gemm_all_attributes/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_gemm_alpha/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
