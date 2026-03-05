@@ -142,6 +142,98 @@ class MatMulOp(MatMulLikeOpBase):
         ctx.set_derived(self, "left_vector", spec["left_vector"])
         ctx.set_derived(self, "right_vector", spec["right_vector"])
 
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dtype = emitter.op_output_dtype(self)
+        c_type = dtype.c_type
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("input1", self.input1),
+                ("output", self.output),
+            ]
+        )
+        output_shape = CEmitterCompat.codegen_shape(emitter.ctx_shape(self.output))
+        output_loop_vars = CEmitterCompat.loop_vars(output_shape)
+        output_index_expr = f"{params['output']}" + "".join(
+            f"[{var}]" for var in output_loop_vars
+        )
+        batch_shape = emitter.derived(self, "batch_shape")
+        batch_rank = len(batch_shape)
+        batch_vars = output_loop_vars[:batch_rank]
+        left_vector = bool(emitter.derived(self, "left_vector"))
+        right_vector = bool(emitter.derived(self, "right_vector"))
+        if left_vector and right_vector:
+            row_var = None
+            col_var = None
+        elif left_vector:
+            row_var = None
+            col_var = output_loop_vars[-1]
+        elif right_vector:
+            row_var = output_loop_vars[-1]
+            col_var = None
+        else:
+            row_var = output_loop_vars[-2]
+            col_var = output_loop_vars[-1]
+        input0_shape = emitter.ctx_shape(self.input0)
+        input1_shape = emitter.ctx_shape(self.input1)
+        input0_batch_shape = emitter.derived(self, "input0_batch_shape")
+        input1_batch_shape = emitter.derived(self, "input1_batch_shape")
+        input0_index_expr, input1_index_expr = CEmitterCompat.matmul_index_exprs(
+            batch_vars,
+            row_var,
+            col_var,
+            batch_rank,
+            input0=params["input0"],
+            input1=params["input1"],
+            left_vector=left_vector,
+            right_vector=right_vector,
+            input0_shape=input0_shape,
+            input1_shape=input1_shape,
+            input0_batch_shape=input0_batch_shape,
+            input1_batch_shape=input1_batch_shape,
+        )
+        input0_suffix = emitter.param_array_suffix(input0_shape)
+        input1_suffix = emitter.param_array_suffix(input1_shape)
+        output_suffix = emitter.param_array_suffix(emitter.ctx_shape(self.output))
+        acc_dtype = emitter.accumulation_dtype(emitter.ctx_dtype(self.output))
+        acc_zero_literal = emitter.format_literal(acc_dtype, 0)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input0_suffix, True),
+                (params["input1"], c_type, input1_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        m = int(emitter.derived(self, "m"))
+        n = int(emitter.derived(self, "n"))
+        k = int(emitter.derived(self, "k"))
+        rendered = state.templates["matmul"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input0=params["input0"],
+            input1=params["input1"],
+            output=params["output"],
+            params=param_decls,
+            c_type=c_type,
+            acc_type=acc_dtype.c_type,
+            zero_literal=acc_zero_literal,
+            input0_suffix=input0_suffix,
+            input1_suffix=input1_suffix,
+            output_suffix=output_suffix,
+            output_loop_vars=output_loop_vars,
+            output_loop_bounds=output_shape,
+            output_index_expr=output_index_expr,
+            input0_index_expr=input0_index_expr,
+            input1_index_expr=input1_index_expr,
+            m=m,
+            n=n,
+            k=k,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
 
 @dataclass(frozen=True)
 class QLinearMatMulOp(MatMulLikeOpBase):
@@ -399,6 +491,117 @@ class MatMulIntegerOp(MatMulLikeOpBase):
     input0_zero_shape: tuple[int, ...] | None
     input1_zero_shape: tuple[int, ...] | None
 
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("input1", self.input1),
+                ("input0_zero_point", self.input0_zero_point),
+                ("input1_zero_point", self.input1_zero_point),
+                ("output", self.output),
+            ]
+        )
+        output_shape = CEmitterCompat.codegen_shape(self.output_shape)
+        output_loop_vars = CEmitterCompat.loop_vars(output_shape)
+        output_index_expr = f"{params['output']}" + "".join(
+            f"[{var}]" for var in output_loop_vars
+        )
+        batch_rank = len(self.batch_shape)
+        batch_vars = output_loop_vars[:batch_rank]
+        if self.left_vector and self.right_vector:
+            row_var = None
+            col_var = None
+        elif self.left_vector:
+            row_var = None
+            col_var = output_loop_vars[-1]
+        elif self.right_vector:
+            row_var = output_loop_vars[-1]
+            col_var = None
+        else:
+            row_var = output_loop_vars[-2]
+            col_var = output_loop_vars[-1]
+        input0_index_expr, input1_index_expr = CEmitterCompat.matmul_index_exprs(
+            batch_vars,
+            row_var,
+            col_var,
+            batch_rank,
+            input0=params["input0"],
+            input1=params["input1"],
+            left_vector=self.left_vector,
+            right_vector=self.right_vector,
+            input0_shape=self.input0_shape,
+            input1_shape=self.input1_shape,
+            input0_batch_shape=self.input0_batch_shape,
+            input1_batch_shape=self.input1_batch_shape,
+        )
+        input0_suffix = emitter.param_array_suffix(self.input0_shape)
+        input1_suffix = emitter.param_array_suffix(self.input1_shape)
+        input0_zero_suffix = emitter.param_array_suffix(self.input0_zero_shape or ())
+        input1_zero_suffix = emitter.param_array_suffix(self.input1_zero_shape or ())
+        output_suffix = emitter.param_array_suffix(self.output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], self.input0_dtype.c_type, input0_suffix, True),
+                (params["input1"], self.input1_dtype.c_type, input1_suffix, True),
+                (
+                    (
+                        params["input0_zero_point"],
+                        self.input0_dtype.c_type,
+                        input0_zero_suffix,
+                        True,
+                    )
+                    if params["input0_zero_point"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (
+                        params["input1_zero_point"],
+                        self.input1_dtype.c_type,
+                        input1_zero_suffix,
+                        True,
+                    )
+                    if params["input1_zero_point"]
+                    else (None, "", "", True)
+                ),
+                (params["output"], self.dtype.c_type, output_suffix, False),
+            ]
+        )
+        input0_zero_expr = (
+            f"{params['input0_zero_point']}[0]"
+            if params["input0_zero_point"]
+            else "0"
+        )
+        input1_zero_expr = (
+            f"{params['input1_zero_point']}[0]"
+            if params["input1_zero_point"]
+            else "0"
+        )
+        rendered = state.templates["matmul_integer"].render(
+            model_name=model.name,
+            op_name=op_name,
+            input0=params["input0"],
+            input1=params["input1"],
+            output=params["output"],
+            params=param_decls,
+            input0_c_type=self.input0_dtype.c_type,
+            input1_c_type=self.input1_dtype.c_type,
+            output_c_type=self.dtype.c_type,
+            input0_zero_expr=input0_zero_expr,
+            input1_zero_expr=input1_zero_expr,
+            output_loop_vars=output_loop_vars,
+            output_loop_bounds=output_shape,
+            output_index_expr=output_index_expr,
+            input0_index_expr=input0_index_expr,
+            input1_index_expr=input1_index_expr,
+            k=self.k,
+            dim_args=dim_args,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
 
 @dataclass(frozen=True)
 class EinsumOp(MatMulLikeOpBase):
@@ -410,6 +613,135 @@ class EinsumOp(MatMulLikeOpBase):
     output_shape: tuple[int, ...]
     dtype: ScalarType
     input_dtype: ScalarType
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        params = emitter.shared_param_map(
+            [
+                *((f"input{idx}", name) for idx, name in enumerate(self.inputs)),
+                ("output", self.output),
+            ]
+        )
+        output_dim_names = emitter.dim_names_for(self.output)
+        output_shape = CEmitterCompat.shape_dim_exprs(
+            self.output_shape, output_dim_names
+        )
+        output_loop_vars = CEmitterCompat.loop_vars(self.output_shape)
+        if self.output_shape:
+            output_expr = f"{params['output']}" + "".join(
+                f"[{var}]" for var in output_loop_vars
+            )
+        else:
+            output_expr = f"{params['output']}[0]"
+        input_shapes = self.input_shapes
+        input_dim_names = [emitter.dim_names_for(name) for name in self.inputs]
+        input_suffixes = [
+            emitter.param_array_suffix(shape, dim_names)
+            for shape, dim_names in zip(input_shapes, input_dim_names)
+        ]
+        param_decls = emitter.build_param_decls(
+            [
+                *(
+                    (
+                        params[f"input{idx}"],
+                        self.input_dtype.c_type,
+                        input_suffixes[idx],
+                        True,
+                    )
+                    for idx in range(len(self.inputs))
+                ),
+                (
+                    params["output"],
+                    self.dtype.c_type,
+                    emitter.param_array_suffix(self.output_shape, output_dim_names),
+                    False,
+                ),
+            ]
+        )
+        acc_dtype = emitter.accumulation_dtype(emitter.ctx_dtype(self.output))
+        acc_zero_literal = emitter.format_literal(acc_dtype, 0)
+        input_loop_vars: tuple[str, ...] = ()
+        input_loop_bounds: tuple[str | int, ...] = ()
+        reduce_loop_var = "k"
+        reduce_loop_bound: str | int | None = None
+        input_expr = None
+        input0_expr = None
+        input1_expr = None
+        if self.kind == EinsumKind.REDUCE_ALL:
+            input_loop_vars = CEmitterCompat.loop_vars(input_shapes[0])
+            input_loop_bounds = tuple(
+                CEmitterCompat.shape_dim_exprs(input_shapes[0], input_dim_names[0])
+            )
+            if input_loop_vars:
+                input_expr = f"{params['input0']}" + "".join(
+                    f"[{var}]" for var in input_loop_vars
+                )
+            else:
+                input_expr = f"{params['input0']}[0]"
+        elif self.kind == EinsumKind.SUM_J:
+            input_shape_exprs = CEmitterCompat.shape_dim_exprs(
+                input_shapes[0], input_dim_names[0]
+            )
+            reduce_loop_bound = input_shape_exprs[1]
+            input_expr = (
+                f"{params['input0']}[{output_loop_vars[0]}][{reduce_loop_var}]"
+            )
+        elif self.kind == EinsumKind.TRANSPOSE:
+            input_expr = (
+                f"{params['input0']}[{output_loop_vars[1]}][{output_loop_vars[0]}]"
+            )
+        elif self.kind == EinsumKind.DOT:
+            input_shape_exprs = CEmitterCompat.shape_dim_exprs(
+                input_shapes[0], input_dim_names[0]
+            )
+            reduce_loop_bound = input_shape_exprs[0]
+            input0_expr = f"{params['input0']}[{reduce_loop_var}]"
+            input1_expr = f"{params['input1']}[{reduce_loop_var}]"
+        elif self.kind == EinsumKind.BATCH_MATMUL:
+            input_shape_exprs = CEmitterCompat.shape_dim_exprs(
+                input_shapes[0], input_dim_names[0]
+            )
+            reduce_loop_bound = input_shape_exprs[2]
+            input0_expr = (
+                f"{params['input0']}"
+                f"[{output_loop_vars[0]}]"
+                f"[{output_loop_vars[1]}][{reduce_loop_var}]"
+            )
+            input1_expr = (
+                f"{params['input1']}"
+                f"[{output_loop_vars[0]}]"
+                f"[{reduce_loop_var}][{output_loop_vars[2]}]"
+            )
+        elif self.kind == EinsumKind.BATCH_DIAGONAL:
+            diag_var = output_loop_vars[-1]
+            prefix_vars = output_loop_vars[:-1]
+            input_expr = f"{params['input0']}" + "".join(
+                f"[{var}]" for var in prefix_vars
+            )
+            input_expr += f"[{diag_var}][{diag_var}]"
+        rendered = state.templates["einsum"].render(
+            model_name=model.name,
+            op_name=op_name,
+            params=param_decls,
+            dim_args=dim_args,
+            kind=self.kind.value,
+            output_loop_vars=output_loop_vars,
+            output_loop_bounds=output_shape,
+            output_expr=output_expr,
+            acc_type=acc_dtype.c_type,
+            zero_literal=acc_zero_literal,
+            input_loop_vars=input_loop_vars,
+            input_loop_bounds=input_loop_bounds,
+            reduce_loop_var=reduce_loop_var,
+            reduce_loop_bound=reduce_loop_bound,
+            input_expr=input_expr,
+            input0_expr=input0_expr,
+            input1_expr=input1_expr,
+        ).rstrip()
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
 @dataclass(frozen=True)
