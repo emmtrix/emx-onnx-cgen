@@ -20,7 +20,6 @@ Aggregates non-success verification outcomes.
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op RNN | 4 | 22 |
-| HardSigmoid only supports alpha=0.2 | 3 | 22 |
 | Unsupported op RandomUniformLike | 3 | 22 |
 | Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op RoiAlign | 3 | 22 |
@@ -55,7 +54,6 @@ Aggregates non-success verification outcomes.
 | Gelu only supports approximate=none | 20 | 2 |
 | Out of tolerance | 20 | 2 |
 | Unsupported op RNN | 22 | 4 |
-| HardSigmoid only supports alpha=0.2 | 22 | 3 |
 | Out of tolerance | 22 | 3 |
 | Unsupported op RandomUniformLike | 22 | 3 |
 | Unsupported op RoiAlign | 22 | 3 |
