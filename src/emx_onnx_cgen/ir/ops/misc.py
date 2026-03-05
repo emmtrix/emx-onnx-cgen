@@ -998,6 +998,23 @@ class CumSumOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class STFTOp(RenderableOpBase):
+    __io_inputs__ = ("signal", "frame_step", "window", "frame_length_input")
+    __io_outputs__ = ("output",)
+    signal: str
+    frame_step: str
+    window: str | None
+    frame_length_input: str | None
+    output: str
+    onesided: bool
+    input_is_complex: bool
+    fft_length: int
+    window_length: int
+    frame_length_literal: int
+    use_runtime_frame_length: bool
+
+
+@dataclass(frozen=True)
 class LoopRangeOp(RenderableOpBase):
     __io_inputs__ = ("trip_count", "cond", "start", "delta")
     __io_outputs__ = ("final", "output")
