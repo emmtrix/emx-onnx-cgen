@@ -24,8 +24,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op RoiAlign | 3 | 22 |
 | '*' | 2 |  |
-| ThresholdedRelu only supports alpha=1.0 | 2 | 22 |
-| Unsupported op Adam | 2 |  |
 | Unsupported op Det | 2 | 22 |
 | Unsupported op MaxUnpool | 2 | 22 |
 | Graph must contain at least one node | 1 | 25 |
