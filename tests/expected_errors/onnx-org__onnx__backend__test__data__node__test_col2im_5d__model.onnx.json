@@ -1,9 +1,12 @@
 {
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_col2im_5d model.onnx --test-data-dir test_data_set_0",
   "error": "Unsupported op Col2Im",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_col2im_5d model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Col2Im"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "ad7c2148e82b360e465dd6f3634f4379beca7cfd731b4ab7afd67dfbb8e195aa"
 }
