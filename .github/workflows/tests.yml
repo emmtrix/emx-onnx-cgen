@@ -9,6 +9,8 @@ on:
 jobs:
   pytest:
     runs-on: ubuntu-latest
+    env:
+      EMX_ENABLE_SANITIZE: "1"
     strategy:
       fail-fast: false
       matrix:
