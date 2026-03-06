@@ -1,0 +1,97 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    {% for dir in range(num_directions) %}
+    {
+        const int dir = {{ dir }};
+        const int reverse = {% if direction == "reverse" %}1{% elif direction == "bidirectional" and dir == 1 %}1{% else %}0{% endif %};
+        {% set act_f = activation_functions[dir] %}
+        {{ c_type }} H_prev[{{ batch_size }}][{{ hidden_size }}];
+        for (int b = 0; b < {{ batch_size }}; ++b) {
+            for (int h = 0; h < {{ hidden_size }}; ++h) {
+                {% if input_initial_h %}
+                {% if layout == 0 %}
+                H_prev[b][h] = {{ input_initial_h }}[dir][b][h];
+                {% else %}
+                H_prev[b][h] = {{ input_initial_h }}[b][dir][h];
+                {% endif %}
+                {% else %}
+                H_prev[b][h] = {{ zero_literal }};
+                {% endif %}
+            }
+        }
+        for (int b = 0; b < {{ batch_size }}; ++b) {
+            int seq_limit = {{ seq_length }};
+            {% if input_sequence_lens %}
+            seq_limit = (int){{ input_sequence_lens }}[b];
+            if (seq_limit < 0) {
+                seq_limit = 0;
+            }
+            if (seq_limit > {{ seq_length }}) {
+                seq_limit = {{ seq_length }};
+            }
+            {% endif %}
+            for (int step = 0; step < seq_limit; ++step) {
+                int t = reverse ? (seq_limit - 1 - step) : step;
+                {{ c_type }} H_next[{{ hidden_size }}];
+                for (int h = 0; h < {{ hidden_size }}; ++h) {
+                    {{ c_type }} sum = {{ zero_literal }};
+                    for (int i = 0; i < {{ input_size }}; ++i) {
+                        {% if layout == 0 %}
+                        {{ c_type }} x_val = {{ input_x }}[t][b][i];
+                        {% else %}
+                        {{ c_type }} x_val = {{ input_x }}[b][t][i];
+                        {% endif %}
+                        sum += x_val * {{ input_w }}[dir][h][i];
+                    }
+                    for (int i = 0; i < {{ hidden_size }}; ++i) {
+                        sum += H_prev[b][i] * {{ input_r }}[dir][h][i];
+                    }
+                    {% if input_b %}
+                    sum += {{ input_b }}[dir][h] + {{ input_b }}[dir][{{ hidden_size }} + h];
+                    {% endif %}
+                    {% if use_clip %}
+                    if (sum > {{ clip_literal }}) {
+                        sum = {{ clip_literal }};
+                    } else if (sum < -{{ clip_literal }}) {
+                        sum = -{{ clip_literal }};
+                    }
+                    {% endif %}
+                    {{ c_type }} h_new = {{ act_f }}(sum);
+                    H_next[h] = h_new;
+                    {% if output_y %}
+                    {% if layout == 0 %}
+                    {{ output_y }}[step][dir][b][h] = h_new;
+                    {% else %}
+                    {{ output_y }}[b][step][dir][h] = h_new;
+                    {% endif %}
+                    {% endif %}
+                }
+                for (int h = 0; h < {{ hidden_size }}; ++h) {
+                    H_prev[b][h] = H_next[h];
+                }
+            }
+            {% if output_y %}
+            for (int step = seq_limit; step < {{ seq_length }}; ++step) {
+                for (int h = 0; h < {{ hidden_size }}; ++h) {
+                    {% if layout == 0 %}
+                    {{ output_y }}[step][dir][b][h] = {{ zero_literal }};
+                    {% else %}
+                    {{ output_y }}[b][step][dir][h] = {{ zero_literal }};
+                    {% endif %}
+                }
+            }
+            {% endif %}
+        }
+        {% if output_y_h %}
+        for (int b = 0; b < {{ batch_size }}; ++b) {
+            for (int h = 0; h < {{ hidden_size }}; ++h) {
+                {% if layout == 0 %}
+                {{ output_y_h }}[dir][b][h] = H_prev[b][h];
+                {% else %}
+                {{ output_y_h }}[b][dir][h] = H_prev[b][h];
+                {% endif %}
+            }
+        }
+        {% endif %}
+    }
+    {% endfor %}
+}
