@@ -6302,6 +6302,7 @@ def test_det_op_compiles_2d() -> None:
     generated = Compiler(CompilerOptions()).compile(model)
     assert "EMX_NODE_FN void" in generated
     assert "det_value" in generated
+    assert "[i0][r0][c0]" not in generated
 
 
 def test_argmax_select_last_index_matches_numpy() -> None:

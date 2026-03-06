@@ -1,10 +1,10 @@
 {
-  "error": "Failed to build testbench.",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_det_2d model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Det"
   ],
   "opset_version": 22,
-  "generated_checksum": "cc7f5198f5d74bcfeed931ecf75b8517fbe2b959bdc649f9b19471a3c1e63d21"
+  "generated_checksum": "c6a7168a7c9e020164ca19a194d33d5ddae95373be7173910c151f2c2b6051fc"
 }
