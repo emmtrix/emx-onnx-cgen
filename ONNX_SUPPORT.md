@@ -8,7 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1612 / 1802, 89.5% | 1.20.1 |
-| [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
+| [ONNX2C test coverage](#onnx2c-test-coverage) | 124 / 125, 99.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -1832,7 +1832,7 @@ Coverage 1612 / 1802 ONNX files (89.5%).
 
 Test directory: `onnx2c-org/test`
 
-Coverage 123 / 125 ONNX files (98.4%).
+Coverage 124 / 125 ONNX files (99.2%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1953,7 +1953,7 @@ Coverage 123 / 125 ONNX files (98.4%).
 | simple_networks/lstm_k1_b1_r1_relu.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/maxpool_k2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/maxpool_k2_s2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
-| simple_networks/random_uniform.onnx | 22 | Random+ORT | ❌ | Unsupported op RandomUniform |
+| simple_networks/random_uniform.onnx | 22 | Random+ORT | ✅ | OK |
 | simple_networks/scalar_abs.onnx | 13 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/scalar_add.onnx | 13 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/scalar_identity.onnx | 13 | Random+ORT | ✅ | OK (max ULP 0) |
