@@ -347,6 +347,21 @@ Conventions:
 This makes control flow deterministic and easy to inspect, and it avoids hidden
 dispatch or vector intrinsics in the generated code.
 
+## Operator-Specific Notes
+
+Some operators emit code with structure that is more specialized than the
+general loop-nest patterns described above. FFT-related operators are the main
+example today.
+
+### FFT-Related Operators
+
+`DFT` and `STFT` are emitted as explicit FFT-based kernels over real/imaginary
+lanes. They automatically choose between a
+[Stockham FFT](https://en.wikipedia.org/wiki/Stockham_FFT) with radix-2 and
+radix-4 stages and a direct DFT; `STFT` adds explicit framing and optional
+windowing around the same spectral kernel. A concrete example is
+[`tests/golden/op_dft_dft_stockham.c`](../tests/golden/op_dft_dft_stockham.c).
+
 ## Weights and Constants
 
 There are three relevant modes for constants/weights:
