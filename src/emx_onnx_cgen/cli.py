@@ -1956,7 +1956,9 @@ def _verify_model(
                 expected_sequence: Any
                 if testbench_outputs is None:
                     expected_sequence = (
-                        None if runtime_outputs is None else runtime_outputs.get(value.name)
+                        None
+                        if runtime_outputs is None
+                        else runtime_outputs.get(value.name)
                     )
                 else:
                     expected_sequence = testbench_outputs.get(value.name)
