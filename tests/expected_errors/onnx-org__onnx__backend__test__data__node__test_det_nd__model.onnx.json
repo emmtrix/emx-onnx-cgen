@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_det_nd model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data",
+  "operators": [
+    "Det"
+  ],
+  "opset_version": 22,
+  "generated_checksum": "ad53c85168ae84f8d2c01e9c151c1e0e28076f9051b44673817a65e442c9c17e"
+}

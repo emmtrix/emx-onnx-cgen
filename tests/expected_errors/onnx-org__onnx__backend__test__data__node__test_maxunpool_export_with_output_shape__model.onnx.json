@@ -5,5 +5,6 @@
   "operators": [
     "MaxUnpool"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "09bf51941d68372318b805b329ca8bf8e01e2ec4aeb5c1b6efdefccceac9c53b"
 }

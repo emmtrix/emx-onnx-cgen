@@ -1,0 +1,10 @@
+{
+  "error": "Failed to build testbench.",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_det_2d model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data",
+  "operators": [
+    "Det"
+  ],
+  "opset_version": 22,
+  "generated_checksum": "cc7f5198f5d74bcfeed931ecf75b8517fbe2b959bdc649f9b19471a3c1e63d21"
+}
