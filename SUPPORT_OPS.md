@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 198 / 205
+Supported operators: 199 / 205
 
 | Operator | Supported |
 | --- | --- |
@@ -202,7 +202,7 @@ Supported operators: 198 / 205
 | Where | ✅ |
 | Xor | ✅ |
 | ai.onnx.ml::ArrayFeatureExtractor | ✅ |
-| ai.onnx.ml::Binarizer | ❌ |
+| ai.onnx.ml::Binarizer | ✅ |
 | ai.onnx.ml::LabelEncoder | ✅ |
 | ai.onnx.ml::TreeEnsemble | ✅ |
 | ai.onnx.ml::TreeEnsembleClassifier | ✅ |

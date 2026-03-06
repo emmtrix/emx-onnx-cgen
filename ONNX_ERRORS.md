@@ -26,7 +26,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op MaxUnpool | 2 | 22 |
 | Graph must contain at least one node | 1 | 25 |
 | Pad value input must be a scalar | 1 | 24 |
-| Unsupported op Binarizer | 1 |  |
 | Unsupported op Loop | 1 | 16 |
 | Unsupported op RandomUniform | 1 | 22 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 1 | 12 |
@@ -70,7 +69,6 @@ Lists every ONNX file with a non-success verification outcome.
 | node/test_adam_multiple/model.onnx |  | Data | ❌ | Out of tolerance (max ULP 62311) |
 | node/test_affine_grid_3d/model.onnx | 20 | Data | ❌ | Out of tolerance (max ULP 151) |
 | node/test_affine_grid_3d_expanded/model.onnx | 20 | Data | ❌ | Out of tolerance (max ULP 169) |
-| node/test_ai_onnx_ml_binarizer/model.onnx |  | Data | ❌ | Unsupported op Binarizer |
 | node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | 24 | Data | ❌ | Pad value input must be a scalar |
 | node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx | 22 | Data | ❌ | Out of tolerance (max ULP 2983) |
 | node/test_bernoulli_double_expanded/model.onnx | 22 | Data | ❌ | Unsupported op RandomUniformLike |
