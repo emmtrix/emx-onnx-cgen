@@ -5,7 +5,7 @@ for (idx_t {{ batch_loop_vars[loop.index0] }} = 0; {{ batch_loop_vars[loop.index
 {{ c_type }} mat[{{ matrix_dim }}][{{ matrix_dim }}];
 for (idx_t r0 = 0; r0 < {{ matrix_dim }}; ++r0) {
     for (idx_t c0 = 0; c0 < {{ matrix_dim }}; ++c0) {
-        mat[r0][c0] = {{ input0 }}{{ batch_index_expr }}[r0][c0];
+        mat[r0][c0] = {{ input0 }}{{ input_batch_index_expr }}[r0][c0];
     }
 }
 {{ c_type }} det_value = ({{ c_type }})1;

@@ -96,6 +96,9 @@ class DetOp(ReduceOpBase):
         batch_shape = input_shape_raw[:-2]
         batch_shape_codegen = CEmitterCompat.codegen_shape(batch_shape)
         batch_loop_vars = CEmitterCompat.loop_vars(batch_shape_codegen)
+        input_batch_index_expr = (
+            "".join(f"[{var}]" for var in batch_loop_vars) if batch_shape else ""
+        )
         batch_index_expr = "".join(f"[{var}]" for var in batch_loop_vars)
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
@@ -121,6 +124,7 @@ class DetOp(ReduceOpBase):
                 matrix_dim=matrix_dim,
                 batch_shape=batch_shape_codegen,
                 batch_loop_vars=batch_loop_vars,
+                input_batch_index_expr=input_batch_index_expr,
                 batch_index_expr=batch_index_expr,
             )
             .rstrip()
