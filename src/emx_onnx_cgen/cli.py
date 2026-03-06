@@ -1467,10 +1467,6 @@ def _verify_model(
                 None,
             )
     output_compare_names = set(original_output_names)
-    requires_non_tensor_reference = any(
-        value.name in output_compare_names and not isinstance(value.type, TensorType)
-        for value in graph.outputs
-    )
     timings: dict[str, float] = {}
     lowered_sequence_input_shapes: dict[str, tuple[int, ...]] = {}
     try:
