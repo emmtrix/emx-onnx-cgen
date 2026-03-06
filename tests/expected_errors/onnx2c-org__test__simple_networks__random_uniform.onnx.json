@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported op RandomUniform",
+  "error": "OK UNKNOWN",
   "command_line": "verify --model-base-dir onnx2c-org/test/simple_networks random_uniform.onnx",
   "verification_mode": "Random+ORT",
   "operators": [
     "RandomUniform"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "3e16725dcc9aecb81dabbe2d99ee30502d0edecab4cb8354a7191f1244a3ee12"
 }

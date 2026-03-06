@@ -643,6 +643,41 @@ def _make_range_model(
     return model
 
 
+def _make_random_uniform_model(
+    *,
+    output_shape: list[int],
+    dtype: int = TensorProto.FLOAT,
+    low: float = 0.0,
+    high: float = 1.0,
+    seed: float | None = None,
+    opset: int = 22,
+) -> onnx.ModelProto:
+    output = helper.make_tensor_value_info("output", dtype, output_shape)
+    attrs: dict[str, object] = {
+        "shape": output_shape,
+        "dtype": dtype,
+        "low": low,
+        "high": high,
+    }
+    if seed is not None:
+        attrs["seed"] = seed
+    node = helper.make_node(
+        "RandomUniform",
+        inputs=[],
+        outputs=[output.name],
+        **attrs,
+    )
+    graph = helper.make_graph([node], "random_uniform_graph", [], [output])
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 9
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_onehot_model(
     *,
     indices_shape: list[int],
@@ -6564,6 +6599,35 @@ def test_range_run_matches_numpy() -> None:
     outputs = _run_reference(model, {})
     expected = np.arange(1, 7, 2, dtype=np.int32)
     np.testing.assert_array_equal(outputs["output"], expected)
+
+
+def test_random_uniform_run_within_bounds() -> None:
+    model = _make_random_uniform_model(
+        output_shape=[2, 3],
+        dtype=TensorProto.FLOAT,
+        low=-0.5,
+        high=0.25,
+        seed=7.0,
+    )
+    outputs = _run_reference(model, {})
+    out = outputs["output"]
+    assert out.shape == (2, 3)
+    assert out.dtype == np.float32
+    assert np.all(out >= np.float32(-0.5))
+    assert np.all(out < np.float32(0.25))
+
+
+def test_random_uniform_op_compiles() -> None:
+    model = _make_random_uniform_model(
+        output_shape=[2, 2],
+        dtype=TensorProto.FLOAT16,
+        low=1.0,
+        high=2.0,
+        seed=11.0,
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "RandomUniform" in generated
+    assert "_rng_next_u64" in generated
 
 
 @pytest.mark.parametrize(

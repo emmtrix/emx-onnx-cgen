@@ -128,6 +128,8 @@ Supported operators: 199 / 205
 | QLinearMatMul | ✅ |
 | QuantizeLinear | ✅ |
 | RMSNormalization | ✅ |
+| RNN | ❌ |
+| RandomUniform | ✅ |
 | RNN | ✅ |
 | RandomUniform | ❌ |
 | RandomUniformLike | ❌ |
