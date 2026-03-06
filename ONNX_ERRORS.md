@@ -20,7 +20,6 @@ Aggregates non-success verification outcomes.
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op RegexFullMatch | 3 | 20 |
 | '*' | 2 |  |
-| Graph must contain at least one node | 1 | 25 |
 | Pad value input must be a scalar | 1 | 24 |
 | Unsupported op Loop | 1 | 16 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 1 | 12 |
@@ -46,7 +45,6 @@ Aggregates non-success verification outcomes.
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 25 | 17 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 25 | 14 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 25 | 4 |
-| Graph must contain at least one node | 25 | 1 |
 
 ## Failing ONNX files
 
@@ -208,7 +206,6 @@ Lists every ONNX file with a non-success verification outcome.
 | node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx | 25 | Data | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. |
 | node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ_expanded/model.onnx | 25 | Data | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. |
 | node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2_expanded/model.onnx | 25 | Data | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'. |
-| node/test_constant/model.onnx | 25 | Random+ORT | ❌ | Graph must contain at least one node |
 | node/test_dequantizelinear_e4m3fn/model.onnx | 25 | Data | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'x'. |
 | node/test_dequantizelinear_e4m3fn_float16/model.onnx | 25 | Data | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'x'. |
 | node/test_dequantizelinear_e4m3fn_zero_point/model.onnx | 25 | Data | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'x'. |

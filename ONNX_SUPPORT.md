@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1625 / 1802, 90.2% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1626 / 1802, 90.2% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 124 / 125, 99.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1625 / 1802 ONNX files (90.2%).
+Coverage 1626 / 1802 ONNX files (90.2%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -533,7 +533,7 @@ Coverage 1625 / 1802 ONNX files (90.2%).
 | node/test_concat_3d_axis_negative_1/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_concat_3d_axis_negative_2/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_concat_3d_axis_negative_3/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
-| node/test_constant/model.onnx | 25 | Random+ORT | ❌ | Graph must contain at least one node |
+| node/test_constant/model.onnx | 25 | Random+ONNXRef | ✅ | OK (max ULP 0) |
 | node/test_constant_pad/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_constant_pad_axes/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_constant_pad_negative_axes/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
