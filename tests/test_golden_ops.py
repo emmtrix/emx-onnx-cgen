@@ -667,6 +667,11 @@ OP_GOLDEN_CASES = [
     ("globalmaxpool", "global_max_pool", _make_global_max_pool_model),
     ("concat", "concat", _make_concat_model),
     (
+        "arrayfeatureextractor",
+        "array_feature_extractor",
+        lambda: _make_array_feature_extractor_model(data_shape=[3, 4], indices_shape=[2]),
+    ),
+    (
         "gatherelements",
         "gather_elements",
         lambda: _make_gather_elements_model(
