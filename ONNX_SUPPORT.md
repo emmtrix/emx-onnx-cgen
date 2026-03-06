@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1617 / 1802, 89.7% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1619 / 1802, 89.8% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 124 / 125, 99.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1617 / 1802 ONNX files (89.7%).
+Coverage 1619 / 1802 ONNX files (89.8%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -962,8 +962,8 @@ Coverage 1617 / 1802 ONNX files (89.7%).
 | node/test_maxpool_3d_dilations_use_ref_impl_large/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_maxpool_with_argmax_2d_precomputed_pads/model.onnx | 22 | Data | ✅ | OK (max abs diff 0, max ULP 0) |
 | node/test_maxpool_with_argmax_2d_precomputed_strides/model.onnx | 22 | Data | ✅ | OK (max abs diff 0, max ULP 0) |
-| node/test_maxunpool_export_with_output_shape/model.onnx | 22 | Data | ❌ | Unsupported op MaxUnpool |
-| node/test_maxunpool_export_without_output_shape/model.onnx | 22 | Data | ❌ | Unsupported op MaxUnpool |
+| node/test_maxunpool_export_with_output_shape/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
+| node/test_maxunpool_export_without_output_shape/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_mean_example/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_mean_one_input/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_mean_two_inputs/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
