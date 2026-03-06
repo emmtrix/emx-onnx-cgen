@@ -71,6 +71,10 @@ MODEL_EXTRA_VERIFY_ARGS = {
         "onnx-reference",
         "--test-data-inputs-only",
     ),
+    "onnx-org/onnx/backend/test/data/node/test_constant/model.onnx": (
+        "--runtime",
+        "onnx-reference",
+    ),
 }
 
 

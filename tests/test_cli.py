@@ -9,7 +9,7 @@ from pathlib import Path
 import onnx
 import pytest
 
-from onnx import TensorProto
+from onnx import TensorProto, helper
 
 from test_ops import (
     _make_operator_model,
@@ -22,7 +22,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = PROJECT_ROOT / "src"
 
 
-def _run_cli_verify(model: onnx.ModelProto) -> None:
+def _run_cli_verify(model: onnx.ModelProto, *, runtime: str = "ort") -> None:
     with tempfile.TemporaryDirectory() as temp_dir:
         model_path = Path(temp_dir) / "model.onnx"
         onnx.save_model(model, model_path)
@@ -31,22 +31,55 @@ def _run_cli_verify(model: onnx.ModelProto) -> None:
         if env.get("PYTHONPATH"):
             python_path = f"{python_path}{os.pathsep}{env['PYTHONPATH']}"
         env["PYTHONPATH"] = python_path
+        verify_cmd = [
+            sys.executable,
+            "-m",
+            "emx_onnx_cgen",
+            "verify",
+            str(model_path),
+            "--temp-dir-root",
+            str(temp_dir),
+        ]
+        if runtime != "ort":
+            verify_cmd.extend(["--runtime", runtime])
         subprocess.run(
-            [
-                sys.executable,
-                "-m",
-                "emx_onnx_cgen",
-                "verify",
-                str(model_path),
-                "--temp-dir-root",
-                str(temp_dir),
-            ],
+            verify_cmd,
             check=True,
             capture_output=True,
             text=True,
             cwd=PROJECT_ROOT,
             env=env,
         )
+
+
+def _make_constant_only_model() -> onnx.ModelProto:
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, [2])
+    constant_value = helper.make_tensor(
+        name="value",
+        data_type=TensorProto.FLOAT,
+        dims=[2],
+        vals=[1.5, -2.0],
+    )
+    constant_node = helper.make_node(
+        "Constant",
+        inputs=[],
+        outputs=["out"],
+        value=constant_value,
+    )
+    graph = helper.make_graph(
+        [constant_node],
+        "constant_only_graph",
+        [],
+        [output],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 25)],
+    )
+    model.ir_version = 13
+    onnx.checker.check_model(model)
+    return model
 
 
 def test_cli_verify_operator_model() -> None:
@@ -58,6 +91,11 @@ def test_cli_verify_operator_model() -> None:
         attrs={},
     )
     _run_cli_verify(model)
+
+
+def test_cli_verify_constant_only_model() -> None:
+    model = _make_constant_only_model()
+    _run_cli_verify(model, runtime="onnx-reference")
 
 
 def test_cli_verify_reduce_model() -> None:
