@@ -22,7 +22,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op RNN | 4 | 22 |
 | Unsupported op RandomUniformLike | 3 | 22 |
 | Unsupported op RegexFullMatch | 3 | 20 |
-| Unsupported op RoiAlign | 3 | 22 |
 | '*' | 2 |  |
 | Unsupported op Det | 2 | 22 |
 | Unsupported op MaxUnpool | 2 | 22 |
@@ -47,7 +46,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op RNN | 22 | 4 |
 | Out of tolerance | 22 | 3 |
 | Unsupported op RandomUniformLike | 22 | 3 |
-| Unsupported op RoiAlign | 22 | 3 |
 | Unsupported op Det | 22 | 2 |
 | Unsupported op MaxUnpool | 22 | 2 |
 | Unsupported op RandomUniform | 22 | 1 |
@@ -262,9 +260,6 @@ Lists every ONNX file with a non-success verification outcome.
 | node/test_regex_full_match_email_domain/model.onnx | 20 | Data | ❌ | Unsupported op RegexFullMatch |
 | node/test_regex_full_match_empty/model.onnx | 20 | Data | ❌ | Unsupported op RegexFullMatch |
 | node/test_rnn_seq_length/model.onnx | 22 | Data | ❌ | Unsupported op RNN |
-| node/test_roialign_aligned_false/model.onnx | 22 | Data | ❌ | Unsupported op RoiAlign |
-| node/test_roialign_aligned_true/model.onnx | 22 | Data | ❌ | Unsupported op RoiAlign |
-| node/test_roialign_mode_max/model.onnx | 22 | Data | ❌ | Unsupported op RoiAlign |
 | node/test_sequence_map_extract_shapes/model.onnx |  |  | ❌ | 'SequenceMap_0_in_0' |
 | node/test_sequence_map_extract_shapes_expanded/model.onnx |  |  | ❌ | 'SequenceMap_test_sequence_map_extract_shapes_expanded_function_x' |
 | node/test_simple_rnn_batchwise/model.onnx | 22 | Data | ❌ | Unsupported op RNN |
