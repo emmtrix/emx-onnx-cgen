@@ -1953,7 +1953,7 @@ Coverage 124 / 125 ONNX files (99.2%).
 | simple_networks/lstm_k1_b1_r1_relu.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/maxpool_k2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/maxpool_k2_s2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
-| simple_networks/random_uniform.onnx | 22 | Random+ORT | ✅ | OK |
+| simple_networks/random_uniform.onnx | 22 | Random+ORT | ✅ | OK UNKNOWN |
 | simple_networks/scalar_abs.onnx | 13 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/scalar_add.onnx | 13 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/scalar_identity.onnx | 13 | Random+ORT | ✅ | OK (max ULP 0) |
