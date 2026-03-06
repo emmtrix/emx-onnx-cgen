@@ -63,6 +63,7 @@ _LOWERING_MODULES = [
     "matmul",
     "matmul_integer",
     "maxpool",
+    "maxunpool",
     "mean_variance_normalization",
     "mel_weight_matrix",
     "negative_log_likelihood_loss",

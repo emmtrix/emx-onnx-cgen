@@ -3747,6 +3747,51 @@ def _make_maxpool_model(
     return model
 
 
+def _make_maxunpool_model(*, with_output_shape: bool) -> onnx.ModelProto:
+    x = helper.make_tensor_value_info("x", TensorProto.FLOAT, [1, 1, 2, 2])
+    indices = helper.make_tensor_value_info("indices", TensorProto.INT64, [1, 1, 2, 2])
+    y = helper.make_tensor_value_info("y", TensorProto.FLOAT, [1, 1, 4, 4])
+
+    initializers = [
+        helper.make_tensor(
+            "indices",
+            TensorProto.INT64,
+            dims=[1, 1, 2, 2],
+            vals=[5, 7, 13, 15],
+        )
+    ]
+    inputs = [x]
+    node_inputs = ["x", "indices"]
+    if with_output_shape:
+        output_shape = helper.make_tensor(
+            "output_shape",
+            TensorProto.INT64,
+            dims=[4],
+            vals=[1, 1, 4, 4],
+        )
+        initializers.append(output_shape)
+        node_inputs.append("output_shape")
+
+    node = helper.make_node(
+        "MaxUnpool",
+        inputs=node_inputs,
+        outputs=["y"],
+        kernel_shape=[2, 2],
+        strides=[2, 2],
+    )
+    graph = helper.make_graph(
+        [node], "maxunpool_graph", inputs, [y], initializer=initializers
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 22)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_gather_elements_model(
     *,
     data_shape: list[int],
@@ -7077,6 +7122,14 @@ def test_maxpool_op_matches_onnxruntime(case: dict[str, object]) -> None:
         pads=case["pads"],
         ceil_mode=case["ceil_mode"],
     )
+    _run_ort_compare(model)
+
+
+@pytest.mark.parametrize(
+    "with_output_shape", [False, True], ids=["inferred", "explicit"]
+)
+def test_maxunpool_op_matches_onnxruntime(with_output_shape: bool) -> None:
+    model = _make_maxunpool_model(with_output_shape=with_output_shape)
     _run_ort_compare(model)
 
 

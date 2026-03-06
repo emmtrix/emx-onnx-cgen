@@ -72,6 +72,7 @@ from ..ir.ops import (
     LstmOp,
     MatMulOp,
     MaxPoolOp,
+    MaxUnpoolOp,
     MeanVarianceNormalizationOp,
     NegativeLogLikelihoodLossOp,
     NonMaxSuppressionOp,
@@ -828,6 +829,7 @@ class CEmitter:
                     "softmax_cross_entropy_loss_op.c.j2"
                 ),
                 "maxpool": self._env.get_template("maxpool_op.c.j2"),
+                "maxunpool": self._env.get_template("maxunpool_op.c.j2"),
                 "roi_align": self._env.get_template("roi_align_op.c.j2"),
                 "concat": self._env.get_template("concat_op.c.j2"),
                 "concat_from_sequence": self._env.get_template(
