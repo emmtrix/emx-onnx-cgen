@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op RandomUniformLike",
+  "error": "Out of tolerance (max ULP 4607182418800017408)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_bernoulli_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
@@ -7,5 +7,6 @@
     "Greater",
     "Cast"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "1212e2d70c43b772528ece04cf4198982ca09ca276345b43581779273ef0c5a7"
 }
