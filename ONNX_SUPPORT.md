@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1619 / 1802, 89.8% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1620 / 1802, 89.9% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 124 / 125, 99.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1619 / 1802 ONNX files (89.8%).
+Coverage 1620 / 1802 ONNX files (89.9%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -241,7 +241,7 @@ Coverage 1619 / 1802 ONNX files (89.8%).
 | node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_1d_default/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_ceil/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
-| node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx | 22 | Data | ❌ | Out of tolerance (max ULP 2983) |
+| node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_default/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_dilations/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_pads/model.onnx | 22 | Data | ✅ | OK (max ULP 3) |
