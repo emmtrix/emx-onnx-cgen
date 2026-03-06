@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1628 / 1802, 90.3% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1629 / 1802, 90.4% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 124 / 125, 99.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1628 / 1802 ONNX files (90.3%).
+Coverage 1629 / 1802 ONNX files (90.4%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -179,7 +179,7 @@ Coverage 1628 / 1802 ONNX files (90.3%).
 | node/test_attention_4d_causal/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_causal_expanded/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx | 24 | Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | 24 | Data | ❌ | Pad value input must be a scalar |
+| node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | 24 | Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_diff_heads_sizes/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_diff_heads_sizes_attn_mask/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
