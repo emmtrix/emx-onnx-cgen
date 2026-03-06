@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1607 / 1802, 89.2% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1611 / 1802, 89.4% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1607 / 1802 ONNX files (89.2%).
+Coverage 1611 / 1802 ONNX files (89.4%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1071,10 +1071,10 @@ Coverage 1607 / 1802 ONNX files (89.2%).
 | node/test_optional_get_element_optional_tensor/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_optional_get_element_sequence/model.onnx | 18 | Data | ✅ | OK (max abs diff 0) |
 | node/test_optional_get_element_tensor/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_optional_has_element_empty_no_input_name_optional_input/model.onnx | 18 | Random+ORT | ❌ | OptionalHasElement expects exactly one non-empty input. |
-| node/test_optional_has_element_empty_no_input_name_tensor_input/model.onnx | 18 | Random+ORT | ❌ | OptionalHasElement expects exactly one non-empty input. |
-| node/test_optional_has_element_empty_no_input_optional_input/model.onnx | 18 | Random+ORT | ❌ | OptionalHasElement expects exactly one non-empty input. |
-| node/test_optional_has_element_empty_no_input_tensor_input/model.onnx | 18 | Random+ORT | ❌ | OptionalHasElement expects exactly one non-empty input. |
+| node/test_optional_has_element_empty_no_input_name_optional_input/model.onnx | 18 | Random+ORT | ✅ | OK (max abs diff 0) |
+| node/test_optional_has_element_empty_no_input_name_tensor_input/model.onnx | 18 | Random+ORT | ✅ | OK (max abs diff 0) |
+| node/test_optional_has_element_empty_no_input_optional_input/model.onnx | 18 | Random+ORT | ✅ | OK (max abs diff 0) |
+| node/test_optional_has_element_empty_no_input_tensor_input/model.onnx | 18 | Random+ORT | ✅ | OK (max abs diff 0) |
 | node/test_optional_has_element_empty_optional_input/model.onnx | 18 | Data | ✅ | OK (max abs diff 0) |
 | node/test_optional_has_element_optional_input/model.onnx | 18 | Data | ✅ | OK (max abs diff 0) |
 | node/test_optional_has_element_tensor_input/model.onnx | 18 | Data | ✅ | OK (max abs diff 0) |
