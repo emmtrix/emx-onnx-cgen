@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op ArrayFeatureExtractor",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_array_feature_extractor model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "ai.onnx.ml::ArrayFeatureExtractor"
-  ]
+  ],
+  "generated_checksum": "5a323a60cd39190f791007b525bb984eb32a541d8d51c61661fb2193e5a59f53"
 }
