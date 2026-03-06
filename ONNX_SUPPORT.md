@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1619 / 1802, 89.8% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1622 / 1802, 90.0% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 124 / 125, 99.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1619 / 1802 ONNX files (89.8%).
+Coverage 1622 / 1802 ONNX files (90.0%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -269,10 +269,10 @@ Coverage 1619 / 1802 ONNX files (89.8%).
 | node/test_batchnorm_example_training_mode/model.onnx | 15 | Data | ✅ | OK (max ULP 6) |
 | node/test_bernoulli/model.onnx | 22 | Data | ✅ | OK (non-deterministic output) |
 | node/test_bernoulli_double/model.onnx | 22 | Data | ✅ | OK (non-deterministic output) |
-| node/test_bernoulli_double_expanded/model.onnx | 22 | Data | ❌ | Unsupported op RandomUniformLike |
-| node/test_bernoulli_expanded/model.onnx | 22 | Data | ❌ | Unsupported op RandomUniformLike |
+| node/test_bernoulli_double_expanded/model.onnx | 22 | Data | ✅ | OK (non-deterministic output) |
+| node/test_bernoulli_expanded/model.onnx | 22 | Data | ✅ | OK (non-deterministic output) |
 | node/test_bernoulli_seed/model.onnx | 22 | Data | ✅ | OK (non-deterministic output) |
-| node/test_bernoulli_seed_expanded/model.onnx | 22 | Data | ❌ | Unsupported op RandomUniformLike |
+| node/test_bernoulli_seed_expanded/model.onnx | 22 | Data | ✅ | OK (non-deterministic output) |
 | node/test_bitshift_left_uint16/model.onnx | 11 | Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_left_uint32/model.onnx | 11 | Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_left_uint64/model.onnx | 11 | Data | ✅ | OK (max abs diff 0) |
