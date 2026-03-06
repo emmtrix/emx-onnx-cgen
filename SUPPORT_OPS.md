@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 202 / 205
+Supported operators: 203 / 205
 
 | Operator | Supported |
 | --- | --- |
@@ -53,7 +53,7 @@ Supported operators: 202 / 205
 | DeformConv | ✅ |
 | DepthToSpace | ✅ |
 | DequantizeLinear | ✅ |
-| Det | ❌ |
+| Det | ✅ |
 | Div | ✅ |
 | Dropout | ✅ |
 | DynamicQuantizeLinear | ✅ |

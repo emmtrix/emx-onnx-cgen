@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1619 / 1802, 89.8% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1621 / 1802, 90.0% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 124 / 125, 99.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1619 / 1802 ONNX files (89.8%).
+Coverage 1621 / 1802 ONNX files (90.0%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -588,8 +588,8 @@ Coverage 1619 / 1802 ONNX files (89.8%).
 | node/test_dequantizelinear_uint16/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_dequantizelinear_uint2/model.onnx | 25 | Data | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'x'. |
 | node/test_dequantizelinear_uint4/model.onnx | 25 | Data | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'x'. |
-| node/test_det_2d/model.onnx | 22 | Data | ❌ | Unsupported op Det |
-| node/test_det_nd/model.onnx | 22 | Data | ❌ | Unsupported op Det |
+| node/test_det_2d/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
+| node/test_det_nd/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_dft/model.onnx | 20 | Data | ✅ | OK (max ULP 4) |
 | node/test_dft_axis/model.onnx | 20 | Data | ✅ | OK (max ULP 72) |
 | node/test_dft_axis_opset19/model.onnx | 19 | Data | ✅ | OK (max ULP 72) |
