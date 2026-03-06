@@ -427,9 +427,7 @@ def _resolve_value_shape(
             if axes_values is None:
                 return None
             out_rank = len(input_shape) + len(axes_values)
-            normalized_axes = sorted(
-                a if a >= 0 else a + out_rank for a in axes_values
-            )
+            normalized_axes = sorted(a if a >= 0 else a + out_rank for a in axes_values)
             result = list(input_shape)
             for ax in normalized_axes:
                 result.insert(ax, 1)
@@ -466,15 +464,9 @@ def _resolve_value_shape(
         if source_node.op_type == "Range":
             if len(source_node.inputs) != 3 or len(source_node.outputs) != 1:
                 return None
-            start_vals = _shape_values_from_input(
-                graph, source_node.inputs[0], node
-            )
-            limit_vals = _shape_values_from_input(
-                graph, source_node.inputs[1], node
-            )
-            step_vals = _shape_values_from_input(
-                graph, source_node.inputs[2], node
-            )
+            start_vals = _shape_values_from_input(graph, source_node.inputs[0], node)
+            limit_vals = _shape_values_from_input(graph, source_node.inputs[1], node)
+            step_vals = _shape_values_from_input(graph, source_node.inputs[2], node)
             if (
                 start_vals is None
                 or limit_vals is None
@@ -486,9 +478,7 @@ def _resolve_value_shape(
             ):
                 return None
 
-            length = max(
-                0, math.ceil((limit_vals[0] - start_vals[0]) / step_vals[0])
-            )
+            length = max(0, math.ceil((limit_vals[0] - start_vals[0]) / step_vals[0]))
             return (length,)
         if source_node.op_type == "Expand":
             if len(source_node.inputs) != 2 or len(source_node.outputs) != 1:
