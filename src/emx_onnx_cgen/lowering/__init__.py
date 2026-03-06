@@ -10,6 +10,7 @@ _LOWERING_MODULES = [
     "affine_grid",
     "momentum",
     "arg_reduce",
+    "array_feature_extractor",
     "attention",
     "average_pool",
     "batch_normalization",
