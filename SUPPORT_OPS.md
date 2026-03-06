@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 203 / 205
+Supported operators: 204 / 205
 
 | Operator | Supported |
 | --- | --- |
