@@ -22,7 +22,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op RegexFullMatch | 3 | 20 |
 | '*' | 2 |  |
 | Unsupported op Det | 2 | 22 |
-| Unsupported op MaxUnpool | 2 | 22 |
 | Graph must contain at least one node | 1 | 25 |
 | Pad value input must be a scalar | 1 | 24 |
 | Unsupported op Loop | 1 | 16 |
@@ -40,7 +39,6 @@ Aggregates non-success verification outcomes.
 | Out of tolerance | 22 | 3 |
 | Unsupported op RandomUniformLike | 22 | 3 |
 | Unsupported op Det | 22 | 2 |
-| Unsupported op MaxUnpool | 22 | 2 |
 | Pad value input must be a scalar | 24 | 1 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 25 | 22 |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 25 | 20 |
@@ -232,8 +230,6 @@ Lists every ONNX file with a non-success verification outcome.
 | node/test_det_nd/model.onnx | 22 | Data | ❌ | Unsupported op Det |
 | node/test_gridsample_bicubic/model.onnx | 22 | Data | ❌ | Out of tolerance (max ULP 1678) |
 | node/test_loop16_seq_none/model.onnx | 16 | Data | ❌ | Unsupported op Loop |
-| node/test_maxunpool_export_with_output_shape/model.onnx | 22 | Data | ❌ | Unsupported op MaxUnpool |
-| node/test_maxunpool_export_without_output_shape/model.onnx | 22 | Data | ❌ | Unsupported op MaxUnpool |
 | node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | 22 | Data | ❌ | Out of tolerance (max ULP 357) |
 | node/test_quantizelinear_e4m3fn/model.onnx | 25 | Data | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_e5m2/model.onnx | 25 | Data | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'y_zero_point'. |

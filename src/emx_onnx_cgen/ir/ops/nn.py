@@ -5556,6 +5556,83 @@ class MaxPoolOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class MaxUnpoolOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "indices")
+    __io_outputs__ = ("output",)
+    input0: str
+    indices: str
+    output_shape: str | None
+    output: str
+    batch: int
+    channels: int
+    spatial_rank: int
+    in_spatial: tuple[int, ...]
+    out_spatial: tuple[int, ...]
+    inferred_out_spatial: tuple[int, ...]
+    dtype: ScalarType
+    indices_dtype: ScalarType
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.output)
+        c_type = output_dtype.c_type
+        indices_c_type = self.indices_dtype.c_type
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("indices", self.indices),
+                ("output", self.output),
+            ]
+        )
+        input_shape = (self.batch, self.channels, *self.in_spatial)
+        output_shape = (self.batch, self.channels, *self.out_spatial)
+        input_suffix = emitter.param_array_suffix(input_shape)
+        indices_suffix = emitter.param_array_suffix(input_shape)
+        output_suffix = emitter.param_array_suffix(output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["indices"], indices_c_type, indices_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        rendered = (
+            state.templates["maxunpool"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                indices=params["indices"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                zero_literal=output_dtype.zero_literal,
+                indices_c_type=indices_c_type,
+                dtype=self.dtype,
+                batch=self.batch,
+                channels=self.channels,
+                spatial_rank=self.spatial_rank,
+                in_spatial=self.in_spatial,
+                out_spatial=self.out_spatial,
+                inferred_out_spatial=self.inferred_out_spatial,
+                input_suffix=input_suffix,
+                indices_suffix=indices_suffix,
+                output_suffix=output_suffix,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        shape = (self.batch, self.channels, *self.out_spatial)
+        return ((self.output, shape, self.dtype),)
+
+
+@dataclass(frozen=True)
 class RoiAlignOp(RenderableOpBase):
     __io_inputs__ = ("input0", "rois", "batch_indices")
     __io_outputs__ = ("output",)
