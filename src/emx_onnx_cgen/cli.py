@@ -783,6 +783,14 @@ def _build_parser() -> argparse.ArgumentParser:
         ),
     )
     verify_parser.add_argument(
+        "--test-data-inputs-only",
+        action="store_true",
+        help=(
+            "Load input_*.pb from --test-data-dir but ignore output_*.pb and "
+            "compare against the selected runtime instead"
+        ),
+    )
+    verify_parser.add_argument(
         "--temp-dir-root",
         type=Path,
         default=None,
@@ -1478,7 +1486,7 @@ def _verify_model(
                 "strict mode is enabled for explicit test data."
             )
         testbench_outputs = None
-        if not args.per_node_accuracy:
+        if not args.per_node_accuracy and not args.test_data_inputs_only:
             testbench_outputs = _load_test_data_outputs(model, args.test_data_dir)
             if reshaped_tensor_inputs and testbench_outputs is not None:
                 active_reporter.note(
@@ -1486,6 +1494,10 @@ def _verify_model(
                     "to match model input signatures; using runtime reference instead."
                 )
                 testbench_outputs = None
+        elif args.test_data_inputs_only and args.test_data_dir is not None:
+            active_reporter.note(
+                "Ignoring test-data outputs by request; using runtime reference instead."
+            )
         if testbench_inputs is None:
             testbench_inputs, testbench_optional_inputs = (
                 _generate_random_testbench_inputs(graph.inputs)
