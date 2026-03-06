@@ -11,7 +11,7 @@ Overview:
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
-See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.
+See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
 
 Floating-point verification first ignores very small differences up to **1.0 × [machine epsilon](https://en.wikipedia.org/wiki/Machine_epsilon) of the evaluated floating-point type**, treating such values as equal. For values with a larger absolute difference, the ULP distance is computed, and the maximum ULP distance is reported.
 
