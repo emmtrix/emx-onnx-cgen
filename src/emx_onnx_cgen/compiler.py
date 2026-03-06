@@ -382,10 +382,7 @@ class Compiler:
         if not shape_inputs:
             return graph
         if not any(
-            (
-                isinstance(value.type, TensorType)
-                and bool(value.type.dim_params)
-            )
+            (isinstance(value.type, TensorType) and bool(value.type.dim_params))
             or (
                 isinstance(value.type, SequenceType)
                 and bool(value.type.elem.dim_params)
@@ -397,7 +394,9 @@ class Compiler:
             import onnxruntime as ort
         except Exception:
             return graph
-        has_sequence_insert = any(node.op_type == "SequenceInsert" for node in graph.nodes)
+        has_sequence_insert = any(
+            node.op_type == "SequenceInsert" for node in graph.nodes
+        )
         sequence_elem_shapes_by_name: dict[str, tuple[int, ...]] = {}
         if not has_sequence_insert:
             for value in graph.inputs:

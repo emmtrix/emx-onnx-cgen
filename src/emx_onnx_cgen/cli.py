@@ -1477,9 +1477,7 @@ def _verify_model(
             testbench_optional_inputs,
             adjusted_test_inputs,
             shape_inference_inputs,
-        ) = (
-            _load_test_data_inputs(model, args.test_data_dir)
-        )
+        ) = _load_test_data_inputs(model, args.test_data_dir)
         _decode_image_decoder_inputs(model, testbench_inputs)
         if args.test_data_dir is not None and testbench_inputs is None:
             raise CodegenError(
