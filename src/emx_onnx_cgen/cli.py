@@ -35,7 +35,7 @@ from .testbench import decode_testbench_array
 from .verification import worst_ulp_diff
 
 LOGGER = logging.getLogger(__name__)
-_NONDETERMINISTIC_OPERATORS = {"Bernoulli"}
+_NONDETERMINISTIC_OPERATORS = {"Bernoulli", "RandomUniform", "RandomUniformLike"}
 _EMX_STRING_MAX_LEN = 256
 _ENABLE_SANITIZE_ENV = "EMX_ENABLE_SANITIZE"
 

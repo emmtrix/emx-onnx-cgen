@@ -8,6 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1623 / 1802, 90.1% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1625 / 1802, 90.2% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 124 / 125, 99.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
@@ -22,6 +23,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 Test directory: `onnx-org/onnx/backend/test/data`
 
 Coverage 1623 / 1802 ONNX files (90.1%).
+Coverage 1625 / 1802 ONNX files (90.2%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -241,7 +243,7 @@ Coverage 1623 / 1802 ONNX files (90.1%).
 | node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_1d_default/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_ceil/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
-| node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx | 22 | Data | ❌ | Out of tolerance (max ULP 2983) |
+| node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_default/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_dilations/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_pads/model.onnx | 22 | Data | ✅ | OK (max ULP 3) |
@@ -269,10 +271,10 @@ Coverage 1623 / 1802 ONNX files (90.1%).
 | node/test_batchnorm_example_training_mode/model.onnx | 15 | Data | ✅ | OK (max ULP 6) |
 | node/test_bernoulli/model.onnx | 22 | Data | ✅ | OK (non-deterministic output) |
 | node/test_bernoulli_double/model.onnx | 22 | Data | ✅ | OK (non-deterministic output) |
-| node/test_bernoulli_double_expanded/model.onnx | 22 | Data | ❌ | Unsupported op RandomUniformLike |
-| node/test_bernoulli_expanded/model.onnx | 22 | Data | ❌ | Unsupported op RandomUniformLike |
+| node/test_bernoulli_double_expanded/model.onnx | 22 | Data | ✅ | OK (non-deterministic output) |
+| node/test_bernoulli_expanded/model.onnx | 22 | Data | ✅ | OK (non-deterministic output) |
 | node/test_bernoulli_seed/model.onnx | 22 | Data | ✅ | OK (non-deterministic output) |
-| node/test_bernoulli_seed_expanded/model.onnx | 22 | Data | ❌ | Unsupported op RandomUniformLike |
+| node/test_bernoulli_seed_expanded/model.onnx | 22 | Data | ✅ | OK (non-deterministic output) |
 | node/test_bitshift_left_uint16/model.onnx | 11 | Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_left_uint32/model.onnx | 11 | Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_left_uint64/model.onnx | 11 | Data | ✅ | OK (max abs diff 0) |
