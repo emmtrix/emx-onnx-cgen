@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported op RoiAlign",
+  "error": "OK (max ULP 36)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_roialign_mode_max model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "RoiAlign"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "4c2ab89a4e8137f10989beca1ceb4d13afe19c1e03de465a00a087fa73e08b01"
 }
