@@ -1,0 +1,128 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    for (idx_t roi_idx = 0; roi_idx < {{ num_rois }}; ++roi_idx) {
+        const idx_t batch_index = (idx_t){{ batch_indices }}[roi_idx];
+        const {{ c_type }} x1 = {{ rois }}[roi_idx][0] * ({{ c_type }})({{ spatial_scale }});
+        const {{ c_type }} y1 = {{ rois }}[roi_idx][1] * ({{ c_type }})({{ spatial_scale }});
+        const {{ c_type }} x2 = {{ rois }}[roi_idx][2] * ({{ c_type }})({{ spatial_scale }});
+        const {{ c_type }} y2 = {{ rois }}[roi_idx][3] * ({{ c_type }})({{ spatial_scale }});
+{% if coordinate_transformation_mode == "half_pixel" %}
+        const {{ c_type }} roi_start_w = x1 - ({{ c_type }})0.5;
+        const {{ c_type }} roi_start_h = y1 - ({{ c_type }})0.5;
+        const {{ c_type }} roi_end_w = x2 - ({{ c_type }})0.5;
+        const {{ c_type }} roi_end_h = y2 - ({{ c_type }})0.5;
+        const {{ c_type }} roi_width = roi_end_w - roi_start_w;
+        const {{ c_type }} roi_height = roi_end_h - roi_start_h;
+{% else %}
+        const {{ c_type }} roi_start_w = x1;
+        const {{ c_type }} roi_start_h = y1;
+        const {{ c_type }} roi_end_w = x2;
+        const {{ c_type }} roi_end_h = y2;
+        const {{ c_type }} roi_width = {{ scalar_fn(SF.MAXIMUM, dtype) }}(roi_end_w - roi_start_w, ({{ c_type }})1.0);
+        const {{ c_type }} roi_height = {{ scalar_fn(SF.MAXIMUM, dtype) }}(roi_end_h - roi_start_h, ({{ c_type }})1.0);
+{% endif %}
+        const {{ c_type }} bin_w = roi_width / ({{ c_type }}){{ output_width }};
+        const {{ c_type }} bin_h = roi_height / ({{ c_type }}){{ output_height }};
+
+        int64_t grid_h = {{ sampling_ratio }};
+        int64_t grid_w = {{ sampling_ratio }};
+        if (grid_h <= 0) {
+            grid_h = (int64_t)ceil((double)(roi_height / ({{ c_type }}){{ output_height }}));
+        }
+        if (grid_w <= 0) {
+            grid_w = (int64_t)ceil((double)(roi_width / ({{ c_type }}){{ output_width }}));
+        }
+{% if mode == "avg" %}
+        const int64_t sample_count = grid_h * grid_w;
+{% endif %}
+
+        for (idx_t c = 0; c < {{ channels }}; ++c) {
+            for (idx_t ph = 0; ph < {{ output_height }}; ++ph) {
+                for (idx_t pw = 0; pw < {{ output_width }}; ++pw) {
+{% if mode == "max" %}
+                    {{ c_type }} out_value = ({{ c_type }})0;
+                    int has_sample = 0;
+{% else %}
+                    double out_value = 0.0;
+{% endif %}
+
+                    for (idx_t iy = 0; iy < grid_h; ++iy) {
+                        const double yy = (double)roi_start_h +
+                            ((double)ph + ((double)iy + 0.5) / (double)grid_h) * (double)bin_h;
+                        for (idx_t ix = 0; ix < grid_w; ++ix) {
+                            const double xx = (double)roi_start_w +
+                                ((double)pw + ((double)ix + 0.5) / (double)grid_w) * (double)bin_w;
+                            double sample = 0.0;
+                            if (!(yy < -1.0 || yy > {{ input_height }} || xx < -1.0 || xx > {{ input_width }})) {
+                                double y = yy;
+                                if (y < 0.0) {
+                                    y = 0.0;
+                                }
+                                double x = xx;
+                                if (x < 0.0) {
+                                    x = 0.0;
+                                }
+                                idx_t y_low = (idx_t)y;
+                                idx_t x_low = (idx_t)x;
+                                idx_t y_high;
+                                idx_t x_high;
+                                if (y_low >= {{ input_height }} - 1) {
+                                    y_high = {{ input_height }} - 1;
+                                    y_low = {{ input_height }} - 1;
+                                    y = (double)y_low;
+                                } else {
+                                    y_high = y_low + 1;
+                                }
+                                if (x_low >= {{ input_width }} - 1) {
+                                    x_high = {{ input_width }} - 1;
+                                    x_low = {{ input_width }} - 1;
+                                    x = (double)x_low;
+                                } else {
+                                    x_high = x_low + 1;
+                                }
+                                const double ly = y - (double)y_low;
+                                const double lx = x - (double)x_low;
+                                const double hy = 1.0 - ly;
+                                const double hx = 1.0 - lx;
+
+                                const double v1 = (double){{ input0 }}[batch_index][c][y_low][x_low];
+                                const double v2 = (double){{ input0 }}[batch_index][c][y_low][x_high];
+                                const double v3 = (double){{ input0 }}[batch_index][c][y_high][x_low];
+                                const double v4 = (double){{ input0 }}[batch_index][c][y_high][x_high];
+{% if mode == "avg" %}
+                                const double bilinear =
+                                    hy * hx * v1 +
+                                    hy * lx * v2 +
+                                    ly * hx * v3 +
+                                    ly * lx * v4;
+{% endif %}
+{% if mode == "max" %}
+                                const {{ c_type }} w1v = hy * hx * v1;
+                                const {{ c_type }} w2v = hy * lx * v2;
+                                const {{ c_type }} w3v = ly * hx * v3;
+                                const {{ c_type }} w4v = ly * lx * v4;
+                                sample = {{ scalar_fn(SF.MAXIMUM, dtype) }}({{ scalar_fn(SF.MAXIMUM, dtype) }}(w1v, w2v), {{ scalar_fn(SF.MAXIMUM, dtype) }}(w3v, w4v));
+{% else %}
+                                sample = bilinear;
+{% endif %}
+                            }
+{% if mode == "max" %}
+                            if (!has_sample) {
+                                out_value = sample;
+                                has_sample = 1;
+                            } else {
+                                out_value = {{ scalar_fn(SF.MAXIMUM, dtype) }}(out_value, sample);
+                            }
+{% else %}
+                            out_value += sample;
+{% endif %}
+                        }
+                    }
+{% if mode == "avg" %}
+                    out_value /= (double)({{ scalar_fn(SF.MAXIMUM, dtype) }}(({{ c_type }})sample_count, ({{ c_type }})1));
+{% endif %}
+                    {{ output }}[roi_idx][c][ph][pw] = ({{ c_type }})out_value;
+                }
+            }
+        }
+    }
+}

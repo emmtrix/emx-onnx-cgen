@@ -90,6 +90,7 @@ _LOWERING_MODULES = [
     "sequence_length",
     "rms_normalization",
     "rotary_embedding",
+    "roi_align",
     "scatter",
     "scatter_elements",
     "scatter_nd",
