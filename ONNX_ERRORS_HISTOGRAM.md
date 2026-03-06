@@ -22,7 +22,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op RNN | 4 | 22 |
 | Unsupported op RandomUniformLike | 3 | 22 |
 | Unsupported op RegexFullMatch | 3 | 20 |
-| Unsupported op RoiAlign | 3 | 22 |
 | '*' | 2 |  |
 | Unsupported op Det | 2 | 22 |
 | Unsupported op MaxUnpool | 2 | 22 |
@@ -47,7 +46,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op RNN | 22 | 4 |
 | Out of tolerance | 22 | 3 |
 | Unsupported op RandomUniformLike | 22 | 3 |
-| Unsupported op RoiAlign | 22 | 3 |
 | Unsupported op Det | 22 | 2 |
 | Unsupported op MaxUnpool | 22 | 2 |
 | Unsupported op RandomUniform | 22 | 1 |
