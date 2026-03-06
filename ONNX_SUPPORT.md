@@ -8,6 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1611 / 1802, 89.4% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1608 / 1802, 89.2% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
@@ -22,6 +23,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 Test directory: `onnx-org/onnx/backend/test/data`
 
 Coverage 1611 / 1802 ONNX files (89.4%).
+Coverage 1608 / 1802 ONNX files (89.2%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -59,7 +61,7 @@ Coverage 1611 / 1802 ONNX files (89.4%).
 | node/test_affine_grid_3d_align_corners/model.onnx | 20 | Data | ✅ | OK (max ULP 23) |
 | node/test_affine_grid_3d_align_corners_expanded/model.onnx | 20 | Data | ✅ | OK (max ULP 23) |
 | node/test_affine_grid_3d_expanded/model.onnx | 20 | Data | ❌ | Out of tolerance (max ULP 169) |
-| node/test_ai_onnx_ml_array_feature_extractor/model.onnx |  | Data | ❌ | Unsupported op ArrayFeatureExtractor |
+| node/test_ai_onnx_ml_array_feature_extractor/model.onnx |  | Data | ✅ | OK (max ULP 0) |
 | node/test_ai_onnx_ml_binarizer/model.onnx |  | Data | ❌ | Unsupported op Binarizer |
 | node/test_ai_onnx_ml_label_encoder_string_int/model.onnx |  | Data | ✅ | OK (max abs diff 0) |
 | node/test_ai_onnx_ml_label_encoder_string_int_no_default/model.onnx |  | Data | ✅ | OK (max abs diff 0) |

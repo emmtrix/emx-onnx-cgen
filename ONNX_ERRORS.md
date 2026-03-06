@@ -26,7 +26,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op MaxUnpool | 2 | 22 |
 | Graph must contain at least one node | 1 | 25 |
 | Pad value input must be a scalar | 1 | 24 |
-| Unsupported op ArrayFeatureExtractor | 1 |  |
 | Unsupported op Binarizer | 1 |  |
 | Unsupported op Loop | 1 | 16 |
 | Unsupported op RandomUniform | 1 | 22 |
@@ -71,7 +70,6 @@ Lists every ONNX file with a non-success verification outcome.
 | node/test_adam_multiple/model.onnx |  | Data | ❌ | Out of tolerance (max ULP 62311) |
 | node/test_affine_grid_3d/model.onnx | 20 | Data | ❌ | Out of tolerance (max ULP 151) |
 | node/test_affine_grid_3d_expanded/model.onnx | 20 | Data | ❌ | Out of tolerance (max ULP 169) |
-| node/test_ai_onnx_ml_array_feature_extractor/model.onnx |  | Data | ❌ | Unsupported op ArrayFeatureExtractor |
 | node/test_ai_onnx_ml_binarizer/model.onnx |  | Data | ❌ | Unsupported op Binarizer |
 | node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | 24 | Data | ❌ | Pad value input must be a scalar |
 | node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx | 22 | Data | ❌ | Out of tolerance (max ULP 2983) |

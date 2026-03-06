@@ -707,6 +707,106 @@ class GatherOp(GatherLikeOpBase):
 
 
 @dataclass(frozen=True)
+class ArrayFeatureExtractorOp(RenderableOpBase):
+    __io_inputs__ = ("data", "indices")
+    __io_outputs__ = ("output",)
+    data: str
+    indices: str
+    output: str
+
+    def infer_types(self, ctx: OpContext) -> None:
+        data_dtype = ctx.dtype(self.data)
+        if data_dtype == ScalarType.STRING:
+            raise UnsupportedOpError(
+                "ArrayFeatureExtractor with string tensors is not supported"
+            )
+        output_dtype = ctx.dtype(self.output)
+        if output_dtype != data_dtype:
+            raise UnsupportedOpError(
+                f"ArrayFeatureExtractor output dtype must match input dtype, "
+                f"got {output_dtype.onnx_name} and {data_dtype.onnx_name}"
+            )
+        indices_dtype = ctx.dtype(self.indices)
+        if indices_dtype not in {ScalarType.I64, ScalarType.I32}:
+            raise UnsupportedOpError(
+                "ArrayFeatureExtractor indices must be int32 or int64, "
+                f"got {indices_dtype.onnx_name}"
+            )
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        data_shape = ctx.shape(self.data)
+        indices_shape = ctx.shape(self.indices)
+        if not data_shape:
+            raise ShapeInferenceError(
+                "ArrayFeatureExtractor does not support scalar input tensors"
+            )
+        if not indices_shape:
+            raise ShapeInferenceError(
+                "ArrayFeatureExtractor requires indices to have rank >= 1"
+            )
+        num_indices = _shape_product(indices_shape)
+        if len(data_shape) == 1:
+            output_shape = (num_indices,)
+        else:
+            output_shape = (*data_shape[:-1], num_indices)
+        ctx.set_shape(self.output, output_shape)
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        output_dtype = emitter.op_output_dtype(self)
+        c_type = output_dtype.c_type
+        params = emitter.shared_param_map(
+            [
+                ("data", self.data),
+                ("indices", self.indices),
+                ("output", self.output),
+            ]
+        )
+        data_shape = emitter.ctx_shape(self.data)
+        indices_shape = emitter.ctx_shape(self.indices)
+        output_shape = emitter.ctx_shape(self.output)
+        prefix_shape = output_shape[:-1]
+        prefix_loop_vars = CEmitterCompat.loop_vars(prefix_shape)
+        indices_loop_vars = tuple(f"j{index}" for index in range(len(indices_shape)))
+        num_indices = _shape_product(indices_shape)
+        indices_strides = _compute_strides(indices_shape)
+        data_suffix = emitter.param_array_suffix(data_shape)
+        indices_suffix = emitter.param_array_suffix(indices_shape)
+        output_suffix = emitter.param_array_suffix(output_shape)
+        indices_c_type = emitter.ctx_dtype(self.indices).c_type
+        param_decls = emitter.build_param_decls(
+            [
+                (params["data"], c_type, data_suffix, True),
+                (params["indices"], indices_c_type, indices_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        rendered = (
+            state.templates["array_feature_extractor"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                data=params["data"],
+                indices=params["indices"],
+                output=params["output"],
+                prefix_shape=CEmitterCompat.codegen_shape(prefix_shape),
+                prefix_loop_vars=prefix_loop_vars,
+                indices_shape=CEmitterCompat.codegen_shape(indices_shape),
+                indices_loop_vars=indices_loop_vars,
+                index_components=tuple(zip(indices_loop_vars, indices_strides)),
+                num_indices=num_indices,
+                last_axis_dim=data_shape[-1],
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+
+@dataclass(frozen=True)
 class GatherNDOp(RenderableOpBase):
     __io_inputs__ = ("data", "indices")
     __io_outputs__ = ("output",)

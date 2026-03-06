@@ -12,6 +12,7 @@ from .elementwise import (
 )
 from .misc import (
     AffineGridOp,
+    ArrayFeatureExtractorOp,
     BernoulliOp,
     BlackmanWindowOp,
     CastOp,
@@ -127,6 +128,7 @@ __all__ = [
     "AdamOp",
     "AdagradOp",
     "AffineGridOp",
+    "ArrayFeatureExtractorOp",
     "ArgReduceOp",
     "AttentionOp",
     "AveragePoolOp",
