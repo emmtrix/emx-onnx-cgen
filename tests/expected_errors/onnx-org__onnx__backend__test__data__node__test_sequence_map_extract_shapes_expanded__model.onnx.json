@@ -1,4 +1,4 @@
 {
-  "error": "'SequenceMap_test_sequence_map_extract_shapes_expanded_function_x'",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes_expanded model.onnx --test-data-dir test_data_set_0"
 }

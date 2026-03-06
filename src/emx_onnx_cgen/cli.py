@@ -26,7 +26,7 @@ from shared.ulp import ulp_intdiff_float
 from ._build_info import BUILD_DATE, GIT_VERSION
 from .compiler import Compiler, CompilerOptions
 from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
-from .ir.model import TensorType
+from .ir.model import SequenceType, TensorType
 from .onnx_import import import_onnx
 from .determinism import deterministic_reference_runtime
 from .onnxruntime_utils import make_deterministic_session_options
@@ -1467,16 +1467,12 @@ def _verify_model(
                 None,
             )
     output_compare_names = set(original_output_names)
-    requires_non_tensor_reference = any(
-        value.name in output_compare_names and not isinstance(value.type, TensorType)
-        for value in graph.outputs
-    )
     timings: dict[str, float] = {}
     lowered_sequence_input_shapes: dict[str, tuple[int, ...]] = {}
     try:
         active_reporter.info("")
         codegen_started = active_reporter.start_step("Generating C code")
-        testbench_inputs, testbench_optional_inputs, reshaped_tensor_inputs = (
+        testbench_inputs, testbench_optional_inputs, adjusted_test_inputs = (
             _load_test_data_inputs(model, args.test_data_dir)
         )
         _decode_image_decoder_inputs(model, testbench_inputs)
@@ -1488,10 +1484,11 @@ def _verify_model(
         testbench_outputs = None
         if not args.per_node_accuracy and not args.test_data_inputs_only:
             testbench_outputs = _load_test_data_outputs(model, args.test_data_dir)
-            if reshaped_tensor_inputs and testbench_outputs is not None:
+            if adjusted_test_inputs and testbench_outputs is not None:
                 active_reporter.note(
-                    "Ignoring test-data outputs because input tensors were reshaped "
-                    "to match model input signatures; using runtime reference instead."
+                    "Ignoring test-data outputs because test-data inputs were "
+                    "normalized/reshaped for the testbench format; using runtime "
+                    "reference instead."
                 )
                 testbench_outputs = None
         elif args.test_data_inputs_only and args.test_data_dir is not None:
@@ -1772,20 +1769,9 @@ def _verify_model(
                 generated_checksum,
             )
 
-        if requires_non_tensor_reference and testbench_outputs is None:
-            return (
-                None,
-                "Verification for non-tensor outputs requires --test-data-dir.",
-                operators,
-                opset_version,
-                generated_checksum,
-            )
-
         if testbench_inputs is not None:
             inputs = {}
             for value in graph.inputs:
-                if not isinstance(value.type, TensorType):
-                    continue
                 values = testbench_inputs.get(value.name)
                 if values is None:
                     return (
@@ -1795,9 +1781,26 @@ def _verify_model(
                         opset_version,
                         generated_checksum,
                     )
-                inputs[value.name] = values.astype(
-                    input_dtypes[value.name].np_dtype, copy=False
-                )
+                if isinstance(value.type, TensorType):
+                    inputs[value.name] = values.astype(
+                        input_dtypes[value.name].np_dtype, copy=False
+                    )
+                    continue
+                if isinstance(value.type, SequenceType):
+                    seq_values = np.asarray(values)
+                    if seq_values.ndim < 1:
+                        return (
+                            None,
+                            f"Sequence input {value.name} must be at least 1D.",
+                            operators,
+                            opset_version,
+                            generated_checksum,
+                        )
+                    seq_dtype = value.type.elem.dtype.np_dtype
+                    inputs[value.name] = [
+                        np.asarray(seq_values[index]).astype(seq_dtype, copy=False)
+                        for index in range(int(seq_values.shape[0]))
+                    ]
         else:
             payload_inputs = payload.get("inputs", {})
             inputs = {}
@@ -1950,11 +1953,13 @@ def _verify_model(
                     continue
                 if isinstance(value.type, TensorType):
                     continue
-                expected_sequence = (
-                    None
-                    if testbench_outputs is None
-                    else testbench_outputs.get(value.name)
-                )
+                expected_sequence: Any
+                if testbench_outputs is None:
+                    expected_sequence = (
+                        None if runtime_outputs is None else runtime_outputs.get(value.name)
+                    )
+                else:
+                    expected_sequence = testbench_outputs.get(value.name)
                 if not isinstance(expected_sequence, list):
                     raise AssertionError(
                         f"Missing sequence reference output for {value.name}."
@@ -2259,6 +2264,7 @@ def _load_test_data_inputs(
     inputs: dict[str, np.ndarray] = {}
     optional_flags: dict[str, bool] = {}
     reshaped_tensor_inputs = False
+    normalized_sequence_inputs = False
 
     def _sequence_tensor_values_to_array(
         *,
@@ -2266,6 +2272,7 @@ def _load_test_data_inputs(
         tensors: list[np.ndarray],
         tensor_type: onnx.TypeProto.Tensor,
     ) -> np.ndarray:
+        nonlocal normalized_sequence_inputs
         if not tensors:
             dtype_info = onnx._mapping.TENSOR_TYPE_MAP.get(tensor_type.elem_type)
             if dtype_info is None:
@@ -2301,6 +2308,7 @@ def _load_test_data_inputs(
                 name,
                 tuple(target_shape),
             )
+            normalized_sequence_inputs = True
             normalized: list[np.ndarray] = []
             for tensor in tensors:
                 item = np.zeros(tuple(target_shape), dtype=tensor.dtype)
@@ -2424,7 +2432,11 @@ def _load_test_data_inputs(
             value_info.name,
         )
         return None, None, False
-    return inputs, optional_flags, reshaped_tensor_inputs
+    return (
+        inputs,
+        optional_flags,
+        reshaped_tensor_inputs or normalized_sequence_inputs,
+    )
 
 
 def _load_test_data_outputs(
