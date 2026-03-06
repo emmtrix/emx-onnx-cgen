@@ -2809,6 +2809,23 @@ def _make_topk_model(
     return model
 
 
+def _make_det_model(
+    *, input_shape: list[int], output_shape: list[int], dtype: int, opset: int = 22
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("input", dtype, input_shape)
+    output_info = helper.make_tensor_value_info("output", dtype, output_shape)
+    node = helper.make_node("Det", inputs=[input_info.name], outputs=[output_info.name])
+    graph = helper.make_graph([node], "det_graph", [input_info], [output_info])
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 9
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_unsqueeze_model(
     *, input_shape: list[int], axes: list[int], opset: int = 13
 ) -> onnx.ModelProto:
@@ -6265,6 +6282,27 @@ def test_topk_matches_onnxruntime(case: dict[str, object]) -> None:
         dtype=TensorProto.FLOAT,
     )
     _run_ort_compare(model)
+
+
+def test_det_op_matches_onnxruntime() -> None:
+    model = _make_det_model(
+        input_shape=[2, 3, 3],
+        output_shape=[2],
+        dtype=TensorProto.FLOAT,
+    )
+    _run_ort_compare(model)
+
+
+def test_det_op_compiles_2d() -> None:
+    model = _make_det_model(
+        input_shape=[3, 3],
+        output_shape=[],
+        dtype=TensorProto.DOUBLE,
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "EMX_NODE_FN void" in generated
+    assert "det_value" in generated
+    assert "[i0][r0][c0]" not in generated
 
 
 def test_argmax_select_last_index_matches_numpy() -> None:

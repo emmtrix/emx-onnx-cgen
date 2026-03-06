@@ -21,7 +21,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op RandomUniformLike | 3 | 22 |
 | Unsupported op RegexFullMatch | 3 | 20 |
 | '*' | 2 |  |
-| Unsupported op Det | 2 | 22 |
 | Graph must contain at least one node | 1 | 25 |
 | Pad value input must be a scalar | 1 | 24 |
 | Unsupported op Loop | 1 | 16 |
@@ -225,8 +224,6 @@ Lists every ONNX file with a non-success verification outcome.
 | node/test_dequantizelinear_int4/model.onnx | 25 | Data | ❌ | Unsupported elem_type 22 (INT4) for tensor 'x'. |
 | node/test_dequantizelinear_uint2/model.onnx | 25 | Data | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'x'. |
 | node/test_dequantizelinear_uint4/model.onnx | 25 | Data | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'x'. |
-| node/test_det_2d/model.onnx | 22 | Data | ❌ | Unsupported op Det |
-| node/test_det_nd/model.onnx | 22 | Data | ❌ | Unsupported op Det |
 | node/test_gridsample_bicubic/model.onnx | 22 | Data | ❌ | Out of tolerance (max ULP 1678) |
 | node/test_loop16_seq_none/model.onnx | 16 | Data | ❌ | Unsupported op Loop |
 | node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | 22 | Data | ❌ | Out of tolerance (max ULP 357) |
