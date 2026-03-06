@@ -78,6 +78,7 @@ _LOWERING_MODULES = [
     "qlinear_mul",
     "qlinear_softmax",
     "quantize_linear",
+    "random_uniform",
     "range",
     "reduce",
     "reshape",

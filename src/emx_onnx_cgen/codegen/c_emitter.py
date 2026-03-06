@@ -845,6 +845,7 @@ class CEmitter:
                 "reshape": self._env.get_template("reshape_op.c.j2"),
                 "identity": self._env.get_template("identity_op.c.j2"),
                 "bernoulli": self._env.get_template("bernoulli_op.c.j2"),
+                "random_uniform": self._env.get_template("random_uniform_op.c.j2"),
                 "dropout": self._env.get_template("dropout_op.c.j2"),
                 "eye_like": self._env.get_template("eye_like_op.c.j2"),
                 "trilu": self._env.get_template("trilu_op.c.j2"),
