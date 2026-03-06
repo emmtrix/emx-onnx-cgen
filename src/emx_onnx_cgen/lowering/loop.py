@@ -260,6 +260,17 @@ def _lower_loop_sequence_map(
     output_elem_shapes: list[tuple[int, ...]] = []
     output_elem_dtypes = []
 
+    def _resolve_external_source(name: str) -> tuple[str, bool]:
+        spec = produced_by.get(name)
+        if spec is None:
+            return name, name in sequence_inputs
+        kind, args = spec
+        if kind == "sequence_elem":
+            return args[0], True
+        if kind == "tensor":
+            return args[0], False
+        raise UnsupportedOpError("Unsupported op Loop")
+
     for state_in, state_out, output_name in zip(
         state_inputs, state_outputs, node.outputs
     ):
@@ -279,9 +290,9 @@ def _lower_loop_sequence_map(
             raise UnsupportedOpError("Unsupported op Loop")
         kind, args = spec
         if kind == "shape":
-            src_name = args[0]
+            src_name, src_is_sequence = _resolve_external_source(args[0])
             src_value = graph.find_value(src_name)
-            if src_name in sequence_inputs:
+            if src_is_sequence:
                 if not isinstance(src_value.type, SequenceType):
                     raise UnsupportedOpError("Unsupported op Loop")
                 src_shape = src_value.type.elem.shape
@@ -290,7 +301,7 @@ def _lower_loop_sequence_map(
             output_kinds.append("shape")
             output_input0.append(src_name)
             output_input1.append(None)
-            output_input0_is_sequence.append(src_name in sequence_inputs)
+            output_input0_is_sequence.append(src_is_sequence)
             output_input1_is_sequence.append(False)
             output_elem_shapes.append((len(src_shape),))
         elif kind in {"sequence_elem", "tensor"}:

@@ -19,7 +19,6 @@ Aggregates non-success verification outcomes.
 | Out of tolerance | 6 | 15, 20, 22 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op RegexFullMatch | 3 | 20 |
-| '*' | 2 |  |
 | Pad value input must be a scalar | 1 | 24 |
 | Unsupported op Loop | 1 | 16 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 1 | 12 |
@@ -228,5 +227,3 @@ Lists every ONNX file with a non-success verification outcome.
 | node/test_regex_full_match_basic/model.onnx | 20 | Data | ❌ | Unsupported op RegexFullMatch |
 | node/test_regex_full_match_email_domain/model.onnx | 20 | Data | ❌ | Unsupported op RegexFullMatch |
 | node/test_regex_full_match_empty/model.onnx | 20 | Data | ❌ | Unsupported op RegexFullMatch |
-| node/test_sequence_map_extract_shapes/model.onnx |  |  | ❌ | 'SequenceMap_0_in_0' |
-| node/test_sequence_map_extract_shapes_expanded/model.onnx |  |  | ❌ | 'SequenceMap_test_sequence_map_extract_shapes_expanded_function_x' |
