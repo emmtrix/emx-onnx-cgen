@@ -16,7 +16,7 @@ Aggregates non-success verification outcomes.
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
-| Out of tolerance | 7 | 15, 20, 22 |
+| Out of tolerance | 6 | 15, 20, 22 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op RandomUniformLike | 3 | 22 |
 | Unsupported op RegexFullMatch | 3 | 20 |
@@ -35,8 +35,8 @@ Aggregates non-success verification outcomes.
 | Unsupported op Loop | 16 | 1 |
 | Unsupported op RegexFullMatch | 20 | 3 |
 | Out of tolerance | 20 | 2 |
-| Out of tolerance | 22 | 3 |
 | Unsupported op RandomUniformLike | 22 | 3 |
+| Out of tolerance | 22 | 2 |
 | Pad value input must be a scalar | 24 | 1 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 25 | 22 |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 25 | 20 |
@@ -62,7 +62,6 @@ Lists every ONNX file with a non-success verification outcome.
 | node/test_affine_grid_3d/model.onnx | 20 | Data | ❌ | Out of tolerance (max ULP 151) |
 | node/test_affine_grid_3d_expanded/model.onnx | 20 | Data | ❌ | Out of tolerance (max ULP 169) |
 | node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | 24 | Data | ❌ | Pad value input must be a scalar |
-| node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx | 22 | Data | ❌ | Out of tolerance (max ULP 2983) |
 | node/test_bernoulli_double_expanded/model.onnx | 22 | Data | ❌ | Unsupported op RandomUniformLike |
 | node/test_bernoulli_expanded/model.onnx | 22 | Data | ❌ | Unsupported op RandomUniformLike |
 | node/test_bernoulli_seed_expanded/model.onnx | 22 | Data | ❌ | Unsupported op RandomUniformLike |
