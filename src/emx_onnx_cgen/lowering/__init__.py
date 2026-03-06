@@ -84,6 +84,7 @@ _LOWERING_MODULES = [
     "reshape",
     "resize",
     "reverse_sequence",
+    "rnn",
     "sequence_at",
     "sequence_construct",
     "sequence_empty",
