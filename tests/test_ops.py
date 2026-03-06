@@ -253,6 +253,41 @@ def _make_array_feature_extractor_model(
     return model
 
 
+def _make_binarizer_model(
+    *,
+    input_shape: list[int],
+    output_shape: list[int],
+    dtype: int,
+    threshold: float = 0.0,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("in0", dtype, input_shape)
+    output_info = helper.make_tensor_value_info("out", dtype, output_shape)
+    node = helper.make_node(
+        "Binarizer",
+        inputs=["in0"],
+        outputs=["out"],
+        domain="ai.onnx.ml",
+        threshold=threshold,
+    )
+    graph = helper.make_graph(
+        [node],
+        "binarizer_graph",
+        [input_info],
+        [output_info],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[
+            helper.make_operatorsetid("", 13),
+            helper.make_operatorsetid("ai.onnx.ml", 1),
+        ],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_adam_model(
     *, tensor_shape: list[int], tensor_count: int = 1
 ) -> onnx.ModelProto:
@@ -7491,6 +7526,37 @@ def test_lower_thresholded_relu_rejects_integer_input() -> None:
 
     with pytest.raises(UnsupportedOpError, match="floating-point inputs"):
         get_lowering("ThresholdedRelu")(graph, graph.nodes[0])
+
+
+def test_lower_binarizer_accepts_custom_threshold() -> None:
+    model = _make_binarizer_model(
+        input_shape=[2, 3],
+        output_shape=[2, 3],
+        dtype=TensorProto.FLOAT,
+        threshold=0.25,
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+
+    op = get_lowering("Binarizer")(graph, graph.nodes[0])
+
+    assert op.function == ScalarFunction.BINARIZER
+    assert op.params == pytest.approx((0.25,))
+
+
+def test_lower_binarizer_rejects_unsupported_dtype() -> None:
+    model = _make_binarizer_model(
+        input_shape=[2, 3],
+        output_shape=[2, 3],
+        dtype=TensorProto.INT16,
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+
+    with pytest.raises(
+        UnsupportedOpError, match="only supports float, int32, and int64"
+    ):
+        get_lowering("Binarizer")(graph, graph.nodes[0])
 
 
 def test_array_feature_extractor_lowering() -> None:

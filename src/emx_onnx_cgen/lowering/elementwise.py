@@ -247,6 +247,30 @@ def lower_hardsigmoid(graph: Graph, node: Node) -> UnaryOp:
     )
 
 
+@register_lowering("Binarizer")
+def lower_binarizer(graph: Graph, node: Node) -> UnaryOp:
+    if len(node.inputs) != 1 or len(node.outputs) != 1:
+        raise UnsupportedOpError("Binarizer must have 1 input and 1 output")
+    dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
+    if not (dtype.is_float or dtype in {ScalarType.I32, ScalarType.I64}):
+        raise UnsupportedOpError(
+            "Binarizer only supports float, int32, and int64 inputs"
+        )
+    for key in node.attrs:
+        if key != "threshold":
+            raise UnsupportedOpError(f"Binarizer does not support attribute {key}")
+    try:
+        threshold = float(node.attrs.get("threshold", 0.0))
+    except (TypeError, ValueError) as exc:
+        raise UnsupportedOpError("Binarizer threshold must be numeric") from exc
+    return UnaryOp(
+        input0=node.inputs[0],
+        output=node.outputs[0],
+        function=ScalarFunction.BINARIZER,
+        params=(threshold,),
+    )
+
+
 @register_lowering("Swish")
 def lower_swish(graph: Graph, node: Node) -> UnaryOp:
     if len(node.inputs) != 1 or len(node.outputs) != 1:

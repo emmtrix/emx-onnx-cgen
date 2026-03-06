@@ -1541,6 +1541,7 @@ class CEmitter:
             ScalarFunction.BITWISE_NOT,
             ScalarFunction.BITWISE_OR,
             ScalarFunction.BITWISE_XOR,
+            ScalarFunction.BINARIZER,
             ScalarFunction.CEIL,
             ScalarFunction.CELU,
             ScalarFunction.COS,

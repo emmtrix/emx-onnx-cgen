@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op Binarizer",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_binarizer model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "ai.onnx.ml::Binarizer"
-  ]
+  ],
+  "generated_checksum": "89e54823074597a373cfe4c7a52bb1cc560f9ff73e3e012997220470b83bf6b1"
 }
