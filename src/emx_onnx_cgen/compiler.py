@@ -312,7 +312,14 @@ class Compiler:
         if not shape_inputs:
             return graph
         if not any(
-            isinstance(value.type, TensorType) and value.type.dim_params
+            (
+                isinstance(value.type, TensorType)
+                and any(dim is not None for dim in value.type.dim_params)
+            )
+            or (
+                isinstance(value.type, SequenceType)
+                and any(dim is not None for dim in value.type.elem.dim_params)
+            )
             for value in graph.values + graph.inputs + graph.outputs
         ):
             return graph
@@ -320,6 +327,20 @@ class Compiler:
             import onnxruntime as ort
         except Exception:
             return graph
+        sequence_elem_shapes_by_name: dict[str, tuple[int, ...]] = {}
+        for value in graph.inputs:
+            if not isinstance(value.type, SequenceType):
+                continue
+            array = shape_inputs.get(value.name)
+            if not isinstance(array, np.ndarray) or array.ndim < 1:
+                continue
+            sequence_elem_shapes_by_name[value.name] = tuple(
+                int(dim) for dim in array.shape[1:]
+            )
+
+        ort_inputs: dict[str, np.ndarray] = {}
+        output_names: list[str] = []
+        output_arrays: list[object] = []
         try:
             model_with_outputs = onnx.ModelProto()
             model_with_outputs.CopyFrom(model)
@@ -366,11 +387,14 @@ class Compiler:
                 for name, array in shape_inputs.items()
                 if name in graph_tensor_inputs and isinstance(array, np.ndarray)
             }
-            if not ort_inputs:
-                return graph
-            output_arrays = sess.run(None, ort_inputs)
+            if ort_inputs:
+                output_arrays = sess.run(None, ort_inputs)
+            else:
+                output_arrays = []
+                output_names = []
         except Exception:
-            return graph
+            if not sequence_elem_shapes_by_name:
+                return graph
 
         shapes_by_name: dict[str, tuple[int, ...]] = {}
         for name, array in zip(output_names, output_arrays):
@@ -381,10 +405,27 @@ class Compiler:
                 shapes_by_name[name] = tuple(int(dim) for dim in array.shape)
 
         def concretize_value(value: Value) -> Value:
+            if not isinstance(value.type, TensorType):
+                if isinstance(value.type, SequenceType):
+                    elem_shape = sequence_elem_shapes_by_name.get(value.name)
+                    if elem_shape is None:
+                        return value
+                    elem = value.type.elem
+                    return Value(
+                        name=value.name,
+                        type=SequenceType(
+                            elem=TensorType(
+                                dtype=elem.dtype,
+                                shape=elem_shape,
+                                dim_params=(None,) * len(elem_shape),
+                                is_optional=elem.is_optional,
+                            ),
+                            is_optional=value.type.is_optional,
+                        ),
+                    )
+                return value
             shape = shapes_by_name.get(value.name)
             if shape is None:
-                return value
-            if not isinstance(value.type, TensorType):
                 return value
             return Value(
                 name=value.name,
