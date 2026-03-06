@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from collections.abc import Sequence
 
 from shared.scalar_types import ScalarType
@@ -484,7 +485,6 @@ def _resolve_value_shape(
                 or step_vals[0] == 0
             ):
                 return None
-            import math
 
             length = max(
                 0, math.ceil((limit_vals[0] - start_vals[0]) / step_vals[0])
@@ -604,9 +604,8 @@ def _resolve_value_shape(
             )
             if condition is None or on_true is None or on_false is None:
                 return None
-            return _broadcast_shapes(
-                _broadcast_shapes(condition, on_true), on_false
-            )
+            cond_xy = _broadcast_shapes(condition, on_true)
+            return _broadcast_shapes(cond_xy, on_false)
         if source_node.op_type == "Pad":
             if not source_node.inputs or len(source_node.outputs) != 1:
                 return None
