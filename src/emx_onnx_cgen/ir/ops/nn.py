@@ -4382,6 +4382,247 @@ class GruOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class RnnOp(RenderableOpBase):
+    __io_inputs__ = (
+        "input_x",
+        "input_w",
+        "input_r",
+        "input_b",
+        "input_sequence_lens",
+        "input_initial_h",
+    )
+    __io_outputs__ = ("output_y", "output_y_h")
+    input_x: str
+    input_w: str
+    input_r: str
+    input_b: str | None
+    input_sequence_lens: str | None
+    input_initial_h: str | None
+    output_y: str | None
+    output_y_h: str | None
+    seq_length: int
+    batch_size: int
+    input_size: int
+    hidden_size: int
+    num_directions: int
+    direction: str
+    layout: int
+    clip: float | None
+    activation_kinds: tuple[int, ...]
+    activation_alphas: tuple[float, ...]
+    activation_betas: tuple[float, ...]
+    dtype: ScalarType
+    sequence_lens_dtype: ScalarType | None
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.output_y or self.output_y_h)
+        c_type = output_dtype.c_type
+        zero_literal = output_dtype.zero_literal
+        params = emitter.shared_param_map(
+            [
+                ("input_x", self.input_x),
+                ("input_w", self.input_w),
+                ("input_r", self.input_r),
+                ("input_b", self.input_b),
+                ("input_sequence_lens", self.input_sequence_lens),
+                ("input_initial_h", self.input_initial_h),
+                ("output_y", self.output_y),
+                ("output_y_h", self.output_y_h),
+            ]
+        )
+        input_x_shape = (
+            (self.seq_length, self.batch_size, self.input_size)
+            if self.layout == 0
+            else (self.batch_size, self.seq_length, self.input_size)
+        )
+        w_shape = (self.num_directions, self.hidden_size, self.input_size)
+        r_shape = (self.num_directions, self.hidden_size, self.hidden_size)
+        b_shape = (
+            (self.num_directions, 2 * self.hidden_size)
+            if self.input_b is not None
+            else None
+        )
+        seq_shape = (self.batch_size,) if self.input_sequence_lens is not None else None
+        state_shape = (
+            (self.num_directions, self.batch_size, self.hidden_size)
+            if self.layout == 0
+            else (self.batch_size, self.num_directions, self.hidden_size)
+        )
+        h_shape = (
+            state_shape
+            if self.input_initial_h is not None or self.output_y_h is not None
+            else None
+        )
+        y_shape = (
+            (self.seq_length, self.num_directions, self.batch_size, self.hidden_size)
+            if self.layout == 0
+            else (
+                self.batch_size,
+                self.seq_length,
+                self.num_directions,
+                self.hidden_size,
+            )
+        )
+        param_decls = emitter.build_param_decls(
+            [
+                (
+                    params["input_x"],
+                    c_type,
+                    emitter.param_array_suffix(input_x_shape),
+                    True,
+                ),
+                (
+                    params["input_w"],
+                    c_type,
+                    emitter.param_array_suffix(w_shape),
+                    True,
+                ),
+                (
+                    params["input_r"],
+                    c_type,
+                    emitter.param_array_suffix(r_shape),
+                    True,
+                ),
+                (
+                    (
+                        params["input_b"],
+                        c_type,
+                        emitter.param_array_suffix(b_shape),
+                        True,
+                    )
+                    if params["input_b"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (
+                        params["input_sequence_lens"],
+                        (self.sequence_lens_dtype or ScalarType.I64).c_type,
+                        emitter.param_array_suffix(seq_shape),
+                        True,
+                    )
+                    if params["input_sequence_lens"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (
+                        params["input_initial_h"],
+                        c_type,
+                        emitter.param_array_suffix(h_shape),
+                        True,
+                    )
+                    if params["input_initial_h"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (
+                        params["output_y"],
+                        c_type,
+                        emitter.param_array_suffix(y_shape),
+                        False,
+                    )
+                    if params["output_y"]
+                    else (None, "", "", False)
+                ),
+                (
+                    (
+                        params["output_y_h"],
+                        c_type,
+                        emitter.param_array_suffix(h_shape),
+                        False,
+                    )
+                    if params["output_y_h"]
+                    else (None, "", "", False)
+                ),
+            ]
+        )
+        activation_functions = tuple(
+            emitter.rnn_activation_function_name(kind, alpha, beta, self.dtype)
+            for kind, alpha, beta in zip(
+                self.activation_kinds,
+                self.activation_alphas,
+                self.activation_betas,
+            )
+        )
+        rendered = (
+            state.templates["rnn"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input_x=params["input_x"],
+                input_w=params["input_w"],
+                input_r=params["input_r"],
+                input_b=params["input_b"],
+                input_sequence_lens=params["input_sequence_lens"],
+                input_initial_h=params["input_initial_h"],
+                output_y=params["output_y"],
+                output_y_h=params["output_y_h"],
+                params=param_decls,
+                c_type=c_type,
+                seq_c_type=(self.sequence_lens_dtype or ScalarType.I64).c_type,
+                zero_literal=zero_literal,
+                clip_literal=(
+                    emitter.format_floating(self.clip, self.dtype)
+                    if self.clip is not None
+                    else emitter.format_literal(self.dtype, 0)
+                ),
+                use_clip=int(self.clip is not None and self.clip > 0),
+                seq_length=self.seq_length,
+                batch_size=self.batch_size,
+                input_size=self.input_size,
+                hidden_size=self.hidden_size,
+                num_directions=self.num_directions,
+                layout=self.layout,
+                direction=self.direction,
+                activation_functions=activation_functions,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        outputs: list[tuple[str, tuple[int, ...], ScalarType]] = []
+        if self.output_y is not None:
+            if self.layout == 0:
+                y_shape = (
+                    self.seq_length,
+                    self.num_directions,
+                    self.batch_size,
+                    self.hidden_size,
+                )
+            else:
+                y_shape = (
+                    self.batch_size,
+                    self.seq_length,
+                    self.num_directions,
+                    self.hidden_size,
+                )
+            outputs.append((self.output_y, y_shape, self.dtype))
+        if self.output_y_h is not None:
+            if self.layout == 0:
+                state_shape = (
+                    self.num_directions,
+                    self.batch_size,
+                    self.hidden_size,
+                )
+            else:
+                state_shape = (
+                    self.batch_size,
+                    self.num_directions,
+                    self.hidden_size,
+                )
+            outputs.append((self.output_y_h, state_shape, self.dtype))
+        return tuple(outputs)
+
+
+@dataclass(frozen=True)
 class LstmOp(RenderableOpBase):
     __io_inputs__ = (
         "input_x",

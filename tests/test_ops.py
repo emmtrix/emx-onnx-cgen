@@ -1946,6 +1946,84 @@ def _make_lstm_model(
     return model
 
 
+def _make_rnn_model(
+    *,
+    seq_length: int,
+    batch_size: int,
+    input_size: int,
+    hidden_size: int,
+    dtype: int,
+    include_optional_inputs: bool,
+    include_y: bool,
+    include_y_h: bool,
+    layout: int = 0,
+) -> onnx.ModelProto:
+    x_shape = (
+        [seq_length, batch_size, input_size]
+        if layout == 0
+        else [batch_size, seq_length, input_size]
+    )
+    inputs = [
+        helper.make_tensor_value_info("X", dtype, x_shape),
+        helper.make_tensor_value_info("W", dtype, [1, hidden_size, input_size]),
+        helper.make_tensor_value_info("R", dtype, [1, hidden_size, hidden_size]),
+    ]
+    input_names = ["X", "W", "R"]
+    if include_optional_inputs:
+        state_shape = (
+            [1, batch_size, hidden_size]
+            if layout == 0
+            else [batch_size, 1, hidden_size]
+        )
+        inputs.extend(
+            [
+                helper.make_tensor_value_info("B", dtype, [1, 2 * hidden_size]),
+                helper.make_tensor_value_info(
+                    "sequence_lens", TensorProto.INT32, [batch_size]
+                ),
+                helper.make_tensor_value_info("initial_h", dtype, state_shape),
+            ]
+        )
+        input_names.extend(["B", "sequence_lens", "initial_h"])
+    outputs = []
+    output_names: list[str] = []
+    if include_y:
+        y_shape = (
+            [seq_length, 1, batch_size, hidden_size]
+            if layout == 0
+            else [batch_size, seq_length, 1, hidden_size]
+        )
+        outputs.append(helper.make_tensor_value_info("Y", dtype, y_shape))
+        output_names.append("Y")
+    state_shape = (
+        [1, batch_size, hidden_size] if layout == 0 else [batch_size, 1, hidden_size]
+    )
+    if include_y_h:
+        outputs.append(helper.make_tensor_value_info("Y_h", dtype, state_shape))
+        output_names.append("Y_h")
+    node = helper.make_node(
+        "RNN",
+        inputs=input_names,
+        outputs=output_names,
+        hidden_size=hidden_size,
+        layout=layout,
+    )
+    graph = helper.make_graph(
+        [node],
+        "rnn_graph",
+        inputs,
+        outputs,
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 14)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _lstm_reference(
     *,
     x: np.ndarray,
@@ -6894,6 +6972,21 @@ def test_lstm_op_matches_onnxruntime() -> None:
         include_y=True,
         include_y_h=True,
         include_y_c=False,
+        layout=0,
+    )
+    _run_ort_compare(model)
+
+
+def test_rnn_op_matches_onnxruntime() -> None:
+    model = _make_rnn_model(
+        seq_length=2,
+        batch_size=2,
+        input_size=3,
+        hidden_size=4,
+        dtype=TensorProto.FLOAT,
+        include_optional_inputs=False,
+        include_y=True,
+        include_y_h=True,
         layout=0,
     )
     _run_ort_compare(model)

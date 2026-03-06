@@ -69,6 +69,7 @@ from ..ir.ops import (
     LpNormalizationOp,
     LpPoolOp,
     LrnOp,
+    RnnOp,
     LstmOp,
     MatMulOp,
     MaxPoolOp,
@@ -814,6 +815,7 @@ class CEmitter:
                 "rms_norm": self._env.get_template("rms_normalization_op.c.j2"),
                 "lrn": self._env.get_template("lrn_op.c.j2"),
                 "gru": self._env.get_template("gru_op.c.j2"),
+                "rnn": self._env.get_template("rnn_op.c.j2"),
                 "lstm": self._env.get_template("lstm_op.c.j2"),
                 "adam": self._env.get_template("adam_op.c.j2"),
                 "adagrad": self._env.get_template("adagrad_op.c.j2"),
@@ -1800,6 +1802,7 @@ class CEmitter:
             | RMSNormalizationOp
             | LrnOp
             | GruOp
+            | RnnOp
             | LstmOp
             | SoftmaxOp
             | LogSoftmaxOp
