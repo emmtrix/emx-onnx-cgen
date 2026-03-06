@@ -1,0 +1,50 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% for dim in batch_shape %}
+for (idx_t {{ batch_loop_vars[loop.index0] }} = 0; {{ batch_loop_vars[loop.index0] }} < {{ dim }}; ++{{ batch_loop_vars[loop.index0] }}) {
+{% endfor %}
+{{ c_type }} mat[{{ matrix_dim }}][{{ matrix_dim }}];
+for (idx_t r0 = 0; r0 < {{ matrix_dim }}; ++r0) {
+    for (idx_t c0 = 0; c0 < {{ matrix_dim }}; ++c0) {
+        mat[r0][c0] = {{ input0 }}{{ batch_index_expr }}[r0][c0];
+    }
+}
+{{ c_type }} det_value = ({{ c_type }})1;
+for (idx_t p0 = 0; p0 < {{ matrix_dim }}; ++p0) {
+    idx_t pivot_row = p0;
+    {{ c_type }} max_abs = mat[p0][p0] < ({{ c_type }})0 ? -mat[p0][p0] : mat[p0][p0];
+    for (idx_t r0 = p0 + 1; r0 < {{ matrix_dim }}; ++r0) {
+        {{ c_type }} abs_value = mat[r0][p0] < ({{ c_type }})0 ? -mat[r0][p0] : mat[r0][p0];
+        if (abs_value > max_abs) {
+            max_abs = abs_value;
+            pivot_row = r0;
+        }
+    }
+    if (max_abs == ({{ c_type }})0) {
+        det_value = ({{ c_type }})0;
+        break;
+    }
+    if (pivot_row != p0) {
+        for (idx_t c0 = p0; c0 < {{ matrix_dim }}; ++c0) {
+            {{ c_type }} tmp = mat[p0][c0];
+            mat[p0][c0] = mat[pivot_row][c0];
+            mat[pivot_row][c0] = tmp;
+        }
+        det_value = -det_value;
+    }
+    {{ c_type }} pivot = mat[p0][p0];
+    det_value *= pivot;
+    for (idx_t r0 = p0 + 1; r0 < {{ matrix_dim }}; ++r0) {
+        {{ c_type }} factor = mat[r0][p0] / pivot;
+        if (factor == ({{ c_type }})0) {
+            continue;
+        }
+        for (idx_t c0 = p0 + 1; c0 < {{ matrix_dim }}; ++c0) {
+            mat[r0][c0] -= factor * mat[p0][c0];
+        }
+    }
+}
+{{ output }}{{ batch_index_expr }} = det_value;
+{% for _ in batch_shape %}
+}
+{% endfor %}
+}
