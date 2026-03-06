@@ -5122,3 +5122,100 @@ class MaxPoolOp(RenderableOpBase):
         if self.indices is not None and self.indices_dtype is not None:
             outputs.append((self.indices, shape, self.indices_dtype))
         return tuple(outputs)
+
+
+@dataclass(frozen=True)
+class RoiAlignOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "rois", "batch_indices")
+    __io_outputs__ = ("output",)
+    input0: str
+    rois: str
+    batch_indices: str
+    output: str
+    num_rois: int
+    channels: int
+    input_height: int
+    input_width: int
+    output_height: int
+    output_width: int
+    sampling_ratio: int
+    spatial_scale: float
+    mode: str
+    coordinate_transformation_mode: str
+    dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.output)
+        c_type = output_dtype.c_type
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("rois", self.rois),
+                ("batch_indices", self.batch_indices),
+                ("output", self.output),
+            ]
+        )
+        input_shape = emitter.ctx_shape(self.input0)
+        rois_shape = emitter.ctx_shape(self.rois)
+        batch_indices_shape = emitter.ctx_shape(self.batch_indices)
+        output_shape = emitter.ctx_shape(self.output)
+        param_decls = emitter.build_param_decls(
+            [
+                (
+                    params["input0"],
+                    c_type,
+                    emitter.param_array_suffix(input_shape),
+                    True,
+                ),
+                (
+                    params["rois"],
+                    c_type,
+                    emitter.param_array_suffix(rois_shape),
+                    True,
+                ),
+                (
+                    params["batch_indices"],
+                    ScalarType.I64.c_type,
+                    emitter.param_array_suffix(batch_indices_shape),
+                    True,
+                ),
+                (
+                    params["output"],
+                    c_type,
+                    emitter.param_array_suffix(output_shape),
+                    False,
+                ),
+            ]
+        )
+        rendered = (
+            state.templates["roi_align"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                params=param_decls,
+                input0=params["input0"],
+                rois=params["rois"],
+                batch_indices=params["batch_indices"],
+                output=params["output"],
+                c_type=c_type,
+                dtype=self.dtype,
+                num_rois=self.num_rois,
+                channels=self.channels,
+                input_height=self.input_height,
+                input_width=self.input_width,
+                output_height=self.output_height,
+                output_width=self.output_width,
+                sampling_ratio=self.sampling_ratio,
+                spatial_scale=emitter.format_double(self.spatial_scale),
+                mode=self.mode,
+                coordinate_transformation_mode=self.coordinate_transformation_mode,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)

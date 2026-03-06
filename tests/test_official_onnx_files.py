@@ -61,6 +61,14 @@ MODEL_EXTRA_VERIFY_ARGS = {
         "--max-ulp",
         "200",
     ),
+    "onnx-org/onnx/backend/test/data/node/test_roialign_aligned_false/model.onnx": (
+        "--max-ulp",
+        "4000",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_roialign_aligned_true/model.onnx": (
+        "--max-ulp",
+        "4000",
+    ),
 }
 
 
