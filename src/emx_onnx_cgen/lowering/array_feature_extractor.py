@@ -8,9 +8,7 @@ from .registry import register_lowering
 
 
 @register_lowering("ArrayFeatureExtractor")
-def lower_array_feature_extractor(
-    graph: Graph, node: Node
-) -> ArrayFeatureExtractorOp:
+def lower_array_feature_extractor(graph: Graph, node: Node) -> ArrayFeatureExtractorOp:
     if len(node.inputs) != 2 or len(node.outputs) != 1:
         raise UnsupportedOpError(
             "ArrayFeatureExtractor must have 2 inputs and 1 output"

@@ -216,8 +216,6 @@ def _make_string_concat_model(
     return model
 
 
-
-
 def _make_array_feature_extractor_model(
     *,
     data_shape: list[int],
@@ -226,7 +224,9 @@ def _make_array_feature_extractor_model(
     data_dtype: int = TensorProto.FLOAT,
 ) -> onnx.ModelProto:
     data_info = helper.make_tensor_value_info("in0", data_dtype, data_shape)
-    indices_info = helper.make_tensor_value_info("in1", TensorProto.INT64, indices_shape)
+    indices_info = helper.make_tensor_value_info(
+        "in1", TensorProto.INT64, indices_shape
+    )
     output_info = helper.make_tensor_value_info("out", data_dtype, output_shape)
     node = helper.make_node(
         "ArrayFeatureExtractor",
@@ -251,6 +251,7 @@ def _make_array_feature_extractor_model(
     model.ir_version = 7
     onnx.checker.check_model(model)
     return model
+
 
 def _make_adam_model(
     *, tensor_shape: list[int], tensor_count: int = 1
