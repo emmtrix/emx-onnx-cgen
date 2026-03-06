@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported op RNN",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_simple_rnn_batchwise model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "RNN"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "92833e2280faaf5813c224edc9838d6ac9736e032643bc3783a49d23a1cb32a2"
 }

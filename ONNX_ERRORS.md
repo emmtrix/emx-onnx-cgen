@@ -18,7 +18,6 @@ Aggregates non-success verification outcomes.
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
 | Out of tolerance | 7 | 15, 20, 22 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
-| Unsupported op RNN | 4 | 22 |
 | Unsupported op RandomUniformLike | 3 | 22 |
 | Unsupported op RegexFullMatch | 3 | 20 |
 | '*' | 2 |  |
@@ -40,7 +39,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op Loop | 16 | 1 |
 | Unsupported op RegexFullMatch | 20 | 3 |
 | Out of tolerance | 20 | 2 |
-| Unsupported op RNN | 22 | 4 |
 | Out of tolerance | 22 | 3 |
 | Unsupported op RandomUniformLike | 22 | 3 |
 | Unsupported op Det | 22 | 2 |
@@ -251,10 +249,6 @@ Lists every ONNX file with a non-success verification outcome.
 | node/test_regex_full_match_basic/model.onnx | 20 | Data | ❌ | Unsupported op RegexFullMatch |
 | node/test_regex_full_match_email_domain/model.onnx | 20 | Data | ❌ | Unsupported op RegexFullMatch |
 | node/test_regex_full_match_empty/model.onnx | 20 | Data | ❌ | Unsupported op RegexFullMatch |
-| node/test_rnn_seq_length/model.onnx | 22 | Data | ❌ | Unsupported op RNN |
 | node/test_sequence_map_extract_shapes/model.onnx |  |  | ❌ | 'SequenceMap_0_in_0' |
 | node/test_sequence_map_extract_shapes_expanded/model.onnx |  |  | ❌ | 'SequenceMap_test_sequence_map_extract_shapes_expanded_function_x' |
-| node/test_simple_rnn_batchwise/model.onnx | 22 | Data | ❌ | Unsupported op RNN |
-| node/test_simple_rnn_defaults/model.onnx | 22 | Data | ❌ | Unsupported op RNN |
-| node/test_simple_rnn_with_initial_bias/model.onnx | 22 | Data | ❌ | Unsupported op RNN |
 | simple_networks/random_uniform.onnx | 22 | Random+ORT | ❌ | Unsupported op RandomUniform |

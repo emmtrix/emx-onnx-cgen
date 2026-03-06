@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 198 / 205
+Supported operators: 199 / 205
 
 | Operator | Supported |
 | --- | --- |
@@ -128,7 +128,7 @@ Supported operators: 198 / 205
 | QLinearMatMul | ✅ |
 | QuantizeLinear | ✅ |
 | RMSNormalization | ✅ |
-| RNN | ❌ |
+| RNN | ✅ |
 | RandomUniform | ❌ |
 | RandomUniformLike | ❌ |
 | Range | ✅ |
