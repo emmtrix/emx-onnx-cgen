@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1604 / 1802, 89.0% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1607 / 1802, 89.2% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1604 / 1802 ONNX files (89.0%).
+Coverage 1607 / 1802 ONNX files (89.2%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1357,9 +1357,9 @@ Coverage 1604 / 1802 ONNX files (89.0%).
 | node/test_rms_normalization_default_axis/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
 | node/test_rms_normalization_default_axis_expanded/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
 | node/test_rnn_seq_length/model.onnx | 22 | Data | ❌ | Unsupported op RNN |
-| node/test_roialign_aligned_false/model.onnx | 22 | Data | ❌ | Unsupported op RoiAlign |
-| node/test_roialign_aligned_true/model.onnx | 22 | Data | ❌ | Unsupported op RoiAlign |
-| node/test_roialign_mode_max/model.onnx | 22 | Data | ❌ | Unsupported op RoiAlign |
+| node/test_roialign_aligned_false/model.onnx | 22 | Data | ✅ | OK (max ULP 10) |
+| node/test_roialign_aligned_true/model.onnx | 22 | Data | ✅ | OK (max ULP 11) |
+| node/test_roialign_mode_max/model.onnx | 22 | Data | ✅ | OK (max ULP 36) |
 | node/test_rotary_embedding/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
 | node/test_rotary_embedding_3d_input/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
 | node/test_rotary_embedding_3d_input_expanded/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
