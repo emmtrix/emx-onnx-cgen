@@ -218,7 +218,7 @@ How verification works:
 ## Official ONNX test coverage
 
 - [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md): overview of ONNX models and their current verification status.
-- [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md): summary of the most common verification outcomes and failure reasons.
+- [`ONNX_ERRORS.md`](ONNX_ERRORS.md): summary of the most common verification outcomes and failure reasons.
 - [`SUPPORT_OPS.md`](SUPPORT_OPS.md): list of ONNX operators and whether they are currently supported.
 
 ## Related Projects

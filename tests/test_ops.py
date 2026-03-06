@@ -3841,50 +3841,6 @@ def _make_gather_model(
     return model
 
 
-
-def _make_array_feature_extractor_model(
-    *,
-    data_shape: list[int],
-    indices_shape: list[int],
-    data_dtype: int = TensorProto.FLOAT,
-    indices_dtype: int = TensorProto.INT64,
-) -> onnx.ModelProto:
-    if len(data_shape) < 1:
-        raise ValueError("ArrayFeatureExtractor requires rank >= 1 data")
-    feature_count = 1
-    for dim in indices_shape:
-        feature_count *= dim
-    output_shape = (
-        [1, feature_count] if len(data_shape) == 1 else [*data_shape[:-1], feature_count]
-    )
-    data_input = helper.make_tensor_value_info("data", data_dtype, data_shape)
-    indices_input = helper.make_tensor_value_info("indices", indices_dtype, indices_shape)
-    output = helper.make_tensor_value_info("out", data_dtype, output_shape)
-    node = helper.make_node(
-        "ArrayFeatureExtractor",
-        inputs=["data", "indices"],
-        outputs=[output.name],
-        domain="ai.onnx.ml",
-    )
-    graph = helper.make_graph(
-        [node],
-        "array_feature_extractor_graph",
-        [data_input, indices_input],
-        [output],
-    )
-    model = helper.make_model(
-        graph,
-        producer_name="onnx2c",
-        opset_imports=[
-            helper.make_operatorsetid("", 13),
-            helper.make_operatorsetid("ai.onnx.ml", 1),
-        ],
-    )
-    model.ir_version = 7
-    onnx.checker.check_model(model)
-    return model
-
-
 def _make_gathernd_model(
     *,
     data_shape: list[int],

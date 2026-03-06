@@ -25,7 +25,6 @@ MODEL_EXTRA_VERIFY_ARGS = {
     "tests/onnx/micro_kws_m_qoperator_add_shape.onnx": ("--replicate-ort-bugs",),
     "tests/onnx/micro_kws_m_qoperator_avg_pool.onnx": ("--replicate-ort-bugs",),
     "tests/onnx/micro_kws_m_qoperator_softmax.onnx": ("--replicate-ort-bugs",),
-    "tests/onnx/micro_kws_m_static_qoperator.onnx": ("--replicate-ort-bugs",),
     "onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx": (
         "--fp32-accumulation-strategy",
         "fp64",

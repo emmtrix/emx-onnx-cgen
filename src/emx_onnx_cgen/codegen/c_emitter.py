@@ -50,7 +50,6 @@ from ..ir.ops import (
     EinsumOp,
     ExpandOp,
     EyeLikeOp,
-    ArrayFeatureExtractorOp,
     GatherElementsOp,
     GatherNDOp,
     GatherOp,
@@ -878,9 +877,6 @@ class CEmitter:
                     "nonmax_suppression_op.c.j2"
                 ),
                 "expand": self._env.get_template("expand_op.c.j2"),
-                "array_feature_extractor": self._env.get_template(
-                    "array_feature_extractor_op.c.j2"
-                ),
                 "cumsum": self._env.get_template("cumsum_op.c.j2"),
                 "stft": self._env.get_template("stft_op.c.j2"),
                 "dft": self._env.get_template("dft_op.c.j2"),
@@ -1835,7 +1831,6 @@ class CEmitter:
             | UniqueOp
             | NonMaxSuppressionOp
             | ExpandOp
-            | ArrayFeatureExtractorOp
             | CumSumOp
             | DFTOp
             | RangeOp
