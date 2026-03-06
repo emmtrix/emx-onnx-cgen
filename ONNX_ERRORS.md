@@ -247,7 +247,3 @@ Lists every ONNX file with a non-success verification outcome.
 | node/test_regex_full_match_empty/model.onnx | 20 | Data | ❌ | Unsupported op RegexFullMatch |
 | node/test_sequence_map_extract_shapes/model.onnx |  |  | ❌ | 'SequenceMap_0_in_0' |
 | node/test_sequence_map_extract_shapes_expanded/model.onnx |  |  | ❌ | 'SequenceMap_test_sequence_map_extract_shapes_expanded_function_x' |
-| node/test_simple_rnn_batchwise/model.onnx | 22 | Data | ❌ | Unsupported op RNN |
-| node/test_simple_rnn_defaults/model.onnx | 22 | Data | ❌ | Unsupported op RNN |
-| node/test_simple_rnn_with_initial_bias/model.onnx | 22 | Data | ❌ | Unsupported op RNN |
-| simple_networks/random_uniform.onnx | 22 | Random+ORT | ❌ | Unsupported op RandomUniform |
