@@ -57,6 +57,11 @@ MODEL_EXTRA_VERIFY_ARGS = {
         "--atol-eps",
         "2",
     ),
+    "onnx-org/onnx/backend/test/data/node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx": (
+        "--runtime",
+        "onnx-reference",
+        "--test-data-inputs-only",
+    ),
     "onnx2c-org/test/mnist/model.onnx": (
         "--max-ulp",
         "200",
