@@ -4,6 +4,7 @@ import os
 import re
 from collections import Counter
 from pathlib import Path
+from typing import Callable
 
 import pytest
 
@@ -24,7 +25,7 @@ OFFICIAL_ONNX_FILE_SUPPORT_PATH = (
     Path(__file__).resolve().parents[1] / "ONNX_SUPPORT.md"
 )
 OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM_PATH = (
-    Path(__file__).resolve().parents[1] / "ONNX_ERRORS_HISTOGRAM.md"
+    Path(__file__).resolve().parents[1] / "ONNX_ERRORS.md"
 )
 SUPPORT_OPS_PATH = Path(__file__).resolve().parents[1] / "SUPPORT_OPS.md"
 ONNX_VERSION_PATH = Path(__file__).resolve().parents[1] / "onnx-org" / "VERSION_NUMBER"
@@ -45,15 +46,20 @@ def _is_success_message(message: str) -> bool:
 
 def _render_onnx_file_support_table(
     expectations: list[OnnxFileExpectation],
+    *,
+    include_expectation: Callable[[OnnxFileExpectation], bool] | None = None,
 ) -> list[str]:
     def _verification_mode(expectation: OnnxFileExpectation) -> str:
         return expectation.verification_mode or ""
 
+    predicate = include_expectation or (lambda expectation: True)
     lines = [
         "| File | Opset | Verification | Supported | Error |",
         "| --- | --- | --- | --- | --- |",
     ]
     for expectation in sorted(expectations, key=lambda item: item.path):
+        if not predicate(expectation):
+            continue
         supported = "✅" if _is_success_message(expectation.error) else "❌"
         opset = (
             str(expectation.opset_version)
@@ -157,7 +163,7 @@ def _render_onnx_file_support_markdown(
             f"{local_repo_support_percent:.1f}% | n/a |"
         ),
         "",
-        "See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.",
+        "See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.",
         "",
         (
             "Floating-point verification first ignores very small differences up to "
@@ -200,7 +206,7 @@ def _render_onnx_file_support_markdown(
 
 def _render_error_histogram_markdown(
     expectations: list[OnnxFileExpectation],
-    title: str = "# Error frequency",
+    title: str = "# ONNX verification errors",
 ) -> str:
     def _next_heading(title_text: str, default_level: int = 2) -> str:
         match = re.match(r"(#+)\\s+", title_text)
@@ -280,12 +286,27 @@ def _render_support_histogram_markdown(
     ]
     histogram_markdown = _render_error_histogram_markdown(
         merged_expectations,
-        title="# Error frequency",
+        title="# ONNX verification errors",
     )
     lines = histogram_markdown.splitlines()
-    if lines and lines[0] == "# Error frequency":
+    if lines and lines[0] == "# ONNX verification errors":
         lines.insert(2, "This histogram is test-suite-overarching.")
         lines.insert(3, "")
+    lines.extend(
+        [
+            "",
+            "## Failing ONNX files",
+            "",
+            "Lists every ONNX file with a non-success verification outcome.",
+            "",
+            *_render_onnx_file_support_table(
+                merged_expectations,
+                include_expectation=lambda expectation: (
+                    expectation.error and not _is_success_message(expectation.error)
+                ),
+            ),
+        ]
+    )
     return "\n".join(lines) + "\n"
 
 
