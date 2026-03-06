@@ -153,6 +153,7 @@ class ScalarFunction(str, Enum):
     BITWISE_OR = _no_float_spec("bitwise_or")
     BITWISE_RIGHT_SHIFT = _int_only_spec("bitwise_right_shift")
     BITWISE_XOR = _no_float_spec("bitwise_xor")
+    BINARIZER = _common_unary_from_f32_spec("binarizer")
     CBRT = _common_unary_from_f32_spec("cbrt")
     CEIL = _bool_unary_from_f32_spec("ceil")
     CELU = _common_unary_from_f32_spec("celu")
@@ -387,6 +388,7 @@ _ONNX_OP_TO_SCALAR_FUNCTION = {
     "Asinh": ScalarFunction.ASINH,
     "Atan": ScalarFunction.ATAN,
     "Atanh": ScalarFunction.ATANH,
+    "Binarizer": ScalarFunction.BINARIZER,
     "BitwiseAnd": ScalarFunction.BITWISE_AND,
     "BitwiseNot": ScalarFunction.BITWISE_NOT,
     "BitwiseOr": ScalarFunction.BITWISE_OR,
@@ -935,6 +937,26 @@ def _float_hardsigmoid_param(
         f"    {dtype_info.c_type} value = a * {alpha} + {beta};",
         f"    {dtype_info.c_type} clamped = {_math_fn('fmin', dtype_info)}({one}, {_math_fn('fmax', dtype_info)}({zero}, value));",
         "    return clamped;",
+        "}",
+    ]
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+
+
+def _float_binarizer_param(
+    dtype_info: _ScalarTypeInfo,
+    params: tuple[float, ...],
+    function_name: str,
+) -> _GeneratedScalar:
+    if params and len(params) != 1:
+        raise ScalarFunctionError("binarizer expects 1 parameter: threshold")
+    threshold_value = params[0] if params else 0.0
+    threshold = _float_literal(threshold_value, dtype_info)
+    one = _float_literal(1.0, dtype_info)
+    zero = _float_literal(0.0, dtype_info)
+    lines = [
+        f"static inline {dtype_info.c_type} {function_name}({dtype_info.c_type} a) {{",
+        f"    const {dtype_info.c_type} threshold = {threshold};",
+        f"    return a > threshold ? {one} : {zero};",
         "}",
     ]
     return _GeneratedScalar(lines=lines, deps=set(), includes=set())
@@ -1550,6 +1572,9 @@ _FLOAT_OP_DISPATCH: Mapping[str, Callable[[_ScalarTypeInfo], _GeneratedScalar]] 
     "relu6": _float_relu6,
     "hardsigmoid": _float_hardsigmoid,
     "hardswish": _float_hardswish,
+    "binarizer": lambda dtype_info: _float_binarizer_param(
+        dtype_info, (), f"{dtype_info.prefix}binarizer"
+    ),
     "thresholded_relu": _float_thresholded_relu,
     "sign": _float_sign,
     "round": _float_round,
@@ -1581,6 +1606,7 @@ _PARAMETERIZED_FLOAT_OPS: Mapping[
     Callable[[_ScalarTypeInfo, tuple[float, ...], str], _GeneratedScalar],
 ] = {
     ScalarFunction.AFFINE: _float_affine,
+    ScalarFunction.BINARIZER: _float_binarizer_param,
     ScalarFunction.CELU: _float_celu,
     ScalarFunction.ELU: _float_elu_param,
     ScalarFunction.HARDSIGMOID: _float_hardsigmoid_param,
