@@ -37,7 +37,6 @@ Aggregates non-success verification outcomes.
 | Out of tolerance | 20 | 2 |
 | Unsupported op RandomUniformLike | 22 | 3 |
 | Out of tolerance | 22 | 2 |
-| Unsupported op Det | 22 | 2 |
 | Pad value input must be a scalar | 24 | 1 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 25 | 22 |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 25 | 20 |

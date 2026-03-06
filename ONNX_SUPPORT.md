@@ -7,8 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1620 / 1802, 89.9% | 1.20.1 |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1621 / 1802, 90.0% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1622 / 1802, 90.0% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 124 / 125, 99.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
@@ -22,8 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1620 / 1802 ONNX files (89.9%).
-Coverage 1621 / 1802 ONNX files (90.0%).
+Coverage 1622 / 1802 ONNX files (90.0%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
