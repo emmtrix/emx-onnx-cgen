@@ -19,7 +19,6 @@ Aggregates non-success verification outcomes.
 | Out of tolerance | 6 | 15, 20, 22 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op RegexFullMatch | 3 | 20 |
-| Pad value input must be a scalar | 1 | 24 |
 | Unsupported op Loop | 1 | 16 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 1 | 12 |
 
@@ -33,7 +32,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op RegexFullMatch | 20 | 3 |
 | Out of tolerance | 20 | 2 |
 | Out of tolerance | 22 | 2 |
-| Pad value input must be a scalar | 24 | 1 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 25 | 22 |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 25 | 20 |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 25 | 18 |
@@ -56,7 +54,6 @@ Lists every ONNX file with a non-success verification outcome.
 | node/test_adam_multiple/model.onnx |  | Data | ❌ | Out of tolerance (max ULP 62311) |
 | node/test_affine_grid_3d/model.onnx | 20 | Data | ❌ | Out of tolerance (max ULP 151) |
 | node/test_affine_grid_3d_expanded/model.onnx | 20 | Data | ❌ | Out of tolerance (max ULP 169) |
-| node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | 24 | Data | ❌ | Pad value input must be a scalar |
 | node/test_cast_FLOAT16_to_FLOAT4E2M1/model.onnx | 25 | Data | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'output'. |
 | node/test_cast_FLOAT16_to_FLOAT8E4M3FN/model.onnx | 25 | Data | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'output'. |
 | node/test_cast_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx | 25 | Data | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'output'. |
