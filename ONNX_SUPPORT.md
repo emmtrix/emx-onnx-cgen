@@ -241,7 +241,7 @@ Coverage 1622 / 1802 ONNX files (90.0%).
 | node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_1d_default/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_ceil/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
-| node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx | 22 | Data | ❌ | Out of tolerance (max ULP 2983) |
+| node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_default/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_dilations/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_pads/model.onnx | 22 | Data | ✅ | OK (max ULP 3) |
@@ -588,8 +588,8 @@ Coverage 1622 / 1802 ONNX files (90.0%).
 | node/test_dequantizelinear_uint16/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_dequantizelinear_uint2/model.onnx | 25 | Data | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'x'. |
 | node/test_dequantizelinear_uint4/model.onnx | 25 | Data | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'x'. |
-| node/test_det_2d/model.onnx | 22 | Data | ❌ | Unsupported op Det |
-| node/test_det_nd/model.onnx | 22 | Data | ❌ | Unsupported op Det |
+| node/test_det_2d/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
+| node/test_det_nd/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_dft/model.onnx | 20 | Data | ✅ | OK (max ULP 4) |
 | node/test_dft_axis/model.onnx | 20 | Data | ✅ | OK (max ULP 72) |
 | node/test_dft_axis_opset19/model.onnx | 19 | Data | ✅ | OK (max ULP 72) |

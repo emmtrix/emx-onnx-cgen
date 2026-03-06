@@ -53,7 +53,7 @@ Supported operators: 203 / 205
 | DeformConv | ✅ |
 | DepthToSpace | ✅ |
 | DequantizeLinear | ✅ |
-| Det | ❌ |
+| Det | ✅ |
 | Div | ✅ |
 | Dropout | ✅ |
 | DynamicQuantizeLinear | ✅ |

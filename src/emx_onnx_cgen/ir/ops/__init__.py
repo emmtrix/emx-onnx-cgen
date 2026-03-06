@@ -126,7 +126,7 @@ from .nn import (
     SoftmaxCrossEntropyLossOp,
     SoftmaxOp,
 )
-from .reduce import ArgReduceOp, ReduceOp, TopKOp
+from .reduce import ArgReduceOp, DetOp, ReduceOp, TopKOp
 
 __all__ = [
     "AdamOp",
@@ -134,6 +134,7 @@ __all__ = [
     "AffineGridOp",
     "ArrayFeatureExtractorOp",
     "ArgReduceOp",
+    "DetOp",
     "AttentionOp",
     "AveragePoolOp",
     "BatchNormOp",
