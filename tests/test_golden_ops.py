@@ -13,6 +13,7 @@ from test_ops import (
     _make_affine_grid_model,
     _make_arg_reduce_model,
     _make_batchnorm_model,
+    _make_binarizer_model,
     _make_cast_model,
     _make_constant_of_shape_model,
     _make_conv_model,
@@ -525,6 +526,15 @@ def _make_unary_tanh_model() -> onnx.ModelProto:
     )
 
 
+def _make_binarizer_golden_model() -> onnx.ModelProto:
+    return _make_binarizer_model(
+        input_shape=[2, 3],
+        output_shape=[2, 3],
+        dtype=TensorProto.FLOAT,
+        threshold=0.25,
+    )
+
+
 def _make_lstm_golden_model() -> onnx.ModelProto:
     return _make_lstm_model(
         seq_length=1,
@@ -616,6 +626,7 @@ OP_GOLDEN_CASES = [
     ("multiinputbinary", "sum", _make_multi_input_sum_model),
     ("where", "where", _make_where_model),
     ("unary", "tanh", _make_unary_tanh_model),
+    ("binarizer", "binarizer", _make_binarizer_golden_model),
     ("clip", "clip", _make_clip_model),
     ("cast", "cast", _make_cast_model),
     ("matmul", "matmul", _make_matmul_model),
