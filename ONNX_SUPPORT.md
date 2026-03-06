@@ -269,10 +269,10 @@ Coverage 1622 / 1802 ONNX files (90.0%).
 | node/test_batchnorm_example_training_mode/model.onnx | 15 | Data | ✅ | OK (max ULP 6) |
 | node/test_bernoulli/model.onnx | 22 | Data | ✅ | OK (non-deterministic output) |
 | node/test_bernoulli_double/model.onnx | 22 | Data | ✅ | OK (non-deterministic output) |
-| node/test_bernoulli_double_expanded/model.onnx | 22 | Data | ❌ | Unsupported op RandomUniformLike |
-| node/test_bernoulli_expanded/model.onnx | 22 | Data | ❌ | Unsupported op RandomUniformLike |
+| node/test_bernoulli_double_expanded/model.onnx | 22 | Data | ✅ | OK (non-deterministic output) |
+| node/test_bernoulli_expanded/model.onnx | 22 | Data | ✅ | OK (non-deterministic output) |
 | node/test_bernoulli_seed/model.onnx | 22 | Data | ✅ | OK (non-deterministic output) |
-| node/test_bernoulli_seed_expanded/model.onnx | 22 | Data | ❌ | Unsupported op RandomUniformLike |
+| node/test_bernoulli_seed_expanded/model.onnx | 22 | Data | ✅ | OK (non-deterministic output) |
 | node/test_bitshift_left_uint16/model.onnx | 11 | Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_left_uint32/model.onnx | 11 | Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_left_uint64/model.onnx | 11 | Data | ✅ | OK (max abs diff 0) |

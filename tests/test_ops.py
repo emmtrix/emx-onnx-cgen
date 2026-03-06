@@ -713,6 +713,43 @@ def _make_random_uniform_model(
     return model
 
 
+def _make_random_uniform_like_model(
+    *,
+    input_shape: list[int],
+    input_dtype: int = TensorProto.FLOAT,
+    output_dtype: int | None = None,
+    low: float = 0.0,
+    high: float = 1.0,
+    seed: float | None = None,
+    opset: int = 22,
+) -> onnx.ModelProto:
+    output_dtype = input_dtype if output_dtype is None else output_dtype
+    input_info = helper.make_tensor_value_info("input", input_dtype, input_shape)
+    output = helper.make_tensor_value_info("output", output_dtype, input_shape)
+    attrs: dict[str, object] = {"low": low, "high": high}
+    if output_dtype != input_dtype:
+        attrs["dtype"] = output_dtype
+    if seed is not None:
+        attrs["seed"] = seed
+    node = helper.make_node(
+        "RandomUniformLike",
+        inputs=[input_info.name],
+        outputs=[output.name],
+        **attrs,
+    )
+    graph = helper.make_graph(
+        [node], "random_uniform_like_graph", [input_info], [output]
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 9
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_onehot_model(
     *,
     indices_shape: list[int],
@@ -6744,6 +6781,37 @@ def test_random_uniform_op_compiles() -> None:
     )
     generated = Compiler(CompilerOptions()).compile(model)
     assert "RandomUniform" in generated
+    assert "_rng_next_u64" in generated
+
+
+def test_random_uniform_like_run_within_bounds() -> None:
+    model = _make_random_uniform_like_model(
+        input_shape=[2, 3],
+        input_dtype=TensorProto.INT32,
+        output_dtype=TensorProto.FLOAT,
+        low=-1.0,
+        high=0.5,
+        seed=3.0,
+    )
+    input_data = np.arange(6, dtype=np.int32).reshape(2, 3)
+    outputs = _run_reference(model, {"input": input_data})
+    out = outputs["output"]
+    assert out.shape == (2, 3)
+    assert out.dtype == np.float32
+    assert np.all(out >= np.float32(-1.0))
+    assert np.all(out < np.float32(0.5))
+
+
+def test_random_uniform_like_op_compiles() -> None:
+    model = _make_random_uniform_like_model(
+        input_shape=[1, 4],
+        input_dtype=TensorProto.FLOAT,
+        low=1.0,
+        high=2.0,
+        seed=9.0,
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "RandomUniformLike" in generated
     assert "_rng_next_u64" in generated
 
 

@@ -130,7 +130,7 @@ Supported operators: 203 / 205
 | RMSNormalization | ✅ |
 | RNN | ✅ |
 | RandomUniform | ✅ |
-| RandomUniformLike | ❌ |
+| RandomUniformLike | ✅ |
 | Range | ✅ |
 | Reciprocal | ✅ |
 | ReduceL1 | ✅ |
