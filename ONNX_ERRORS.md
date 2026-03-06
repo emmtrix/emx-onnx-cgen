@@ -17,7 +17,6 @@ Aggregates non-success verification outcomes.
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
 | Out of tolerance | 7 | 15, 20, 22 |
-| OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op RNN | 4 | 22 |
 | Unsupported op RandomUniformLike | 3 | 22 |
@@ -39,7 +38,6 @@ Aggregates non-success verification outcomes.
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
 | Out of tolerance | 15 | 1 |
 | Unsupported op Loop | 16 | 1 |
-| OptionalHasElement expects exactly one non-empty input. | 18 | 4 |
 | Unsupported op RegexFullMatch | 20 | 3 |
 | Out of tolerance | 20 | 2 |
 | Unsupported op RNN | 22 | 4 |
@@ -243,10 +241,6 @@ Lists every ONNX file with a non-success verification outcome.
 | node/test_maxunpool_export_with_output_shape/model.onnx | 22 | Data | ❌ | Unsupported op MaxUnpool |
 | node/test_maxunpool_export_without_output_shape/model.onnx | 22 | Data | ❌ | Unsupported op MaxUnpool |
 | node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | 22 | Data | ❌ | Out of tolerance (max ULP 357) |
-| node/test_optional_has_element_empty_no_input_name_optional_input/model.onnx | 18 | Random+ORT | ❌ | OptionalHasElement expects exactly one non-empty input. |
-| node/test_optional_has_element_empty_no_input_name_tensor_input/model.onnx | 18 | Random+ORT | ❌ | OptionalHasElement expects exactly one non-empty input. |
-| node/test_optional_has_element_empty_no_input_optional_input/model.onnx | 18 | Random+ORT | ❌ | OptionalHasElement expects exactly one non-empty input. |
-| node/test_optional_has_element_empty_no_input_tensor_input/model.onnx | 18 | Random+ORT | ❌ | OptionalHasElement expects exactly one non-empty input. |
 | node/test_quantizelinear_e4m3fn/model.onnx | 25 | Data | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_e5m2/model.onnx | 25 | Data | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_float4e2m1/model.onnx | 25 | Data | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'y_zero_point'. |

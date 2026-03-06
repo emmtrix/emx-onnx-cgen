@@ -182,6 +182,29 @@ def _make_optional_has_element_model() -> onnx.ModelProto:
     return model
 
 
+def _make_optional_has_element_no_input_model() -> onnx.ModelProto:
+    output = helper.make_tensor_value_info("output", TensorProto.BOOL, [])
+    node = helper.make_node(
+        "OptionalHasElement",
+        inputs=[],
+        outputs=[output.name],
+    )
+    graph = helper.make_graph(
+        [node],
+        "optional_has_element_no_input_graph",
+        [],
+        [output],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_operatorsetid("", 18)],
+    )
+    model.ir_version = 8
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_optional_get_element_model() -> onnx.ModelProto:
     elem_type = helper.make_tensor_type_proto(TensorProto.FLOAT, [4])
     optional_type = helper.make_optional_type_proto(elem_type)
@@ -584,6 +607,11 @@ OP_GOLDEN_CASES = [
     ("matmul", "matmul", _make_matmul_model),
     ("matmulinteger", "matmul_integer", _make_matmulinteger_model),
     ("optionalhaselement", "optional_has_element", _make_optional_has_element_model),
+    (
+        "optionalhaselement",
+        "optional_has_element_no_input",
+        _make_optional_has_element_no_input_model,
+    ),
     ("optionalgetelement", "optional_get_element", _make_optional_get_element_model),
     (
         "optionalgetelement",

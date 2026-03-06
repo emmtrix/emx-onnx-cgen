@@ -1,9 +1,10 @@
 {
-  "error": "OptionalHasElement expects exactly one non-empty input.",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_no_input_optional_input model.onnx",
   "verification_mode": "Random+ORT",
   "operators": [
     "OptionalHasElement"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "7436ac7146af9bc000c002ea23901ac8ee6caf6cde599a4e016f50f5b27b8287"
 }

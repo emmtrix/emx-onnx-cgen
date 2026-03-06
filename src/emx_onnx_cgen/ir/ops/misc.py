@@ -3009,6 +3009,7 @@ class OptionalHasElementOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
+    input_is_optional: bool
 
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
@@ -3029,22 +3030,24 @@ class OptionalHasElementOp(RenderableOpBase):
         output_dtype = emitter.ctx_dtype(self.output)
         optional_flags = emitter.optional_input_flag_map(model)
         input_flag = optional_flags.get(self.input0)
-        if input_flag is None:
-            raise CodegenError("OptionalHasElement expects an optional input flag.")
-        param_decls = emitter.build_param_decls(
-            [
-                (params["input0"], input_dtype.c_type, input_suffix, True),
-                (input_flag, "_Bool", "", True),
-                (params["output"], output_dtype.c_type, output_suffix, False),
-            ]
-        )
+        param_defs: list[tuple[str, str, str, bool]] = [
+            (params["input0"], input_dtype.c_type, input_suffix, True),
+        ]
+        input_present_expr = "1"
+        if self.input_is_optional:
+            if input_flag is None:
+                raise CodegenError("OptionalHasElement expects an optional input flag.")
+            param_defs.append((input_flag, "_Bool", "", True))
+            input_present_expr = input_flag
+        param_defs.append((params["output"], output_dtype.c_type, output_suffix, False))
+        param_decls = emitter.build_param_decls(param_defs)
         rendered = (
             state.templates["optional_has_element"]
             .render(
                 model_name=model.name,
                 op_name=op_name,
                 input0=params["input0"],
-                input_present=input_flag,
+                input_present=input_present_expr,
                 output=params["output"],
                 params=param_decls,
                 input_c_type=input_dtype.c_type,
@@ -3057,13 +3060,15 @@ class OptionalHasElementOp(RenderableOpBase):
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def call_args(self) -> tuple[str, ...]:
-        return (self.input0, f"{self.input0}_present", self.output)
+        if self.input_is_optional:
+            return (self.input0, f"{self.input0}_present", self.output)
+        return (self.input0, self.output)
 
     def validate(self, ctx: OpContext) -> None:
         value = ctx.graph.find_value(self.input0)
-        if not value.type.is_optional:
+        if value.type.is_optional != self.input_is_optional:
             raise UnsupportedOpError(
-                f"{self.kind} expects optional input, got non-optional tensor."
+                f"{self.kind} optional input typing mismatch for {self.input0}."
             )
         try:
             output_dtype = ctx.dtype(self.output)
@@ -3096,6 +3101,48 @@ class OptionalHasElementOp(RenderableOpBase):
         if output_shape not in {(), (1,)}:
             raise UnsupportedOpError(
                 f"{self.kind} expects scalar output, got shape {output_shape}"
+            )
+
+
+@dataclass(frozen=True)
+class OptionalHasElementAbsentOp(RenderableOpBase):
+    __io_inputs__ = ()
+    __io_outputs__ = ("output",)
+    output: str
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        output_dtype = emitter.op_output_dtype(self)
+        params = emitter.shared_param_map([("output", self.output)])
+        output_shape = emitter.ctx_shape(self.output)
+        output_dim_names = emitter.dim_names_for(self.output)
+        output_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["output"], output_dtype.c_type, output_suffix, False),
+            ]
+        )
+        rendered = (
+            f"EMX_NODE_FN void {op_name}({dim_args}{', '.join(param_decls)}) {{\n"
+            f"    {params['output']}[0] = 0;\n"
+            "}"
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def call_args(self) -> tuple[str, ...]:
+        return (self.output,)
+
+    def validate(self, ctx: OpContext) -> None:
+        try:
+            output_dtype = ctx.dtype(self.output)
+        except ShapeInferenceError:
+            return None
+        if output_dtype != ScalarType.BOOL:
+            raise UnsupportedOpError(
+                f"{self.kind} expects bool output, got {output_dtype.onnx_name}"
             )
 
 
