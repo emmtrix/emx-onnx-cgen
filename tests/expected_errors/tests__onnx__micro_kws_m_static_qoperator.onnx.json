@@ -1,6 +1,6 @@
 {
-  "error": "Out of tolerance (max ULP 998244352)",
-  "command_line": "verify --model-base-dir tests/onnx micro_kws_m_static_qoperator.onnx",
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir tests/onnx micro_kws_m_static_qoperator.onnx --replicate-ort-bugs",
   "verification_mode": "Random+ORT",
   "operators": [
     "Reshape",
@@ -15,5 +15,5 @@
     "com.microsoft::QLinearSoftmax"
   ],
   "opset_version": 15,
-  "generated_checksum": "f1d21f5376ef329e2d8e0571c8bfab231b3fc29985fa727872bd5a71b3add8ea"
+  "generated_checksum": "51f1c448f513f0302dedf0c9205d7df33a696794b258b90db802e98f5f92b051"
 }
