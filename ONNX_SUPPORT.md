@@ -8,6 +8,9 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1613 / 1802, 89.5% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1612 / 1802, 89.5% | 1.20.1 |
+| [ONNX2C test coverage](#onnx2c-test-coverage) | 124 / 125, 99.2% | n/a |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1616 / 1802, 89.7% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
@@ -22,6 +25,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 Test directory: `onnx-org/onnx/backend/test/data`
 
 Coverage 1613 / 1802 ONNX files (89.5%).
+Coverage 1616 / 1802 ONNX files (89.7%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1356,7 +1360,7 @@ Coverage 1613 / 1802 ONNX files (89.5%).
 | node/test_rms_normalization_4d_axis_negative_4_expanded/model.onnx | 23 | Data | ✅ | OK (max ULP 2) |
 | node/test_rms_normalization_default_axis/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
 | node/test_rms_normalization_default_axis_expanded/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
-| node/test_rnn_seq_length/model.onnx | 22 | Data | ❌ | Unsupported op RNN |
+| node/test_rnn_seq_length/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_roialign_aligned_false/model.onnx | 22 | Data | ✅ | OK (max ULP 10) |
 | node/test_roialign_aligned_true/model.onnx | 22 | Data | ✅ | OK (max ULP 11) |
 | node/test_roialign_mode_max/model.onnx | 22 | Data | ✅ | OK (max ULP 36) |
@@ -1498,9 +1502,9 @@ Coverage 1613 / 1802 ONNX files (89.5%).
 | node/test_sigmoid/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_sigmoid_example/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_sign/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
-| node/test_simple_rnn_batchwise/model.onnx | 22 | Data | ❌ | Unsupported op RNN |
-| node/test_simple_rnn_defaults/model.onnx | 22 | Data | ❌ | Unsupported op RNN |
-| node/test_simple_rnn_with_initial_bias/model.onnx | 22 | Data | ❌ | Unsupported op RNN |
+| node/test_simple_rnn_batchwise/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
+| node/test_simple_rnn_defaults/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
+| node/test_simple_rnn_with_initial_bias/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_sin/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_sin_example/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_sinh/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
@@ -1832,7 +1836,7 @@ Coverage 1613 / 1802 ONNX files (89.5%).
 
 Test directory: `onnx2c-org/test`
 
-Coverage 123 / 125 ONNX files (98.4%).
+Coverage 124 / 125 ONNX files (99.2%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1953,7 +1957,7 @@ Coverage 123 / 125 ONNX files (98.4%).
 | simple_networks/lstm_k1_b1_r1_relu.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/maxpool_k2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/maxpool_k2_s2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
-| simple_networks/random_uniform.onnx | 22 | Random+ORT | ❌ | Unsupported op RandomUniform |
+| simple_networks/random_uniform.onnx | 22 | Random+ORT | ✅ | OK UNKNOWN |
 | simple_networks/scalar_abs.onnx | 13 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/scalar_add.onnx | 13 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/scalar_identity.onnx | 13 | Random+ORT | ✅ | OK (max ULP 0) |

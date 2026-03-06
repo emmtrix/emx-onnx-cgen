@@ -36,6 +36,7 @@ from test_ops import (
     _make_reshape_model,
     _make_scatter_model,
     _make_resize_model,
+    _make_rnn_model,
     _make_rms_normalization_model,
     _make_shape_model,
     _make_size_model,
@@ -548,6 +549,19 @@ def _make_lstm_golden_model() -> onnx.ModelProto:
     )
 
 
+def _make_rnn_golden_model() -> onnx.ModelProto:
+    return _make_rnn_model(
+        seq_length=1,
+        batch_size=1,
+        input_size=2,
+        hidden_size=3,
+        dtype=TensorProto.FLOAT,
+        include_optional_inputs=False,
+        include_y=True,
+        include_y_h=True,
+    )
+
+
 def _make_reduce_mean_model() -> onnx.ModelProto:
     return _make_reduce_model(
         op_type="ReduceMean",
@@ -692,6 +706,7 @@ OP_GOLDEN_CASES = [
     ),
     ("lrn", "lrn", _make_lrn_model),
     ("lstm", "lstm", _make_lstm_golden_model),
+    ("rnn", "rnn", _make_rnn_golden_model),
     (
         "maxpool",
         "maxpool",

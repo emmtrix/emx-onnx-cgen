@@ -678,6 +678,41 @@ def _make_range_model(
     return model
 
 
+def _make_random_uniform_model(
+    *,
+    output_shape: list[int],
+    dtype: int = TensorProto.FLOAT,
+    low: float = 0.0,
+    high: float = 1.0,
+    seed: float | None = None,
+    opset: int = 22,
+) -> onnx.ModelProto:
+    output = helper.make_tensor_value_info("output", dtype, output_shape)
+    attrs: dict[str, object] = {
+        "shape": output_shape,
+        "dtype": dtype,
+        "low": low,
+        "high": high,
+    }
+    if seed is not None:
+        attrs["seed"] = seed
+    node = helper.make_node(
+        "RandomUniform",
+        inputs=[],
+        outputs=[output.name],
+        **attrs,
+    )
+    graph = helper.make_graph([node], "random_uniform_graph", [], [output])
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 9
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_onehot_model(
     *,
     indices_shape: list[int],
@@ -1968,6 +2003,84 @@ def _make_lstm_model(
     graph = helper.make_graph(
         [node],
         "lstm_graph",
+        inputs,
+        outputs,
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 14)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_rnn_model(
+    *,
+    seq_length: int,
+    batch_size: int,
+    input_size: int,
+    hidden_size: int,
+    dtype: int,
+    include_optional_inputs: bool,
+    include_y: bool,
+    include_y_h: bool,
+    layout: int = 0,
+) -> onnx.ModelProto:
+    x_shape = (
+        [seq_length, batch_size, input_size]
+        if layout == 0
+        else [batch_size, seq_length, input_size]
+    )
+    inputs = [
+        helper.make_tensor_value_info("X", dtype, x_shape),
+        helper.make_tensor_value_info("W", dtype, [1, hidden_size, input_size]),
+        helper.make_tensor_value_info("R", dtype, [1, hidden_size, hidden_size]),
+    ]
+    input_names = ["X", "W", "R"]
+    if include_optional_inputs:
+        state_shape = (
+            [1, batch_size, hidden_size]
+            if layout == 0
+            else [batch_size, 1, hidden_size]
+        )
+        inputs.extend(
+            [
+                helper.make_tensor_value_info("B", dtype, [1, 2 * hidden_size]),
+                helper.make_tensor_value_info(
+                    "sequence_lens", TensorProto.INT32, [batch_size]
+                ),
+                helper.make_tensor_value_info("initial_h", dtype, state_shape),
+            ]
+        )
+        input_names.extend(["B", "sequence_lens", "initial_h"])
+    outputs = []
+    output_names: list[str] = []
+    if include_y:
+        y_shape = (
+            [seq_length, 1, batch_size, hidden_size]
+            if layout == 0
+            else [batch_size, seq_length, 1, hidden_size]
+        )
+        outputs.append(helper.make_tensor_value_info("Y", dtype, y_shape))
+        output_names.append("Y")
+    state_shape = (
+        [1, batch_size, hidden_size] if layout == 0 else [batch_size, 1, hidden_size]
+    )
+    if include_y_h:
+        outputs.append(helper.make_tensor_value_info("Y_h", dtype, state_shape))
+        output_names.append("Y_h")
+    node = helper.make_node(
+        "RNN",
+        inputs=input_names,
+        outputs=output_names,
+        hidden_size=hidden_size,
+        layout=layout,
+    )
+    graph = helper.make_graph(
+        [node],
+        "rnn_graph",
         inputs,
         outputs,
     )
@@ -6523,6 +6636,35 @@ def test_range_run_matches_numpy() -> None:
     np.testing.assert_array_equal(outputs["output"], expected)
 
 
+def test_random_uniform_run_within_bounds() -> None:
+    model = _make_random_uniform_model(
+        output_shape=[2, 3],
+        dtype=TensorProto.FLOAT,
+        low=-0.5,
+        high=0.25,
+        seed=7.0,
+    )
+    outputs = _run_reference(model, {})
+    out = outputs["output"]
+    assert out.shape == (2, 3)
+    assert out.dtype == np.float32
+    assert np.all(out >= np.float32(-0.5))
+    assert np.all(out < np.float32(0.25))
+
+
+def test_random_uniform_op_compiles() -> None:
+    model = _make_random_uniform_model(
+        output_shape=[2, 2],
+        dtype=TensorProto.FLOAT16,
+        low=1.0,
+        high=2.0,
+        seed=11.0,
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "RandomUniform" in generated
+    assert "_rng_next_u64" in generated
+
+
 @pytest.mark.parametrize(
     ("axis", "exclusive", "reverse"),
     [
@@ -6929,6 +7071,21 @@ def test_lstm_op_matches_onnxruntime() -> None:
         include_y=True,
         include_y_h=True,
         include_y_c=False,
+        layout=0,
+    )
+    _run_ort_compare(model)
+
+
+def test_rnn_op_matches_onnxruntime() -> None:
+    model = _make_rnn_model(
+        seq_length=2,
+        batch_size=2,
+        input_size=3,
+        hidden_size=4,
+        dtype=TensorProto.FLOAT,
+        include_optional_inputs=False,
+        include_y=True,
+        include_y_h=True,
         layout=0,
     )
     _run_ort_compare(model)

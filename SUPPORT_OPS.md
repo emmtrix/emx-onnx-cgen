@@ -129,6 +129,8 @@ Supported operators: 199 / 205
 | QuantizeLinear | ✅ |
 | RMSNormalization | ✅ |
 | RNN | ❌ |
+| RandomUniform | ✅ |
+| RNN | ✅ |
 | RandomUniform | ❌ |
 | RandomUniformLike | ❌ |
 | Range | ✅ |

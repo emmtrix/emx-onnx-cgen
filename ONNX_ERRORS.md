@@ -18,7 +18,6 @@ Aggregates non-success verification outcomes.
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
 | Out of tolerance | 7 | 15, 20, 22 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
-| Unsupported op RNN | 4 | 22 |
 | Unsupported op RandomUniformLike | 3 | 22 |
 | Unsupported op RegexFullMatch | 3 | 20 |
 | '*' | 2 |  |
@@ -27,7 +26,6 @@ Aggregates non-success verification outcomes.
 | Graph must contain at least one node | 1 | 25 |
 | Pad value input must be a scalar | 1 | 24 |
 | Unsupported op Loop | 1 | 16 |
-| Unsupported op RandomUniform | 1 | 22 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 1 | 12 |
 
 ## Error frequency by opset
@@ -39,12 +37,10 @@ Aggregates non-success verification outcomes.
 | Unsupported op Loop | 16 | 1 |
 | Unsupported op RegexFullMatch | 20 | 3 |
 | Out of tolerance | 20 | 2 |
-| Unsupported op RNN | 22 | 4 |
 | Out of tolerance | 22 | 3 |
 | Unsupported op RandomUniformLike | 22 | 3 |
 | Unsupported op Det | 22 | 2 |
 | Unsupported op MaxUnpool | 22 | 2 |
-| Unsupported op RandomUniform | 22 | 1 |
 | Pad value input must be a scalar | 24 | 1 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 25 | 22 |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 25 | 20 |
@@ -249,7 +245,6 @@ Lists every ONNX file with a non-success verification outcome.
 | node/test_regex_full_match_basic/model.onnx | 20 | Data | ❌ | Unsupported op RegexFullMatch |
 | node/test_regex_full_match_email_domain/model.onnx | 20 | Data | ❌ | Unsupported op RegexFullMatch |
 | node/test_regex_full_match_empty/model.onnx | 20 | Data | ❌ | Unsupported op RegexFullMatch |
-| node/test_rnn_seq_length/model.onnx | 22 | Data | ❌ | Unsupported op RNN |
 | node/test_sequence_map_extract_shapes/model.onnx |  |  | ❌ | 'SequenceMap_0_in_0' |
 | node/test_sequence_map_extract_shapes_expanded/model.onnx |  |  | ❌ | 'SequenceMap_test_sequence_map_extract_shapes_expanded_function_x' |
 | node/test_simple_rnn_batchwise/model.onnx | 22 | Data | ❌ | Unsupported op RNN |

@@ -69,6 +69,7 @@ from ..ir.ops import (
     LpNormalizationOp,
     LpPoolOp,
     LrnOp,
+    RnnOp,
     LstmOp,
     MatMulOp,
     MaxPoolOp,
@@ -814,6 +815,7 @@ class CEmitter:
                 "rms_norm": self._env.get_template("rms_normalization_op.c.j2"),
                 "lrn": self._env.get_template("lrn_op.c.j2"),
                 "gru": self._env.get_template("gru_op.c.j2"),
+                "rnn": self._env.get_template("rnn_op.c.j2"),
                 "lstm": self._env.get_template("lstm_op.c.j2"),
                 "adam": self._env.get_template("adam_op.c.j2"),
                 "adagrad": self._env.get_template("adagrad_op.c.j2"),
@@ -845,6 +847,7 @@ class CEmitter:
                 "reshape": self._env.get_template("reshape_op.c.j2"),
                 "identity": self._env.get_template("identity_op.c.j2"),
                 "bernoulli": self._env.get_template("bernoulli_op.c.j2"),
+                "random_uniform": self._env.get_template("random_uniform_op.c.j2"),
                 "dropout": self._env.get_template("dropout_op.c.j2"),
                 "eye_like": self._env.get_template("eye_like_op.c.j2"),
                 "trilu": self._env.get_template("trilu_op.c.j2"),
@@ -1801,6 +1804,7 @@ class CEmitter:
             | RMSNormalizationOp
             | LrnOp
             | GruOp
+            | RnnOp
             | LstmOp
             | SoftmaxOp
             | LogSoftmaxOp
