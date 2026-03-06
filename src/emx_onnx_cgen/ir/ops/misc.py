@@ -1628,6 +1628,55 @@ class BernoulliOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class RandomUniformOp(RenderableOpBase):
+    __io_inputs__ = ()
+    __io_outputs__ = ("output",)
+    output: str
+    low: float
+    high: float
+    seed: int | None
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        output_dtype = emitter.op_output_dtype(self)
+        output_shape = emitter.ctx_shape(self.output)
+        output_dim_names = emitter.dim_names_for(self.output)
+        output_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
+        params = emitter.shared_param_map([("output", self.output)])
+        param_decls = emitter.build_param_decls(
+            [
+                (params["output"], output_dtype.c_type, output_suffix, False),
+            ]
+        )
+        rendered = (
+            state.templates["random_uniform"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                output=params["output"],
+                shape=CEmitterCompat.shape_dim_exprs(output_shape, output_dim_names),
+                loop_vars=CEmitterCompat.loop_vars(output_shape),
+                output_index_expr="".join(
+                    f"[{var}]" for var in CEmitterCompat.loop_vars(output_shape)
+                ),
+                low=self.low,
+                high=self.high,
+                c_type=output_dtype.c_type,
+                seed=self.seed if self.seed is not None else 0,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def call_args(self) -> tuple[str, ...]:
+        return (self.output,)
+
+
+@dataclass(frozen=True)
 class DropoutOp(RenderableOpBase):
     __io_inputs__ = ("input0", "ratio", "training_mode")
     __io_outputs__ = ("output", "mask")
