@@ -1,0 +1,23 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% for dim in prefix_shape %}
+for (idx_t {{ prefix_loop_vars[loop.index0] }} = 0; {{ prefix_loop_vars[loop.index0] }} < {{ dim }}; ++{{ prefix_loop_vars[loop.index0] }}) {
+{% endfor %}
+{% for dim in indices_shape %}
+for (idx_t {{ indices_loop_vars[loop.index0] }} = 0; {{ indices_loop_vars[loop.index0] }} < {{ dim }}; ++{{ indices_loop_vars[loop.index0] }}) {
+{% endfor %}
+idx_t feature_index = {{ indices }}{% for var in indices_loop_vars %}[{{ var }}]{% endfor %};
+if (feature_index < 0) {
+    feature_index += {{ last_axis_dim }};
+}
+idx_t flat_index = 0;
+{% for var, stride in index_components %}
+flat_index += {{ var }} * {{ stride }};
+{% endfor %}
+{{ output }}{% for var in prefix_loop_vars %}[{{ var }}]{% endfor %}[flat_index] = {{ data }}{% for var in prefix_loop_vars %}[{{ var }}]{% endfor %}[feature_index];
+{% for _ in indices_shape %}
+}
+{% endfor %}
+{% for _ in prefix_shape %}
+}
+{% endfor %}
+}

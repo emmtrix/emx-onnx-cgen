@@ -216,6 +216,43 @@ def _make_string_concat_model(
     return model
 
 
+def _make_array_feature_extractor_model(
+    *,
+    data_shape: list[int],
+    indices_shape: list[int],
+    output_shape: list[int],
+    data_dtype: int = TensorProto.FLOAT,
+) -> onnx.ModelProto:
+    data_info = helper.make_tensor_value_info("in0", data_dtype, data_shape)
+    indices_info = helper.make_tensor_value_info(
+        "in1", TensorProto.INT64, indices_shape
+    )
+    output_info = helper.make_tensor_value_info("out", data_dtype, output_shape)
+    node = helper.make_node(
+        "ArrayFeatureExtractor",
+        inputs=["in0", "in1"],
+        outputs=["out"],
+        domain="ai.onnx.ml",
+    )
+    graph = helper.make_graph(
+        [node],
+        "array_feature_extractor_graph",
+        [data_info, indices_info],
+        [output_info],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[
+            helper.make_operatorsetid("", 13),
+            helper.make_operatorsetid("ai.onnx.ml", 1),
+        ],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_adam_model(
     *, tensor_shape: list[int], tensor_count: int = 1
 ) -> onnx.ModelProto:
@@ -7297,3 +7334,38 @@ def test_lower_thresholded_relu_rejects_integer_input() -> None:
 
     with pytest.raises(UnsupportedOpError, match="floating-point inputs"):
         get_lowering("ThresholdedRelu")(graph, graph.nodes[0])
+
+
+def test_array_feature_extractor_lowering() -> None:
+    model = _make_array_feature_extractor_model(
+        data_shape=[3, 4],
+        indices_shape=[2],
+        output_shape=[3, 2],
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+    lowering = get_lowering("ArrayFeatureExtractor")
+    op = lowering(graph, graph.nodes[0])
+    assert op.data == "in0"
+    assert op.indices == "in1"
+    assert op.output == "out"
+
+
+def test_array_feature_extractor_codegen_emits_index_projection() -> None:
+    model = _make_array_feature_extractor_model(
+        data_shape=[3, 4],
+        indices_shape=[2],
+        output_shape=[3, 2],
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "feature_index" in generated
+    assert "flat_index" in generated
+
+
+def test_array_feature_extractor_reference_compare() -> None:
+    model = _make_array_feature_extractor_model(
+        data_shape=[3, 4],
+        indices_shape=[2],
+        output_shape=[3, 2],
+    )
+    _run_reference_testbench_compare(model)

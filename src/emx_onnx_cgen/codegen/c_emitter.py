@@ -861,6 +861,9 @@ class CEmitter:
                 "reduce": self._env.get_template("reduce_op.c.j2"),
                 "reduce_dynamic": self._env.get_template("reduce_op_dynamic.c.j2"),
                 "arg_reduce": self._env.get_template("arg_reduce_op.c.j2"),
+                "array_feature_extractor": self._env.get_template(
+                    "array_feature_extractor_op.c.j2"
+                ),
                 "topk": self._env.get_template("topk_op.c.j2"),
                 "constant_of_shape": self._env.get_template(
                     "constant_of_shape_op.c.j2"
