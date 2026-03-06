@@ -1,10 +1,11 @@
 {
-  "error": "ReduceSum output shape rank must match input rank",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_negative_axes_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "ReduceSum",
     "Log"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "c2a83ede1ae7c7033bed8eab7fc0a9a31200d8eefa637bf20b7267cba4eced82"
 }

@@ -1472,7 +1472,12 @@ def _verify_model(
     try:
         active_reporter.info("")
         codegen_started = active_reporter.start_step("Generating C code")
-        testbench_inputs, testbench_optional_inputs, adjusted_test_inputs = (
+        (
+            testbench_inputs,
+            testbench_optional_inputs,
+            adjusted_test_inputs,
+            shape_inference_inputs,
+        ) = (
             _load_test_data_inputs(model, args.test_data_dir)
         )
         _decode_image_decoder_inputs(model, testbench_inputs)
@@ -1499,6 +1504,7 @@ def _verify_model(
             testbench_inputs, testbench_optional_inputs = (
                 _generate_random_testbench_inputs(graph.inputs)
             )
+            shape_inference_inputs = testbench_inputs
             input_source = "Random"
         if testbench_outputs is not None:
             reference_source = "Data"
@@ -1520,7 +1526,7 @@ def _verify_model(
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,
             testbench_optional_inputs=None,
-            shape_inference_inputs=testbench_inputs,
+            shape_inference_inputs=shape_inference_inputs,
             timings=timings,
         )
         compiler = Compiler(options)
@@ -2229,9 +2235,14 @@ def _decode_image_decoder_inputs(
 
 def _load_test_data_inputs(
     model: onnx.ModelProto, data_dir: Path | None
-) -> tuple[dict[str, "np.ndarray"] | None, dict[str, bool] | None, bool]:
+) -> tuple[
+    dict[str, "np.ndarray"] | None,
+    dict[str, bool] | None,
+    bool,
+    dict[str, "np.ndarray"] | None,
+]:
     if data_dir is None:
-        return None, None, False
+        return None, None, False, None
     if not data_dir.exists():
         raise CodegenError(f"Test data directory not found: {data_dir}")
     input_files = sorted(
@@ -2262,7 +2273,7 @@ def _load_test_data_inputs(
                 value_info.name,
                 value_kind or "unknown",
             )
-            return None, None, False
+            return None, None, False, None
     inputs: dict[str, np.ndarray] = {}
     optional_flags: dict[str, bool] = {}
     reshaped_tensor_inputs = False
@@ -2360,7 +2371,7 @@ def _load_test_data_inputs(
         if value_kind == "sequence_type":
             elem_type = value_info.type.sequence_type.elem_type
             if elem_type.WhichOneof("value") != "tensor_type":
-                return None, None, False
+                return None, None, False, None
             seq = onnx.SequenceProto()
             seq.ParseFromString(path.read_bytes())
             tensors = [numpy_helper.to_array(tensor) for tensor in seq.tensor_values]
@@ -2409,7 +2420,7 @@ def _load_test_data_inputs(
                     "Skipping test data load for non-tensor optional sequence input %s.",
                     value_info.name,
                 )
-                return None, None, False
+                return None, None, False, None
             if optional.HasField("sequence_value"):
                 tensors = [
                     numpy_helper.to_array(tensor)
@@ -2433,11 +2444,12 @@ def _load_test_data_inputs(
             "Skipping test data load for unsupported optional input %s.",
             value_info.name,
         )
-        return None, None, False
+        return None, None, False, None
     return (
         inputs,
         optional_flags,
         reshaped_tensor_inputs or normalized_sequence_inputs,
+        inputs,
     )
 
 

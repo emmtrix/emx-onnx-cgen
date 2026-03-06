@@ -21,7 +21,15 @@ from .codegen.c_emitter import (
 )
 from .errors import UnsupportedOpError
 from .ir.context import GraphContext
-from .ir.model import Graph, SequenceType, TensorType, Value, ValueType
+from .ir.model import (
+    Graph,
+    Initializer,
+    Node,
+    SequenceType,
+    TensorType,
+    Value,
+    ValueType,
+)
 from .ir.op_base import OpBase
 from .ir.op_context import OpContext
 from .lowering import load_lowering_registry
@@ -235,6 +243,7 @@ class Compiler:
         return collect(graph.inputs), collect(graph.outputs)
 
     def _lower_model(self, model: onnx.ModelProto, graph: Graph) -> LoweredModel:
+        graph = self._materialize_initializer_outputs(graph)
         ctx = GraphContext(graph)
         constants = _lowered_constants(ctx)
         self._validate_graph(graph)
@@ -307,6 +316,67 @@ class Compiler:
             op_context=op_ctx,
         )
 
+    def _materialize_initializer_outputs(self, graph: Graph) -> Graph:
+        if graph.nodes:
+            return graph
+        if not graph.outputs:
+            return graph
+
+        initializer_by_name = {
+            initializer.name: initializer for initializer in graph.initializers
+        }
+        output_names = {value.name for value in graph.outputs}
+        if not all(name in initializer_by_name for name in output_names):
+            return graph
+
+        reserved_names = {
+            *(value.name for value in graph.inputs),
+            *(value.name for value in graph.outputs),
+            *(value.name for value in graph.values),
+            *(initializer.name for initializer in graph.initializers),
+        }
+        renamed_initializers: list[Initializer] = []
+        initializer_name_map: dict[str, str] = {}
+        for initializer in graph.initializers:
+            if initializer.name not in output_names:
+                renamed_initializers.append(initializer)
+                continue
+            base_name = f"{initializer.name}__const"
+            new_name = base_name
+            suffix = 0
+            while new_name in reserved_names:
+                suffix += 1
+                new_name = f"{base_name}_{suffix}"
+            reserved_names.add(new_name)
+            initializer_name_map[initializer.name] = new_name
+            renamed_initializers.append(
+                Initializer(
+                    name=new_name,
+                    type=initializer.type,
+                    data=initializer.data,
+                )
+            )
+
+        identity_nodes = tuple(
+            Node(
+                op_type="Identity",
+                name=f"materialize_output_{index}",
+                inputs=(initializer_name_map[output.name],),
+                outputs=(output.name,),
+                attrs={},
+            )
+            for index, output in enumerate(graph.outputs)
+        )
+
+        return Graph(
+            inputs=graph.inputs,
+            outputs=graph.outputs,
+            nodes=identity_nodes,
+            initializers=tuple(renamed_initializers),
+            values=graph.values,
+            opset_imports=graph.opset_imports,
+        )
+
     def _concretize_graph_shapes(self, model: onnx.ModelProto, graph: Graph) -> Graph:
         shape_inputs = self._options.shape_inference_inputs
         if not shape_inputs:
@@ -314,11 +384,11 @@ class Compiler:
         if not any(
             (
                 isinstance(value.type, TensorType)
-                and any(dim is not None for dim in value.type.dim_params)
+                and bool(value.type.dim_params)
             )
             or (
                 isinstance(value.type, SequenceType)
-                and any(dim is not None for dim in value.type.elem.dim_params)
+                and bool(value.type.elem.dim_params)
             )
             for value in graph.values + graph.inputs + graph.outputs
         ):
@@ -327,16 +397,18 @@ class Compiler:
             import onnxruntime as ort
         except Exception:
             return graph
+        has_sequence_insert = any(node.op_type == "SequenceInsert" for node in graph.nodes)
         sequence_elem_shapes_by_name: dict[str, tuple[int, ...]] = {}
-        for value in graph.inputs:
-            if not isinstance(value.type, SequenceType):
-                continue
-            array = shape_inputs.get(value.name)
-            if not isinstance(array, np.ndarray) or array.ndim < 1:
-                continue
-            sequence_elem_shapes_by_name[value.name] = tuple(
-                int(dim) for dim in array.shape[1:]
-            )
+        if not has_sequence_insert:
+            for value in graph.inputs:
+                if not isinstance(value.type, SequenceType):
+                    continue
+                array = shape_inputs.get(value.name)
+                if not isinstance(array, np.ndarray) or array.ndim < 1:
+                    continue
+                sequence_elem_shapes_by_name[value.name] = tuple(
+                    int(dim) for dim in array.shape[1:]
+                )
 
         ort_inputs: dict[str, np.ndarray] = {}
         output_names: list[str] = []

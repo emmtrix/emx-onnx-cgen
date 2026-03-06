@@ -1,9 +1,10 @@
 {
-  "error": "Graph must contain at least one node",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_constant model.onnx",
-  "verification_mode": "Random+ORT",
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_constant model.onnx --runtime onnx-reference",
+  "verification_mode": "Random+ONNXRef",
   "operators": [
     "Constant"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "16139f19ff072f89c20ed459deb9d671554587f5a7274c655c7d0cc9ecf6bc0e"
 }
