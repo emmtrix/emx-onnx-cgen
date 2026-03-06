@@ -1677,6 +1677,68 @@ class RandomUniformOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class RandomUniformLikeOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
+    input0: str
+    output: str
+    low: float
+    high: float
+    seed: int | None
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        output_dtype = emitter.op_output_dtype(self)
+        output_shape = emitter.ctx_shape(self.output)
+        output_dim_names = emitter.dim_names_for(self.output)
+        output_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
+        input_shape = emitter.ctx_shape(self.input0)
+        input_suffix = emitter.param_array_suffix(
+            input_shape,
+            emitter.dim_names_for(self.input0),
+            dtype=emitter.ctx_dtype(self.input0),
+        )
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        param_decls = emitter.build_param_decls(
+            [
+                (
+                    params["input0"],
+                    emitter.ctx_dtype(self.input0).c_type,
+                    input_suffix,
+                    True,
+                ),
+                (params["output"], output_dtype.c_type, output_suffix, False),
+            ]
+        )
+        rendered = (
+            state.templates["random_uniform"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                output=params["output"],
+                shape=CEmitterCompat.shape_dim_exprs(output_shape, output_dim_names),
+                loop_vars=CEmitterCompat.loop_vars(output_shape),
+                output_index_expr="".join(
+                    f"[{var}]" for var in CEmitterCompat.loop_vars(output_shape)
+                ),
+                low=self.low,
+                high=self.high,
+                c_type=output_dtype.c_type,
+                seed=self.seed if self.seed is not None else 0,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+
+@dataclass(frozen=True)
 class DropoutOp(RenderableOpBase):
     __io_inputs__ = ("input0", "ratio", "training_mode")
     __io_outputs__ = ("output", "mask")
