@@ -3749,7 +3749,6 @@ def _make_maxpool_model(
 
 def _make_maxunpool_model(*, with_output_shape: bool) -> onnx.ModelProto:
     x = helper.make_tensor_value_info("x", TensorProto.FLOAT, [1, 1, 2, 2])
-    indices = helper.make_tensor_value_info("indices", TensorProto.INT64, [1, 1, 2, 2])
     y = helper.make_tensor_value_info("y", TensorProto.FLOAT, [1, 1, 4, 4])
 
     initializers = [

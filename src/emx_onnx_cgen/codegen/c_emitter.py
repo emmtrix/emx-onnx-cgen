@@ -72,7 +72,6 @@ from ..ir.ops import (
     LstmOp,
     MatMulOp,
     MaxPoolOp,
-    MaxUnpoolOp,
     MeanVarianceNormalizationOp,
     NegativeLogLikelihoodLossOp,
     NonMaxSuppressionOp,
