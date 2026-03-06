@@ -14,7 +14,9 @@ jobs:
   build-linux-bundle:
     runs-on: ubuntu-latest
     container:
-      image: python:3.11-slim
+      # Build in a deliberately older glibc environment so the bundled
+      # libpython has a lower runtime glibc floor.
+      image: python:3.11-slim-bullseye
     permissions:
       contents: write
     steps:
