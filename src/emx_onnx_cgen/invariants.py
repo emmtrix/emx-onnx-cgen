@@ -54,9 +54,7 @@ def check_lowered_ops(ops: Sequence[OpBase]) -> None:
     for op in ops:
         outputs = op.output_names
         if not outputs:
-            raise UnsupportedOpError(
-                f"Lowered op {op.kind} has no output names"
-            )
+            raise UnsupportedOpError(f"Lowered op {op.kind} has no output names")
         for name in outputs:
             if name is not None and not name:
                 raise UnsupportedOpError(
