@@ -20,6 +20,12 @@ from .codegen.c_emitter import (
     NodeInfo,
 )
 from .errors import UnsupportedOpError
+from .invariants import (
+    check_graph_integrity,
+    check_inferred_shapes,
+    check_inferred_types,
+    check_lowered_ops,
+)
 from .ir.context import GraphContext
 from .ir.model import (
     Graph,
@@ -260,13 +266,16 @@ class Compiler:
             output_types,
         ) = self._collect_io_specs(graph)
         ops, node_infos = self._lower_nodes(ctx)
+        check_lowered_ops(ops)
         op_ctx = OpContext(ctx)
         for op in ops:
             op.validate(op_ctx)
         for op in ops:
             op.infer_types(op_ctx)
+        check_inferred_types(ops, op_ctx)
         for op in ops:
             op.infer_shapes(op_ctx)
+        check_inferred_shapes(ops, op_ctx)
         refreshed_output_types: list[ValueType] = []
         refreshed_output_shapes: list[tuple[int, ...]] = []
         refreshed_output_dtypes: list[ScalarType] = []
@@ -518,10 +527,7 @@ class Compiler:
         )
 
     def _validate_graph(self, graph: Graph) -> None:
-        if not graph.outputs:
-            raise UnsupportedOpError("Graph must have at least one output")
-        if not graph.nodes:
-            raise UnsupportedOpError("Graph must contain at least one node")
+        check_graph_integrity(graph)
         for value in graph.outputs:
             if isinstance(value.type, TensorType):
                 shape_product(value.type.shape)
