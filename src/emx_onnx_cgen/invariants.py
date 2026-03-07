@@ -69,6 +69,11 @@ def check_inferred_types(ops: Sequence[OpBase], ctx: OpContext) -> None:
 
     Every tensor output must have a valid dtype.  Non-tensor outputs
     (e.g. sequences) are skipped.
+
+    ``ctx.dtype()`` raises ``ShapeInferenceError`` for missing tensor
+    dtypes — that error propagates uncaught as a genuine gate failure.
+    ``UnsupportedOpError`` is caught and ignored because it signals a
+    non-tensor output that this gate does not cover.
     """
     for op in ops:
         name = op.primary_output_name
@@ -77,6 +82,7 @@ def check_inferred_types(ops: Sequence[OpBase], ctx: OpContext) -> None:
         try:
             ctx.dtype(name)
         except UnsupportedOpError:
+            # Non-tensor output (e.g. sequence) — not covered by this gate.
             pass
 
 
@@ -85,6 +91,11 @@ def check_inferred_shapes(ops: Sequence[OpBase], ctx: OpContext) -> None:
 
     Every tensor output must have a shape with non-negative dimensions.
     Non-tensor outputs (e.g. sequences) are skipped.
+
+    ``ctx.shape()`` raises ``ShapeInferenceError`` for missing tensor
+    shapes — that error propagates uncaught as a genuine gate failure.
+    ``UnsupportedOpError`` is caught and ignored because it signals a
+    non-tensor output that this gate does not cover.
     """
     for op in ops:
         name = op.primary_output_name
@@ -93,6 +104,7 @@ def check_inferred_shapes(ops: Sequence[OpBase], ctx: OpContext) -> None:
         try:
             shape = ctx.shape(name)
         except UnsupportedOpError:
+            # Non-tensor output (e.g. sequence) — not covered by this gate.
             continue
         for dim_index, dim in enumerate(shape):
             if dim < 0:
