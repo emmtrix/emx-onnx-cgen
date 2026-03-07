@@ -6,6 +6,7 @@ from shared.scalar_types import ScalarType
 
 from ..ir.ops import PadOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
+from ..ir.context import GraphContext
 from ..ir.model import Graph, Initializer, Node
 from ..lowering.common import optional_name, value_dtype, value_shape
 from ..validation import normalize_axis
@@ -80,6 +81,8 @@ def lower_pad(graph: Graph, node: Node) -> PadOp:
         raise UnsupportedOpError("Pad input must be provided")
     input_shape = value_shape(graph, input_name, node)
     output_shape = value_shape(graph, node.outputs[0], node)
+    if isinstance(graph, GraphContext):
+        graph.set_shape(node.outputs[0], output_shape)
     input_dtype = value_dtype(graph, input_name, node)
     output_dtype = value_dtype(graph, node.outputs[0], node)
     if input_dtype != output_dtype:
@@ -204,7 +207,7 @@ def lower_pad(graph: Graph, node: Node) -> PadOp:
                     "Pad value input must match input dtype, "
                     f"got {input_value_dtype.onnx_name}"
                 )
-            if value_input_shape:
+            if value_input_shape and value_input_shape != (1,):
                 raise UnsupportedOpError("Pad value input must be a scalar")
             value_input = value_name
     elif "value" in node.attrs:
