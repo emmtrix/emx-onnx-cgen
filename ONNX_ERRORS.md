@@ -16,7 +16,7 @@ Aggregates non-success verification outcomes.
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
-| Out of tolerance | 6 | 15, 20, 22 |
+| Out of tolerance | 5 | 20, 22 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op Loop | 1 | 16 |
@@ -27,7 +27,6 @@ Aggregates non-success verification outcomes.
 | Error message | Opset | Count |
 | --- | --- | --- |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
-| Out of tolerance | 15 | 1 |
 | Unsupported op Loop | 16 | 1 |
 | Unsupported op RegexFullMatch | 20 | 3 |
 | Out of tolerance | 20 | 2 |
@@ -50,7 +49,6 @@ Lists every ONNX file with a non-success verification outcome.
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
 | local_ops/test_gemm_CM_transA/model.onnx | 12 | Data | ❌ | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'sclbl-onnx-node1' Status Message: Gemm: Invalid bias shape for broadcast |
-| micro_kws_m_static_qoperator.onnx | 15 | Random+ORT | ❌ | Out of tolerance (max ULP 998244352) |
 | node/test_adam_multiple/model.onnx |  | Data | ❌ | Out of tolerance (max ULP 62311) |
 | node/test_affine_grid_3d/model.onnx | 20 | Data | ❌ | Out of tolerance (max ULP 151) |
 | node/test_affine_grid_3d_expanded/model.onnx | 20 | Data | ❌ | Out of tolerance (max ULP 169) |
