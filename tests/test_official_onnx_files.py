@@ -67,6 +67,10 @@ MODEL_EXTRA_VERIFY_ARGS = {
         "--max-ulp",
         "200",
     ),
+    "onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx": (
+        "--runtime",
+        "onnx-reference",
+    ),
     "onnx-org/onnx/backend/test/data/node/test_roialign_aligned_false/model.onnx": (
         "--runtime",
         "onnx-reference",
