@@ -905,7 +905,7 @@ Coverage 1630 / 1802 ONNX files (90.5%).
 | node/test_logsoftmax_negative_axis_expanded_ver18/model.onnx | 18 | Data | ✅ | OK (max ULP 1) |
 | node/test_loop11/model.onnx | 11 | Data | ✅ | OK (max ULP 0) |
 | node/test_loop13_seq/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
-| node/test_loop16_seq_none/model.onnx | 16 | Data | ❌ | Unsupported op Loop |
+| node/test_loop16_seq_none/model.onnx | 16 | Data | ✅ | OK (max ULP 0) |
 | node/test_lpnormalization_default/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_lppool_1d_default/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_lppool_2d_default/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
