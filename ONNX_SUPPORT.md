@@ -718,7 +718,7 @@ Coverage 1630 / 1802 ONNX files (90.5%).
 | node/test_greater_uint8/model.onnx | 13 | Data | ✅ | OK (max abs diff 0) |
 | node/test_gridsample/model.onnx | 22 | Data | ✅ | OK (max ULP 2) |
 | node/test_gridsample_aligncorners_true/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
-| node/test_gridsample_bicubic/model.onnx | 22 | Data | ❌ | Out of tolerance (max ULP 1678) |
+| node/test_gridsample_bicubic/model.onnx | 22 | Data | ✅ | OK (max ULP 13) |
 | node/test_gridsample_bicubic_align_corners_0_additional_1/model.onnx | 22 | Data | ✅ | OK (max ULP 13) |
 | node/test_gridsample_bicubic_align_corners_1_additional_1/model.onnx | 22 | Data | ✅ | OK (max ULP 34) |
 | node/test_gridsample_bilinear/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
