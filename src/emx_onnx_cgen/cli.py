@@ -1659,7 +1659,7 @@ def _verify_model(
                                 if slices:
                                     target[slices] = item[slices]
                                 elif item.ndim == 0:
-                                    target[...] = item
+                                    normalized[idx] = item
                                 else:
                                     flat_src = item.reshape(-1)
                                     flat_dst = target.reshape(-1)
