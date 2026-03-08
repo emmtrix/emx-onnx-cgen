@@ -1151,6 +1151,82 @@ def _handle_verify(args: argparse.Namespace) -> int:
     return 0
 
 
+def _normalize_gemm_bias_for_runtime(
+    model: onnx.ModelProto,
+    inputs: dict[str, "np.ndarray"],
+) -> tuple[onnx.ModelProto, dict[str, "np.ndarray"]]:
+    """Normalize Gemm 1D row-wise bias for runtime comparison.
+
+    Our compiler accepts Gemm with a 1D C bias of shape [M] and treats it as
+    row-wise bias (equivalent to [M, 1]).  The ONNX standard requires C to be
+    unidirectionally broadcastable to (M, N), which means [M] is interpreted
+    as [1, M] by NumPy rules and is only valid when M == N.  When M != N this
+    function normalizes C from [M] to [M, 1] so the reference runtime produces
+    matching outputs.
+    """
+
+    def _concrete_shape(
+        tensor_type: onnx.TypeProto.Tensor,
+    ) -> tuple[int, ...] | None:
+        if not tensor_type.HasField("shape"):
+            return None
+        dims: list[int] = []
+        for d in tensor_type.shape.dim:
+            if d.HasField("dim_value"):
+                dims.append(d.dim_value)
+            else:
+                return None
+        return tuple(dims)
+
+    shape_map: dict[str, tuple[int, ...]] = {}
+    for vi in (*model.graph.output, *model.graph.value_info):
+        shape = _concrete_shape(vi.type.tensor_type)
+        if shape is not None:
+            shape_map[vi.name] = shape
+
+    normalizations: dict[str, int] = {}
+    for node in model.graph.node:
+        if node.op_type != "Gemm" or len(node.input) < 3:
+            continue
+        c_name = node.input[2]
+        if not c_name:
+            continue
+        c_shape: tuple[int, ...] | None = None
+        for inp in model.graph.input:
+            if inp.name == c_name:
+                c_shape = _concrete_shape(inp.type.tensor_type)
+                break
+        if c_shape is None or len(c_shape) != 1:
+            continue
+        out_shape = shape_map.get(node.output[0])
+        if out_shape is None or len(out_shape) < 2:
+            continue
+        m, n = out_shape[0], out_shape[1]
+        if c_shape[0] == m and m != n:
+            c_arr = inputs.get(c_name)
+            if c_arr is not None and c_arr.size == m:
+                normalizations[c_name] = m
+
+    if not normalizations:
+        return model, inputs
+
+    normalized_model = onnx.ModelProto()
+    normalized_model.CopyFrom(model)
+    for inp in normalized_model.graph.input:
+        if inp.name not in normalizations:
+            continue
+        m = normalizations[inp.name]
+        del inp.type.tensor_type.shape.dim[:]
+        inp.type.tensor_type.shape.dim.add().dim_value = m
+        inp.type.tensor_type.shape.dim.add().dim_value = 1
+
+    normalized_inputs = {
+        name: (arr.reshape(normalizations[name], 1) if name in normalizations else arr)
+        for name, arr in inputs.items()
+    }
+    return normalized_model, normalized_inputs
+
+
 def _augment_model_with_tensor_node_outputs(
     model: onnx.ModelProto,
     graph: Any,
@@ -1854,23 +1930,26 @@ def _verify_model(
             runtime_started = active_reporter.start_step(
                 f"  Running {runtime_name} [--runtime={args.runtime}]"
             )
+            runtime_model, runtime_inputs = _normalize_gemm_bias_for_runtime(
+                model, inputs
+            )
             try:
                 if runtime_name == "onnxruntime":
                     import onnxruntime as ort
 
                     sess_options = make_deterministic_session_options(ort)
                     sess = ort.InferenceSession(
-                        model.SerializeToString(),
+                        runtime_model.SerializeToString(),
                         sess_options=sess_options,
                         providers=["CPUExecutionProvider"],
                     )
-                    runtime_outputs_list = sess.run(None, inputs)
+                    runtime_outputs_list = sess.run(None, runtime_inputs)
                 else:
                     from onnx.reference import ReferenceEvaluator
 
                     with deterministic_reference_runtime():
-                        evaluator = ReferenceEvaluator(model)
-                        runtime_outputs_list = evaluator.run(None, inputs)
+                        evaluator = ReferenceEvaluator(runtime_model)
+                        runtime_outputs_list = evaluator.run(None, runtime_inputs)
             except Exception as exc:
                 active_reporter.step_fail(str(exc))
                 message = str(exc)
