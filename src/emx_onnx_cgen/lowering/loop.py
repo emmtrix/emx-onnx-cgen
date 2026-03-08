@@ -441,6 +441,190 @@ def _lower_loop_sequence_insert(
     )
 
 
+def _extract_if_default_sequence(
+    body: GraphProto,
+    if_node: NodeProto,
+    opt_state_name: str,
+) -> tuple[str, tuple[float | int, ...]] | None:
+    """Extract the If node output name and then-branch default sequence values.
+
+    Returns (if_output_name, default_values) when the If node implements the
+    optional-sequence pattern: condition=optional_is_none, then-branch creates
+    a SequenceConstruct from a Constant, else-branch calls OptionalGetElement
+    on the loop state. Returns None if the pattern does not match.
+    """
+    if len(if_node.input) != 1 or len(if_node.output) != 1:
+        return None
+    if_output = if_node.output[0]
+
+    then_branch = next(
+        (a.g for a in if_node.attribute if a.name == "then_branch"), None
+    )
+    else_branch = next(
+        (a.g for a in if_node.attribute if a.name == "else_branch"), None
+    )
+    if then_branch is None or else_branch is None:
+        return None
+
+    # else-branch must be exactly: OptionalGetElement(opt_state) → output
+    if len(else_branch.node) != 1:
+        return None
+    else_node = else_branch.node[0]
+    if (
+        else_node.op_type != "OptionalGetElement"
+        or list(else_node.input) != [opt_state_name]
+        or len(else_node.output) != 1
+    ):
+        return None
+
+    # then-branch must produce a SequenceConstruct from a single Constant
+    const_nodes = {n.output[0]: n for n in then_branch.node if n.op_type == "Constant"}
+    seq_nodes = [n for n in then_branch.node if n.op_type == "SequenceConstruct"]
+    if len(seq_nodes) != 1:
+        return None
+    seq_node = seq_nodes[0]
+    if len(seq_node.input) != 1 or len(seq_node.output) != 1:
+        return None
+    const_name = seq_node.input[0]
+    const_node = const_nodes.get(const_name)
+    if const_node is None:
+        return None
+    for attr in const_node.attribute:
+        if attr.name == "value":
+            arr = numpy_helper.to_array(attr.t)
+            return if_output, tuple(arr.reshape(-1).tolist())
+    return None
+
+
+def _lower_loop_optional_sequence_insert(
+    graph: Graph, node: Node, body: GraphProto
+) -> LoopSequenceInsertOp:
+    """Lower a Loop with Optional[Sequence] state to LoopSequenceInsertOp.
+
+    Handles the pattern where the loop state is Optional[Sequence] and the body
+    uses OptionalHasElement + Not + If to obtain an initial sequence, then calls
+    SequenceInsert to append a table element each iteration.
+    """
+    if len(node.inputs) != 3 or len(node.outputs) != 1:
+        raise UnsupportedOpError("Unsupported op Loop")
+    if len(body.input) != 3 or len(body.output) != 2:
+        raise UnsupportedOpError("Unsupported op Loop")
+
+    iter_name = body.input[0].name
+    cond_in_name = body.input[1].name
+    opt_state_name = body.input[2].name
+    cond_out = body.output[0].name
+    seq_out = body.output[1].name
+    body_nodes = list(body.node)
+
+    _match_single_node(body_nodes, "Identity", (cond_in_name,), (cond_out,))
+
+    # Detect: OptionalHasElement(opt_state) → has_elem_name
+    has_elem_nodes = [
+        n
+        for n in body_nodes
+        if n.op_type == "OptionalHasElement"
+        and list(n.input) == [opt_state_name]
+        and len(n.output) == 1
+    ]
+    if len(has_elem_nodes) != 1:
+        raise UnsupportedOpError("Unsupported op Loop")
+    has_elem_name = has_elem_nodes[0].output[0]
+
+    # Detect: Not(has_elem_name) → is_none_name
+    not_nodes = [
+        n
+        for n in body_nodes
+        if n.op_type == "Not"
+        and list(n.input) == [has_elem_name]
+        and len(n.output) == 1
+    ]
+    if len(not_nodes) != 1:
+        raise UnsupportedOpError("Unsupported op Loop")
+    is_none_name = not_nodes[0].output[0]
+
+    # Detect: If(is_none_name) → sequence_name
+    if_nodes = [
+        n
+        for n in body_nodes
+        if n.op_type == "If"
+        and list(n.input) == [is_none_name]
+        and len(n.output) == 1
+    ]
+    if len(if_nodes) != 1:
+        raise UnsupportedOpError("Unsupported op Loop")
+    if_node = if_nodes[0]
+    extracted = _extract_if_default_sequence(body, if_node, opt_state_name)
+    if extracted is None:
+        raise UnsupportedOpError("Unsupported op Loop")
+    sequence_name, default_values = extracted
+
+    # Validate the rest of the body matches the standard insert pattern
+    _match_single_node(body_nodes, "Add", (iter_name, "one"), ("end",))
+    _match_single_node(body_nodes, "Unsqueeze", ("end", "axes"), ("slice_end",))
+    _match_single_node(
+        body_nodes, "Slice", ("x", "slice_start", "slice_end"), ("slice_out",)
+    )
+    _match_single_node(
+        body_nodes, "SequenceInsert", (sequence_name, "slice_out"), (seq_out,)
+    )
+
+    constants = _const_value_map(body)
+    table = constants.get("x")
+    if table is None or len(table.shape) != 1:
+        raise UnsupportedOpError("Unsupported op Loop")
+    table_values = table.reshape(-1).tolist()
+    if not table_values:
+        raise UnsupportedOpError("Unsupported op Loop")
+    slice_start = constants.get("slice_start")
+    if slice_start is not None:
+        start_values = slice_start.reshape(-1).tolist()
+        if len(start_values) != 1:
+            raise UnsupportedOpError("Unsupported op Loop")
+        start_index = int(start_values[0])
+        if start_index < 0:
+            start_index += len(table_values)
+        if start_index < 0 or start_index >= len(table_values):
+            raise UnsupportedOpError("Unsupported op Loop")
+        table_values = [table_values[start_index]] * len(table_values)
+
+    trip_count_shape = value_shape(graph, node.inputs[0], node)
+    cond_shape = value_shape(graph, node.inputs[1], node)
+    if trip_count_shape not in {(), (1,)} or cond_shape not in {(), (1,)}:
+        raise UnsupportedOpError("Unsupported op Loop")
+
+    input_value = graph.find_value(node.inputs[2])
+    output_value = graph.find_value(node.outputs[0])
+    if not isinstance(input_value.type, SequenceType) or not isinstance(
+        output_value.type, SequenceType
+    ):
+        raise UnsupportedOpError("Unsupported op Loop")
+    if not input_value.type.is_optional:
+        raise UnsupportedOpError("Unsupported op Loop")
+    if input_value.type.elem.shape != output_value.type.elem.shape:
+        raise UnsupportedOpError("Unsupported op Loop")
+    if input_value.type.elem.shape != ():
+        raise UnsupportedOpError("Unsupported op Loop")
+
+    elem_dtype = input_value.type.elem.dtype
+    if elem_dtype.name not in {"F32", "F64", "I32", "I64", "I16"}:
+        raise UnsupportedOpError("Unsupported op Loop")
+
+    input_sequence_present = f"{node.inputs[2]}_present"
+    return LoopSequenceInsertOp(
+        trip_count=node.inputs[0],
+        cond=node.inputs[1],
+        input_sequence=node.inputs[2],
+        output_sequence=node.outputs[0],
+        table_data=tuple(table_values),
+        table_shape=(int(table.shape[0]),),
+        elem_shape=input_value.type.elem.shape,
+        elem_dtype=elem_dtype,
+        input_sequence_present=input_sequence_present,
+        default_sequence_data=default_values,
+    )
+
+
 @register_lowering("Loop")
 def lower_loop(
     graph: Graph, node: Node
@@ -455,4 +639,7 @@ def lower_loop(
             try:
                 return _lower_loop_sequence_insert(graph, node, body)
             except UnsupportedOpError:
-                return _lower_loop_sequence_map(graph, node, body)
+                try:
+                    return _lower_loop_optional_sequence_insert(graph, node, body)
+                except UnsupportedOpError:
+                    return _lower_loop_sequence_map(graph, node, body)

@@ -4305,16 +4305,29 @@ class LoopSequenceInsertOp(RenderableOpBase):
     table_shape: tuple[int, ...]
     elem_shape: tuple[int, ...]
     elem_dtype: ScalarType
+    input_sequence_present: str | None = None
+    # Name of the _Bool present flag passed to the C function. Set when
+    # input_sequence is an Optional[Sequence]; None for plain Sequence inputs.
+    default_sequence_data: tuple[float | int, ...] = ()
+    # Initial sequence values used when input_sequence_present is False (absent).
+    # Extracted from the then-branch SequenceConstruct in the loop body.
 
     def call_args(self) -> tuple[str, ...]:
-        return (
+        args: list[str] = [
             self.trip_count,
             self.cond,
             self.input_sequence,
             f"{self.input_sequence}__count",
-            self.output_sequence,
-            f"{self.output_sequence}__count",
+        ]
+        if self.input_sequence_present is not None:
+            args.append(self.input_sequence_present)
+        args.extend(
+            [
+                self.output_sequence,
+                f"{self.output_sequence}__count",
+            ]
         )
+        return tuple(args)
 
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
@@ -4327,6 +4340,7 @@ class LoopSequenceInsertOp(RenderableOpBase):
                 ("trip_count", self.trip_count),
                 ("cond", self.cond),
                 ("input_sequence", self.input_sequence),
+                ("input_sequence_present", self.input_sequence_present),
                 ("output_sequence", self.output_sequence),
             ]
         )
@@ -4334,27 +4348,32 @@ class LoopSequenceInsertOp(RenderableOpBase):
         elem_suffix = emitter.param_array_suffix(elem_shape)
         seq_dtype = self.elem_dtype
         scalar_suffix = emitter.param_array_suffix(())
-        param_decls = emitter.build_param_decls(
+        input_present_param = params.get("input_sequence_present")
+        param_specs: list[tuple[str | None, str, str, bool]] = [
+            (
+                params["trip_count"],
+                emitter.ctx_dtype(self.trip_count).c_type,
+                scalar_suffix,
+                True,
+            ),
+            (
+                params["cond"],
+                emitter.ctx_dtype(self.cond).c_type,
+                scalar_suffix,
+                True,
+            ),
+            (
+                params["input_sequence"],
+                seq_dtype.c_type,
+                f"[EMX_SEQUENCE_MAX_LEN]{elem_suffix}",
+                True,
+            ),
+            (f"{params['input_sequence']}__count", "idx_t", "", True),
+        ]
+        if input_present_param is not None:
+            param_specs.append((input_present_param, "_Bool", "", True))
+        param_specs.extend(
             [
-                (
-                    params["trip_count"],
-                    emitter.ctx_dtype(self.trip_count).c_type,
-                    scalar_suffix,
-                    True,
-                ),
-                (
-                    params["cond"],
-                    emitter.ctx_dtype(self.cond).c_type,
-                    scalar_suffix,
-                    True,
-                ),
-                (
-                    params["input_sequence"],
-                    seq_dtype.c_type,
-                    f"[EMX_SEQUENCE_MAX_LEN]{elem_suffix}",
-                    True,
-                ),
-                (f"{params['input_sequence']}__count", "idx_t", "", True),
                 (
                     params["output_sequence"],
                     seq_dtype.c_type,
@@ -4369,8 +4388,12 @@ class LoopSequenceInsertOp(RenderableOpBase):
                 ),
             ]
         )
+        param_decls = emitter.build_param_decls(param_specs)
         table_data = [
             emitter.format_value(value, seq_dtype) for value in self.table_data
+        ]
+        default_data = [
+            emitter.format_value(value, seq_dtype) for value in self.default_sequence_data
         ]
         rendered = (
             state.templates["loop_sequence_insert"]
@@ -4381,11 +4404,14 @@ class LoopSequenceInsertOp(RenderableOpBase):
                 trip_count=params["trip_count"],
                 cond=params["cond"],
                 input_sequence=params["input_sequence"],
+                input_present=input_present_param,
                 output_sequence=params["output_sequence"],
                 table_data=table_data,
                 table_len=self.table_shape[0],
                 element_count=CEmitterCompat.element_count_expr(elem_shape),
                 c_type=seq_dtype.c_type,
+                default_data=default_data,
+                default_count=len(self.default_sequence_data),
             )
             .rstrip()
         )
