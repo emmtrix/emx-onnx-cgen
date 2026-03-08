@@ -547,9 +547,7 @@ def _lower_loop_optional_sequence_insert(
     if_nodes = [
         n
         for n in body_nodes
-        if n.op_type == "If"
-        and list(n.input) == [is_none_name]
-        and len(n.output) == 1
+        if n.op_type == "If" and list(n.input) == [is_none_name] and len(n.output) == 1
     ]
     if len(if_nodes) != 1:
         raise UnsupportedOpError("Unsupported op Loop")

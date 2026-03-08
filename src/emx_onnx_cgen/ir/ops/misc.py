@@ -4393,7 +4393,8 @@ class LoopSequenceInsertOp(RenderableOpBase):
             emitter.format_value(value, seq_dtype) for value in self.table_data
         ]
         default_data = [
-            emitter.format_value(value, seq_dtype) for value in self.default_sequence_data
+            emitter.format_value(value, seq_dtype)
+            for value in self.default_sequence_data
         ]
         rendered = (
             state.templates["loop_sequence_insert"]
