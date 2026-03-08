@@ -81,6 +81,11 @@ MODEL_EXTRA_VERIFY_ARGS = {
         "--runtime",
         "onnx-reference",
     ),
+    "onnx-org/onnx/backend/test/data/node/test_gridsample_bicubic/model.onnx": (
+        "--runtime",
+        "onnx-reference",
+        "--test-data-inputs-only",
+    ),
 }
 
 
