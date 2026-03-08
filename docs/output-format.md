@@ -552,7 +552,7 @@ Unrecognized patterns raise an error at lowering time.
 ### Mel-Frequency Filter Banks (MelWeightMatrix)
 
 Generates a triangular mel-scale filter bank. Frequency-to-mel conversion
-uses the [O'Shaughnessy formula](https://en.wikipedia.org/wiki/Mel_scale):
+uses the [Slaney formula](https://en.wikipedia.org/wiki/Mel_scale):
 `mel(f) = 2595 × log₁₀(1 + f / 700)`. For each mel bin, a triangular window
 with linear rise and fall slopes is constructed over the corresponding
 DFT frequency bins.
