@@ -45,6 +45,18 @@ jobs:
         run: |
           python tools/pyinstaller_build.py
 
+      - name: Validate bundled glibc floor
+        run: |
+          libpython_path="$(ls dist/emx-onnx-cgen/_internal/libpython*.so.*)"
+          echo "Inspecting: ${libpython_path}"
+          max_glibc="$(strings "${libpython_path}" | grep -oE 'GLIBC_[0-9]+\.[0-9]+' | sort -V | tail -n1)"
+          echo "Highest required glibc symbol: ${max_glibc}"
+          if [ "$(printf '%s\n' "${max_glibc}" "GLIBC_2.31" | sort -V | tail -n1)" != "GLIBC_2.31" ]; then
+            echo "ERROR: bundled libpython requires ${max_glibc}, expected <= GLIBC_2.31 from bullseye build env"
+            exit 1
+          fi
+
+
       - name: Package bundle
         run: |
           tar -czf emx-onnx-cgen-linux-amd64.tar.gz -C dist/emx-onnx-cgen .
