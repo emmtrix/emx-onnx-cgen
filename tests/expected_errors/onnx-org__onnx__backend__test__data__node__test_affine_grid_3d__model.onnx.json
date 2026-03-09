@@ -1,10 +1,10 @@
 {
-  "error": "Out of tolerance (max ULP 151)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_affine_grid_3d model.onnx --test-data-dir test_data_set_0",
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_affine_grid_3d model.onnx --test-data-dir test_data_set_0 --fp32-accumulation-strategy fp64",
   "verification_mode": "Data",
   "operators": [
     "AffineGrid"
   ],
   "opset_version": 20,
-  "generated_checksum": "c27cde89e99ad571fd7fdb721900133274d453d2dc29655aab61706b53b53e6b"
+  "generated_checksum": "94291c3ea67afd92c1f7b8976edee01ffc9ab255b0d2741adcc9e42f16516bb7"
 }
