@@ -17,6 +17,8 @@ from test_ops import (
     _reduce_output_shape,
 )
 from emx_onnx_cgen import cli
+from emx_onnx_cgen.ir.model import Graph, Node, TensorType, Value
+from shared.scalar_types import ScalarType
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = PROJECT_ROOT / "src"
@@ -261,6 +263,53 @@ def test_cli_verify_per_node_accuracy_flag_can_be_enabled() -> None:
     parser = cli._build_parser()
     args = parser.parse_args(["verify", "model.onnx", "--per-node-accuracy"])
     assert args.per_node_accuracy is True
+
+
+def test_augment_model_with_tensor_node_outputs_skips_non_top_level_outputs() -> None:
+    output = helper.make_tensor_value_info("y", TensorProto.FLOAT, [1])
+    identity = helper.make_node("Identity", inputs=["x"], outputs=["y"])
+    model = helper.make_model(
+        helper.make_graph(
+            [identity],
+            "top_level_graph",
+            [helper.make_tensor_value_info("x", TensorProto.FLOAT, [1])],
+            [output],
+        ),
+        opset_imports=[helper.make_operatorsetid("", 20)],
+    )
+
+    tensor_type = TensorType(dtype=ScalarType.F32, shape=(1,), dim_params=(None,))
+    graph = Graph(
+        inputs=(Value(name="x", type=tensor_type),),
+        outputs=(Value(name="y", type=tensor_type),),
+        nodes=(
+            Node(
+                op_type="FakeInner",
+                name="inner",
+                inputs=("x",),
+                outputs=("inner_only",),
+                attrs={},
+            ),
+            Node(
+                op_type="Identity",
+                name="top",
+                inputs=("x",),
+                outputs=("y",),
+                attrs={},
+            ),
+        ),
+        initializers=(),
+        values=(
+            Value(name="inner_only", type=tensor_type),
+            Value(name="y", type=tensor_type),
+        ),
+    )
+
+    augmented = cli._augment_model_with_tensor_node_outputs(model, graph)
+
+    output_names = [value.name for value in augmented.graph.output]
+    assert "y" in output_names
+    assert "inner_only" not in output_names
 
 
 def test_cli_compile_accepts_testbench_output_format_txt_emmtrix() -> None:
