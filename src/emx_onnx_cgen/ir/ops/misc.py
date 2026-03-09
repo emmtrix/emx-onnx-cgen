@@ -2912,6 +2912,7 @@ class AffineGridOp(RenderableOpBase):
         emitter.dim_args_str()
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
+        acc_type = emitter.accumulation_dtype(output_dtype).c_type
         grid_shape = emitter.ctx_shape(self.grid)
         theta_shape = emitter.ctx_shape(self.theta)
         spatial_rank = self.spatial_rank
@@ -2935,6 +2936,7 @@ class AffineGridOp(RenderableOpBase):
                 size=self.size,
                 grid=self.grid,
                 c_type=c_type,
+                acc_type=acc_type,
                 theta_shape=theta_shape,
                 grid_shape=grid_shape,
                 theta_suffix=theta_suffix,
