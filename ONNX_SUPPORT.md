@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1632 / 1802, 90.6% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1633 / 1802, 90.6% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 124 / 125, 99.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1632 / 1802 ONNX files (90.6%).
+Coverage 1633 / 1802 ONNX files (90.6%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -55,10 +55,10 @@ Coverage 1632 / 1802 ONNX files (90.6%).
 | node/test_affine_grid_2d_align_corners/model.onnx | 20 | Data | ✅ | OK (max ULP 4) |
 | node/test_affine_grid_2d_align_corners_expanded/model.onnx | 20 | Data | ✅ | OK (max ULP 4) |
 | node/test_affine_grid_2d_expanded/model.onnx | 20 | Data | ✅ | OK (max ULP 5) |
-| node/test_affine_grid_3d/model.onnx | 20 | Data | ❌ | Out of tolerance (max ULP 151) |
+| node/test_affine_grid_3d/model.onnx | 20 | Data | ✅ | OK (max ULP 0) |
 | node/test_affine_grid_3d_align_corners/model.onnx | 20 | Data | ✅ | OK (max ULP 23) |
 | node/test_affine_grid_3d_align_corners_expanded/model.onnx | 20 | Data | ✅ | OK (max ULP 23) |
-| node/test_affine_grid_3d_expanded/model.onnx | 20 | Data | ✅ | OK (max ULP 89) |
+| node/test_affine_grid_3d_expanded/model.onnx | 20 | Data | ✅ | OK (max ULP 2) |
 | node/test_ai_onnx_ml_array_feature_extractor/model.onnx |  | Data | ✅ | OK (max ULP 0) |
 | node/test_ai_onnx_ml_binarizer/model.onnx |  | Data | ✅ | OK (max ULP 0) |
 | node/test_ai_onnx_ml_label_encoder_string_int/model.onnx |  | Data | ✅ | OK (max abs diff 0) |
