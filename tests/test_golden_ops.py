@@ -618,6 +618,16 @@ def test_codegen_golden_conv_simple_accumulation() -> None:
     )
 
 
+def test_codegen_golden_matmul_fp64_accumulation() -> None:
+    model = _make_matmul_model()
+    options = CompilerOptions(fp32_accumulation_strategy="fp64")
+    _compile_and_assert_golden(
+        model,
+        "op_matmul_matmul_fp64.c",
+        options=options,
+    )
+
+
 # Each entry is (class_name, op_name, model_factory). class_name must be a single
 # token without underscores; filenames and test names are generated as:
 #   test_op_<class_name>_<op_name> and op_<class_name>_<op_name>.c
