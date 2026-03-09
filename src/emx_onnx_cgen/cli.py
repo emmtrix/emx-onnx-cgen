@@ -1158,6 +1158,12 @@ def _augment_model_with_tensor_node_outputs(
     augmented = onnx.ModelProto()
     augmented.CopyFrom(model)
     existing_output_names = {output.name for output in augmented.graph.output}
+    top_level_output_names = {
+        output_name
+        for node in augmented.graph.node
+        for output_name in node.output
+        if output_name
+    }
     value_by_name = {
         value.name: value
         for value in (*graph.values, *graph.outputs)
@@ -1166,6 +1172,8 @@ def _augment_model_with_tensor_node_outputs(
     for node in graph.nodes:
         for output_name in node.outputs:
             if not output_name or output_name in existing_output_names:
+                continue
+            if output_name not in top_level_output_names:
                 continue
             value = value_by_name.get(output_name)
             if value is None:
