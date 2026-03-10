@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1633 / 1802, 90.6% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1636 / 1802, 90.8% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 124 / 125, 99.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1633 / 1802 ONNX files (90.6%).
+Coverage 1636 / 1802 ONNX files (90.8%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1262,9 +1262,9 @@ Coverage 1633 / 1802 ONNX files (90.6%).
 | node/test_reduce_sum_square_negative_axes_keepdims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_sum_square_negative_axes_keepdims_random_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reflect_pad/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
-| node/test_regex_full_match_basic/model.onnx | 20 | Data | ❌ | Unsupported op RegexFullMatch |
-| node/test_regex_full_match_email_domain/model.onnx | 20 | Data | ❌ | Unsupported op RegexFullMatch |
-| node/test_regex_full_match_empty/model.onnx | 20 | Data | ❌ | Unsupported op RegexFullMatch |
+| node/test_regex_full_match_basic/model.onnx | 20 | Data | ✅ | OK (max abs diff 0) |
+| node/test_regex_full_match_email_domain/model.onnx | 20 | Data | ✅ | OK (max abs diff 0) |
+| node/test_regex_full_match_empty/model.onnx | 20 | Data | ✅ | OK (max abs diff 0) |
 | node/test_relu/model.onnx | 14 | Data | ✅ | OK (max ULP 0) |
 | node/test_relu_expanded_ver18/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reshape_allowzero_reordered/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
