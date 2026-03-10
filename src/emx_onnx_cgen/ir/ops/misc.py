@@ -4,6 +4,7 @@ from dataclasses import dataclass
 
 import itertools
 import math
+import re
 
 import numpy as np
 
@@ -5725,6 +5726,118 @@ class StringSplitOp(RenderableOpBase):
                 emitter.ctx_dtype(self.output_z),
             ),
         )
+
+
+def _normalize_regex_fullmatch_pattern(pattern: str) -> str:
+    """Strip word-boundary assertions that are redundant under fullmatch.
+
+    emx-regex-cgen does not currently accept ``\\b``. We only rewrite a few
+    cases where the boundary is implied by adjacent literal context and thus
+    preserves semantics.
+    """
+
+    normalized = pattern
+    normalized = re.sub(r"\\([^\wds])\\b(?=[A-Za-z0-9_])", r"\\\1", normalized)
+    normalized = re.sub(r"(?<=[A-Za-z0-9_])\\b\\([^\wds])", r"\\\1", normalized)
+    normalized = re.sub(r"^\\b(?=[A-Za-z0-9_])", "", normalized)
+    normalized = re.sub(r"(?<=[A-Za-z0-9_])\\b$", "", normalized)
+    return normalized
+
+
+def _compile_regex_fullmatch_codegen(pattern: str, *, prefix: str) -> tuple[str, str]:
+    try:
+        from emx_regex_cgen import generate as generate_regex_c
+    except ImportError as exc:  # pragma: no cover - dependency failure
+        raise CodegenError(
+            "RegexFullMatch requires the emx-regex-cgen package to be installed"
+        ) from exc
+
+    attempts = [pattern]
+    normalized = _normalize_regex_fullmatch_pattern(pattern)
+    if normalized != pattern:
+        attempts.append(normalized)
+
+    errors: list[str] = []
+    for candidate in attempts:
+        try:
+            generated = generate_regex_c(candidate, prefix=prefix)
+        except ValueError as exc:
+            errors.append(f"{candidate!r}: {exc}")
+            continue
+        match_function = generated.match_function.replace(
+            f"bool {prefix}_match(",
+            f"static inline bool {prefix}_match(",
+            1,
+        )
+        return generated.globals.rstrip(), match_function.rstrip()
+
+    raise UnsupportedOpError(
+        "RegexFullMatch pattern is not supported by emx-regex-cgen: "
+        + "; ".join(errors)
+    )
+
+
+@dataclass(frozen=True)
+class RegexFullMatchOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
+    input0: str
+    output: str
+    pattern: str
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {
+            "#include <stdbool.h>",
+            "#include <stddef.h>",
+            "#include <stdint.h>",
+            "#include <string.h>",
+        }
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        matcher_prefix = f"{op_name}_regex"
+        matcher_globals, matcher_function = _compile_regex_fullmatch_codegen(
+            self.pattern,
+            prefix=matcher_prefix,
+        )
+        dim_args = emitter.dim_args_str()
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        input_shape = emitter.ctx_shape(self.input0)
+        input_suffix = emitter.param_array_suffix(
+            input_shape, emitter.dim_names_for(self.input0), dtype=ScalarType.STRING
+        )
+        output_dtype = emitter.ctx_dtype(self.output)
+        output_suffix = emitter.param_array_suffix(
+            emitter.ctx_shape(self.output), emitter.dim_names_for(self.output)
+        )
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], "char", input_suffix, True),
+                (params["output"], output_dtype.c_type, output_suffix, False),
+            ]
+        )
+        input_count = CEmitterCompat.element_count_expr(input_shape)
+        lines = [
+            matcher_globals,
+            "",
+            matcher_function,
+            "",
+            f"EMX_NODE_FN void {op_name}({dim_args}{', '.join(param_decls)}) {{",
+            f"const char (*input_flat)[EMX_STRING_MAX_LEN] = (const char (*)[EMX_STRING_MAX_LEN]){params['input0']};",
+            f"{output_dtype.c_type} *output_flat = ({output_dtype.c_type} *){params['output']};",
+            f"for (idx_t i = 0; i < {input_count}; ++i) {{",
+            f"    output_flat[i] = {matcher_prefix}_match(input_flat[i], strlen(input_flat[i]));",
+            "}",
+            "}",
+        ]
+        return emitter.with_node_comment(model, ctx.op_index, "\n".join(lines))
+
+    def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
+        return ScalarType.BOOL
 
 
 @dataclass(frozen=True)

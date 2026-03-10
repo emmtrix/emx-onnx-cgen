@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported op RegexFullMatch",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_regex_full_match_basic model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "RegexFullMatch"
   ],
-  "opset_version": 20
+  "opset_version": 20,
+  "generated_checksum": "2e0af7808295e6bb8b78c97ea63a90177ebba6d2865dc8a7f67dc9740d96f3af"
 }

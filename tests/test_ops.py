@@ -216,6 +216,36 @@ def _make_string_concat_model(
     return model
 
 
+def _make_regex_full_match_model(
+    *,
+    input_shape: list[int],
+    pattern: str,
+    opset: int = 20,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("in0", TensorProto.STRING, input_shape)
+    output_info = helper.make_tensor_value_info("out", TensorProto.BOOL, input_shape)
+    node = helper.make_node(
+        "RegexFullMatch",
+        inputs=["in0"],
+        outputs=["out"],
+        pattern=pattern,
+    )
+    graph = helper.make_graph(
+        [node],
+        "regex_full_match_graph",
+        [input_info],
+        [output_info],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 9
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_array_feature_extractor_model(
     *,
     data_shape: list[int],
@@ -4564,6 +4594,19 @@ def _compile_and_run_testbench(
     return json.loads(result.stdout)
 
 
+def _encode_string_testbench_input(array: np.ndarray) -> np.ndarray:
+    encoded = np.zeros(array.shape, dtype="S256")
+    flat_encoded = encoded.reshape(-1)
+    flat_values = array.reshape(-1)
+    for index, value in enumerate(flat_values):
+        if isinstance(value, bytes):
+            chunk = value[:255]
+        else:
+            chunk = str(value).encode("utf-8")[:255]
+        flat_encoded[index] = chunk
+    return encoded
+
+
 def _run_testbench_compare(model: onnx.ModelProto) -> None:
     initializer_names = {init.name for init in model.graph.initializer}
     rng = np.random.default_rng(0)
@@ -4792,6 +4835,56 @@ def test_string_split_codegen_emits_whitespace_logic() -> None:
     )
     generated = Compiler(CompilerOptions()).compile(model)
     assert "strstr" not in generated
+
+
+def test_regex_full_match_lowering() -> None:
+    model = _make_regex_full_match_model(
+        input_shape=[3],
+        pattern=r"(\W|^)[\w.\-]{0,25}@(yahoo|gmail)\.com(\W|$)",
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+    lowering = get_lowering("RegexFullMatch")
+    op = lowering(graph, graph.nodes[0])
+    assert op.input0 == "in0"
+    assert op.output == "out"
+    assert op.pattern == r"(\W|^)[\w.\-]{0,25}@(yahoo|gmail)\.com(\W|$)"
+
+
+def test_regex_full_match_codegen_embeds_generated_matcher() -> None:
+    model = _make_regex_full_match_model(
+        input_shape=[3],
+        pattern=r"www\.[\w.-]+\.\bcom\b",
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "regex_full_match" in generated
+    assert "_regex_match" in generated
+    assert "Unsupported anchor" not in generated
+
+
+def test_regex_full_match_matches_onnxruntime() -> None:
+    model = _make_regex_full_match_model(
+        input_shape=[3],
+        pattern=r"www\.[\w.-]+\.\bcom\b",
+    )
+    ort_inputs = np.array(
+        ["www.google.com", "www.facebook.com", "www.bbc.co.uk"],
+        dtype=object,
+    )
+    session = ort.InferenceSession(
+        model.SerializeToString(), providers=["CPUExecutionProvider"]
+    )
+    ort_output = session.run(None, {"in0": ort_inputs})[0]
+    payload = _compile_and_run_testbench(
+        model,
+        testbench_inputs={"in0": _encode_string_testbench_input(ort_inputs)},
+    )
+    output_payload = payload.get("outputs", {}).get("out")
+    if output_payload is None:
+        raise AssertionError("Missing output out in testbench data")
+    output_data = decode_testbench_array(output_payload["data"], ort_output.dtype)
+    output_data = output_data.reshape(ort_output.shape)
+    np.testing.assert_array_equal(output_data, ort_output)
 
 
 def test_tfidf_vectorizer_testbench_match() -> None:

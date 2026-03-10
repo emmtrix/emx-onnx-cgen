@@ -474,6 +474,26 @@ def _make_identity_model() -> onnx.ModelProto:
     )
 
 
+def _make_regex_full_match_golden_model() -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("in0", TensorProto.STRING, [2])
+    output = helper.make_tensor_value_info("out", TensorProto.BOOL, [2])
+    node = helper.make_node(
+        "RegexFullMatch",
+        inputs=["in0"],
+        outputs=[output.name],
+        pattern="ab",
+    )
+    graph = helper.make_graph([node], "regex_full_match_graph", [input_info], [output])
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_operatorsetid("", 20)],
+    )
+    model.ir_version = 9
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_depth_to_space_model() -> onnx.ModelProto:
     return _make_operator_model(
         op_type="DepthToSpace",
@@ -752,6 +772,7 @@ OP_GOLDEN_CASES = [
     ("transpose", "transpose", _make_transpose_model),
     ("reshape", "reshape", _make_reshape_model),
     ("identity", "identity", _make_identity_model),
+    ("regexfullmatch", "regex_full_match", _make_regex_full_match_golden_model),
     (
         "eyelike",
         "eye_like",

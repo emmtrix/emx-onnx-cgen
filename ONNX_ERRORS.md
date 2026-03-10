@@ -17,7 +17,6 @@ Aggregates non-success verification outcomes.
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
-| Unsupported op RegexFullMatch | 3 | 20 |
 | Out of tolerance | 2 | 22 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 1 | 12 |
 
@@ -26,7 +25,6 @@ Aggregates non-success verification outcomes.
 | Error message | Opset | Count |
 | --- | --- | --- |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
-| Unsupported op RegexFullMatch | 20 | 3 |
 | Out of tolerance | 22 | 1 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 25 | 22 |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 25 | 20 |
@@ -212,6 +210,3 @@ Lists every ONNX file with a non-success verification outcome.
 | node/test_quantizelinear_int4/model.onnx | 25 | Data | ❌ | Unsupported elem_type 22 (INT4) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_uint2/model.onnx | 25 | Data | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_uint4/model.onnx | 25 | Data | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'y_zero_point'. |
-| node/test_regex_full_match_basic/model.onnx | 20 | Data | ❌ | Unsupported op RegexFullMatch |
-| node/test_regex_full_match_email_domain/model.onnx | 20 | Data | ❌ | Unsupported op RegexFullMatch |
-| node/test_regex_full_match_empty/model.onnx | 20 | Data | ❌ | Unsupported op RegexFullMatch |
