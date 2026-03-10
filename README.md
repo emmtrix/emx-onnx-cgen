@@ -215,6 +215,16 @@ How verification works:
 5. **ORT unsupported models**: when using `onnxruntime`, if ORT reports
    `NOT_IMPLEMENTED`, verification is skipped with a warning (exit code 0).
 
+## Linux release compatibility
+
+GitHub Linux release artifacts (`emx-onnx-cgen-linux-amd64.tar.gz`) are built in a
+`manylinux_2_31_x86_64` container to keep runtime compatibility predictable.
+
+- Target compatibility floor: `glibc >= 2.31`
+- The Linux release workflow validates the bundled
+  `dist/emx-onnx-cgen/_internal/libpython*.so.*` and fails if it requires a newer
+  `GLIBC_*` symbol than `GLIBC_2.31`.
+
 ## Official ONNX test coverage
 
 - [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md): overview of ONNX models and their current verification status.

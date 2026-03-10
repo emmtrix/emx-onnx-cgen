@@ -14,34 +14,50 @@ jobs:
   build-linux-bundle:
     runs-on: ubuntu-latest
     container:
-      image: python:3.11-slim
+      # Build in manylinux_2_31 so the bundled libpython keeps a GLIBC_2.31 floor.
+      image: quay.io/pypa/manylinux_2_31_x86_64
     permissions:
       contents: write
+    env:
+      PYBIN: /opt/python/cp311-cp311/bin
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set up Python
         run: |
-          python --version
-          python -m pip --version
-
-      - name: Install system dependencies
-        run: |
-          apt-get update
-          apt-get install -y --no-install-recommends \
-            build-essential \
-          && rm -rf /var/lib/apt/lists/*
+          "${PYBIN}/python" --version
+          "${PYBIN}/python" -m pip --version
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements-ci.txt
-          python -m pip install pyinstaller
+          "${PYBIN}/python" -m pip install --upgrade pip
+          "${PYBIN}/python" -m pip install -r requirements-ci.txt
 
       - name: Build PyInstaller bundle
         run: |
-          python tools/pyinstaller_build.py
+          "${PYBIN}/python" tools/pyinstaller_build.py
+
+      - name: Validate bundled glibc floor
+        run: |
+          shopt -s nullglob
+          libpython_candidates=(dist/emx-onnx-cgen/_internal/libpython*.so.*)
+          if [ "${#libpython_candidates[@]}" -eq 0 ]; then
+            echo "ERROR: no bundled libpython shared library found under dist/emx-onnx-cgen/_internal"
+            exit 1
+          fi
+          libpython_path="${libpython_candidates[0]}"
+          echo "Inspecting: ${libpython_path}"
+          max_glibc="$(strings "${libpython_path}" | grep -oE 'GLIBC_[0-9]+\.[0-9]+' | sort -V | tail -n1)"
+          if [ -z "${max_glibc}" ]; then
+            echo "ERROR: unable to detect GLIBC symbols in ${libpython_path}"
+            exit 1
+          fi
+          echo "Highest required glibc symbol: ${max_glibc}"
+          if [ "$(printf '%s\n' "${max_glibc}" "GLIBC_2.31" | sort -V | tail -n1)" != "GLIBC_2.31" ]; then
+            echo "ERROR: bundled libpython requires ${max_glibc}, expected <= GLIBC_2.31 from manylinux_2_31 build env"
+            exit 1
+          fi
 
       - name: Package bundle
         run: |
