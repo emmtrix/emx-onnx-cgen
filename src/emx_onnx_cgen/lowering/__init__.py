@@ -82,6 +82,7 @@ _LOWERING_MODULES = [
     "quantize_linear",
     "random_uniform",
     "random_uniform_like",
+    "regex_full_match",
     "range",
     "reduce",
     "reshape",
