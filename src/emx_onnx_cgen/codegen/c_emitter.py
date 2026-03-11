@@ -2007,13 +2007,31 @@ class CEmitter:
         )
 
     @staticmethod
-    def _temp_buffer_size_bytes(temp: TempBuffer) -> int:
+    def _buffer_size_bytes(
+        shape: tuple[int, ...], dtype: ScalarType, *, is_sequence: bool = False
+    ) -> int:
         element_count = 1
-        for dim in temp.shape:
+        for dim in shape:
             element_count *= dim
-        if temp.is_sequence:
+        if is_sequence:
             element_count *= 32
-        return element_count * temp.dtype.np_dtype.itemsize
+        return element_count * dtype.np_dtype.itemsize
+
+    def _local_array_storage(
+        self, shape: tuple[int, ...], dtype: ScalarType, *, is_sequence: bool = False
+    ) -> str:
+        if (
+            self._buffer_size_bytes(shape, dtype, is_sequence=is_sequence)
+            > self._large_temp_threshold_bytes
+        ):
+            return "static "
+        return ""
+
+    @staticmethod
+    def _temp_buffer_size_bytes(temp: TempBuffer) -> int:
+        return CEmitter._buffer_size_bytes(
+            temp.shape, temp.dtype, is_sequence=temp.is_sequence
+        )
 
     def _temp_buffers(
         self, model: LoweredModel, *, reserved_names: set[str] | None = None
@@ -2977,6 +2995,9 @@ class CEmitter:
                 if is_sequence_input
                 else self._array_suffix(codegen_shape, dtype)
             )
+            input_storage = self._local_array_storage(
+                codegen_shape, dtype, is_sequence=is_sequence_input
+            )
             inputs.append(
                 {
                     "name": name,
@@ -3002,6 +3023,7 @@ class CEmitter:
                     "is_sequence": is_sequence_input,
                     "count_name": f"{name}__count",
                     "count_value": loop_shape[0] if is_sequence_input else 1,
+                    "storage": input_storage,
                 }
             )
         outputs = []
@@ -3024,6 +3046,9 @@ class CEmitter:
                 if is_sequence_output
                 else self._array_suffix(codegen_shape, dtype)
             )
+            output_storage = self._local_array_storage(
+                codegen_shape, dtype, is_sequence=is_sequence_output
+            )
             outputs.append(
                 {
                     "name": name,
@@ -3044,6 +3069,7 @@ class CEmitter:
                     "is_sequence": is_sequence_output,
                     "count_name": f"{name}__count",
                     "optional_flag_name": optional_flag,
+                    "storage": output_storage,
                 }
             )
         try:
