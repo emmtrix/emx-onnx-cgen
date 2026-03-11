@@ -1,6 +1,6 @@
 [build-system]
 requires = ["setuptools>=61", "setuptools_scm[toml]>=7.0"]
-build-backend = "build_backend"
+build-backend = "packaging_backend"
 backend-path = ["."]
 
 [project]
