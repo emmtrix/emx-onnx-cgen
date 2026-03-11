@@ -17,7 +17,9 @@ def _import_backend(module_name: str):
     return backend
 
 
-def _prune_suite_to_selection(suite: type, selected_tests: tuple[str, ...] | None) -> None:
+def _prune_suite_to_selection(
+    suite: type, selected_tests: tuple[str, ...] | None
+) -> None:
     if selected_tests is None:
         return
     selected = set(selected_tests)
