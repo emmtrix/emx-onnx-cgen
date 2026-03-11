@@ -65,6 +65,9 @@ When making architectural decisions, prefer clean and maintainable design even i
   - stable formatting
 - **No hidden state:** passes should be pure functions over IR where possible.
 - **Explicit errors:** unsupported ops or ambiguous shapes must raise actionable errors.
+- **Compile/verify parity:** `verify` must not feed extra shape information into code
+  generation unless the same information is provided explicitly via a CLI option
+  that is also available to `compile`.
 
 ## How to Run
 
@@ -93,6 +96,11 @@ PYTHONPATH=src python -m emx_onnx_cgen.cli <command_line from JSON>
 ```
 
 Sanitizers can be controlled via `EMX_ENABLE_SANITIZE` (when set, it overrides `--sanitize`).
+
+If code generation needs concrete data to resolve dynamic shapes, pass it
+explicitly to both commands via `--shape-inference-shapes "<name=...;name=...>"`.
+Do not rely on `--test-data-dir` to change generated code; it is for verification
+I/O only.
 
 ### Golden reference updates
 
@@ -322,15 +330,20 @@ When acting as an agent in this repo:
 * problem
 * options
 * recommendation
-11. To find operator specifications within this repository, prefer:
+11. Do not let verification-only inputs change generated code implicitly. If a
+    model needs representative inputs to concretize dynamic shapes, require the
+    explicit shared CLI flag `--shape-inference-shapes` on both `compile` and
+    `verify`, and surface a clear error when it is missing. Do not make
+    `compile` or `verify` read `input_*.pb` files for code generation.
+12. To find operator specifications within this repository, prefer:
     * `onnx-org/docs/Operators.md` for the current consolidated operator docs.
     * `onnx-org/docs/Changelog.md` for versioned operator specs (e.g., Slice-13).
     * `onnx-org/onnx/defs/**/defs.cc` or `onnx-org/onnx/defs/**/old.cc` for the
       schema source and historical documentation strings.
     * Use ripgrep (`rg -n "<OpName>" onnx-org`) to locate the relevant sections.
-12. When implementing min/max selection in templates, use scalar min/max helpers
+13. When implementing min/max selection in templates, use scalar min/max helpers
     from the scalar function registry instead of `if`-based comparisons.
-13. Do not modify `onnx-org/` or any other submodule contents.
+14. Do not modify `onnx-org/` or any other submodule contents.
 
 ## Adding an operator (checklist)
 

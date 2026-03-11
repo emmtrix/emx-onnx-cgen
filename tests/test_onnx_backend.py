@@ -79,7 +79,9 @@ def test_prepare_keeps_compiled_artifact_alive_only_for_backend_rep_lifetime() -
         executable = temp_path / "model"
         executable.write_text("", encoding="utf-8")
         created["temp_path"] = temp_path
-        return backend_module._CompiledArtifact(executable=executable, temp_dir=temp_dir)
+        return backend_module._CompiledArtifact(
+            executable=executable, temp_dir=temp_dir
+        )
 
     original_compile_model = backend_module._compile_model
     backend_module._compile_model = fake_compile_model

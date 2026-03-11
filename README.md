@@ -148,6 +148,20 @@ Verify an ONNX model end-to-end against ONNX Runtime (default):
 emx-onnx-cgen verify path/to/model.onnx
 ```
 
+If a model cannot be code-generated without representative concrete input shapes,
+pass them explicitly to both commands:
+
+```bash
+emx-onnx-cgen compile path/to/model.onnx build/model.c \
+  --shape-inference-shapes "x=1x3x224x224;size=[1,3,224,224]"
+
+emx-onnx-cgen verify path/to/model.onnx \
+  --shape-inference-shapes "x=1x3x224x224;size=[1,3,224,224]"
+```
+
+`--test-data-dir` is verification input/output data only. It does not change the
+generated C code.
+
 Use `emx-onnx-cgen` as an importable ONNX backend:
 
 ```python
@@ -191,6 +205,7 @@ These options are accepted by both `compile` and `verify`:
 - `--fp32-accumulation-strategy`: Accumulation strategy for float32 inputs (`simple` uses float32, `fp64` uses double; default: `fp64`).
 - `--fp16-accumulation-strategy`: Accumulation strategy for float16 inputs (`simple` uses float16, `fp32` uses float; default: `fp32`).
 - `--replicate-ort-bugs`: Compatibility switch for verification/debugging. Enables emulation of known behavior differences of the ONNX Runtime version pinned in `requirements-ci.txt`.
+- `--shape-inference-shapes`: Explicit shape/value specs used only to concretize dynamic shapes during code generation. Use `name=2x3x4` for ordinary tensors, `name=[1,3,224,224]` for shape-carrying 1D tensors, and `name=seq[4]:8x16` for sequences. This option is explicit and behaves the same for `compile` and `verify`.
 
 ### `compile`
 

@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'lstm_X' has dynamic dimensions ('M1', 'N', None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes.",
   "command_line": "verify --model-base-dir onnx2c-org/test/simple_networks lstm_k1_b1_r1.onnx",
   "verification_mode": "Random+ORT",
   "operators": [
@@ -7,6 +7,5 @@
     "LSTM",
     "Squeeze"
   ],
-  "opset_version": 11,
-  "generated_checksum": "629263ed8d3213208287deb9747bc4ef8ae2a14f29cb254f0f51b38a5e918d7b"
+  "opset_version": 11
 }

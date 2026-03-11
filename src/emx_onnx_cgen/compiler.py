@@ -44,6 +44,29 @@ from .lowering.registry import get_lowering_registry
 from .onnx_import import import_onnx, prepare_onnx_model
 
 
+def _value_requires_explicit_shape_concretization(
+    value: Value,
+    *,
+    allow_top_level_tensor_dims: bool,
+    check_sequence_dims: bool,
+) -> str | None:
+    value_type = value.type
+    if isinstance(value_type, SequenceType):
+        if check_sequence_dims and any(
+            dim_param is not None for dim_param in value_type.elem.dim_params
+        ):
+            return (
+                f"sequence '{value.name}' has dynamic element dimensions "
+                f"{value_type.elem.dim_params}"
+            )
+        return None
+    if allow_top_level_tensor_dims:
+        return None
+    if any(dim_param is not None for dim_param in value_type.dim_params):
+        return f"tensor '{value.name}' has dynamic dimensions {value_type.dim_params}"
+    return None
+
+
 @dataclass(frozen=True)
 class CompilerOptions:
     template_dir: Path | None = None
@@ -118,10 +141,32 @@ class Compiler:
             "import_onnx",
             lambda: import_onnx(prepared_model, _prepared=True),
         )
+        missing_shape_reason = self._shape_concretization_requirement_reason(graph)
+        if (
+            missing_shape_reason is not None
+            and not self._options.shape_inference_inputs
+        ):
+            raise UnsupportedOpError(
+                "Code generation needs explicit shape concretization, but no "
+                "--shape-inference-shapes were provided. "
+                f"Reason: {missing_shape_reason}. "
+                "Hint: pass --shape-inference-shapes with explicit input specs "
+                "(for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, "
+                "or export the model with static shapes."
+            )
         graph = self._time_step(
             "concretize_shapes",
             lambda: self._concretize_graph_shapes(prepared_model, graph),
         )
+        unresolved_shape_reason = self._unresolved_shape_concretization_reason(graph)
+        if unresolved_shape_reason is not None:
+            raise UnsupportedOpError(
+                "Code generation still has unresolved dynamic shapes after "
+                "shape concretization. "
+                f"Reason: {unresolved_shape_reason}. "
+                "Hint: provide more representative --shape-inference-shapes or "
+                "export the model with static shapes."
+            )
         variable_dim_inputs, variable_dim_outputs = self._time_step(
             "collect_variable_dims", lambda: self._collect_variable_dims(graph)
         )
@@ -227,6 +272,68 @@ class Compiler:
             lambda: self._emitter.collect_weight_data(ctx.lowered.constants),
         )
         return generated, data_source, weight_data
+
+    @staticmethod
+    def _shape_concretization_requirement_reason(graph: Graph) -> str | None:
+        for value in graph.inputs:
+            reason = _value_requires_explicit_shape_concretization(
+                value,
+                allow_top_level_tensor_dims=True,
+                check_sequence_dims=True,
+            )
+            if reason is not None:
+                return reason
+        for value in graph.values:
+            reason = _value_requires_explicit_shape_concretization(
+                value,
+                allow_top_level_tensor_dims=False,
+                check_sequence_dims=True,
+            )
+            if reason is not None:
+                return reason
+        for value in graph.outputs:
+            reason = _value_requires_explicit_shape_concretization(
+                value,
+                allow_top_level_tensor_dims=True,
+                check_sequence_dims=True,
+            )
+            if reason is not None:
+                return reason
+        return None
+
+    @staticmethod
+    def _unresolved_shape_concretization_reason(graph: Graph) -> str | None:
+        for value in graph.inputs:
+            reason = _value_requires_explicit_shape_concretization(
+                value,
+                allow_top_level_tensor_dims=True,
+                check_sequence_dims=True,
+            )
+            if reason is not None:
+                return reason
+        for value in graph.values:
+            reason = _value_requires_explicit_shape_concretization(
+                value,
+                allow_top_level_tensor_dims=False,
+                check_sequence_dims=False,
+            )
+            if reason is not None:
+                return reason
+        for value in graph.outputs:
+            reason = _value_requires_explicit_shape_concretization(
+                value,
+                allow_top_level_tensor_dims=True,
+                check_sequence_dims=False,
+            )
+            if reason is not None:
+                return reason
+        return None
+
+    @classmethod
+    def requires_explicit_shape_inference_inputs(cls, model: onnx.ModelProto) -> bool:
+        prepared_model = prepare_onnx_model(model)
+        graph = import_onnx(prepared_model, _prepared=True)
+        return cls._shape_concretization_requirement_reason(graph) is not None
 
     @staticmethod
     def _collect_variable_dims(

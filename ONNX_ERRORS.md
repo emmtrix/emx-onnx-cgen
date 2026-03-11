@@ -16,16 +16,37 @@ Aggregates non-success verification outcomes.
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
+| ReduceSum output shape rank must match input rank | 12 | 18 |
+| Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor '*' has dynamic dimensions ('*', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. | 11 | 11, 12, 15 |
+| CastLike input and output shapes must match | 8 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
+| Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor '*' has dynamic dimensions ('*', None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. | 3 | 9, 11 |
+| Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor '*' has dynamic dimensions ('*', '*', None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. | 2 | 11 |
 | Out of tolerance | 2 | 22 |
+| Code generation still has unresolved dynamic shapes after shape concretization. Reason: tensor '*' has dynamic dimensions ('*', '*', '*', '*'). Hint: provide more representative --shape-inference-inputs or export the model with static shapes. | 1 | 24 |
+| Output shape mismatch for reduced (actual_shape=(1,), actual_size=1, expected_shape=(3,), expected_size=3, output=reduced) | 1 | 18 |
+| Output shape mismatch for reduced (actual_shape=(1,), actual_size=1, expected_shape=(5,), expected_size=5, output=reduced) | 1 | 18 |
+| Testbench execution failed: exit code 1 | 1 | 12 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 1 | 12 |
 
 ## Error frequency by opset
 
 | Error message | Opset | Count |
 | --- | --- | --- |
+| Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor '*' has dynamic dimensions ('*', None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. | 9 | 2 |
+| Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor '*' has dynamic dimensions ('*', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. | 11 | 6 |
+| Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor '*' has dynamic dimensions ('*', '*', None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. | 11 | 2 |
+| Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor '*' has dynamic dimensions ('*', None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. | 11 | 1 |
+| Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor '*' has dynamic dimensions ('*', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. | 12 | 3 |
+| Testbench execution failed: exit code 1 | 12 | 1 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
+| Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor '*' has dynamic dimensions ('*', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. | 15 | 2 |
+| ReduceSum output shape rank must match input rank | 18 | 12 |
+| CastLike input and output shapes must match | 18 | 8 |
+| Output shape mismatch for reduced (actual_shape=(1,), actual_size=1, expected_shape=(3,), expected_size=3, output=reduced) | 18 | 1 |
+| Output shape mismatch for reduced (actual_shape=(1,), actual_size=1, expected_shape=(5,), expected_size=5, output=reduced) | 18 | 1 |
 | Out of tolerance | 22 | 1 |
+| Code generation still has unresolved dynamic shapes after shape concretization. Reason: tensor '*' has dynamic dimensions ('*', '*', '*', '*'). Hint: provide more representative --shape-inference-inputs or export the model with static shapes. | 24 | 1 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 25 | 22 |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 25 | 20 |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 25 | 18 |
@@ -44,7 +65,10 @@ Lists every ONNX file with a non-success verification outcome.
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
 | local_ops/test_gemm_CM_transA/model.onnx | 12 | Data | ❌ | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'sclbl-onnx-node1' Status Message: Gemm: Invalid bias shape for broadcast |
+| micro_kws_m_qdq.onnx | 15 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'micro_kws/conv2d/Relu;micro_kws/conv2d/BiasAdd;micro_kws/conv2d_2/Conv2D;micro_kws/conv2d/Conv2D;micro_kws/conv2d/BiasAdd/ReadVariableOp__28:0' has dynamic dimensions ('unk__0', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
+| micro_kws_m_static_qdq.onnx | 15 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'micro_kws/conv2d/Relu;micro_kws/conv2d/BiasAdd;micro_kws/conv2d_2/Conv2D;micro_kws/conv2d/Conv2D;micro_kws/conv2d/BiasAdd/ReadVariableOp__28:0' has dynamic dimensions ('unk__0', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
 | node/test_adam_multiple/model.onnx |  | Data | ❌ | Out of tolerance (max ULP 62311) |
+| node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | 24 | Data | ❌ | Code generation still has unresolved dynamic shapes after shape concretization. Reason: tensor 'Attention_test_attention_4d_diff_heads_mask4d_padded_kv_expanded_function_AttnBias' has dynamic dimensions ('unk__0', 'unk__1', 'unk__2', 'unk__3'). Hint: provide more representative --shape-inference-inputs or export the model with static shapes. |
 | node/test_cast_FLOAT16_to_FLOAT4E2M1/model.onnx | 25 | Data | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'output'. |
 | node/test_cast_FLOAT16_to_FLOAT8E4M3FN/model.onnx | 25 | Data | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'output'. |
 | node/test_cast_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx | 25 | Data | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'output'. |
@@ -210,3 +234,40 @@ Lists every ONNX file with a non-success verification outcome.
 | node/test_quantizelinear_int4/model.onnx | 25 | Data | ❌ | Unsupported elem_type 22 (INT4) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_uint2/model.onnx | 25 | Data | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_uint4/model.onnx | 25 | Data | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'y_zero_point'. |
+| node/test_reduce_l2_default_axes_keepdims_example_expanded/model.onnx | 18 | Data | ❌ | CastLike input and output shapes must match |
+| node/test_reduce_l2_default_axes_keepdims_random_expanded/model.onnx | 18 | Data | ❌ | CastLike input and output shapes must match |
+| node/test_reduce_l2_do_not_keepdims_example_expanded/model.onnx | 18 | Data | ❌ | CastLike input and output shapes must match |
+| node/test_reduce_l2_do_not_keepdims_random_expanded/model.onnx | 18 | Data | ❌ | CastLike input and output shapes must match |
+| node/test_reduce_l2_empty_set_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
+| node/test_reduce_l2_keep_dims_example_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
+| node/test_reduce_l2_keep_dims_random_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
+| node/test_reduce_l2_negative_axes_keep_dims_example_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
+| node/test_reduce_l2_negative_axes_keep_dims_random_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
+| node/test_reduce_log_sum_asc_axes_expanded/model.onnx | 18 | Data | ❌ | Output shape mismatch for reduced (actual_shape=(1,), actual_size=1, expected_shape=(5,), expected_size=5, output=reduced) |
+| node/test_reduce_log_sum_desc_axes_expanded/model.onnx | 18 | Data | ❌ | Output shape mismatch for reduced (actual_shape=(1,), actual_size=1, expected_shape=(3,), expected_size=3, output=reduced) |
+| node/test_reduce_log_sum_empty_set_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
+| node/test_reduce_log_sum_exp_default_axes_keepdims_example_expanded/model.onnx | 18 | Data | ❌ | CastLike input and output shapes must match |
+| node/test_reduce_log_sum_exp_default_axes_keepdims_random_expanded/model.onnx | 18 | Data | ❌ | CastLike input and output shapes must match |
+| node/test_reduce_log_sum_exp_do_not_keepdims_example_expanded/model.onnx | 18 | Data | ❌ | CastLike input and output shapes must match |
+| node/test_reduce_log_sum_exp_do_not_keepdims_random_expanded/model.onnx | 18 | Data | ❌ | CastLike input and output shapes must match |
+| node/test_reduce_log_sum_exp_empty_set_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
+| node/test_reduce_log_sum_exp_keepdims_example_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
+| node/test_reduce_log_sum_exp_keepdims_random_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
+| node/test_reduce_log_sum_exp_negative_axes_keepdims_example_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
+| node/test_reduce_log_sum_exp_negative_axes_keepdims_random_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
+| node/test_reduce_log_sum_negative_axes_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
+| simple/test_sequence_model4/model.onnx | 12 | Data | ❌ | Testbench execution failed: exit code 1 |
+| simple_networks/conv_2ch_3kernels_randombias.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'adjusted_input' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
+| simple_networks/conv_2kernels.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'adjusted_input' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
+| simple_networks/conv_2kernels_randombias.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'adjusted_input' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
+| simple_networks/conv_3ch.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'adjusted_input' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
+| simple_networks/conv_k2.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'adjusted_input' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
+| simple_networks/conv_k2_maxpool_k2.onnx | 12 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'adjusted_input' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
+| simple_networks/conv_k2_s2.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'adjusted_input' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
+| simple_networks/lstm_k1_b1_r1.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'lstm_X' has dynamic dimensions ('M1', 'N', None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
+| simple_networks/lstm_k1_b1_r1_relu.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'lstm_X' has dynamic dimensions ('M1', 'N', None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
+| simple_networks/maxpool_k2.onnx | 12 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'input_transposed' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
+| simple_networks/maxpool_k2_s2.onnx | 12 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'input_transposed' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
+| tfl_helloworld/model.onnx | 9 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'dense_20' has dynamic dimensions ('N', None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
+| velardo/lesson14.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'flatten/Reshape:0' has dynamic dimensions ('N', None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
+| velardo/lesson9.onnx | 9 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'dense0' has dynamic dimensions ('N', None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
