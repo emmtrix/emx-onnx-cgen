@@ -7,8 +7,6 @@ from .config import DEFAULT_TESTS, selected_tests_from_env
 
 def pytest_terminal_summary(
     terminalreporter: TerminalReporter,
-    exitstatus: int,
-    config,
 ) -> None:
     selected = selected_tests_from_env()
     terminalreporter.section("emx-onnx-cgen backend summary", sep="-")
