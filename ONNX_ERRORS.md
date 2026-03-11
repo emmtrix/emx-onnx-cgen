@@ -19,8 +19,10 @@ Aggregates non-success verification outcomes.
 | ReduceSum output shape rank must match input rank | 12 | 18 |
 | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor '*' has dynamic dimensions ('*', None, None, None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. | 11 | 11, 12, 15 |
 | CastLike input and output shapes must match | 8 | 18 |
+| Explicit --shape-inference-shapes were provided for input name(s) that do not require them: '*'. Remove those entries and rerun. | 4 | 17 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor '*' has dynamic dimensions ('*', None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. | 3 | 9, 11 |
+| Explicit --shape-inference-shapes were provided for input name(s) that do not require them: '*', '*'. Remove those entries and rerun. | 3 | 12, 24 |
 | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor '*' has dynamic dimensions ('*', '*', None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. | 2 | 11 |
 | Out of tolerance | 2 | 22 |
 | Code generation still has unresolved dynamic shapes after shape concretization. Reason: tensor '*' has dynamic dimensions ('*', '*', '*', '*'). Hint: provide more representative --shape-inference-shapes or export the model with static shapes. | 1 | 24 |
@@ -38,14 +40,17 @@ Aggregates non-success verification outcomes.
 | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor '*' has dynamic dimensions ('*', '*', None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. | 11 | 2 |
 | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor '*' has dynamic dimensions ('*', None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. | 11 | 1 |
 | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor '*' has dynamic dimensions ('*', None, None, None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. | 12 | 3 |
+| Explicit --shape-inference-shapes were provided for input name(s) that do not require them: '*', '*'. Remove those entries and rerun. | 12 | 1 |
 | Testbench execution failed: exit code 1 | 12 | 1 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
 | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor '*' has dynamic dimensions ('*', None, None, None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. | 15 | 2 |
+| Explicit --shape-inference-shapes were provided for input name(s) that do not require them: '*'. Remove those entries and rerun. | 17 | 4 |
 | ReduceSum output shape rank must match input rank | 18 | 12 |
 | CastLike input and output shapes must match | 18 | 8 |
 | Output shape mismatch for reduced (actual_shape=(1,), actual_size=1, expected_shape=(3,), expected_size=3, output=reduced) | 18 | 1 |
 | Output shape mismatch for reduced (actual_shape=(1,), actual_size=1, expected_shape=(5,), expected_size=5, output=reduced) | 18 | 1 |
 | Out of tolerance | 22 | 1 |
+| Explicit --shape-inference-shapes were provided for input name(s) that do not require them: '*', '*'. Remove those entries and rerun. | 24 | 2 |
 | Code generation still has unresolved dynamic shapes after shape concretization. Reason: tensor '*' has dynamic dimensions ('*', '*', '*', '*'). Hint: provide more representative --shape-inference-shapes or export the model with static shapes. | 24 | 1 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 25 | 22 |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 25 | 20 |
@@ -256,7 +261,14 @@ Lists every ONNX file with a non-success verification outcome.
 | node/test_reduce_log_sum_exp_negative_axes_keepdims_example_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_log_sum_exp_negative_axes_keepdims_random_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_log_sum_negative_axes_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
+| node/test_sequence_map_add_1_sequence_1_tensor/model.onnx | 17 | Data | ❌ | Explicit --shape-inference-shapes were provided for input name(s) that do not require them: 'x1'. Remove those entries and rerun. |
+| node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx | 17 | Data | ❌ | Explicit --shape-inference-shapes were provided for input name(s) that do not require them: 'x1'. Remove those entries and rerun. |
+| node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx | 17 | Data | ❌ | Explicit --shape-inference-shapes were provided for input name(s) that do not require them: 'x1'. Remove those entries and rerun. |
+| node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx | 17 | Data | ❌ | Explicit --shape-inference-shapes were provided for input name(s) that do not require them: 'x1'. Remove those entries and rerun. |
+| node/test_split_to_sequence_1/model.onnx | 24 | Data | ❌ | Explicit --shape-inference-shapes were provided for input name(s) that do not require them: 'data', 'split'. Remove those entries and rerun. |
+| node/test_split_to_sequence_2/model.onnx | 24 | Data | ❌ | Explicit --shape-inference-shapes were provided for input name(s) that do not require them: 'data', 'split'. Remove those entries and rerun. |
 | simple/test_sequence_model4/model.onnx | 12 | Data | ❌ | Testbench execution failed: exit code 1 |
+| simple/test_sequence_model8/model.onnx | 12 | Data | ❌ | Explicit --shape-inference-shapes were provided for input name(s) that do not require them: 'X', 'Splits'. Remove those entries and rerun. |
 | simple_networks/conv_2ch_3kernels_randombias.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor 'adjusted_input' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. |
 | simple_networks/conv_2kernels.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor 'adjusted_input' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. |
 | simple_networks/conv_2kernels_randombias.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor 'adjusted_input' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. |

@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1612 / 1802, 89.5% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1605 / 1802, 89.1% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 110 / 125, 88.0% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 5 / 7, 71.4% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1612 / 1802 ONNX files (89.5%).
+Coverage 1605 / 1802 ONNX files (89.1%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1468,15 +1468,15 @@ Coverage 1612 / 1802 ONNX files (89.5%).
 | node/test_selu_expanded_ver18/model.onnx | 18 | Data | ✅ | OK (max ULP 24) |
 | node/test_sequence_insert_at_back/model.onnx | 11 | Data | ✅ | OK (max abs diff 0) |
 | node/test_sequence_insert_at_front/model.onnx | 11 | Data | ✅ | OK (max abs diff 0) |
-| node/test_sequence_map_add_1_sequence_1_tensor/model.onnx | 17 | Data | ✅ | OK (max ULP 0) |
-| node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx | 17 | Data | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_add_1_sequence_1_tensor/model.onnx | 17 | Data | ❌ | Explicit --shape-inference-shapes were provided for input name(s) that do not require them: 'x1'. Remove those entries and rerun. |
+| node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx | 17 | Data | ❌ | Explicit --shape-inference-shapes were provided for input name(s) that do not require them: 'x1'. Remove those entries and rerun. |
 | node/test_sequence_map_add_2_sequences/model.onnx | 17 | Data | ✅ | OK (max ULP 0) |
 | node/test_sequence_map_add_2_sequences_expanded/model.onnx | 17 | Data | ✅ | OK (max ULP 0) |
 | node/test_sequence_map_extract_shapes/model.onnx | 17 | Data | ✅ | OK (max abs diff 0) |
 | node/test_sequence_map_extract_shapes_expanded/model.onnx | 17 | Data | ✅ | OK (max abs diff 0) |
 | node/test_sequence_map_identity_1_sequence/model.onnx | 17 | Data | ✅ | OK (max ULP 0) |
-| node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx | 17 | Data | ✅ | OK (max ULP 0) |
-| node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx | 17 | Data | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx | 17 | Data | ❌ | Explicit --shape-inference-shapes were provided for input name(s) that do not require them: 'x1'. Remove those entries and rerun. |
+| node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx | 17 | Data | ❌ | Explicit --shape-inference-shapes were provided for input name(s) that do not require them: 'x1'. Remove those entries and rerun. |
 | node/test_sequence_map_identity_1_sequence_expanded/model.onnx | 17 | Data | ✅ | OK (max ULP 0) |
 | node/test_sequence_map_identity_2_sequences/model.onnx | 17 | Data | ✅ | OK (max ULP 0) |
 | node/test_sequence_map_identity_2_sequences_expanded/model.onnx | 17 | Data | ✅ | OK (max ULP 0) |
@@ -1554,8 +1554,8 @@ Coverage 1612 / 1802 ONNX files (89.5%).
 | node/test_split_equal_parts_2d_opset13/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_split_equal_parts_default_axis_opset13/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_split_equal_parts_default_axis_opset18/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_split_to_sequence_1/model.onnx | 24 | Data | ✅ | OK (max ULP 0) |
-| node/test_split_to_sequence_2/model.onnx | 24 | Data | ✅ | OK (max ULP 0) |
+| node/test_split_to_sequence_1/model.onnx | 24 | Data | ❌ | Explicit --shape-inference-shapes were provided for input name(s) that do not require them: 'data', 'split'. Remove those entries and rerun. |
+| node/test_split_to_sequence_2/model.onnx | 24 | Data | ❌ | Explicit --shape-inference-shapes were provided for input name(s) that do not require them: 'data', 'split'. Remove those entries and rerun. |
 | node/test_split_to_sequence_nokeepdims/model.onnx | 24 | Data | ✅ | OK (max ULP 0) |
 | node/test_split_variable_parts_1d_opset13/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_split_variable_parts_1d_opset18/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
@@ -1817,7 +1817,7 @@ Coverage 1612 / 1802 ONNX files (89.5%).
 | simple/test_sequence_model5/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
 | simple/test_sequence_model6/model.onnx | 12 | Data | ✅ | OK (max abs diff 0) |
 | simple/test_sequence_model7/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
-| simple/test_sequence_model8/model.onnx | 12 | Data | ✅ | OK (max abs diff 0) |
+| simple/test_sequence_model8/model.onnx | 12 | Data | ❌ | Explicit --shape-inference-shapes were provided for input name(s) that do not require them: 'X', 'Splits'. Remove those entries and rerun. |
 | simple/test_shrink/model.onnx | 10 | Data | ✅ | OK (max ULP 0) |
 | simple/test_sign_model/model.onnx | 9 | Data | ✅ | OK (max ULP 0) |
 | simple/test_single_relu_model/model.onnx | 9 | Data | ✅ | OK (max ULP 0) |

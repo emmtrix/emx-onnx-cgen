@@ -1,11 +1,10 @@
 {
-  "error": "OK (max abs diff 0)",
+  "error": "Explicit --shape-inference-shapes were provided for input name(s) that do not require them: 'X', 'Splits'. Remove those entries and rerun.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/simple/test_sequence_model8 model.onnx --test-data-dir test_data_set_0 --shape-inference-shapes 'X=[];Splits=[0,0,0]'",
   "verification_mode": "Data",
   "operators": [
     "SplitToSequence",
     "SequenceLength"
   ],
-  "opset_version": 12,
-  "generated_checksum": "32cfa6ca06167cec6b25575e35ee2b99f1a2734545ec1f17662df4ddd9372ceb"
+  "opset_version": 12
 }

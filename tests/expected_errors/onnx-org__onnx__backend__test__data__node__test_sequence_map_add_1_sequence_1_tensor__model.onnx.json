@@ -1,10 +1,9 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "Explicit --shape-inference-shapes were provided for input name(s) that do not require them: 'x1'. Remove those entries and rerun.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor model.onnx --test-data-dir test_data_set_0 --shape-inference-shapes 'x0=seq[3]:10;x1=10'",
   "verification_mode": "Data",
   "operators": [
     "SequenceMap"
   ],
-  "opset_version": 17,
-  "generated_checksum": "e77696168d50bd98d00e4245c403c13599902c46a3342e03a2fbc55a85a84daa"
+  "opset_version": 17
 }

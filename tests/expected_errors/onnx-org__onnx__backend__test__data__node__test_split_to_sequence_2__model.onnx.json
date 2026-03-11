@@ -1,10 +1,9 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "Explicit --shape-inference-shapes were provided for input name(s) that do not require them: 'data', 'split'. Remove those entries and rerun.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_split_to_sequence_2 model.onnx --test-data-dir test_data_set_0 --shape-inference-shapes 'data=3x6;split=[1,2]'",
   "verification_mode": "Data",
   "operators": [
     "SplitToSequence"
   ],
-  "opset_version": 24,
-  "generated_checksum": "70bc5cc9de016d6ae1efd3bca4e7647696152a6da15362c2bcef5208cd759f3e"
+  "opset_version": 24
 }
