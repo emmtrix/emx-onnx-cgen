@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences model.onnx --test-data-dir test_data_set_0 --shape-inference-inputs test_data_set_0",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences model.onnx --test-data-dir test_data_set_0 --shape-inference-shapes 'x0=seq[3]:9;x1=seq[3]:8'",
   "verification_mode": "Data",
   "operators": [
     "SequenceMap"

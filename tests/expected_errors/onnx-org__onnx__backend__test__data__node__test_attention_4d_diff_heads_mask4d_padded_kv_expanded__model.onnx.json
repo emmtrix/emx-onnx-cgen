@@ -1,6 +1,6 @@
 {
-  "error": "Code generation still has unresolved dynamic shapes after shape concretization. Reason: tensor 'Attention_test_attention_4d_diff_heads_mask4d_padded_kv_expanded_function_AttnBias' has dynamic dimensions ('unk__0', 'unk__1', 'unk__2', 'unk__3'). Hint: provide more representative --shape-inference-inputs or export the model with static shapes.",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded model.onnx --test-data-dir test_data_set_0 --shape-inference-inputs test_data_set_0",
+  "error": "Code generation still has unresolved dynamic shapes after shape concretization. Reason: tensor 'Attention_test_attention_4d_diff_heads_mask4d_padded_kv_expanded_function_AttnBias' has dynamic dimensions ('unk__0', 'unk__1', 'unk__2', 'unk__3'). Hint: provide more representative --shape-inference-shapes or export the model with static shapes.",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded model.onnx --test-data-dir test_data_set_0 --shape-inference-shapes 'Q=2x3x4x8;K=2x3x6x8;V=2x3x6x10;attn_mask=2x3x4x4;nonpad_kv_seqlen=[3,4]'",
   "verification_mode": "Data",
   "operators": [
     "Shape",

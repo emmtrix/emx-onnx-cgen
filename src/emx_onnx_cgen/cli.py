@@ -234,9 +234,7 @@ def _parse_shape_inference_shapes(value: str) -> dict[str, _ShapeInferenceInputS
                 f"invalid shape specification {entry!r}; expected name=SPEC"
             )
         if input_name in specs:
-            raise ValueError(
-                f"duplicate shape specification for input {input_name!r}"
-            )
+            raise ValueError(f"duplicate shape specification for input {input_name!r}")
         specs[input_name] = _parse_shape_inference_input_spec(spec)
     return specs
 
@@ -2535,14 +2533,13 @@ def _load_shape_inference_inputs(
         return None
     specs = _parse_shape_inference_shapes(shape_specs)
     inputs_by_name = {
-        value_info.name: value_info for value_info in _shape_inference_model_inputs(model)
+        value_info.name: value_info
+        for value_info in _shape_inference_model_inputs(model)
     }
     unknown_inputs = sorted(name for name in specs if name not in inputs_by_name)
     if unknown_inputs:
         joined = ", ".join(repr(name) for name in unknown_inputs)
-        raise CodegenError(
-            f"Unknown shape-inference input name(s): {joined}."
-        )
+        raise CodegenError(f"Unknown shape-inference input name(s): {joined}.")
     shape_inference_inputs: dict[str, np.ndarray] = {}
     for input_name, spec in specs.items():
         value_info = inputs_by_name[input_name]
@@ -2621,12 +2618,18 @@ def _format_shape_inference_literal(value: bool | int | float) -> str:
 def _shape_inference_spec_from_array(array: np.ndarray) -> str:
     if array.ndim == 0:
         return _format_shape_inference_literal(array.reshape(()).item())
-    if array.ndim == 1 and array.size <= 8 and (
-        np.issubdtype(array.dtype, np.bool_)
-        or np.issubdtype(array.dtype, np.integer)
-        or np.issubdtype(array.dtype, np.floating)
+    if (
+        array.ndim == 1
+        and array.size <= 8
+        and (
+            np.issubdtype(array.dtype, np.bool_)
+            or np.issubdtype(array.dtype, np.integer)
+            or np.issubdtype(array.dtype, np.floating)
+        )
     ):
-        values = ",".join(_format_shape_inference_literal(item) for item in array.tolist())
+        values = ",".join(
+            _format_shape_inference_literal(item) for item in array.tolist()
+        )
         return f"[{values}]"
     return "x".join(str(int(dim)) for dim in array.shape) or "scalar"
 
@@ -2650,7 +2653,8 @@ def _derive_shape_inference_shapes_from_test_data(
         return None
     parts: list[str] = []
     inputs_by_name = {
-        value_info.name: value_info for value_info in _shape_inference_model_inputs(model)
+        value_info.name: value_info
+        for value_info in _shape_inference_model_inputs(model)
     }
     for input_name, array in inputs.items():
         if optional_flags is not None and optional_flags.get(input_name) is False:
@@ -2660,7 +2664,9 @@ def _derive_shape_inference_shapes_from_test_data(
             continue
         value_kind = value_info.type.WhichOneof("value")
         if value_kind == "sequence_type":
-            parts.append(f"{input_name}={_shape_inference_spec_from_sequence_array(array)}")
+            parts.append(
+                f"{input_name}={_shape_inference_spec_from_sequence_array(array)}"
+            )
             continue
         if value_kind == "optional_type":
             elem_kind = value_info.type.optional_type.elem_type.WhichOneof("value")
