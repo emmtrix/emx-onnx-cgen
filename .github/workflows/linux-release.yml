@@ -26,7 +26,6 @@ jobs:
       - name: Show Python version
         run: |
           "$PYTHON_BIN" --version
-          "$PYTHON_BIN" -m pip --version
 
       - name: Install system dependencies
         run: |
