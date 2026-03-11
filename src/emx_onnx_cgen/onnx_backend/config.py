@@ -20,6 +20,7 @@ DEFAULT_TESTS: tuple[str, ...] = (
     "test_equal_string_cpu",
     "test_string_concat_utf8_cpu",
     "test_string_split_empty_tensor_cpu",
+    "test_image_decoder_decode_png_rgb_cpu",
     "test_operator_conv_cpu",
     "test_optional_get_element_sequence_cpu",
     "test_optional_has_element_optional_input_cpu",

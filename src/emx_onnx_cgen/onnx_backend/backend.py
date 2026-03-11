@@ -14,7 +14,11 @@ import numpy as np
 from onnx import ModelProto, TensorProto
 from onnx.backend.base import Backend, BackendRep
 
-from emx_onnx_cgen.cli import _resolve_compiler, _serialize_string_tensor
+from emx_onnx_cgen.cli import (
+    _decode_image_decoder_inputs,
+    _resolve_compiler,
+    _serialize_string_tensor,
+)
 from emx_onnx_cgen.compiler import Compiler, CompilerOptions
 from emx_onnx_cgen.ir.model import SequenceType, TensorType, Value
 from emx_onnx_cgen.onnx_import import import_onnx
@@ -137,6 +141,47 @@ def _build_backend_metadata(model: ModelProto) -> _BackendMetadata:
     )
 
 
+def _non_initializer_input_names(model: ModelProto) -> tuple[str, ...]:
+    initializer_names = {initializer.name for initializer in model.graph.initializer}
+    return tuple(
+        value_info.name
+        for value_info in model.graph.input
+        if value_info.name not in initializer_names
+    )
+
+
+def _normalize_runtime_inputs(
+    model: ModelProto, inputs: tuple[object, ...]
+) -> tuple[object, ...]:
+    input_names = _non_initializer_input_names(model)
+    named_inputs = {name: value for name, value in zip(input_names, inputs, strict=True)}
+    _decode_image_decoder_inputs(model, named_inputs)
+    return tuple(named_inputs[name] for name in input_names)
+
+
+def _sequence_input_items(input_data: object, *, dtype: np.dtype) -> list[np.ndarray]:
+    if isinstance(input_data, np.ndarray) and input_data.dtype != np.dtype("O"):
+        if input_data.ndim < 1:
+            raise TypeError("Sequence input must be at least 1D.")
+        return [
+            np.asarray(input_data[index]).astype(dtype, copy=False)
+            for index in range(int(input_data.shape[0]))
+        ]
+
+    if isinstance(input_data, (list, tuple)):
+        return [np.asarray(item).astype(dtype, copy=False) for item in input_data]
+
+    array = np.asarray(input_data)
+    if array.ndim < 1:
+        raise TypeError("Sequence input must be at least 1D.")
+    if array.dtype == np.dtype("O"):
+        return [np.asarray(item).astype(dtype, copy=False) for item in array.tolist()]
+    return [
+        np.asarray(array[index]).astype(dtype, copy=False)
+        for index in range(int(array.shape[0]))
+    ]
+
+
 def _serialize_runtime_input(
     handle,
     *,
@@ -165,16 +210,14 @@ def _serialize_runtime_input(
             zero_payload = np.zeros((32, *elem_shape), dtype=seq_dtype)
             handle.write(np.ascontiguousarray(zero_payload).tobytes(order="C"))
             return
-    seq_data = np.asarray(input_data).astype(seq_dtype, copy=False)
-    if seq_data.ndim < 1:
-        raise TypeError(f"Sequence input {value.name} must be at least 1D.")
-    seq_count = int(seq_data.shape[0])
+    seq_items = _sequence_input_items(input_data, dtype=seq_dtype)
+    seq_count = len(seq_items)
     handle.write(struct.pack("<i", seq_count))
     elem_shape = lowered_sequence_input_shapes.get(value.name, tuple(seq_type.elem.shape))
     normalized = np.zeros((32, *elem_shape), dtype=seq_dtype)
     limit = min(seq_count, 32)
     for idx in range(limit):
-        item = np.asarray(seq_data[idx])
+        item = seq_items[idx]
         target = normalized[idx]
         if target.ndim == item.ndim:
             slices = tuple(
@@ -235,14 +278,20 @@ class EmxOnnxCgenBackendRep(BackendRep):
         *,
         executable: Path,
         metadata: _BackendMetadata,
+        model: ModelProto,
     ) -> None:
         self._executable = executable
         self._metadata = metadata
+        self._model = ModelProto()
+        self._model.CopyFrom(model)
 
     def run(self, inputs, **kwargs):
+        normalized_inputs = _normalize_runtime_inputs(self._model, tuple(inputs))
         with tempfile.NamedTemporaryFile(delete=False, suffix=".bin") as handle:
             input_path = Path(handle.name)
-            for input_value, value in zip(inputs, self._metadata.inputs, strict=True):
+            for input_value, value in zip(
+                normalized_inputs, self._metadata.inputs, strict=True
+            ):
                 _serialize_runtime_input(
                     handle,
                     value=value,
@@ -290,6 +339,7 @@ class EmxOnnxCgenBackend(Backend):
         return EmxOnnxCgenBackendRep(
             executable=artifact.executable,
             metadata=_build_backend_metadata(model),
+            model=model,
         )
 
     @classmethod
