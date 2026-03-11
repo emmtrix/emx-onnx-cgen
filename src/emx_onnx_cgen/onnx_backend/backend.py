@@ -203,8 +203,16 @@ def _decode_runtime_output(value: Value, payload: dict[str, object]) -> object:
     if isinstance(value.type, TensorType):
         dtype = value.type.dtype.np_dtype
         array = np.array(_decode_value(payload["data"], dtype=dtype), dtype=dtype)
-        shape = payload.get("shape", [])
+        shape = tuple(payload.get("shape", []))
         if shape:
+            if array.size == 0:
+                shape = tuple(
+                    0
+                    if index < len(value.type.dim_params)
+                    and value.type.dim_params[index] is not None
+                    else dim
+                    for index, dim in enumerate(shape)
+                )
             array = array.reshape(shape)
         elif array.size == 1:
             array = array.reshape(())
@@ -246,6 +254,7 @@ class EmxOnnxCgenBackendRep(BackendRep):
                 [str(self._executable), str(input_path)],
                 capture_output=True,
                 check=False,
+                encoding="utf-8",
                 text=True,
                 timeout=60,
             )
