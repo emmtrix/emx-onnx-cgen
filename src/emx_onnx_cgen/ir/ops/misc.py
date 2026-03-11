@@ -5731,9 +5731,8 @@ class StringSplitOp(RenderableOpBase):
 def _normalize_regex_fullmatch_pattern(pattern: str) -> str:
     """Strip word-boundary assertions that are redundant under fullmatch.
 
-    emx-regex-cgen does not currently accept ``\\b``. We only rewrite a few
-    cases where the boundary is implied by adjacent literal context and thus
-    preserves semantics.
+    Kept as a best-effort normalizer for patterns where the boundary is
+    implied by adjacent literal context and thus preserves semantics.
     """
 
     normalized = pattern
