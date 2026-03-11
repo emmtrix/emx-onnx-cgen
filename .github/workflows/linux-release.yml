@@ -51,7 +51,12 @@ jobs:
 
       - name: Build and package PyInstaller bundle
         run: |
-          bash tools/build_linux_pyinstaller_release.sh
+          if [[ -f tools/build_linux_pyinstaller_release.sh ]]; then
+            bash tools/build_linux_pyinstaller_release.sh
+          else
+            "$PYTHON_BIN" tools/pyinstaller_build.py
+            tar -czf emx-onnx-cgen-linux-amd64.tar.gz -C dist emx-onnx-cgen
+          fi
 
       - name: Upload workflow artifact
         if: ${{ github.event_name == 'workflow_dispatch' }}
