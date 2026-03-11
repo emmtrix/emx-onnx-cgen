@@ -236,23 +236,17 @@ def test_cli_model_base_dir_resolves_test_data(tmp_path: Path) -> None:
     assert args.test_data_dir == base_dir / "inputs"
 
 
-def test_cli_model_base_dir_resolves_shape_inference_inputs(tmp_path: Path) -> None:
-    base_dir = tmp_path / "base"
-    base_dir.mkdir()
+def test_cli_parse_shape_inference_shapes_flag() -> None:
     parser = cli._build_parser()
     args = parser.parse_args(
         [
             "compile",
             "model.onnx",
-            "--shape-inference-inputs",
-            "inputs",
-            "--model-base-dir",
-            str(base_dir),
+            "--shape-inference-shapes",
+            "x=2x3;size=[2,3,5,6];seq=seq[4]:8x16",
         ]
     )
-    cli._apply_base_dir(args, parser)
-    assert args.model == base_dir / "model.onnx"
-    assert args.shape_inference_inputs == base_dir / "inputs"
+    assert args.shape_inference_shapes == "x=2x3;size=[2,3,5,6];seq=seq[4]:8x16"
 
 
 def test_cli_verify_rejects_model_name_flag() -> None:
@@ -317,7 +311,7 @@ def test_cli_verify_per_node_accuracy_flag_can_be_enabled() -> None:
     assert args.per_node_accuracy is True
 
 
-def test_cli_compile_requires_explicit_shape_inference_inputs(tmp_path: Path) -> None:
+def test_cli_compile_requires_explicit_shape_inference_shapes(tmp_path: Path) -> None:
     model = _make_dynamic_identity_chain_model()
     model_path = tmp_path / "model.onnx"
     output_path = tmp_path / "model.c"
@@ -327,24 +321,22 @@ def test_cli_compile_requires_explicit_shape_inference_inputs(tmp_path: Path) ->
 
     assert result.exit_code == 1
     assert result.result is not None
-    assert "--shape-inference-inputs" in result.result
+    assert "--shape-inference-shapes" in result.result
 
 
-def test_cli_compile_accepts_explicit_shape_inference_inputs(tmp_path: Path) -> None:
+def test_cli_compile_accepts_explicit_shape_inference_shapes(tmp_path: Path) -> None:
     model = _make_dynamic_identity_chain_model()
     model_path = tmp_path / "model.onnx"
     output_path = tmp_path / "model.c"
-    shape_data_dir = tmp_path / "shape_inputs"
     onnx.save_model(model, model_path)
-    _write_input_pb(shape_data_dir, "x", np.array([1.0, 2.0], dtype=np.float32))
 
     result = cli.run_cli_command(
         [
             "compile",
             str(model_path),
             str(output_path),
-            "--shape-inference-inputs",
-            str(shape_data_dir),
+            "--shape-inference-shapes",
+            "x=2",
         ]
     )
 
@@ -352,7 +344,7 @@ def test_cli_compile_accepts_explicit_shape_inference_inputs(tmp_path: Path) -> 
     assert result.result == ""
 
 
-def test_cli_verify_notes_shape_inference_hint_from_test_data_dir(
+def test_cli_verify_notes_shape_inference_shapes_hint_from_test_data_dir(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     model = _make_dynamic_identity_chain_model()
@@ -382,10 +374,10 @@ def test_cli_verify_notes_shape_inference_hint_from_test_data_dir(
 
     assert success_message is None
     assert error is not None
-    assert "--shape-inference-inputs" in error
-    cli._maybe_note_shape_inference_inputs_hint(reporter, args=args, error=error)
+    assert "--shape-inference-shapes" in error
+    cli._maybe_note_shape_inference_shapes_hint(reporter, args=args, error=error)
     reporter.flush_deferred()
-    assert f"--shape-inference-inputs {test_data_dir}" in stream.getvalue()
+    assert '--shape-inference-shapes "x=[1.0,2.0]"' in stream.getvalue()
 
 
 def test_augment_model_with_tensor_node_outputs_skips_non_top_level_outputs() -> None:

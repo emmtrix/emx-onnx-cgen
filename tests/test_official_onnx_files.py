@@ -9,6 +9,7 @@ from functools import cache
 from pathlib import Path
 from typing import Any, Callable
 
+import onnx
 import pytest
 
 from emx_onnx_cgen import cli
@@ -96,7 +97,26 @@ MODEL_EXTRA_VERIFY_ARGS = {
     ),
 }
 
-MODELS_REQUIRING_SHAPE_INFERENCE_INPUTS = (
+
+def _shape_inference_shapes_from_test_data(repo_relative_path: str) -> str:
+    model_path = Path(__file__).resolve().parents[1] / repo_relative_path
+    test_data_dir = model_path.parent / "test_data_set_0"
+    if not test_data_dir.exists() or not list(test_data_dir.glob("input_*.pb")):
+        test_data_dir = None
+    if test_data_dir is None:
+        raise AssertionError(
+            f"Missing test_data_set_0 for shape-inference case {repo_relative_path}"
+        )
+    model = onnx.load(model_path)
+    shape_spec = cli._derive_shape_inference_shapes_from_test_data(model, test_data_dir)
+    if not shape_spec:
+        raise AssertionError(
+            f"Could not derive shape-inference shapes for {repo_relative_path}"
+        )
+    return shape_spec
+
+
+MODELS_REQUIRING_SHAPE_INFERENCE_SHAPES = (
     "onnx-org/onnx/backend/test/data/node/test_affine_grid_2d_align_corners_expanded/model.onnx",
     "onnx-org/onnx/backend/test/data/node/test_affine_grid_2d_expanded/model.onnx",
     "onnx-org/onnx/backend/test/data/node/test_affine_grid_3d_align_corners_expanded/model.onnx",
@@ -241,14 +261,20 @@ MODELS_REQUIRING_SHAPE_INFERENCE_INPUTS = (
     "onnx-org/onnx/backend/test/data/simple/test_sequence_model8/model.onnx",
 )
 
-for _model_path in MODELS_REQUIRING_SHAPE_INFERENCE_INPUTS:
+_existing_args: tuple[str, ...] = ()
+_full_model_path = Path()
+for _model_path in MODELS_REQUIRING_SHAPE_INFERENCE_SHAPES:
+    _full_model_path = Path(__file__).resolve().parents[1] / _model_path
+    if not _full_model_path.exists():
+        continue
     _existing_args = MODEL_EXTRA_VERIFY_ARGS.get(_model_path, ())
     MODEL_EXTRA_VERIFY_ARGS[_model_path] = (
         *_existing_args,
-        "--shape-inference-inputs",
-        "test_data_set_0",
+        "--shape-inference-shapes",
+        _shape_inference_shapes_from_test_data(_model_path),
     )
 del _existing_args
+del _full_model_path
 del _model_path
 
 
@@ -729,10 +755,10 @@ def test_run_expected_error_test_does_not_add_sanitize_flag(
 
     assert captured_args
     assert "--sanitize" not in captured_args[0]
-    assert "--shape-inference-inputs" not in captured_args[0]
+    assert "--shape-inference-shapes" not in captured_args[0]
 
 
-def test_run_expected_error_test_adds_shape_inference_inputs_from_extra_flags(
+def test_run_expected_error_test_adds_shape_inference_shapes_from_extra_flags(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
@@ -752,7 +778,7 @@ def test_run_expected_error_test_adds_shape_inference_inputs_from_extra_flags(
             exit_code=0,
             command_line=(
                 "verify --model-base-dir tests/onnx model.onnx "
-                "--test-data-dir test_data_set_0 --shape-inference-inputs test_data_set_0"
+                '--test-data-dir test_data_set_0 --shape-inference-shapes "x=2x3"'
             ),
             result="OK",
         )
@@ -761,7 +787,7 @@ def test_run_expected_error_test_adds_shape_inference_inputs_from_extra_flags(
     monkeypatch.setitem(
         MODEL_EXTRA_VERIFY_ARGS,
         "tests/onnx/model.onnx",
-        ("--shape-inference-inputs", "test_data_set_0"),
+        ("--shape-inference-shapes", "x=2x3"),
     )
     monkeypatch.delenv("UPDATE_REFS", raising=False)
 
@@ -777,7 +803,7 @@ def test_run_expected_error_test_adds_shape_inference_inputs_from_extra_flags(
     )
 
     assert captured_args
-    assert "--shape-inference-inputs" in captured_args[0]
+    assert "--shape-inference-shapes" in captured_args[0]
 
 
 @pytest.mark.order(1)

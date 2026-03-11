@@ -148,10 +148,11 @@ class Compiler:
         ):
             raise UnsupportedOpError(
                 "Code generation needs explicit shape concretization, but no "
-                "--shape-inference-inputs were provided. "
+                "--shape-inference-shapes were provided. "
                 f"Reason: {missing_shape_reason}. "
-                "Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to "
-                "compile/verify, or export the model with static shapes."
+                "Hint: pass --shape-inference-shapes with explicit input specs "
+                "(for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, "
+                "or export the model with static shapes."
             )
         graph = self._time_step(
             "concretize_shapes",
@@ -163,7 +164,7 @@ class Compiler:
                 "Code generation still has unresolved dynamic shapes after "
                 "shape concretization. "
                 f"Reason: {unresolved_shape_reason}. "
-                "Hint: provide more representative --shape-inference-inputs or "
+                "Hint: provide more representative --shape-inference-shapes or "
                 "export the model with static shapes."
             )
         variable_dim_inputs, variable_dim_outputs = self._time_step(

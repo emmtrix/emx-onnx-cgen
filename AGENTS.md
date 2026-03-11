@@ -98,7 +98,7 @@ PYTHONPATH=src python -m emx_onnx_cgen.cli <command_line from JSON>
 Sanitizers can be controlled via `EMX_ENABLE_SANITIZE` (when set, it overrides `--sanitize`).
 
 If code generation needs concrete data to resolve dynamic shapes, pass it
-explicitly to both commands via `--shape-inference-inputs <dir-with-input_*.pb>`.
+explicitly to both commands via `--shape-inference-shapes "<name=...;name=...>"`.
 Do not rely on `--test-data-dir` to change generated code; it is for verification
 I/O only.
 
@@ -332,8 +332,9 @@ When acting as an agent in this repo:
 * recommendation
 11. Do not let verification-only inputs change generated code implicitly. If a
     model needs representative inputs to concretize dynamic shapes, require the
-    explicit shared CLI flag `--shape-inference-inputs` on both `compile` and
-    `verify`, and surface a clear error when it is missing.
+    explicit shared CLI flag `--shape-inference-shapes` on both `compile` and
+    `verify`, and surface a clear error when it is missing. Do not make
+    `compile` or `verify` read `input_*.pb` files for code generation.
 12. To find operator specifications within this repository, prefer:
     * `onnx-org/docs/Operators.md` for the current consolidated operator docs.
     * `onnx-org/docs/Changelog.md` for versioned operator specs (e.g., Slice-13).
