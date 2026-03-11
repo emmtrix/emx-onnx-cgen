@@ -132,6 +132,7 @@ Optional for verification and tests:
 
 - `onnxruntime`
 - A C compiler (`cc`, `gcc`, `clang` or via `--cc`)
+- `pytest` for ONNX backend compliance smoke tests
 
 ## Quickstart
 
@@ -145,6 +146,34 @@ Verify an ONNX model end-to-end against ONNX Runtime (default):
 
 ```bash
 emx-onnx-cgen verify path/to/model.onnx
+```
+
+Use `emx-onnx-cgen` as an importable ONNX backend:
+
+```python
+import onnx
+from onnx.backend import prepare
+
+import emx_onnx_cgen.onnx_backend as emx_backend
+
+model = onnx.load("path/to/model.onnx")
+rep = prepare(model, backend=emx_backend)
+outputs = rep.run(inputs)
+```
+
+The backend module is `emx_onnx_cgen.onnx_backend`. It compiles the ONNX model
+to C on demand, builds a temporary executable, and runs that executable through
+the standard ONNX backend interface.
+
+You can also call it directly without `onnx.backend.prepare`:
+
+```python
+import onnx
+
+from emx_onnx_cgen.onnx_backend import run_model
+
+model = onnx.load("path/to/model.onnx")
+outputs = run_model(model, inputs)
 ```
 
 ## CLI Reference
