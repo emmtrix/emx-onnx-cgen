@@ -787,6 +787,27 @@ def test_codegen_testbench_output_format_txt_emmtrix_custom_ulp() -> None:
     assert "#ULP123.5" in generated
 
 
+def test_codegen_testbench_uses_large_temp_threshold_for_io_buffers() -> None:
+    model = _make_add_model()
+
+    static_generated = Compiler(
+        CompilerOptions(emit_testbench=True, large_temp_threshold_bytes=95)
+    ).compile(model)
+    stack_generated = Compiler(
+        CompilerOptions(emit_testbench=True, large_temp_threshold_bytes=96)
+    ).compile(model)
+
+    assert "    static float a[2][3][4];" in static_generated
+    assert "    static float b[2][3][4];" in static_generated
+    assert "    static float out[2][3][4];" in static_generated
+    assert "    static float a[2][3][4];" not in stack_generated
+    assert "    static float b[2][3][4];" not in stack_generated
+    assert "    static float out[2][3][4];" not in stack_generated
+    assert "    float a[2][3][4];" in stack_generated
+    assert "    float b[2][3][4];" in stack_generated
+    assert "    float out[2][3][4];" in stack_generated
+
+
 def test_codegen_separate_testbench_source() -> None:
     model = _make_add_model()
     compiler = Compiler(CompilerOptions(emit_testbench=False))
