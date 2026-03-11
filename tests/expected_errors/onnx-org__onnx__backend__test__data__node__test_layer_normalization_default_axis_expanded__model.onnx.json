@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 6)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_layer_normalization_default_axis_expanded model.onnx --test-data-dir test_data_set_0 --shape-inference-shapes 'X=2x3x4x5;W=[0.37642553448677063,-1.0994007587432861,0.29823818802833557,1.3263858556747437,-0.694567859172821];B=[-0.14963454008102417,-0.4351535439491272,1.8492637872695923,0.6722947359085083,0.40746182203292847]'",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_layer_normalization_default_axis_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Constant",

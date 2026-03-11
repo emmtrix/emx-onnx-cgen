@@ -19,7 +19,7 @@ from .codegen.c_emitter import (
     ModelHeader,
     NodeInfo,
 )
-from .errors import UnsupportedOpError
+from .errors import ShapeInferenceError, UnsupportedOpError
 from .invariants import (
     check_graph_integrity,
     check_inferred_shapes,
@@ -131,6 +131,16 @@ class Compiler:
         variable_dim_inputs: dict[int, dict[int, str]]
         variable_dim_outputs: dict[int, dict[int, str]]
 
+    def _try_lower_without_shape_concretization(
+        self,
+        model: onnx.ModelProto,
+        graph: Graph,
+    ) -> LoweredModel | None:
+        try:
+            return self._lower_model(model, graph)
+        except (ShapeInferenceError, UnsupportedOpError):
+            return None
+
     def _time_step(self, label: str, func: Callable[[], _T]) -> _T:
         timings = self._options.timings
         if timings is None:
@@ -153,6 +163,21 @@ class Compiler:
             missing_shape_reason is not None
             and not self._options.shape_inference_inputs
         ):
+            lowered = self._time_step(
+                "lower_model_without_concretize",
+                lambda: self._try_lower_without_shape_concretization(
+                    prepared_model, graph
+                ),
+            )
+            if lowered is not None:
+                variable_dim_inputs, variable_dim_outputs = self._time_step(
+                    "collect_variable_dims", lambda: self._collect_variable_dims(graph)
+                )
+                return Compiler._CompileContext(
+                    lowered=lowered,
+                    variable_dim_inputs=variable_dim_inputs,
+                    variable_dim_outputs=variable_dim_outputs,
+                )
             raise UnsupportedOpError(
                 "Code generation needs explicit shape concretization, but no "
                 "--shape-inference-shapes were provided. "
@@ -358,7 +383,12 @@ class Compiler:
     def requires_explicit_shape_inference_inputs(cls, model: onnx.ModelProto) -> bool:
         prepared_model = prepare_onnx_model(model)
         graph = import_onnx(prepared_model, _prepared=True)
-        return cls._shape_concretization_requirement_reason(graph) is not None
+        if cls._shape_concretization_requirement_reason(graph) is None:
+            return False
+        compiler = cls(CompilerOptions())
+        return compiler._try_lower_without_shape_concretization(
+            prepared_model, graph
+        ) is None
 
     @staticmethod
     def _collect_variable_dims(
