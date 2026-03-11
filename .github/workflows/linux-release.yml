@@ -14,7 +14,7 @@ jobs:
   build-linux-bundle:
     runs-on: ubuntu-latest
     container:
-      image: python:3.11-slim
+      image: quay.io/pypa/manylinux_2_28_x86_64
     permissions:
       contents: write
     steps:
@@ -23,24 +23,35 @@ jobs:
 
       - name: Set up Python
         run: |
+          export PATH="/opt/python/cp310-cp310/bin:${PATH}"
           python --version
           python -m pip --version
 
       - name: Install system dependencies
         run: |
-          apt-get update
-          apt-get install -y --no-install-recommends \
-            build-essential \
-          && rm -rf /var/lib/apt/lists/*
+          if command -v dnf >/dev/null 2>&1; then
+            dnf install -y gcc gcc-c++ make
+          elif command -v yum >/dev/null 2>&1; then
+            yum install -y gcc gcc-c++ make
+          elif command -v apt-get >/dev/null 2>&1; then
+            apt-get update
+            apt-get install -y --no-install-recommends build-essential
+            rm -rf /var/lib/apt/lists/*
+          else
+            echo "No supported package manager found (dnf/yum/apt-get)." >&2
+            exit 1
+          fi
 
       - name: Install dependencies
         run: |
+          export PATH="/opt/python/cp310-cp310/bin:${PATH}"
           python -m pip install --upgrade pip
           python -m pip install -r requirements-ci.txt
           python -m pip install pyinstaller
 
       - name: Build PyInstaller bundle
         run: |
+          export PATH="/opt/python/cp310-cp310/bin:${PATH}"
           python tools/pyinstaller_build.py
 
       - name: Package bundle
