@@ -335,6 +335,32 @@ class Compiler:
         graph = import_onnx(prepared_model, _prepared=True)
         return cls._shape_concretization_requirement_reason(graph) is not None
 
+    @classmethod
+    def unnecessary_shape_inference_input_names(
+        cls,
+        model: onnx.ModelProto,
+        shape_inference_inputs: Mapping[str, np.ndarray],
+    ) -> tuple[str, ...]:
+        if not shape_inference_inputs:
+            return ()
+        prepared_model = prepare_onnx_model(model)
+        graph = import_onnx(prepared_model, _prepared=True)
+        if cls._shape_concretization_requirement_reason(graph) is None:
+            return tuple(shape_inference_inputs)
+
+        input_items = tuple(shape_inference_inputs.items())
+        unnecessary_inputs: list[str] = []
+        for input_name, _array in input_items:
+            remaining_inputs = {
+                name: array for name, array in input_items if name != input_name
+            }
+            concretized_graph = cls(
+                CompilerOptions(shape_inference_inputs=remaining_inputs)
+            )._concretize_graph_shapes(prepared_model, graph)
+            if cls._unresolved_shape_concretization_reason(concretized_graph) is None:
+                unnecessary_inputs.append(input_name)
+        return tuple(unnecessary_inputs)
+
     @staticmethod
     def _collect_variable_dims(
         graph: Graph,

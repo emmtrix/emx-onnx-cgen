@@ -111,6 +111,21 @@ def _make_dynamic_identity_chain_model() -> onnx.ModelProto:
     return model
 
 
+def _make_static_identity_model() -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("x", TensorProto.FLOAT, [2])
+    output_info = helper.make_tensor_value_info("y", TensorProto.FLOAT, [2])
+    node = helper.make_node("Identity", inputs=["x"], outputs=["y"])
+    graph = helper.make_graph([node], "static_identity", [input_info], [output_info])
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _write_input_pb(data_dir: Path, name: str, values: np.ndarray) -> None:
     data_dir.mkdir(parents=True, exist_ok=True)
     tensor = numpy_helper.from_array(values, name=name)
@@ -342,6 +357,30 @@ def test_cli_compile_accepts_explicit_shape_inference_shapes(tmp_path: Path) -> 
 
     assert result.exit_code == 0
     assert result.result == ""
+
+
+def test_cli_compile_rejects_unnecessary_shape_inference_shapes(
+    tmp_path: Path,
+) -> None:
+    model = _make_static_identity_model()
+    model_path = tmp_path / "model.onnx"
+    output_path = tmp_path / "model.c"
+    onnx.save_model(model, model_path)
+
+    result = cli.run_cli_command(
+        [
+            "compile",
+            str(model_path),
+            str(output_path),
+            "--shape-inference-shapes",
+            "x=2",
+        ]
+    )
+
+    assert result.exit_code == 1
+    assert result.result is not None
+    assert "do not require them" in result.result
+    assert "'x'" in result.result
 
 
 def test_cli_verify_notes_shape_inference_shapes_hint_from_test_data_dir(
