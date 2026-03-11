@@ -134,6 +134,15 @@ Optional for verification and tests:
 - A C compiler (`cc`, `gcc`, `clang` or via `--cc`)
 - `pytest` for ONNX backend compliance smoke tests
 
+## Backend Terms
+
+This repository uses the word `backend` for two different integration layers:
+
+- `build-backend` in [`pyproject.toml`](pyproject.toml) refers to the custom PEP 517 packaging wrapper in [`build_backend.py`](build_backend.py). It exists only to inject build metadata and rewrite relative README links for PyPI builds.
+- `emx_onnx_cgen.onnx_backend` refers to the ONNX backend adapter. It exposes the compiler through the standard ONNX backend interface and powers the backend compliance smoke tests.
+
+Neither of these is a second code-generation backend for the compiler itself. The compiler pipeline remains the same; these layers only adapt packaging and ONNX integration.
+
 ## Quickstart
 
 Compile an ONNX model into a C source file:

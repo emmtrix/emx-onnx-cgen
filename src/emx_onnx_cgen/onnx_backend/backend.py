@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 import json
 import logging
 import os
@@ -11,7 +10,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
-from onnx import ModelProto, TensorProto
+from onnx import ModelProto
 from onnx.backend.base import Backend, BackendRep
 
 from emx_onnx_cgen.cli import (
@@ -22,32 +21,15 @@ from emx_onnx_cgen.cli import (
 from emx_onnx_cgen.compiler import Compiler, CompilerOptions
 from emx_onnx_cgen.ir.model import SequenceType, TensorType, Value
 from emx_onnx_cgen.onnx_import import import_onnx
-from shared.scalar_types import ScalarType
 
 LOGGER = logging.getLogger(__name__)
-
-_ELEM_TYPE_TO_DTYPE = {
-    TensorProto.BOOL: np.dtype("bool"),
-    TensorProto.BFLOAT16: ScalarType.BF16.np_dtype,
-    TensorProto.DOUBLE: np.dtype("float64"),
-    TensorProto.FLOAT: np.dtype("float32"),
-    TensorProto.FLOAT16: np.dtype("float16"),
-    TensorProto.INT8: np.dtype("int8"),
-    TensorProto.INT16: np.dtype("int16"),
-    TensorProto.INT32: np.dtype("int32"),
-    TensorProto.INT64: np.dtype("int64"),
-    TensorProto.STRING: np.dtype("O"),
-    TensorProto.UINT8: np.dtype("uint8"),
-    TensorProto.UINT16: np.dtype("uint16"),
-    TensorProto.UINT32: np.dtype("uint32"),
-    TensorProto.UINT64: np.dtype("uint64"),
-}
+_SEQUENCE_MAX_LEN = 32
 
 
 @dataclass(frozen=True)
 class _CompiledArtifact:
     executable: Path
-    temp_dir: Path
+    temp_dir: tempfile.TemporaryDirectory[str]
 
 
 @dataclass(frozen=True)
@@ -57,24 +39,8 @@ class _BackendMetadata:
     lowered_sequence_input_shapes: dict[str, tuple[int, ...]]
 
 
-_COMPILE_CACHE: dict[str, _CompiledArtifact] = {}
-
-
-def _model_hash(model: ModelProto) -> str:
-    return hashlib.sha256(model.SerializeToString()).hexdigest()
-
-
 def _resolve_executable_suffix() -> str:
     return ".exe" if os.name == "nt" else ""
-
-
-def _resolve_output_infos(model: ModelProto) -> list[tuple[str, np.dtype]]:
-    output_infos: list[tuple[str, np.dtype]] = []
-    for output in model.graph.output:
-        elem_type = output.type.tensor_type.elem_type
-        dtype = _ELEM_TYPE_TO_DTYPE.get(elem_type, np.dtype("float32"))
-        output_infos.append((output.name, dtype))
-    return output_infos
 
 
 def _decode_value(value: object, *, dtype: np.dtype) -> object:
@@ -96,9 +62,10 @@ def _compile_model(model: ModelProto) -> _CompiledArtifact:
         testbench_output_format="json",
     )
     generated = Compiler(options).compile(model)
-    temp_dir = Path(tempfile.mkdtemp(prefix="emx_onnx_backend_"))
-    c_path = temp_dir / "model.c"
-    exe_path = temp_dir / f"model{_resolve_executable_suffix()}"
+    temp_dir = tempfile.TemporaryDirectory(prefix="emx_onnx_backend_")
+    temp_dir_path = Path(temp_dir.name)
+    c_path = temp_dir_path / "model.c"
+    exe_path = temp_dir_path / f"model{_resolve_executable_suffix()}"
     c_path.write_text(generated, encoding="utf-8")
 
     command = [*compiler, "-O2", str(c_path), "-o", str(exe_path), "-lm"]
@@ -109,6 +76,7 @@ def _compile_model(model: ModelProto) -> _CompiledArtifact:
         text=True,
     )
     if result.returncode != 0:
+        temp_dir.cleanup()
         raise RuntimeError(f"C compilation failed:\n{result.stderr}")
     return _CompiledArtifact(executable=exe_path, temp_dir=temp_dir)
 
@@ -209,18 +177,22 @@ def _serialize_runtime_input(
         if not present:
             handle.write(struct.pack("<i", 0))
             elem_shape = tuple(seq_type.elem.shape)
-            zero_payload = np.zeros((32, *elem_shape), dtype=seq_dtype)
+            zero_payload = np.zeros((_SEQUENCE_MAX_LEN, *elem_shape), dtype=seq_dtype)
             handle.write(np.ascontiguousarray(zero_payload).tobytes(order="C"))
             return
     seq_items = _sequence_input_items(input_data, dtype=seq_dtype)
     seq_count = len(seq_items)
+    if seq_count > _SEQUENCE_MAX_LEN:
+        raise ValueError(
+            f"Sequence input {value.name!r} has length {seq_count}, "
+            f"but the generated ONNX backend ABI supports at most {_SEQUENCE_MAX_LEN} items."
+        )
     handle.write(struct.pack("<i", seq_count))
     elem_shape = lowered_sequence_input_shapes.get(
         value.name, tuple(seq_type.elem.shape)
     )
-    normalized = np.zeros((32, *elem_shape), dtype=seq_dtype)
-    limit = min(seq_count, 32)
-    for idx in range(limit):
+    normalized = np.zeros((_SEQUENCE_MAX_LEN, *elem_shape), dtype=seq_dtype)
+    for idx in range(seq_count):
         item = seq_items[idx]
         target = normalized[idx]
         if target.ndim == item.ndim:
@@ -280,11 +252,12 @@ class EmxOnnxCgenBackendRep(BackendRep):
     def __init__(
         self,
         *,
-        executable: Path,
+        artifact: _CompiledArtifact,
         metadata: _BackendMetadata,
         model: ModelProto,
     ) -> None:
-        self._executable = executable
+        self._artifact = artifact
+        self._executable = artifact.executable
         self._metadata = metadata
         self._model = ModelProto()
         self._model.CopyFrom(model)
@@ -334,14 +307,10 @@ class EmxOnnxCgenBackend(Backend):
     def prepare(cls, model, device="CPU", **kwargs):
         if device != "CPU":
             raise RuntimeError(f"Unsupported device: {device}")
-        digest = _model_hash(model)
-        artifact = _COMPILE_CACHE.get(digest)
-        if artifact is None:
-            artifact = _compile_model(model)
-            _COMPILE_CACHE[digest] = artifact
-            LOGGER.info("Compiled ONNX backend test model into %s", artifact.executable)
+        artifact = _compile_model(model)
+        LOGGER.info("Compiled ONNX backend test model into %s", artifact.executable)
         return EmxOnnxCgenBackendRep(
-            executable=artifact.executable,
+            artifact=artifact,
             metadata=_build_backend_metadata(model),
             model=model,
         )
