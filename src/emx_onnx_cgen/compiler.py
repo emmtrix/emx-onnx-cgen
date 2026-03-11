@@ -4,7 +4,7 @@ from dataclasses import dataclass
 import hashlib
 from pathlib import Path
 import time
-from typing import Callable, Mapping, TypeVar
+from typing import Callable, Mapping, Sequence, TypeVar
 
 import numpy as np
 import onnx
@@ -452,6 +452,7 @@ class Compiler:
         for op in ops:
             op.infer_shapes(op_ctx)
         check_inferred_shapes(ops, op_ctx)
+        ops, node_infos = self._prune_dead_ops(ops, node_infos, output_names)
         refreshed_output_types: list[ValueType] = []
         refreshed_output_shapes: list[tuple[int, ...]] = []
         refreshed_output_dtypes: list[ScalarType] = []
@@ -881,6 +882,26 @@ class Compiler:
                 )
             )
         return ops, node_infos
+
+    @staticmethod
+    def _prune_dead_ops(
+        ops: Sequence[OpBase],
+        node_infos: Sequence[NodeInfo],
+        model_output_names: Sequence[str],
+    ) -> tuple[list[OpBase], list[NodeInfo]]:
+        needed = {name for name in model_output_names if name}
+        kept_ops: list[OpBase] = []
+        kept_node_infos: list[NodeInfo] = []
+        for op, node_info in zip(reversed(ops), reversed(node_infos), strict=True):
+            output_names = tuple(name for name in op.output_names if name)
+            if not output_names or not any(name in needed for name in output_names):
+                continue
+            kept_ops.append(op)
+            kept_node_infos.append(node_info)
+            needed.update(name for name in op.input_names if name)
+        kept_ops.reverse()
+        kept_node_infos.reverse()
+        return kept_ops, kept_node_infos
 
     def _build_header(self, model: onnx.ModelProto, graph: Graph) -> ModelHeader:
         metadata_props = tuple((prop.key, prop.value) for prop in model.metadata_props)

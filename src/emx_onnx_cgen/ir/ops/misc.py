@@ -6331,7 +6331,7 @@ class SplitToSequenceOp(RenderableOpBase):
         raise CodegenError("SplitToSequence output must be a sequence")
 
     def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
-        return emitter.ctx_sequence_elem_type(self.output_sequence).shape
+        return emitter.sequence_storage_shape(self.output_sequence)
 
     def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
         return emitter.ctx_sequence_elem_type(self.output_sequence).dtype
@@ -7280,7 +7280,7 @@ class SequenceEmptyOp(RenderableOpBase):
         raise CodegenError("SequenceEmpty output must be a sequence")
 
     def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
-        return emitter.ctx_sequence_elem_type(self.output_sequence).shape
+        return emitter.sequence_storage_shape(self.output_sequence)
 
     def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
         return emitter.ctx_sequence_elem_type(self.output_sequence).dtype
