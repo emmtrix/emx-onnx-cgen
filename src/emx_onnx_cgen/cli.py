@@ -2606,6 +2606,15 @@ def _load_shape_inference_inputs(
         raise CodegenError(
             f"Input {input_name!r} has unsupported type for shape inference."
         )
+    unnecessary_inputs = Compiler.unnecessary_shape_inference_input_names(
+        model, shape_inference_inputs
+    )
+    if unnecessary_inputs:
+        joined = ", ".join(repr(name) for name in unnecessary_inputs)
+        raise CodegenError(
+            "Explicit --shape-inference-shapes were provided for input name(s) "
+            f"that do not require them: {joined}. Remove those entries and rerun."
+        )
     return shape_inference_inputs
 
 
