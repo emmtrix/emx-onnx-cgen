@@ -49,6 +49,7 @@ def _value_requires_explicit_shape_concretization(
     *,
     allow_top_level_tensor_dims: bool,
     check_sequence_dims: bool,
+    allowed_tensor_dim_params: set[str] | None = None,
 ) -> str | None:
     value_type = value.type
     if isinstance(value_type, SequenceType):
@@ -62,7 +63,13 @@ def _value_requires_explicit_shape_concretization(
         return None
     if allow_top_level_tensor_dims:
         return None
-    if any(dim_param is not None for dim_param in value_type.dim_params):
+    unresolved_dim_params = tuple(
+        dim_param
+        for dim_param in value_type.dim_params
+        if dim_param is not None
+        and (allowed_tensor_dim_params is None or dim_param not in allowed_tensor_dim_params)
+    )
+    if unresolved_dim_params:
         return f"tensor '{value.name}' has dynamic dimensions {value_type.dim_params}"
     return None
 
@@ -275,6 +282,7 @@ class Compiler:
 
     @staticmethod
     def _shape_concretization_requirement_reason(graph: Graph) -> str | None:
+        allowed_internal_dim_params = Compiler._allowed_internal_dim_params(graph)
         for value in graph.inputs:
             reason = _value_requires_explicit_shape_concretization(
                 value,
@@ -288,6 +296,7 @@ class Compiler:
                 value,
                 allow_top_level_tensor_dims=False,
                 check_sequence_dims=True,
+                allowed_tensor_dim_params=allowed_internal_dim_params,
             )
             if reason is not None:
                 return reason
@@ -303,6 +312,7 @@ class Compiler:
 
     @staticmethod
     def _unresolved_shape_concretization_reason(graph: Graph) -> str | None:
+        allowed_internal_dim_params = Compiler._allowed_internal_dim_params(graph)
         for value in graph.inputs:
             reason = _value_requires_explicit_shape_concretization(
                 value,
@@ -316,6 +326,7 @@ class Compiler:
                 value,
                 allow_top_level_tensor_dims=False,
                 check_sequence_dims=False,
+                allowed_tensor_dim_params=allowed_internal_dim_params,
             )
             if reason is not None:
                 return reason
@@ -328,6 +339,20 @@ class Compiler:
             if reason is not None:
                 return reason
         return None
+
+    @staticmethod
+    def _allowed_internal_dim_params(graph: Graph) -> set[str]:
+        dim_params: set[str] = set()
+        for value in graph.inputs + graph.outputs:
+            if isinstance(value.type, TensorType):
+                dim_params.update(
+                    dim_param for dim_param in value.type.dim_params if dim_param
+                )
+            elif isinstance(value.type, SequenceType):
+                dim_params.update(
+                    dim_param for dim_param in value.type.elem.dim_params if dim_param
+                )
+        return dim_params
 
     @classmethod
     def requires_explicit_shape_inference_inputs(cls, model: onnx.ModelProto) -> bool:

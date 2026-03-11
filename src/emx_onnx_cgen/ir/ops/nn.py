@@ -5484,14 +5484,20 @@ class MaxPoolOp(RenderableOpBase):
         )
         input_shape = (self.batch, self.channels, *self.in_spatial)
         output_shape = (self.batch, self.channels, *self.out_spatial)
+        input_dim_names = emitter.dim_names_for(self.input0)
+        output_dim_names = emitter.dim_names_for(self.output)
         indices_c_type = (
             self.indices_dtype.c_type
             if self.indices is not None and self.indices_dtype is not None
             else None
         )
-        input_suffix = emitter.param_array_suffix(input_shape)
-        output_suffix = emitter.param_array_suffix(output_shape)
-        indices_suffix = emitter.param_array_suffix(output_shape)
+        input_shape_expr = CEmitterCompat.shape_dim_exprs(input_shape, input_dim_names)
+        output_shape_expr = CEmitterCompat.shape_dim_exprs(
+            output_shape, output_dim_names
+        )
+        input_suffix = emitter.param_array_suffix(input_shape, input_dim_names)
+        output_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
+        indices_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
         param_decls = emitter.build_param_decls(
             [
                 (params["input0"], c_type, input_suffix, True),
@@ -5524,11 +5530,11 @@ class MaxPoolOp(RenderableOpBase):
                 indices_suffix=indices_suffix,
                 indices_c_type=indices_c_type,
                 dtype=self.dtype,
-                batch=self.batch,
-                channels=self.channels,
+                batch=input_shape_expr[0],
+                channels=input_shape_expr[1],
                 spatial_rank=self.spatial_rank,
-                in_spatial=self.in_spatial,
-                out_spatial=self.out_spatial,
+                in_spatial=input_shape_expr[2:],
+                out_spatial=output_shape_expr[2:],
                 kernel_shape=self.kernel_shape,
                 strides=self.strides,
                 pads=self.pads,

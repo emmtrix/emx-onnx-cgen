@@ -1394,13 +1394,17 @@ class TransposeOp(RenderableOpBase):
         c_type = emitter.ctx_dtype(self.output).c_type
         input_shape = emitter.ctx_shape(self.input0)
         output_shape_raw = emitter.ctx_shape(self.output)
+        input_dim_names = emitter.dim_names_for(self.input0)
+        output_dim_names = emitter.dim_names_for(self.output)
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
-        output_shape = CEmitterCompat.codegen_shape(output_shape_raw)
+        output_shape = CEmitterCompat.shape_dim_exprs(
+            output_shape_raw, output_dim_names
+        )
         loop_vars = CEmitterCompat.loop_vars(output_shape)
-        output_suffix = emitter.param_array_suffix(output_shape_raw)
-        input_suffix = emitter.param_array_suffix(input_shape)
+        output_suffix = emitter.param_array_suffix(output_shape_raw, output_dim_names)
+        input_suffix = emitter.param_array_suffix(input_shape, input_dim_names)
         param_decls = emitter.build_param_decls(
             [
                 (params["input0"], c_type, input_suffix, True),
@@ -1460,12 +1464,16 @@ class ReshapeOp(RenderableOpBase):
         c_type = emitter.ctx_dtype(self.output).c_type
         input_shape = emitter.ctx_shape(self.input0)
         output_shape_raw = emitter.ctx_shape(self.output)
+        input_dim_names = emitter.dim_names_for(self.input0)
+        output_dim_names = emitter.dim_names_for(self.output)
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
-        input_suffix = emitter.param_array_suffix(input_shape)
-        output_shape = CEmitterCompat.codegen_shape(output_shape_raw)
-        output_suffix = emitter.param_array_suffix(output_shape_raw)
+        input_suffix = emitter.param_array_suffix(input_shape, input_dim_names)
+        output_shape = CEmitterCompat.shape_dim_exprs(
+            output_shape_raw, output_dim_names
+        )
+        output_suffix = emitter.param_array_suffix(output_shape_raw, output_dim_names)
         param_decls = emitter.build_param_decls(
             [
                 (params["input0"], c_type, input_suffix, True),

@@ -21,6 +21,7 @@ from ..errors import CodegenError
 from ..testbench_output_format import parse_testbench_output_format
 from ..ir.op_base import (
     OpBase,
+    CodegenDim,
     EmitContext,
 )
 from ..ir.op_context import OpContext
@@ -321,7 +322,7 @@ class _EmitState:
     scalar_registry: ScalarFunctionRegistry
     fft_kernel_registry: FFTKernelRegistry
     dim_args: str
-    tensor_dim_names: Mapping[str, Mapping[int, str]]
+    tensor_dim_names: Mapping[str, Mapping[int, CodegenDim]]
     op_context: OpContext
     value_name_map: Mapping[str, str]
 
@@ -970,6 +971,7 @@ class CEmitter:
             model,
             input_dim_names,
             output_dim_names,
+            name_map,
         )
         dim_args = self._format_dim_args_prefix(dim_order)
         self._env.globals["dim_args"] = dim_args
@@ -1002,6 +1004,15 @@ class CEmitter:
         temp_buffers = self._temp_buffers(model, reserved_names=reserved_names)
         temp_name_map = {
             original: buffer.name for original, buffer in temp_buffers.items()
+        }
+        self._copy_temp_buffer_dim_names(tensor_dim_names, temp_name_map)
+        heap_temp_include = {
+            "#include <stdlib.h>"
+            for temp in temp_buffers.values()
+            if self._temp_buffer_uses_heap(
+                temp,
+                tensor_dim_names.get(temp.name),
+            )
         }
         resolved_ops = [self._resolve_op(op, temp_name_map) for op in model.ops]
         self._copy_derived(model.op_context, model.ops, resolved_ops)
@@ -1050,7 +1061,10 @@ class CEmitter:
             list(original_model.ops),
             emit_testbench=emit_testbench,
             extra_includes=(
-                scalar_includes | fft_kernel_includes | testbench_math_include
+                scalar_includes
+                | fft_kernel_includes
+                | testbench_math_include
+                | heap_temp_include
             ),
             needs_weight_loader=bool(large_constants),
         )
@@ -1110,6 +1124,8 @@ class CEmitter:
                         testbench_output_format=testbench_output_format,
                         testbench_inputs=testbench_inputs,
                         testbench_optional_inputs=testbench_optional_inputs,
+                        input_dim_names=input_dim_names,
+                        output_dim_names=output_dim_names,
                         dim_order=dim_order,
                         dim_values=dim_values,
                         weight_data_filename=self._weight_data_filename(model),
@@ -1155,6 +1171,7 @@ class CEmitter:
             model,
             input_dim_names,
             output_dim_names,
+            name_map,
         )
         dim_args = self._format_dim_args_prefix(dim_order)
         self._env.globals["dim_args"] = dim_args
@@ -1187,6 +1204,15 @@ class CEmitter:
         temp_buffers = self._temp_buffers(model, reserved_names=reserved_names)
         temp_name_map = {
             original: buffer.name for original, buffer in temp_buffers.items()
+        }
+        self._copy_temp_buffer_dim_names(tensor_dim_names, temp_name_map)
+        heap_temp_include = {
+            "#include <stdlib.h>"
+            for temp in temp_buffers.values()
+            if self._temp_buffer_uses_heap(
+                temp,
+                tensor_dim_names.get(temp.name),
+            )
         }
         resolved_ops = [self._resolve_op(op, temp_name_map) for op in model.ops]
         self._copy_derived(model.op_context, model.ops, resolved_ops)
@@ -1235,7 +1261,10 @@ class CEmitter:
             list(original_model.ops),
             emit_testbench=emit_testbench,
             extra_includes=(
-                scalar_includes | fft_kernel_includes | testbench_math_include
+                scalar_includes
+                | fft_kernel_includes
+                | testbench_math_include
+                | heap_temp_include
             ),
             needs_weight_loader=bool(large_constants),
         )
@@ -1284,16 +1313,18 @@ class CEmitter:
             sections.extend(
                 (
                     "",
-                    self._emit_testbench(
-                        model,
-                        testbench_template,
-                        testbench_output_format=testbench_output_format,
-                        testbench_inputs=testbench_inputs,
-                        testbench_optional_inputs=testbench_optional_inputs,
-                        dim_order=dim_order,
-                        dim_values=dim_values,
-                        weight_data_filename=self._weight_data_filename(model),
-                    ),
+            self._emit_testbench(
+                model,
+                testbench_template,
+                testbench_output_format=testbench_output_format,
+                testbench_inputs=testbench_inputs,
+                testbench_optional_inputs=testbench_optional_inputs,
+                input_dim_names=input_dim_names,
+                output_dim_names=output_dim_names,
+                dim_order=dim_order,
+                dim_values=dim_values,
+                weight_data_filename=self._weight_data_filename(model),
+            ),
                 )
             )
         sections.append("")
@@ -1351,7 +1382,7 @@ class CEmitter:
             literal_formatter=CEmitter._format_literal
         )
         self._setup_template_resolvers(scalar_registry, fft_kernel_registry)
-        tensor_dim_names = self._build_tensor_dim_names(model, {}, {})
+        tensor_dim_names = self._build_tensor_dim_names(model, {}, {}, name_map)
         initial_name_map = self._build_value_name_map(name_map, {})
         self._emit_state = _EmitState(
             model=model,
@@ -1369,6 +1400,8 @@ class CEmitter:
             testbench_output_format=testbench_output_format,
             testbench_inputs=testbench_inputs,
             testbench_optional_inputs=testbench_optional_inputs,
+            input_dim_names=_in_dims,
+            output_dim_names=_out_dims,
             dim_order=dim_order,
             dim_values=dim_values,
             weight_data_filename=self._weight_data_filename(model),
@@ -1863,8 +1896,8 @@ class CEmitter:
         temp_buffers: tuple[TempBuffer, ...],
         *,
         dim_order: Sequence[str],
-        input_dim_names: Mapping[int, Mapping[int, str]],
-        output_dim_names: Mapping[int, Mapping[int, str]],
+        input_dim_names: Mapping[int, Mapping[int, CodegenDim]],
+        output_dim_names: Mapping[int, Mapping[int, CodegenDim]],
     ) -> str:
         signature = self._entrypoint_signature(
             model,
@@ -1873,21 +1906,36 @@ class CEmitter:
             output_dim_names=output_dim_names,
         )
         lines = [f"void {model.name}({signature}) {{"]
+        heap_temp_names: list[str] = []
         for temp in temp_buffers:
             c_type = temp.dtype.c_type
-            storage = (
-                "static "
-                if self._temp_buffer_size_bytes(temp) > self._large_temp_threshold_bytes
-                else ""
-            )
+            dim_names = self.dim_names_for(temp.name)
             if temp.is_sequence:
+                storage = (
+                    "static "
+                    if self._temp_buffer_size_bytes(temp) > self._large_temp_threshold_bytes
+                    else ""
+                )
                 lines.append(
                     f"    {storage}{c_type} {temp.name}[EMX_SEQUENCE_MAX_LEN]{self._array_suffix(temp.shape, temp.dtype)};"
                 )
                 lines.append(f"    idx_t {temp.name}__count = 0;")
+            elif self._temp_buffer_uses_heap(temp, dim_names):
+                lines.extend(
+                    f"    {line}"
+                    for line in self._heap_temp_buffer_lines(temp, dim_names)
+                )
+                heap_temp_names.append(temp.name)
             else:
+                storage = ""
+                if (
+                    not dim_names
+                    and self._temp_buffer_size_bytes(temp)
+                    > self._large_temp_threshold_bytes
+                ):
+                    storage = "static "
                 lines.append(
-                    f"    {storage}{c_type} {temp.name}{self._array_suffix(temp.shape, temp.dtype)};"
+                    f"    {storage}{c_type} {temp.name}{self._param_array_suffix(temp.shape, dim_names, dtype=temp.dtype)};"
                 )
         sequence_temp_count_names = {
             f"{temp.name}__count" for temp in temp_buffers if temp.is_sequence
@@ -1913,6 +1961,8 @@ class CEmitter:
             args = [*dim_order, *op_args]
             call = ", ".join(args)
             lines.append(f"    {op_name}({call});")
+        for temp_name in reversed(heap_temp_names):
+            lines.append(f"    free({temp_name});")
         lines.append("}")
         return "\n".join(lines)
 
@@ -1921,8 +1971,8 @@ class CEmitter:
         model: LoweredModel,
         *,
         dim_order: Sequence[str],
-        input_dim_names: Mapping[int, Mapping[int, str]],
-        output_dim_names: Mapping[int, Mapping[int, str]],
+        input_dim_names: Mapping[int, Mapping[int, CodegenDim]],
+        output_dim_names: Mapping[int, Mapping[int, CodegenDim]],
     ) -> str:
         params: list[str] = []
         optional_flags = self._optional_input_flag_map(model)
@@ -2008,20 +2058,36 @@ class CEmitter:
 
     @staticmethod
     def _buffer_size_bytes(
-        shape: tuple[int, ...], dtype: ScalarType, *, is_sequence: bool = False
+        shape: tuple[int, ...],
+        dtype: ScalarType,
+        *,
+        dim_names: Mapping[int, CodegenDim] | None = None,
+        is_sequence: bool = False,
     ) -> int:
         element_count = 1
-        for dim in shape:
+        for dim in CEmitter._shape_with_expected_sizes(shape, dim_names):
             element_count *= dim
         if is_sequence:
             element_count *= 32
         return element_count * dtype.np_dtype.itemsize
 
     def _local_array_storage(
-        self, shape: tuple[int, ...], dtype: ScalarType, *, is_sequence: bool = False
+        self,
+        shape: tuple[int, ...],
+        dtype: ScalarType,
+        *,
+        dim_names: Mapping[int, CodegenDim] | None = None,
+        is_sequence: bool = False,
     ) -> str:
+        if dim_names:
+            return ""
         if (
-            self._buffer_size_bytes(shape, dtype, is_sequence=is_sequence)
+            self._buffer_size_bytes(
+                shape,
+                dtype,
+                dim_names=dim_names,
+                is_sequence=is_sequence,
+            )
             > self._large_temp_threshold_bytes
         ):
             return "static "
@@ -2032,6 +2098,50 @@ class CEmitter:
         return CEmitter._buffer_size_bytes(
             temp.shape, temp.dtype, is_sequence=temp.is_sequence
         )
+
+    def _temp_buffer_uses_heap(
+        self,
+        temp: TempBuffer,
+        dim_names: Mapping[int, CodegenDim] | None = None,
+    ) -> bool:
+        if temp.is_sequence:
+            return False
+        return (
+            self._buffer_size_bytes(
+                temp.shape,
+                temp.dtype,
+                dim_names=dim_names,
+                is_sequence=temp.is_sequence,
+            )
+            > self._large_temp_threshold_bytes
+        )
+
+    def _heap_temp_buffer_lines(
+        self,
+        temp: TempBuffer,
+        dim_names: Mapping[int, CodegenDim] | None = None,
+    ) -> list[str]:
+        dim_names = dim_names or {}
+        shape = self._codegen_shape(temp.shape)
+        shape_exprs = [self._dim_expr(dim_names.get(index, dim)) for index, dim in enumerate(shape)]
+        suffix = ""
+        if len(shape_exprs) > 1:
+            suffix = "".join(f"[{expr}]" for expr in shape_exprs[1:])
+        if temp.dtype == ScalarType.STRING:
+            suffix += "[EMX_STRING_MAX_LEN]"
+        c_type = temp.dtype.c_type
+        if len(shape_exprs) <= 1:
+            decl = f"{c_type} *{temp.name}"
+            alloc = f"malloc(sizeof(*{temp.name}) * {shape_exprs[0] if shape_exprs else 1})"
+        else:
+            decl = f"{c_type} (*{temp.name}){suffix}"
+            alloc = f"malloc(sizeof(*{temp.name}) * {shape_exprs[0]})"
+        return [
+            f"{decl} = {alloc};",
+            f"if ({temp.name} == NULL) {{",
+            f"        return;",
+            "    }",
+        ]
 
     def _temp_buffers(
         self, model: LoweredModel, *, reserved_names: set[str] | None = None
@@ -2619,10 +2729,33 @@ class CEmitter:
             suffix += "[EMX_STRING_MAX_LEN]"
         return suffix
 
+    @staticmethod
+    def _dim_expr(dim: int | CodegenDim) -> str:
+        return str(dim)
+
+    @staticmethod
+    def _dim_expected_size(dim: int | CodegenDim) -> int:
+        if isinstance(dim, CodegenDim):
+            return dim.expected_size
+        return int(dim)
+
+    @staticmethod
+    def _shape_with_expected_sizes(
+        shape: tuple[int, ...],
+        dim_names: Mapping[int, CodegenDim] | None = None,
+    ) -> tuple[int, ...]:
+        dim_names = dim_names or {}
+        return tuple(
+            dim_names.get(index, dim).expected_size
+            if index in dim_names
+            else dim
+            for index, dim in enumerate(shape)
+        )
+
     def _param_array_suffix(
         self,
         shape: tuple[int, ...],
-        dim_names: Mapping[int, str] | None = None,
+        dim_names: Mapping[int, CodegenDim] | None = None,
         *,
         use_restrict: bool = False,
         dtype: ScalarType | None = None,
@@ -2631,15 +2764,17 @@ class CEmitter:
         dim_names = dim_names or {}
         if not (self._restrict_arrays and use_restrict):
             suffix = "".join(
-                f"[{dim_names.get(index, dim)}]" for index, dim in enumerate(shape)
+                f"[{self._dim_expr(dim_names.get(index, dim))}]"
+                for index, dim in enumerate(shape)
             )
             if dtype == ScalarType.STRING:
                 suffix += "[EMX_STRING_MAX_LEN]"
             return suffix
         first, *rest = shape
-        first_dim = dim_names.get(0, first)
+        first_dim = self._dim_expr(dim_names.get(0, first))
         rest_dims = "".join(
-            f"[{dim_names.get(index + 1, dim)}]" for index, dim in enumerate(rest)
+            f"[{self._dim_expr(dim_names.get(index + 1, dim))}]"
+            for index, dim in enumerate(rest)
         )
         suffix = f"[restrict {first_dim}]{rest_dims}"
         if dtype == ScalarType.STRING:
@@ -2679,14 +2814,14 @@ class CEmitter:
         variable_dim_outputs: Mapping[int, Mapping[int, str]] | None,
     ) -> tuple[
         list[str],
-        dict[int, dict[int, str]],
-        dict[int, dict[int, str]],
+        dict[int, dict[int, CodegenDim]],
+        dict[int, dict[int, CodegenDim]],
         dict[str, int],
     ]:
         variable_dim_inputs = variable_dim_inputs or {}
         variable_dim_outputs = variable_dim_outputs or {}
         dim_order: list[str] = []
-        dim_vars: dict[tuple[str, int, int], str] = {}
+        dim_vars: dict[tuple[str, int, int], CodegenDim] = {}
         dim_values: dict[str, int] = {}
         reserved_names = set(model.input_names) | set(model.output_names)
         reserved_names.update(
@@ -2719,29 +2854,29 @@ class CEmitter:
             dim_index: int,
             dim_name: str,
             dim_value: int,
-        ) -> str:
+        ) -> CodegenDim:
             key = (kind, tensor_index, dim_index)
             dim_name = _unique_dim_name(dim_name)
+            expected_size = dim_value if dim_value > 1 else CodegenDim(dim_name).expected_size
             if key not in dim_vars:
-                dim_vars[key] = dim_name
+                dim_ref = CodegenDim(dim_name, expected_size)
+                dim_vars[key] = dim_ref
                 if dim_name not in dim_order:
                     dim_order.append(dim_name)
-                dim_values.setdefault(dim_name, dim_value)
+                dim_values.setdefault(dim_name, expected_size)
             else:
-                if dim_values[dim_name] != dim_value:
-                    raise CodegenError(
-                        "Variable dimension values must be consistent, "
-                        f"got {dim_values[dim_name]} and {dim_value} for {dim_name}"
-                    )
-            return dim_name
+                expected_size = max(dim_values[dim_name], expected_size)
+                dim_values[dim_name] = expected_size
+                dim_vars[key] = CodegenDim(dim_name, expected_size)
+            return dim_vars[key]
 
         def _build_dim_names(
             kind: str,
             tensor_index: int,
             shape: tuple[int, ...],
             variable_dims: Mapping[int, Mapping[int, str]],
-        ) -> dict[int, str]:
-            dim_names: dict[int, str] = {}
+        ) -> dict[int, CodegenDim]:
+            dim_names: dict[int, CodegenDim] = {}
             for dim_index, dim_name in variable_dims.get(tensor_index, {}).items():
                 if dim_index < 0 or dim_index >= len(shape):
                     raise CodegenError(
@@ -2756,13 +2891,13 @@ class CEmitter:
                 )
             return dim_names
 
-        input_dim_names: dict[int, dict[int, str]] = {}
+        input_dim_names: dict[int, dict[int, CodegenDim]] = {}
         for index, shape in enumerate(model.input_shapes):
             dim_names = _build_dim_names("input", index, shape, variable_dim_inputs)
             if dim_names:
                 input_dim_names[index] = dim_names
 
-        output_dim_names: dict[int, dict[int, str]] = {}
+        output_dim_names: dict[int, dict[int, CodegenDim]] = {}
         for index, shape in enumerate(model.output_shapes):
             dim_names = _build_dim_names("output", index, shape, variable_dim_outputs)
             if dim_names:
@@ -2789,17 +2924,58 @@ class CEmitter:
     def _build_tensor_dim_names(
         self,
         model: LoweredModel,
-        input_dim_names: Mapping[int, Mapping[int, str]],
-        output_dim_names: Mapping[int, Mapping[int, str]],
-    ) -> dict[str, dict[int, str]]:
-        dim_names: dict[str, dict[int, str]] = {}
+        input_dim_names: Mapping[int, Mapping[int, CodegenDim]],
+        output_dim_names: Mapping[int, Mapping[int, CodegenDim]],
+        name_map: Mapping[str, str] | None = None,
+    ) -> dict[str, dict[int, CodegenDim]]:
+        dim_names: dict[str, dict[int, CodegenDim]] = {}
+        symbol_dims: dict[str, CodegenDim] = {}
+
+        def _remember_symbol_dims(
+            value_types: Sequence[ValueType],
+            per_tensor_dim_names: Mapping[int, Mapping[int, CodegenDim]],
+        ) -> None:
+            for index, value_type in enumerate(value_types):
+                if not isinstance(value_type, TensorType):
+                    continue
+                tensor_dim_names = per_tensor_dim_names.get(index, {})
+                for axis, dim_param in enumerate(value_type.dim_params):
+                    dim_ref = tensor_dim_names.get(axis)
+                    if dim_param and dim_ref is not None:
+                        symbol_dims.setdefault(dim_param, dim_ref)
+
+        _remember_symbol_dims(model.input_types, input_dim_names)
+        _remember_symbol_dims(model.output_types, output_dim_names)
+
         for index, name in enumerate(model.input_names):
             if index in input_dim_names:
                 dim_names[name] = dict(input_dim_names[index])
         for index, name in enumerate(model.output_names):
             if index in output_dim_names:
                 dim_names[name] = dict(output_dim_names[index])
+        for value in model.op_context.graph.inputs + model.op_context.graph.values + model.op_context.graph.outputs:
+            if not isinstance(value.type, TensorType):
+                continue
+            tensor_dim_names = {
+                axis: symbol_dims[dim_param]
+                for axis, dim_param in enumerate(value.type.dim_params)
+                if dim_param and dim_param in symbol_dims
+            }
+            if not tensor_dim_names:
+                continue
+            mapped_name = name_map.get(value.name, value.name) if name_map else value.name
+            dim_names.setdefault(mapped_name, {}).update(tensor_dim_names)
         return dim_names
+
+    @staticmethod
+    def _copy_temp_buffer_dim_names(
+        tensor_dim_names: dict[str, dict[int, CodegenDim]],
+        temp_name_map: Mapping[str, str],
+    ) -> None:
+        for original_name, temp_name in temp_name_map.items():
+            dim_names = tensor_dim_names.get(original_name)
+            if dim_names:
+                tensor_dim_names[temp_name] = dict(dim_names)
 
     @staticmethod
     def _loop_vars(shape: tuple[int, ...]) -> tuple[str, ...]:
@@ -2898,6 +3074,8 @@ class CEmitter:
         testbench_output_format: str,
         testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None = None,
         testbench_optional_inputs: Mapping[str, bool] | None = None,
+        input_dim_names: Mapping[int, Mapping[int, CodegenDim]],
+        output_dim_names: Mapping[int, Mapping[int, CodegenDim]],
         dim_order: Sequence[str],
         dim_values: Mapping[str, int],
         weight_data_filename: str,
@@ -2910,20 +3088,24 @@ class CEmitter:
         rng_requires_double = False
         rng_requires_i64 = False
         inputs = []
-        for name, shape, count, dtype, optional_flag, value_type in zip(
+        for index, (name, shape, count, dtype, optional_flag, value_type) in enumerate(
+            zip(
             model.input_names,
             model.input_shapes,
             input_counts,
             model.input_dtypes,
             model.input_optional_names,
             model.input_types,
+            )
         ):
             json_name = self._ctx_name(name)
-            codegen_shape = self._codegen_shape(shape)
+            dim_names = input_dim_names.get(index)
+            codegen_shape = self._shape_dim_exprs(shape, dim_names)
+            concrete_codegen_shape = self._shape_with_expected_sizes(shape, dim_names)
             is_sequence_input = isinstance(value_type, SequenceType)
             constant_values = testbench_inputs.get(name)
             if is_sequence_input and isinstance(constant_values, np.ndarray):
-                target_shape = (int(constant_values.shape[0]), *codegen_shape)
+                target_shape = (int(constant_values.shape[0]), *concrete_codegen_shape)
                 if constant_values.shape != target_shape:
                     normalized = np.zeros(target_shape, dtype=constant_values.dtype)
                     if constant_values.ndim == len(target_shape):
@@ -2935,7 +3117,7 @@ class CEmitter:
                         )
                         normalized[overlap] = constant_values[overlap]
                     constant_values = normalized
-            loop_shape = (1,) if not shape else shape
+            loop_shape = (1,) if not codegen_shape else codegen_shape
             if is_sequence_input:
                 if (
                     isinstance(constant_values, np.ndarray)
@@ -2991,12 +3173,15 @@ class CEmitter:
                 else None
             )
             input_array_suffix = (
-                f"[EMX_SEQUENCE_MAX_LEN]{self._array_suffix(codegen_shape, dtype)}"
+                f"[EMX_SEQUENCE_MAX_LEN]{self._param_array_suffix(shape, dim_names, dtype=dtype)}"
                 if is_sequence_input
-                else self._array_suffix(codegen_shape, dtype)
+                else self._param_array_suffix(shape, dim_names, dtype=dtype)
             )
             input_storage = self._local_array_storage(
-                codegen_shape, dtype, is_sequence=is_sequence_input
+                shape,
+                dtype,
+                dim_names=dim_names,
+                is_sequence=is_sequence_input,
             )
             inputs.append(
                 {
@@ -3027,27 +3212,33 @@ class CEmitter:
                 }
             )
         outputs = []
-        for name, shape, dtype, value_type, optional_flag in zip(
+        for index, (name, shape, dtype, value_type, optional_flag) in enumerate(
+            zip(
             model.output_names,
             model.output_shapes,
             model.output_dtypes,
             model.output_types,
             model.output_optional_names,
+            )
         ):
             json_name = self._ctx_name(name)
-            codegen_shape = self._codegen_shape(shape)
+            dim_names = output_dim_names.get(index)
+            codegen_shape = self._shape_dim_exprs(shape, dim_names)
             is_sequence_output = isinstance(value_type, SequenceType)
-            loop_shape = (1,) if not shape else shape
+            loop_shape = (1,) if not codegen_shape else codegen_shape
             if is_sequence_output:
                 loop_shape = (32, *loop_shape)
             output_loop_vars = self._loop_vars(loop_shape)
             output_array_suffix = (
-                f"[EMX_SEQUENCE_MAX_LEN]{self._array_suffix(codegen_shape, dtype)}"
+                f"[EMX_SEQUENCE_MAX_LEN]{self._param_array_suffix(shape, dim_names, dtype=dtype)}"
                 if is_sequence_output
-                else self._array_suffix(codegen_shape, dtype)
+                else self._param_array_suffix(shape, dim_names, dtype=dtype)
             )
             output_storage = self._local_array_storage(
-                codegen_shape, dtype, is_sequence=is_sequence_output
+                shape,
+                dtype,
+                dim_names=dim_names,
+                is_sequence=is_sequence_output,
             )
             outputs.append(
                 {
