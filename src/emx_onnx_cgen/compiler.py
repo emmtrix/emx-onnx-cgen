@@ -84,6 +84,7 @@ class CompilerOptions:
     restrict_arrays: bool = True
     fp32_accumulation_strategy: str = "simple"
     fp16_accumulation_strategy: str = "fp32"
+    testbench_inputs: Mapping[str, tuple[float | int | bool, ...] | np.ndarray] | None = None
     testbench_optional_inputs: Mapping[str, bool] | None = None
     testbench_output_format: str = "json"
     shape_inference_inputs: Mapping[str, np.ndarray] | None = None
@@ -220,6 +221,7 @@ class Compiler:
                 emit_testbench=self._options.emit_testbench,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
                 testbench_output_format=self._options.testbench_output_format,
+                testbench_inputs=self._options.testbench_inputs,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
             ),
@@ -231,6 +233,7 @@ class Compiler:
             "emit_testbench",
             lambda: self._emitter.emit_testbench(
                 ctx.lowered,
+                testbench_inputs=self._options.testbench_inputs,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
                 testbench_output_format=self._options.testbench_output_format,
                 variable_dim_inputs=ctx.variable_dim_inputs,
@@ -258,6 +261,7 @@ class Compiler:
                 emit_testbench=self._options.emit_testbench,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
                 testbench_output_format=self._options.testbench_output_format,
+                testbench_inputs=self._options.testbench_inputs,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
             ),
@@ -274,6 +278,7 @@ class Compiler:
                 emit_testbench=self._options.emit_testbench,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
                 testbench_output_format=self._options.testbench_output_format,
+                testbench_inputs=self._options.testbench_inputs,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
             ),
@@ -295,6 +300,7 @@ class Compiler:
                 emit_testbench=self._options.emit_testbench,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
                 testbench_output_format=self._options.testbench_output_format,
+                testbench_inputs=self._options.testbench_inputs,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
             ),
@@ -394,14 +400,22 @@ class Compiler:
     def _collect_variable_dims(
         graph: Graph,
     ) -> tuple[dict[int, dict[int, str]], dict[int, dict[int, str]]]:
+        def tensor_type(value: Value) -> TensorType | None:
+            if isinstance(value.type, TensorType):
+                return value.type
+            if isinstance(value.type, SequenceType):
+                return value.type.elem
+            return None
+
         def collect(values: tuple[Value, ...]) -> dict[int, dict[int, str]]:
             dim_map: dict[int, dict[int, str]] = {}
             for index, value in enumerate(values):
-                if not isinstance(value.type, TensorType):
+                value_tensor_type = tensor_type(value)
+                if value_tensor_type is None:
                     continue
                 dims = {
                     dim_index: dim_param
-                    for dim_index, dim_param in enumerate(value.type.dim_params)
+                    for dim_index, dim_param in enumerate(value_tensor_type.dim_params)
                     if dim_param
                 }
                 if dims:
@@ -692,6 +706,8 @@ class Compiler:
         check_graph_integrity(graph)
         for value in graph.outputs:
             if isinstance(value.type, TensorType):
+                if any(value.type.dim_params):
+                    continue
                 shape_product(value.type.shape)
 
     def _collect_io_specs(

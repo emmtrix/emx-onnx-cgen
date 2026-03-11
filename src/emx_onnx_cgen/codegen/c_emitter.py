@@ -1911,13 +1911,24 @@ class CEmitter:
             c_type = temp.dtype.c_type
             dim_names = self.dim_names_for(temp.name)
             if temp.is_sequence:
+                suffix = self._param_array_suffix(
+                    temp.shape,
+                    dim_names,
+                    dtype=temp.dtype,
+                )
                 storage = (
                     "static "
-                    if self._temp_buffer_size_bytes(temp) > self._large_temp_threshold_bytes
+                    if self._buffer_size_bytes(
+                        temp.shape,
+                        temp.dtype,
+                        dim_names=dim_names,
+                        is_sequence=temp.is_sequence,
+                    )
+                    > self._large_temp_threshold_bytes
                     else ""
                 )
                 lines.append(
-                    f"    {storage}{c_type} {temp.name}[EMX_SEQUENCE_MAX_LEN]{self._array_suffix(temp.shape, temp.dtype)};"
+                    f"    {storage}{c_type} {temp.name}[EMX_SEQUENCE_MAX_LEN]{suffix};"
                 )
                 lines.append(f"    idx_t {temp.name}__count = 0;")
             elif self._temp_buffer_uses_heap(temp, dim_names):
@@ -1988,7 +1999,11 @@ class CEmitter:
             )
         ):
             if isinstance(value_type, SequenceType):
-                elem_suffix = self._array_suffix(shape, dtype)
+                elem_suffix = self._param_array_suffix(
+                    shape,
+                    input_dim_names.get(index),
+                    dtype=dtype,
+                )
                 params.append(
                     f"const {dtype.c_type} {name}[EMX_SEQUENCE_MAX_LEN]{elem_suffix}"
                 )
@@ -2013,7 +2028,11 @@ class CEmitter:
             )
         ):
             if isinstance(value_type, SequenceType):
-                elem_suffix = self._array_suffix(shape, dtype)
+                elem_suffix = self._param_array_suffix(
+                    shape,
+                    output_dim_names.get(index),
+                    dtype=dtype,
+                )
                 params.append(
                     f"{dtype.c_type} {name}[EMX_SEQUENCE_MAX_LEN]{elem_suffix}"
                 )
@@ -2931,15 +2950,23 @@ class CEmitter:
         dim_names: dict[str, dict[int, CodegenDim]] = {}
         symbol_dims: dict[str, CodegenDim] = {}
 
+        def _tensor_type(value_type: ValueType) -> TensorType | None:
+            if isinstance(value_type, TensorType):
+                return value_type
+            if isinstance(value_type, SequenceType):
+                return value_type.elem
+            return None
+
         def _remember_symbol_dims(
             value_types: Sequence[ValueType],
             per_tensor_dim_names: Mapping[int, Mapping[int, CodegenDim]],
         ) -> None:
             for index, value_type in enumerate(value_types):
-                if not isinstance(value_type, TensorType):
+                tensor_type = _tensor_type(value_type)
+                if tensor_type is None:
                     continue
                 tensor_dim_names = per_tensor_dim_names.get(index, {})
-                for axis, dim_param in enumerate(value_type.dim_params):
+                for axis, dim_param in enumerate(tensor_type.dim_params):
                     dim_ref = tensor_dim_names.get(axis)
                     if dim_param and dim_ref is not None:
                         symbol_dims.setdefault(dim_param, dim_ref)
@@ -2954,11 +2981,12 @@ class CEmitter:
             if index in output_dim_names:
                 dim_names[name] = dict(output_dim_names[index])
         for value in model.op_context.graph.inputs + model.op_context.graph.values + model.op_context.graph.outputs:
-            if not isinstance(value.type, TensorType):
+            tensor_type = _tensor_type(value.type)
+            if tensor_type is None:
                 continue
             tensor_dim_names = {
                 axis: symbol_dims[dim_param]
-                for axis, dim_param in enumerate(value.type.dim_params)
+                for axis, dim_param in enumerate(tensor_type.dim_params)
                 if dim_param and dim_param in symbol_dims
             }
             if not tensor_dim_names:
@@ -3080,30 +3108,58 @@ class CEmitter:
         dim_values: Mapping[str, int],
         weight_data_filename: str,
     ) -> str:
-        input_counts = tuple(self._element_count(shape) for shape in model.input_shapes)
+        def concrete_shape_for_testbench(
+            shape: tuple[int, ...],
+            dim_names: Mapping[int, CodegenDim] | None,
+        ) -> tuple[int, ...]:
+            dim_names = dim_names or {}
+            resolved: list[int] = []
+            for axis, dim in enumerate(shape):
+                dim_ref = dim_names.get(axis)
+                if dim_ref is not None:
+                    resolved.append(dim_values.get(dim_ref.name, dim_ref.expected_size))
+                elif dim < 0:
+                    resolved.append(CodegenDim(f"dim_{axis}").expected_size)
+                else:
+                    resolved.append(dim)
+            return tuple(resolved)
+
         testbench_inputs = testbench_inputs or {}
         testbench_optional_inputs = testbench_optional_inputs or {}
+        observed_dim_values: dict[str, int] = {}
         rng_requires_u64 = False
         rng_requires_float = False
         rng_requires_double = False
         rng_requires_i64 = False
         inputs = []
-        for index, (name, shape, count, dtype, optional_flag, value_type) in enumerate(
+        for index, (name, shape, dtype, optional_flag, value_type) in enumerate(
             zip(
-            model.input_names,
-            model.input_shapes,
-            input_counts,
-            model.input_dtypes,
-            model.input_optional_names,
-            model.input_types,
+                model.input_names,
+                model.input_shapes,
+                model.input_dtypes,
+                model.input_optional_names,
+                model.input_types,
             )
         ):
             json_name = self._ctx_name(name)
-            dim_names = input_dim_names.get(index)
-            codegen_shape = self._shape_dim_exprs(shape, dim_names)
-            concrete_codegen_shape = self._shape_with_expected_sizes(shape, dim_names)
+            dim_names = input_dim_names.get(index) or self.dim_names_for(name)
             is_sequence_input = isinstance(value_type, SequenceType)
             constant_values = testbench_inputs.get(name)
+            if (
+                is_sequence_input
+                and isinstance(constant_values, np.ndarray)
+                and constant_values.ndim >= 1
+                and dim_names
+            ):
+                for axis, actual_dim in enumerate(constant_values.shape[1:]):
+                    dim_ref = dim_names.get(axis)
+                    if dim_ref is not None:
+                        observed_dim_values[dim_ref.name] = max(
+                            observed_dim_values.get(dim_ref.name, 0),
+                            int(actual_dim),
+                        )
+                        dim_values[dim_ref.name] = observed_dim_values[dim_ref.name]
+            concrete_codegen_shape = concrete_shape_for_testbench(shape, dim_names)
             if is_sequence_input and isinstance(constant_values, np.ndarray):
                 target_shape = (int(constant_values.shape[0]), *concrete_codegen_shape)
                 if constant_values.shape != target_shape:
@@ -3112,12 +3168,12 @@ class CEmitter:
                         overlap = (slice(0, target_shape[0]),) + tuple(
                             slice(0, min(cur_dim, tgt_dim))
                             for cur_dim, tgt_dim in zip(
-                                constant_values.shape[1:], codegen_shape
+                                constant_values.shape[1:], concrete_codegen_shape
                             )
                         )
                         normalized[overlap] = constant_values[overlap]
                     constant_values = normalized
-            loop_shape = (1,) if not codegen_shape else codegen_shape
+            loop_shape = (1,) if not concrete_codegen_shape else concrete_codegen_shape
             if is_sequence_input:
                 if (
                     isinstance(constant_values, np.ndarray)
@@ -3173,22 +3229,21 @@ class CEmitter:
                 else None
             )
             input_array_suffix = (
-                f"[EMX_SEQUENCE_MAX_LEN]{self._param_array_suffix(shape, dim_names, dtype=dtype)}"
+                f"[EMX_SEQUENCE_MAX_LEN]{self._array_suffix(concrete_codegen_shape, dtype)}"
                 if is_sequence_input
-                else self._param_array_suffix(shape, dim_names, dtype=dtype)
+                else self._array_suffix(concrete_codegen_shape, dtype)
             )
             input_storage = self._local_array_storage(
-                shape,
+                concrete_codegen_shape,
                 dtype,
-                dim_names=dim_names,
                 is_sequence=is_sequence_input,
             )
             inputs.append(
                 {
                     "name": name,
                     "shape": loop_shape,
-                    "shape_literal": ",".join(str(dim) for dim in shape),
-                    "count": count,
+                    "shape_literal": ",".join(str(dim) for dim in concrete_codegen_shape),
+                    "count": self._element_count(concrete_codegen_shape),
                     "array_suffix": input_array_suffix,
                     "array_index_expr": "".join(f"[{var}]" for var in loop_vars),
                     "loop_vars": loop_vars,
@@ -3222,30 +3277,29 @@ class CEmitter:
             )
         ):
             json_name = self._ctx_name(name)
-            dim_names = output_dim_names.get(index)
-            codegen_shape = self._shape_dim_exprs(shape, dim_names)
+            dim_names = output_dim_names.get(index) or self.dim_names_for(name)
+            concrete_codegen_shape = concrete_shape_for_testbench(shape, dim_names)
             is_sequence_output = isinstance(value_type, SequenceType)
-            loop_shape = (1,) if not codegen_shape else codegen_shape
+            loop_shape = (1,) if not concrete_codegen_shape else concrete_codegen_shape
             if is_sequence_output:
                 loop_shape = (32, *loop_shape)
             output_loop_vars = self._loop_vars(loop_shape)
             output_array_suffix = (
-                f"[EMX_SEQUENCE_MAX_LEN]{self._param_array_suffix(shape, dim_names, dtype=dtype)}"
+                f"[EMX_SEQUENCE_MAX_LEN]{self._array_suffix(concrete_codegen_shape, dtype)}"
                 if is_sequence_output
-                else self._param_array_suffix(shape, dim_names, dtype=dtype)
+                else self._array_suffix(concrete_codegen_shape, dtype)
             )
             output_storage = self._local_array_storage(
-                shape,
+                concrete_codegen_shape,
                 dtype,
-                dim_names=dim_names,
                 is_sequence=is_sequence_output,
             )
             outputs.append(
                 {
                     "name": name,
                     "shape": loop_shape,
-                    "shape_literal": ",".join(str(dim) for dim in shape),
-                    "count": self._element_count(shape),
+                    "shape_literal": ",".join(str(dim) for dim in concrete_codegen_shape),
+                    "count": self._element_count(concrete_codegen_shape),
                     "array_suffix": output_array_suffix,
                     "array_index_expr": "".join(f"[{var}]" for var in output_loop_vars),
                     "loop_vars": output_loop_vars,

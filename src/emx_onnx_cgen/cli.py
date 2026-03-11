@@ -1707,6 +1707,7 @@ def _verify_model(
             truncate_weights_after=args.truncate_weights_after,
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,
+            testbench_inputs=testbench_inputs,
             testbench_optional_inputs=None,
             shape_inference_inputs=shape_inference_inputs,
             timings=timings,
@@ -1715,15 +1716,23 @@ def _verify_model(
         generated, weight_data = compiler.compile_with_weight_data(model)
         if testbench_inputs is not None:
             compile_ctx = compiler._build_compile_context(model)
-            lowered_sequence_input_shapes = {
-                name: tuple(shape)
-                for name, shape, value_type in zip(
-                    compile_ctx.lowered.input_names,
-                    compile_ctx.lowered.input_shapes,
-                    compile_ctx.lowered.input_types,
-                )
-                if not isinstance(value_type, TensorType)
-            }
+            lowered_sequence_input_shapes = {}
+            for name, shape, value_type in zip(
+                compile_ctx.lowered.input_names,
+                compile_ctx.lowered.input_shapes,
+                compile_ctx.lowered.input_types,
+            ):
+                if isinstance(value_type, TensorType):
+                    continue
+                concrete_shape = tuple(shape)
+                input_data = testbench_inputs.get(name)
+                if (
+                    isinstance(input_data, np.ndarray)
+                    and input_data.ndim >= 1
+                    and any(dim < 0 for dim in concrete_shape)
+                ):
+                    concrete_shape = tuple(int(dim) for dim in input_data.shape[1:])
+                lowered_sequence_input_shapes[name] = concrete_shape
         active_reporter.step_ok(codegen_started)
         if args.verbose:
             _report_codegen_timings(active_reporter, timings=timings)

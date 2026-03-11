@@ -21,6 +21,9 @@ from .ir.model import (
 )
 
 
+_UNKNOWN_DIM = -1
+
+
 def _normalize_initializer_data(dtype: ScalarType, data: object) -> np.ndarray:
     if isinstance(data, (onnx.TensorProto, onnx.SparseTensorProto)):
         array = numpy_helper.to_array(data)
@@ -76,11 +79,11 @@ def _tensor_type_from_proto(
         dim_params.append(dim_param or None)
         if not dim.HasField("dim_value"):
             if dim_param:
-                shape.append(1)
+                shape.append(_UNKNOWN_DIM)
                 continue
             synthetic_dim_param = f"{name}_dim_{dim_index}"
             dim_params[-1] = synthetic_dim_param
-            shape.append(1)
+            shape.append(_UNKNOWN_DIM)
             continue
         shape.append(dim.dim_value)
     return TensorType(

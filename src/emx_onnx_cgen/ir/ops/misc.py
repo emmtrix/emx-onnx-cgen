@@ -1492,7 +1492,6 @@ class ReshapeOp(RenderableOpBase):
                 c_type=c_type,
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
-                element_count=CEmitterCompat.element_count(output_shape_raw),
                 output_shape=output_shape,
                 loop_vars=loop_vars,
             )
@@ -4526,12 +4525,13 @@ class LoopSequenceMapOp(RenderableOpBase):
         }
         for idx, name in enumerate(self.input_sequences):
             seq_dtype = emitter.ctx_sequence_elem_type(name).dtype
-            seq_shape = emitter.ctx_sequence_elem_type(name).shape
+            seq_shape = emitter.sequence_storage_shape(name)
+            seq_dim_names = emitter.dim_names_for(name)
             decls.append(
                 (
                     params[f"input_sequence_{idx}"],
                     seq_dtype.c_type,
-                    f"[EMX_SEQUENCE_MAX_LEN]{emitter.param_array_suffix(seq_shape)}",
+                    f"[EMX_SEQUENCE_MAX_LEN]{emitter.param_array_suffix(seq_shape, seq_dim_names)}",
                     True,
                 )
             )
@@ -4551,12 +4551,13 @@ class LoopSequenceMapOp(RenderableOpBase):
             )
         for idx, name in enumerate(self.output_sequences):
             seq_dtype = emitter.ctx_sequence_elem_type(name).dtype
-            seq_shape = emitter.ctx_sequence_elem_type(name).shape
+            seq_shape = emitter.sequence_storage_shape(name)
+            seq_dim_names = emitter.dim_names_for(name)
             decls.append(
                 (
                     params[f"output_sequence_{idx}"],
                     seq_dtype.c_type,
-                    f"[EMX_SEQUENCE_MAX_LEN]{emitter.param_array_suffix(seq_shape)}",
+                    f"[EMX_SEQUENCE_MAX_LEN]{emitter.param_array_suffix(seq_shape, seq_dim_names)}",
                     False,
                 )
             )
@@ -4588,14 +4589,25 @@ class LoopSequenceMapOp(RenderableOpBase):
             in1 = self.output_input1[out_idx]
             in0_seq = self.output_input0_is_sequence[out_idx]
             in1_seq = self.output_input1_is_sequence[out_idx]
+            output_elem_shape = emitter.sequence_storage_shape(out_name)
+            output_elem_dim_names = emitter.dim_names_for(out_name)
             elem_count = CEmitterCompat.element_count_expr(
-                self.output_elem_shapes[out_idx]
+                CEmitterCompat.shape_dim_exprs(
+                    output_elem_shape,
+                    output_elem_dim_names,
+                )
             )
             if kind == "shape":
                 source_shape = (
-                    emitter.ctx_sequence_elem_type(in0).shape
+                    CEmitterCompat.shape_dim_exprs(
+                        emitter.sequence_storage_shape(in0),
+                        emitter.dim_names_for(in0),
+                    )
                     if in0_seq
-                    else emitter.ctx_shape(in0)
+                    else CEmitterCompat.shape_dim_exprs(
+                        emitter.ctx_shape(in0),
+                        emitter.dim_names_for(in0),
+                    )
                 )
                 for dim_idx, dim in enumerate(source_shape):
                     lines.append(f"        {out_param}[(idx_t)i][{dim_idx}] = {dim};")
