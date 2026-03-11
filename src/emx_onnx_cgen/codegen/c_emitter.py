@@ -2139,7 +2139,7 @@ class CEmitter:
         return [
             f"{decl} = {alloc};",
             f"if ({temp.name} == NULL) {{",
-            f"        return;",
+            "        return;",
             "    }",
         ]
 
