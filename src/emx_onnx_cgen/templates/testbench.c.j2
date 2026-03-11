@@ -293,10 +293,10 @@ static int testbench_run(const char *input_path) {
     _Bool {{ input.optional_flag_name }} = {{ "1" if input.optional_present else "0" }};
 {% endif %}
 {% if input.is_sequence %}
-    {{ input.c_type }} {{ input.name }}{{ input.array_suffix }};
+    {{ input.storage }}{{ input.c_type }} {{ input.name }}{{ input.array_suffix }};
     idx_t {{ input.count_name }} = {{ input.count_value }};
 {% else %}
-    {{ input.c_type }} {{ input.name }}{{ input.array_suffix }};
+    {{ input.storage }}{{ input.c_type }} {{ input.name }}{{ input.array_suffix }};
 {% endif %}
 {% endfor %}
 
@@ -311,10 +311,10 @@ static int testbench_run(const char *input_path) {
 
 {% for output in outputs %}
 {% if output.is_sequence %}
-    {{ output.c_type }} {{ output.name }}{{ output.array_suffix }};
+    {{ output.storage }}{{ output.c_type }} {{ output.name }}{{ output.array_suffix }};
     idx_t {{ output.count_name }} = 0;
 {% else %}
-    {{ output.c_type }} {{ output.name }}{{ output.array_suffix }};
+    {{ output.storage }}{{ output.c_type }} {{ output.name }}{{ output.array_suffix }};
 {% endif %}
 {% if output.optional_flag_name %}
     _Bool {{ output.optional_flag_name }} = 0;
