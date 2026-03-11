@@ -69,9 +69,6 @@ This list contains ONNX backend tests that failed in the full backend run even t
 | [ ] | `src/emx_onnx_cgen/onnx_backend/test_suite.py::OnnxBackendNodeModelTest::test_reduce_log_sum_exp_negative_axes_keepdims_example_expanded_cpu` | [R10](#r10-reducelogsum-and-reducelogsumexp-shape-lowering-bugs) |
 | [ ] | `src/emx_onnx_cgen/onnx_backend/test_suite.py::OnnxBackendNodeModelTest::test_reduce_log_sum_exp_negative_axes_keepdims_random_expanded_cpu` | [R10](#r10-reducelogsum-and-reducelogsumexp-shape-lowering-bugs) |
 | [ ] | `src/emx_onnx_cgen/onnx_backend/test_suite.py::OnnxBackendNodeModelTest::test_reduce_log_sum_negative_axes_expanded_cpu` | [R10](#r10-reducelogsum-and-reducelogsumexp-shape-lowering-bugs) |
-| [ ] | `src/emx_onnx_cgen/onnx_backend/test_suite.py::OnnxBackendNodeModelTest::test_regex_full_match_basic_cpu` | [R11](#r11-regexfullmatch-optional-dependency-missing) |
-| [ ] | `src/emx_onnx_cgen/onnx_backend/test_suite.py::OnnxBackendNodeModelTest::test_regex_full_match_email_domain_cpu` | [R11](#r11-regexfullmatch-optional-dependency-missing) |
-| [ ] | `src/emx_onnx_cgen/onnx_backend/test_suite.py::OnnxBackendNodeModelTest::test_regex_full_match_empty_cpu` | [R11](#r11-regexfullmatch-optional-dependency-missing) |
 | [ ] | `src/emx_onnx_cgen/onnx_backend/test_suite.py::OnnxBackendNodeModelTest::test_sequence_insert_at_back_cpu` | [R13](#r13-jagged-sequence-elements-vs-fixed-lowered-shape) |
 | [ ] | `src/emx_onnx_cgen/onnx_backend/test_suite.py::OnnxBackendNodeModelTest::test_sequence_insert_at_front_cpu` | [R13](#r13-jagged-sequence-elements-vs-fixed-lowered-shape) |
 | [ ] | `src/emx_onnx_cgen/onnx_backend/test_suite.py::OnnxBackendNodeModelTest::test_sequence_map_add_1_sequence_1_tensor_cpu` | [R14](#r14-prepare-only-compilation-collapses-dynamic-dims) |
@@ -133,10 +130,6 @@ These failures happen in lowering, typically with `CastLike input and output sha
 ### R10 `ReduceLogSum` and `ReduceLogSumExp` shape/lowering bugs
 
 This cluster is mixed: some cases already fail in lowering, while others run but return the wrong scalar/vector shape. The problem is in reduce lowering or generated operator behavior, not in backend input/output wiring.
-
-### R11 `RegexFullMatch` optional dependency missing
-
-`prepare()` fails because `RegexFullMatch` currently requires the optional `emx-regex-cgen` dependency.
 
 ### R12 Sequence element shape missing in model
 
