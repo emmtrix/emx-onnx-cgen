@@ -5,5 +5,5 @@
   "operators": [
     "ai.onnx.preview.training::Momentum"
   ],
-  "generated_checksum": "04853f170df34f965a8081e922537f1d824741a0f0dcf1b5aacefd34673db192"
+  "generated_checksum": "c88cc5675278dfc439016018e126479c4cdf1aa99ed593576bfa25c414fbc426"
 }

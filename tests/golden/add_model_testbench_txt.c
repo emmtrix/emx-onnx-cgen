@@ -215,8 +215,8 @@ float out[2][3][4]) {
 
 static int testbench_run(const char *input_path) {
 
-    static float a[2][3][4];
-    static float b[2][3][4];
+    float a[2][3][4];
+    float b[2][3][4];
 
     testbench_init_constant_input();
     if (input_path) {
@@ -227,7 +227,7 @@ static int testbench_run(const char *input_path) {
         testbench_fill_random_input(a, b);
     }
 
-    static float out[2][3][4];
+    float out[2][3][4];
 
     if (!model_load("model.bin")) {
         return 1;

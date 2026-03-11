@@ -188,7 +188,7 @@ float out[2][3]) {
 
 static int testbench_run(const char *input_path) {
 
-    static float in0[2][3];
+    float in0[2][3];
 
     testbench_init_constant_input();
     if (input_path) {
@@ -199,7 +199,7 @@ static int testbench_run(const char *input_path) {
         testbench_fill_random_input(in0);
     }
 
-    static float out[2][3];
+    float out[2][3];
 
     if (!large_weight_model_load("large_weight_model.bin")) {
         return 1;
