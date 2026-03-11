@@ -7,7 +7,12 @@ from typing import Sequence
 
 import pytest
 
-from .config import DEFAULT_TESTS, RUN_ALL_TESTS_ENV, SELECTED_TESTS_ENV, parse_selected_tests
+from .config import (
+    DEFAULT_TESTS,
+    RUN_ALL_TESTS_ENV,
+    SELECTED_TESTS_ENV,
+    parse_selected_tests,
+)
 
 
 def build_pytest_args(

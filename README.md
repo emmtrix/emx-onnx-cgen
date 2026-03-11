@@ -120,6 +120,8 @@ Install the package directly from PyPI (recommended):
 pip install emx-onnx-cgen
 ```
 
+Minimum Python version: **3.11**.
+
 Required at runtime (both `compile` and `verify`):
 
 - `onnx`

@@ -213,7 +213,9 @@ def _serialize_runtime_input(
     seq_items = _sequence_input_items(input_data, dtype=seq_dtype)
     seq_count = len(seq_items)
     handle.write(struct.pack("<i", seq_count))
-    elem_shape = lowered_sequence_input_shapes.get(value.name, tuple(seq_type.elem.shape))
+    elem_shape = lowered_sequence_input_shapes.get(
+        value.name, tuple(seq_type.elem.shape)
+    )
     normalized = np.zeros((32, *elem_shape), dtype=seq_dtype)
     limit = min(seq_count, 32)
     for idx in range(limit):

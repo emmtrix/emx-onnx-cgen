@@ -61,4 +61,6 @@ def selected_tests_from_env(
     raw_names = active_env.get(SELECTED_TESTS_ENV)
     if raw_names is None:
         return tuple(default_tests)
-    return parse_selected_tests(_split_test_names(raw_names), default_tests=default_tests)
+    return parse_selected_tests(
+        _split_test_names(raw_names), default_tests=default_tests
+    )
