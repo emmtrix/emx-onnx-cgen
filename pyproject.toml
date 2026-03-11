@@ -21,6 +21,9 @@ dependencies = [
 verify = [
     "onnxruntime",
 ]
+backend-tests = [
+    "pytest",
+]
 
 [project.urls]
 Homepage = "https://www.emmtrix.com/wiki/emmtrix_ONNX-to-C_Code_Generator"
@@ -29,6 +32,7 @@ Issues = "https://github.com/emmtrix/emx-onnx-cgen/issues"
 
 [project.scripts]
 emx-onnx-cgen = "emx_onnx_cgen.cli:main"
+emx-onnx-cgen-backend-test = "emx_onnx_cgen.onnx_backend.runner:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
