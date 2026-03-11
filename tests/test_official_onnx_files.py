@@ -96,6 +96,161 @@ MODEL_EXTRA_VERIFY_ARGS = {
     ),
 }
 
+MODELS_REQUIRING_SHAPE_INFERENCE_INPUTS = (
+    "onnx-org/onnx/backend/test/data/node/test_affine_grid_2d_align_corners_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_affine_grid_2d_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_affine_grid_3d_align_corners_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_affine_grid_3d_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_3d_attn_mask_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_3d_causal_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_softcap_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_with_past_and_present_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_3d_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_attn_mask_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_causal_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_scaled_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_softcap_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_with_past_and_present_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_3d_scaled_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_3d_softcap_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_3d_transpose_verification_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_3d_causal_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_3d_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_4d_causal_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_4d_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_bool_4d_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_bool_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_causal_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_fp16_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_attn_mask_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_causal_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_scaled_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_softcap_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_scaled_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_softcap_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_blackmanwindow_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_blackmanwindow_symmetric_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_and_pad_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_axes_chw_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_axes_hwc_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_negative_axes_hwc_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_pad_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_group_normalization_epsilon_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_group_normalization_example_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_hammingwindow_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_hammingwindow_symmetric_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_hannwindow_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_hannwindow_symmetric_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_1_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_1_expanded_ver18/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_2_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_2_expanded_ver18/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded_ver18/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded_ver18/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded_ver18/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_1_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_1_expanded_ver18/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_2_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_2_expanded_ver18/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_3_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_3_expanded_ver18/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_4_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_4_expanded_ver18/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_layer_normalization_default_axis_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_layer_normalization_default_axis_expanded_ver18/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis0_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis1_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis_negative_1_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis_negative_2_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis0_epsilon_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis1_epsilon_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis2_epsilon_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis0_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis1_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis2_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis3_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis_negative_1_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis_negative_2_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis_negative_3_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis_negative_4_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rms_normalization_default_axis_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rotary_embedding_3d_input_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rotary_embedding_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rotary_embedding_interleaved_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_interleaved_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_rotary_dim_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_interleaved_rotary_dim_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_rotary_dim_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_split_to_sequence_1/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_split_to_sequence_2/model.onnx",
+    "onnx-org/onnx/backend/test/data/simple/test_sequence_model8/model.onnx",
+)
+
+for _model_path in MODELS_REQUIRING_SHAPE_INFERENCE_INPUTS:
+    _existing_args = MODEL_EXTRA_VERIFY_ARGS.get(_model_path, ())
+    MODEL_EXTRA_VERIFY_ARGS[_model_path] = (
+        *_existing_args,
+        "--shape-inference-inputs",
+        "test_data_set_0",
+    )
+del _existing_args
+del _model_path
+
 
 @dataclass(frozen=True)
 class OnnxFileExpectation:
@@ -574,6 +729,55 @@ def test_run_expected_error_test_does_not_add_sanitize_flag(
 
     assert captured_args
     assert "--sanitize" not in captured_args[0]
+    assert "--shape-inference-inputs" not in captured_args[0]
+
+
+def test_run_expected_error_test_adds_shape_inference_inputs_from_extra_flags(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    repo_root = tmp_path / "repo"
+    model_dir = repo_root / "tests" / "onnx"
+    test_data_dir = model_dir / "test_data_set_0"
+    test_data_dir.mkdir(parents=True)
+    (test_data_dir / "input_0.pb").write_bytes(b"placeholder")
+    model_path = model_dir / "model.onnx"
+    model_path.write_bytes(b"")
+
+    captured_args: list[list[str]] = []
+
+    def _fake_run_cli_command(argv: list[str]) -> cli.CliResult:
+        captured_args.append(argv)
+        return cli.CliResult(
+            exit_code=0,
+            command_line=(
+                "verify --model-base-dir tests/onnx model.onnx "
+                "--test-data-dir test_data_set_0 --shape-inference-inputs test_data_set_0"
+            ),
+            result="OK",
+        )
+
+    monkeypatch.setattr(cli, "run_cli_command", _fake_run_cli_command)
+    monkeypatch.setitem(
+        MODEL_EXTRA_VERIFY_ARGS,
+        "tests/onnx/model.onnx",
+        ("--shape-inference-inputs", "test_data_set_0"),
+    )
+    monkeypatch.delenv("UPDATE_REFS", raising=False)
+
+    _run_expected_error_test(
+        repo_root=repo_root,
+        repo_relative_path="tests/onnx/model.onnx",
+        model_path=model_path,
+        expectation=OnnxFileExpectation(
+            path="tests/onnx/model.onnx",
+            error="OK",
+        ),
+        expectation_path="tests/onnx/model.onnx",
+    )
+
+    assert captured_args
+    assert "--shape-inference-inputs" in captured_args[0]
 
 
 @pytest.mark.order(1)
