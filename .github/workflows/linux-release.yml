@@ -14,38 +14,44 @@ jobs:
   build-linux-bundle:
     runs-on: ubuntu-latest
     container:
-      image: python:3.11-slim
+      image: quay.io/pypa/manylinux_2_28_x86_64
+    env:
+      PYTHON_BIN: /usr/bin/python3.11
     permissions:
       contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Show Python version
         run: |
-          python --version
-          python -m pip --version
+          "$PYTHON_BIN" --version
 
       - name: Install system dependencies
         run: |
-          apt-get update
-          apt-get install -y --no-install-recommends \
-            build-essential \
-          && rm -rf /var/lib/apt/lists/*
+          if command -v dnf >/dev/null 2>&1; then
+            dnf install -y python3.11 python3.11-devel gcc gcc-c++ make
+          elif command -v yum >/dev/null 2>&1; then
+            yum install -y python3.11 python3.11-devel gcc gcc-c++ make
+          elif command -v apt-get >/dev/null 2>&1; then
+            apt-get update
+            apt-get install -y --no-install-recommends python3.11 python3.11-dev build-essential
+            rm -rf /var/lib/apt/lists/*
+          else
+            echo "No supported package manager found (dnf/yum/apt-get)." >&2
+            exit 1
+          fi
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements-ci.txt
-          python -m pip install pyinstaller
+          "$PYTHON_BIN" -m ensurepip --upgrade || true
+          "$PYTHON_BIN" -m pip install --upgrade pip
+          "$PYTHON_BIN" -m pip install -r requirements-ci.txt
+          "$PYTHON_BIN" -m pip install pyinstaller
 
-      - name: Build PyInstaller bundle
+      - name: Build and package PyInstaller bundle
         run: |
-          python tools/pyinstaller_build.py
-
-      - name: Package bundle
-        run: |
-          tar -czf emx-onnx-cgen-linux-amd64.tar.gz -C dist/emx-onnx-cgen .
+          bash tools/build_linux_pyinstaller_release.sh
 
       - name: Upload workflow artifact
         if: ${{ github.event_name == 'workflow_dispatch' }}
