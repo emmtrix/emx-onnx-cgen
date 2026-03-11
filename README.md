@@ -146,39 +146,32 @@ Verify an ONNX model end-to-end against ONNX Runtime (default):
 emx-onnx-cgen verify path/to/model.onnx
 ```
 
-Run the packaged ONNX backend smoke tests:
+Use `emx-onnx-cgen` as an importable ONNX backend:
 
-```bash
-pip install "emx-onnx-cgen[backend-tests]"
-emx-onnx-cgen-backend-test
+```python
+import onnx
+from onnx.backend import prepare
+
+import emx_onnx_cgen.onnx_backend as emx_backend
+
+model = onnx.load("path/to/model.onnx")
+rep = prepare(model, backend=emx_backend)
+outputs = rep.run(inputs)
 ```
 
-The importable backend module is `emx_onnx_cgen.onnx_backend`. The smoke runner
-uses this default list of exact backend test names:
+The backend module is `emx_onnx_cgen.onnx_backend`. It compiles the ONNX model
+to C on demand, builds a temporary executable, and runs that executable through
+the standard ONNX backend interface.
 
-- `test_abs_cpu` for `float`
-- `test_cast_FLOAT_to_FLOAT16_cpu` for `float16`
-- `test_cast_FLOAT_to_DOUBLE_cpu` for `double`
-- `test_add_int8_cpu` for `int8`
-- `test_add_int16_cpu` for `int16`
-- `test_max_int32_cpu` for `int32`
-- `test_max_int64_cpu` for `int64`
-- `test_add_uint8_cpu` for `uint8`
-- `test_add_uint16_cpu` for `uint16`
-- `test_add_uint32_cpu` for `uint32`
-- `test_add_uint64_cpu` for `uint64`
-- `test_reduce_max_bool_inputs_cpu` for `bool`
-- `test_cast_FLOAT_to_BFLOAT16_cpu` for `bfloat16`
-- `test_equal_string_cpu` for `string`
-- `test_optional_get_element_sequence_cpu` for `sequence(<tensor>)`
-- `test_optional_has_element_optional_input_cpu` for `optional(<tensor>)`
+You can also call it directly without `onnx.backend.prepare`:
 
-Run different backend tests through the CLI by naming them explicitly or by
-requesting the full collection:
+```python
+import onnx
 
-```bash
-emx-onnx-cgen-backend-test test_abs_cpu test_softmax_example_cpu
-emx-onnx-cgen-backend-test --all
+from emx_onnx_cgen.onnx_backend import run_model
+
+model = onnx.load("path/to/model.onnx")
+outputs = run_model(model, inputs)
 ```
 
 ## CLI Reference
