@@ -142,7 +142,10 @@ class Compiler:
             lambda: import_onnx(prepared_model, _prepared=True),
         )
         missing_shape_reason = self._shape_concretization_requirement_reason(graph)
-        if missing_shape_reason is not None and not self._options.shape_inference_inputs:
+        if (
+            missing_shape_reason is not None
+            and not self._options.shape_inference_inputs
+        ):
             raise UnsupportedOpError(
                 "Code generation needs explicit shape concretization, but no "
                 "--shape-inference-inputs were provided. "
@@ -326,9 +329,7 @@ class Compiler:
         return None
 
     @classmethod
-    def requires_explicit_shape_inference_inputs(
-        cls, model: onnx.ModelProto
-    ) -> bool:
+    def requires_explicit_shape_inference_inputs(cls, model: onnx.ModelProto) -> bool:
         prepared_model = prepare_onnx_model(model)
         graph = import_onnx(prepared_model, _prepared=True)
         return cls._shape_concretization_requirement_reason(graph) is not None

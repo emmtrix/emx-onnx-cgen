@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "Output shape mismatch for reduced (actual_shape=(1,), actual_size=1, expected_shape=(3,), expected_size=3, output=reduced)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_desc_axes_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
@@ -7,5 +7,5 @@
     "Log"
   ],
   "opset_version": 18,
-  "generated_checksum": "b2341881a323ceee302ed53a2bc46f600b9f5e571657bf892d10fe1a7c0c2693"
+  "generated_checksum": "5cd7b2c46fde85e75cbbbe4b018055b82ca37bfb879a5a38d6b2791e2b208669"
 }

@@ -7,9 +7,9 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1636 / 1802, 90.8% | 1.20.1 |
-| [ONNX2C test coverage](#onnx2c-test-coverage) | 124 / 125, 99.2% | n/a |
-| [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1612 / 1802, 89.5% | 1.20.1 |
+| [ONNX2C test coverage](#onnx2c-test-coverage) | 110 / 125, 88.0% | n/a |
+| [Local ONNX test coverage](#local-onnx-test-coverage) | 5 / 7, 71.4% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1636 / 1802 ONNX files (90.8%).
+Coverage 1612 / 1802 ONNX files (89.5%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -179,7 +179,7 @@ Coverage 1636 / 1802 ONNX files (90.8%).
 | node/test_attention_4d_causal/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_causal_expanded/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx | 24 | Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | 24 | Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | 24 | Data | ❌ | Code generation still has unresolved dynamic shapes after shape concretization. Reason: tensor 'Attention_test_attention_4d_diff_heads_mask4d_padded_kv_expanded_function_AttnBias' has dynamic dimensions ('unk__0', 'unk__1', 'unk__2', 'unk__3'). Hint: provide more representative --shape-inference-inputs or export the model with static shapes. |
 | node/test_attention_4d_diff_heads_sizes/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_diff_heads_sizes_attn_mask/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
@@ -1149,51 +1149,51 @@ Coverage 1636 / 1802 ONNX files (90.8%).
 | node/test_reduce_l1_negative_axes_keep_dims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_l1_negative_axes_keep_dims_random_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_l2_default_axes_keepdims_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_l2_default_axes_keepdims_example_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_reduce_l2_default_axes_keepdims_example_expanded/model.onnx | 18 | Data | ❌ | CastLike input and output shapes must match |
 | node/test_reduce_l2_default_axes_keepdims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_l2_default_axes_keepdims_random_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_reduce_l2_default_axes_keepdims_random_expanded/model.onnx | 18 | Data | ❌ | CastLike input and output shapes must match |
 | node/test_reduce_l2_do_not_keepdims_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_l2_do_not_keepdims_example_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_reduce_l2_do_not_keepdims_example_expanded/model.onnx | 18 | Data | ❌ | CastLike input and output shapes must match |
 | node/test_reduce_l2_do_not_keepdims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_l2_do_not_keepdims_random_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_reduce_l2_do_not_keepdims_random_expanded/model.onnx | 18 | Data | ❌ | CastLike input and output shapes must match |
 | node/test_reduce_l2_empty_set/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_l2_empty_set_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_reduce_l2_empty_set_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_l2_keep_dims_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_l2_keep_dims_example_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_reduce_l2_keep_dims_example_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_l2_keep_dims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_l2_keep_dims_random_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_reduce_l2_keep_dims_random_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_l2_negative_axes_keep_dims_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_l2_negative_axes_keep_dims_example_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_reduce_l2_negative_axes_keep_dims_example_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_l2_negative_axes_keep_dims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_l2_negative_axes_keep_dims_random_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_reduce_l2_negative_axes_keep_dims_random_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_log_sum_asc_axes/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_asc_axes_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_reduce_log_sum_asc_axes_expanded/model.onnx | 18 | Data | ❌ | Output shape mismatch for reduced (actual_shape=(1,), actual_size=1, expected_shape=(5,), expected_size=5, output=reduced) |
 | node/test_reduce_log_sum_default/model.onnx | 18 | Data | ✅ | OK (max ULP 1) |
 | node/test_reduce_log_sum_default_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 1) |
 | node/test_reduce_log_sum_desc_axes/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_desc_axes_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_reduce_log_sum_desc_axes_expanded/model.onnx | 18 | Data | ❌ | Output shape mismatch for reduced (actual_shape=(1,), actual_size=1, expected_shape=(3,), expected_size=3, output=reduced) |
 | node/test_reduce_log_sum_empty_set/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_empty_set_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_reduce_log_sum_empty_set_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_log_sum_exp_default_axes_keepdims_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_exp_default_axes_keepdims_example_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_reduce_log_sum_exp_default_axes_keepdims_example_expanded/model.onnx | 18 | Data | ❌ | CastLike input and output shapes must match |
 | node/test_reduce_log_sum_exp_default_axes_keepdims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_exp_default_axes_keepdims_random_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_reduce_log_sum_exp_default_axes_keepdims_random_expanded/model.onnx | 18 | Data | ❌ | CastLike input and output shapes must match |
 | node/test_reduce_log_sum_exp_do_not_keepdims_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_exp_do_not_keepdims_example_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_reduce_log_sum_exp_do_not_keepdims_example_expanded/model.onnx | 18 | Data | ❌ | CastLike input and output shapes must match |
 | node/test_reduce_log_sum_exp_do_not_keepdims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_exp_do_not_keepdims_random_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_reduce_log_sum_exp_do_not_keepdims_random_expanded/model.onnx | 18 | Data | ❌ | CastLike input and output shapes must match |
 | node/test_reduce_log_sum_exp_empty_set/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_exp_empty_set_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_reduce_log_sum_exp_empty_set_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_log_sum_exp_keepdims_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_exp_keepdims_example_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_reduce_log_sum_exp_keepdims_example_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_log_sum_exp_keepdims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_exp_keepdims_random_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_reduce_log_sum_exp_keepdims_random_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_log_sum_exp_negative_axes_keepdims_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_exp_negative_axes_keepdims_example_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_reduce_log_sum_exp_negative_axes_keepdims_example_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_log_sum_exp_negative_axes_keepdims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_exp_negative_axes_keepdims_random_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_reduce_log_sum_exp_negative_axes_keepdims_random_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_log_sum_negative_axes/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_negative_axes_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_reduce_log_sum_negative_axes_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_max_bool_inputs/model.onnx | 20 | Data | ✅ | OK (max abs diff 0) |
 | node/test_reduce_max_default_axes_keepdim_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_max_default_axes_keepdims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
@@ -1813,7 +1813,7 @@ Coverage 1636 / 1802 ONNX files (90.8%).
 | simple/test_sequence_model1/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
 | simple/test_sequence_model2/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
 | simple/test_sequence_model3/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
-| simple/test_sequence_model4/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
+| simple/test_sequence_model4/model.onnx | 12 | Data | ❌ | Testbench execution failed: exit code 1 |
 | simple/test_sequence_model5/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
 | simple/test_sequence_model6/model.onnx | 12 | Data | ✅ | OK (max abs diff 0) |
 | simple/test_sequence_model7/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
@@ -1832,7 +1832,7 @@ Coverage 1636 / 1802 ONNX files (90.8%).
 
 Test directory: `onnx2c-org/test`
 
-Coverage 124 / 125 ONNX files (99.2%).
+Coverage 110 / 125 ONNX files (88.0%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1940,40 +1940,40 @@ Coverage 124 / 125 ONNX files (99.2%).
 | old_onnx_backend/9/test_slice_default_axes/model.onnx | 9 | Data | ✅ | OK (max ULP 0) |
 | old_onnx_backend/9/test_slice_end_out_of_bounds/model.onnx | 9 | Data | ✅ | OK (max ULP 0) |
 | old_onnx_backend/9/test_slice_neg/model.onnx | 9 | Data | ✅ | OK (max ULP 0) |
-| simple_networks/conv_2ch_3kernels_randombias.onnx | 11 | Random+ORT | ✅ | OK (max ULP 1) |
-| simple_networks/conv_2kernels.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
-| simple_networks/conv_2kernels_randombias.onnx | 11 | Random+ORT | ✅ | OK (max ULP 3) |
-| simple_networks/conv_3ch.onnx | 11 | Random+ORT | ✅ | OK (max ULP 3) |
-| simple_networks/conv_k2.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
-| simple_networks/conv_k2_maxpool_k2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
-| simple_networks/conv_k2_s2.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
+| simple_networks/conv_2ch_3kernels_randombias.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'adjusted_input' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
+| simple_networks/conv_2kernels.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'adjusted_input' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
+| simple_networks/conv_2kernels_randombias.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'adjusted_input' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
+| simple_networks/conv_3ch.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'adjusted_input' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
+| simple_networks/conv_k2.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'adjusted_input' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
+| simple_networks/conv_k2_maxpool_k2.onnx | 12 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'adjusted_input' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
+| simple_networks/conv_k2_s2.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'adjusted_input' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
 | simple_networks/fp_bfloat16.onnx | 22 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/fp_float16.onnx | 22 | Random+ORT | ✅ | OK (max ULP 0) |
-| simple_networks/lstm_k1_b1_r1.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
-| simple_networks/lstm_k1_b1_r1_relu.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
-| simple_networks/maxpool_k2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
-| simple_networks/maxpool_k2_s2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
+| simple_networks/lstm_k1_b1_r1.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'lstm_X' has dynamic dimensions ('M1', 'N', None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
+| simple_networks/lstm_k1_b1_r1_relu.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'lstm_X' has dynamic dimensions ('M1', 'N', None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
+| simple_networks/maxpool_k2.onnx | 12 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'input_transposed' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
+| simple_networks/maxpool_k2_s2.onnx | 12 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'input_transposed' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
 | simple_networks/random_uniform.onnx | 22 | Random+ORT | ✅ | OK UNKNOWN |
 | simple_networks/scalar_abs.onnx | 13 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/scalar_add.onnx | 13 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/scalar_identity.onnx | 13 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/treeensembleclassifier.onnx | 12 | Random+ORT | ✅ | OK (max abs diff 0, max ULP 0) |
-| tfl_helloworld/model.onnx | 9 | Random+ORT | ✅ | OK (max ULP 0) |
-| velardo/lesson14.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
-| velardo/lesson9.onnx | 9 | Random+ORT | ✅ | OK (max ULP 0) |
+| tfl_helloworld/model.onnx | 9 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'dense_20' has dynamic dimensions ('N', None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
+| velardo/lesson14.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'flatten/Reshape:0' has dynamic dimensions ('N', None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
+| velardo/lesson9.onnx | 9 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'dense0' has dynamic dimensions ('N', None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
 
 ## Local ONNX test coverage
 
 Test directory: `tests/onnx`
 
-Coverage 7 / 7 ONNX files (100.0%).
+Coverage 5 / 7 ONNX files (71.4%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
-| micro_kws_m_qdq.onnx | 15 | Random+ORT | ✅ | OK (max ULP 0) |
+| micro_kws_m_qdq.onnx | 15 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'micro_kws/conv2d/Relu;micro_kws/conv2d/BiasAdd;micro_kws/conv2d_2/Conv2D;micro_kws/conv2d/Conv2D;micro_kws/conv2d/BiasAdd/ReadVariableOp__28:0' has dynamic dimensions ('unk__0', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
 | micro_kws_m_qoperator_add_shape.onnx | 15 | Random+ORT | ✅ | OK (max ULP 0) |
 | micro_kws_m_qoperator_avg_pool.onnx | 15 | Random+ORT | ✅ | OK (max ULP 0) |
 | micro_kws_m_qoperator_softmax.onnx | 15 | Random+ORT | ✅ | OK (max ULP 0) |
 | micro_kws_m_static_fp32.onnx | 15 | Random+ORT | ✅ | OK (max ULP 6) |
-| micro_kws_m_static_qdq.onnx | 15 | Random+ORT | ✅ | OK (max ULP 0) |
+| micro_kws_m_static_qdq.onnx | 15 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'micro_kws/conv2d/Relu;micro_kws/conv2d/BiasAdd;micro_kws/conv2d_2/Conv2D;micro_kws/conv2d/Conv2D;micro_kws/conv2d/BiasAdd/ReadVariableOp__28:0' has dynamic dimensions ('unk__0', None, None, None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes. |
 | micro_kws_m_static_qoperator.onnx | 15 | Random+ORT | ✅ | OK (max ULP 0) |

@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "Code generation needs explicit shape concretization, but no --shape-inference-inputs were provided. Reason: tensor 'flatten/Reshape:0' has dynamic dimensions ('N', None). Hint: pass --shape-inference-inputs <dir-with-input_*.pb> to compile/verify, or export the model with static shapes.",
   "command_line": "verify --model-base-dir onnx2c-org/test/velardo lesson14.onnx",
   "verification_mode": "Random+ORT",
   "operators": [
@@ -9,6 +9,5 @@
     "Relu",
     "Softmax"
   ],
-  "opset_version": 11,
-  "generated_checksum": "a1c58a02d64195a6c0734c41b9aec2d5c5dd5f0174e90fe67f8e20098dc6554f"
+  "opset_version": 11
 }

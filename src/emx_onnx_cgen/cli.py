@@ -2285,9 +2285,11 @@ def _load_shape_inference_inputs(
 ) -> dict[str, "np.ndarray"] | None:
     if data_dir is None:
         return None
-    _inputs, _optional_flags, _adjusted, shape_inference_inputs = _load_test_data_inputs(
-        model,
-        data_dir,
+    _inputs, _optional_flags, _adjusted, shape_inference_inputs = (
+        _load_test_data_inputs(
+            model,
+            data_dir,
+        )
     )
     if shape_inference_inputs is None:
         raise CodegenError(
