@@ -154,7 +154,9 @@ def _normalize_runtime_inputs(
     model: ModelProto, inputs: tuple[object, ...]
 ) -> tuple[object, ...]:
     input_names = _non_initializer_input_names(model)
-    named_inputs = {name: value for name, value in zip(input_names, inputs, strict=True)}
+    named_inputs = {
+        name: value for name, value in zip(input_names, inputs, strict=True)
+    }
     _decode_image_decoder_inputs(model, named_inputs)
     return tuple(named_inputs[name] for name in input_names)
 
