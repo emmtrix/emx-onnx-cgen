@@ -5731,8 +5731,11 @@ class StringSplitOp(RenderableOpBase):
 def _normalize_regex_fullmatch_pattern(pattern: str) -> str:
     """Strip word-boundary assertions that are redundant under fullmatch.
 
-    Kept as a best-effort normalizer for patterns where the boundary is
-    implied by adjacent literal context and thus preserves semantics.
+    Rewrites ``\\b`` adjacent to literal word characters where the boundary
+    is implied by the surrounding context (e.g. ``\\b`` at pattern start/end
+    next to a word character, or between a punctuation literal and a word
+    character).  Used as a fallback: the original pattern is tried first;
+    the normalised form is only attempted if the original is rejected.
     """
 
     normalized = pattern
