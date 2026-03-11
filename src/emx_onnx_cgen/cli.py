@@ -609,6 +609,20 @@ def _build_parser() -> argparse.ArgumentParser:
             ),
         )
 
+    def add_shape_inference_inputs_flag(
+        subparser: argparse.ArgumentParser,
+    ) -> None:
+        subparser.add_argument(
+            "--shape-inference-inputs",
+            type=Path,
+            default=None,
+            help=(
+                "Directory containing input_*.pb files used only to concretize "
+                "dynamic shapes during code generation. "
+                "This affects compile and verify equally."
+            ),
+        )
+
     compile_parser = subparsers.add_parser(
         "compile", help="Compile an ONNX model into C source"
     )
@@ -704,6 +718,7 @@ def _build_parser() -> argparse.ArgumentParser:
     add_fp32_accumulation_strategy_flag(compile_parser)
     add_fp16_accumulation_strategy_flag(compile_parser)
     add_runtime_compat_flag(compile_parser)
+    add_shape_inference_inputs_flag(compile_parser)
 
     verify_parser = subparsers.add_parser(
         "verify",
@@ -850,6 +865,7 @@ def _build_parser() -> argparse.ArgumentParser:
     add_fp32_accumulation_strategy_flag(verify_parser)
     add_fp16_accumulation_strategy_flag(verify_parser)
     add_runtime_compat_flag(verify_parser)
+    add_shape_inference_inputs_flag(verify_parser)
     return parser
 
 
@@ -867,7 +883,7 @@ def _apply_base_dir(args: argparse.Namespace, parser: argparse.ArgumentParser) -
         parser.error(
             f"--model-base-dir {model_base_dir} does not exist or is not a directory"
         )
-    path_fields = ("model", "test_data_dir")
+    path_fields = ("model", "test_data_dir", "shape_inference_inputs")
     for field in path_fields:
         value = getattr(args, field, None)
         if value is None:
@@ -962,6 +978,15 @@ def _compile_model(
         input_count=len(model.graph.input),
         output_count=len(model.graph.output),
     )
+    shape_inference_inputs = _load_shape_inference_inputs(
+        model, args.shape_inference_inputs
+    )
+    _decode_image_decoder_inputs(model, shape_inference_inputs)
+    if args.shape_inference_inputs is not None:
+        active_reporter.note(
+            "Using explicit shape-inference inputs from "
+            f"{args.shape_inference_inputs} for code generation."
+        )
 
     active_reporter.info("")
     codegen_started = active_reporter.start_step("Generating C code")
@@ -980,6 +1005,7 @@ def _compile_model(
             truncate_weights_after=args.truncate_weights_after,
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,
+            shape_inference_inputs=shape_inference_inputs,
             timings=timings,
         )
         compiler = Compiler(options)
@@ -1040,6 +1066,10 @@ def _compile_testbench_declarations(
         model, _model_checksum = _load_model_and_checksum(model_path)
     except OSError as exc:
         raise CodegenError(str(exc)) from exc
+    shape_inference_inputs = _load_shape_inference_inputs(
+        model, args.shape_inference_inputs
+    )
+    _decode_image_decoder_inputs(model, shape_inference_inputs)
     options = CompilerOptions(
         model_name=model_name,
         emit_testbench=False,
@@ -1052,6 +1082,7 @@ def _compile_testbench_declarations(
         truncate_weights_after=args.truncate_weights_after,
         large_temp_threshold_bytes=args.large_temp_threshold_bytes,
         large_weight_threshold=args.large_weight_threshold,
+        shape_inference_inputs=shape_inference_inputs,
         testbench_optional_inputs=None,
         timings=None,
     )
@@ -1140,6 +1171,7 @@ def _handle_verify(args: argparse.Namespace) -> int:
         generated_checksum,
     ) = _verify_model(args, include_build_details=True, reporter=reporter)
     if error is not None:
+        _maybe_note_shape_inference_inputs_hint(reporter, args=args, error=error)
         reporter.flush_deferred()
         reporter.info("")
         reporter.result(error, ok=False)
@@ -1480,11 +1512,21 @@ def _verify_model(
     try:
         active_reporter.info("")
         codegen_started = active_reporter.start_step("Generating C code")
+        shape_inference_inputs = _load_shape_inference_inputs(
+            model,
+            args.shape_inference_inputs,
+        )
+        _decode_image_decoder_inputs(model, shape_inference_inputs)
+        if args.shape_inference_inputs is not None:
+            active_reporter.note(
+                "Using explicit shape-inference inputs from "
+                f"{args.shape_inference_inputs} for code generation."
+            )
         (
             testbench_inputs,
             testbench_optional_inputs,
             adjusted_test_inputs,
-            shape_inference_inputs,
+            _loaded_test_data_inputs,
         ) = _load_test_data_inputs(model, args.test_data_dir)
         _decode_image_decoder_inputs(model, testbench_inputs)
         if args.test_data_dir is not None and testbench_inputs is None:
@@ -1510,7 +1552,6 @@ def _verify_model(
             testbench_inputs, testbench_optional_inputs = (
                 _generate_random_testbench_inputs(graph.inputs)
             )
-            shape_inference_inputs = testbench_inputs
             input_source = "Random"
         if testbench_outputs is not None:
             reference_source = "Data"
@@ -2237,6 +2278,43 @@ def _decode_image_decoder_inputs(
                 f"Failed to decode image for ImageDecoder input '{input_name}': {exc}"
             ) from exc
         testbench_inputs[input_name] = decoded
+
+
+def _load_shape_inference_inputs(
+    model: onnx.ModelProto, data_dir: Path | None
+) -> dict[str, "np.ndarray"] | None:
+    if data_dir is None:
+        return None
+    _inputs, _optional_flags, _adjusted, shape_inference_inputs = _load_test_data_inputs(
+        model,
+        data_dir,
+    )
+    if shape_inference_inputs is None:
+        raise CodegenError(
+            "Failed to load shape-inference inputs from "
+            f"{data_dir}. Expected input_*.pb files compatible with the model."
+        )
+    return shape_inference_inputs
+
+
+def _maybe_note_shape_inference_inputs_hint(
+    reporter: _VerifyReporter,
+    *,
+    args: argparse.Namespace,
+    error: str,
+) -> None:
+    if args.command != "verify":
+        return
+    if args.shape_inference_inputs is not None:
+        return
+    if args.test_data_dir is None:
+        return
+    if "--shape-inference-inputs" not in error:
+        return
+    reporter.note(
+        "If you want verify to use the same extra shape information explicitly, rerun with "
+        f"--shape-inference-inputs {args.test_data_dir}."
+    )
 
 
 def _load_test_data_inputs(
