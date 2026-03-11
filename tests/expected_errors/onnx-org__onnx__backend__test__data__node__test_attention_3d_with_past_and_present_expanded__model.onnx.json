@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_expanded model.onnx --test-data-dir test_data_set_0",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_expanded model.onnx --test-data-dir test_data_set_0 --shape-inference-shapes 'Q=2x4x24;K=2x6x24;V=2x6x24;attn_mask=4x18;past_key=2x3x12x8;past_value=2x3x12x8'",
   "verification_mode": "Data",
   "operators": [
     "Shape",

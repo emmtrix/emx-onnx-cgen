@@ -113,6 +113,141 @@ def _parse_testbench_output_format_arg(value: str) -> str:
 
 
 @dataclass(frozen=True)
+class _ShapeInferenceInputSpec:
+    kind: str
+    tensor_shape: tuple[int, ...] = ()
+    sequence_length: int | None = None
+    literal_values: tuple[bool | int | float, ...] = ()
+    scalar_literal: bool = False
+
+
+def _parse_shape_inference_literal_token(token: str) -> bool | int | float:
+    normalized = token.strip()
+    if not normalized:
+        raise ValueError("empty literal value")
+    lowered = normalized.lower()
+    if lowered == "true":
+        return True
+    if lowered == "false":
+        return False
+    try:
+        return int(normalized)
+    except ValueError:
+        pass
+    try:
+        return float(normalized)
+    except ValueError as exc:
+        raise ValueError(
+            f"unsupported literal value {normalized!r}; expected bool, int, or float"
+        ) from exc
+
+
+def _parse_tensor_shape_spec(spec: str) -> tuple[int, ...]:
+    normalized = spec.strip()
+    if normalized == "scalar":
+        return ()
+    dims: list[int] = []
+    for token in normalized.split("x"):
+        token = token.strip()
+        if not token:
+            raise ValueError("empty dimension in shape specification")
+        try:
+            dim = int(token)
+        except ValueError as exc:
+            raise ValueError(
+                f"invalid dimension {token!r}; expected a positive integer"
+            ) from exc
+        if dim < 0:
+            raise ValueError(
+                f"invalid dimension {token!r}; expected a non-negative integer"
+            )
+        dims.append(dim)
+    if not dims:
+        raise ValueError("empty shape specification")
+    return tuple(dims)
+
+
+def _parse_shape_inference_input_spec(spec: str) -> _ShapeInferenceInputSpec:
+    normalized = spec.strip()
+    if not normalized:
+        raise ValueError("empty shape specification")
+    if normalized.startswith("seq["):
+        prefix, separator, elem_spec = normalized.partition("]:")
+        if not separator:
+            raise ValueError(
+                "invalid sequence specification; expected seq[LEN]:DIMxDIM"
+            )
+        try:
+            sequence_length = int(prefix[4:])
+        except ValueError as exc:
+            raise ValueError(
+                "invalid sequence specification; LEN must be an integer"
+            ) from exc
+        if sequence_length < 0:
+            raise ValueError("invalid sequence specification; LEN must be >= 0")
+        return _ShapeInferenceInputSpec(
+            kind="sequence_shape",
+            tensor_shape=_parse_tensor_shape_spec(elem_spec),
+            sequence_length=sequence_length,
+        )
+    if normalized.startswith("[") and normalized.endswith("]"):
+        inner = normalized[1:-1].strip()
+        if not inner:
+            values: tuple[bool | int | float, ...] = ()
+        else:
+            values = tuple(
+                _parse_shape_inference_literal_token(token)
+                for token in inner.split(",")
+            )
+        return _ShapeInferenceInputSpec(
+            kind="tensor_literal",
+            tensor_shape=(len(values),),
+            literal_values=values,
+            scalar_literal=False,
+        )
+    if "x" in normalized or normalized == "scalar":
+        return _ShapeInferenceInputSpec(
+            kind="tensor_shape",
+            tensor_shape=_parse_tensor_shape_spec(normalized),
+        )
+    scalar_value = _parse_shape_inference_literal_token(normalized)
+    return _ShapeInferenceInputSpec(
+        kind="tensor_literal",
+        tensor_shape=(),
+        literal_values=(scalar_value,),
+        scalar_literal=True,
+    )
+
+
+def _parse_shape_inference_shapes(value: str) -> dict[str, _ShapeInferenceInputSpec]:
+    if not value.strip():
+        raise ValueError("shape specification string must not be empty")
+    specs: dict[str, _ShapeInferenceInputSpec] = {}
+    for raw_entry in value.split(";"):
+        entry = raw_entry.strip()
+        if not entry:
+            raise ValueError("empty shape specification entry")
+        name, separator, spec = entry.partition("=")
+        input_name = name.strip()
+        if not separator or not input_name:
+            raise ValueError(
+                f"invalid shape specification {entry!r}; expected name=SPEC"
+            )
+        if input_name in specs:
+            raise ValueError(f"duplicate shape specification for input {input_name!r}")
+        specs[input_name] = _parse_shape_inference_input_spec(spec)
+    return specs
+
+
+def _parse_shape_inference_shapes_arg(value: str) -> str:
+    try:
+        _parse_shape_inference_shapes(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(str(exc)) from exc
+    return value
+
+
+@dataclass(frozen=True)
 class CliResult:
     exit_code: int
     command_line: str
@@ -609,6 +744,20 @@ def _build_parser() -> argparse.ArgumentParser:
             ),
         )
 
+    def add_shape_inference_shapes_flag(
+        subparser: argparse.ArgumentParser,
+    ) -> None:
+        subparser.add_argument(
+            "--shape-inference-shapes",
+            type=_parse_shape_inference_shapes_arg,
+            default=None,
+            help=(
+                "Explicit shape concretization specs used only during code "
+                "generation. Syntax: name=2x3x4;shape=[2,3,5,6];seq=seq[4]:8x16. "
+                "This affects compile and verify equally."
+            ),
+        )
+
     compile_parser = subparsers.add_parser(
         "compile", help="Compile an ONNX model into C source"
     )
@@ -704,6 +853,7 @@ def _build_parser() -> argparse.ArgumentParser:
     add_fp32_accumulation_strategy_flag(compile_parser)
     add_fp16_accumulation_strategy_flag(compile_parser)
     add_runtime_compat_flag(compile_parser)
+    add_shape_inference_shapes_flag(compile_parser)
 
     verify_parser = subparsers.add_parser(
         "verify",
@@ -850,6 +1000,7 @@ def _build_parser() -> argparse.ArgumentParser:
     add_fp32_accumulation_strategy_flag(verify_parser)
     add_fp16_accumulation_strategy_flag(verify_parser)
     add_runtime_compat_flag(verify_parser)
+    add_shape_inference_shapes_flag(verify_parser)
     return parser
 
 
@@ -962,6 +1113,15 @@ def _compile_model(
         input_count=len(model.graph.input),
         output_count=len(model.graph.output),
     )
+    shape_inference_inputs = _load_shape_inference_inputs(
+        model, args.shape_inference_shapes
+    )
+    _decode_image_decoder_inputs(model, shape_inference_inputs)
+    if args.shape_inference_shapes is not None:
+        active_reporter.note(
+            "Using explicit shape-inference shapes for code generation: "
+            f"{args.shape_inference_shapes}"
+        )
 
     active_reporter.info("")
     codegen_started = active_reporter.start_step("Generating C code")
@@ -980,6 +1140,7 @@ def _compile_model(
             truncate_weights_after=args.truncate_weights_after,
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,
+            shape_inference_inputs=shape_inference_inputs,
             timings=timings,
         )
         compiler = Compiler(options)
@@ -1040,6 +1201,10 @@ def _compile_testbench_declarations(
         model, _model_checksum = _load_model_and_checksum(model_path)
     except OSError as exc:
         raise CodegenError(str(exc)) from exc
+    shape_inference_inputs = _load_shape_inference_inputs(
+        model, args.shape_inference_shapes
+    )
+    _decode_image_decoder_inputs(model, shape_inference_inputs)
     options = CompilerOptions(
         model_name=model_name,
         emit_testbench=False,
@@ -1052,6 +1217,7 @@ def _compile_testbench_declarations(
         truncate_weights_after=args.truncate_weights_after,
         large_temp_threshold_bytes=args.large_temp_threshold_bytes,
         large_weight_threshold=args.large_weight_threshold,
+        shape_inference_inputs=shape_inference_inputs,
         testbench_optional_inputs=None,
         timings=None,
     )
@@ -1140,6 +1306,7 @@ def _handle_verify(args: argparse.Namespace) -> int:
         generated_checksum,
     ) = _verify_model(args, include_build_details=True, reporter=reporter)
     if error is not None:
+        _maybe_note_shape_inference_shapes_hint(reporter, args=args, error=error)
         reporter.flush_deferred()
         reporter.info("")
         reporter.result(error, ok=False)
@@ -1480,11 +1647,21 @@ def _verify_model(
     try:
         active_reporter.info("")
         codegen_started = active_reporter.start_step("Generating C code")
+        shape_inference_inputs = _load_shape_inference_inputs(
+            model,
+            args.shape_inference_shapes,
+        )
+        _decode_image_decoder_inputs(model, shape_inference_inputs)
+        if args.shape_inference_shapes is not None:
+            active_reporter.note(
+                "Using explicit shape-inference shapes for code generation: "
+                f"{args.shape_inference_shapes}"
+            )
         (
             testbench_inputs,
             testbench_optional_inputs,
             adjusted_test_inputs,
-            shape_inference_inputs,
+            _loaded_test_data_inputs,
         ) = _load_test_data_inputs(model, args.test_data_dir)
         _decode_image_decoder_inputs(model, testbench_inputs)
         if args.test_data_dir is not None and testbench_inputs is None:
@@ -1510,7 +1687,6 @@ def _verify_model(
             testbench_inputs, testbench_optional_inputs = (
                 _generate_random_testbench_inputs(graph.inputs)
             )
-            shape_inference_inputs = testbench_inputs
             input_source = "Random"
         if testbench_outputs is not None:
             reference_source = "Data"
@@ -2237,6 +2413,300 @@ def _decode_image_decoder_inputs(
                 f"Failed to decode image for ImageDecoder input '{input_name}': {exc}"
             ) from exc
         testbench_inputs[input_name] = decoded
+
+
+def _shape_inference_model_inputs(
+    model: onnx.ModelProto,
+) -> list[onnx.ValueInfoProto]:
+    initializer_names = {init.name for init in model.graph.initializer}
+    initializer_names.update(
+        sparse_init.name for sparse_init in model.graph.sparse_initializer
+    )
+    return [
+        value_info
+        for value_info in model.graph.input
+        if value_info.name not in initializer_names
+    ]
+
+
+def _shape_inference_tensor_dtype(
+    tensor_type: onnx.TypeProto.Tensor,
+) -> np.dtype[Any]:
+    dtype_info = onnx._mapping.TENSOR_TYPE_MAP.get(tensor_type.elem_type)
+    if dtype_info is None:
+        raise CodegenError("Unsupported tensor element type for shape inference.")
+    return np.dtype(dtype_info.np_dtype)
+
+
+def _default_shape_inference_tensor(
+    shape: tuple[int, ...],
+    *,
+    tensor_type: onnx.TypeProto.Tensor,
+) -> np.ndarray:
+    np_dtype = _shape_inference_tensor_dtype(tensor_type)
+    if tensor_type.elem_type == onnx.TensorProto.STRING:
+        return np.full(shape, "", dtype=np_dtype)
+    return np.zeros(shape, dtype=np_dtype)
+
+
+def _validate_shape_inference_tensor_shape(
+    *,
+    input_name: str,
+    tensor_type: onnx.TypeProto.Tensor,
+    actual_shape: tuple[int, ...],
+) -> None:
+    if not tensor_type.HasField("shape"):
+        return
+    dims = list(tensor_type.shape.dim)
+    if len(actual_shape) != len(dims):
+        raise CodegenError(
+            f"Shape-inference spec for input {input_name!r} has rank "
+            f"{len(actual_shape)}, expected {len(dims)}."
+        )
+    for index, (actual_dim, dim) in enumerate(zip(actual_shape, dims)):
+        if dim.HasField("dim_value") and int(dim.dim_value) != actual_dim:
+            raise CodegenError(
+                f"Shape-inference spec for input {input_name!r} sets dimension "
+                f"{index} to {actual_dim}, expected {int(dim.dim_value)}."
+            )
+
+
+def _shape_inference_tensor_from_spec(
+    *,
+    input_name: str,
+    tensor_type: onnx.TypeProto.Tensor,
+    spec: _ShapeInferenceInputSpec,
+) -> np.ndarray:
+    if spec.kind == "tensor_shape":
+        _validate_shape_inference_tensor_shape(
+            input_name=input_name,
+            tensor_type=tensor_type,
+            actual_shape=spec.tensor_shape,
+        )
+        return _default_shape_inference_tensor(
+            spec.tensor_shape,
+            tensor_type=tensor_type,
+        )
+    if spec.kind != "tensor_literal":
+        raise CodegenError(
+            f"Shape-inference spec for input {input_name!r} must describe a tensor."
+        )
+    np_dtype = _shape_inference_tensor_dtype(tensor_type)
+    if tensor_type.elem_type == onnx.TensorProto.STRING:
+        raise CodegenError(
+            f"Shape-inference literal values are not supported for string input {input_name!r}."
+        )
+    tensor_rank = len(tensor_type.shape.dim) if tensor_type.HasField("shape") else None
+    if (
+        spec.scalar_literal
+        and tensor_rank == 1
+        and isinstance(spec.literal_values[0], int)
+        and not isinstance(spec.literal_values[0], bool)
+        and int(spec.literal_values[0]) >= 0
+    ):
+        inferred_shape = (int(spec.literal_values[0]),)
+        _validate_shape_inference_tensor_shape(
+            input_name=input_name,
+            tensor_type=tensor_type,
+            actual_shape=inferred_shape,
+        )
+        return _default_shape_inference_tensor(
+            inferred_shape,
+            tensor_type=tensor_type,
+        )
+    if spec.scalar_literal:
+        array = np.asarray(spec.literal_values[0], dtype=np_dtype)
+    else:
+        array = np.asarray(spec.literal_values, dtype=np_dtype)
+    _validate_shape_inference_tensor_shape(
+        input_name=input_name,
+        tensor_type=tensor_type,
+        actual_shape=tuple(int(dim) for dim in array.shape),
+    )
+    return array
+
+
+def _load_shape_inference_inputs(
+    model: onnx.ModelProto, shape_specs: str | None
+) -> dict[str, "np.ndarray"] | None:
+    if shape_specs is None:
+        return None
+    specs = _parse_shape_inference_shapes(shape_specs)
+    inputs_by_name = {
+        value_info.name: value_info
+        for value_info in _shape_inference_model_inputs(model)
+    }
+    unknown_inputs = sorted(name for name in specs if name not in inputs_by_name)
+    if unknown_inputs:
+        joined = ", ".join(repr(name) for name in unknown_inputs)
+        raise CodegenError(f"Unknown shape-inference input name(s): {joined}.")
+    shape_inference_inputs: dict[str, np.ndarray] = {}
+    for input_name, spec in specs.items():
+        value_info = inputs_by_name[input_name]
+        value_kind = value_info.type.WhichOneof("value")
+        if value_kind == "tensor_type":
+            shape_inference_inputs[input_name] = _shape_inference_tensor_from_spec(
+                input_name=input_name,
+                tensor_type=value_info.type.tensor_type,
+                spec=spec,
+            )
+            continue
+        if value_kind == "sequence_type":
+            if spec.kind != "sequence_shape":
+                raise CodegenError(
+                    f"Shape-inference spec for sequence input {input_name!r} "
+                    "must use seq[LEN]:DIMxDIM syntax."
+                )
+            elem_type = value_info.type.sequence_type.elem_type
+            if elem_type.WhichOneof("value") != "tensor_type":
+                raise CodegenError(
+                    f"Sequence input {input_name!r} has unsupported non-tensor elements."
+                )
+            _validate_shape_inference_tensor_shape(
+                input_name=input_name,
+                tensor_type=elem_type.tensor_type,
+                actual_shape=spec.tensor_shape,
+            )
+            shape_inference_inputs[input_name] = _default_shape_inference_tensor(
+                (int(spec.sequence_length or 0), *spec.tensor_shape),
+                tensor_type=elem_type.tensor_type,
+            )
+            continue
+        if value_kind == "optional_type":
+            elem_type = value_info.type.optional_type.elem_type
+            elem_kind = elem_type.WhichOneof("value")
+            if elem_kind == "tensor_type":
+                shape_inference_inputs[input_name] = _shape_inference_tensor_from_spec(
+                    input_name=input_name,
+                    tensor_type=elem_type.tensor_type,
+                    spec=spec,
+                )
+                continue
+            if elem_kind == "sequence_type":
+                if spec.kind != "sequence_shape":
+                    raise CodegenError(
+                        f"Shape-inference spec for optional sequence input {input_name!r} "
+                        "must use seq[LEN]:DIMxDIM syntax."
+                    )
+                seq_elem = elem_type.sequence_type.elem_type
+                if seq_elem.WhichOneof("value") != "tensor_type":
+                    raise CodegenError(
+                        f"Optional sequence input {input_name!r} has unsupported non-tensor elements."
+                    )
+                _validate_shape_inference_tensor_shape(
+                    input_name=input_name,
+                    tensor_type=seq_elem.tensor_type,
+                    actual_shape=spec.tensor_shape,
+                )
+                shape_inference_inputs[input_name] = _default_shape_inference_tensor(
+                    (int(spec.sequence_length or 0), *spec.tensor_shape),
+                    tensor_type=seq_elem.tensor_type,
+                )
+                continue
+        raise CodegenError(
+            f"Input {input_name!r} has unsupported type for shape inference."
+        )
+    return shape_inference_inputs
+
+
+def _format_shape_inference_literal(value: bool | int | float) -> str:
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    return str(value)
+
+
+def _shape_inference_spec_from_array(array: np.ndarray) -> str:
+    if array.ndim == 0:
+        return _format_shape_inference_literal(array.reshape(()).item())
+    if (
+        array.ndim == 1
+        and array.size <= 8
+        and (
+            np.issubdtype(array.dtype, np.bool_)
+            or np.issubdtype(array.dtype, np.integer)
+            or np.issubdtype(array.dtype, np.floating)
+        )
+    ):
+        values = ",".join(
+            _format_shape_inference_literal(item) for item in array.tolist()
+        )
+        return f"[{values}]"
+    return "x".join(str(int(dim)) for dim in array.shape) or "scalar"
+
+
+def _shape_inference_spec_from_sequence_array(array: np.ndarray) -> str:
+    elem_shape = tuple(int(dim) for dim in array.shape[1:])
+    elem_spec = "scalar" if not elem_shape else "x".join(str(dim) for dim in elem_shape)
+    return f"seq[{int(array.shape[0])}]:{elem_spec}"
+
+
+def _derive_shape_inference_shapes_from_test_data(
+    model: onnx.ModelProto, data_dir: Path
+) -> str | None:
+    (
+        inputs,
+        optional_flags,
+        _adjusted,
+        _shape_inference_inputs,
+    ) = _load_test_data_inputs(model, data_dir)
+    if inputs is None:
+        return None
+    parts: list[str] = []
+    inputs_by_name = {
+        value_info.name: value_info
+        for value_info in _shape_inference_model_inputs(model)
+    }
+    for input_name, array in inputs.items():
+        if optional_flags is not None and optional_flags.get(input_name) is False:
+            continue
+        value_info = inputs_by_name.get(input_name)
+        if value_info is None:
+            continue
+        value_kind = value_info.type.WhichOneof("value")
+        if value_kind == "sequence_type":
+            parts.append(
+                f"{input_name}={_shape_inference_spec_from_sequence_array(array)}"
+            )
+            continue
+        if value_kind == "optional_type":
+            elem_kind = value_info.type.optional_type.elem_type.WhichOneof("value")
+            if elem_kind == "sequence_type":
+                parts.append(
+                    f"{input_name}={_shape_inference_spec_from_sequence_array(array)}"
+                )
+                continue
+        parts.append(f"{input_name}={_shape_inference_spec_from_array(array)}")
+    return ";".join(parts) if parts else None
+
+
+def _maybe_note_shape_inference_shapes_hint(
+    reporter: _VerifyReporter,
+    *,
+    args: argparse.Namespace,
+    error: str,
+) -> None:
+    if args.command != "verify":
+        return
+    if args.shape_inference_shapes is not None:
+        return
+    if args.test_data_dir is None:
+        return
+    if "--shape-inference-shapes" not in error:
+        return
+    try:
+        model, _checksum = _load_model_and_checksum(args.model)
+        suggested = _derive_shape_inference_shapes_from_test_data(
+            model,
+            args.test_data_dir,
+        )
+    except OSError:
+        suggested = None
+    if not suggested:
+        return
+    reporter.note(
+        "If you want verify to use the same extra shape information explicitly, rerun with "
+        f'--shape-inference-shapes "{suggested}".'
+    )
 
 
 def _load_test_data_inputs(

@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 1)",
+  "error": "Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor 'adjusted_input' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes.",
   "command_line": "verify --model-base-dir onnx2c-org/test/simple_networks conv_2ch_3kernels_randombias.onnx",
   "verification_mode": "Random+ORT",
   "operators": [
@@ -7,6 +7,5 @@
     "Conv",
     "Flatten"
   ],
-  "opset_version": 11,
-  "generated_checksum": "81b94317aedcece559c39bbc86ad2ef0d97c6d42db3305672e6eb483f70d9c78"
+  "opset_version": 11
 }

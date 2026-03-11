@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_transpose_verification_expanded model.onnx --test-data-dir test_data_set_0",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_transpose_verification_expanded model.onnx --test-data-dir test_data_set_0 --shape-inference-shapes 'Q=1x2x12;K=1x2x12;V=1x2x12'",
   "verification_mode": "Data",
   "operators": [
     "Shape",

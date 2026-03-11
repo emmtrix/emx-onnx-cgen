@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis1_expanded model.onnx --test-data-dir test_data_set_0",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis1_expanded model.onnx --test-data-dir test_data_set_0 --shape-inference-shapes 'X=3x4;W=[1.2302906513214111,1.202379822731018,-0.38732680678367615,-0.302302747964859]'",
   "verification_mode": "Data",
   "operators": [
     "Constant",
