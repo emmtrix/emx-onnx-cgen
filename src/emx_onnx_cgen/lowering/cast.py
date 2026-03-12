@@ -33,6 +33,8 @@ def lower_cast(graph: Graph, node: Node) -> CastOp:
         )
     input_shape = value_shape(graph, node.inputs[0], node)
     output_shape = value_shape(graph, node.outputs[0], node)
+    if input_shape == () and output_shape:
+        input_shape = output_shape
     if output_shape == () and input_shape:
         output_shape = input_shape
     if input_shape != output_shape:
@@ -59,6 +61,8 @@ def lower_castlike(graph: Graph, node: Node) -> CastOp:
         )
     input_shape = value_shape(graph, node.inputs[0], node)
     output_shape = value_shape(graph, node.outputs[0], node)
+    if input_shape == () and output_shape:
+        input_shape = output_shape
     if output_shape == () and input_shape:
         output_shape = input_shape
     if input_shape != output_shape:

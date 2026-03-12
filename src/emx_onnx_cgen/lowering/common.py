@@ -363,6 +363,10 @@ def _broadcast_shapes(
         right_dim = right_rev[index] if index < len(right_rev) else 1
         if left_dim == right_dim:
             result.append(left_dim)
+        elif left_dim < 0 and right_dim == 1:
+            result.append(left_dim)
+        elif right_dim < 0 and left_dim == 1:
+            result.append(right_dim)
         elif left_dim == 1:
             result.append(right_dim)
         elif right_dim == 1:

@@ -7,8 +7,8 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1614 / 1802, 89.6% | 1.20.1 |
-| [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1636 / 1802, 90.8% | 1.20.1 |
+| [ONNX2C test coverage](#onnx2c-test-coverage) | 120 / 125, 96.0% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 5 / 7, 71.4% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1614 / 1802 ONNX files (89.6%).
+Coverage 1636 / 1802 ONNX files (90.8%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1149,51 +1149,51 @@ Coverage 1614 / 1802 ONNX files (89.6%).
 | node/test_reduce_l1_negative_axes_keep_dims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_l1_negative_axes_keep_dims_random_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_l2_default_axes_keepdims_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_l2_default_axes_keepdims_example_expanded/model.onnx | 18 | Data | ❌ | CastLike input and output shapes must match |
+| node/test_reduce_l2_default_axes_keepdims_example_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_l2_default_axes_keepdims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_l2_default_axes_keepdims_random_expanded/model.onnx | 18 | Data | ❌ | CastLike input and output shapes must match |
+| node/test_reduce_l2_default_axes_keepdims_random_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_l2_do_not_keepdims_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_l2_do_not_keepdims_example_expanded/model.onnx | 18 | Data | ❌ | CastLike input and output shapes must match |
+| node/test_reduce_l2_do_not_keepdims_example_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_l2_do_not_keepdims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_l2_do_not_keepdims_random_expanded/model.onnx | 18 | Data | ❌ | CastLike input and output shapes must match |
+| node/test_reduce_l2_do_not_keepdims_random_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_l2_empty_set/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_l2_empty_set_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
+| node/test_reduce_l2_empty_set_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_l2_keep_dims_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_l2_keep_dims_example_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
+| node/test_reduce_l2_keep_dims_example_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_l2_keep_dims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_l2_keep_dims_random_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
+| node/test_reduce_l2_keep_dims_random_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_l2_negative_axes_keep_dims_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_l2_negative_axes_keep_dims_example_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
+| node/test_reduce_l2_negative_axes_keep_dims_example_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_l2_negative_axes_keep_dims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_l2_negative_axes_keep_dims_random_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
+| node/test_reduce_l2_negative_axes_keep_dims_random_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_log_sum_asc_axes/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_asc_axes_expanded/model.onnx | 18 | Data | ❌ | Output shape mismatch for reduced (actual_shape=(1,), actual_size=1, expected_shape=(5,), expected_size=5, output=reduced) |
+| node/test_reduce_log_sum_asc_axes_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_log_sum_default/model.onnx | 18 | Data | ✅ | OK (max ULP 1) |
 | node/test_reduce_log_sum_default_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 1) |
 | node/test_reduce_log_sum_desc_axes/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_desc_axes_expanded/model.onnx | 18 | Data | ❌ | Output shape mismatch for reduced (actual_shape=(1,), actual_size=1, expected_shape=(3,), expected_size=3, output=reduced) |
+| node/test_reduce_log_sum_desc_axes_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_log_sum_empty_set/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_empty_set_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
+| node/test_reduce_log_sum_empty_set_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_log_sum_exp_default_axes_keepdims_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_exp_default_axes_keepdims_example_expanded/model.onnx | 18 | Data | ❌ | CastLike input and output shapes must match |
+| node/test_reduce_log_sum_exp_default_axes_keepdims_example_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_log_sum_exp_default_axes_keepdims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_exp_default_axes_keepdims_random_expanded/model.onnx | 18 | Data | ❌ | CastLike input and output shapes must match |
+| node/test_reduce_log_sum_exp_default_axes_keepdims_random_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_log_sum_exp_do_not_keepdims_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_exp_do_not_keepdims_example_expanded/model.onnx | 18 | Data | ❌ | CastLike input and output shapes must match |
+| node/test_reduce_log_sum_exp_do_not_keepdims_example_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_log_sum_exp_do_not_keepdims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_exp_do_not_keepdims_random_expanded/model.onnx | 18 | Data | ❌ | CastLike input and output shapes must match |
+| node/test_reduce_log_sum_exp_do_not_keepdims_random_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_log_sum_exp_empty_set/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_exp_empty_set_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
+| node/test_reduce_log_sum_exp_empty_set_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_log_sum_exp_keepdims_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_exp_keepdims_example_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
+| node/test_reduce_log_sum_exp_keepdims_example_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_log_sum_exp_keepdims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_exp_keepdims_random_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
+| node/test_reduce_log_sum_exp_keepdims_random_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_log_sum_exp_negative_axes_keepdims_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_exp_negative_axes_keepdims_example_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
+| node/test_reduce_log_sum_exp_negative_axes_keepdims_example_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_log_sum_exp_negative_axes_keepdims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_exp_negative_axes_keepdims_random_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
+| node/test_reduce_log_sum_exp_negative_axes_keepdims_random_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_log_sum_negative_axes/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_log_sum_negative_axes_expanded/model.onnx | 18 | Data | ❌ | ReduceSum output shape rank must match input rank |
+| node/test_reduce_log_sum_negative_axes_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_max_bool_inputs/model.onnx | 20 | Data | ✅ | OK (max abs diff 0) |
 | node/test_reduce_max_default_axes_keepdim_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_max_default_axes_keepdims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
@@ -1832,7 +1832,7 @@ Coverage 1614 / 1802 ONNX files (89.6%).
 
 Test directory: `onnx2c-org/test`
 
-Coverage 119 / 125 ONNX files (95.2%).
+Coverage 120 / 125 ONNX files (96.0%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1949,7 +1949,7 @@ Coverage 119 / 125 ONNX files (95.2%).
 | simple_networks/conv_k2_s2.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/fp_bfloat16.onnx | 22 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/fp_float16.onnx | 22 | Random+ORT | ✅ | OK (max ULP 0) |
-| simple_networks/lstm_k1_b1_r1.onnx | 11 | Random+ORT | ❌ | Squeeze does not support dynamic dims in input |
+| simple_networks/lstm_k1_b1_r1.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/lstm_k1_b1_r1_relu.onnx | 11 | Random+ORT | ❌ | Squeeze does not support dynamic dims in input |
 | simple_networks/maxpool_k2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/maxpool_k2_s2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |

@@ -1,5 +1,5 @@
 {
-  "error": "CastLike input and output shapes must match",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_reduce_l2_do_not_keepdims_random_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
@@ -9,5 +9,6 @@
     "Sqrt",
     "CastLike"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "fd8ad6e5764d875d6bc4cc43b727fce5e76573ca5486af1f386d55bf1851268d"
 }
