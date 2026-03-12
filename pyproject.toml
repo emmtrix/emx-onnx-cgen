@@ -11,10 +11,13 @@ requires-python = ">=3.11"
 dynamic = ["version"]
 license = { file = "LICENSE" }
 dependencies = [
-    "emx-regex-cgen==0.1.3",
+    "emx-regex-cgen==0.2.0",
     "jinja2",
     "numpy",
     "onnx",
+    # >=5.29.6: fixes GHSA-8qvm-5x2c-j2w7/CVE-2025-4565 (DoS, <4.25.8) and
+    #           GHSA-7gcm-g887-7qv7/CVE-2026-0994 (JSON recursion bypass, <5.29.6)
+    "protobuf>=5.29.6",
 ]
 
 [project.optional-dependencies]
