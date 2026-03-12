@@ -8,7 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1636 / 1802, 90.8% | 1.20.1 |
-| [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
+| [ONNX2C test coverage](#onnx2c-test-coverage) | 120 / 125, 96.0% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 5 / 7, 71.4% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -1832,7 +1832,7 @@ Coverage 1636 / 1802 ONNX files (90.8%).
 
 Test directory: `onnx2c-org/test`
 
-Coverage 119 / 125 ONNX files (95.2%).
+Coverage 120 / 125 ONNX files (96.0%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1949,7 +1949,7 @@ Coverage 119 / 125 ONNX files (95.2%).
 | simple_networks/conv_k2_s2.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/fp_bfloat16.onnx | 22 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/fp_float16.onnx | 22 | Random+ORT | ✅ | OK (max ULP 0) |
-| simple_networks/lstm_k1_b1_r1.onnx | 11 | Random+ORT | ❌ | Squeeze does not support dynamic dims in input |
+| simple_networks/lstm_k1_b1_r1.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/lstm_k1_b1_r1_relu.onnx | 11 | Random+ORT | ❌ | Squeeze does not support dynamic dims in input |
 | simple_networks/maxpool_k2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/maxpool_k2_s2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
