@@ -1,5 +1,5 @@
 {
-  "error": "Squeeze does not support dynamic dims in input",
+  "error": "OK (max ULP 5)",
   "command_line": "verify --model-base-dir onnx2c-org/test/simple_networks lstm_k1_b1_r1_relu.onnx",
   "verification_mode": "Random+ORT",
   "operators": [
@@ -7,5 +7,6 @@
     "LSTM",
     "Squeeze"
   ],
-  "opset_version": 11
+  "opset_version": 11,
+  "generated_checksum": "9b3c7d95dac16a1247d8e379e94adfe606e9e1e7e907063ddf0ebdfbad1f2a47"
 }

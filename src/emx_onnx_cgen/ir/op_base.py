@@ -806,12 +806,34 @@ class BroadcastingOpBase(RenderableOpBase):
         padded_shapes = [(1,) * (max_rank - len(shape)) + shape for shape in shapes]
         result: list[int] = []
         for dims in zip(*padded_shapes):
-            dim = max(dims)
-            if any(d not in {1, dim} for d in dims):
+            known_dims = {d for d in dims if d > 1}
+            unknown_dims = [d for d in dims if d < 0]
+            if len(known_dims) > 1:
                 raise ShapeInferenceError(
                     "Broadcasting mismatch for shapes: "
                     + ", ".join(str(shape) for shape in shapes)
                 )
+            if known_dims:
+                dim = next(iter(known_dims))
+                if any(d not in {1, dim} for d in dims if d >= 0):
+                    raise ShapeInferenceError(
+                        "Broadcasting mismatch for shapes: "
+                        + ", ".join(str(shape) for shape in shapes)
+                    )
+                if unknown_dims:
+                    raise ShapeInferenceError(
+                        "Broadcasting mismatch for shapes: "
+                        + ", ".join(str(shape) for shape in shapes)
+                    )
+            elif unknown_dims:
+                dim = unknown_dims[0]
+                if any(d not in {1, dim} for d in dims):
+                    raise ShapeInferenceError(
+                        "Broadcasting mismatch for shapes: "
+                        + ", ".join(str(shape) for shape in shapes)
+                    )
+            else:
+                dim = 1
             result.append(dim)
         return tuple(result)
 

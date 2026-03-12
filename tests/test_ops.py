@@ -106,6 +106,40 @@ def _make_operator_model(
     return model
 
 
+def _make_symbolic_reshape_model(
+    *,
+    input_shape: list[int | str],
+    output_shape: list[int | str],
+    target_shape: list[int],
+    dtype: int = TensorProto.FLOAT,
+    opset: int = 13,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("in0", dtype, input_shape)
+    output_info = helper.make_tensor_value_info("out", dtype, output_shape)
+    shape_initializer = helper.make_tensor(
+        "shape",
+        TensorProto.INT64,
+        [len(target_shape)],
+        target_shape,
+    )
+    node = helper.make_node("Reshape", inputs=["in0", "shape"], outputs=["out"])
+    graph = helper.make_graph(
+        [node],
+        "reshape_graph",
+        [input_info],
+        [output_info],
+        [shape_initializer],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_tfidf_vectorizer_model(
     *,
     input_shape: list[int],
@@ -5959,6 +5993,74 @@ def test_compile_prunes_unused_sequence_empty_state_from_sequence_map() -> None:
     generated = Compiler(CompilerOptions()).compile(model)
     assert "SequenceMap_0_state_0_empty" not in generated
     assert "tmp1_SequenceMap_0_state_0" not in generated
+
+
+def test_compile_reduce_l2_empty_set_expanded_recovers_passthrough_shape() -> None:
+    model = onnx.load(
+        PROJECT_ROOT
+        / "onnx-org/onnx/backend/test/data/node/test_reduce_l2_empty_set_expanded/model.onnx"
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "node1_reducesum" in generated
+    assert "reduced[restrict 2][1][4]" in generated
+
+
+def test_compile_reduce_log_sum_exp_expanded_recovers_passthrough_shape() -> None:
+    model = onnx.load(
+        PROJECT_ROOT
+        / "onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_do_not_keepdims_example_expanded/model.onnx"
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "node2_reducesum" in generated
+    assert "reduced[restrict 3][2]" in generated
+
+
+def test_compile_lstm_dynamic_squeeze_model() -> None:
+    model = onnx.load(
+        PROJECT_ROOT / "onnx2c-org/test/simple_networks/lstm_k1_b1_r1.onnx"
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "OpType: Squeeze" in generated
+    assert "lstm[restrict N][3]" in generated
+
+
+def test_compile_velardo_lesson14_dynamic_bias_broadcast() -> None:
+    model = onnx.load(PROJECT_ROOT / "onnx2c-org/test/velardo/lesson14.onnx")
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "node1_dense(int N, const float input0[N][1690]" in generated
+    assert "float output[N][512]" in generated
+    assert "flatten_input[restrict N][130][13]" in generated
+
+
+def test_compile_dynamic_reshape_preserves_symbolic_batch() -> None:
+    model = _make_symbolic_reshape_model(
+        input_shape=["N", 1960],
+        output_shape=["N", 49, 40, 1],
+        target_shape=[0, 49, 40, 1],
+    )
+
+    generated = Compiler(CompilerOptions()).compile(model)
+
+    assert "const float in0[restrict N][1960]" in generated
+    assert "float out[restrict N][49][40][1]" in generated
+
+
+def test_compile_micro_kws_dynamic_intermediates_use_symbolic_batch() -> None:
+    model = onnx.load(PROJECT_ROOT / "tests/onnx/micro_kws_m_static_qdq.onnx")
+
+    generated = Compiler(CompilerOptions()).compile(model)
+
+    assert "for (idx_t n = 0; n < -1; ++n)" not in generated
+    assert (
+        "float (*tmp15_Relu__5_0)[16][49][40] = malloc("
+        "sizeof(*tmp15_Relu__5_0) * unk__68);"
+    ) in generated
+    assert (
+        "node24_micro_kws_average_pooling2d_avgpool("
+        "int unk__68, int unk__69, "
+        "const float input0[unk__68][12][24][20], "
+        "float output[unk__68][12][12][10])"
+    ) in generated
 
 
 def test_lower_concat_from_sequence() -> None:

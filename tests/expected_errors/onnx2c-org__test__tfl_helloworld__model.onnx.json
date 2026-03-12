@@ -1,5 +1,5 @@
 {
-  "error": "Broadcasting mismatch for shapes: (-1, 16), (16,)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx2c-org/test/tfl_helloworld model.onnx",
   "verification_mode": "Random+ORT",
   "operators": [
@@ -7,5 +7,6 @@
     "Add",
     "Relu"
   ],
-  "opset_version": 9
+  "opset_version": 9,
+  "generated_checksum": "02e2be9769bdd7b08a031c51ee0da4592c4b75d55545fa86b254faf80f492454"
 }

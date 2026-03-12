@@ -36,6 +36,18 @@ def _shape_product(shape: tuple[int, ...]) -> int:
     return product
 
 
+def _shape_product_expr(
+    shape: tuple[int, ...],
+    dim_names: dict[int, str] | None = None,
+) -> int | str:
+    if not shape:
+        return 1
+    dim_exprs = CEmitterCompat.shape_dim_exprs(shape, dim_names)
+    if len(dim_exprs) == 1:
+        return dim_exprs[0]
+    return " * ".join(str(dim) for dim in dim_exprs)
+
+
 def _broadcast_batch_shapes(
     left: tuple[int, ...], right: tuple[int, ...]
 ) -> tuple[tuple[int, ...], tuple[int, ...], tuple[int, ...]]:
@@ -155,7 +167,15 @@ class MatMulOp(MatMulLikeOpBase):
                 ("output", self.output),
             ]
         )
-        output_shape = CEmitterCompat.codegen_shape(emitter.ctx_shape(self.output))
+        input0_shape = emitter.ctx_shape(self.input0)
+        input1_shape = emitter.ctx_shape(self.input1)
+        input0_dim_names = emitter.dim_names_for(self.input0)
+        input1_dim_names = emitter.dim_names_for(self.input1)
+        output_shape_raw = emitter.ctx_shape(self.output)
+        output_dim_names = emitter.dim_names_for(self.output)
+        output_shape = CEmitterCompat.shape_dim_exprs(
+            output_shape_raw, output_dim_names
+        )
         output_loop_vars = CEmitterCompat.loop_vars(output_shape)
         output_index_expr = f"{params['output']}" + "".join(
             f"[{var}]" for var in output_loop_vars
@@ -177,8 +197,6 @@ class MatMulOp(MatMulLikeOpBase):
         else:
             row_var = output_loop_vars[-2]
             col_var = output_loop_vars[-1]
-        input0_shape = emitter.ctx_shape(self.input0)
-        input1_shape = emitter.ctx_shape(self.input1)
         input0_batch_shape = emitter.derived(self, "input0_batch_shape")
         input1_batch_shape = emitter.derived(self, "input1_batch_shape")
         input0_index_expr, input1_index_expr = CEmitterCompat.matmul_index_exprs(
@@ -195,9 +213,9 @@ class MatMulOp(MatMulLikeOpBase):
             input0_batch_shape=input0_batch_shape,
             input1_batch_shape=input1_batch_shape,
         )
-        input0_suffix = emitter.param_array_suffix(input0_shape)
-        input1_suffix = emitter.param_array_suffix(input1_shape)
-        output_suffix = emitter.param_array_suffix(emitter.ctx_shape(self.output))
+        input0_suffix = emitter.param_array_suffix(input0_shape, input0_dim_names)
+        input1_suffix = emitter.param_array_suffix(input1_shape, input1_dim_names)
+        output_suffix = emitter.param_array_suffix(output_shape_raw, output_dim_names)
         acc_dtype = emitter.accumulation_dtype(emitter.ctx_dtype(self.output))
         acc_zero_literal = emitter.format_literal(acc_dtype, 0)
         param_decls = emitter.build_param_decls(
@@ -2367,6 +2385,8 @@ class AveragePoolOp(RenderableOpBase):
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
+        input_dim_names = emitter.dim_names_for(self.input0)
+        output_dim_names = emitter.dim_names_for(self.output)
         if self.spatial_rank == 3:
             input_shape = (
                 self.batch,
@@ -2388,8 +2408,33 @@ class AveragePoolOp(RenderableOpBase):
         else:
             input_shape = (self.batch, self.channels, self.in_h, self.in_w)
             output_shape = (self.batch, self.channels, self.out_h, self.out_w)
-        input_suffix = emitter.param_array_suffix(input_shape)
-        output_suffix = emitter.param_array_suffix(output_shape)
+        input_shape_expr = CEmitterCompat.shape_dim_exprs(input_shape, input_dim_names)
+        output_shape_expr = CEmitterCompat.shape_dim_exprs(
+            output_shape, output_dim_names
+        )
+        if self.spatial_rank == 3:
+            in_d = input_shape_expr[2]
+            in_h = input_shape_expr[3]
+            in_w = input_shape_expr[4]
+            out_d = output_shape_expr[2]
+            out_h = output_shape_expr[3]
+            out_w = output_shape_expr[4]
+        elif self.spatial_rank == 1:
+            in_d = self.in_d
+            in_h = self.in_h
+            in_w = input_shape_expr[2]
+            out_d = self.out_d
+            out_h = self.out_h
+            out_w = output_shape_expr[2]
+        else:
+            in_d = self.in_d
+            in_h = input_shape_expr[2]
+            in_w = input_shape_expr[3]
+            out_d = self.out_d
+            out_h = output_shape_expr[2]
+            out_w = output_shape_expr[3]
+        input_suffix = emitter.param_array_suffix(input_shape, input_dim_names)
+        output_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
         param_decls = emitter.build_param_decls(
             [
                 (params["input0"], c_type, input_suffix, True),
@@ -2408,15 +2453,15 @@ class AveragePoolOp(RenderableOpBase):
                 zero_literal=zero_literal,
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
-                batch=self.batch,
-                channels=self.channels,
+                batch=input_shape_expr[0],
+                channels=input_shape_expr[1],
                 spatial_rank=self.spatial_rank,
-                in_d=self.in_d,
-                in_h=self.in_h,
-                in_w=self.in_w,
-                out_d=self.out_d,
-                out_h=self.out_h,
-                out_w=self.out_w,
+                in_d=in_d,
+                in_h=in_h,
+                in_w=in_w,
+                out_d=out_d,
+                out_h=out_h,
+                out_w=out_w,
                 kernel_d=self.kernel_d,
                 kernel_h=self.kernel_h,
                 kernel_w=self.kernel_w,
@@ -2718,14 +2763,35 @@ class SoftmaxOp(RenderableOpBase):
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
         output_shape = emitter.ctx_shape(self.output)
+        output_dim_names = emitter.dim_names_for(self.output)
         output_dtype = emitter.ctx_dtype(self.output)
-        outer = emitter.derived(self, "outer")
-        axis_size = emitter.derived(self, "axis_size")
-        inner = emitter.derived(self, "inner")
+        axis = emitter.derived(self, "axis")
+        if self.use_legacy_axis_semantics:
+            outer = (
+                _shape_product_expr(output_shape[:axis], output_dim_names)
+                if axis > 0
+                else 1
+            )
+            axis_size = _shape_product_expr(output_shape[axis:], output_dim_names)
+            inner = 1
+        else:
+            outer = (
+                _shape_product_expr(output_shape[:axis], output_dim_names)
+                if axis > 0
+                else 1
+            )
+            axis_size = CEmitterCompat.shape_dim_exprs(output_shape, output_dim_names)[
+                axis
+            ]
+            inner = (
+                _shape_product_expr(output_shape[axis + 1 :], output_dim_names)
+                if axis + 1 < len(output_shape)
+                else 1
+            )
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
-        array_suffix = emitter.param_array_suffix(output_shape)
+        array_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
         param_decls = emitter.build_param_decls(
             [
                 (params["input0"], output_dtype.c_type, array_suffix, True),
@@ -2778,23 +2844,8 @@ class SoftmaxOp(RenderableOpBase):
             raise ShapeInferenceError(
                 f"Softmax axis {self.axis} is out of bounds for shape {input_shape}"
             )
-        if self.use_legacy_axis_semantics:
-            outer = _shape_product(input_shape[:axis]) if axis > 0 else 1
-            axis_size = _shape_product(input_shape[axis:])
-            inner = 1
-        else:
-            outer = _shape_product(input_shape[:axis]) if axis > 0 else 1
-            axis_size = input_shape[axis]
-            inner = (
-                _shape_product(input_shape[axis + 1 :])
-                if axis + 1 < len(input_shape)
-                else 1
-            )
         ctx.set_shape(self.output, input_shape)
         ctx.set_derived(self, "axis", axis)
-        ctx.set_derived(self, "outer", outer)
-        ctx.set_derived(self, "axis_size", axis_size)
-        ctx.set_derived(self, "inner", inner)
 
 
 @dataclass(frozen=True)
@@ -2966,14 +3017,35 @@ class LogSoftmaxOp(RenderableOpBase):
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
         output_shape = emitter.ctx_shape(self.output)
+        output_dim_names = emitter.dim_names_for(self.output)
         output_dtype = emitter.ctx_dtype(self.output)
-        outer = emitter.derived(self, "outer")
-        axis_size = emitter.derived(self, "axis_size")
-        inner = emitter.derived(self, "inner")
+        axis = emitter.derived(self, "axis")
+        if self.use_legacy_axis_semantics:
+            outer = (
+                _shape_product_expr(output_shape[:axis], output_dim_names)
+                if axis > 0
+                else 1
+            )
+            axis_size = _shape_product_expr(output_shape[axis:], output_dim_names)
+            inner = 1
+        else:
+            outer = (
+                _shape_product_expr(output_shape[:axis], output_dim_names)
+                if axis > 0
+                else 1
+            )
+            axis_size = CEmitterCompat.shape_dim_exprs(output_shape, output_dim_names)[
+                axis
+            ]
+            inner = (
+                _shape_product_expr(output_shape[axis + 1 :], output_dim_names)
+                if axis + 1 < len(output_shape)
+                else 1
+            )
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
-        array_suffix = emitter.param_array_suffix(output_shape)
+        array_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
         param_decls = emitter.build_param_decls(
             [
                 (params["input0"], output_dtype.c_type, array_suffix, True),
@@ -3026,23 +3098,8 @@ class LogSoftmaxOp(RenderableOpBase):
             raise ShapeInferenceError(
                 f"LogSoftmax axis {self.axis} is out of bounds for shape {input_shape}"
             )
-        if self.use_legacy_axis_semantics:
-            outer = _shape_product(input_shape[:axis]) if axis > 0 else 1
-            axis_size = _shape_product(input_shape[axis:])
-            inner = 1
-        else:
-            outer = _shape_product(input_shape[:axis]) if axis > 0 else 1
-            axis_size = input_shape[axis]
-            inner = (
-                _shape_product(input_shape[axis + 1 :])
-                if axis + 1 < len(input_shape)
-                else 1
-            )
         ctx.set_shape(self.output, input_shape)
         ctx.set_derived(self, "axis", axis)
-        ctx.set_derived(self, "outer", outer)
-        ctx.set_derived(self, "axis_size", axis_size)
-        ctx.set_derived(self, "inner", inner)
 
 
 @dataclass(frozen=True)
@@ -3058,15 +3115,25 @@ class HardmaxOp(RenderableOpBase):
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
         output_shape = emitter.ctx_shape(self.output)
+        output_dim_names = emitter.dim_names_for(self.output)
         output_dtype = emitter.ctx_dtype(self.output)
         zero_literal = output_dtype.zero_literal
-        outer = emitter.derived(self, "outer")
-        axis_size = emitter.derived(self, "axis_size")
-        inner = emitter.derived(self, "inner")
+        axis = emitter.derived(self, "axis")
+        outer = (
+            _shape_product_expr(output_shape[:axis], output_dim_names)
+            if axis > 0
+            else 1
+        )
+        axis_size = CEmitterCompat.shape_dim_exprs(output_shape, output_dim_names)[axis]
+        inner = (
+            _shape_product_expr(output_shape[axis + 1 :], output_dim_names)
+            if axis + 1 < len(output_shape)
+            else 1
+        )
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
-        array_suffix = emitter.param_array_suffix(output_shape)
+        array_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
         param_decls = emitter.build_param_decls(
             [
                 (params["input0"], output_dtype.c_type, array_suffix, True),
@@ -3129,23 +3196,8 @@ class HardmaxOp(RenderableOpBase):
             raise ShapeInferenceError(
                 f"Hardmax axis {self.axis} is out of bounds for shape {input_shape}"
             )
-        if legacy_axis_semantics:
-            outer = _shape_product(input_shape[:axis]) if axis > 0 else 1
-            axis_size = _shape_product(input_shape[axis:])
-            inner = 1
-        else:
-            outer = _shape_product(input_shape[:axis]) if axis > 0 else 1
-            axis_size = input_shape[axis]
-            inner = (
-                _shape_product(input_shape[axis + 1 :])
-                if axis + 1 < len(input_shape)
-                else 1
-            )
         ctx.set_shape(self.output, input_shape)
         ctx.set_derived(self, "axis", axis)
-        ctx.set_derived(self, "outer", outer)
-        ctx.set_derived(self, "axis_size", axis_size)
-        ctx.set_derived(self, "inner", inner)
 
 
 @dataclass(frozen=True)
@@ -4674,6 +4726,7 @@ class LstmOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
         output_dtype = emitter.ctx_dtype(
             self.output_y or self.output_y_h or self.output_y_c
         )
@@ -4694,74 +4747,56 @@ class LstmOp(RenderableOpBase):
                 ("output_y_c", self.output_y_c),
             ]
         )
-        input_x_shape = (
-            (self.seq_length, self.batch_size, self.input_size)
-            if self.layout == 0
-            else (self.batch_size, self.seq_length, self.input_size)
-        )
-        w_shape = (self.num_directions, 4 * self.hidden_size, self.input_size)
-        r_shape = (self.num_directions, 4 * self.hidden_size, self.hidden_size)
-        b_shape = (
-            (self.num_directions, 8 * self.hidden_size)
-            if self.input_b is not None
+        input_x_shape = emitter.ctx_shape(self.input_x)
+        input_x_dim_names = emitter.dim_names_for(self.input_x)
+        input_x_dims = CEmitterCompat.shape_dim_exprs(input_x_shape, input_x_dim_names)
+        seq_length = input_x_dims[0] if self.layout == 0 else input_x_dims[1]
+        batch_size = input_x_dims[1] if self.layout == 0 else input_x_dims[0]
+        w_shape = emitter.ctx_shape(self.input_w)
+        r_shape = emitter.ctx_shape(self.input_r)
+        b_shape = emitter.ctx_shape(self.input_b) if self.input_b is not None else None
+        seq_shape = (
+            emitter.ctx_shape(self.input_sequence_lens)
+            if self.input_sequence_lens is not None
             else None
         )
-        seq_shape = (self.batch_size,) if self.input_sequence_lens is not None else None
-        state_shape = (
-            (self.num_directions, self.batch_size, self.hidden_size)
-            if self.layout == 0
-            else (self.batch_size, self.num_directions, self.hidden_size)
-        )
-        h_shape = (
-            state_shape
-            if self.input_initial_h is not None or self.output_y_h is not None
-            else None
-        )
-        c_shape = (
-            state_shape
-            if self.input_initial_c is not None or self.output_y_c is not None
-            else None
-        )
-        p_shape = (
-            (self.num_directions, 3 * self.hidden_size)
-            if self.input_p is not None
-            else None
-        )
-        y_shape = (
-            (self.seq_length, self.num_directions, self.batch_size, self.hidden_size)
-            if self.layout == 0
-            else (
-                self.batch_size,
-                self.seq_length,
-                self.num_directions,
-                self.hidden_size,
-            )
-        )
+        h_name = self.input_initial_h or self.output_y_h
+        h_shape = emitter.ctx_shape(h_name) if h_name is not None else None
+        c_name = self.input_initial_c or self.output_y_c
+        c_shape = emitter.ctx_shape(c_name) if c_name is not None else None
+        p_shape = emitter.ctx_shape(self.input_p) if self.input_p is not None else None
+        y_shape = emitter.ctx_shape(self.output_y) if self.output_y is not None else None
         param_decls = emitter.build_param_decls(
             [
                 (
                     params["input_x"],
                     c_type,
-                    emitter.param_array_suffix(input_x_shape),
+                    emitter.param_array_suffix(input_x_shape, input_x_dim_names),
                     True,
                 ),
                 (
                     params["input_w"],
                     c_type,
-                    emitter.param_array_suffix(w_shape),
+                    emitter.param_array_suffix(
+                        w_shape, emitter.dim_names_for(self.input_w)
+                    ),
                     True,
                 ),
                 (
                     params["input_r"],
                     c_type,
-                    emitter.param_array_suffix(r_shape),
+                    emitter.param_array_suffix(
+                        r_shape, emitter.dim_names_for(self.input_r)
+                    ),
                     True,
                 ),
                 (
                     (
                         params["input_b"],
                         c_type,
-                        emitter.param_array_suffix(b_shape),
+                        emitter.param_array_suffix(
+                            b_shape, emitter.dim_names_for(self.input_b)
+                        ),
                         True,
                     )
                     if params["input_b"]
@@ -4771,7 +4806,9 @@ class LstmOp(RenderableOpBase):
                     (
                         params["input_sequence_lens"],
                         (self.sequence_lens_dtype or ScalarType.I64).c_type,
-                        emitter.param_array_suffix(seq_shape),
+                        emitter.param_array_suffix(
+                            seq_shape, emitter.dim_names_for(self.input_sequence_lens)
+                        ),
                         True,
                     )
                     if params["input_sequence_lens"]
@@ -4781,7 +4818,9 @@ class LstmOp(RenderableOpBase):
                     (
                         params["input_initial_h"],
                         c_type,
-                        emitter.param_array_suffix(h_shape),
+                        emitter.param_array_suffix(
+                            h_shape, emitter.dim_names_for(self.input_initial_h)
+                        ),
                         True,
                     )
                     if params["input_initial_h"]
@@ -4791,7 +4830,9 @@ class LstmOp(RenderableOpBase):
                     (
                         params["input_initial_c"],
                         c_type,
-                        emitter.param_array_suffix(c_shape),
+                        emitter.param_array_suffix(
+                            c_shape, emitter.dim_names_for(self.input_initial_c)
+                        ),
                         True,
                     )
                     if params["input_initial_c"]
@@ -4801,7 +4842,9 @@ class LstmOp(RenderableOpBase):
                     (
                         params["input_p"],
                         c_type,
-                        emitter.param_array_suffix(p_shape),
+                        emitter.param_array_suffix(
+                            p_shape, emitter.dim_names_for(self.input_p)
+                        ),
                         True,
                     )
                     if params["input_p"]
@@ -4811,7 +4854,9 @@ class LstmOp(RenderableOpBase):
                     (
                         params["output_y"],
                         c_type,
-                        emitter.param_array_suffix(y_shape),
+                        emitter.param_array_suffix(
+                            y_shape, emitter.dim_names_for(self.output_y)
+                        ),
                         False,
                     )
                     if params["output_y"]
@@ -4821,7 +4866,9 @@ class LstmOp(RenderableOpBase):
                     (
                         params["output_y_h"],
                         c_type,
-                        emitter.param_array_suffix(h_shape),
+                        emitter.param_array_suffix(
+                            h_shape, emitter.dim_names_for(self.output_y_h)
+                        ),
                         False,
                     )
                     if params["output_y_h"]
@@ -4831,7 +4878,9 @@ class LstmOp(RenderableOpBase):
                     (
                         params["output_y_c"],
                         c_type,
-                        emitter.param_array_suffix(c_shape),
+                        emitter.param_array_suffix(
+                            c_shape, emitter.dim_names_for(self.output_y_c)
+                        ),
                         False,
                     )
                     if params["output_y_c"]
@@ -4863,6 +4912,7 @@ class LstmOp(RenderableOpBase):
                 output_y=params["output_y"],
                 output_y_h=params["output_y_h"],
                 output_y_c=params["output_y_c"],
+                dim_args=dim_args,
                 params=param_decls,
                 c_type=c_type,
                 seq_c_type=(self.sequence_lens_dtype or ScalarType.I64).c_type,
@@ -4874,8 +4924,8 @@ class LstmOp(RenderableOpBase):
                     else emitter.format_literal(self.dtype, 0)
                 ),
                 use_clip=int(self.clip is not None and self.clip > 0),
-                seq_length=self.seq_length,
-                batch_size=self.batch_size,
+                seq_length=seq_length,
+                batch_size=batch_size,
                 input_size=self.input_size,
                 hidden_size=self.hidden_size,
                 num_directions=self.num_directions,

@@ -2744,13 +2744,30 @@ class CEmitter:
     ) -> None:
         for op in resolved_ops:
             for output_name, output_shape, _ in self._op_outputs(op):
-                if output_name in tensor_dim_names:
-                    continue
+                propagated = dict(tensor_dim_names.get(output_name, {}))
+                if isinstance(op, TransposeOp):
+                    input_dim_names = tensor_dim_names.get(op.input0, {})
+                    for output_axis, input_axis in enumerate(op.perm):
+                        dim_ref = input_dim_names.get(input_axis)
+                        if dim_ref is not None:
+                            propagated.setdefault(output_axis, dim_ref)
                 for input_name, input_shape in self._op_inputs(op):
                     dim_names = tensor_dim_names.get(input_name)
-                    if dim_names and input_shape == output_shape:
-                        tensor_dim_names[output_name] = dict(dim_names)
-                        break
+                    if not dim_names:
+                        continue
+                    if input_shape == output_shape:
+                        for axis, dim_ref in dim_names.items():
+                            propagated.setdefault(axis, dim_ref)
+                        continue
+                    shared_rank = min(len(input_shape), len(output_shape))
+                    for axis in range(shared_rank):
+                        dim_ref = dim_names.get(axis)
+                        if dim_ref is None:
+                            continue
+                        if input_shape[axis] == output_shape[axis]:
+                            propagated.setdefault(axis, dim_ref)
+                if propagated:
+                    tensor_dim_names[output_name] = propagated
 
     def _op_outputs(
         self,
