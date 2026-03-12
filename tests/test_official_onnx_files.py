@@ -122,15 +122,7 @@ def _model_requires_shape_inference_shapes(model_path: str) -> bool:
     return Compiler.requires_explicit_shape_inference_inputs(onnx.load(model_path))
 
 
-MODELS_REQUIRING_SHAPE_INFERENCE_SHAPES = (
-    "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_and_pad_expanded/model.onnx",
-    "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_axes_chw_expanded/model.onnx",
-    "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_axes_hwc_expanded/model.onnx",
-    "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_expanded/model.onnx",
-    "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_negative_axes_hwc_expanded/model.onnx",
-    "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_pad_expanded/model.onnx",
-    "onnx-org/onnx/backend/test/data/simple/test_sequence_model8/model.onnx",
-)
+MODELS_REQUIRING_SHAPE_INFERENCE_SHAPES = ()
 
 _existing_args: tuple[str, ...] = ()
 _full_model_path = Path()
@@ -154,7 +146,6 @@ MODELS_REQUIRING_SHAPE_INFERENCE_SHAPES = tuple(
 del _existing_args
 del _full_model_path
 del _effective_models_requiring_shape_inference_shapes
-del _model_path
 
 
 @dataclass(frozen=True)

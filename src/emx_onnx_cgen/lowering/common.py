@@ -263,6 +263,56 @@ def _split_shape_values_from_static_graph_output(
     return [value]
 
 
+def _center_crop_pad_shape_values_from_static_output(
+    graph: Graph | GraphContext,
+    name: str,
+    node: Node | None,
+    *,
+    _visited: set[str],
+) -> list[int] | None:
+    if isinstance(graph, GraphContext):
+        graph_outputs = graph.graph.outputs
+    else:
+        graph_outputs = graph.outputs
+    if len(graph_outputs) != 1:
+        return None
+    output = graph_outputs[0]
+    if not isinstance(output.type, TensorType):
+        return None
+    output_shape = output.type.shape
+    if any(dim < 0 for dim in output_shape):
+        return None
+    slice_node = _find_node_by_output(graph, output.name)
+    if slice_node is None or slice_node.op_type != "Slice":
+        return None
+    if len(slice_node.inputs) < 3:
+        return None
+    end_name = slice_node.inputs[2]
+    add_node = _find_node_by_output(graph, end_name)
+    if add_node is None or add_node.op_type != "Add" or name not in add_node.inputs:
+        return None
+    consumer_ops = {consumer.op_type for consumer in _find_consumers(graph, name)}
+    if not {"Max", "Add", "Sub"}.issubset(consumer_ops):
+        return None
+    axes_values: list[int] | None = None
+    if len(slice_node.inputs) > 3 and slice_node.inputs[3]:
+        axes_values = _shape_values_from_input(
+            graph,
+            slice_node.inputs[3],
+            node,
+            _visited=_visited,
+        )
+        if axes_values is None:
+            return None
+    if axes_values is None:
+        return list(output_shape)
+    rank = len(output_shape)
+    normalized_axes = [axis if axis >= 0 else axis + rank for axis in axes_values]
+    if any(axis < 0 or axis >= rank for axis in normalized_axes):
+        return None
+    return [output_shape[axis] for axis in normalized_axes]
+
+
 def _shape_values_from_input(
     graph: Graph | GraphContext,
     name: str,
@@ -281,6 +331,19 @@ def _shape_values_from_input(
             return shape_values
         source_node = _find_node_by_output(graph, name)
         if source_node is None:
+            value = graph.find_value(name)
+            if isinstance(value.type, TensorType) and value.type.dtype in {
+                ScalarType.I64,
+                ScalarType.I32,
+            }:
+                inferred_values = _center_crop_pad_shape_values_from_static_output(
+                    graph,
+                    name,
+                    node,
+                    _visited=_visited,
+                )
+                if inferred_values is not None:
+                    return inferred_values
             return None
         if source_node.op_type == "Shape":
             return _shape_values_from_shape_node(graph, source_node, node)

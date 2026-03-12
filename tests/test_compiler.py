@@ -192,6 +192,19 @@ _OFFICIAL_AFFINE_GRID_EXPANDED_MODELS = (
     "onnx-org/onnx/backend/test/data/node/test_affine_grid_3d_expanded/model.onnx",
 )
 
+_OFFICIAL_CENTER_CROP_PAD_EXPANDED_MODELS = (
+    "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_and_pad_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_axes_chw_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_axes_hwc_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_negative_axes_hwc_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_pad_expanded/model.onnx",
+)
+
+_OFFICIAL_SEQUENCE_MODELS = (
+    "onnx-org/onnx/backend/test/data/simple/test_sequence_model8/model.onnx",
+)
+
 
 def test_compile_debug_lowering_failure_context_disabled_by_default() -> None:
     compiler = Compiler(CompilerOptions())
@@ -294,3 +307,31 @@ def test_compile_official_affine_grid_expanded_without_shape_inputs(
     generated = Compiler(CompilerOptions()).compile(onnx.load(model_path))
 
     assert "OpType: ConstantOfShape" in generated
+
+
+@pytest.mark.parametrize(
+    "repo_relative_model_path", _OFFICIAL_CENTER_CROP_PAD_EXPANDED_MODELS
+)
+def test_compile_official_center_crop_pad_expanded_without_shape_inputs(
+    repo_relative_model_path: str,
+) -> None:
+    model_path = Path(__file__).resolve().parents[1] / repo_relative_model_path
+    if not model_path.exists():
+        pytest.skip(f"Missing official ONNX model: {repo_relative_model_path}")
+
+    generated = Compiler(CompilerOptions()).compile(onnx.load(model_path))
+
+    assert "OpType: Pad" in generated
+
+
+@pytest.mark.parametrize("repo_relative_model_path", _OFFICIAL_SEQUENCE_MODELS)
+def test_compile_official_sequence_model_without_shape_inputs(
+    repo_relative_model_path: str,
+) -> None:
+    model_path = Path(__file__).resolve().parents[1] / repo_relative_model_path
+    if not model_path.exists():
+        pytest.skip(f"Missing official ONNX model: {repo_relative_model_path}")
+
+    generated = Compiler(CompilerOptions()).compile(onnx.load(model_path))
+
+    assert "OpType: SequenceLength" in generated
