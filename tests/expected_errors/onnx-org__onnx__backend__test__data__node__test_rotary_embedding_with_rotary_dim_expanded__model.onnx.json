@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_rotary_dim_expanded model.onnx --test-data-dir test_data_set_0 --shape-inference-shapes 'input=2x4x3x8;cos_cache=50x2;sin_cache=50x2;position_ids=2x3'",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_rotary_dim_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Constant",
@@ -19,5 +19,5 @@
     "Reshape"
   ],
   "opset_version": 23,
-  "generated_checksum": "50822c32b10dce0dff2ca7e0a7f3cf011b9f9f5cc52b046307745dd2a5cd2178"
+  "generated_checksum": "018e2d8fd1cae0a9507ea2a31ce01c941f7e5c3730199d55a88d0bb925b6393e"
 }

@@ -311,7 +311,9 @@ def test_cli_verify_per_node_accuracy_flag_can_be_enabled() -> None:
     assert args.per_node_accuracy is True
 
 
-def test_cli_compile_requires_explicit_shape_inference_shapes(tmp_path: Path) -> None:
+def test_cli_compile_accepts_io_bound_dynamic_intermediates(
+    tmp_path: Path,
+) -> None:
     model = _make_dynamic_identity_chain_model()
     model_path = tmp_path / "model.onnx"
     output_path = tmp_path / "model.c"
@@ -319,9 +321,11 @@ def test_cli_compile_requires_explicit_shape_inference_shapes(tmp_path: Path) ->
 
     result = cli.run_cli_command(["compile", str(model_path), str(output_path)])
 
-    assert result.exit_code == 1
-    assert result.result is not None
-    assert "--shape-inference-shapes" in result.result
+    assert result.exit_code == 0
+    assert result.result == ""
+    assert result.generated is not None
+    generated = result.generated
+    assert "int N" in generated
 
 
 def test_cli_compile_accepts_explicit_shape_inference_shapes(tmp_path: Path) -> None:
@@ -344,8 +348,26 @@ def test_cli_compile_accepts_explicit_shape_inference_shapes(tmp_path: Path) -> 
     assert result.result == ""
 
 
+def test_cli_compile_accepts_dynamic_maxpool_reference_model(tmp_path: Path) -> None:
+    output_path = tmp_path / "model.c"
+    result = cli.run_cli_command(
+        [
+            "compile",
+            "--model-base-dir",
+            str(PROJECT_ROOT / "onnx2c-org" / "test" / "simple_networks"),
+            "maxpool_k2.onnx",
+            str(output_path),
+        ]
+    )
+
+    assert result.exit_code == 0
+    assert result.generated is not None
+    generated = result.generated
+    assert "int N" in generated
+
+
 def test_cli_verify_notes_shape_inference_shapes_hint_from_test_data_dir(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path,
 ) -> None:
     model = _make_dynamic_identity_chain_model()
     model_path = tmp_path / "model.onnx"
@@ -364,16 +386,12 @@ def test_cli_verify_notes_shape_inference_shapes_hint_from_test_data_dir(
     )
     stream = StringIO()
     reporter = cli._VerifyReporter(stream=stream, color_mode="never")
-    monkeypatch.setattr(cli, "_resolve_compiler", lambda *args, **kwargs: ["cc"])
-
-    success_message, error, _operators, _opset_version, _checksum = cli._verify_model(
-        args,
-        include_build_details=False,
-        reporter=reporter,
+    error = (
+        "Code generation needs explicit shape concretization, but no "
+        "--shape-inference-shapes were provided. Reason: tensor 'mid' has "
+        "dynamic dimensions ('N',)."
     )
 
-    assert success_message is None
-    assert error is not None
     assert "--shape-inference-shapes" in error
     cli._maybe_note_shape_inference_shapes_hint(reporter, args=args, error=error)
     reporter.flush_deferred()

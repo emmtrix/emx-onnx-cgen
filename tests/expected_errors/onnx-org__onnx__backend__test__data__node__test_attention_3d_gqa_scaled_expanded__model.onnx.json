@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_scaled_expanded model.onnx --test-data-dir test_data_set_0 --shape-inference-shapes 'Q=2x4x72;K=2x6x24;V=2x6x24'",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_scaled_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Shape",
@@ -26,5 +26,5 @@
     "Softmax"
   ],
   "opset_version": 23,
-  "generated_checksum": "821b57adc4f0cbbe4e93e1bd52650b2bcf7d4973b336e2e4849a591b0758dcee"
+  "generated_checksum": "5c4660a83dfe5237abd80e3bd6239eeb5916fc178474ef3d61e60b00314130d9"
 }

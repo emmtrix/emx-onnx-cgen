@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_with_past_and_present_expanded model.onnx --test-data-dir test_data_set_0 --shape-inference-shapes 'Q=2x4x24;K=2x6x24;V=2x6x30;attn_mask=4x18;past_key=2x3x12x8;past_value=2x3x12x10'",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_with_past_and_present_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Shape",
@@ -25,5 +25,5 @@
     "Softmax"
   ],
   "opset_version": 23,
-  "generated_checksum": "f0c4e60807f0267bf152c2d25372357be42762b6d2fd617cc2fa76347c9581dd"
+  "generated_checksum": "16e18afc96c3f305e5f12ce7ab234271adb3e94b866e106dbf5d0970345c3c97"
 }

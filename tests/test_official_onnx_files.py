@@ -13,6 +13,7 @@ import onnx
 import pytest
 
 from emx_onnx_cgen import cli
+from emx_onnx_cgen.compiler import Compiler
 
 EXPECTED_ERRORS_ROOT = Path(__file__).resolve().parent / "expected_errors"
 OFFICIAL_ONNX_PREFIX = "onnx-org/onnx/backend/test/data/"
@@ -114,6 +115,11 @@ def _shape_inference_shapes_from_test_data(repo_relative_path: str) -> str:
             f"Could not derive shape-inference shapes for {repo_relative_path}"
         )
     return shape_spec
+
+
+@cache
+def _model_requires_shape_inference_shapes(model_path: str) -> bool:
+    return Compiler.requires_explicit_shape_inference_inputs(onnx.load(model_path))
 
 
 MODELS_REQUIRING_SHAPE_INFERENCE_SHAPES = (
@@ -263,18 +269,26 @@ MODELS_REQUIRING_SHAPE_INFERENCE_SHAPES = (
 
 _existing_args: tuple[str, ...] = ()
 _full_model_path = Path()
+_effective_models_requiring_shape_inference_shapes: list[str] = []
 for _model_path in MODELS_REQUIRING_SHAPE_INFERENCE_SHAPES:
     _full_model_path = Path(__file__).resolve().parents[1] / _model_path
     if not _full_model_path.exists():
         continue
+    if not _model_requires_shape_inference_shapes(str(_full_model_path)):
+        continue
+    _effective_models_requiring_shape_inference_shapes.append(_model_path)
     _existing_args = MODEL_EXTRA_VERIFY_ARGS.get(_model_path, ())
     MODEL_EXTRA_VERIFY_ARGS[_model_path] = (
         *_existing_args,
         "--shape-inference-shapes",
         _shape_inference_shapes_from_test_data(_model_path),
     )
+MODELS_REQUIRING_SHAPE_INFERENCE_SHAPES = tuple(
+    _effective_models_requiring_shape_inference_shapes
+)
 del _existing_args
 del _full_model_path
+del _effective_models_requiring_shape_inference_shapes
 del _model_path
 
 

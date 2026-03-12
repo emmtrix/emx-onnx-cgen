@@ -1,10 +1,10 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences model.onnx --test-data-dir test_data_set_0 --shape-inference-shapes 'x0=seq[3]:6;x1=seq[3]:6'",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "SequenceMap"
   ],
   "opset_version": 17,
-  "generated_checksum": "dd4bd113fa866f6ddb1c7629bd2bcea387441788d07ebc04c58c6869321e3740"
+  "generated_checksum": "2afe6b3e060efa175e4cb38da2aa15d44f53079eb99171ceacbc5f296e47614c"
 }

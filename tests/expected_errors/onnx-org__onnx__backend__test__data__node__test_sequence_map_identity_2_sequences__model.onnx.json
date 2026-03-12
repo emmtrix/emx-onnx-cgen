@@ -1,10 +1,10 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences model.onnx --test-data-dir test_data_set_0 --shape-inference-shapes 'x0=seq[3]:9;x1=seq[3]:8'",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "SequenceMap"
   ],
   "opset_version": 17,
-  "generated_checksum": "592283613ffa1524ebf8f7411c9fa1576364f654dcbf6c742d426e49fa14491e"
+  "generated_checksum": "ace2693735cabfe647f5d17ef157d226b910a5313bfd4a62db7070b6034ea9aa"
 }

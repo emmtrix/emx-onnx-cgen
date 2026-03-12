@@ -1,10 +1,10 @@
 {
   "error": "OK (max abs diff 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes model.onnx --test-data-dir test_data_set_0 --shape-inference-shapes 'in_seq=seq[3]:40x30x3'",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "SequenceMap"
   ],
   "opset_version": 17,
-  "generated_checksum": "dce56854d0bb21ea53c1686dfeecc822b4b25b4a07577c5640405d193cf09401"
+  "generated_checksum": "0591408814e28130dbe4b5a3b1ede4cfca3e685f2394b40d71a4b74e644ed35a"
 }

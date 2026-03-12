@@ -356,8 +356,33 @@ def test_import_allows_anonymous_dynamic_dims() -> None:
     imported = import_onnx(model)
     output_type = imported.find_value("out").type
 
-    assert output_type.shape == (1,)
+    assert output_type.shape == (-1,)
     assert output_type.dim_params == ("out_dim_0",)
+
+
+def test_import_named_dynamic_dims_use_explicit_unknown_shape() -> None:
+    input_info = helper.make_tensor_value_info("x", TensorProto.FLOAT, [2, 3])
+    output_info = helper.make_tensor_value_info("y", TensorProto.FLOAT, [1])
+    output_dim = output_info.type.tensor_type.shape.dim[0]
+    output_dim.ClearField("dim_value")
+    output_dim.dim_param = "N"
+
+    node = helper.make_node("Identity", inputs=["x"], outputs=["y"])
+    graph = helper.make_graph(
+        [node], "named_dynamic_dim_graph", [input_info], [output_info]
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+
+    imported = import_onnx(model)
+    output_type = imported.find_value("y").type
+
+    assert output_type.shape == (-1,)
+    assert output_type.dim_params == ("N",)
 
 
 def test_import_optional_sequence_value_info_marks_sequence_optional() -> None:

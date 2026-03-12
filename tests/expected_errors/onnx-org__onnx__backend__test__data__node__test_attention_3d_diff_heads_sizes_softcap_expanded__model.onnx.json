@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_softcap_expanded model.onnx --test-data-dir test_data_set_0 --shape-inference-shapes 'Q=2x4x24;K=2x6x24;V=2x6x30'",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_softcap_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Shape",
@@ -27,5 +27,5 @@
     "Softmax"
   ],
   "opset_version": 23,
-  "generated_checksum": "e6da164600df294edb28a82128081f60bdfaeab8e04a400e25acbdfc2075c627"
+  "generated_checksum": "c96fdea513c808ec49a45de7852cd43102c8bb497dd48f591a0b18c5502663c9"
 }

@@ -29,16 +29,23 @@ from emx_onnx_cgen.ir.op_context import OpContext
 def _tensor_type(
     dtype: ScalarType = ScalarType.F32,
     shape: tuple[int, ...] = (2, 3),
+    dim_params: tuple[str | None, ...] | None = None,
 ) -> TensorType:
+    if dim_params is None:
+        dim_params = (None,) * len(shape)
     return TensorType(
         dtype=dtype,
         shape=shape,
-        dim_params=(None,) * len(shape),
+        dim_params=dim_params,
     )
 
 
-def _value(name: str, shape: tuple[int, ...] = (2, 3)) -> Value:
-    return Value(name=name, type=_tensor_type(shape=shape))
+def _value(
+    name: str,
+    shape: tuple[int, ...] = (2, 3),
+    dim_params: tuple[str | None, ...] | None = None,
+) -> Value:
+    return Value(name=name, type=_tensor_type(shape=shape, dim_params=dim_params))
 
 
 def _node(
@@ -121,6 +128,12 @@ class TestCheckGraphIntegrity:
         with pytest.raises(ShapeInferenceError, match="Negative dimension"):
             check_graph_integrity(graph)
 
+    def test_negative_dim_with_dim_param_passes(self) -> None:
+        graph = _simple_graph(
+            inputs=(_value("x", shape=(2, -1), dim_params=(None, "N")),)
+        )
+        check_graph_integrity(graph)
+
     def test_zero_dim_passes(self) -> None:
         graph = _simple_graph(outputs=(_value("y", shape=(0, 3)),))
         check_graph_integrity(graph)
@@ -196,6 +209,16 @@ class TestCheckInferredShapes:
         ops = [_DummyOp(input="x", output="y")]
         with pytest.raises(ShapeInferenceError, match="negative dimension"):
             check_inferred_shapes(ops, op_ctx)
+
+    def test_negative_dim_with_dim_param_passes(self) -> None:
+        graph = _simple_graph(
+            outputs=(_value("y", shape=(2, -1), dim_params=(None, "N")),)
+        )
+        ctx = GraphContext(graph)
+        op_ctx = OpContext(ctx)
+        op_ctx.set_shape("y", (2, -1))
+        ops = [_DummyOp(input="x", output="y")]
+        check_inferred_shapes(ops, op_ctx)
 
     def test_zero_dim_passes(self) -> None:
         graph = _simple_graph()

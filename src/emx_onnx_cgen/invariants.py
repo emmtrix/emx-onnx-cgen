@@ -23,9 +23,9 @@ def check_graph_integrity(graph: Graph) -> None:
     Checks performed:
     - Graph has at least one output.
     - Graph has at least one node.
-    - All tensor values referenced by the graph have non-negative shape
-      dimensions (negative dimensions indicate unresolved dynamic shapes
-      that the compiler cannot handle).
+    - All tensor values referenced by the graph have either non-negative
+      shape dimensions or explicitly marked dynamic dimensions via
+      ``dim_params``.
     """
     if not graph.outputs:
         raise UnsupportedOpError("Graph must have at least one output")
@@ -36,12 +36,17 @@ def check_graph_integrity(graph: Graph) -> None:
         if not isinstance(value.type, TensorType):
             continue
         for dim_index, dim in enumerate(value.type.shape):
-            if dim < 0:
+            dim_param = (
+                value.type.dim_params[dim_index]
+                if dim_index < len(value.type.dim_params)
+                else None
+            )
+            if dim < 0 and not dim_param:
                 raise ShapeInferenceError(
                     f"Negative dimension {dim} at index {dim_index} "
                     f"for value '{value.name}'. "
                     "Hint: export with static shapes or provide "
-                    "--shape-inference-inputs."
+                    "--shape-inference-shapes."
                 )
 
 
@@ -87,7 +92,8 @@ def check_inferred_types(ops: Sequence[OpBase], ctx: OpContext) -> None:
 def check_inferred_shapes(ops: Sequence[OpBase], ctx: OpContext) -> None:
     """Shape-Gate: validate that output shapes are concrete after infer_shapes.
 
-    Every tensor output must have a shape with non-negative dimensions.
+    Every tensor output must have either non-negative dimensions or an
+    explicit ``dim_param`` for each negative dimension.
     Non-tensor outputs (e.g. sequences) are skipped.
 
     ``ctx.shape()`` raises ``ShapeInferenceError`` for missing tensor
@@ -104,8 +110,19 @@ def check_inferred_shapes(ops: Sequence[OpBase], ctx: OpContext) -> None:
         except UnsupportedOpError:
             # Non-tensor output (e.g. sequence) — not covered by this gate.
             continue
+        try:
+            value = ctx.graph.find_value(name)
+        except KeyError:
+            value = None
         for dim_index, dim in enumerate(shape):
-            if dim < 0:
+            dim_param = None
+            if (
+                value is not None
+                and isinstance(value.type, TensorType)
+                and dim_index < len(value.type.dim_params)
+            ):
+                dim_param = value.type.dim_params[dim_index]
+            if dim < 0 and not dim_param:
                 raise ShapeInferenceError(
                     f"Op {op.kind} output '{name}' has negative dimension "
                     f"{dim} at index {dim_index} after shape inference"
