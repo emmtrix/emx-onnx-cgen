@@ -368,7 +368,9 @@ def test_import_named_dynamic_dims_use_explicit_unknown_shape() -> None:
     output_dim.dim_param = "N"
 
     node = helper.make_node("Identity", inputs=["x"], outputs=["y"])
-    graph = helper.make_graph([node], "named_dynamic_dim_graph", [input_info], [output_info])
+    graph = helper.make_graph(
+        [node], "named_dynamic_dim_graph", [input_info], [output_info]
+    )
     model = helper.make_model(
         graph,
         producer_name="onnx2c",

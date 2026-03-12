@@ -1852,7 +1852,7 @@ Coverage 119 / 125 ONNX files (95.2%).
 | local_ops/test_gemm_C1xN/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
 | local_ops/test_gemm_C1xN_transA/model.onnx | 12 | Data | ✅ | OK (max ULP 1) |
 | local_ops/test_gemm_C1xN_transA_transB/model.onnx | 12 | Data | ✅ | OK (max ULP 1) |
-| local_ops/test_gemm_CM_transA/model.onnx | 12 | Data | ❌ | onnxruntime failed to run onnx2c-org\test\local_ops\test_gemm_CM_transA\model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'sclbl-onnx-node1' Status Message: Gemm: Invalid bias shape for broadcast |
+| local_ops/test_gemm_CM_transA/model.onnx | 12 | Data | ❌ | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'sclbl-onnx-node1' Status Message: Gemm: Invalid bias shape for broadcast |
 | local_ops/test_gemm_CMx1/model.onnx | 12 | Data | ✅ | OK (max ULP 1) |
 | local_ops/test_gemm_CMx1_transA/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
 | local_ops/test_gemm_CMx1_transA_transB/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |

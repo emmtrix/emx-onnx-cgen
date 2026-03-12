@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis_negative_1_expanded model.onnx --test-data-dir test_data_set_0",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis_negative_1_expanded model.onnx --test-data-dir test_data_set_0 --shape-inference-shapes 'X=3x4;W=[-1.0485529899597168,-1.420017957687378,-1.7062702178955078,1.950775384902954]'",
   "verification_mode": "Data",
   "operators": [
     "Constant",
@@ -15,5 +15,5 @@
     "Div"
   ],
   "opset_version": 23,
-  "generated_checksum": "3ef90c97757e0c878add93eb88c39f33fa4c38d6309e8b62eb2d3bd2b048e05b"
+  "generated_checksum": "4920364c9b8ee0e10212a14fd82d511cdef5939cf24b74e0604698eca446c110"
 }

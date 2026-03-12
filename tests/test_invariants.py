@@ -211,7 +211,9 @@ class TestCheckInferredShapes:
             check_inferred_shapes(ops, op_ctx)
 
     def test_negative_dim_with_dim_param_passes(self) -> None:
-        graph = _simple_graph(outputs=(_value("y", shape=(2, -1), dim_params=(None, "N")),))
+        graph = _simple_graph(
+            outputs=(_value("y", shape=(2, -1), dim_params=(None, "N")),)
+        )
         ctx = GraphContext(graph)
         op_ctx = OpContext(ctx)
         op_ctx.set_shape("y", (2, -1))

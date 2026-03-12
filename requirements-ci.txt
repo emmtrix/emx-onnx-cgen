@@ -1,14 +1,16 @@
 # Core ONNX toolchain
 onnx==1.20.1
 onnxruntime==1.23.2
-protobuf>=4.25.0
+# >=5.29.6: fixes GHSA-8qvm-5x2c-j2w7 / CVE-2025-4565 (DoS, < 4.25.8) and
+#           GHSA-7gcm-g887-7qv7 / CVE-2026-0994 (JSON recursion bypass, < 5.29.6)
+protobuf>=5.29.6
 
 # Numerics
 numpy==2.2.6
 
 # Code generation
 Jinja2==3.1.6
-emx-regex-cgen==0.1.3
+emx-regex-cgen==0.2.0
 
 # Image decoding (ImageDecoder operator verification)
 Pillow>=10.0.0
