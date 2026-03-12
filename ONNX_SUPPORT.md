@@ -9,7 +9,7 @@ Overview:
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1636 / 1802, 90.8% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 124 / 125, 99.2% | n/a |
-| [Local ONNX test coverage](#local-onnx-test-coverage) | 5 / 7, 71.4% | n/a |
+| [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
 
@@ -1966,14 +1966,14 @@ Coverage 124 / 125 ONNX files (99.2%).
 
 Test directory: `tests/onnx`
 
-Coverage 5 / 7 ONNX files (71.4%).
+Coverage 7 / 7 ONNX files (100.0%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
-| micro_kws_m_qdq.onnx | 15 | Random+ORT | ❌ | Out of tolerance (max ULP 1065155838) |
+| micro_kws_m_qdq.onnx | 15 | Random+ORT | ✅ | OK (max ULP 0) |
 | micro_kws_m_qoperator_add_shape.onnx | 15 | Random+ORT | ✅ | OK (max ULP 0) |
 | micro_kws_m_qoperator_avg_pool.onnx | 15 | Random+ORT | ✅ | OK (max ULP 0) |
 | micro_kws_m_qoperator_softmax.onnx | 15 | Random+ORT | ✅ | OK (max ULP 0) |
 | micro_kws_m_static_fp32.onnx | 15 | Random+ORT | ✅ | OK (max ULP 6) |
-| micro_kws_m_static_qdq.onnx | 15 | Random+ORT | ❌ | Out of tolerance (max ULP 1065155838) |
+| micro_kws_m_static_qdq.onnx | 15 | Random+ORT | ✅ | OK (max ULP 0) |
 | micro_kws_m_static_qoperator.onnx | 15 | Random+ORT | ✅ | OK (max ULP 0) |

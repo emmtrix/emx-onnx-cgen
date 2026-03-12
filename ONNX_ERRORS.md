@@ -16,8 +16,8 @@ Aggregates non-success verification outcomes.
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
-| Out of tolerance | 4 | 15, 22 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
+| Out of tolerance | 2 | 22 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 1 | 12 |
 
 ## Error frequency by opset
@@ -25,7 +25,6 @@ Aggregates non-success verification outcomes.
 | Error message | Opset | Count |
 | --- | --- | --- |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
-| Out of tolerance | 15 | 2 |
 | Out of tolerance | 22 | 1 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 25 | 22 |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 25 | 20 |
@@ -45,8 +44,6 @@ Lists every ONNX file with a non-success verification outcome.
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
 | local_ops/test_gemm_CM_transA/model.onnx | 12 | Data | ❌ | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'sclbl-onnx-node1' Status Message: Gemm: Invalid bias shape for broadcast |
-| micro_kws_m_qdq.onnx | 15 | Random+ORT | ❌ | Out of tolerance (max ULP 1065155838) |
-| micro_kws_m_static_qdq.onnx | 15 | Random+ORT | ❌ | Out of tolerance (max ULP 1065155838) |
 | node/test_adam_multiple/model.onnx |  | Data | ❌ | Out of tolerance (max ULP 62311) |
 | node/test_cast_FLOAT16_to_FLOAT4E2M1/model.onnx | 25 | Data | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'output'. |
 | node/test_cast_FLOAT16_to_FLOAT8E4M3FN/model.onnx | 25 | Data | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'output'. |
