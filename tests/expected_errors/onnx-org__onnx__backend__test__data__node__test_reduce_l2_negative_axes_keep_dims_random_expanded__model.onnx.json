@@ -1,5 +1,5 @@
 {
-  "error": "ReduceSum output shape rank must match input rank",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_reduce_l2_negative_axes_keep_dims_random_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
@@ -9,5 +9,6 @@
     "Sqrt",
     "CastLike"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "88d685bf023ef9300f615c75c46a02682559cff39a9fae27a4cfd5e17fe5c450"
 }

@@ -20,14 +20,6 @@ def _find_initializer(graph: Graph, name: str) -> Initializer | None:
     return None
 
 
-def _validate_shape(shape: tuple[int, ...], node: Node, label: str) -> None:
-    for dim in shape:
-        if dim < 0:
-            raise ShapeInferenceError(
-                f"{node.op_type} does not support dynamic dims in {label}"
-            )
-
-
 def _normalize_axes(axes: list[int], input_rank: int, node: Node) -> tuple[int, ...]:
     normalized: list[int] = []
     for axis in axes:
@@ -101,6 +93,22 @@ def _validate_output_shape_for_unknown_axes(
         )
 
 
+def _validate_squeezed_axes(
+    input_shape: tuple[int, ...],
+    input_dim_params: tuple[str | None, ...],
+    axes: tuple[int, ...],
+) -> None:
+    for axis in axes:
+        dim_param = input_dim_params[axis] if axis < len(input_dim_params) else None
+        if input_shape[axis] == 1:
+            continue
+        if dim_param:
+            raise ShapeInferenceError(
+                "Squeeze axes with symbolic dimensions are not supported"
+            )
+        raise ShapeInferenceError("Squeeze axes must target dimensions of size 1")
+
+
 @register_lowering("Squeeze")
 def lower_squeeze(graph: Graph, node: Node) -> ReshapeOp:
     if len(node.outputs) != 1 or len(node.inputs) not in {1, 2}:
@@ -109,8 +117,6 @@ def lower_squeeze(graph: Graph, node: Node) -> ReshapeOp:
     output_shape = _value_shape(graph, node.outputs[0], node)
     input_dim_params = value_dim_params(graph, node.inputs[0])
     has_symbolic_input_dims = any(input_dim_params)
-    _validate_shape(input_shape, node, "input")
-    _validate_shape(output_shape, node, "output")
     input_dtype = _value_dtype(graph, node.inputs[0], node)
     output_dtype = _value_dtype(graph, node.outputs[0], node)
     if input_dtype != output_dtype:
@@ -154,12 +160,7 @@ def lower_squeeze(graph: Graph, node: Node) -> ReshapeOp:
             output_shape = expected_shape
     else:
         normalized_axes = _normalize_axes(list(axes), len(input_shape), node)
-        for axis in normalized_axes:
-            dim_param = input_dim_params[axis] if axis < len(input_dim_params) else None
-            if input_shape[axis] != 1 and not dim_param:
-                raise ShapeInferenceError(
-                    "Squeeze axes must target dimensions of size 1"
-                )
+        _validate_squeezed_axes(input_shape, input_dim_params, normalized_axes)
         expected_shape = _expected_output_shape(input_shape, normalized_axes)
         reduced_dim_params = tuple(
             dim_param

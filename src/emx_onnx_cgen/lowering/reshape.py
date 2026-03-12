@@ -27,6 +27,18 @@ def _shape_product(shape: tuple[int, ...]) -> int:
     return product
 
 
+def _known_shape_product(shape: tuple[int, ...]) -> int:
+    product = 1
+    for dim in shape:
+        if dim >= 0:
+            product *= dim
+    return product
+
+
+def _dynamic_dim_count(shape: tuple[int, ...]) -> int:
+    return sum(1 for dim in shape if dim < 0)
+
+
 def _reshape_mismatch_error(
     node: Node,
     input_shape: tuple[int, ...],
@@ -280,6 +292,7 @@ def _resolve_target_shape(
             unknown_index = index
             output_dims.append(-1)
         else:
+            copied_input_dim = False
             if dim == 0:
                 contains_zero = True
                 if allowzero == 0:
@@ -288,7 +301,8 @@ def _resolve_target_shape(
                             "Reshape zero dim must index into input shape"
                         )
                     dim = input_shape[index]
-            if dim < 0:
+                    copied_input_dim = True
+            if dim < 0 and not copied_input_dim:
                 raise ShapeInferenceError("Reshape dims must be >= -1")
             output_dims.append(dim)
             known_product *= dim
@@ -296,22 +310,42 @@ def _resolve_target_shape(
         raise ShapeInferenceError(
             "Reshape allowzero cannot combine zero and -1 dimensions"
         )
-    input_product = _shape_product(input_shape)
+    input_has_dynamic_dims = any(dim < 0 for dim in input_shape)
+    input_product = None if input_has_dynamic_dims else _shape_product(input_shape)
     if unknown_index is not None:
         if known_product == 0:
-            if input_product != 0:
+            if input_product is None or input_product != 0:
                 raise ShapeInferenceError(
                     "Reshape cannot infer dimension from input shape"
                 )
             output_dims[unknown_index] = 0
         else:
-            if input_product % known_product != 0:
-                raise ShapeInferenceError(
-                    "Reshape cannot infer dimension from input shape"
-                )
-            output_dims[unknown_index] = input_product // known_product
+            if input_product is None:
+                if (
+                    _dynamic_dim_count(input_shape) == 1
+                    and _known_shape_product(input_shape) == known_product
+                ):
+                    output_dims[unknown_index] = -1
+                else:
+                    raise ShapeInferenceError(
+                        "Reshape cannot infer dimension from input shape"
+                    )
+            else:
+                if input_product % known_product != 0:
+                    raise ShapeInferenceError(
+                        "Reshape cannot infer dimension from input shape"
+                    )
+                output_dims[unknown_index] = input_product // known_product
     output_shape = tuple(output_dims)
-    if _shape_product(output_shape) != input_product:
+    if input_product is not None:
+        if _shape_product(output_shape) != input_product:
+            raise _reshape_mismatch_error(node, input_shape, output_shape)
+    elif _dynamic_dim_count(output_shape) > 1:
+        raise ShapeInferenceError(
+            "Reshape cannot preserve more than one dynamic dimension without "
+            "explicit shape concretization"
+        )
+    elif _known_shape_product(output_shape) != _known_shape_product(input_shape):
         raise _reshape_mismatch_error(node, input_shape, output_shape)
     return output_shape
 
@@ -350,13 +384,21 @@ def lower_reshape(graph: Graph, node: Node) -> ReshapeOp:
                 f"Reshape output shape must be {resolved_shape}, got {output_shape}"
             )
     else:
-        if _shape_product(output_shape) != _shape_product(input_shape):
+        if (
+            any(dim < 0 for dim in input_shape)
+            or any(dim < 0 for dim in output_shape)
+        ):
+            if (
+                _dynamic_dim_count(input_shape) > 1
+                or _dynamic_dim_count(output_shape) > 1
+                or _known_shape_product(output_shape)
+                != _known_shape_product(input_shape)
+            ):
+                raise _reshape_mismatch_error(node, input_shape, output_shape)
+        elif _shape_product(output_shape) != _shape_product(input_shape):
             raise _reshape_mismatch_error(node, input_shape, output_shape)
     if resolved_shape is not None:
         output_shape = resolved_shape
-    for dim in output_shape:
-        if dim < 0:
-            raise ShapeInferenceError("Dynamic dims are not supported")
     if isinstance(graph, GraphContext):
         graph.set_shape(node.outputs[0], output_shape)
     return ReshapeOp(

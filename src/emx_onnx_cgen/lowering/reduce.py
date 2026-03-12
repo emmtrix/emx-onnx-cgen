@@ -7,6 +7,7 @@ import numpy as np
 from shared.scalar_types import ScalarType
 
 from ..ir.ops import ReduceOp, ReshapeOp
+from ..ir.context import GraphContext
 from ..dtypes import scalar_type_from_onnx
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Initializer, Node
@@ -284,6 +285,82 @@ def _infer_axes_from_shapes(
     return None
 
 
+_SHAPE_PRESERVING_REDUCE_CONSUMERS = frozenset(
+    {
+        "Identity",
+        "Cast",
+        "CastLike",
+        "Abs",
+        "Neg",
+        "Sqrt",
+        "Exp",
+        "Log",
+        "Relu",
+        "Sigmoid",
+        "Tanh",
+    }
+)
+
+
+def _passthrough_output_shape_from_consumers(
+    graph: Graph,
+    value_name: str,
+    node: Node,
+    *,
+    _visited: set[str] | None = None,
+) -> tuple[int, ...] | None:
+    if _visited is None:
+        _visited = set()
+    if value_name in _visited:
+        return None
+    _visited.add(value_name)
+    for consumer in graph.nodes:
+        if value_name not in consumer.inputs:
+            continue
+        if len(consumer.outputs) != 1:
+            continue
+        if consumer.op_type not in _SHAPE_PRESERVING_REDUCE_CONSUMERS:
+            continue
+        input_index = consumer.inputs.index(value_name)
+        if consumer.op_type == "CastLike" and input_index != 0:
+            continue
+        output_name = consumer.outputs[0]
+        output_shape = _value_shape(graph, output_name, consumer)
+        if output_shape:
+            return output_shape
+        downstream_shape = _passthrough_output_shape_from_consumers(
+            graph,
+            output_name,
+            node,
+            _visited=_visited,
+        )
+        if downstream_shape is not None:
+            return downstream_shape
+    return None
+
+
+def _best_effort_reduce_output_shape(
+    graph: Graph,
+    output_name: str,
+    input_shape: tuple[int, ...],
+    keepdims: bool,
+    node: Node,
+) -> tuple[int, ...]:
+    output_shape = _value_shape(graph, output_name, node)
+    should_recover = (keepdims and len(output_shape) != len(input_shape)) or (
+        output_shape == () and input_shape != ()
+    )
+    if should_recover:
+        recovered_shape = _passthrough_output_shape_from_consumers(
+            graph,
+            output_name,
+            node,
+        )
+        if recovered_shape is not None:
+            return recovered_shape
+    return output_shape
+
+
 def normalize_reduce_axes(
     axes: tuple[int, ...], input_shape: tuple[int, ...], node: Node
 ) -> tuple[int, ...]:
@@ -328,7 +405,13 @@ def resolve_reduce_axes(
         if axes_input.input_name:
             axes = _axes_values_from_shape_ops(graph, axes_input.input_name, node)
         if axes is None:
-            output_shape = _value_shape(graph, node.outputs[0], node)
+            output_shape = _best_effort_reduce_output_shape(
+                graph,
+                node.outputs[0],
+                input_shape,
+                keepdims,
+                node,
+            )
             axes = _infer_axes_from_shapes(input_shape, output_shape, keepdims, node)
         if axes is None:
             axes_input_name = axes_input.input_name
@@ -349,7 +432,13 @@ def resolve_reduce_axes(
             return None, True
         axes = tuple(range(len(input_shape)))
     if axes is None:
-        output_shape = _value_shape(graph, node.outputs[0], node)
+        output_shape = _best_effort_reduce_output_shape(
+            graph,
+            node.outputs[0],
+            input_shape,
+            keepdims,
+            node,
+        )
         if keepdims and len(output_shape) != len(input_shape):
             raise ShapeInferenceError(
                 f"{node.op_type} output shape rank must match input rank"
@@ -497,6 +586,8 @@ def lower_reduce(graph: Graph, node: Node) -> ReduceOp | ReshapeOp:
         raise ShapeInferenceError(
             f"{node.op_type} axes input must have a static shape and dtype"
         )
+    if isinstance(graph, GraphContext):
+        graph.set_shape(node.outputs[0], spec.output_shape)
     return ReduceOp(
         input0=node.inputs[0],
         output=node.outputs[0],
