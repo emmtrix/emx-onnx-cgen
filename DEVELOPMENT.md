@@ -122,7 +122,7 @@ Verification conceptually:
 Prefer running a focused subset while developing:
 
 ```bash
-pytest -q tests/test_some_module.py -n auto
+pytest -q tests/test_some_module.py
 ```
 
 If you need to exercise full verification (instead of the early-exit checksum
@@ -139,12 +139,12 @@ to fail (non-OK expectations), or `UPDATE_REFS=3` to skip checksums entirely.
 ### Full suite
 
 ```bash
-pytest -n auto -q --maxfail=10
+pytest -q --maxfail=10
 ```
 
 Notes:
 
-* The suite can take several minutes; use `-n auto` (xdist) for speed.
+* The suite can take several minutes; `pytest` defaults to `-n auto` via xdist.
 * Tests include “golden” expectations of generated artifacts and expected error JSON files.
 
 ---
@@ -154,7 +154,7 @@ Notes:
 If you intentionally changed codegen output or expected-error baselines, regenerate references by running:
 
 ```bash
-UPDATE_REFS=1 pytest -n auto -q --maxfail=10
+UPDATE_REFS=1 pytest -q --maxfail=10
 ```
 
 In CI (PRs), the test workflow runs with `UPDATE_REFS=1` and may auto-commit updated references to the PR branch (for branches in the same repo).
