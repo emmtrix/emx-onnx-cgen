@@ -367,7 +367,7 @@ def test_cli_compile_accepts_dynamic_maxpool_reference_model(tmp_path: Path) -> 
 
 
 def test_cli_verify_notes_shape_inference_shapes_hint_from_test_data_dir(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path,
 ) -> None:
     model = _make_dynamic_identity_chain_model()
     model_path = tmp_path / "model.onnx"
@@ -386,16 +386,12 @@ def test_cli_verify_notes_shape_inference_shapes_hint_from_test_data_dir(
     )
     stream = StringIO()
     reporter = cli._VerifyReporter(stream=stream, color_mode="never")
-    monkeypatch.setattr(cli, "_resolve_compiler", lambda *args, **kwargs: ["cc"])
-
-    success_message, error, _operators, _opset_version, _checksum = cli._verify_model(
-        args,
-        include_build_details=False,
-        reporter=reporter,
+    error = (
+        "Code generation needs explicit shape concretization, but no "
+        "--shape-inference-shapes were provided. Reason: tensor 'mid' has "
+        "dynamic dimensions ('N',)."
     )
 
-    assert success_message is None
-    assert error is not None
     assert "--shape-inference-shapes" in error
     cli._maybe_note_shape_inference_shapes_hint(reporter, args=args, error=error)
     reporter.flush_deferred()

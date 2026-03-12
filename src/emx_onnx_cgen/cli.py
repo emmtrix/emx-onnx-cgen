@@ -55,18 +55,19 @@ def _serialize_string_tensor(array: np.ndarray) -> bytes:
 def _random_tensor_input(
     shape: tuple[int, ...], dtype: ScalarType, rng: np.random.Generator
 ) -> np.ndarray:
+    resolved_shape = tuple(10 if dim < 0 else dim for dim in shape)
     np_dtype = dtype.np_dtype
     if dtype == ScalarType.STRING:
-        return np.full(shape, "", dtype=np_dtype)
+        return np.full(resolved_shape, "", dtype=np_dtype)
     if np.issubdtype(np_dtype, np.floating):
-        return rng.uniform(-1.0, 1.0, size=shape).astype(np_dtype)
+        return rng.uniform(-1.0, 1.0, size=resolved_shape).astype(np_dtype)
     if np.issubdtype(np_dtype, np.bool_):
-        return rng.integers(0, 2, size=shape, dtype=np.int8).astype(np_dtype)
+        return rng.integers(0, 2, size=resolved_shape, dtype=np.int8).astype(np_dtype)
     if np.issubdtype(np_dtype, np.unsignedinteger):
-        return rng.integers(0, 8, size=shape, dtype=np.uint64).astype(np_dtype)
+        return rng.integers(0, 8, size=resolved_shape, dtype=np.uint64).astype(np_dtype)
     if np.issubdtype(np_dtype, np.integer):
-        return rng.integers(-4, 4, size=shape, dtype=np.int64).astype(np_dtype)
-    return np.zeros(shape, dtype=np_dtype)
+        return rng.integers(-4, 4, size=resolved_shape, dtype=np.int64).astype(np_dtype)
+    return np.zeros(resolved_shape, dtype=np_dtype)
 
 
 def _generate_random_testbench_inputs(
@@ -1708,7 +1709,8 @@ def _verify_model(
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,
             testbench_inputs=testbench_inputs,
-            testbench_optional_inputs=None,
+            testbench_outputs=testbench_outputs,
+            testbench_optional_inputs=testbench_optional_inputs,
             shape_inference_inputs=shape_inference_inputs,
             timings=timings,
         )
@@ -1904,6 +1906,8 @@ def _verify_model(
                 check=True,
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
                 cwd=temp_path,
             )
             active_reporter.step_ok(compile_started)
@@ -1933,6 +1937,8 @@ def _verify_model(
                 check=True,
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
                 cwd=temp_path,
             )
             active_reporter.step_ok(run_started)

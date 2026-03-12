@@ -767,6 +767,18 @@ class CEmitter:
             for name, value in testbench_optional_inputs.items()
         }
 
+    @staticmethod
+    def _sanitize_testbench_outputs(
+        testbench_outputs: Mapping[str, np.ndarray | list[np.ndarray]] | None,
+        name_map: Mapping[str, str],
+    ) -> Mapping[str, np.ndarray | list[np.ndarray]] | None:
+        if not testbench_outputs:
+            return None
+        return {
+            name_map.get(name, name): value
+            for name, value in testbench_outputs.items()
+        }
+
     def _load_templates(self, emit_testbench: bool) -> dict[str, Template]:
         try:
             templates = {
@@ -945,6 +957,7 @@ class CEmitter:
         emit_testbench: bool = False,
         testbench_output_format: str = "json",
         testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None = None,
+        testbench_outputs: Mapping[str, np.ndarray | list[np.ndarray]] | None = None,
         testbench_optional_inputs: Mapping[str, bool] | None = None,
         variable_dim_inputs: Mapping[int, Mapping[int, str]] | None = None,
         variable_dim_outputs: Mapping[int, Mapping[int, str]] | None = None,
@@ -953,6 +966,9 @@ class CEmitter:
         model, name_map = self._sanitize_model_names_with_map(model)
         self._copy_derived(model.op_context, original_model.ops, model.ops)
         testbench_inputs = self._sanitize_testbench_inputs(testbench_inputs, name_map)
+        testbench_outputs = self._sanitize_testbench_outputs(
+            testbench_outputs, name_map
+        )
         testbench_optional_inputs = self._sanitize_testbench_optional_inputs(
             testbench_optional_inputs, name_map
         )
@@ -1123,6 +1139,7 @@ class CEmitter:
                         testbench_template,
                         testbench_output_format=testbench_output_format,
                         testbench_inputs=testbench_inputs,
+                        testbench_outputs=testbench_outputs,
                         testbench_optional_inputs=testbench_optional_inputs,
                         input_dim_names=input_dim_names,
                         output_dim_names=output_dim_names,
@@ -1145,6 +1162,7 @@ class CEmitter:
         emit_testbench: bool = False,
         testbench_output_format: str = "json",
         testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None = None,
+        testbench_outputs: Mapping[str, np.ndarray | list[np.ndarray]] | None = None,
         testbench_optional_inputs: Mapping[str, bool] | None = None,
         variable_dim_inputs: Mapping[int, Mapping[int, str]] | None = None,
         variable_dim_outputs: Mapping[int, Mapping[int, str]] | None = None,
@@ -1153,6 +1171,9 @@ class CEmitter:
         model, name_map = self._sanitize_model_names_with_map(model)
         self._copy_derived(model.op_context, original_model.ops, model.ops)
         testbench_inputs = self._sanitize_testbench_inputs(testbench_inputs, name_map)
+        testbench_outputs = self._sanitize_testbench_outputs(
+            testbench_outputs, name_map
+        )
         testbench_optional_inputs = self._sanitize_testbench_optional_inputs(
             testbench_optional_inputs, name_map
         )
@@ -1318,6 +1339,7 @@ class CEmitter:
                 testbench_template,
                 testbench_output_format=testbench_output_format,
                 testbench_inputs=testbench_inputs,
+                testbench_outputs=testbench_outputs,
                 testbench_optional_inputs=testbench_optional_inputs,
                 input_dim_names=input_dim_names,
                 output_dim_names=output_dim_names,
@@ -1355,6 +1377,7 @@ class CEmitter:
         *,
         testbench_output_format: str = "json",
         testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None = None,
+        testbench_outputs: Mapping[str, np.ndarray | list[np.ndarray]] | None = None,
         testbench_optional_inputs: Mapping[str, bool] | None = None,
         variable_dim_inputs: Mapping[int, Mapping[int, str]] | None = None,
         variable_dim_outputs: Mapping[int, Mapping[int, str]] | None = None,
@@ -1363,6 +1386,9 @@ class CEmitter:
         model, name_map = self._sanitize_model_names_with_map(model)
         self._copy_derived(model.op_context, original_model.ops, model.ops)
         testbench_inputs = self._sanitize_testbench_inputs(testbench_inputs, name_map)
+        testbench_outputs = self._sanitize_testbench_outputs(
+            testbench_outputs, name_map
+        )
         testbench_optional_inputs = self._sanitize_testbench_optional_inputs(
             testbench_optional_inputs, name_map
         )
@@ -1399,6 +1425,7 @@ class CEmitter:
             testbench_template,
             testbench_output_format=testbench_output_format,
             testbench_inputs=testbench_inputs,
+            testbench_outputs=testbench_outputs,
             testbench_optional_inputs=testbench_optional_inputs,
             input_dim_names=_in_dims,
             output_dim_names=_out_dims,
@@ -3101,6 +3128,7 @@ class CEmitter:
         *,
         testbench_output_format: str,
         testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None = None,
+        testbench_outputs: Mapping[str, np.ndarray | list[np.ndarray]] | None = None,
         testbench_optional_inputs: Mapping[str, bool] | None = None,
         input_dim_names: Mapping[int, Mapping[int, CodegenDim]],
         output_dim_names: Mapping[int, Mapping[int, CodegenDim]],
@@ -3111,10 +3139,17 @@ class CEmitter:
         def concrete_shape_for_testbench(
             shape: tuple[int, ...],
             dim_names: Mapping[int, CodegenDim] | None,
+            *,
+            actual_shape: tuple[int, ...] | None = None,
         ) -> tuple[int, ...]:
             dim_names = dim_names or {}
             resolved: list[int] = []
             for axis, dim in enumerate(shape):
+                if actual_shape is not None and axis < len(actual_shape):
+                    actual_dim = int(actual_shape[axis])
+                    if actual_dim >= 0 and (dim < 0 or axis in dim_names):
+                        resolved.append(actual_dim)
+                        continue
                 dim_ref = dim_names.get(axis)
                 if dim_ref is not None:
                     resolved.append(dim_values.get(dim_ref.name, dim_ref.expected_size))
@@ -3145,13 +3180,14 @@ class CEmitter:
             dim_names = input_dim_names.get(index) or self.dim_names_for(name)
             is_sequence_input = isinstance(value_type, SequenceType)
             constant_values = testbench_inputs.get(name)
-            if (
-                is_sequence_input
-                and isinstance(constant_values, np.ndarray)
-                and constant_values.ndim >= 1
-                and dim_names
-            ):
-                for axis, actual_dim in enumerate(constant_values.shape[1:]):
+            input_actual_shape: tuple[int, ...] | None = None
+            if isinstance(constant_values, np.ndarray):
+                if is_sequence_input and constant_values.ndim >= 1:
+                    input_actual_shape = tuple(int(dim) for dim in constant_values.shape[1:])
+                else:
+                    input_actual_shape = tuple(int(dim) for dim in constant_values.shape)
+            if input_actual_shape is not None and dim_names:
+                for axis, actual_dim in enumerate(input_actual_shape):
                     dim_ref = dim_names.get(axis)
                     if dim_ref is not None:
                         observed_dim_values[dim_ref.name] = max(
@@ -3159,7 +3195,11 @@ class CEmitter:
                             int(actual_dim),
                         )
                         dim_values[dim_ref.name] = observed_dim_values[dim_ref.name]
-            concrete_codegen_shape = concrete_shape_for_testbench(shape, dim_names)
+            concrete_codegen_shape = concrete_shape_for_testbench(
+                shape,
+                dim_names,
+                actual_shape=input_actual_shape,
+            )
             if is_sequence_input and isinstance(constant_values, np.ndarray):
                 target_shape = (int(constant_values.shape[0]), *concrete_codegen_shape)
                 if constant_values.shape != target_shape:
@@ -3212,17 +3252,43 @@ class CEmitter:
             constant_lines = None
             if constant_values is not None:
                 constant_name = f"{name}_testbench_data"
-                flat_values: list[float | int | bool]
                 if isinstance(constant_values, np.ndarray):
                     flat_values = constant_values.reshape(-1).tolist()
                 else:
                     flat_values = list(constant_values)
-                if flat_values:
-                    constant_lines = [
-                        self._format_value(value, dtype) for value in flat_values
-                    ]
+                formatted_values = [
+                    self._format_value(value, dtype) for value in flat_values
+                ]
+                if (
+                    formatted_values
+                    and dtype == ScalarType.STRING
+                    and isinstance(constant_values, np.ndarray)
+                    and constant_values.ndim > 0
+                ):
+                    constant_lines = self._emit_initializer_lines(
+                        formatted_values,
+                        tuple(int(dim) for dim in constant_values.shape),
+                    )
+                elif formatted_values:
+                    constant_lines = self._emit_initializer_lines(
+                        formatted_values,
+                        (len(formatted_values),),
+                    )
                 else:
-                    constant_lines = [self._format_value(0, dtype)]
+                    storage_shape = self._codegen_shape(concrete_codegen_shape)
+                    default_value = "" if dtype == ScalarType.STRING else 0
+                    initializer_shape = (
+                        storage_shape
+                        if dtype == ScalarType.STRING
+                        else (self._element_count(storage_shape),)
+                    )
+                    constant_lines = self._emit_initializer_lines(
+                        [
+                            self._format_value(default_value, dtype)
+                            for _ in range(self._element_count(storage_shape))
+                        ],
+                        initializer_shape,
+                    )
             optional_present = (
                 testbench_optional_inputs.get(name, True)
                 if optional_flag is not None
@@ -3278,7 +3344,24 @@ class CEmitter:
         ):
             json_name = self._ctx_name(name)
             dim_names = output_dim_names.get(index) or self.dim_names_for(name)
-            concrete_codegen_shape = concrete_shape_for_testbench(shape, dim_names)
+            output_values = testbench_outputs.get(name) if testbench_outputs else None
+            output_actual_shape: tuple[int, ...] | None = None
+            if isinstance(output_values, np.ndarray):
+                output_actual_shape = tuple(int(dim) for dim in output_values.shape)
+            if output_actual_shape is not None and dim_names:
+                for axis, actual_dim in enumerate(output_actual_shape):
+                    dim_ref = dim_names.get(axis)
+                    if dim_ref is not None:
+                        observed_dim_values[dim_ref.name] = max(
+                            observed_dim_values.get(dim_ref.name, 0),
+                            int(actual_dim),
+                        )
+                        dim_values[dim_ref.name] = observed_dim_values[dim_ref.name]
+            concrete_codegen_shape = concrete_shape_for_testbench(
+                shape,
+                dim_names,
+                actual_shape=output_actual_shape,
+            )
             is_sequence_output = isinstance(value_type, SequenceType)
             loop_shape = (1,) if not concrete_codegen_shape else concrete_codegen_shape
             if is_sequence_output:
@@ -3664,13 +3747,23 @@ class CEmitter:
 
     @staticmethod
     def _format_c_string_literal(value: str) -> str:
-        escaped = (
-            value.replace("\\", "\\\\")
-            .replace('"', '\\"')
-            .replace("\n", "\\n")
-            .replace("\t", "\\t")
-        )
-        return f'"{escaped}"'
+        escaped_parts: list[str] = []
+        for byte in value.encode("utf-8"):
+            if byte == 0x5C:
+                escaped_parts.append("\\\\")
+            elif byte == 0x22:
+                escaped_parts.append('\\"')
+            elif byte == 0x0A:
+                escaped_parts.append("\\n")
+            elif byte == 0x0D:
+                escaped_parts.append("\\r")
+            elif byte == 0x09:
+                escaped_parts.append("\\t")
+            elif 0x20 <= byte <= 0x7E:
+                escaped_parts.append(chr(byte))
+            else:
+                escaped_parts.append(f"\\x{byte:02X}")
+        return f'"{"".join(escaped_parts)}"'
 
     @staticmethod
     def _format_literal(dtype: ScalarType, value: float | int | bool) -> str:

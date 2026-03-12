@@ -85,6 +85,7 @@ class CompilerOptions:
     fp32_accumulation_strategy: str = "simple"
     fp16_accumulation_strategy: str = "fp32"
     testbench_inputs: Mapping[str, tuple[float | int | bool, ...] | np.ndarray] | None = None
+    testbench_outputs: Mapping[str, np.ndarray | list[np.ndarray]] | None = None
     testbench_optional_inputs: Mapping[str, bool] | None = None
     testbench_output_format: str = "json"
     shape_inference_inputs: Mapping[str, np.ndarray] | None = None
@@ -222,6 +223,7 @@ class Compiler:
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
                 testbench_output_format=self._options.testbench_output_format,
                 testbench_inputs=self._options.testbench_inputs,
+                testbench_outputs=self._options.testbench_outputs,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
             ),
@@ -234,6 +236,7 @@ class Compiler:
             lambda: self._emitter.emit_testbench(
                 ctx.lowered,
                 testbench_inputs=self._options.testbench_inputs,
+                testbench_outputs=self._options.testbench_outputs,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
                 testbench_output_format=self._options.testbench_output_format,
                 variable_dim_inputs=ctx.variable_dim_inputs,
@@ -262,6 +265,7 @@ class Compiler:
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
                 testbench_output_format=self._options.testbench_output_format,
                 testbench_inputs=self._options.testbench_inputs,
+                testbench_outputs=self._options.testbench_outputs,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
             ),
@@ -279,6 +283,7 @@ class Compiler:
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
                 testbench_output_format=self._options.testbench_output_format,
                 testbench_inputs=self._options.testbench_inputs,
+                testbench_outputs=self._options.testbench_outputs,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
             ),
@@ -301,6 +306,7 @@ class Compiler:
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
                 testbench_output_format=self._options.testbench_output_format,
                 testbench_inputs=self._options.testbench_inputs,
+                testbench_outputs=self._options.testbench_outputs,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
             ),
