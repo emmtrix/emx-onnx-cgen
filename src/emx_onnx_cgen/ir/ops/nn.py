@@ -36,6 +36,18 @@ def _shape_product(shape: tuple[int, ...]) -> int:
     return product
 
 
+def _shape_product_expr(
+    shape: tuple[int, ...],
+    dim_names: dict[int, str] | None = None,
+) -> int | str:
+    if not shape:
+        return 1
+    dim_exprs = CEmitterCompat.shape_dim_exprs(shape, dim_names)
+    if len(dim_exprs) == 1:
+        return dim_exprs[0]
+    return " * ".join(str(dim) for dim in dim_exprs)
+
+
 def _broadcast_batch_shapes(
     left: tuple[int, ...], right: tuple[int, ...]
 ) -> tuple[tuple[int, ...], tuple[int, ...], tuple[int, ...]]:
@@ -155,7 +167,15 @@ class MatMulOp(MatMulLikeOpBase):
                 ("output", self.output),
             ]
         )
-        output_shape = CEmitterCompat.codegen_shape(emitter.ctx_shape(self.output))
+        input0_shape = emitter.ctx_shape(self.input0)
+        input1_shape = emitter.ctx_shape(self.input1)
+        input0_dim_names = emitter.dim_names_for(self.input0)
+        input1_dim_names = emitter.dim_names_for(self.input1)
+        output_shape_raw = emitter.ctx_shape(self.output)
+        output_dim_names = emitter.dim_names_for(self.output)
+        output_shape = CEmitterCompat.shape_dim_exprs(
+            output_shape_raw, output_dim_names
+        )
         output_loop_vars = CEmitterCompat.loop_vars(output_shape)
         output_index_expr = f"{params['output']}" + "".join(
             f"[{var}]" for var in output_loop_vars
@@ -177,8 +197,6 @@ class MatMulOp(MatMulLikeOpBase):
         else:
             row_var = output_loop_vars[-2]
             col_var = output_loop_vars[-1]
-        input0_shape = emitter.ctx_shape(self.input0)
-        input1_shape = emitter.ctx_shape(self.input1)
         input0_batch_shape = emitter.derived(self, "input0_batch_shape")
         input1_batch_shape = emitter.derived(self, "input1_batch_shape")
         input0_index_expr, input1_index_expr = CEmitterCompat.matmul_index_exprs(
@@ -195,9 +213,9 @@ class MatMulOp(MatMulLikeOpBase):
             input0_batch_shape=input0_batch_shape,
             input1_batch_shape=input1_batch_shape,
         )
-        input0_suffix = emitter.param_array_suffix(input0_shape)
-        input1_suffix = emitter.param_array_suffix(input1_shape)
-        output_suffix = emitter.param_array_suffix(emitter.ctx_shape(self.output))
+        input0_suffix = emitter.param_array_suffix(input0_shape, input0_dim_names)
+        input1_suffix = emitter.param_array_suffix(input1_shape, input1_dim_names)
+        output_suffix = emitter.param_array_suffix(output_shape_raw, output_dim_names)
         acc_dtype = emitter.accumulation_dtype(emitter.ctx_dtype(self.output))
         acc_zero_literal = emitter.format_literal(acc_dtype, 0)
         param_decls = emitter.build_param_decls(
@@ -2718,14 +2736,35 @@ class SoftmaxOp(RenderableOpBase):
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
         output_shape = emitter.ctx_shape(self.output)
+        output_dim_names = emitter.dim_names_for(self.output)
         output_dtype = emitter.ctx_dtype(self.output)
-        outer = emitter.derived(self, "outer")
-        axis_size = emitter.derived(self, "axis_size")
-        inner = emitter.derived(self, "inner")
+        axis = emitter.derived(self, "axis")
+        if self.use_legacy_axis_semantics:
+            outer = (
+                _shape_product_expr(output_shape[:axis], output_dim_names)
+                if axis > 0
+                else 1
+            )
+            axis_size = _shape_product_expr(output_shape[axis:], output_dim_names)
+            inner = 1
+        else:
+            outer = (
+                _shape_product_expr(output_shape[:axis], output_dim_names)
+                if axis > 0
+                else 1
+            )
+            axis_size = CEmitterCompat.shape_dim_exprs(output_shape, output_dim_names)[
+                axis
+            ]
+            inner = (
+                _shape_product_expr(output_shape[axis + 1 :], output_dim_names)
+                if axis + 1 < len(output_shape)
+                else 1
+            )
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
-        array_suffix = emitter.param_array_suffix(output_shape)
+        array_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
         param_decls = emitter.build_param_decls(
             [
                 (params["input0"], output_dtype.c_type, array_suffix, True),
@@ -2778,23 +2817,8 @@ class SoftmaxOp(RenderableOpBase):
             raise ShapeInferenceError(
                 f"Softmax axis {self.axis} is out of bounds for shape {input_shape}"
             )
-        if self.use_legacy_axis_semantics:
-            outer = _shape_product(input_shape[:axis]) if axis > 0 else 1
-            axis_size = _shape_product(input_shape[axis:])
-            inner = 1
-        else:
-            outer = _shape_product(input_shape[:axis]) if axis > 0 else 1
-            axis_size = input_shape[axis]
-            inner = (
-                _shape_product(input_shape[axis + 1 :])
-                if axis + 1 < len(input_shape)
-                else 1
-            )
         ctx.set_shape(self.output, input_shape)
         ctx.set_derived(self, "axis", axis)
-        ctx.set_derived(self, "outer", outer)
-        ctx.set_derived(self, "axis_size", axis_size)
-        ctx.set_derived(self, "inner", inner)
 
 
 @dataclass(frozen=True)
@@ -2966,14 +2990,35 @@ class LogSoftmaxOp(RenderableOpBase):
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
         output_shape = emitter.ctx_shape(self.output)
+        output_dim_names = emitter.dim_names_for(self.output)
         output_dtype = emitter.ctx_dtype(self.output)
-        outer = emitter.derived(self, "outer")
-        axis_size = emitter.derived(self, "axis_size")
-        inner = emitter.derived(self, "inner")
+        axis = emitter.derived(self, "axis")
+        if self.use_legacy_axis_semantics:
+            outer = (
+                _shape_product_expr(output_shape[:axis], output_dim_names)
+                if axis > 0
+                else 1
+            )
+            axis_size = _shape_product_expr(output_shape[axis:], output_dim_names)
+            inner = 1
+        else:
+            outer = (
+                _shape_product_expr(output_shape[:axis], output_dim_names)
+                if axis > 0
+                else 1
+            )
+            axis_size = CEmitterCompat.shape_dim_exprs(output_shape, output_dim_names)[
+                axis
+            ]
+            inner = (
+                _shape_product_expr(output_shape[axis + 1 :], output_dim_names)
+                if axis + 1 < len(output_shape)
+                else 1
+            )
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
-        array_suffix = emitter.param_array_suffix(output_shape)
+        array_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
         param_decls = emitter.build_param_decls(
             [
                 (params["input0"], output_dtype.c_type, array_suffix, True),
@@ -3026,23 +3071,8 @@ class LogSoftmaxOp(RenderableOpBase):
             raise ShapeInferenceError(
                 f"LogSoftmax axis {self.axis} is out of bounds for shape {input_shape}"
             )
-        if self.use_legacy_axis_semantics:
-            outer = _shape_product(input_shape[:axis]) if axis > 0 else 1
-            axis_size = _shape_product(input_shape[axis:])
-            inner = 1
-        else:
-            outer = _shape_product(input_shape[:axis]) if axis > 0 else 1
-            axis_size = input_shape[axis]
-            inner = (
-                _shape_product(input_shape[axis + 1 :])
-                if axis + 1 < len(input_shape)
-                else 1
-            )
         ctx.set_shape(self.output, input_shape)
         ctx.set_derived(self, "axis", axis)
-        ctx.set_derived(self, "outer", outer)
-        ctx.set_derived(self, "axis_size", axis_size)
-        ctx.set_derived(self, "inner", inner)
 
 
 @dataclass(frozen=True)
@@ -3058,15 +3088,25 @@ class HardmaxOp(RenderableOpBase):
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
         output_shape = emitter.ctx_shape(self.output)
+        output_dim_names = emitter.dim_names_for(self.output)
         output_dtype = emitter.ctx_dtype(self.output)
         zero_literal = output_dtype.zero_literal
-        outer = emitter.derived(self, "outer")
-        axis_size = emitter.derived(self, "axis_size")
-        inner = emitter.derived(self, "inner")
+        axis = emitter.derived(self, "axis")
+        outer = (
+            _shape_product_expr(output_shape[:axis], output_dim_names)
+            if axis > 0
+            else 1
+        )
+        axis_size = CEmitterCompat.shape_dim_exprs(output_shape, output_dim_names)[axis]
+        inner = (
+            _shape_product_expr(output_shape[axis + 1 :], output_dim_names)
+            if axis + 1 < len(output_shape)
+            else 1
+        )
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
-        array_suffix = emitter.param_array_suffix(output_shape)
+        array_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
         param_decls = emitter.build_param_decls(
             [
                 (params["input0"], output_dtype.c_type, array_suffix, True),
@@ -3129,23 +3169,8 @@ class HardmaxOp(RenderableOpBase):
             raise ShapeInferenceError(
                 f"Hardmax axis {self.axis} is out of bounds for shape {input_shape}"
             )
-        if legacy_axis_semantics:
-            outer = _shape_product(input_shape[:axis]) if axis > 0 else 1
-            axis_size = _shape_product(input_shape[axis:])
-            inner = 1
-        else:
-            outer = _shape_product(input_shape[:axis]) if axis > 0 else 1
-            axis_size = input_shape[axis]
-            inner = (
-                _shape_product(input_shape[axis + 1 :])
-                if axis + 1 < len(input_shape)
-                else 1
-            )
         ctx.set_shape(self.output, input_shape)
         ctx.set_derived(self, "axis", axis)
-        ctx.set_derived(self, "outer", outer)
-        ctx.set_derived(self, "axis_size", axis_size)
-        ctx.set_derived(self, "inner", inner)
 
 
 @dataclass(frozen=True)
