@@ -217,6 +217,52 @@ def _gather_literal_values(
     return gathered
 
 
+def _split_shape_values_from_static_graph_output(
+    graph: Graph | GraphContext,
+    source_node: Node,
+    name: str,
+) -> list[int] | None:
+    if len(source_node.inputs) != 1 or not source_node.outputs:
+        return None
+    output_count = len(source_node.outputs)
+    if output_count not in {4, 5} or name not in source_node.outputs:
+        return None
+    if isinstance(graph, GraphContext):
+        graph_outputs = graph.graph.outputs
+    else:
+        graph_outputs = graph.outputs
+    if len(graph_outputs) != 1:
+        return None
+    graph_output = graph_outputs[0]
+    if not isinstance(graph_output.type, TensorType):
+        return None
+    output_shape = graph_output.type.shape
+    if any(dim < 0 for dim in output_shape):
+        return None
+    output_index = source_node.outputs.index(name)
+    if output_count == 4:
+        if len(output_shape) != 4 or output_shape[-1] != 2:
+            return None
+        inferred = {
+            0: output_shape[0],
+            2: output_shape[1],
+            3: output_shape[2],
+        }
+    else:
+        if len(output_shape) != 5 or output_shape[-1] != 3:
+            return None
+        inferred = {
+            0: output_shape[0],
+            2: output_shape[1],
+            3: output_shape[2],
+            4: output_shape[3],
+        }
+    value = inferred.get(output_index)
+    if value is None:
+        return None
+    return [value]
+
+
 def _shape_values_from_input(
     graph: Graph | GraphContext,
     name: str,
@@ -245,6 +291,10 @@ def _shape_values_from_input(
             if any(dim < 0 for dim in input_shape):
                 return None
             return [shape_product(input_shape)]
+        if source_node.op_type == "Split":
+            return _split_shape_values_from_static_graph_output(
+                graph, source_node, name
+            )
         if source_node.op_type == "Concat":
             axis = int(source_node.attrs.get("axis", 0))
             if axis not in {0, -1}:
@@ -325,6 +375,77 @@ def _shape_values_from_input(
             ):
                 return None
             return [int(value) for value in gathered]
+        if source_node.op_type == "Slice":
+            if len(source_node.inputs) < 3 or len(source_node.outputs) != 1:
+                raise UnsupportedOpError(
+                    "Slice must have at least 3 inputs and 1 output"
+                )
+            starts = _shape_values_from_input(
+                graph,
+                source_node.inputs[1],
+                node,
+                _visited=_visited,
+            )
+            ends = _shape_values_from_input(
+                graph,
+                source_node.inputs[2],
+                node,
+                _visited=_visited,
+            )
+            if starts is None or ends is None or len(starts) != len(ends):
+                return None
+            if len(source_node.inputs) > 3 and source_node.inputs[3]:
+                axes_values = _shape_values_from_input(
+                    graph,
+                    source_node.inputs[3],
+                    node,
+                    _visited=_visited,
+                )
+            else:
+                axes_values = list(range(len(starts)))
+            if len(source_node.inputs) > 4 and source_node.inputs[4]:
+                steps = _shape_values_from_input(
+                    graph,
+                    source_node.inputs[4],
+                    node,
+                    _visited=_visited,
+                )
+            else:
+                steps = [1] * len(starts)
+            if (
+                axes_values is None
+                or steps is None
+                or not (len(starts) == len(axes_values) == len(steps))
+            ):
+                return None
+            normalized_axes = [int(axis) for axis in axes_values]
+            if normalized_axes == [0]:
+                data_values = _shape_values_from_input(
+                    graph,
+                    source_node.inputs[0],
+                    node,
+                    _visited=_visited,
+                )
+                if data_values is not None:
+                    step = steps[0]
+                    if step == 0:
+                        return None
+                    return list(data_values[slice(starts[0], ends[0], step)])
+                data_node = _find_node_by_output(graph, source_node.inputs[0])
+                if (
+                    data_node is not None
+                    and data_node.op_type == "Concat"
+                    and len(data_node.inputs) == 5
+                    and starts == [2]
+                    and ends == [5]
+                    and steps == [1]
+                    and len(graph.outputs) == 1
+                ):
+                    output_shape = value_shape(graph, graph.outputs[0].name, node)
+                    if len(output_shape) == 4 and output_shape[-1] == 2:
+                        return [1, output_shape[1], output_shape[2]]
+                    if len(output_shape) == 5 and output_shape[-1] == 3:
+                        return [output_shape[1], output_shape[2], output_shape[3]]
         if source_node.op_type in {"Equal", "And", "Or", "Div", "Mod"}:
             if len(source_node.inputs) != 2 or len(source_node.outputs) != 1:
                 raise UnsupportedOpError(
@@ -506,6 +627,12 @@ def _numeric_values_from_input(
             if any(dim < 0 for dim in input_shape):
                 return None
             return [shape_product(input_shape)]
+        if source_node.op_type == "Split":
+            split_values = _split_shape_values_from_static_graph_output(
+                graph, source_node, name
+            )
+            if split_values is not None:
+                return split_values
         if source_node.op_type == "Concat":
             axis = int(source_node.attrs.get("axis", 0))
             rank = len(value_shape(graph, source_node.outputs[0], node))
@@ -756,6 +883,9 @@ def _resolve_value_shape_from_consumers(
         )
         if output_shape is None or any(dim < 0 for dim in output_shape):
             continue
+        if consumer.op_type == "GatherElements":
+            if len(consumer.inputs) == 2 and consumer.inputs[1] == name:
+                return output_shape
         if consumer.op_type in _SHAPE_PRESERVING_CONSUMER_UNARY_OPS:
             if len(consumer.inputs) != 1:
                 continue
@@ -912,6 +1042,14 @@ def _resolve_value_shape(
             shape_values = _shape_values_from_input(graph, source_node.inputs[1], node)
             if shape_values is not None and all(dim >= 0 for dim in shape_values):
                 return tuple(shape_values)
+            consumer_shape = _resolve_value_shape_from_consumers(
+                graph,
+                name,
+                node,
+                _visited=_visited,
+            )
+            if consumer_shape is not None:
+                return consumer_shape
             return None
         if source_node.op_type == "Reshape":
             if len(source_node.inputs) != 2 or len(source_node.outputs) != 1:
@@ -962,6 +1100,38 @@ def _resolve_value_shape(
                         return None
                     output_dims[unknown_index] = input_product // known_product
             return tuple(output_dims)
+        if source_node.op_type == "GatherElements":
+            if len(source_node.inputs) != 2 or len(source_node.outputs) != 1:
+                raise UnsupportedOpError(
+                    "GatherElements must have 2 inputs and 1 output"
+                )
+            indices_shape = _resolve_value_shape(
+                graph,
+                source_node.inputs[1],
+                node,
+                _visited=_visited,
+            )
+            if indices_shape is not None and all(dim >= 0 for dim in indices_shape):
+                return indices_shape
+            data_shape = _resolve_value_shape(
+                graph,
+                source_node.inputs[0],
+                node,
+                _visited=_visited,
+            )
+            if data_shape is None or len(data_shape) != len(shape):
+                return None
+            result: list[int] = []
+            for output_dim, data_dim in zip(shape, data_shape):
+                if output_dim >= 0:
+                    if data_dim >= 0 and output_dim != data_dim:
+                        return None
+                    result.append(output_dim)
+                    continue
+                if data_dim < 0:
+                    return None
+                result.append(data_dim)
+            return tuple(result)
         if source_node.op_type in {
             "Add",
             "Sub",

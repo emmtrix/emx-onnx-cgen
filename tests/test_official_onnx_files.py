@@ -123,10 +123,6 @@ def _model_requires_shape_inference_shapes(model_path: str) -> bool:
 
 
 MODELS_REQUIRING_SHAPE_INFERENCE_SHAPES = (
-    "onnx-org/onnx/backend/test/data/node/test_affine_grid_2d_align_corners_expanded/model.onnx",
-    "onnx-org/onnx/backend/test/data/node/test_affine_grid_2d_expanded/model.onnx",
-    "onnx-org/onnx/backend/test/data/node/test_affine_grid_3d_align_corners_expanded/model.onnx",
-    "onnx-org/onnx/backend/test/data/node/test_affine_grid_3d_expanded/model.onnx",
     "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_and_pad_expanded/model.onnx",
     "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_axes_chw_expanded/model.onnx",
     "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_axes_hwc_expanded/model.onnx",

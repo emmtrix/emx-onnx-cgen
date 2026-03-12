@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import onnx
 from onnx import TensorProto, helper
 import pytest
@@ -145,17 +147,11 @@ def _make_range_with_shape_preserving_consumer_model() -> onnx.ModelProto:
                 helper.make_node("Mul", ["range_out", "two"], ["out"]),
             ],
             name="range_shape_preserving_consumer_graph",
-            inputs=[
-                helper.make_tensor_value_info("x", TensorProto.INT32, [])
-            ],
-            outputs=[
-                helper.make_tensor_value_info("out", TensorProto.FLOAT, [3])
-            ],
+            inputs=[helper.make_tensor_value_info("x", TensorProto.INT32, [])],
+            outputs=[helper.make_tensor_value_info("out", TensorProto.FLOAT, [3])],
             initializer=[zero, one, two],
             value_info=[
-                helper.make_tensor_value_info(
-                    "range_out", TensorProto.FLOAT, ["N"]
-                )
+                helper.make_tensor_value_info("range_out", TensorProto.FLOAT, ["N"])
             ],
         ),
         opset_imports=[helper.make_opsetid("", 13)],
@@ -169,12 +165,12 @@ def _make_reduce_after_resolveable_reshape_model() -> onnx.ModelProto:
         helper.make_graph(
             nodes=[
                 helper.make_node("Reshape", ["x", "new_shape"], ["reshaped"]),
-                helper.make_node("ReduceMean", ["reshaped", "axes"], ["out"], keepdims=1),
+                helper.make_node(
+                    "ReduceMean", ["reshaped", "axes"], ["out"], keepdims=1
+                ),
             ],
             name="reduce_after_reshape_graph",
-            inputs=[
-                helper.make_tensor_value_info("x", TensorProto.FLOAT, [3, 4, 2])
-            ],
+            inputs=[helper.make_tensor_value_info("x", TensorProto.FLOAT, [3, 4, 2])],
             outputs=[
                 helper.make_tensor_value_info("out", TensorProto.FLOAT, [3, 2, 1])
             ],
@@ -187,6 +183,14 @@ def _make_reduce_after_resolveable_reshape_model() -> onnx.ModelProto:
         ),
         opset_imports=[helper.make_opsetid("", 18)],
     )
+
+
+_OFFICIAL_AFFINE_GRID_EXPANDED_MODELS = (
+    "onnx-org/onnx/backend/test/data/node/test_affine_grid_2d_align_corners_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_affine_grid_2d_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_affine_grid_3d_align_corners_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_affine_grid_3d_expanded/model.onnx",
+)
 
 
 def test_compile_debug_lowering_failure_context_disabled_by_default() -> None:
@@ -275,3 +279,18 @@ def test_compile_reuses_common_shape_resolution_for_reduce_inputs() -> None:
     )
 
     assert "OpType: ReduceMean" in generated
+
+
+@pytest.mark.parametrize(
+    "repo_relative_model_path", _OFFICIAL_AFFINE_GRID_EXPANDED_MODELS
+)
+def test_compile_official_affine_grid_expanded_without_shape_inputs(
+    repo_relative_model_path: str,
+) -> None:
+    model_path = Path(__file__).resolve().parents[1] / repo_relative_model_path
+    if not model_path.exists():
+        pytest.skip(f"Missing official ONNX model: {repo_relative_model_path}")
+
+    generated = Compiler(CompilerOptions()).compile(onnx.load(model_path))
+
+    assert "OpType: ConstantOfShape" in generated
