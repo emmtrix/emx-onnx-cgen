@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 4)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded_ver18 model.onnx --test-data-dir test_data_set_0",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded_ver18 model.onnx --test-data-dir test_data_set_0 --shape-inference-shapes 'X=2x3x5;W=3x5;B=3x5'",
   "verification_mode": "Data",
   "operators": [
     "Constant",
@@ -22,5 +22,5 @@
     "Reciprocal"
   ],
   "opset_version": 18,
-  "generated_checksum": "04aabc6f25e53e85477dbd7d189215ac4fdc444ebaf87f01ec5d2a37ebfb61cc"
+  "generated_checksum": "688735595ba37f041e6f76c67bb0e3fb3473264d9ee4e126e75b0f5e9b724637"
 }

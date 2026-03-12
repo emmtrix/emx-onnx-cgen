@@ -27,7 +27,7 @@ Aggregates non-success verification outcomes.
 | Broadcasting mismatch for shapes: (-1, 512), (512,) | 1 | 11 |
 | Output shape mismatch for reduced (actual_shape=(1,), actual_size=1, expected_shape=(3,), expected_size=3, output=reduced) | 1 | 18 |
 | Output shape mismatch for reduced (actual_shape=(1,), actual_size=1, expected_shape=(5,), expected_size=5, output=reduced) | 1 | 18 |
-| onnxruntime failed to run onnx2c-org\test\local_ops\test_gemm_CM_transA\model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 1 | 12 |
+| onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 1 | 12 |
 
 ## Error frequency by opset
 
@@ -37,7 +37,7 @@ Aggregates non-success verification outcomes.
 | Broadcasting mismatch for shapes: (-1, 5), (5,) | 9 | 1 |
 | Squeeze does not support dynamic dims in input | 11 | 2 |
 | Broadcasting mismatch for shapes: (-1, 512), (512,) | 11 | 1 |
-| onnxruntime failed to run onnx2c-org\test\local_ops\test_gemm_CM_transA\model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
+| onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
 | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor '*' has dynamic dimensions ('*', None, None, None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. | 15 | 2 |
 | ReduceSum output shape rank must match input rank | 18 | 12 |
 | CastLike input and output shapes must match | 18 | 8 |
@@ -61,7 +61,7 @@ Lists every ONNX file with a non-success verification outcome.
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
-| local_ops/test_gemm_CM_transA/model.onnx | 12 | Data | ❌ | onnxruntime failed to run onnx2c-org\test\local_ops\test_gemm_CM_transA\model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'sclbl-onnx-node1' Status Message: Gemm: Invalid bias shape for broadcast |
+| local_ops/test_gemm_CM_transA/model.onnx | 12 | Data | ❌ | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'sclbl-onnx-node1' Status Message: Gemm: Invalid bias shape for broadcast |
 | micro_kws_m_qdq.onnx | 15 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor 'micro_kws/conv2d/Relu;micro_kws/conv2d/BiasAdd;micro_kws/conv2d_2/Conv2D;micro_kws/conv2d/Conv2D;micro_kws/conv2d/BiasAdd/ReadVariableOp__28:0' has dynamic dimensions ('unk__0', None, None, None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. |
 | micro_kws_m_static_qdq.onnx | 15 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor 'micro_kws/conv2d/Relu;micro_kws/conv2d/BiasAdd;micro_kws/conv2d_2/Conv2D;micro_kws/conv2d/Conv2D;micro_kws/conv2d/BiasAdd/ReadVariableOp__28:0' has dynamic dimensions ('unk__0', None, None, None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. |
 | node/test_adam_multiple/model.onnx |  | Data | ❌ | Out of tolerance (max ULP 62311) |

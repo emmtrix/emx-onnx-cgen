@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_center_crop_pad_pad_expanded model.onnx --test-data-dir test_data_set_0",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_center_crop_pad_pad_expanded model.onnx --test-data-dir test_data_set_0 --shape-inference-shapes 'x=10x7x3;shape=[20,10,3]'",
   "verification_mode": "Data",
   "operators": [
     "Constant",
@@ -14,5 +14,5 @@
     "Slice"
   ],
   "opset_version": 18,
-  "generated_checksum": "3975145837b4d3357b578debb2804ae6f8012a45f31ffed8f97717085722c0a3"
+  "generated_checksum": "004bee5fad488a34a0f2edd2e1d112ceba98e2b4ad29315d7ddb295bc18d564f"
 }

@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 2)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis1_expanded model.onnx --test-data-dir test_data_set_0",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis1_expanded model.onnx --test-data-dir test_data_set_0 --shape-inference-shapes 'X=2x3x4x5;W=3x4x5'",
   "verification_mode": "Data",
   "operators": [
     "Constant",
@@ -16,5 +16,5 @@
     "Div"
   ],
   "opset_version": 23,
-  "generated_checksum": "9f9cda6f715438fa965aff3673e6f263815b60c08f5a3c817bd34a317ebcf0b2"
+  "generated_checksum": "572f1e68fa61df246fd810949c59e257196a3360fcd5c4c5899ef0f70db06122"
 }

@@ -67,7 +67,10 @@ def _value_requires_explicit_shape_concretization(
         dim_param
         for dim_param in value_type.dim_params
         if dim_param is not None
-        and (allowed_tensor_dim_params is None or dim_param not in allowed_tensor_dim_params)
+        and (
+            allowed_tensor_dim_params is None
+            or dim_param not in allowed_tensor_dim_params
+        )
     )
     if unresolved_dim_params:
         return f"tensor '{value.name}' has dynamic dimensions {value_type.dim_params}"
@@ -84,7 +87,9 @@ class CompilerOptions:
     restrict_arrays: bool = True
     fp32_accumulation_strategy: str = "simple"
     fp16_accumulation_strategy: str = "fp32"
-    testbench_inputs: Mapping[str, tuple[float | int | bool, ...] | np.ndarray] | None = None
+    testbench_inputs: (
+        Mapping[str, tuple[float | int | bool, ...] | np.ndarray] | None
+    ) = None
     testbench_outputs: Mapping[str, np.ndarray | list[np.ndarray]] | None = None
     testbench_optional_inputs: Mapping[str, bool] | None = None
     testbench_output_format: str = "json"
@@ -398,9 +403,10 @@ class Compiler:
         if cls._shape_concretization_requirement_reason(graph) is None:
             return False
         compiler = cls(CompilerOptions())
-        return compiler._try_lower_without_shape_concretization(
-            prepared_model, graph
-        ) is None
+        return (
+            compiler._try_lower_without_shape_concretization(prepared_model, graph)
+            is None
+        )
 
     @staticmethod
     def _collect_variable_dims(

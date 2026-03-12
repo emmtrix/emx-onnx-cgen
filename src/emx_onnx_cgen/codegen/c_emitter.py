@@ -775,8 +775,7 @@ class CEmitter:
         if not testbench_outputs:
             return None
         return {
-            name_map.get(name, name): value
-            for name, value in testbench_outputs.items()
+            name_map.get(name, name): value for name, value in testbench_outputs.items()
         }
 
     def _load_templates(self, emit_testbench: bool) -> dict[str, Template]:
@@ -1334,19 +1333,19 @@ class CEmitter:
             sections.extend(
                 (
                     "",
-            self._emit_testbench(
-                model,
-                testbench_template,
-                testbench_output_format=testbench_output_format,
-                testbench_inputs=testbench_inputs,
-                testbench_outputs=testbench_outputs,
-                testbench_optional_inputs=testbench_optional_inputs,
-                input_dim_names=input_dim_names,
-                output_dim_names=output_dim_names,
-                dim_order=dim_order,
-                dim_values=dim_values,
-                weight_data_filename=self._weight_data_filename(model),
-            ),
+                    self._emit_testbench(
+                        model,
+                        testbench_template,
+                        testbench_output_format=testbench_output_format,
+                        testbench_inputs=testbench_inputs,
+                        testbench_outputs=testbench_outputs,
+                        testbench_optional_inputs=testbench_optional_inputs,
+                        input_dim_names=input_dim_names,
+                        output_dim_names=output_dim_names,
+                        dim_order=dim_order,
+                        dim_values=dim_values,
+                        weight_data_filename=self._weight_data_filename(model),
+                    ),
                 )
             )
         sections.append("")
@@ -2169,7 +2168,9 @@ class CEmitter:
     ) -> list[str]:
         dim_names = dim_names or {}
         shape = self._codegen_shape(temp.shape)
-        shape_exprs = [self._dim_expr(dim_names.get(index, dim)) for index, dim in enumerate(shape)]
+        shape_exprs = [
+            self._dim_expr(dim_names.get(index, dim)) for index, dim in enumerate(shape)
+        ]
         suffix = ""
         if len(shape_exprs) > 1:
             suffix = "".join(f"[{expr}]" for expr in shape_exprs[1:])
@@ -2178,7 +2179,9 @@ class CEmitter:
         c_type = temp.dtype.c_type
         if len(shape_exprs) <= 1:
             decl = f"{c_type} *{temp.name}"
-            alloc = f"malloc(sizeof(*{temp.name}) * {shape_exprs[0] if shape_exprs else 1})"
+            alloc = (
+                f"malloc(sizeof(*{temp.name}) * {shape_exprs[0] if shape_exprs else 1})"
+            )
         else:
             decl = f"{c_type} (*{temp.name}){suffix}"
             alloc = f"malloc(sizeof(*{temp.name}) * {shape_exprs[0]})"
@@ -2792,9 +2795,7 @@ class CEmitter:
     ) -> tuple[int, ...]:
         dim_names = dim_names or {}
         return tuple(
-            dim_names.get(index, dim).expected_size
-            if index in dim_names
-            else dim
+            dim_names.get(index, dim).expected_size if index in dim_names else dim
             for index, dim in enumerate(shape)
         )
 
@@ -2903,7 +2904,9 @@ class CEmitter:
         ) -> CodegenDim:
             key = (kind, tensor_index, dim_index)
             dim_name = _unique_dim_name(dim_name)
-            expected_size = dim_value if dim_value > 1 else CodegenDim(dim_name).expected_size
+            expected_size = (
+                dim_value if dim_value > 1 else CodegenDim(dim_name).expected_size
+            )
             if key not in dim_vars:
                 dim_ref = CodegenDim(dim_name, expected_size)
                 dim_vars[key] = dim_ref
@@ -3007,7 +3010,11 @@ class CEmitter:
         for index, name in enumerate(model.output_names):
             if index in output_dim_names:
                 dim_names[name] = dict(output_dim_names[index])
-        for value in model.op_context.graph.inputs + model.op_context.graph.values + model.op_context.graph.outputs:
+        for value in (
+            model.op_context.graph.inputs
+            + model.op_context.graph.values
+            + model.op_context.graph.outputs
+        ):
             tensor_type = _tensor_type(value.type)
             if tensor_type is None:
                 continue
@@ -3018,7 +3025,9 @@ class CEmitter:
             }
             if not tensor_dim_names:
                 continue
-            mapped_name = name_map.get(value.name, value.name) if name_map else value.name
+            mapped_name = (
+                name_map.get(value.name, value.name) if name_map else value.name
+            )
             dim_names.setdefault(mapped_name, {}).update(tensor_dim_names)
         return dim_names
 
@@ -3183,9 +3192,13 @@ class CEmitter:
             input_actual_shape: tuple[int, ...] | None = None
             if isinstance(constant_values, np.ndarray):
                 if is_sequence_input and constant_values.ndim >= 1:
-                    input_actual_shape = tuple(int(dim) for dim in constant_values.shape[1:])
+                    input_actual_shape = tuple(
+                        int(dim) for dim in constant_values.shape[1:]
+                    )
                 else:
-                    input_actual_shape = tuple(int(dim) for dim in constant_values.shape)
+                    input_actual_shape = tuple(
+                        int(dim) for dim in constant_values.shape
+                    )
             if input_actual_shape is not None and dim_names:
                 for axis, actual_dim in enumerate(input_actual_shape):
                     dim_ref = dim_names.get(axis)
@@ -3308,7 +3321,9 @@ class CEmitter:
                 {
                     "name": name,
                     "shape": loop_shape,
-                    "shape_literal": ",".join(str(dim) for dim in concrete_codegen_shape),
+                    "shape_literal": ",".join(
+                        str(dim) for dim in concrete_codegen_shape
+                    ),
                     "count": self._element_count(concrete_codegen_shape),
                     "array_suffix": input_array_suffix,
                     "array_index_expr": "".join(f"[{var}]" for var in loop_vars),
@@ -3335,11 +3350,11 @@ class CEmitter:
         outputs = []
         for index, (name, shape, dtype, value_type, optional_flag) in enumerate(
             zip(
-            model.output_names,
-            model.output_shapes,
-            model.output_dtypes,
-            model.output_types,
-            model.output_optional_names,
+                model.output_names,
+                model.output_shapes,
+                model.output_dtypes,
+                model.output_types,
+                model.output_optional_names,
             )
         ):
             json_name = self._ctx_name(name)
@@ -3381,7 +3396,9 @@ class CEmitter:
                 {
                     "name": name,
                     "shape": loop_shape,
-                    "shape_literal": ",".join(str(dim) for dim in concrete_codegen_shape),
+                    "shape_literal": ",".join(
+                        str(dim) for dim in concrete_codegen_shape
+                    ),
                     "count": self._element_count(concrete_codegen_shape),
                     "array_suffix": output_array_suffix,
                     "array_index_expr": "".join(f"[{var}]" for var in output_loop_vars),
