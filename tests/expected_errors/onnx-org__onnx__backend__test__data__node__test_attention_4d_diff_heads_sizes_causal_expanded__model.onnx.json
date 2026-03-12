@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_causal_expanded model.onnx --test-data-dir test_data_set_0 --shape-inference-shapes 'Q=2x3x4x8;K=2x3x6x8;V=2x3x6x10'",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_causal_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Shape",
@@ -30,5 +30,5 @@
     "Softmax"
   ],
   "opset_version": 23,
-  "generated_checksum": "99ccf1161d166c2a0b47ecc5d87f0fef5de6daa3982c95a8395b195c1deb597c"
+  "generated_checksum": "7be74b6abce6d423d23e571bb3a41b281d61a762ed61ec6a734a4339436554c7"
 }
