@@ -153,6 +153,62 @@ def _make_reshape_target_from_rank_size_model() -> onnx.ModelProto:
     )
 
 
+def _make_range_with_shape_preserving_consumer_model() -> onnx.ModelProto:
+    zero = helper.make_tensor("zero", TensorProto.FLOAT, [], [0.0])
+    one = helper.make_tensor("one", TensorProto.FLOAT, [], [1.0])
+    two = helper.make_tensor("two", TensorProto.FLOAT, [], [2.0])
+    return helper.make_model(
+        helper.make_graph(
+            nodes=[
+                helper.make_node("Cast", ["x"], ["limit"], to=TensorProto.FLOAT),
+                helper.make_node("Range", ["zero", "limit", "one"], ["range_out"]),
+                helper.make_node("Mul", ["range_out", "two"], ["out"]),
+            ],
+            name="range_shape_preserving_consumer_graph",
+            inputs=[
+                helper.make_tensor_value_info("x", TensorProto.INT32, [])
+            ],
+            outputs=[
+                helper.make_tensor_value_info("out", TensorProto.FLOAT, [3])
+            ],
+            initializer=[zero, one, two],
+            value_info=[
+                helper.make_tensor_value_info(
+                    "range_out", TensorProto.FLOAT, ["N"]
+                )
+            ],
+        ),
+        opset_imports=[helper.make_opsetid("", 13)],
+    )
+
+
+def _make_reduce_after_resolveable_reshape_model() -> onnx.ModelProto:
+    new_shape = helper.make_tensor("new_shape", TensorProto.INT64, [3], [3, 2, -1])
+    axes = helper.make_tensor("axes", TensorProto.INT64, [1], [2])
+    return helper.make_model(
+        helper.make_graph(
+            nodes=[
+                helper.make_node("Reshape", ["x", "new_shape"], ["reshaped"]),
+                helper.make_node("ReduceMean", ["reshaped", "axes"], ["out"], keepdims=1),
+            ],
+            name="reduce_after_reshape_graph",
+            inputs=[
+                helper.make_tensor_value_info("x", TensorProto.FLOAT, [3, 4, 2])
+            ],
+            outputs=[
+                helper.make_tensor_value_info("out", TensorProto.FLOAT, [3, 2, 1])
+            ],
+            initializer=[new_shape, axes],
+            value_info=[
+                helper.make_tensor_value_info(
+                    "reshaped", TensorProto.FLOAT, [3, 2, "N"]
+                )
+            ],
+        ),
+        opset_imports=[helper.make_opsetid("", 18)],
+    )
+
+
 def test_compile_debug_lowering_failure_context_disabled_by_default() -> None:
     compiler = Compiler(CompilerOptions())
 
@@ -205,3 +261,19 @@ def test_compile_resolves_reshape_target_from_rank_size_chain() -> None:
     generated = Compiler(CompilerOptions()).compile(_make_reshape_target_from_rank_size_model())
 
     assert "OpType: Reshape" in generated
+
+
+def test_compile_resolves_range_shape_from_shape_preserving_consumer_chain() -> None:
+    generated = Compiler(CompilerOptions()).compile(
+        _make_range_with_shape_preserving_consumer_model()
+    )
+
+    assert "OpType: Range" in generated
+
+
+def test_compile_reuses_common_shape_resolution_for_reduce_inputs() -> None:
+    generated = Compiler(CompilerOptions()).compile(
+        _make_reduce_after_resolveable_reshape_model()
+    )
+
+    assert "OpType: ReduceMean" in generated
