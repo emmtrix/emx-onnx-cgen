@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import hashlib
+import os
 from pathlib import Path
 import time
 from typing import Callable, Mapping, Sequence, TypeVar
@@ -42,6 +43,9 @@ from .lowering import load_lowering_registry
 from .lowering.common import ensure_supported_dtype, shape_product
 from .lowering.registry import get_lowering_registry
 from .onnx_import import import_onnx, prepare_onnx_model
+
+# Keep this env var near the lowering loop so future shape-debug work can find it fast.
+_DEBUG_LOWERING_FAILURES_ENV = "EMX_DEBUG_LOWERING_FAILURES"
 
 
 def _value_requires_explicit_shape_concretization(
@@ -98,6 +102,8 @@ class CompilerOptions:
     large_temp_threshold_bytes: int = 1024
     large_weight_threshold: int = 100 * 1024
     replicate_ort_bugs: bool = False
+    # Developer-only switch: attach the failing lowering node with typed I/O context.
+    debug_lowering_failures: bool = False
     timings: dict[str, float] | None = None
 
 
@@ -120,6 +126,12 @@ class Compiler:
         if options is None:
             options = CompilerOptions()
         self._options = options
+        env_debug_lowering = os.environ.get(_DEBUG_LOWERING_FAILURES_ENV)
+        self._debug_lowering_failures = options.debug_lowering_failures or (
+            env_debug_lowering is not None
+            and env_debug_lowering.strip().lower()
+            not in {"", "0", "false", "no", "off"}
+        )
         self._emitter = CEmitter(
             options.template_dir,
             restrict_arrays=options.restrict_arrays,
@@ -875,15 +887,74 @@ class Compiler:
             output_types,
         )
 
+    @staticmethod
+    def _format_debug_value_type(value_type: ValueType) -> str:
+        if isinstance(value_type, TensorType):
+            suffix = "?" if value_type.is_optional else ""
+            if value_type.dim_params:
+                return (
+                    f"tensor{suffix}[dtype={value_type.dtype.onnx_name}, "
+                    f"shape={value_type.shape}, dim_params={value_type.dim_params}]"
+                )
+            return f"tensor{suffix}[dtype={value_type.dtype.onnx_name}, shape={value_type.shape}]"
+        elem = value_type.elem
+        suffix = "?" if value_type.is_optional else ""
+        return (
+            f"sequence{suffix}[dtype={elem.dtype.onnx_name}, "
+            f"elem_shape={elem.shape}, elem_dim_params={elem.dim_params}]"
+        )
+
+    def _format_debug_value(self, ctx: GraphContext, name: str) -> str:
+        if not name:
+            return "<omitted>"
+        try:
+            value = ctx.find_value(name)
+        except KeyError:
+            return f"{name}: <missing>"
+        return f"{name}: {self._format_debug_value_type(value.type)}"
+
+    def _format_lowering_debug_context(
+        self,
+        ctx: GraphContext,
+        node: Node,
+        *,
+        node_index: int,
+    ) -> str:
+        lines = [
+            f"node_index: {node_index}",
+            f"op_type: {node.op_type}",
+            f"name: {node.name or '<unnamed>'}",
+            f"attrs: {dict(node.attrs)}",
+            "inputs:",
+        ]
+        for name in node.inputs:
+            lines.append(f"  - {self._format_debug_value(ctx, name)}")
+        lines.append("outputs:")
+        for name in node.outputs:
+            lines.append(f"  - {self._format_debug_value(ctx, name)}")
+        return "\n".join(lines)
+
     def _lower_nodes(self, ctx: GraphContext) -> tuple[list[OpBase], list[NodeInfo]]:
         ops: list[OpBase] = []
         node_infos: list[NodeInfo] = []
         registry = get_lowering_registry()
-        for node in ctx.nodes:
+        for node_index, node in enumerate(ctx.nodes):
             lowering = registry.get(node.op_type)
             if lowering is None:
                 raise UnsupportedOpError(f"Unsupported op {node.op_type}")
-            ops.append(lowering(ctx, node))
+            try:
+                ops.append(lowering(ctx, node))
+            except (ShapeInferenceError, UnsupportedOpError) as exc:
+                if not self._debug_lowering_failures:
+                    raise
+                debug_context = self._format_lowering_debug_context(
+                    ctx,
+                    node,
+                    node_index=node_index,
+                )
+                raise type(exc)(
+                    f"{exc}\n\nLowering debug context:\n{debug_context}"
+                ) from exc
             node_infos.append(
                 NodeInfo(
                     op_type=node.op_type,

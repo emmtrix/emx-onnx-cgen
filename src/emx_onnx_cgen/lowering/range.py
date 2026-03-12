@@ -2,14 +2,16 @@ from __future__ import annotations
 
 import math
 
-import numpy as np
-
 from shared.scalar_types import ScalarType
 
-from ..ir.ops import RangeOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
-from ..ir.model import Graph, Initializer, Node
-from ..lowering.common import node_dtype, value_shape
+from ..ir.model import Graph, Node
+from ..ir.ops import RangeOp
+from ..lowering.common import (
+    node_dtype,
+    resolve_numeric_list_from_value,
+    value_shape,
+)
 from .registry import register_lowering
 
 
@@ -20,25 +22,6 @@ _SUPPORTED_RANGE_DTYPES = {
     ScalarType.I32,
     ScalarType.I64,
 }
-
-
-def _find_initializer(graph: Graph, name: str) -> Initializer | None:
-    for initializer in graph.initializers:
-        if initializer.name == name:
-            return initializer
-    return None
-
-
-def _read_scalar_initializer(
-    graph: Graph, name: str, node: Node, label: str
-) -> float | int | None:
-    initializer = _find_initializer(graph, name)
-    if initializer is None:
-        return None
-    data = np.array(initializer.data)
-    if data.size != 1:
-        raise UnsupportedOpError(f"{node.op_type} {label} input must be a scalar")
-    return data.reshape(-1)[0].item()
 
 
 def _is_scalar_shape(shape: tuple[int, ...]) -> bool:
@@ -64,10 +47,20 @@ def lower_range(graph: Graph, node: Node) -> RangeOp:
     output_shape = value_shape(graph, node.outputs[0], node)
     if len(output_shape) != 1:
         raise ShapeInferenceError("Range output must be 1D")
-    start_value = _read_scalar_initializer(graph, node.inputs[0], node, "start")
-    limit_value = _read_scalar_initializer(graph, node.inputs[1], node, "limit")
-    delta_value = _read_scalar_initializer(graph, node.inputs[2], node, "delta")
-    if start_value is not None and limit_value is not None and delta_value is not None:
+    start_values = resolve_numeric_list_from_value(graph, node.inputs[0], node)
+    limit_values = resolve_numeric_list_from_value(graph, node.inputs[1], node)
+    delta_values = resolve_numeric_list_from_value(graph, node.inputs[2], node)
+    if (
+        start_values is not None
+        and limit_values is not None
+        and delta_values is not None
+        and len(start_values) == 1
+        and len(limit_values) == 1
+        and len(delta_values) == 1
+    ):
+        start_value = start_values[0]
+        limit_value = limit_values[0]
+        delta_value = delta_values[0]
         if float(delta_value) == 0.0:
             raise UnsupportedOpError("Range delta must be non-zero")
         raw_count = (float(limit_value) - float(start_value)) / float(delta_value)
