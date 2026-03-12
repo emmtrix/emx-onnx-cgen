@@ -1,5 +1,5 @@
 {
-  "error": "OK (max abs diff 0)",
+  "error": "Failed to build testbench.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/simple/test_sequence_model8 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
@@ -7,5 +7,5 @@
     "SequenceLength"
   ],
   "opset_version": 12,
-  "generated_checksum": "ffcfccd8b8528e6a785e3f270324873ab4d281daa9a5170720c379f33d77811c"
+  "generated_checksum": "60bff499ab6c48058867e77e0837413328cc2614e80c533b26e90541e5968d79"
 }
