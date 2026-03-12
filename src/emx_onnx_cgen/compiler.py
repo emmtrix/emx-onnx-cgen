@@ -4,7 +4,7 @@ from dataclasses import dataclass
 import hashlib
 from pathlib import Path
 import time
-from typing import Callable, Mapping, TypeVar
+from typing import Callable, Mapping, Sequence, TypeVar
 
 import numpy as np
 import onnx
@@ -19,7 +19,7 @@ from .codegen.c_emitter import (
     ModelHeader,
     NodeInfo,
 )
-from .errors import UnsupportedOpError
+from .errors import ShapeInferenceError, UnsupportedOpError
 from .invariants import (
     check_graph_integrity,
     check_inferred_shapes,
@@ -49,6 +49,7 @@ def _value_requires_explicit_shape_concretization(
     *,
     allow_top_level_tensor_dims: bool,
     check_sequence_dims: bool,
+    allowed_tensor_dim_params: set[str] | None = None,
 ) -> str | None:
     value_type = value.type
     if isinstance(value_type, SequenceType):
@@ -62,7 +63,13 @@ def _value_requires_explicit_shape_concretization(
         return None
     if allow_top_level_tensor_dims:
         return None
-    if any(dim_param is not None for dim_param in value_type.dim_params):
+    unresolved_dim_params = tuple(
+        dim_param
+        for dim_param in value_type.dim_params
+        if dim_param is not None
+        and (allowed_tensor_dim_params is None or dim_param not in allowed_tensor_dim_params)
+    )
+    if unresolved_dim_params:
         return f"tensor '{value.name}' has dynamic dimensions {value_type.dim_params}"
     return None
 
@@ -77,6 +84,8 @@ class CompilerOptions:
     restrict_arrays: bool = True
     fp32_accumulation_strategy: str = "simple"
     fp16_accumulation_strategy: str = "fp32"
+    testbench_inputs: Mapping[str, tuple[float | int | bool, ...] | np.ndarray] | None = None
+    testbench_outputs: Mapping[str, np.ndarray | list[np.ndarray]] | None = None
     testbench_optional_inputs: Mapping[str, bool] | None = None
     testbench_output_format: str = "json"
     shape_inference_inputs: Mapping[str, np.ndarray] | None = None
@@ -124,6 +133,16 @@ class Compiler:
         variable_dim_inputs: dict[int, dict[int, str]]
         variable_dim_outputs: dict[int, dict[int, str]]
 
+    def _try_lower_without_shape_concretization(
+        self,
+        model: onnx.ModelProto,
+        graph: Graph,
+    ) -> LoweredModel | None:
+        try:
+            return self._lower_model(model, graph)
+        except (ShapeInferenceError, UnsupportedOpError):
+            return None
+
     def _time_step(self, label: str, func: Callable[[], _T]) -> _T:
         timings = self._options.timings
         if timings is None:
@@ -146,6 +165,21 @@ class Compiler:
             missing_shape_reason is not None
             and not self._options.shape_inference_inputs
         ):
+            lowered = self._time_step(
+                "lower_model_without_concretize",
+                lambda: self._try_lower_without_shape_concretization(
+                    prepared_model, graph
+                ),
+            )
+            if lowered is not None:
+                variable_dim_inputs, variable_dim_outputs = self._time_step(
+                    "collect_variable_dims", lambda: self._collect_variable_dims(graph)
+                )
+                return Compiler._CompileContext(
+                    lowered=lowered,
+                    variable_dim_inputs=variable_dim_inputs,
+                    variable_dim_outputs=variable_dim_outputs,
+                )
             raise UnsupportedOpError(
                 "Code generation needs explicit shape concretization, but no "
                 "--shape-inference-shapes were provided. "
@@ -188,6 +222,8 @@ class Compiler:
                 emit_testbench=self._options.emit_testbench,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
                 testbench_output_format=self._options.testbench_output_format,
+                testbench_inputs=self._options.testbench_inputs,
+                testbench_outputs=self._options.testbench_outputs,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
             ),
@@ -199,6 +235,8 @@ class Compiler:
             "emit_testbench",
             lambda: self._emitter.emit_testbench(
                 ctx.lowered,
+                testbench_inputs=self._options.testbench_inputs,
+                testbench_outputs=self._options.testbench_outputs,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
                 testbench_output_format=self._options.testbench_output_format,
                 variable_dim_inputs=ctx.variable_dim_inputs,
@@ -226,6 +264,8 @@ class Compiler:
                 emit_testbench=self._options.emit_testbench,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
                 testbench_output_format=self._options.testbench_output_format,
+                testbench_inputs=self._options.testbench_inputs,
+                testbench_outputs=self._options.testbench_outputs,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
             ),
@@ -242,6 +282,8 @@ class Compiler:
                 emit_testbench=self._options.emit_testbench,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
                 testbench_output_format=self._options.testbench_output_format,
+                testbench_inputs=self._options.testbench_inputs,
+                testbench_outputs=self._options.testbench_outputs,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
             ),
@@ -263,6 +305,8 @@ class Compiler:
                 emit_testbench=self._options.emit_testbench,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
                 testbench_output_format=self._options.testbench_output_format,
+                testbench_inputs=self._options.testbench_inputs,
+                testbench_outputs=self._options.testbench_outputs,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
             ),
@@ -275,6 +319,7 @@ class Compiler:
 
     @staticmethod
     def _shape_concretization_requirement_reason(graph: Graph) -> str | None:
+        allowed_internal_dim_params = Compiler._allowed_internal_dim_params(graph)
         for value in graph.inputs:
             reason = _value_requires_explicit_shape_concretization(
                 value,
@@ -288,6 +333,7 @@ class Compiler:
                 value,
                 allow_top_level_tensor_dims=False,
                 check_sequence_dims=True,
+                allowed_tensor_dim_params=allowed_internal_dim_params,
             )
             if reason is not None:
                 return reason
@@ -303,6 +349,7 @@ class Compiler:
 
     @staticmethod
     def _unresolved_shape_concretization_reason(graph: Graph) -> str | None:
+        allowed_internal_dim_params = Compiler._allowed_internal_dim_params(graph)
         for value in graph.inputs:
             reason = _value_requires_explicit_shape_concretization(
                 value,
@@ -316,6 +363,7 @@ class Compiler:
                 value,
                 allow_top_level_tensor_dims=False,
                 check_sequence_dims=False,
+                allowed_tensor_dim_params=allowed_internal_dim_params,
             )
             if reason is not None:
                 return reason
@@ -329,24 +377,51 @@ class Compiler:
                 return reason
         return None
 
+    @staticmethod
+    def _allowed_internal_dim_params(graph: Graph) -> set[str]:
+        dim_params: set[str] = set()
+        for value in graph.inputs + graph.outputs:
+            if isinstance(value.type, TensorType):
+                dim_params.update(
+                    dim_param for dim_param in value.type.dim_params if dim_param
+                )
+            elif isinstance(value.type, SequenceType):
+                dim_params.update(
+                    dim_param for dim_param in value.type.elem.dim_params if dim_param
+                )
+        return dim_params
+
     @classmethod
     def requires_explicit_shape_inference_inputs(cls, model: onnx.ModelProto) -> bool:
         prepared_model = prepare_onnx_model(model)
         graph = import_onnx(prepared_model, _prepared=True)
-        return cls._shape_concretization_requirement_reason(graph) is not None
+        if cls._shape_concretization_requirement_reason(graph) is None:
+            return False
+        compiler = cls(CompilerOptions())
+        return compiler._try_lower_without_shape_concretization(
+            prepared_model, graph
+        ) is None
 
     @staticmethod
     def _collect_variable_dims(
         graph: Graph,
     ) -> tuple[dict[int, dict[int, str]], dict[int, dict[int, str]]]:
+        def tensor_type(value: Value) -> TensorType | None:
+            if isinstance(value.type, TensorType):
+                return value.type
+            if isinstance(value.type, SequenceType):
+                return value.type.elem
+            return None
+
         def collect(values: tuple[Value, ...]) -> dict[int, dict[int, str]]:
             dim_map: dict[int, dict[int, str]] = {}
             for index, value in enumerate(values):
-                if not isinstance(value.type, TensorType):
+                value_tensor_type = tensor_type(value)
+                if value_tensor_type is None:
                     continue
                 dims = {
                     dim_index: dim_param
-                    for dim_index, dim_param in enumerate(value.type.dim_params)
+                    for dim_index, dim_param in enumerate(value_tensor_type.dim_params)
                     if dim_param
                 }
                 if dims:
@@ -383,6 +458,7 @@ class Compiler:
         for op in ops:
             op.infer_shapes(op_ctx)
         check_inferred_shapes(ops, op_ctx)
+        ops, node_infos = self._prune_dead_ops(ops, node_infos, output_names)
         refreshed_output_types: list[ValueType] = []
         refreshed_output_shapes: list[tuple[int, ...]] = []
         refreshed_output_dtypes: list[ScalarType] = []
@@ -637,6 +713,8 @@ class Compiler:
         check_graph_integrity(graph)
         for value in graph.outputs:
             if isinstance(value.type, TensorType):
+                if any(value.type.dim_params):
+                    continue
                 shape_product(value.type.shape)
 
     def _collect_io_specs(
@@ -810,6 +888,26 @@ class Compiler:
                 )
             )
         return ops, node_infos
+
+    @staticmethod
+    def _prune_dead_ops(
+        ops: Sequence[OpBase],
+        node_infos: Sequence[NodeInfo],
+        model_output_names: Sequence[str],
+    ) -> tuple[list[OpBase], list[NodeInfo]]:
+        needed = {name for name in model_output_names if name}
+        kept_ops: list[OpBase] = []
+        kept_node_infos: list[NodeInfo] = []
+        for op, node_info in zip(reversed(ops), reversed(node_infos), strict=True):
+            output_names = tuple(name for name in op.output_names if name)
+            if not output_names or not any(name in needed for name in output_names):
+                continue
+            kept_ops.append(op)
+            kept_node_infos.append(node_info)
+            needed.update(name for name in op.input_names if name)
+        kept_ops.reverse()
+        kept_node_infos.reverse()
+        return kept_ops, kept_node_infos
 
     def _build_header(self, model: onnx.ModelProto, graph: Graph) -> ModelHeader:
         metadata_props = tuple((prop.key, prop.value) for prop in model.metadata_props)

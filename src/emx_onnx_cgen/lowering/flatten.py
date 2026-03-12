@@ -15,13 +15,19 @@ def _normalize_axis(axis: int, rank: int) -> int:
     return axis
 
 
-def _flatten_output_shape(input_shape: tuple[int, ...], axis: int) -> tuple[int, int]:
+def _flatten_output_shape(
+    input_shape: tuple[int, ...],
+    axis: int,
+    expected_shape: tuple[int, ...] | None = None,
+) -> tuple[int, int]:
     rank = len(input_shape)
     axis = _normalize_axis(axis, rank)
     if rank == 0:
         return (1, 1)
     for dim in input_shape:
         if dim < 0:
+            if expected_shape is not None:
+                return expected_shape
             raise ShapeInferenceError("Dynamic dims are not supported")
     first = shape_product(input_shape[:axis]) if axis else 1
     second = shape_product(input_shape[axis:]) if axis < rank else 1
@@ -41,8 +47,12 @@ def lower_flatten(graph: Graph, node: Node) -> ReshapeOp:
             f"got {input_dtype} and {output_dtype}"
         )
     axis = int(node.attrs.get("axis", 1))
-    output_shape = _flatten_output_shape(input_shape, axis)
     expected_shape = value_shape(graph, node.outputs[0], node)
+    output_shape = _flatten_output_shape(
+        input_shape,
+        axis,
+        expected_shape if any(dim < 0 for dim in expected_shape) else None,
+    )
     if expected_shape and output_shape != expected_shape:
         raise ShapeInferenceError(
             f"Flatten output shape must be {output_shape}, got {expected_shape}"

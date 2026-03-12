@@ -70,6 +70,15 @@ class EmitContext:
     op_index: int
 
 
+@dataclass(frozen=True)
+class CodegenDim:
+    name: str
+    expected_size: int = 10
+
+    def __str__(self) -> str:
+        return self.name
+
+
 class OpBase(ABC):
     """Ops should not mutate themselves; store derived values in OpContext."""
 

@@ -5951,6 +5951,16 @@ def test_lower_sequence_construct() -> None:
     assert op.output_sequence == "output_sequence"
 
 
+def test_compile_prunes_unused_sequence_empty_state_from_sequence_map() -> None:
+    model = onnx.load(
+        PROJECT_ROOT
+        / "onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences/model.onnx"
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "SequenceMap_0_state_0_empty" not in generated
+    assert "tmp1_SequenceMap_0_state_0" not in generated
+
+
 def test_lower_concat_from_sequence() -> None:
     graph = import_onnx(_make_concat_from_sequence_model(axis=-1, new_axis=0))
     op = lower_concat_from_sequence(graph, graph.nodes[1])

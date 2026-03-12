@@ -7,8 +7,8 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1612 / 1802, 89.5% | 1.20.1 |
-| [ONNX2C test coverage](#onnx2c-test-coverage) | 110 / 125, 88.0% | n/a |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1614 / 1802, 89.6% | 1.20.1 |
+| [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 5 / 7, 71.4% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1612 / 1802 ONNX files (89.5%).
+Coverage 1614 / 1802 ONNX files (89.6%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -179,7 +179,7 @@ Coverage 1612 / 1802 ONNX files (89.5%).
 | node/test_attention_4d_causal/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_causal_expanded/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx | 24 | Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | 24 | Data | ❌ | Code generation still has unresolved dynamic shapes after shape concretization. Reason: tensor 'Attention_test_attention_4d_diff_heads_mask4d_padded_kv_expanded_function_AttnBias' has dynamic dimensions ('unk__0', 'unk__1', 'unk__2', 'unk__3'). Hint: provide more representative --shape-inference-shapes or export the model with static shapes. |
+| node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | 24 | Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_diff_heads_sizes/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_diff_heads_sizes_attn_mask/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx | 23 | Data | ✅ | OK (max ULP 0) |
@@ -1813,7 +1813,7 @@ Coverage 1612 / 1802 ONNX files (89.5%).
 | simple/test_sequence_model1/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
 | simple/test_sequence_model2/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
 | simple/test_sequence_model3/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
-| simple/test_sequence_model4/model.onnx | 12 | Data | ❌ | Testbench execution failed: exit code 1 |
+| simple/test_sequence_model4/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
 | simple/test_sequence_model5/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
 | simple/test_sequence_model6/model.onnx | 12 | Data | ✅ | OK (max abs diff 0) |
 | simple/test_sequence_model7/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
@@ -1832,7 +1832,7 @@ Coverage 1612 / 1802 ONNX files (89.5%).
 
 Test directory: `onnx2c-org/test`
 
-Coverage 110 / 125 ONNX files (88.0%).
+Coverage 119 / 125 ONNX files (95.2%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1852,7 +1852,7 @@ Coverage 110 / 125 ONNX files (88.0%).
 | local_ops/test_gemm_C1xN/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
 | local_ops/test_gemm_C1xN_transA/model.onnx | 12 | Data | ✅ | OK (max ULP 1) |
 | local_ops/test_gemm_C1xN_transA_transB/model.onnx | 12 | Data | ✅ | OK (max ULP 1) |
-| local_ops/test_gemm_CM_transA/model.onnx | 12 | Data | ❌ | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'sclbl-onnx-node1' Status Message: Gemm: Invalid bias shape for broadcast |
+| local_ops/test_gemm_CM_transA/model.onnx | 12 | Data | ❌ | onnxruntime failed to run onnx2c-org\test\local_ops\test_gemm_CM_transA\model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'sclbl-onnx-node1' Status Message: Gemm: Invalid bias shape for broadcast |
 | local_ops/test_gemm_CMx1/model.onnx | 12 | Data | ✅ | OK (max ULP 1) |
 | local_ops/test_gemm_CMx1_transA/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
 | local_ops/test_gemm_CMx1_transA_transB/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
@@ -1940,27 +1940,27 @@ Coverage 110 / 125 ONNX files (88.0%).
 | old_onnx_backend/9/test_slice_default_axes/model.onnx | 9 | Data | ✅ | OK (max ULP 0) |
 | old_onnx_backend/9/test_slice_end_out_of_bounds/model.onnx | 9 | Data | ✅ | OK (max ULP 0) |
 | old_onnx_backend/9/test_slice_neg/model.onnx | 9 | Data | ✅ | OK (max ULP 0) |
-| simple_networks/conv_2ch_3kernels_randombias.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor 'adjusted_input' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. |
-| simple_networks/conv_2kernels.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor 'adjusted_input' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. |
-| simple_networks/conv_2kernels_randombias.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor 'adjusted_input' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. |
-| simple_networks/conv_3ch.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor 'adjusted_input' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. |
-| simple_networks/conv_k2.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor 'adjusted_input' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. |
-| simple_networks/conv_k2_maxpool_k2.onnx | 12 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor 'adjusted_input' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. |
-| simple_networks/conv_k2_s2.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor 'adjusted_input' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. |
+| simple_networks/conv_2ch_3kernels_randombias.onnx | 11 | Random+ORT | ✅ | OK (max ULP 34) |
+| simple_networks/conv_2kernels.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
+| simple_networks/conv_2kernels_randombias.onnx | 11 | Random+ORT | ✅ | OK (max ULP 10) |
+| simple_networks/conv_3ch.onnx | 11 | Random+ORT | ✅ | OK (max ULP 20) |
+| simple_networks/conv_k2.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
+| simple_networks/conv_k2_maxpool_k2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
+| simple_networks/conv_k2_s2.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/fp_bfloat16.onnx | 22 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/fp_float16.onnx | 22 | Random+ORT | ✅ | OK (max ULP 0) |
-| simple_networks/lstm_k1_b1_r1.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor 'lstm_X' has dynamic dimensions ('M1', 'N', None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. |
-| simple_networks/lstm_k1_b1_r1_relu.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor 'lstm_X' has dynamic dimensions ('M1', 'N', None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. |
-| simple_networks/maxpool_k2.onnx | 12 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor 'input_transposed' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. |
-| simple_networks/maxpool_k2_s2.onnx | 12 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor 'input_transposed' has dynamic dimensions ('N', None, None, None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. |
+| simple_networks/lstm_k1_b1_r1.onnx | 11 | Random+ORT | ❌ | Squeeze does not support dynamic dims in input |
+| simple_networks/lstm_k1_b1_r1_relu.onnx | 11 | Random+ORT | ❌ | Squeeze does not support dynamic dims in input |
+| simple_networks/maxpool_k2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
+| simple_networks/maxpool_k2_s2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/random_uniform.onnx | 22 | Random+ORT | ✅ | OK UNKNOWN |
 | simple_networks/scalar_abs.onnx | 13 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/scalar_add.onnx | 13 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/scalar_identity.onnx | 13 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/treeensembleclassifier.onnx | 12 | Random+ORT | ✅ | OK (max abs diff 0, max ULP 0) |
-| tfl_helloworld/model.onnx | 9 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor 'dense_20' has dynamic dimensions ('N', None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. |
-| velardo/lesson14.onnx | 11 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor 'flatten/Reshape:0' has dynamic dimensions ('N', None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. |
-| velardo/lesson9.onnx | 9 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor 'dense0' has dynamic dimensions ('N', None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. |
+| tfl_helloworld/model.onnx | 9 | Random+ORT | ❌ | Broadcasting mismatch for shapes: (-1, 16), (16,) |
+| velardo/lesson14.onnx | 11 | Random+ORT | ❌ | Broadcasting mismatch for shapes: (-1, 512), (512,) |
+| velardo/lesson9.onnx | 9 | Random+ORT | ❌ | Broadcasting mismatch for shapes: (-1, 5), (5,) |
 
 ## Local ONNX test coverage
 

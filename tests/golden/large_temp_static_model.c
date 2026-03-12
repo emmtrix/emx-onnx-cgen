@@ -26,6 +26,7 @@
  */
 
 #include <stdint.h>
+#include <stdlib.h>
 #include <math.h>
 #include <float.h>
 
@@ -95,7 +96,11 @@ _Bool large_temp_static_model_load(const char *path) {
 }
 
 void large_temp_static_model(const float a[restrict 1][257], const float b[restrict 1][257], float out[restrict 1][257]) {
-    static float tmp0_tmp[1][257];
+    float (*tmp0_tmp)[257] = malloc(sizeof(*tmp0_tmp) * 1);
+    if (tmp0_tmp == NULL) {
+            return;
+        }
     node0_add(a, b, tmp0_tmp);
     node1_relu(tmp0_tmp, out);
+    free(tmp0_tmp);
 }

@@ -37,7 +37,7 @@ static const {{ input.c_type }} {{ input.constant_name }}{{ input.array_suffix }
 static const {{ input.c_type }} {{ input.constant_name }}[] = {
 {% endif %}
 {% for line in input.constant_lines %}
-    {{ line }}{% if not loop.last %},{% endif %}
+{{ line }}
 {% endfor %}
 };
 {% endif %}
