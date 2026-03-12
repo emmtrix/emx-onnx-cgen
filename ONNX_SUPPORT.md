@@ -8,7 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1636 / 1802, 90.8% | 1.20.1 |
-| [ONNX2C test coverage](#onnx2c-test-coverage) | 120 / 125, 96.0% | n/a |
+| [ONNX2C test coverage](#onnx2c-test-coverage) | 122 / 125, 97.6% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 5 / 7, 71.4% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -1832,7 +1832,7 @@ Coverage 1636 / 1802 ONNX files (90.8%).
 
 Test directory: `onnx2c-org/test`
 
-Coverage 120 / 125 ONNX files (96.0%).
+Coverage 122 / 125 ONNX files (97.6%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1950,7 +1950,7 @@ Coverage 120 / 125 ONNX files (96.0%).
 | simple_networks/fp_bfloat16.onnx | 22 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/fp_float16.onnx | 22 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/lstm_k1_b1_r1.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
-| simple_networks/lstm_k1_b1_r1_relu.onnx | 11 | Random+ORT | ❌ | Squeeze does not support dynamic dims in input |
+| simple_networks/lstm_k1_b1_r1_relu.onnx | 11 | Random+ORT | ✅ | OK (max ULP 5) |
 | simple_networks/maxpool_k2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/maxpool_k2_s2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/random_uniform.onnx | 22 | Random+ORT | ✅ | OK UNKNOWN |
@@ -1959,7 +1959,7 @@ Coverage 120 / 125 ONNX files (96.0%).
 | simple_networks/scalar_identity.onnx | 13 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/treeensembleclassifier.onnx | 12 | Random+ORT | ✅ | OK (max abs diff 0, max ULP 0) |
 | tfl_helloworld/model.onnx | 9 | Random+ORT | ❌ | Broadcasting mismatch for shapes: (-1, 16), (16,) |
-| velardo/lesson14.onnx | 11 | Random+ORT | ❌ | Broadcasting mismatch for shapes: (-1, 512), (512,) |
+| velardo/lesson14.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
 | velardo/lesson9.onnx | 9 | Random+ORT | ❌ | Broadcasting mismatch for shapes: (-1, 5), (5,) |
 
 ## Local ONNX test coverage
