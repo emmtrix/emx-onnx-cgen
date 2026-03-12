@@ -23,9 +23,11 @@ def _split_metadata(
     split_name: str | None,
     node: Node,
     *,
-    axis_size: int,
+    axis_size: int | None,
 ) -> tuple[tuple[int, ...] | None, bool]:
     if split_name is None:
+        if axis_size is None:
+            return None, False
         return tuple(1 for _ in range(axis_size)), False
 
     split_shape = value_shape(graph, split_name, node)
@@ -43,6 +45,8 @@ def _split_metadata(
         split_size = split_values[0]
         if split_size <= 0:
             raise ShapeInferenceError("SplitToSequence scalar split must be positive")
+        if axis_size is None:
+            return None, True
         full_chunks, remainder = divmod(axis_size, split_size)
         sizes = [split_size] * full_chunks
         if remainder:
@@ -59,7 +63,7 @@ def _split_metadata(
         return None, False
     if any(size <= 0 for size in split_values):
         raise ShapeInferenceError("SplitToSequence split sizes must be positive")
-    if sum(split_values) != axis_size:
+    if axis_size is not None and sum(split_values) != axis_size:
         raise ShapeInferenceError(
             "SplitToSequence split sizes must sum to axis dimension"
         )
@@ -90,10 +94,6 @@ def lower_split_to_sequence(graph: Graph, node: Node) -> SplitToSequenceOp:
     input_shape = value_shape(graph, input_name, node)
     axis = normalize_axis(int(node.attrs.get("axis", 0)), input_shape, node)
     axis_size = input_shape[axis]
-    if axis_size < 0:
-        raise ShapeInferenceError(
-            "SplitToSequence requires a static axis dimension or shape-inference dims"
-        )
 
     split_name = optional_name(node.inputs, 1)
     keepdims = bool(int(node.attrs.get("keepdims", 1)))
@@ -101,8 +101,12 @@ def lower_split_to_sequence(graph: Graph, node: Node) -> SplitToSequenceOp:
         graph,
         split_name,
         node,
-        axis_size=axis_size,
+        axis_size=axis_size if axis_size >= 0 else None,
     )
+    if axis_size < 0 and (split_name is None or split_scalar):
+        raise ShapeInferenceError(
+            "SplitToSequence requires a static axis dimension or shape-inference dims"
+        )
     if split_name is not None:
         keepdims = True
 

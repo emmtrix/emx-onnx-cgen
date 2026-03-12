@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 2)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded model.onnx --test-data-dir test_data_set_0 --shape-inference-shapes 'Q=2x3x4x8;K=2x3x6x8;V=2x3x6x8;attn_mask=2x3x4x18;past_key=2x3x12x8;past_value=2x3x12x8'",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Shape",
@@ -29,5 +29,5 @@
     "Softmax"
   ],
   "opset_version": 23,
-  "generated_checksum": "a79a051e434c7e5f34743408b12f5fb89cbc22a2ffcd2490d387106ade2e02f7"
+  "generated_checksum": "d68cae7bffcfa9ee5960c65c5d8b94275c378070dad69784c5a6a7979e5d70ae"
 }
