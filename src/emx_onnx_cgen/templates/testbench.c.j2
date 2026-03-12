@@ -79,10 +79,13 @@ static void testbench_init_constant_input({% if not constant_inputs %}void{% els
 }
 
 static int testbench_read_input_file(
-    const char *input_path{% for input in variable_inputs %}, {{ input.c_type }} {{ input.name }}{{ input.array_suffix }}{% if input.is_sequence %}, idx_t *{{ input.count_name }}{% endif %}{% if input.optional_flag_name %}, _Bool *{{ input.optional_flag_name }}{% endif %}{% endfor %}
+    const char *input_path{% for dim in dim_args %}, int *{{ dim.name }}__ptr{% endfor %}{% for input in variable_inputs %}, {{ input.c_type }} {{ input.name }}{{ input.array_suffix }}{% if input.is_sequence %}, idx_t *{{ input.count_name }}{% endif %}{% if input.optional_flag_name %}, _Bool *{{ input.optional_flag_name }}{% endif %}{% endfor %}
 ) {
 {% if not variable_inputs %}
     (void)input_path;
+{% for dim in dim_args %}
+    (void){{ dim.name }}__ptr;
+{% endfor %}
     return 0;
 {% else %}
     FILE *input_file = fopen(input_path, "rb");
@@ -122,8 +125,24 @@ static int testbench_read_input_file(
 {% if input.optional_flag_name and not input.is_sequence %}
     if (*{{ input.optional_flag_name }}) {
 {% endif %}
+{% for dim_read in input.runtime_dim_reads %}
+    {
+        int32_t runtime_dim = 0;
+        if (fread(&runtime_dim, sizeof(int32_t), 1, input_file) != 1) {
+            fprintf(stderr, "Failed to read runtime dim {{ dim_read.name }} for input {{ input.json_name }}\n");
+            fclose(input_file);
+            return 1;
+        }
+        if (runtime_dim < 0) {
+            fprintf(stderr, "Invalid runtime dim {{ dim_read.name }} for input {{ input.json_name }}: %d\n", (int)runtime_dim);
+            fclose(input_file);
+            return 1;
+        }
+        *{{ dim_read.name }}__ptr = runtime_dim;
+    }
+{% endfor %}
 {% for depth in range(input.rank) %}
-    for (idx_t {{ input.loop_vars[depth] }} = 0; {{ input.loop_vars[depth] }} < {{ input.shape[depth] }}; ++{{ input.loop_vars[depth] }}) {
+    for (idx_t {{ input.loop_vars[depth] }} = 0; {{ input.loop_vars[depth] }} < {{ input.input_file_shape[depth] }}; ++{{ input.loop_vars[depth] }}) {
 {% endfor %}
 {% if input.is_string %}
         if (fread({{ input.name }}{{ input.array_index_expr }}, sizeof(char), EMX_STRING_MAX_LEN, input_file) != EMX_STRING_MAX_LEN) {
@@ -148,14 +167,17 @@ static int testbench_read_input_file(
 {% endif %}
 }
 
-static void testbench_fill_random_input({% if not variable_inputs %}void{% else %}{% for input in variable_inputs %}{{ input.c_type }} {{ input.name }}{{ input.array_suffix }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}) {
-{% if not variable_inputs %}
+static void testbench_fill_random_input({% if not variable_inputs and not dim_args %}void{% else %}{% for dim in dim_args %}int {{ dim.name }}{% if not loop.last or variable_inputs %}, {% endif %}{% endfor %}{% for input in variable_inputs %}{{ input.c_type }} {{ input.name }}{{ input.array_suffix }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}) {
+{% if not variable_inputs and not dim_args %}
     (void)0;
 {% endif %}
+{% for dim in dim_args %}
+    (void){{ dim.name }};
+{% endfor %}
 {% for input in inputs %}
 {% if not input.constant_name %}
 {% for depth in range(input.rank) %}
-    for (idx_t {{ input.loop_vars[depth] }} = 0; {{ input.loop_vars[depth] }} < {{ input.shape[depth] }}; ++{{ input.loop_vars[depth] }}) {
+    for (idx_t {{ input.loop_vars[depth] }} = 0; {{ input.loop_vars[depth] }} < {{ input.runtime_shape[depth] }}; ++{{ input.loop_vars[depth] }}) {
 {% endfor %}
 {% if input.is_string %}
         {{ input.name }}{{ input.array_index_expr }}[0] = '\0';
@@ -302,11 +324,11 @@ static int testbench_run(const char *input_path) {
 
     testbench_init_constant_input({% for input in constant_inputs %}{{ input.name }}{% if not loop.last %}, {% endif %}{% endfor %});
     if (input_path) {
-        if (testbench_read_input_file(input_path{% for input in variable_inputs %}, {{ input.name }}{% if input.is_sequence %}, &{{ input.count_name }}{% endif %}{% if input.optional_flag_name %}, &{{ input.optional_flag_name }}{% endif %}{% endfor %}) != 0) {
+        if (testbench_read_input_file(input_path{% for dim in dim_args %}, &{{ dim.name }}{% endfor %}{% for input in variable_inputs %}, {{ input.name }}{% if input.is_sequence %}, &{{ input.count_name }}{% endif %}{% if input.optional_flag_name %}, &{{ input.optional_flag_name }}{% endif %}{% endfor %}) != 0) {
             return 1;
         }
     } else {
-        testbench_fill_random_input({% for input in variable_inputs %}{{ input.name }}{% if not loop.last %}, {% endif %}{% endfor %});
+        testbench_fill_random_input({% for dim in dim_args %}{{ dim.name }}{% if not loop.last or variable_inputs %}, {% endif %}{% endfor %}{% for input in variable_inputs %}{{ input.name }}{% if not loop.last %}, {% endif %}{% endfor %});
     }
 
 {% for output in outputs %}

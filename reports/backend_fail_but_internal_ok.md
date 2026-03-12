@@ -86,7 +86,6 @@ This list contains ONNX backend tests that failed in the full backend run even t
 | [ ] | `src/emx_onnx_cgen/onnx_backend/test_suite.py::OnnxBackendNodeModelTest::test_split_to_sequence_1_cpu` | [R14](#r14-prepare-only-compilation-collapses-dynamic-dims) |
 | [ ] | `src/emx_onnx_cgen/onnx_backend/test_suite.py::OnnxBackendNodeModelTest::test_split_to_sequence_2_cpu` | [R14](#r14-prepare-only-compilation-collapses-dynamic-dims) |
 | [ ] | `src/emx_onnx_cgen/onnx_backend/test_suite.py::OnnxBackendSimpleModelTest::test_sequence_model4_cpu` | [R14](#r14-prepare-only-compilation-collapses-dynamic-dims) |
-| [ ] | `src/emx_onnx_cgen/onnx_backend/test_suite.py::OnnxBackendSimpleModelTest::test_sequence_model8_cpu` | [R15](#r15-empty-dynamic-input-vs-prepare-only-fixed-shape) |
 | [ ] | `src/emx_onnx_cgen/onnx_backend/test_suite.py::OnnxBackendNodeModelTest::test_identity_sequence_cpu` | [R12](#r12-sequence-element-shape-missing-in-model) |
 
 ## Reasons
@@ -143,6 +142,3 @@ These inputs contain tensors of different lengths, for example `[4]`, `[3]`, `[2
 
 These models internally rely on compile-time concretization of dynamic tensor or sequence element sizes, but the ONNX backend must compile in `prepare()` without concrete runtime data. The resulting lowered shapes collapse to placeholders such as `(1,)`, `(3, 6)`, or `(2, 1, 4)`, which then truncates or pads runtime results.
 
-### R15 Empty dynamic input vs prepare-only fixed shape
-
-`test_sequence_model8_cpu` feeds an empty tensor where the prepare-only compile path lowered the dynamic input to a non-empty fixed shape. The testbench therefore consumes the wrong byte count for the first input and then fails on the next one with `Failed to read input Splits`.

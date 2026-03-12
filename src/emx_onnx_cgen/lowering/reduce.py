@@ -11,6 +11,11 @@ from ..ir.context import GraphContext
 from ..dtypes import scalar_type_from_onnx
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Initializer, Node
+from .common import (
+    shape_product as common_shape_product,
+    value_dtype as common_value_dtype,
+    value_shape as common_value_shape,
+)
 from .registry import register_lowering
 
 REDUCE_KIND_BY_OP = {
@@ -56,34 +61,15 @@ class _AxesInputSpec:
 
 
 def _value_shape(graph: Graph, name: str, node: Node) -> tuple[int, ...]:
-    try:
-        return graph.find_value(name).type.shape
-    except KeyError as exc:
-        raise ShapeInferenceError(
-            f"Missing shape for value '{name}' in op {node.op_type}. "
-            "Hint: run ONNX shape inference or export with static shapes."
-        ) from exc
+    return common_value_shape(graph, name, node)
 
 
 def _value_dtype(graph: Graph, name: str, node: Node) -> ScalarType:
-    try:
-        return graph.find_value(name).type.dtype
-    except KeyError as exc:
-        raise ShapeInferenceError(
-            f"Missing dtype for value '{name}' in op {node.op_type}. "
-            "Hint: run ONNX shape inference or export with static shapes."
-        ) from exc
+    return common_value_dtype(graph, name, node)
 
 
 def _shape_product(shape: tuple[int, ...]) -> int:
-    product = 1
-    for dim in shape:
-        if dim < 0:
-            raise ShapeInferenceError("Dynamic dims are not supported")
-        if dim == 0:
-            return 0
-        product *= dim
-    return product
+    return common_shape_product(shape)
 
 
 def _find_initializer(graph: Graph, name: str) -> Initializer | None:

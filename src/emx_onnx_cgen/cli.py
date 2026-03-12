@@ -52,6 +52,26 @@ def _serialize_string_tensor(array: np.ndarray) -> bytes:
     return bytes(encoded)
 
 
+def _tensor_runtime_dim_values(value: Any, input_data: object) -> tuple[int, ...]:
+    if not isinstance(value.type, TensorType):
+        return ()
+    dynamic_axes = tuple(
+        index
+        for index, dim_param in enumerate(value.type.dim_params)
+        if dim_param is not None
+    )
+    if not dynamic_axes:
+        return ()
+    array = np.asarray(input_data)
+    expected_rank = len(value.type.shape)
+    if array.ndim != expected_rank:
+        raise ValueError(
+            f"Input {value.name!r} rank {array.ndim} does not match expected rank "
+            f"{expected_rank}."
+        )
+    return tuple(int(array.shape[axis]) for axis in dynamic_axes)
+
+
 def _random_tensor_input(
     shape: tuple[int, ...], dtype: ScalarType, rng: np.random.Generator
 ) -> np.ndarray:
@@ -1797,13 +1817,8 @@ def _verify_model(
                             generated_checksum,
                         )
                     if isinstance(value.type, TensorType):
+                        array_data = np.asarray(input_data)
                         dtype = input_dtypes[name].np_dtype
-                        if input_dtypes[name] == ScalarType.STRING:
-                            blob = _serialize_string_tensor(input_data)
-                        else:
-                            blob = np.ascontiguousarray(
-                                input_data.astype(dtype, copy=False)
-                            ).tobytes(order="C")
                         if value.type.is_optional:
                             present = bool(
                                 (testbench_optional_inputs or {}).get(name, True)
@@ -1811,6 +1826,17 @@ def _verify_model(
                             handle.write(struct.pack("<B", 1 if present else 0))
                             if not present:
                                 continue
+                        runtime_dims = _tensor_runtime_dim_values(value, array_data)
+                        if runtime_dims:
+                            handle.write(
+                                struct.pack(f"<{len(runtime_dims)}i", *runtime_dims)
+                            )
+                        if input_dtypes[name] == ScalarType.STRING:
+                            blob = _serialize_string_tensor(array_data)
+                        else:
+                            blob = np.ascontiguousarray(
+                                array_data.astype(dtype, copy=False)
+                            ).tobytes(order="C")
                         handle.write(blob)
                         continue
                     seq_type = value.type

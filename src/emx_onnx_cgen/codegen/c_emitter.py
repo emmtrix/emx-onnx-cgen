@@ -1944,7 +1944,8 @@ class CEmitter:
                 )
                 storage = (
                     "static "
-                    if self._buffer_size_bytes(
+                    if not dim_names
+                    and self._buffer_size_bytes(
                         temp.shape,
                         temp.dtype,
                         dim_names=dim_names,
@@ -3230,6 +3231,22 @@ class CEmitter:
                 dim_names,
                 actual_shape=input_actual_shape,
             )
+            runtime_shape = tuple(
+                (
+                    dim_names[axis].name
+                    if dim_names is not None and axis in dim_names
+                    else concrete_codegen_shape[axis]
+                )
+                for axis in range(len(concrete_codegen_shape))
+            )
+            input_file_shape = tuple(
+                (
+                    f"*{dim_names[axis].name}__ptr"
+                    if dim_names is not None and axis in dim_names
+                    else concrete_codegen_shape[axis]
+                )
+                for axis in range(len(concrete_codegen_shape))
+            )
             if is_sequence_input and isinstance(constant_values, np.ndarray):
                 target_shape = (int(constant_values.shape[0]), *concrete_codegen_shape)
                 if constant_values.shape != target_shape:
@@ -3252,6 +3269,11 @@ class CEmitter:
                     loop_shape = (int(constant_values.shape[0]), *loop_shape)
                 else:
                     loop_shape = (32, *loop_shape)
+                runtime_shape = (32, *runtime_shape)
+                input_file_shape = (32, *input_file_shape)
+            elif not runtime_shape:
+                runtime_shape = (1,)
+                input_file_shape = (1,)
             loop_vars = self._loop_vars(loop_shape)
             if constant_values is None:
                 if dtype in {ScalarType.F16, ScalarType.BF16, ScalarType.F32}:
@@ -3338,6 +3360,8 @@ class CEmitter:
                 {
                     "name": name,
                     "shape": loop_shape,
+                    "runtime_shape": runtime_shape,
+                    "input_file_shape": input_file_shape,
                     "shape_literal": ",".join(
                         str(dim) for dim in concrete_codegen_shape
                     ),
@@ -3359,6 +3383,12 @@ class CEmitter:
                     "optional_flag_name": optional_flag,
                     "optional_present": optional_present,
                     "is_sequence": is_sequence_input,
+                    "runtime_dim_reads": tuple(
+                        {"axis": axis, "name": dim_ref.name}
+                        for axis, dim_ref in sorted((dim_names or {}).items())
+                    )
+                    if not is_sequence_input
+                    else (),
                     "count_name": f"{name}__count",
                     "count_value": loop_shape[0] if is_sequence_input else 1,
                     "storage": input_storage,

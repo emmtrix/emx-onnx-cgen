@@ -11,6 +11,18 @@ from .common import ensure_supported_dtype, value_dtype, value_shape
 from .registry import register_lowering
 
 
+def _shapes_match_or_are_dynamic(
+    input_shape: tuple[int, ...],
+    output_shape: tuple[int, ...],
+) -> bool:
+    if len(input_shape) != len(output_shape):
+        return False
+    return all(
+        output_dim < 0 or output_dim == input_dim
+        for input_dim, output_dim in zip(input_shape, output_shape)
+    )
+
+
 @register_lowering("Cast")
 def lower_cast(graph: Graph, node: Node) -> CastOp:
     if len(node.inputs) != 1 or len(node.outputs) != 1:
@@ -37,8 +49,9 @@ def lower_cast(graph: Graph, node: Node) -> CastOp:
         input_shape = output_shape
     if output_shape == () and input_shape:
         output_shape = input_shape
-    if input_shape != output_shape:
+    if not _shapes_match_or_are_dynamic(input_shape, output_shape):
         raise ShapeInferenceError("Cast input and output shapes must match")
+    output_shape = input_shape
     if isinstance(graph, GraphContext):
         graph.set_shape(node.outputs[0], output_shape)
     return CastOp(
@@ -65,8 +78,9 @@ def lower_castlike(graph: Graph, node: Node) -> CastOp:
         input_shape = output_shape
     if output_shape == () and input_shape:
         output_shape = input_shape
-    if input_shape != output_shape:
+    if not _shapes_match_or_are_dynamic(input_shape, output_shape):
         raise ShapeInferenceError("CastLike input and output shapes must match")
+    output_shape = input_shape
     if isinstance(graph, GraphContext):
         graph.set_shape(node.outputs[0], output_shape)
     return CastOp(

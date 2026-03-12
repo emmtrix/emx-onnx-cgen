@@ -1,11 +1,11 @@
 {
   "error": "OK (max abs diff 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/simple/test_sequence_model8 model.onnx --test-data-dir test_data_set_0 --shape-inference-shapes 'X=[];Splits=[0,0,0]'",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/simple/test_sequence_model8 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "SplitToSequence",
     "SequenceLength"
   ],
   "opset_version": 12,
-  "generated_checksum": "2e6e4d3fbb06a139769f59f92cca357fcdc988fa228493e5bf8a5b8f8bd819f0"
+  "generated_checksum": "1ce10718733c222898dd7d8fc1c751deb628ed1b002ea2ad0ba57309fdde9468"
 }

@@ -40,10 +40,7 @@ def lower_constant_of_shape(graph: Graph, node: Node) -> ConstantOfShapeOp:
     if len(input_shape) != 1:
         raise UnsupportedOpError("ConstantOfShape expects a 1D shape input")
     output_shape = _value_shape(graph, node.outputs[0], node)
-    rank_unknown = output_shape == () and input_shape[0] > 0
-    if not rank_unknown and input_shape[0] != len(output_shape):
-        raise ShapeInferenceError("ConstantOfShape input length must match output rank")
-    if rank_unknown:
+    if output_shape == () or any(dim < 0 for dim in output_shape):
         shape_values = resolve_int_list_from_value(graph, node.inputs[0], node)
         if (
             shape_values is not None
@@ -51,6 +48,9 @@ def lower_constant_of_shape(graph: Graph, node: Node) -> ConstantOfShapeOp:
             and all(dim >= 0 for dim in shape_values)
         ):
             output_shape = tuple(shape_values)
+    rank_unknown = output_shape == () and input_shape[0] > 0
+    if not rank_unknown and input_shape[0] != len(output_shape):
+        raise ShapeInferenceError("ConstantOfShape input length must match output rank")
     for dim in output_shape:
         if dim < 0:
             raise ShapeInferenceError("Dynamic dims are not supported")

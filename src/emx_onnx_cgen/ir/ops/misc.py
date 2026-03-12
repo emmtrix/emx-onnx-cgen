@@ -6259,6 +6259,12 @@ class SplitToSequenceOp(RenderableOpBase):
         output_suffix = emitter.param_array_suffix(
             output_shape, emitter.dim_names_for(self.output_sequence)
         )
+        input_shape_expr = CEmitterCompat.shape_dim_exprs(
+            input_shape, emitter.dim_names_for(self.input0)
+        )
+        output_shape_expr = CEmitterCompat.shape_dim_exprs(
+            output_shape, emitter.dim_names_for(self.output_sequence)
+        )
         param_specs = [
             (params["input0"], c_type, input_suffix, True),
         ]
@@ -6287,12 +6293,8 @@ class SplitToSequenceOp(RenderableOpBase):
             ]
         )
         param_decls = emitter.build_param_decls(param_specs)
-        outer = 1
-        for dim in input_shape[: self.axis]:
-            outer *= dim
-        inner = 1
-        for dim in input_shape[self.axis + 1 :]:
-            inner *= dim
+        outer = CEmitterCompat.element_count_expr(input_shape_expr[: self.axis])
+        inner = CEmitterCompat.element_count_expr(input_shape_expr[self.axis + 1 :])
         split_len = (
             emitter.ctx_shape(self.split)[0]
             if self.split is not None and len(emitter.ctx_shape(self.split)) == 1
@@ -6315,11 +6317,13 @@ class SplitToSequenceOp(RenderableOpBase):
                 split_len=split_len,
                 axis_sizes=self.split_sizes,
                 output_sequence=params["output_sequence"],
-                axis_total=input_shape[self.axis],
+                axis_total=input_shape_expr[self.axis],
                 outer=outer,
                 inner=inner,
                 keepdims=self.keepdims,
-                output_axis_capacity=(output_shape[self.axis] if self.keepdims else 1),
+                output_axis_capacity=(
+                    output_shape_expr[self.axis] if self.keepdims else 1
+                ),
                 c_type=c_type,
             )
             .rstrip()
