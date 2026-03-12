@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1635 / 1802, 90.7% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1636 / 1802, 90.8% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 124 / 125, 99.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1635 / 1802 ONNX files (90.7%).
+Coverage 1636 / 1802 ONNX files (90.8%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1817,7 +1817,7 @@ Coverage 1635 / 1802 ONNX files (90.7%).
 | simple/test_sequence_model5/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
 | simple/test_sequence_model6/model.onnx | 12 | Data | ✅ | OK (max abs diff 0) |
 | simple/test_sequence_model7/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
-| simple/test_sequence_model8/model.onnx | 12 | Data | ❌ | Failed to build testbench. |
+| simple/test_sequence_model8/model.onnx | 12 | Data | ✅ | OK (max abs diff 0) |
 | simple/test_shrink/model.onnx | 10 | Data | ✅ | OK (max ULP 0) |
 | simple/test_sign_model/model.onnx | 9 | Data | ✅ | OK (max ULP 0) |
 | simple/test_single_relu_model/model.onnx | 9 | Data | ✅ | OK (max ULP 0) |
