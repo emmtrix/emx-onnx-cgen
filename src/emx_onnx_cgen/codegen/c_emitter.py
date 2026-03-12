@@ -3243,7 +3243,7 @@ class CEmitter:
                         )
                         normalized[overlap] = constant_values[overlap]
                     constant_values = normalized
-            loop_shape = (1,) if not concrete_codegen_shape else concrete_codegen_shape
+            loop_shape = CEmitter._codegen_shape(concrete_codegen_shape)
             if is_sequence_input:
                 if (
                     isinstance(constant_values, np.ndarray)

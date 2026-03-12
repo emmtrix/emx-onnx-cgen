@@ -2846,6 +2846,22 @@ class SoftmaxOp(RenderableOpBase):
             )
         ctx.set_shape(self.output, input_shape)
         ctx.set_derived(self, "axis", axis)
+        outer = 1
+        for dim in input_shape[:axis]:
+            outer *= dim
+        if self.use_legacy_axis_semantics:
+            axis_size = 1
+            for dim in input_shape[axis:]:
+                axis_size *= dim
+            inner = 1
+        else:
+            axis_size = input_shape[axis]
+            inner = 1
+            for dim in input_shape[axis + 1 :]:
+                inner *= dim
+        ctx.set_derived(self, "outer", outer)
+        ctx.set_derived(self, "axis_size", axis_size)
+        ctx.set_derived(self, "inner", inner)
 
 
 @dataclass(frozen=True)
