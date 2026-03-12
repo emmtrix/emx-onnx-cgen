@@ -5961,6 +5961,35 @@ def test_compile_prunes_unused_sequence_empty_state_from_sequence_map() -> None:
     assert "tmp1_SequenceMap_0_state_0" not in generated
 
 
+def test_compile_reduce_l2_empty_set_expanded_recovers_passthrough_shape() -> None:
+    model = onnx.load(
+        PROJECT_ROOT
+        / "onnx-org/onnx/backend/test/data/node/test_reduce_l2_empty_set_expanded/model.onnx"
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "node1_reducesum" in generated
+    assert "reduced[restrict 2][1][4]" in generated
+
+
+def test_compile_reduce_log_sum_exp_expanded_recovers_passthrough_shape() -> None:
+    model = onnx.load(
+        PROJECT_ROOT
+        / "onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_do_not_keepdims_example_expanded/model.onnx"
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "node2_reducesum" in generated
+    assert "reduced[restrict 3][2]" in generated
+
+
+def test_compile_lstm_dynamic_squeeze_model() -> None:
+    model = onnx.load(
+        PROJECT_ROOT / "onnx2c-org/test/simple_networks/lstm_k1_b1_r1.onnx"
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "OpType: Squeeze" in generated
+    assert "lstm[restrict N][3]" in generated
+
+
 def test_lower_concat_from_sequence() -> None:
     graph = import_onnx(_make_concat_from_sequence_model(axis=-1, new_axis=0))
     op = lower_concat_from_sequence(graph, graph.nodes[1])

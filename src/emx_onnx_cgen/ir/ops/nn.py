@@ -4674,6 +4674,7 @@ class LstmOp(RenderableOpBase):
         state = emitter.require_emit_state()
         model = state.model
         op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
         output_dtype = emitter.ctx_dtype(
             self.output_y or self.output_y_h or self.output_y_c
         )
@@ -4694,74 +4695,56 @@ class LstmOp(RenderableOpBase):
                 ("output_y_c", self.output_y_c),
             ]
         )
-        input_x_shape = (
-            (self.seq_length, self.batch_size, self.input_size)
-            if self.layout == 0
-            else (self.batch_size, self.seq_length, self.input_size)
-        )
-        w_shape = (self.num_directions, 4 * self.hidden_size, self.input_size)
-        r_shape = (self.num_directions, 4 * self.hidden_size, self.hidden_size)
-        b_shape = (
-            (self.num_directions, 8 * self.hidden_size)
-            if self.input_b is not None
+        input_x_shape = emitter.ctx_shape(self.input_x)
+        input_x_dim_names = emitter.dim_names_for(self.input_x)
+        input_x_dims = CEmitterCompat.shape_dim_exprs(input_x_shape, input_x_dim_names)
+        seq_length = input_x_dims[0] if self.layout == 0 else input_x_dims[1]
+        batch_size = input_x_dims[1] if self.layout == 0 else input_x_dims[0]
+        w_shape = emitter.ctx_shape(self.input_w)
+        r_shape = emitter.ctx_shape(self.input_r)
+        b_shape = emitter.ctx_shape(self.input_b) if self.input_b is not None else None
+        seq_shape = (
+            emitter.ctx_shape(self.input_sequence_lens)
+            if self.input_sequence_lens is not None
             else None
         )
-        seq_shape = (self.batch_size,) if self.input_sequence_lens is not None else None
-        state_shape = (
-            (self.num_directions, self.batch_size, self.hidden_size)
-            if self.layout == 0
-            else (self.batch_size, self.num_directions, self.hidden_size)
-        )
-        h_shape = (
-            state_shape
-            if self.input_initial_h is not None or self.output_y_h is not None
-            else None
-        )
-        c_shape = (
-            state_shape
-            if self.input_initial_c is not None or self.output_y_c is not None
-            else None
-        )
-        p_shape = (
-            (self.num_directions, 3 * self.hidden_size)
-            if self.input_p is not None
-            else None
-        )
-        y_shape = (
-            (self.seq_length, self.num_directions, self.batch_size, self.hidden_size)
-            if self.layout == 0
-            else (
-                self.batch_size,
-                self.seq_length,
-                self.num_directions,
-                self.hidden_size,
-            )
-        )
+        h_name = self.input_initial_h or self.output_y_h
+        h_shape = emitter.ctx_shape(h_name) if h_name is not None else None
+        c_name = self.input_initial_c or self.output_y_c
+        c_shape = emitter.ctx_shape(c_name) if c_name is not None else None
+        p_shape = emitter.ctx_shape(self.input_p) if self.input_p is not None else None
+        y_shape = emitter.ctx_shape(self.output_y) if self.output_y is not None else None
         param_decls = emitter.build_param_decls(
             [
                 (
                     params["input_x"],
                     c_type,
-                    emitter.param_array_suffix(input_x_shape),
+                    emitter.param_array_suffix(input_x_shape, input_x_dim_names),
                     True,
                 ),
                 (
                     params["input_w"],
                     c_type,
-                    emitter.param_array_suffix(w_shape),
+                    emitter.param_array_suffix(
+                        w_shape, emitter.dim_names_for(self.input_w)
+                    ),
                     True,
                 ),
                 (
                     params["input_r"],
                     c_type,
-                    emitter.param_array_suffix(r_shape),
+                    emitter.param_array_suffix(
+                        r_shape, emitter.dim_names_for(self.input_r)
+                    ),
                     True,
                 ),
                 (
                     (
                         params["input_b"],
                         c_type,
-                        emitter.param_array_suffix(b_shape),
+                        emitter.param_array_suffix(
+                            b_shape, emitter.dim_names_for(self.input_b)
+                        ),
                         True,
                     )
                     if params["input_b"]
@@ -4771,7 +4754,9 @@ class LstmOp(RenderableOpBase):
                     (
                         params["input_sequence_lens"],
                         (self.sequence_lens_dtype or ScalarType.I64).c_type,
-                        emitter.param_array_suffix(seq_shape),
+                        emitter.param_array_suffix(
+                            seq_shape, emitter.dim_names_for(self.input_sequence_lens)
+                        ),
                         True,
                     )
                     if params["input_sequence_lens"]
@@ -4781,7 +4766,9 @@ class LstmOp(RenderableOpBase):
                     (
                         params["input_initial_h"],
                         c_type,
-                        emitter.param_array_suffix(h_shape),
+                        emitter.param_array_suffix(
+                            h_shape, emitter.dim_names_for(self.input_initial_h)
+                        ),
                         True,
                     )
                     if params["input_initial_h"]
@@ -4791,7 +4778,9 @@ class LstmOp(RenderableOpBase):
                     (
                         params["input_initial_c"],
                         c_type,
-                        emitter.param_array_suffix(c_shape),
+                        emitter.param_array_suffix(
+                            c_shape, emitter.dim_names_for(self.input_initial_c)
+                        ),
                         True,
                     )
                     if params["input_initial_c"]
@@ -4801,7 +4790,9 @@ class LstmOp(RenderableOpBase):
                     (
                         params["input_p"],
                         c_type,
-                        emitter.param_array_suffix(p_shape),
+                        emitter.param_array_suffix(
+                            p_shape, emitter.dim_names_for(self.input_p)
+                        ),
                         True,
                     )
                     if params["input_p"]
@@ -4811,7 +4802,9 @@ class LstmOp(RenderableOpBase):
                     (
                         params["output_y"],
                         c_type,
-                        emitter.param_array_suffix(y_shape),
+                        emitter.param_array_suffix(
+                            y_shape, emitter.dim_names_for(self.output_y)
+                        ),
                         False,
                     )
                     if params["output_y"]
@@ -4821,7 +4814,9 @@ class LstmOp(RenderableOpBase):
                     (
                         params["output_y_h"],
                         c_type,
-                        emitter.param_array_suffix(h_shape),
+                        emitter.param_array_suffix(
+                            h_shape, emitter.dim_names_for(self.output_y_h)
+                        ),
                         False,
                     )
                     if params["output_y_h"]
@@ -4831,7 +4826,9 @@ class LstmOp(RenderableOpBase):
                     (
                         params["output_y_c"],
                         c_type,
-                        emitter.param_array_suffix(c_shape),
+                        emitter.param_array_suffix(
+                            c_shape, emitter.dim_names_for(self.output_y_c)
+                        ),
                         False,
                     )
                     if params["output_y_c"]
@@ -4863,6 +4860,7 @@ class LstmOp(RenderableOpBase):
                 output_y=params["output_y"],
                 output_y_h=params["output_y_h"],
                 output_y_c=params["output_y_c"],
+                dim_args=dim_args,
                 params=param_decls,
                 c_type=c_type,
                 seq_c_type=(self.sequence_lens_dtype or ScalarType.I64).c_type,
@@ -4874,8 +4872,8 @@ class LstmOp(RenderableOpBase):
                     else emitter.format_literal(self.dtype, 0)
                 ),
                 use_clip=int(self.clip is not None and self.clip > 0),
-                seq_length=self.seq_length,
-                batch_size=self.batch_size,
+                seq_length=seq_length,
+                batch_size=batch_size,
                 input_size=self.input_size,
                 hidden_size=self.hidden_size,
                 num_directions=self.num_directions,
