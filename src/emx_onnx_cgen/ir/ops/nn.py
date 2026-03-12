@@ -4781,7 +4781,9 @@ class LstmOp(RenderableOpBase):
         c_name = self.input_initial_c or self.output_y_c
         c_shape = emitter.ctx_shape(c_name) if c_name is not None else None
         p_shape = emitter.ctx_shape(self.input_p) if self.input_p is not None else None
-        y_shape = emitter.ctx_shape(self.output_y) if self.output_y is not None else None
+        y_shape = (
+            emitter.ctx_shape(self.output_y) if self.output_y is not None else None
+        )
         param_decls = emitter.build_param_decls(
             [
                 (
