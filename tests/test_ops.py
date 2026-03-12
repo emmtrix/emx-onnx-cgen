@@ -6045,6 +6045,24 @@ def test_compile_dynamic_reshape_preserves_symbolic_batch() -> None:
     assert "float out[restrict N][49][40][1]" in generated
 
 
+def test_compile_micro_kws_dynamic_intermediates_use_symbolic_batch() -> None:
+    model = onnx.load(PROJECT_ROOT / "tests/onnx/micro_kws_m_static_qdq.onnx")
+
+    generated = Compiler(CompilerOptions()).compile(model)
+
+    assert "for (idx_t n = 0; n < -1; ++n)" not in generated
+    assert (
+        "float (*tmp15_Relu__5_0)[16][49][40] = malloc("
+        "sizeof(*tmp15_Relu__5_0) * unk__68);"
+    ) in generated
+    assert (
+        "node24_micro_kws_average_pooling2d_avgpool("
+        "int unk__68, int unk__69, "
+        "const float input0[unk__68][12][24][20], "
+        "float output[unk__68][12][12][10])"
+    ) in generated
+
+
 def test_lower_concat_from_sequence() -> None:
     graph = import_onnx(_make_concat_from_sequence_model(axis=-1, new_axis=0))
     op = lower_concat_from_sequence(graph, graph.nodes[1])

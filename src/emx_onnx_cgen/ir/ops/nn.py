@@ -2385,6 +2385,8 @@ class AveragePoolOp(RenderableOpBase):
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
+        input_dim_names = emitter.dim_names_for(self.input0)
+        output_dim_names = emitter.dim_names_for(self.output)
         if self.spatial_rank == 3:
             input_shape = (
                 self.batch,
@@ -2406,8 +2408,33 @@ class AveragePoolOp(RenderableOpBase):
         else:
             input_shape = (self.batch, self.channels, self.in_h, self.in_w)
             output_shape = (self.batch, self.channels, self.out_h, self.out_w)
-        input_suffix = emitter.param_array_suffix(input_shape)
-        output_suffix = emitter.param_array_suffix(output_shape)
+        input_shape_expr = CEmitterCompat.shape_dim_exprs(input_shape, input_dim_names)
+        output_shape_expr = CEmitterCompat.shape_dim_exprs(
+            output_shape, output_dim_names
+        )
+        if self.spatial_rank == 3:
+            in_d = input_shape_expr[2]
+            in_h = input_shape_expr[3]
+            in_w = input_shape_expr[4]
+            out_d = output_shape_expr[2]
+            out_h = output_shape_expr[3]
+            out_w = output_shape_expr[4]
+        elif self.spatial_rank == 1:
+            in_d = self.in_d
+            in_h = self.in_h
+            in_w = input_shape_expr[2]
+            out_d = self.out_d
+            out_h = self.out_h
+            out_w = output_shape_expr[2]
+        else:
+            in_d = self.in_d
+            in_h = input_shape_expr[2]
+            in_w = input_shape_expr[3]
+            out_d = self.out_d
+            out_h = output_shape_expr[2]
+            out_w = output_shape_expr[3]
+        input_suffix = emitter.param_array_suffix(input_shape, input_dim_names)
+        output_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
         param_decls = emitter.build_param_decls(
             [
                 (params["input0"], c_type, input_suffix, True),
@@ -2426,15 +2453,15 @@ class AveragePoolOp(RenderableOpBase):
                 zero_literal=zero_literal,
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
-                batch=self.batch,
-                channels=self.channels,
+                batch=input_shape_expr[0],
+                channels=input_shape_expr[1],
                 spatial_rank=self.spatial_rank,
-                in_d=self.in_d,
-                in_h=self.in_h,
-                in_w=self.in_w,
-                out_d=self.out_d,
-                out_h=self.out_h,
-                out_w=self.out_w,
+                in_d=in_d,
+                in_h=in_h,
+                in_w=in_w,
+                out_d=out_d,
+                out_h=out_h,
+                out_w=out_w,
                 kernel_d=self.kernel_d,
                 kernel_h=self.kernel_h,
                 kernel_w=self.kernel_w,

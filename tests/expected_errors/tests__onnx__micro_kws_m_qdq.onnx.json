@@ -1,5 +1,5 @@
 {
-  "error": "Out of tolerance (max ULP 1065155838)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir tests/onnx micro_kws_m_qdq.onnx",
   "verification_mode": "Random+ORT",
   "operators": [
@@ -15,5 +15,5 @@
     "Softmax"
   ],
   "opset_version": 15,
-  "generated_checksum": "4c62efab838a2597ceb5aa5caad76abd5985a8fbf63eeec41cd4c6a2dabdcfbf"
+  "generated_checksum": "66876d79aa19ec10c0813d2cf4e439af5f466b74e0e7328fd5315b7152ee8995"
 }
