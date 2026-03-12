@@ -56,12 +56,12 @@ def _make_sequence_length_from_dynamic_split_model() -> onnx.ModelProto:
     tensor_input = helper.make_tensor_value_info("X", TensorProto.FLOAT, ["n"])
     split_input = helper.make_tensor_value_info("Splits", TensorProto.INT64, [3])
     output = helper.make_tensor_value_info("len", TensorProto.INT64, [])
-    seq_info = helper.make_tensor_sequence_value_info(
-        "seq_1", TensorProto.FLOAT, ["m"]
-    )
+    seq_info = helper.make_tensor_sequence_value_info("seq_1", TensorProto.FLOAT, ["m"])
     graph = helper.make_graph(
         [
-            helper.make_node("SplitToSequence", inputs=["X", "Splits"], outputs=["seq_1"]),
+            helper.make_node(
+                "SplitToSequence", inputs=["X", "Splits"], outputs=["seq_1"]
+            ),
             helper.make_node("SequenceLength", inputs=["seq_1"], outputs=["len"]),
         ],
         "sequence_length_from_dynamic_split",
