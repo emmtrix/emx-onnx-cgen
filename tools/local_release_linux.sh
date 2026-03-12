@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+image="quay.io/pypa/manylinux_2_28_x86_64"
+python_bin="/usr/bin/python3.11"
+output_archive="${OUTPUT_ARCHIVE:-emx-onnx-cgen-linux-amd64.tar.gz}"
+
+if ! command -v docker >/dev/null 2>&1; then
+  echo "error: docker is required for local Linux release builds." >&2
+  exit 1
+fi
+
+# Keep these package/install commands aligned with .github/workflows/linux-release.yml.
+docker run --rm \
+  -v "${repo_root}:/workspace" \
+  -w /workspace \
+  -e PYTHON_BIN="${python_bin}" \
+  -e OUTPUT_ARCHIVE="${output_archive}" \
+  "${image}" \
+  /bin/bash -lc '
+    set -euo pipefail
+
+    if command -v dnf >/dev/null 2>&1; then
+      dnf install -y python3.11 python3.11-devel gcc gcc-c++ make
+    elif command -v yum >/dev/null 2>&1; then
+      yum install -y python3.11 python3.11-devel gcc gcc-c++ make
+    elif command -v apt-get >/dev/null 2>&1; then
+      apt-get update
+      apt-get install -y --no-install-recommends python3.11 python3.11-dev build-essential
+      rm -rf /var/lib/apt/lists/*
+    else
+      echo "No supported package manager found (dnf/yum/apt-get)." >&2
+      exit 1
+    fi
+
+    "${PYTHON_BIN}" --version
+    "${PYTHON_BIN}" -m ensurepip --upgrade || true
+    "${PYTHON_BIN}" -m pip install --upgrade pip
+    "${PYTHON_BIN}" -m pip install -r requirements-ci.txt
+    "${PYTHON_BIN}" -m pip install pyinstaller
+
+    if [[ -f tools/build_linux_pyinstaller_release.sh ]]; then
+      bash tools/build_linux_pyinstaller_release.sh
+      if [[ "${OUTPUT_ARCHIVE}" != "emx-onnx-cgen-linux-amd64.tar.gz" ]]; then
+        mv -f emx-onnx-cgen-linux-amd64.tar.gz "${OUTPUT_ARCHIVE}"
+      fi
+    else
+      "${PYTHON_BIN}" tools/pyinstaller_build.py
+      tar -czf "${OUTPUT_ARCHIVE}" -C dist emx-onnx-cgen
+    fi
+  '
+
+echo "Linux release bundle created: ${repo_root}/${output_archive}"
