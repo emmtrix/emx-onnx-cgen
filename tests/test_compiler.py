@@ -145,17 +145,11 @@ def _make_range_with_shape_preserving_consumer_model() -> onnx.ModelProto:
                 helper.make_node("Mul", ["range_out", "two"], ["out"]),
             ],
             name="range_shape_preserving_consumer_graph",
-            inputs=[
-                helper.make_tensor_value_info("x", TensorProto.INT32, [])
-            ],
-            outputs=[
-                helper.make_tensor_value_info("out", TensorProto.FLOAT, [3])
-            ],
+            inputs=[helper.make_tensor_value_info("x", TensorProto.INT32, [])],
+            outputs=[helper.make_tensor_value_info("out", TensorProto.FLOAT, [3])],
             initializer=[zero, one, two],
             value_info=[
-                helper.make_tensor_value_info(
-                    "range_out", TensorProto.FLOAT, ["N"]
-                )
+                helper.make_tensor_value_info("range_out", TensorProto.FLOAT, ["N"])
             ],
         ),
         opset_imports=[helper.make_opsetid("", 13)],
@@ -169,12 +163,12 @@ def _make_reduce_after_resolveable_reshape_model() -> onnx.ModelProto:
         helper.make_graph(
             nodes=[
                 helper.make_node("Reshape", ["x", "new_shape"], ["reshaped"]),
-                helper.make_node("ReduceMean", ["reshaped", "axes"], ["out"], keepdims=1),
+                helper.make_node(
+                    "ReduceMean", ["reshaped", "axes"], ["out"], keepdims=1
+                ),
             ],
             name="reduce_after_reshape_graph",
-            inputs=[
-                helper.make_tensor_value_info("x", TensorProto.FLOAT, [3, 4, 2])
-            ],
+            inputs=[helper.make_tensor_value_info("x", TensorProto.FLOAT, [3, 4, 2])],
             outputs=[
                 helper.make_tensor_value_info("out", TensorProto.FLOAT, [3, 2, 1])
             ],
