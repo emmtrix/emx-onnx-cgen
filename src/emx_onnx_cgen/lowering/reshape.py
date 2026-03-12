@@ -384,10 +384,7 @@ def lower_reshape(graph: Graph, node: Node) -> ReshapeOp:
                 f"Reshape output shape must be {resolved_shape}, got {output_shape}"
             )
     else:
-        if (
-            any(dim < 0 for dim in input_shape)
-            or any(dim < 0 for dim in output_shape)
-        ):
+        if any(dim < 0 for dim in input_shape) or any(dim < 0 for dim in output_shape):
             if (
                 _dynamic_dim_count(input_shape) > 1
                 or _dynamic_dim_count(output_shape) > 1
