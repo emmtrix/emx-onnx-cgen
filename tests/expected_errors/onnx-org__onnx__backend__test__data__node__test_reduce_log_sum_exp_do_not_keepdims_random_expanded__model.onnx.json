@@ -1,5 +1,5 @@
 {
-  "error": "CastLike input and output shapes must match",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_do_not_keepdims_random_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
@@ -9,5 +9,6 @@
     "Log",
     "CastLike"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "6d18566ec1d146faa9b33f8e3d248a140a8d8e1b01d856b9dd8b9d16bfac62f8"
 }
