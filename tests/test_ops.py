@@ -106,6 +106,40 @@ def _make_operator_model(
     return model
 
 
+def _make_symbolic_reshape_model(
+    *,
+    input_shape: list[int | str],
+    output_shape: list[int | str],
+    target_shape: list[int],
+    dtype: int = TensorProto.FLOAT,
+    opset: int = 13,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("in0", dtype, input_shape)
+    output_info = helper.make_tensor_value_info("out", dtype, output_shape)
+    shape_initializer = helper.make_tensor(
+        "shape",
+        TensorProto.INT64,
+        [len(target_shape)],
+        target_shape,
+    )
+    node = helper.make_node("Reshape", inputs=["in0", "shape"], outputs=["out"])
+    graph = helper.make_graph(
+        [node],
+        "reshape_graph",
+        [input_info],
+        [output_info],
+        [shape_initializer],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_tfidf_vectorizer_model(
     *,
     input_shape: list[int],
@@ -5996,6 +6030,19 @@ def test_compile_velardo_lesson14_dynamic_bias_broadcast() -> None:
     assert "node1_dense(int N, const float input0[N][1690]" in generated
     assert "float output[N][512]" in generated
     assert "flatten_input[restrict N][130][13]" in generated
+
+
+def test_compile_dynamic_reshape_preserves_symbolic_batch() -> None:
+    model = _make_symbolic_reshape_model(
+        input_shape=["N", 1960],
+        output_shape=["N", 49, 40, 1],
+        target_shape=[0, 49, 40, 1],
+    )
+
+    generated = Compiler(CompilerOptions()).compile(model)
+
+    assert "const float in0[restrict N][1960]" in generated
+    assert "float out[restrict N][49][40][1]" in generated
 
 
 def test_lower_concat_from_sequence() -> None:

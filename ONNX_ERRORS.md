@@ -16,25 +16,16 @@ Aggregates non-success verification outcomes.
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
+| Out of tolerance | 4 | 15, 22 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
-| Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor '*' has dynamic dimensions ('*', None, None, None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. | 2 | 15 |
-| Out of tolerance | 2 | 22 |
-| Broadcasting mismatch for shapes: (-1, 16), (16,) | 1 | 9 |
-| Broadcasting mismatch for shapes: (-1, 5), (5,) | 1 | 9 |
-| Broadcasting mismatch for shapes: (-1, 512), (512,) | 1 | 11 |
-| Squeeze does not support dynamic dims in input | 1 | 11 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 1 | 12 |
 
 ## Error frequency by opset
 
 | Error message | Opset | Count |
 | --- | --- | --- |
-| Broadcasting mismatch for shapes: (-1, 16), (16,) | 9 | 1 |
-| Broadcasting mismatch for shapes: (-1, 5), (5,) | 9 | 1 |
-| Broadcasting mismatch for shapes: (-1, 512), (512,) | 11 | 1 |
-| Squeeze does not support dynamic dims in input | 11 | 1 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
-| Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor '*' has dynamic dimensions ('*', None, None, None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. | 15 | 2 |
+| Out of tolerance | 15 | 2 |
 | Out of tolerance | 22 | 1 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 25 | 22 |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 25 | 20 |
@@ -54,8 +45,8 @@ Lists every ONNX file with a non-success verification outcome.
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
 | local_ops/test_gemm_CM_transA/model.onnx | 12 | Data | ❌ | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'sclbl-onnx-node1' Status Message: Gemm: Invalid bias shape for broadcast |
-| micro_kws_m_qdq.onnx | 15 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor 'micro_kws/conv2d/Relu;micro_kws/conv2d/BiasAdd;micro_kws/conv2d_2/Conv2D;micro_kws/conv2d/Conv2D;micro_kws/conv2d/BiasAdd/ReadVariableOp__28:0' has dynamic dimensions ('unk__0', None, None, None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. |
-| micro_kws_m_static_qdq.onnx | 15 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor 'micro_kws/conv2d/Relu;micro_kws/conv2d/BiasAdd;micro_kws/conv2d_2/Conv2D;micro_kws/conv2d/Conv2D;micro_kws/conv2d/BiasAdd/ReadVariableOp__28:0' has dynamic dimensions ('unk__0', None, None, None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. |
+| micro_kws_m_qdq.onnx | 15 | Random+ORT | ❌ | Out of tolerance (max ULP 1065155838) |
+| micro_kws_m_static_qdq.onnx | 15 | Random+ORT | ❌ | Out of tolerance (max ULP 1065155838) |
 | node/test_adam_multiple/model.onnx |  | Data | ❌ | Out of tolerance (max ULP 62311) |
 | node/test_cast_FLOAT16_to_FLOAT4E2M1/model.onnx | 25 | Data | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'output'. |
 | node/test_cast_FLOAT16_to_FLOAT8E4M3FN/model.onnx | 25 | Data | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'output'. |
@@ -222,7 +213,3 @@ Lists every ONNX file with a non-success verification outcome.
 | node/test_quantizelinear_int4/model.onnx | 25 | Data | ❌ | Unsupported elem_type 22 (INT4) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_uint2/model.onnx | 25 | Data | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_uint4/model.onnx | 25 | Data | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'y_zero_point'. |
-| simple_networks/lstm_k1_b1_r1_relu.onnx | 11 | Random+ORT | ❌ | Squeeze does not support dynamic dims in input |
-| tfl_helloworld/model.onnx | 9 | Random+ORT | ❌ | Broadcasting mismatch for shapes: (-1, 16), (16,) |
-| velardo/lesson14.onnx | 11 | Random+ORT | ❌ | Broadcasting mismatch for shapes: (-1, 512), (512,) |
-| velardo/lesson9.onnx | 9 | Random+ORT | ❌ | Broadcasting mismatch for shapes: (-1, 5), (5,) |

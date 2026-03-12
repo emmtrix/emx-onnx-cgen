@@ -8,7 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1636 / 1802, 90.8% | 1.20.1 |
-| [ONNX2C test coverage](#onnx2c-test-coverage) | 120 / 125, 96.0% | n/a |
+| [ONNX2C test coverage](#onnx2c-test-coverage) | 124 / 125, 99.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 5 / 7, 71.4% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -1832,7 +1832,7 @@ Coverage 1636 / 1802 ONNX files (90.8%).
 
 Test directory: `onnx2c-org/test`
 
-Coverage 120 / 125 ONNX files (96.0%).
+Coverage 124 / 125 ONNX files (99.2%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1950,7 +1950,7 @@ Coverage 120 / 125 ONNX files (96.0%).
 | simple_networks/fp_bfloat16.onnx | 22 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/fp_float16.onnx | 22 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/lstm_k1_b1_r1.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
-| simple_networks/lstm_k1_b1_r1_relu.onnx | 11 | Random+ORT | ❌ | Squeeze does not support dynamic dims in input |
+| simple_networks/lstm_k1_b1_r1_relu.onnx | 11 | Random+ORT | ✅ | OK (max ULP 5) |
 | simple_networks/maxpool_k2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/maxpool_k2_s2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/random_uniform.onnx | 22 | Random+ORT | ✅ | OK UNKNOWN |
@@ -1958,9 +1958,9 @@ Coverage 120 / 125 ONNX files (96.0%).
 | simple_networks/scalar_add.onnx | 13 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/scalar_identity.onnx | 13 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/treeensembleclassifier.onnx | 12 | Random+ORT | ✅ | OK (max abs diff 0, max ULP 0) |
-| tfl_helloworld/model.onnx | 9 | Random+ORT | ❌ | Broadcasting mismatch for shapes: (-1, 16), (16,) |
-| velardo/lesson14.onnx | 11 | Random+ORT | ❌ | Broadcasting mismatch for shapes: (-1, 512), (512,) |
-| velardo/lesson9.onnx | 9 | Random+ORT | ❌ | Broadcasting mismatch for shapes: (-1, 5), (5,) |
+| tfl_helloworld/model.onnx | 9 | Random+ORT | ✅ | OK (max ULP 0) |
+| velardo/lesson14.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
+| velardo/lesson9.onnx | 9 | Random+ORT | ✅ | OK (max ULP 0) |
 
 ## Local ONNX test coverage
 
@@ -1970,10 +1970,10 @@ Coverage 5 / 7 ONNX files (71.4%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
-| micro_kws_m_qdq.onnx | 15 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor 'micro_kws/conv2d/Relu;micro_kws/conv2d/BiasAdd;micro_kws/conv2d_2/Conv2D;micro_kws/conv2d/Conv2D;micro_kws/conv2d/BiasAdd/ReadVariableOp__28:0' has dynamic dimensions ('unk__0', None, None, None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. |
+| micro_kws_m_qdq.onnx | 15 | Random+ORT | ❌ | Out of tolerance (max ULP 1065155838) |
 | micro_kws_m_qoperator_add_shape.onnx | 15 | Random+ORT | ✅ | OK (max ULP 0) |
 | micro_kws_m_qoperator_avg_pool.onnx | 15 | Random+ORT | ✅ | OK (max ULP 0) |
 | micro_kws_m_qoperator_softmax.onnx | 15 | Random+ORT | ✅ | OK (max ULP 0) |
 | micro_kws_m_static_fp32.onnx | 15 | Random+ORT | ✅ | OK (max ULP 6) |
-| micro_kws_m_static_qdq.onnx | 15 | Random+ORT | ❌ | Code generation needs explicit shape concretization, but no --shape-inference-shapes were provided. Reason: tensor 'micro_kws/conv2d/Relu;micro_kws/conv2d/BiasAdd;micro_kws/conv2d_2/Conv2D;micro_kws/conv2d/Conv2D;micro_kws/conv2d/BiasAdd/ReadVariableOp__28:0' has dynamic dimensions ('unk__0', None, None, None). Hint: pass --shape-inference-shapes with explicit input specs (for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, or export the model with static shapes. |
+| micro_kws_m_static_qdq.onnx | 15 | Random+ORT | ❌ | Out of tolerance (max ULP 1065155838) |
 | micro_kws_m_static_qoperator.onnx | 15 | Random+ORT | ✅ | OK (max ULP 0) |

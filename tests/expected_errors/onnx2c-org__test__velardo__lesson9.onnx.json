@@ -1,5 +1,5 @@
 {
-  "error": "Broadcasting mismatch for shapes: (-1, 5), (5,)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx2c-org/test/velardo lesson9.onnx",
   "verification_mode": "Random+ORT",
   "operators": [
@@ -7,5 +7,6 @@
     "Add",
     "Sigmoid"
   ],
-  "opset_version": 9
+  "opset_version": 9,
+  "generated_checksum": "637c1db1224b6e51ae0a2770dfcefd6531629db716725c7b373f206a6a95d60c"
 }
