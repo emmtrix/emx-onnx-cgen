@@ -17,6 +17,7 @@ from emx_onnx_cgen.cli import (
     _decode_image_decoder_inputs,
     _resolve_compiler,
     _serialize_string_tensor,
+    _tensor_runtime_dim_values,
 )
 from emx_onnx_cgen.compiler import Compiler, CompilerOptions
 from emx_onnx_cgen.ir.model import SequenceType, TensorType, Value
@@ -161,12 +162,16 @@ def _serialize_runtime_input(
 ) -> None:
     if isinstance(value.type, TensorType):
         dtype = value.type.dtype.np_dtype
+        array_data = np.asarray(input_data)
         if value.type.is_optional:
             present = input_data is not None
             handle.write(struct.pack("<B", 1 if present else 0))
             if not present:
                 return
-        handle.write(_serialize_tensor_payload(np.asarray(input_data), dtype))
+        runtime_dims = _tensor_runtime_dim_values(value, array_data)
+        if runtime_dims:
+            handle.write(struct.pack(f"<{len(runtime_dims)}i", *runtime_dims))
+        handle.write(_serialize_tensor_payload(array_data, dtype))
         return
 
     seq_type = value.type

@@ -5,6 +5,7 @@ import io
 from pathlib import Path
 import tempfile
 
+import numpy as np
 import onnx
 import pytest
 from onnx import TensorProto, helper
@@ -46,6 +47,32 @@ def _make_sequence_io_model() -> onnx.ModelProto:
         graph,
         producer_name="emx-onnx-cgen",
         opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    return model
+
+
+def _make_sequence_length_from_dynamic_split_model() -> onnx.ModelProto:
+    tensor_input = helper.make_tensor_value_info("X", TensorProto.FLOAT, ["n"])
+    split_input = helper.make_tensor_value_info("Splits", TensorProto.INT64, [3])
+    output = helper.make_tensor_value_info("len", TensorProto.INT64, [])
+    seq_info = helper.make_tensor_sequence_value_info("seq_1", TensorProto.FLOAT, ["m"])
+    graph = helper.make_graph(
+        [
+            helper.make_node(
+                "SplitToSequence", inputs=["X", "Splits"], outputs=["seq_1"]
+            ),
+            helper.make_node("SequenceLength", inputs=["seq_1"], outputs=["len"]),
+        ],
+        "sequence_length_from_dynamic_split",
+        [tensor_input, split_input],
+        [output],
+        value_info=[seq_info],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_operatorsetid("", 12)],
     )
     model.ir_version = 7
     return model
@@ -94,3 +121,21 @@ def test_prepare_keeps_compiled_artifact_alive_only_for_backend_rep_lifetime() -
         assert not temp_path.exists()
     finally:
         backend_module._compile_model = original_compile_model
+
+
+def test_backend_runs_dynamic_split_to_sequence_with_empty_tensor() -> None:
+    if backend_module._resolve_compiler(None, prefer_ccache=False) is None:
+        pytest.skip("No C compiler available for backend integration test.")
+
+    model = _make_sequence_length_from_dynamic_split_model()
+
+    outputs = backend_module.EmxOnnxCgenBackend.run_model(
+        model,
+        [
+            np.array([], dtype=np.float32),
+            np.array([0, 0, 0], dtype=np.int64),
+        ],
+    )
+
+    assert len(outputs) == 1
+    assert int(np.asarray(outputs[0]).item()) == 3

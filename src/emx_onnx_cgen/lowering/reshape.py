@@ -6,7 +6,11 @@ from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.context import GraphContext
 from ..ir.model import Graph, Initializer, Node
 from ..ir.ops import ReshapeOp
-from .common import value_dtype, value_shape as resolved_value_shape
+from .common import (
+    resolve_int_list_from_value,
+    value_dtype,
+    value_shape as resolved_value_shape,
+)
 from .registry import register_lowering
 
 
@@ -367,7 +371,7 @@ def lower_reshape(graph: Graph, node: Node) -> ReshapeOp:
     output_dim_params = output_value.type.dim_params
     allowzero = int(node.attrs.get("allowzero", 0))
     resolved_shape: tuple[int, ...] | None = None
-    shape_values = _shape_values_from_input(graph, node.inputs[1], node)
+    shape_values = resolve_int_list_from_value(graph, node.inputs[1], node)
     if shape_values is not None:
         resolved_shape = _resolve_target_shape(
             input_shape,

@@ -60,6 +60,18 @@ def _validate_output_ranks(
             )
 
 
+def _output_shape_matches(
+    output_shape: tuple[int, ...],
+    computed_shape: tuple[int, ...],
+) -> bool:
+    if len(output_shape) != len(computed_shape):
+        return False
+    return all(
+        output_dim < 0 or output_dim == computed_dim
+        for output_dim, computed_dim in zip(output_shape, computed_shape)
+    )
+
+
 def _normalize_num_outputs(node: Node, output_count: int) -> int:
     num_outputs_attr = node.attrs.get("num_outputs")
     if num_outputs_attr is None:
@@ -149,7 +161,7 @@ def lower_split(graph: Graph, node: Node) -> SplitOp:
         shape = list(input_shape)
         shape[axis] = size
         computed_shape = tuple(shape)
-        if output_shape and output_shape != computed_shape:
+        if output_shape and not _output_shape_matches(output_shape, computed_shape):
             raise ShapeInferenceError(
                 f"Split output shape must be {computed_shape}, got {output_shape}"
             )
