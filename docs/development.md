@@ -8,7 +8,7 @@ For end-user usage and CLI flags, also see `README.md`.
 
 ## Prerequisites
 
-- **Python >= 3.11** (project requirement).
+- **Python >= 3.10** (project requirement).
 - A C compiler for end-to-end verification (one of `cc`, `gcc`, `clang`, or provide via `--cc` / `CC`).
 - `git` (needed for submodules; tests can auto-init them if available).
 
