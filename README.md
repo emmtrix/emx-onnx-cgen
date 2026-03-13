@@ -122,48 +122,9 @@ pip install emx-onnx-cgen
 
 Minimum Python version: **3.11**.
 
-## Local release builds (matching GitHub release workflows)
+## Development
 
-To reproduce the release artifacts locally with the same settings as the
-GitHub workflows:
-
-- Linux (uses the same Docker image as `.github/workflows/linux-release.yml`):
-
-  ```bash
-  ./tools/local_release_linux.sh
-  ```
-
-- Windows (matches the install/build steps from
-  `.github/workflows/windows-release.yml`):
-
-  ```powershell
-  powershell -ExecutionPolicy Bypass -File .\tools\local_release_windows.ps1
-  ```
-
-  If the exact pinned `onnxruntime` version from `requirements-ci.txt` is not
-  available on your package index, the script falls back to a compatible
-  version (`onnxruntime>=<pinned>,<2`). To enforce strict pin-only behavior, use:
-
-  ```powershell
-  powershell -ExecutionPolicy Bypass -File .\tools\local_release_windows.ps1 -DisableOnnxruntimeFallback
-  ```
-
-Both scripts produce the same archive names used by the release workflows:
-
-- `emx-onnx-cgen-linux-amd64.tar.gz`
-- `emx-onnx-cgen-windows-amd64.zip`
-
-Required at runtime (both `compile` and `verify`):
-
-- `onnx`
-- `numpy`
-- `jinja2`
-
-Optional for verification and tests:
-
-- `onnxruntime`
-- A C compiler (`cc`, `gcc`, `clang` or via `--cc`)
-- `pytest` for ONNX backend compliance smoke tests
+For local setup, testing, and contributor workflows, see [`docs/development.md`](docs/development.md).
 
 ## Quickstart
 
