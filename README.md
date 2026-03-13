@@ -267,6 +267,12 @@ How verification works:
 - **onnx2c**  
   An ONNX-to-C code generator with a different design focus and code generation approach.  
   https://github.com/kraiskil/onnx2c
+
+## Supporting Projects
+
+- **emx-regex-cgen**  
+  A regex-to-C code generator used to implement the ONNX `RegexFullMatch` operator in emx-onnx-cgen.  
+  https://github.com/emmtrix/emx-regex-cgen
   
 ## Maintained by
 
