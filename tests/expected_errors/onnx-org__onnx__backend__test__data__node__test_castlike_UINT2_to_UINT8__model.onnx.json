@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported elem_type 25 (UINT2) for tensor 'input'.",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_castlike_UINT2_to_UINT8 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "CastLike"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "82d9bf0e12fbbfbb4ea7c684942a23db8242539f5149f77ec1029350b41aa93c"
 }
