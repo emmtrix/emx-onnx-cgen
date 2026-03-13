@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       EMX_ENABLE_SANITIZE: "1"
+      CC: gcc-14
     strategy:
       fail-fast: false
       matrix:
