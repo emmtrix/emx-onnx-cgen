@@ -1,0 +1,78 @@
+name: python-compatibility
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify-local-model:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: pip
+
+      - name: Verify local ONNX model on Python 3.10
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ".[verify]"
+          python -m emx_onnx_cgen.cli verify tests/onnx/micro_kws_m_static_fp32.onnx
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Verify local ONNX model on Python 3.11
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ".[verify]"
+          python -m emx_onnx_cgen.cli verify tests/onnx/micro_kws_m_static_fp32.onnx
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Verify local ONNX model on Python 3.12
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ".[verify]"
+          python -m emx_onnx_cgen.cli verify tests/onnx/micro_kws_m_static_fp32.onnx
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Verify local ONNX model on Python 3.13
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ".[verify]"
+          python -m emx_onnx_cgen.cli verify tests/onnx/micro_kws_m_static_fp32.onnx
+
+      - name: Set up Python 3.14
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+
+      - name: Verify local ONNX model on Python 3.14
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ".[verify]"
+          python -m emx_onnx_cgen.cli verify tests/onnx/micro_kws_m_static_fp32.onnx
