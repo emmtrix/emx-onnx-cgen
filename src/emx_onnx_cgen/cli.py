@@ -1901,9 +1901,10 @@ def _verify_model(
         if weight_data is not None:
             weights_path.write_bytes(weight_data)
         try:
+            c_std = "-std=c23" if "_BitInt(" in generated else "-std=c99"
             compile_cmd = [
                 *compiler_cmd,
-                "-std=c99",
+                c_std,
                 "-O1",
             ]
             sanitize_enabled, sanitize_override = _resolve_sanitize_enabled(

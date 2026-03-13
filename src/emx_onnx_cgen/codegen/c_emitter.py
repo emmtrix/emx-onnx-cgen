@@ -3849,6 +3849,10 @@ class CEmitter:
             return CEmitter._format_uint(int(value), 16, "UINT16_MAX")
         if dtype == ScalarType.U8:
             return CEmitter._format_uint(int(value), 8, "UINT8_MAX")
+        if dtype == ScalarType.U4:
+            return CEmitter._format_uint(int(value), 4, "15")
+        if dtype == ScalarType.U2:
+            return CEmitter._format_uint(int(value), 2, "3")
         if dtype == ScalarType.I64:
             return CEmitter._format_int64(int(value))
         if dtype == ScalarType.I32:
@@ -3857,6 +3861,10 @@ class CEmitter:
             return CEmitter._format_int(int(value), 16, "INT16_MIN")
         if dtype == ScalarType.I8:
             return CEmitter._format_int(int(value), 8, "INT8_MIN")
+        if dtype == ScalarType.I4:
+            return CEmitter._format_int(int(value), 4, "-8")
+        if dtype == ScalarType.I2:
+            return CEmitter._format_int(int(value), 2, "-2")
         raise CodegenError(f"Unsupported dtype {dtype.onnx_name}")
 
     def _format_value(self, value: float | int | bool, dtype: ScalarType) -> str:
@@ -3878,6 +3886,10 @@ class CEmitter:
             return self._format_uint(int(value), 16, "UINT16_MAX")
         if dtype == ScalarType.U8:
             return self._format_uint(int(value), 8, "UINT8_MAX")
+        if dtype == ScalarType.U4:
+            return self._format_uint(int(value), 4, "15")
+        if dtype == ScalarType.U2:
+            return self._format_uint(int(value), 2, "3")
         if dtype == ScalarType.I64:
             return self._format_int64(int(value))
         if dtype == ScalarType.I32:
@@ -3886,6 +3898,10 @@ class CEmitter:
             return self._format_int(int(value), 16, "INT16_MIN")
         if dtype == ScalarType.I8:
             return self._format_int(int(value), 8, "INT8_MIN")
+        if dtype == ScalarType.I4:
+            return self._format_int(int(value), 4, "-8")
+        if dtype == ScalarType.I2:
+            return self._format_int(int(value), 2, "-2")
         if dtype == ScalarType.STRING:
             if isinstance(value, bytes):
                 return self._format_c_string_literal(value.decode("utf-8"))
@@ -3922,6 +3938,10 @@ class CEmitter:
             return self._format_uint(int(value), 16, "UINT16_MAX")
         if dtype == ScalarType.U8:
             return self._format_uint(int(value), 8, "UINT8_MAX")
+        if dtype == ScalarType.U4:
+            return self._format_uint(int(value), 4, "15")
+        if dtype == ScalarType.U2:
+            return self._format_uint(int(value), 2, "3")
         if dtype == ScalarType.I64:
             return self._format_int64(int(value))
         if dtype == ScalarType.I32:
@@ -3930,6 +3950,10 @@ class CEmitter:
             return self._format_int(int(value), 16, "INT16_MIN")
         if dtype == ScalarType.I8:
             return self._format_int(int(value), 8, "INT8_MIN")
+        if dtype == ScalarType.I4:
+            return self._format_int(int(value), 4, "-8")
+        if dtype == ScalarType.I2:
+            return self._format_int(int(value), 2, "-2")
         if dtype == ScalarType.STRING:
             if isinstance(value, bytes):
                 decoded = value.decode("utf-8")
@@ -4046,6 +4070,8 @@ class CEmitter:
             return "%hu"
         if dtype == ScalarType.U8:
             return "%hhu"
+        if dtype in {ScalarType.U4, ScalarType.U2}:
+            return "%u"
         if dtype == ScalarType.I64:
             return "%lld"
         if dtype == ScalarType.I32:
@@ -4054,6 +4080,8 @@ class CEmitter:
             return "%hd"
         if dtype == ScalarType.I8:
             return "%hhd"
+        if dtype in {ScalarType.I4, ScalarType.I2}:
+            return "%d"
         if dtype == ScalarType.STRING:
             return '"%s"'
         raise CodegenError(f"Unsupported dtype {dtype.onnx_name}")
@@ -4066,11 +4094,11 @@ class CEmitter:
             return "(int)"
         if dtype == ScalarType.U64:
             return "(unsigned long long)"
-        if dtype in {ScalarType.U32, ScalarType.U16, ScalarType.U8}:
+        if dtype in {ScalarType.U32, ScalarType.U16, ScalarType.U8, ScalarType.U4, ScalarType.U2}:
             return "(unsigned int)"
         if dtype == ScalarType.I64:
             return "(long long)"
-        if dtype in {ScalarType.I32, ScalarType.I16, ScalarType.I8}:
+        if dtype in {ScalarType.I32, ScalarType.I16, ScalarType.I8, ScalarType.I4, ScalarType.I2}:
             return "(int)"
         if dtype == ScalarType.STRING:
             return ""
