@@ -122,17 +122,9 @@ pip install emx-onnx-cgen
 
 Minimum Python version: **3.11**.
 
-Required at runtime (both `compile` and `verify`):
+## Development
 
-- `onnx`
-- `numpy`
-- `jinja2`
-
-Optional for verification and tests:
-
-- `onnxruntime`
-- A C compiler (`cc`, `gcc`, `clang` or via `--cc`)
-- `pytest` for ONNX backend compliance smoke tests
+For local setup, testing, and contributor workflows, see [`docs/development.md`](docs/development.md).
 
 ## Quickstart
 
