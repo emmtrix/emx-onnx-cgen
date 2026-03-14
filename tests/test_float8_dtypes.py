@@ -103,7 +103,6 @@ def _make_cast_model(
     initializers = []
 
     if weight_values is not None:
-        w_info = helper.make_tensor_value_info("w", from_dtype, shape)
         yw_info = helper.make_tensor_value_info("y_from_weight", to_dtype, shape)
         weight_tensor = helper.make_tensor("w", from_dtype, shape, weight_values)
         nodes.append(helper.make_node("Cast", ["w"], ["y_from_weight"], to=to_dtype))
