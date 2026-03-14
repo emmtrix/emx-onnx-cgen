@@ -4094,11 +4094,23 @@ class CEmitter:
             return "(int)"
         if dtype == ScalarType.U64:
             return "(unsigned long long)"
-        if dtype in {ScalarType.U32, ScalarType.U16, ScalarType.U8, ScalarType.U4, ScalarType.U2}:
+        if dtype in {
+            ScalarType.U32,
+            ScalarType.U16,
+            ScalarType.U8,
+            ScalarType.U4,
+            ScalarType.U2,
+        }:
             return "(unsigned int)"
         if dtype == ScalarType.I64:
             return "(long long)"
-        if dtype in {ScalarType.I32, ScalarType.I16, ScalarType.I8, ScalarType.I4, ScalarType.I2}:
+        if dtype in {
+            ScalarType.I32,
+            ScalarType.I16,
+            ScalarType.I8,
+            ScalarType.I4,
+            ScalarType.I2,
+        }:
             return "(int)"
         if dtype == ScalarType.STRING:
             return ""
