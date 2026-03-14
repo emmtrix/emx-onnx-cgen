@@ -139,18 +139,22 @@ def lower_dequantize_linear(graph: Graph, node: Node) -> DequantizeLinearOp:
         input_dtype = _infer_missing_input_dtype(graph, node)
     scale_dtype = _value_dtype(graph, node.inputs[1], node)
     output_dtype = _value_dtype(graph, node.outputs[0], node)
-    if input_dtype not in {
-        ScalarType.U2,
-        ScalarType.I2,
-        ScalarType.U4,
-        ScalarType.I4,
-        ScalarType.U8,
-        ScalarType.I8,
-        ScalarType.U16,
-        ScalarType.I16,
-        ScalarType.I32,
-        ScalarType.U32,
-    } and not input_dtype.is_float8:
+    if (
+        input_dtype
+        not in {
+            ScalarType.U2,
+            ScalarType.I2,
+            ScalarType.U4,
+            ScalarType.I4,
+            ScalarType.U8,
+            ScalarType.I8,
+            ScalarType.U16,
+            ScalarType.I16,
+            ScalarType.I32,
+            ScalarType.U32,
+        }
+        and not input_dtype.is_float8
+    ):
         raise UnsupportedOpError(
             "DequantizeLinear supports int/uint and float8 inputs only"
         )

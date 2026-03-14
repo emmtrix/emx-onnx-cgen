@@ -66,16 +66,20 @@ def resolve_quantize_spec(graph: Graph, node: Node) -> QuantizeSpec:
     scale_shape = _value_shape(graph, node.inputs[1], node)
     zero_point_name = optional_name(node.inputs, 2)
     output_dtype = _resolve_output_dtype(graph, node, zero_point_name)
-    if output_dtype not in {
-        ScalarType.U2,
-        ScalarType.I2,
-        ScalarType.U4,
-        ScalarType.I4,
-        ScalarType.U8,
-        ScalarType.I8,
-        ScalarType.U16,
-        ScalarType.I16,
-    } and not output_dtype.is_float8:
+    if (
+        output_dtype
+        not in {
+            ScalarType.U2,
+            ScalarType.I2,
+            ScalarType.U4,
+            ScalarType.I4,
+            ScalarType.U8,
+            ScalarType.I8,
+            ScalarType.U16,
+            ScalarType.I16,
+        }
+        and not output_dtype.is_float8
+    ):
         raise UnsupportedOpError(
             "QuantizeLinear supports int/uint and float8 outputs only"
         )

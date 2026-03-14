@@ -67,7 +67,9 @@ def _cast_fn_for_float8(
         return f"({output_dtype.c_type})", ""
 
     from_f32_fn = (
-        ScalarFunction.FROM_F32_NO_SAT if not saturate else ScalarFunction.CONVERT_FROM_F32
+        ScalarFunction.FROM_F32_NO_SAT
+        if not saturate
+        else ScalarFunction.CONVERT_FROM_F32
     )
 
     if src_f8 and dst_f8:
