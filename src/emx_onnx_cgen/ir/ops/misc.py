@@ -40,7 +40,11 @@ def _shape_product(shape: tuple[int, ...]) -> int:
 
 
 def _cast_fn_for_float8(
-    input_dtype: ScalarType, output_dtype: ScalarType, emitter: Emitter
+    input_dtype: ScalarType,
+    output_dtype: ScalarType,
+    emitter: Emitter,
+    *,
+    saturate: bool = True,
 ) -> tuple[str, str]:
     """Return ``(cast_prefix, cast_suffix)`` for the cast template.
 
@@ -62,6 +66,10 @@ def _cast_fn_for_float8(
     if registry is None:
         return f"({output_dtype.c_type})", ""
 
+    from_f32_fn = (
+        ScalarFunction.FROM_F32_NO_SAT if not saturate else ScalarFunction.CONVERT_FROM_F32
+    )
+
     if src_f8 and dst_f8:
         to_name = registry.request(
             ScalarFunctionKey(
@@ -71,7 +79,7 @@ def _cast_fn_for_float8(
         )
         from_name = registry.request(
             ScalarFunctionKey(
-                function=ScalarFunction.CONVERT_FROM_F32,
+                function=from_f32_fn,
                 return_type=output_dtype,
             )
         )
@@ -88,7 +96,7 @@ def _cast_fn_for_float8(
 
     from_name = registry.request(
         ScalarFunctionKey(
-            function=ScalarFunction.CONVERT_FROM_F32,
+            function=from_f32_fn,
             return_type=output_dtype,
         )
     )
@@ -101,6 +109,7 @@ class CastOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
+    saturate: bool = True
 
     def infer_types(self, ctx: OpContext) -> None:
         ctx.dtype(self.input0)
@@ -132,7 +141,7 @@ class CastOp(RenderableOpBase):
             ]
         )
         cast_prefix, cast_suffix = _cast_fn_for_float8(
-            input_dtype, output_dtype, emitter
+            input_dtype, output_dtype, emitter, saturate=self.saturate
         )
         rendered = (
             state.templates["cast"]
