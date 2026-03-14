@@ -125,6 +125,18 @@ def _resolve_sanitize_enabled(cli_requested: bool) -> tuple[bool, str | None]:
     return env_enabled, f"{_ENABLE_SANITIZE_ENV}={env_value!r}"
 
 
+def _summarize_build_failure(stderr: str) -> str | None:
+    lines = [line.strip() for line in stderr.splitlines() if line.strip()]
+    if not lines:
+        return None
+    preferred_markers = ("error:", "undefined reference", "ld returned", "failed:")
+    for line in reversed(lines):
+        lowered = line.lower()
+        if any(marker in lowered for marker in preferred_markers):
+            return line[:240]
+    return lines[-1][:240]
+
+
 def _parse_testbench_output_format_arg(value: str) -> str:
     try:
         parse_testbench_output_format(value)
@@ -1948,10 +1960,9 @@ def _verify_model(
                 active_reporter.info("Verifying using generated random inputs")
         except subprocess.CalledProcessError as exc:
             message = "Failed to build testbench."
-            if include_build_details:
-                details = exc.stderr.strip()
-                if details:
-                    message = f"{message} {details}"
+            details = _summarize_build_failure(exc.stderr)
+            if details:
+                message = f"Failed to build testbench ({details})."
             active_reporter.step_fail(message)
             return None, message, operators, opset_version, generated_checksum
         try:

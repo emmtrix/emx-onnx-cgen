@@ -462,7 +462,16 @@ def _find_test_data_dir(model_path: Path) -> Path | None:
 
 
 def _errors_match(actual_error: str, expected_error: str) -> bool:
+    if expected_error == "Failed to build testbench.":
+        return actual_error.startswith("Failed to build testbench")
     return actual_error == expected_error
+
+
+def test_errors_match_accepts_build_failure_with_detail() -> None:
+    assert _errors_match(
+        "Failed to build testbench (cc1: error: unsupported _BitInt width).",
+        "Failed to build testbench.",
+    )
 
 
 def _skip_expected_checksum() -> bool:
