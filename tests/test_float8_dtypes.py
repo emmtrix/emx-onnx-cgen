@@ -335,7 +335,9 @@ def _make_dequantize_float4_model(
     x_info = helper.make_tensor_value_info("x", TensorProto.FLOAT4E2M1, shape)
     y_info = helper.make_tensor_value_info("y", TensorProto.FLOAT, shape)
     scale_t = helper.make_tensor("scale", TensorProto.FLOAT, [], [scale])
-    zp_t = helper.make_tensor("zero_point", TensorProto.FLOAT4E2M1, [], [zero_point_f32])
+    zp_t = helper.make_tensor(
+        "zero_point", TensorProto.FLOAT4E2M1, [], [zero_point_f32]
+    )
     node = helper.make_node(
         "DequantizeLinear", inputs=["x", "scale", "zero_point"], outputs=["y"]
     )
@@ -364,7 +366,9 @@ def _make_quantize_float4_model(
     x_info = helper.make_tensor_value_info("x", TensorProto.FLOAT, shape)
     y_info = helper.make_tensor_value_info("y", TensorProto.FLOAT4E2M1, shape)
     scale_t = helper.make_tensor("scale", TensorProto.FLOAT, [], [scale])
-    zp_t = helper.make_tensor("zero_point", TensorProto.FLOAT4E2M1, [], [zero_point_f32])
+    zp_t = helper.make_tensor(
+        "zero_point", TensorProto.FLOAT4E2M1, [], [zero_point_f32]
+    )
     node = helper.make_node(
         "QuantizeLinear", inputs=["x", "scale", "zero_point"], outputs=["y"]
     )
@@ -403,7 +407,9 @@ def test_float4e2m1_dequantize_backend() -> None:
     out_data = decode_testbench_array(
         payload["outputs"]["y"]["data"], np.dtype(np.float32)
     )
-    zp_f4 = np.float32(zero_point_f32).astype(ml_dtypes.float4_e2m1fn).astype(np.float32)
+    zp_f4 = (
+        np.float32(zero_point_f32).astype(ml_dtypes.float4_e2m1fn).astype(np.float32)
+    )
     expected = (
         f32_vals.astype(ml_dtypes.float4_e2m1fn).astype(np.float32) - zp_f4
     ) * np.float32(scale)
@@ -430,7 +436,9 @@ def test_float4e2m1_quantize_backend() -> None:
     out_data = decode_testbench_array(
         payload["outputs"]["y"]["data"], np.dtype(np.uint8)
     )
-    zp_f32 = np.float32(zero_point_f32).astype(ml_dtypes.float4_e2m1fn).astype(np.float32)
+    zp_f32 = (
+        np.float32(zero_point_f32).astype(ml_dtypes.float4_e2m1fn).astype(np.float32)
+    )
     scaled = f32_input / np.float32(scale) + zp_f32
     expected = scaled.astype(ml_dtypes.float4_e2m1fn).view(np.uint8)
     np.testing.assert_array_equal(out_data, expected)
