@@ -299,6 +299,7 @@ class ScalarFunction(str, Enum):
     CONVERT_FROM_U32 = _conversion_spec("convert_from_u32")
     CONVERT_FROM_U64 = _conversion_spec("convert_from_u64")
     CONVERT_FROM_BOOL = _conversion_spec("convert_from_bool")
+    FROM_F32_NO_SAT = _conversion_spec("from_f32_no_sat")
 
     def supports_dtype(self, dtype_info: _ScalarTypeInfo) -> bool:
         if dtype_info.is_float:
@@ -2353,6 +2354,29 @@ _FLOAT8_FROM_F32_BODY: Dict[str, List[str]] = {
 }
 
 
+_FLOAT8_FROM_F32_NO_SAT_BODY: Dict[str, List[str]] = {
+    "emx_float8e5m2_t": [
+        "    if (v != v) return 0x7Fu;",
+        "    uint8_t s = signbit(v) ? 0x80u : 0u;",
+        "    float a = fabsf(v);",
+        "    if (a == 0.0f) return s;",
+        "    if (a > 57344.0f) return s | 0x7Cu;",
+        "    int e; float f = frexpf(a, &e); e--; f *= 2.0f;",
+        "    int be = e + 15;",
+        "    if (be >= 1) {",
+        "        int m = (int)rintf((f - 1.0f) * 4.0f);",
+        "        if (m >= 4) { m = 0; be++; }",
+        "        if (be >= 31) return s | 0x7Cu;",
+        "        return s | (uint8_t)((be << 2) | m);",
+        "    }",
+        "    int m = (int)rintf(ldexpf(a, 16));",
+        "    if (m >= 4) return s | (1u << 2);",
+        "    if (m <= 0) return s;",
+        "    return s | (uint8_t)m;",
+    ],
+}
+
+
 def _float8_to_f32(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     body = _FLOAT8_TO_F32_BODY[dtype_info.c_type]
     lines = [
@@ -2367,6 +2391,18 @@ def _float8_from_f32(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     body = _FLOAT8_FROM_F32_BODY[dtype_info.c_type]
     lines = [
         f"static inline {dtype_info.c_type} {dtype_info.prefix}from_f32(float v) {{",
+        *body,
+        "}",
+    ]
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+
+
+def _float8_from_f32_no_sat(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
+    body = _FLOAT8_FROM_F32_NO_SAT_BODY.get(
+        dtype_info.c_type, _FLOAT8_FROM_F32_BODY[dtype_info.c_type]
+    )
+    lines = [
+        f"static inline {dtype_info.c_type} {dtype_info.prefix}from_f32_no_sat(float v) {{",
         *body,
         "}",
     ]
@@ -2418,6 +2454,7 @@ def _float8_comparison(
 _FLOAT8_OP_DISPATCH: Dict[str, Callable[[_ScalarTypeInfo], _GeneratedScalar]] = {
     "to_f32": _float8_to_f32,
     "from_f32": _float8_from_f32,
+    "from_f32_no_sat": _float8_from_f32_no_sat,
     "eq": lambda d: _float8_comparison(d, "eq", "=="),
     "ne": lambda d: _float8_comparison(d, "ne", "!="),
     "lt": lambda d: _float8_comparison(d, "lt", "<"),
@@ -2743,6 +2780,7 @@ def _supported_ops(dtype_info: _ScalarTypeInfo) -> Set[str]:
         supported.add("to_f32")
     if dtype_info.is_float8:
         supported.add("from_f32")
+        supported.add("from_f32_no_sat")
         supported.add("to_f32")
     return supported
 
@@ -2753,7 +2791,7 @@ def validate_scalar_function_supported_ops() -> None:
         for function in ScalarFunction
         if not function.value.startswith("convert_from_")
     }
-    conversion_aliases = {"from_f32", "to_f32"}
+    conversion_aliases = {"from_f32", "from_f32_no_sat", "to_f32"}
     categories = {
         "float": _supported_ops(_SCALAR_TYPES[ScalarType.F32]),
         "bool": _supported_ops(_SCALAR_TYPES[ScalarType.BOOL]),

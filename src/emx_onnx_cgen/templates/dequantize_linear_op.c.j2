@@ -2,7 +2,11 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% for dim in shape %}
 for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}
+{% if input_is_float8 %}
+    {{ compute_type }} dequantized = ({{ to_f32_fn }}({{ input_expr }}) - {{ to_f32_fn }}({{ zero_expr }})) * ({{ compute_type }}){{ scale_expr }};
+{% else %}
     {{ compute_type }} dequantized = (({{ compute_type }}){{ input_expr }} - ({{ compute_type }}){{ zero_expr }}) * ({{ compute_type }}){{ scale_expr }};
+{% endif %}
     {{ output_expr }} = ({{ output_c_type }})dequantized;
 {% for _ in shape %}
 }
