@@ -126,7 +126,9 @@ def test_summarize_build_failure_prefers_error_line() -> None:
         ]
     )
 
-    assert cli._summarize_build_failure(stderr) == "cc1: error: unsupported _BitInt width"
+    assert (
+        cli._summarize_build_failure(stderr) == "cc1: error: unsupported _BitInt width"
+    )
 
 
 def test_cli_verify_operator_model() -> None:

@@ -92,8 +92,12 @@ source of truth for CLI arguments:
 3. Run verification by invoking the CLI with the recorded command line:
 
 ```bash
-PYTHONPATH=src python -m emx_onnx_cgen.cli <command_line from JSON>
+PYTHONPATH=src python -m emx_onnx_cgen <command_line from JSON>
 ```
+
+Do not invoke verification via `python -m emx_onnx_cgen.cli ...`; use
+`python -m emx_onnx_cgen ...` or the `emx-onnx-cgen` entry point so the CLI
+main function actually runs.
 
 Sanitizers can be controlled via `EMX_ENABLE_SANITIZE` (when set, it overrides `--sanitize`).
 
