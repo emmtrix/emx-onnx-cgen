@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'.",
+  "error": "Out of tolerance (max abs diff inf)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "CastLike"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "23d6132d7e4b62b8c0230c47c66eefad3cb62baa6416f8b1e416657cdd78ba80"
 }

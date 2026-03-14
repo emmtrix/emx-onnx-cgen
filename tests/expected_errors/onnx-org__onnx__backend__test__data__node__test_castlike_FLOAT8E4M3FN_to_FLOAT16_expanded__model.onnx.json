@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'input'.",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E4M3FN_to_FLOAT16_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Cast"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "83549a3ce20c3209a8d8a521cf7a787a4ef76c2e9c73768fc831daa2522e1f63"
 }

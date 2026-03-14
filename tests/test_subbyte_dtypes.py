@@ -150,9 +150,7 @@ def test_int4_backend() -> None:
     shape = [2, 3]
     input_data = np.array([[-7, 3, 0], [1, -8, 7]], dtype=np.int8)
     weight_values = [1, -1, 0, 3, -3, 7]
-    model = _make_identity_with_weight_model(
-        TensorProto.INT4, shape, weight_values
-    )
+    model = _make_identity_with_weight_model(TensorProto.INT4, shape, weight_values)
     payload, generated = _compile_and_run_bitint_testbench(
         model, testbench_inputs={"x": input_data}
     )
@@ -178,9 +176,7 @@ def test_uint4_backend() -> None:
     shape = [2, 3]
     input_data = np.array([[0, 5, 10], [15, 1, 8]], dtype=np.uint8)
     weight_values = [0, 3, 7, 15, 2, 9]
-    model = _make_identity_with_weight_model(
-        TensorProto.UINT4, shape, weight_values
-    )
+    model = _make_identity_with_weight_model(TensorProto.UINT4, shape, weight_values)
     payload, generated = _compile_and_run_bitint_testbench(
         model, testbench_inputs={"x": input_data}
     )
@@ -206,9 +202,7 @@ def test_int2_backend() -> None:
     shape = [2, 3]
     input_data = np.array([[-2, 1, 0], [-1, 0, 1]], dtype=np.int8)
     weight_values = [1, 0, -1, -2, 1, 0]
-    model = _make_identity_with_weight_model(
-        TensorProto.INT2, shape, weight_values
-    )
+    model = _make_identity_with_weight_model(TensorProto.INT2, shape, weight_values)
     payload, generated = _compile_and_run_bitint_testbench(
         model, testbench_inputs={"x": input_data}
     )
@@ -234,9 +228,7 @@ def test_uint2_backend() -> None:
     shape = [2, 3]
     input_data = np.array([[0, 1, 2], [3, 0, 1]], dtype=np.uint8)
     weight_values = [3, 2, 1, 0, 3, 2]
-    model = _make_identity_with_weight_model(
-        TensorProto.UINT2, shape, weight_values
-    )
+    model = _make_identity_with_weight_model(TensorProto.UINT2, shape, weight_values)
     payload, generated = _compile_and_run_bitint_testbench(
         model, testbench_inputs={"x": input_data}
     )

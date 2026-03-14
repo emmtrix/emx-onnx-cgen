@@ -832,3 +832,50 @@ def test_matmul_matches_onnxruntime() -> None:
 
     reference_outputs = _run_reference(model, {"a": input_a, "b": input_b})
     np.testing.assert_allclose(reference_outputs["out"], ort_out, rtol=1e-4, atol=1e-5)
+
+
+# -- Float8 golden tests -----------------------------------------------------
+
+
+def _make_cast_float_to_f8e4m3fn_model() -> onnx.ModelProto:
+    x = helper.make_tensor_value_info("x", TensorProto.FLOAT, [2, 3])
+    y = helper.make_tensor_value_info("y", TensorProto.FLOAT8E4M3FN, [2, 3])
+    node = helper.make_node("Cast", ["x"], ["y"], to=TensorProto.FLOAT8E4M3FN)
+    graph = helper.make_graph([node], "cast_f32_to_f8e4m3fn", [x], [y])
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_opsetid("", 25)],
+    )
+    model.ir_version = 10
+    return model
+
+
+def _make_cast_f8e4m3fn_to_float_model() -> onnx.ModelProto:
+    x = helper.make_tensor_value_info("x", TensorProto.FLOAT8E4M3FN, [2, 3])
+    y = helper.make_tensor_value_info("y", TensorProto.FLOAT, [2, 3])
+    node = helper.make_node("Cast", ["x"], ["y"], to=TensorProto.FLOAT)
+    graph = helper.make_graph([node], "cast_f8e4m3fn_to_f32", [x], [y])
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_opsetid("", 25)],
+    )
+    model.ir_version = 10
+    return model
+
+
+def test_codegen_golden_cast_float_to_f8e4m3fn() -> None:
+    model = _make_cast_float_to_f8e4m3fn_model()
+    compiler = Compiler()
+    generated = compiler.compile(model)
+    golden_path = Path(__file__).parent / "golden" / "cast_float_to_f8e4m3fn.c"
+    assert_golden(generated, golden_path)
+
+
+def test_codegen_golden_cast_f8e4m3fn_to_float() -> None:
+    model = _make_cast_f8e4m3fn_to_float_model()
+    compiler = Compiler()
+    generated = compiler.compile(model)
+    golden_path = Path(__file__).parent / "golden" / "cast_f8e4m3fn_to_float.c"
+    assert_golden(generated, golden_path)

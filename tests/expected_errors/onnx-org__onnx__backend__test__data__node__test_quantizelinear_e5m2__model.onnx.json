@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'y_zero_point'.",
+  "error": "QuantizeLinear supports int2/uint2/int4/uint4/int8/uint8/int16/uint16 outputs only",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_quantizelinear_e5m2 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
