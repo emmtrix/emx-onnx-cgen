@@ -1,9 +1,10 @@
 {
-  "error": "QuantizeLinear supports int8/uint8/int16/uint16 outputs only",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_quantizelinear_uint2 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "QuantizeLinear"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "33b6077e528091bd47b10a87426d4bd7973fb3482c9e8ba0df277735e0d66d41"
 }

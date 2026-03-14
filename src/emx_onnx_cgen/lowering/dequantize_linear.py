@@ -140,6 +140,10 @@ def lower_dequantize_linear(graph: Graph, node: Node) -> DequantizeLinearOp:
     scale_dtype = _value_dtype(graph, node.inputs[1], node)
     output_dtype = _value_dtype(graph, node.outputs[0], node)
     if input_dtype not in {
+        ScalarType.U2,
+        ScalarType.I2,
+        ScalarType.U4,
+        ScalarType.I4,
         ScalarType.U8,
         ScalarType.I8,
         ScalarType.U16,
@@ -148,7 +152,7 @@ def lower_dequantize_linear(graph: Graph, node: Node) -> DequantizeLinearOp:
         ScalarType.U32,
     }:
         raise UnsupportedOpError(
-            "DequantizeLinear supports int8/uint8/int16/uint16/int32/uint32 inputs only"
+            "DequantizeLinear supports int2/uint2/int4/uint4/int8/uint8/int16/uint16/int32/uint32 inputs only"
         )
     if not scale_dtype.is_float or not output_dtype.is_float:
         raise UnsupportedOpError(
