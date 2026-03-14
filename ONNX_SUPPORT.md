@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1774 / 1802, 98.4% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1786 / 1802, 99.1% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 124 / 125, 99.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1774 / 1802 ONNX files (98.4%).
+Coverage 1786 / 1802 ONNX files (99.1%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -305,7 +305,7 @@ Coverage 1774 / 1802 ONNX files (98.4%).
 | node/test_cast_DOUBLE_to_FLOAT16/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_cast_FLOAT16_to_DOUBLE/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_cast_FLOAT16_to_FLOAT/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
-| node/test_cast_FLOAT16_to_FLOAT4E2M1/model.onnx | 25 | Data | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'output'. |
+| node/test_cast_FLOAT16_to_FLOAT4E2M1/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_cast_FLOAT16_to_FLOAT8E4M3FN/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_cast_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_cast_FLOAT16_to_FLOAT8E5M2/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
@@ -314,8 +314,8 @@ Coverage 1774 / 1802 ONNX files (98.4%).
 | node/test_cast_FLOAT16_to_INT4/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_cast_FLOAT16_to_UINT2/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_cast_FLOAT16_to_UINT4/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
-| node/test_cast_FLOAT4E2M1_to_FLOAT/model.onnx | 25 | Data | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. |
-| node/test_cast_FLOAT4E2M1_to_FLOAT16/model.onnx | 25 | Data | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. |
+| node/test_cast_FLOAT4E2M1_to_FLOAT/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
+| node/test_cast_FLOAT4E2M1_to_FLOAT16/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_cast_FLOAT8E4M3FNUZ_to_FLOAT/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_cast_FLOAT8E4M3FNUZ_to_FLOAT16/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_cast_FLOAT8E4M3FN_to_FLOAT/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
@@ -327,7 +327,7 @@ Coverage 1774 / 1802 ONNX files (98.4%).
 | node/test_cast_FLOAT_to_BFLOAT16/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_cast_FLOAT_to_DOUBLE/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_cast_FLOAT_to_FLOAT16/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
-| node/test_cast_FLOAT_to_FLOAT4E2M1/model.onnx | 25 | Data | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'output'. |
+| node/test_cast_FLOAT_to_FLOAT4E2M1/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_cast_FLOAT_to_FLOAT8E4M3FN/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_cast_FLOAT_to_FLOAT8E4M3FNUZ/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_cast_FLOAT_to_FLOAT8E5M2/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
@@ -369,8 +369,8 @@ Coverage 1774 / 1802 ONNX files (98.4%).
 | node/test_castlike_FLOAT16_to_DOUBLE/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_castlike_FLOAT16_to_DOUBLE_expanded/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_castlike_FLOAT16_to_FLOAT/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
-| node/test_castlike_FLOAT16_to_FLOAT4E2M1/model.onnx | 25 | Data | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'like'. |
-| node/test_castlike_FLOAT16_to_FLOAT4E2M1_expanded/model.onnx | 25 | Data | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'like'. |
+| node/test_castlike_FLOAT16_to_FLOAT4E2M1/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
+| node/test_castlike_FLOAT16_to_FLOAT4E2M1_expanded/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_castlike_FLOAT16_to_FLOAT8E4M3FN/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_castlike_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_castlike_FLOAT16_to_FLOAT8E4M3FNUZ_expanded/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
@@ -388,10 +388,10 @@ Coverage 1774 / 1802 ONNX files (98.4%).
 | node/test_castlike_FLOAT16_to_UINT2_expanded/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_castlike_FLOAT16_to_UINT4/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_castlike_FLOAT16_to_UINT4_expanded/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
-| node/test_castlike_FLOAT4E2M1_to_FLOAT/model.onnx | 25 | Data | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. |
-| node/test_castlike_FLOAT4E2M1_to_FLOAT16/model.onnx | 25 | Data | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. |
-| node/test_castlike_FLOAT4E2M1_to_FLOAT16_expanded/model.onnx | 25 | Data | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. |
-| node/test_castlike_FLOAT4E2M1_to_FLOAT_expanded/model.onnx | 25 | Data | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. |
+| node/test_castlike_FLOAT4E2M1_to_FLOAT/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
+| node/test_castlike_FLOAT4E2M1_to_FLOAT16/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
+| node/test_castlike_FLOAT4E2M1_to_FLOAT16_expanded/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
+| node/test_castlike_FLOAT4E2M1_to_FLOAT_expanded/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_castlike_FLOAT8E4M3FNUZ_to_FLOAT/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_castlike_FLOAT8E4M3FNUZ_to_FLOAT16/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_castlike_FLOAT8E4M3FNUZ_to_FLOAT16_expanded/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
@@ -414,8 +414,8 @@ Coverage 1774 / 1802 ONNX files (98.4%).
 | node/test_castlike_FLOAT_to_DOUBLE_expanded/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_castlike_FLOAT_to_FLOAT16/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_castlike_FLOAT_to_FLOAT16_expanded/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
-| node/test_castlike_FLOAT_to_FLOAT4E2M1/model.onnx | 25 | Data | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'like'. |
-| node/test_castlike_FLOAT_to_FLOAT4E2M1_expanded/model.onnx | 25 | Data | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'like'. |
+| node/test_castlike_FLOAT_to_FLOAT4E2M1/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
+| node/test_castlike_FLOAT_to_FLOAT4E2M1_expanded/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_castlike_FLOAT_to_FLOAT8E4M3FN/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_castlike_FLOAT_to_FLOAT8E4M3FNUZ/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_castlike_FLOAT_to_FLOAT8E4M3FNUZ_expanded/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
@@ -581,7 +581,7 @@ Coverage 1774 / 1802 ONNX files (98.4%).
 | node/test_dequantizelinear_e4m3fn_float16/model.onnx | 25 | Data | ❌ | DequantizeLinear supports int2/uint2/int4/uint4/int8/uint8/int16/uint16/int32/uint32 inputs only |
 | node/test_dequantizelinear_e4m3fn_zero_point/model.onnx | 25 | Data | ❌ | DequantizeLinear supports int2/uint2/int4/uint4/int8/uint8/int16/uint16/int32/uint32 inputs only |
 | node/test_dequantizelinear_e5m2/model.onnx | 25 | Data | ❌ | DequantizeLinear supports int2/uint2/int4/uint4/int8/uint8/int16/uint16/int32/uint32 inputs only |
-| node/test_dequantizelinear_float4e2m1/model.onnx | 25 | Data | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'x'. |
+| node/test_dequantizelinear_float4e2m1/model.onnx | 25 | Data | ❌ | DequantizeLinear supports int2/uint2/int4/uint4/int8/uint8/int16/uint16/int32/uint32 inputs only |
 | node/test_dequantizelinear_int16/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_dequantizelinear_int2/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_dequantizelinear_int4/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
@@ -1117,7 +1117,7 @@ Coverage 1774 / 1802 ONNX files (98.4%).
 | node/test_quantizelinear_blocked_symmetric/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_quantizelinear_e4m3fn/model.onnx | 25 | Data | ❌ | QuantizeLinear supports int2/uint2/int4/uint4/int8/uint8/int16/uint16 outputs only |
 | node/test_quantizelinear_e5m2/model.onnx | 25 | Data | ❌ | QuantizeLinear supports int2/uint2/int4/uint4/int8/uint8/int16/uint16 outputs only |
-| node/test_quantizelinear_float4e2m1/model.onnx | 25 | Data | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'y_zero_point'. |
+| node/test_quantizelinear_float4e2m1/model.onnx | 25 | Data | ❌ | QuantizeLinear supports int2/uint2/int4/uint4/int8/uint8/int16/uint16 outputs only |
 | node/test_quantizelinear_int16/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_quantizelinear_int2/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_quantizelinear_int4/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
