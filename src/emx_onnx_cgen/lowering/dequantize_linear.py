@@ -153,10 +153,10 @@ def lower_dequantize_linear(graph: Graph, node: Node) -> DequantizeLinearOp:
             ScalarType.I32,
             ScalarType.U32,
         }
-        and not input_dtype.is_float8
+        and not input_dtype.is_typedef_float
     ):
         raise UnsupportedOpError(
-            "DequantizeLinear supports int/uint and float8 inputs only"
+            "DequantizeLinear supports int/uint and float4/float8 inputs only"
         )
     if not scale_dtype.is_float or not output_dtype.is_float:
         raise UnsupportedOpError(

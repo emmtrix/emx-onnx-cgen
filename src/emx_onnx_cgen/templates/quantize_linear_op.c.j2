@@ -2,7 +2,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% for dim in shape %}
 for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}
-{% if output_is_float8 %}
+{% if output_is_typedef_float %}
     {{ compute_type }} scaled = (({{ compute_type }}){{ input_expr }} / ({{ compute_type }}){{ scale_expr }}) + ({{ compute_type }}){{ to_f32_fn }}({{ zero_expr }});
     {{ output_expr }} = {{ from_f32_fn }}(scaled);
 {% else %}

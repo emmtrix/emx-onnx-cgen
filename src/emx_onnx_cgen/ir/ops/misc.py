@@ -269,7 +269,7 @@ class QuantizeLinearOp(RenderableOpBase):
             zero_expr = "0"
         from_f32_fn = ""
         to_f32_fn = ""
-        if output_dtype.is_float8:
+        if output_dtype.is_typedef_float:
             from shared.scalar_functions import ScalarFunction, ScalarFunctionKey
 
             registry = emitter.scalar_registry()
@@ -309,7 +309,7 @@ class QuantizeLinearOp(RenderableOpBase):
                 min_literal=output_dtype.min_literal,
                 max_literal=output_dtype.max_literal,
                 dim_args=dim_args,
-                output_is_float8=output_dtype.is_float8,
+                output_is_typedef_float=output_dtype.is_typedef_float,
                 from_f32_fn=from_f32_fn,
                 to_f32_fn=to_f32_fn,
             )
@@ -521,7 +521,7 @@ class DequantizeLinearOp(RenderableOpBase):
         else:
             zero_expr = "0"
         to_f32_fn = ""
-        if input_dtype.is_float8:
+        if input_dtype.is_typedef_float:
             from shared.scalar_functions import ScalarFunction, ScalarFunctionKey
 
             registry = emitter.scalar_registry()
@@ -552,7 +552,7 @@ class DequantizeLinearOp(RenderableOpBase):
                 zero_expr=zero_expr,
                 output_expr=output_expr,
                 dim_args=dim_args,
-                input_is_float8=input_dtype.is_float8,
+                input_is_typedef_float=input_dtype.is_typedef_float,
                 to_f32_fn=to_f32_fn,
             )
             .rstrip()
