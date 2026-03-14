@@ -1,0 +1,2 @@
+[console_scripts]
+emx-regex-cgen = emx_regex_cgen.cli:main
