@@ -39,6 +39,62 @@ def _shape_product(shape: tuple[int, ...]) -> int:
     return product
 
 
+def _cast_fn_for_float8(
+    input_dtype: ScalarType, output_dtype: ScalarType, emitter: Emitter
+) -> tuple[str, str]:
+    """Return ``(cast_prefix, cast_suffix)`` for the cast template.
+
+    When either side is a float8 type a plain C cast ``(target_type)value`` is
+    not sufficient because the storage type is ``uint8_t``.  Instead we chain
+    the appropriate ``to_f32`` / ``from_f32`` scalar conversion helpers.
+
+    For regular casts the pair ``("(target_type)", "")`` is returned.
+    """
+    from shared.scalar_functions import ScalarFunction, ScalarFunctionKey
+
+    src_f8 = input_dtype.is_float8
+    dst_f8 = output_dtype.is_float8
+
+    if not src_f8 and not dst_f8:
+        return f"({output_dtype.c_type})", ""
+
+    registry = emitter.scalar_registry()
+    if registry is None:
+        return f"({output_dtype.c_type})", ""
+
+    if src_f8 and dst_f8:
+        to_name = registry.request(
+            ScalarFunctionKey(
+                function=ScalarFunction.CONVERT_FROM_BOOL,
+                return_type=input_dtype,
+            )
+        )
+        from_name = registry.request(
+            ScalarFunctionKey(
+                function=ScalarFunction.CONVERT_FROM_F32,
+                return_type=output_dtype,
+            )
+        )
+        return f"{from_name}({to_name}(", "))"
+
+    if src_f8:
+        to_name = registry.request(
+            ScalarFunctionKey(
+                function=ScalarFunction.CONVERT_FROM_BOOL,
+                return_type=input_dtype,
+            )
+        )
+        return f"({output_dtype.c_type}){to_name}(", ")"
+
+    from_name = registry.request(
+        ScalarFunctionKey(
+            function=ScalarFunction.CONVERT_FROM_F32,
+            return_type=output_dtype,
+        )
+    )
+    return f"{from_name}((float)", ")"
+
+
 @dataclass(frozen=True)
 class CastOp(RenderableOpBase):
     __io_inputs__ = ("input0",)
@@ -75,6 +131,9 @@ class CastOp(RenderableOpBase):
                 (params["output"], output_dtype.c_type, array_suffix, False),
             ]
         )
+        cast_prefix, cast_suffix = _cast_fn_for_float8(
+            input_dtype, output_dtype, emitter
+        )
         rendered = (
             state.templates["cast"]
             .render(
@@ -89,6 +148,8 @@ class CastOp(RenderableOpBase):
                 shape=shape,
                 loop_vars=loop_vars,
                 dim_args=dim_args,
+                cast_prefix=cast_prefix,
+                cast_suffix=cast_suffix,
             )
             .rstrip()
         )

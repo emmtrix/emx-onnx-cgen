@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'.",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT8E4M3FNUZ model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "CastLike"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "9277c1367b8b70d46502a35b0483a9c0422bd59bb14131cecc8af7d1ae36b510"
 }

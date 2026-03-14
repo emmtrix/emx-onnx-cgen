@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'output'.",
+  "error": "Out of tolerance (max abs diff inf)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_cast_no_saturate_FLOAT_to_FLOAT8E5M2 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Cast"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "9b0d857e5a83c61ab32926d14ea09d95f0c9c33ce5fd789aeace25e48fd5ad05"
 }
