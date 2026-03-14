@@ -1781,6 +1781,7 @@ class CEmitter:
     @staticmethod
     def _emit_float8_typedefs(model_dtypes: set[ScalarType]) -> str | None:
         _FLOAT8_TYPEDEFS = {
+            ScalarType.F4E2M1: "typedef uint8_t emx_float4e2m1_t;",
             ScalarType.F8E4M3FN: "typedef uint8_t emx_float8e4m3fn_t;",
             ScalarType.F8E4M3FNUZ: "typedef uint8_t emx_float8e4m3fnuz_t;",
             ScalarType.F8E5M2: "typedef uint8_t emx_float8e5m2_t;",
@@ -3336,7 +3337,8 @@ class CEmitter:
             elif dtype == ScalarType.STRING:
                 random_expr = '""'
             elif dtype.is_float8:
-                random_expr = f"({dtype.c_type})(rng_next_i64() & 0xFF)"
+                mask = "0x0F" if dtype.is_float4 else "0xFF"
+                random_expr = f"({dtype.c_type})(rng_next_i64() & {mask})"
             else:
                 random_expr = f"({dtype.c_type})rng_next_i64()"
             constant_name = None
@@ -3769,6 +3771,7 @@ class CEmitter:
         import ml_dtypes  # noqa: F811
 
         _ML_DTYPE_MAP = {
+            ScalarType.F4E2M1: ml_dtypes.float4_e2m1fn,
             ScalarType.F8E4M3FN: ml_dtypes.float8_e4m3fn,
             ScalarType.F8E4M3FNUZ: ml_dtypes.float8_e4m3fnuz,
             ScalarType.F8E5M2: ml_dtypes.float8_e5m2,

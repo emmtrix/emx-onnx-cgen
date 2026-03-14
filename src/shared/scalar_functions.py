@@ -2233,6 +2233,11 @@ def _bool_from_ops(name: str) -> _GeneratedScalar:
 
 # C code snippets for float8 ↔ float32 conversion, keyed by float8 c_type.
 _FLOAT8_TO_F32_BODY: Dict[str, List[str]] = {
+    "emx_float4e2m1_t": [
+        "    uint8_t s = (v >> 3) & 1u, e = (v >> 1) & 0x3u, m = v & 0x1u;",
+        "    float r = (e == 0u) ? 0.5f * (float)m : ldexpf(1.0f + 0.5f * (float)m, (int)e - 1);",
+        "    return s ? -r : r;",
+    ],
     "emx_float8e4m3fn_t": [
         "    uint8_t s = v >> 7, e = (v >> 3) & 0xFu, m = v & 0x7u;",
         "    if (e == 15u && m == 7u) return NAN;",
@@ -2264,6 +2269,25 @@ _FLOAT8_TO_F32_BODY: Dict[str, List[str]] = {
 }
 
 _FLOAT8_FROM_F32_BODY: Dict[str, List[str]] = {
+    "emx_float4e2m1_t": [
+        "    if (v != v) return signbit(v) ? 0u : 0x8u;",
+        "    uint8_t s = signbit(v) ? 0x8u : 0u;",
+        "    float a = fabsf(v);",
+        "    if (a == 0.0f) return s;",
+        "    if (a > 6.0f) return s | 0x07u;",
+        "    int e; float f = frexpf(a, &e); e--; f *= 2.0f;",
+        "    int be = e + 1;",
+        "    if (be >= 1) {",
+        "        int m = (int)rintf((f - 1.0f) * 2.0f);",
+        "        if (m >= 2) { m = 0; be++; }",
+        "        if (be > 3) return s | 0x07u;",
+        "        return s | (uint8_t)((be << 1) | m);",
+        "    }",
+        "    int m = (int)rintf(a * 2.0f);",
+        "    if (m >= 2) return s | (1u << 1);",
+        "    if (m <= 0) return s;",
+        "    return s | (uint8_t)m;",
+    ],
     "emx_float8e4m3fn_t": [
         "    if (v != v) return 0x7Fu;",
         "    uint8_t s = signbit(v) ? 0x80u : 0u;",
@@ -2535,6 +2559,18 @@ _SCALAR_TYPES: Dict[ScalarType, _ScalarTypeInfo] = {
         is_signed=False,
         is_small_int=False,
         bits=8,
+        is_float8=True,
+    ),
+    ScalarType.F4E2M1: _ScalarTypeInfo(
+        scalar_type=ScalarType.F4E2M1,
+        c_type="emx_float4e2m1_t",
+        prefix="ref_scalar_f4e2m1_",
+        suffix="f4e2m1",
+        is_float=True,
+        is_bool=False,
+        is_signed=True,
+        is_small_int=False,
+        bits=4,
         is_float8=True,
     ),
     ScalarType.F32: _ScalarTypeInfo(
