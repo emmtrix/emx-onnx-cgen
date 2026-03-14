@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1774 / 1802, 98.4% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1786 / 1802, 99.1% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 124 / 125, 99.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1774 / 1802 ONNX files (98.4%).
+Coverage 1786 / 1802 ONNX files (99.1%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -354,11 +354,11 @@ Coverage 1774 / 1802 ONNX files (98.4%).
 | node/test_cast_e8m0_FLOAT_to_FLOAT8E8M0/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_cast_no_saturate_FLOAT16_to_FLOAT8E4M3FN/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_cast_no_saturate_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
-| node/test_cast_no_saturate_FLOAT16_to_FLOAT8E5M2/model.onnx | 25 | Data | ❌ | Out of tolerance (max abs diff inf) |
+| node/test_cast_no_saturate_FLOAT16_to_FLOAT8E5M2/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_cast_no_saturate_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_cast_no_saturate_FLOAT_to_FLOAT8E4M3FN/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_cast_no_saturate_FLOAT_to_FLOAT8E4M3FNUZ/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
-| node/test_cast_no_saturate_FLOAT_to_FLOAT8E5M2/model.onnx | 25 | Data | ❌ | Out of tolerance (max abs diff inf) |
+| node/test_cast_no_saturate_FLOAT_to_FLOAT8E5M2/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_cast_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_castlike_BFLOAT16_to_FLOAT/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_castlike_BFLOAT16_to_FLOAT_expanded/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
@@ -460,18 +460,18 @@ Coverage 1774 / 1802 ONNX files (98.4%).
 | node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FNUZ_expanded/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FN_expanded/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
-| node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2/model.onnx | 25 | Data | ❌ | Out of tolerance (max abs diff inf) |
+| node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2FNUZ_expanded/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
-| node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2_expanded/model.onnx | 25 | Data | ❌ | Out of tolerance (max abs diff inf) |
+| node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2_expanded/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FN/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FNUZ/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FNUZ_expanded/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FN_expanded/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
-| node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2/model.onnx | 25 | Data | ❌ | Out of tolerance (max abs diff inf) |
+| node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ_expanded/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
-| node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2_expanded/model.onnx | 25 | Data | ❌ | Out of tolerance (max abs diff inf) |
+| node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2_expanded/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_ceil/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_ceil_example/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_celu/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
@@ -577,10 +577,10 @@ Coverage 1774 / 1802 ONNX files (98.4%).
 | node/test_dequantizelinear/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_dequantizelinear_axis/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_dequantizelinear_blocked/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
-| node/test_dequantizelinear_e4m3fn/model.onnx | 25 | Data | ❌ | DequantizeLinear supports int2/uint2/int4/uint4/int8/uint8/int16/uint16/int32/uint32 inputs only |
-| node/test_dequantizelinear_e4m3fn_float16/model.onnx | 25 | Data | ❌ | DequantizeLinear supports int2/uint2/int4/uint4/int8/uint8/int16/uint16/int32/uint32 inputs only |
-| node/test_dequantizelinear_e4m3fn_zero_point/model.onnx | 25 | Data | ❌ | DequantizeLinear supports int2/uint2/int4/uint4/int8/uint8/int16/uint16/int32/uint32 inputs only |
-| node/test_dequantizelinear_e5m2/model.onnx | 25 | Data | ❌ | DequantizeLinear supports int2/uint2/int4/uint4/int8/uint8/int16/uint16/int32/uint32 inputs only |
+| node/test_dequantizelinear_e4m3fn/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
+| node/test_dequantizelinear_e4m3fn_float16/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
+| node/test_dequantizelinear_e4m3fn_zero_point/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
+| node/test_dequantizelinear_e5m2/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_dequantizelinear_float4e2m1/model.onnx | 25 | Data | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'x'. |
 | node/test_dequantizelinear_int16/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_dequantizelinear_int2/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
@@ -1115,8 +1115,8 @@ Coverage 1774 / 1802 ONNX files (98.4%).
 | node/test_quantizelinear_axis/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_quantizelinear_blocked_asymmetric/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_quantizelinear_blocked_symmetric/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
-| node/test_quantizelinear_e4m3fn/model.onnx | 25 | Data | ❌ | QuantizeLinear supports int2/uint2/int4/uint4/int8/uint8/int16/uint16 outputs only |
-| node/test_quantizelinear_e5m2/model.onnx | 25 | Data | ❌ | QuantizeLinear supports int2/uint2/int4/uint4/int8/uint8/int16/uint16 outputs only |
+| node/test_quantizelinear_e4m3fn/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
+| node/test_quantizelinear_e5m2/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_quantizelinear_float4e2m1/model.onnx | 25 | Data | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_int16/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_quantizelinear_int2/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
