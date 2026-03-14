@@ -103,6 +103,32 @@ class ScalarType(str, Enum):
         False,
         64,
     )
+    I2 = (
+        "i2",
+        "int2",
+        "_BitInt(2)",
+        np.dtype("int8"),
+        "0",
+        "-2",
+        "1",
+        False,
+        True,
+        False,
+        2,
+    )
+    I4 = (
+        "i4",
+        "int4",
+        "_BitInt(4)",
+        np.dtype("int8"),
+        "0",
+        "-8",
+        "7",
+        False,
+        True,
+        False,
+        4,
+    )
     I8 = (
         "i8",
         "int8",
@@ -154,6 +180,32 @@ class ScalarType(str, Enum):
         True,
         False,
         64,
+    )
+    U2 = (
+        "u2",
+        "uint2",
+        "unsigned _BitInt(2)",
+        np.dtype("uint8"),
+        "0",
+        "0",
+        "3",
+        False,
+        False,
+        False,
+        2,
+    )
+    U4 = (
+        "u4",
+        "uint4",
+        "unsigned _BitInt(4)",
+        np.dtype("uint8"),
+        "0",
+        "0",
+        "15",
+        False,
+        False,
+        False,
+        4,
     )
     U8 = (
         "u8",
@@ -237,6 +289,10 @@ class ScalarType(str, Enum):
     @property
     def is_integer(self) -> bool:
         return not self.is_float and not self.is_bool
+
+    @property
+    def is_subbyte(self) -> bool:
+        return self.bits is not None and self.bits < 8
 
     @classmethod
     def from_torch_dtype(cls, dtype: object) -> "ScalarType":

@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported elem_type 22 (INT4) for tensor 'output'.",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_INT4 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Cast"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "1ec8d0363cf7ca31e33cb1027c382c0c5628da40df0476bd9e01245efd1679a4"
 }

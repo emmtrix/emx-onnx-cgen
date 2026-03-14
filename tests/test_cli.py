@@ -117,6 +117,20 @@ def _write_input_pb(data_dir: Path, name: str, values: np.ndarray) -> None:
     (data_dir / "input_0.pb").write_bytes(tensor.SerializeToString())
 
 
+def test_summarize_build_failure_prefers_error_line() -> None:
+    stderr = "\n".join(
+        [
+            "model.c: In function 'main':",
+            "model.c:42:3: warning: something incidental",
+            "cc1: error: unsupported _BitInt width",
+        ]
+    )
+
+    assert (
+        cli._summarize_build_failure(stderr) == "cc1: error: unsupported _BitInt width"
+    )
+
+
 def test_cli_verify_operator_model() -> None:
     model = _make_operator_model(
         op_type="Add",

@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported elem_type 25 (UINT2) for tensor 'like'.",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_UINT2_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Cast"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "8eedeee6536a752c2b024579b09b001ad1ae525577c88eeb08e5d13f7a0e936c"
 }

@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported elem_type 25 (UINT2) for tensor 'output'.",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_UINT2 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Cast"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "51a990aed2f8e6ea961be559407a47d1a8a1060b89486e0c9add44564401766c"
 }
