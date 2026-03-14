@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'output'.",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_FLOAT4E2M1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Cast"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "b57427611e2c0585d964db5b4cf6117bc098359c92d648802205b996becbe283"
 }

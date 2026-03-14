@@ -49,13 +49,14 @@ For PyTorch models, see the related project [`emx-pytorch-cgen`](https://github.
 - Supported data types:
   - `bfloat16`, `float16`, `float`, `double`
   - `float8e4m3fn`, `float8e4m3fnuz`, `float8e5m2`, `float8e5m2fnuz`, `float8e8m0` (stored as `uint8_t` with manual conversion to/from `float`)
+  - `float4e2m1` (stored as `uint8_t` with manual conversion to/from `float`)
   - `int2`, `uint2`, `int4`, `uint4` (using C23 `_BitInt` types)
   - `int8`, `uint8`, `int16`, `uint16`, `int32`, `uint32`, `int64`, `uint64`
   - `bool`
   - `string` (fixed-size `'\0'`-terminated C strings; see [`docs/output-format.md`](docs/output-format.md))
   - `sequence(<tensor type>)` (fixed-capacity tensor sequences with presence/length metadata; see [`docs/output-format.md`](docs/output-format.md))
   - `optional(<tensor type>)` (optional tensors represented via an extra `_Bool <name>_present` flag; see [`docs/output-format.md`](docs/output-format.md))
-  - Not supported: `float4e2m1`, `complex64/complex128`, and ONNX `map/sparse_tensor/opaque` value types.
+  - Not supported: `complex64/complex128`, and ONNX `map/sparse_tensor/opaque` value types.
 - Optional support for dynamic dimensions using C99 variable-length arrays (VLAs), when the target compiler supports them.
 
 ## Usage Scenarios

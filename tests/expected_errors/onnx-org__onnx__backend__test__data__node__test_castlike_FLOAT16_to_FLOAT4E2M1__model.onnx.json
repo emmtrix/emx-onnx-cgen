@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'like'.",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT4E2M1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "CastLike"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "5fa3900485c4c514fcbd219f4a106d56f20ecf962c14f57417bd2769bc860e1c"
 }

@@ -14,6 +14,7 @@ ONNX_TO_SCALAR_TYPE: dict[int, ScalarType] = {
     onnx.TensorProto.FLOAT8E5M2: ScalarType.F8E5M2,
     onnx.TensorProto.FLOAT8E5M2FNUZ: ScalarType.F8E5M2FNUZ,
     onnx.TensorProto.FLOAT8E8M0: ScalarType.F8E8M0FNU,
+    onnx.TensorProto.FLOAT4E2M1: ScalarType.F4E2M1,
     onnx.TensorProto.FLOAT: ScalarType.F32,
     onnx.TensorProto.DOUBLE: ScalarType.F64,
     onnx.TensorProto.BOOL: ScalarType.BOOL,

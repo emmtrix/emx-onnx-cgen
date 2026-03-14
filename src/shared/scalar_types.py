@@ -34,6 +34,23 @@ def _float8_numpy_dtype(ml_name: str) -> np.dtype:
     return np.dtype(np.uint8)
 
 
+def _float4_numpy_dtype(ml_name: str) -> np.dtype:
+    """Return the canonical numpy dtype for a float4 type.
+
+    Uses the corresponding ``ml_dtypes`` type when available, falling back to
+    ``uint8``.
+    """
+    try:
+        import ml_dtypes
+
+        dtype_cls = getattr(ml_dtypes, ml_name, None)
+        if dtype_cls is not None:
+            return np.dtype(dtype_cls)
+    except ImportError:
+        pass
+    return np.dtype(np.uint8)
+
+
 def _subbyte_numpy_dtype(bits: int, *, signed: bool) -> np.dtype:
     """Return the canonical numpy dtype for a sub-byte integer type.
 
@@ -194,6 +211,19 @@ class ScalarType(str, Enum):
         False,
         False,
         8,
+    )
+    F4E2M1 = (
+        "f4e2m1",
+        "float4e2m1",
+        "emx_float4e2m1_t",
+        _float4_numpy_dtype("float4_e2m1fn"),
+        "0",
+        "0x0Fu",
+        "0x07u",
+        True,
+        True,
+        False,
+        4,
     )
     F32 = (
         "f32",
@@ -415,6 +445,15 @@ class ScalarType(str, Enum):
     @property
     def is_float8(self) -> bool:
         return self.is_float and self.bits is not None and self.bits == 8
+
+    @property
+    def is_float4(self) -> bool:
+        return self.is_float and self.bits is not None and self.bits == 4
+
+    @property
+    def is_typedef_float(self) -> bool:
+        """Custom float type stored as ``uint8_t`` with manual conversion."""
+        return self.is_float8 or self.is_float4
 
     @classmethod
     def from_torch_dtype(cls, dtype: object) -> "ScalarType":
