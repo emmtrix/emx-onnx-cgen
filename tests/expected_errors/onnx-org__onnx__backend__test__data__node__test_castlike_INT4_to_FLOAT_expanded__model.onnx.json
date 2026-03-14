@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported elem_type 22 (INT4) for tensor 'input'.",
+  "error": "Failed to build testbench.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_castlike_INT4_to_FLOAT_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Cast"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "bcf2f5367dbdc39a85e525ef0218d479ac437bb0f598507a69a3326428139574"
 }

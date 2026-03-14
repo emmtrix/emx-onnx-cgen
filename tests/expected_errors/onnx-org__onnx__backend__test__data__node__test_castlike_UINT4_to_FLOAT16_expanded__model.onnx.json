@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported elem_type 21 (UINT4) for tensor 'input'.",
+  "error": "Failed to build testbench.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_castlike_UINT4_to_FLOAT16_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Cast"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "6e58bfcb20968a239375a34111a4c036d40452261c9a4447727296316855633f"
 }

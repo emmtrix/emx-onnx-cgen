@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported elem_type 21 (UINT4) for tensor 'like'.",
+  "error": "Failed to build testbench.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_UINT4 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "CastLike"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "dd0648c8e7391f989282b859799b18d306a5976afc0816f13e6d288ddb62bd1c"
 }

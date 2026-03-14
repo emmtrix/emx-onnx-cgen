@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported elem_type 25 (UINT2) for tensor 'input'.",
+  "error": "Failed to build testbench.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_cast_UINT2_to_FLOAT16 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Cast"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "df225668ec03913a9d6951ff83af1b7853a99b71a80adfa90da6d6cfc84f77be"
 }

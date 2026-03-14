@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported elem_type 26 (INT2) for tensor 'input'.",
+  "error": "Failed to build testbench.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_castlike_INT2_to_FLOAT_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Cast"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "b812c2651138f96411d5986f0c5910c29d6c5c2817162d96a63ecc5a68d7a65d"
 }
