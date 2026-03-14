@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported elem_type 21 (UINT4) for tensor 'like'.",
+  "error": "Failed to build testbench (cc: error: unrecognized command-line option \u2018-std=c23\u2019; did you mean \u2018-std=c2x\u2019?).",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_UINT4_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Cast"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "bf4b529f27e34c74b120d3d8b62710ee7e75162e8ed22ec28490a6372ce2865b"
 }

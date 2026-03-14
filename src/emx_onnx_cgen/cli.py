@@ -125,6 +125,18 @@ def _resolve_sanitize_enabled(cli_requested: bool) -> tuple[bool, str | None]:
     return env_enabled, f"{_ENABLE_SANITIZE_ENV}={env_value!r}"
 
 
+def _summarize_build_failure(stderr: str) -> str | None:
+    lines = [line.strip() for line in stderr.splitlines() if line.strip()]
+    if not lines:
+        return None
+    preferred_markers = ("error:", "undefined reference", "ld returned", "failed:")
+    for line in reversed(lines):
+        lowered = line.lower()
+        if any(marker in lowered for marker in preferred_markers):
+            return line[:240]
+    return lines[-1][:240]
+
+
 def _parse_testbench_output_format_arg(value: str) -> str:
     try:
         parse_testbench_output_format(value)
@@ -650,9 +662,7 @@ def run_cli_command(
                 operators,
                 opset_version,
                 generated_checksum,
-            ) = _verify_model(
-                args, include_build_details=False, reporter=_NullVerifyReporter()
-            )
+            ) = _verify_model(args, reporter=_NullVerifyReporter())
             return CliResult(
                 exit_code=0 if error is None else 1,
                 command_line=args.command_line,
@@ -1325,7 +1335,7 @@ def _handle_verify(args: argparse.Namespace) -> int:
         _operators,
         _opset_version,
         generated_checksum,
-    ) = _verify_model(args, include_build_details=True, reporter=reporter)
+    ) = _verify_model(args, reporter=reporter)
     if error is not None:
         _maybe_note_shape_inference_shapes_hint(reporter, args=args, error=error)
         reporter.flush_deferred()
@@ -1521,7 +1531,6 @@ def _report_per_node_accuracy(
 def _verify_model(
     args: argparse.Namespace,
     *,
-    include_build_details: bool,
     reporter: _VerifyReporter | None = None,
     result_meta: dict[str, str] | None = None,
 ) -> tuple[str | None, str | None, list[str], int | None, str | None]:
@@ -1901,9 +1910,10 @@ def _verify_model(
         if weight_data is not None:
             weights_path.write_bytes(weight_data)
         try:
+            c_std = "-std=c23" if "_BitInt(" in generated else "-std=c99"
             compile_cmd = [
                 *compiler_cmd,
-                "-std=c99",
+                c_std,
                 "-O1",
             ]
             sanitize_enabled, sanitize_override = _resolve_sanitize_enabled(
@@ -1947,10 +1957,9 @@ def _verify_model(
                 active_reporter.info("Verifying using generated random inputs")
         except subprocess.CalledProcessError as exc:
             message = "Failed to build testbench."
-            if include_build_details:
-                details = exc.stderr.strip()
-                if details:
-                    message = f"{message} {details}"
+            details = _summarize_build_failure(exc.stderr)
+            if details:
+                message = f"Failed to build testbench ({details})."
             active_reporter.step_fail(message)
             return None, message, operators, opset_version, generated_checksum
         try:

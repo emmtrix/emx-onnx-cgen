@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported elem_type 26 (INT2) for tensor 'input'.",
+  "error": "Failed to build testbench (cc: error: unrecognized command-line option \u2018-std=c23\u2019; did you mean \u2018-std=c2x\u2019?).",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_castlike_INT2_to_FLOAT16 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "CastLike"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "97fd1493fc7e2c9c0d9ca2aa1090131c9d690dfb21bcd897f42439bfa679769a"
 }

@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported elem_type 22 (INT4) for tensor 'input'.",
+  "error": "Failed to build testbench (cc: error: unrecognized command-line option \u2018-std=c23\u2019; did you mean \u2018-std=c2x\u2019?).",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_castlike_INT4_to_FLOAT16_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Cast"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "88db0341a016d54d4bfaa04062155409ce1cdf61fcca0e33fbe999ef8b65a29a"
 }

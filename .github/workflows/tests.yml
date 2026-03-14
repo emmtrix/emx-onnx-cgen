@@ -10,6 +10,8 @@ jobs:
   pytest:
     runs-on: ubuntu-latest
     env:
+      CC: gcc-14
+      CXX: g++-14
       EMX_ENABLE_SANITIZE: "1"
     strategy:
       fail-fast: false
@@ -26,6 +28,11 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
+
+      - name: Install GCC 14
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-14 g++-14
 
       - name: Install dependencies
         run: |
