@@ -78,10 +78,10 @@ def resolve_quantize_spec(graph: Graph, node: Node) -> QuantizeSpec:
             ScalarType.U16,
             ScalarType.I16,
         }
-        and not output_dtype.is_float8
+        and not output_dtype.is_typedef_float
     ):
         raise UnsupportedOpError(
-            "QuantizeLinear supports int/uint and float8 outputs only"
+            "QuantizeLinear supports int/uint and float4/float8 outputs only"
         )
     if zero_point_name is not None:
         zero_point_dtype = _value_dtype(graph, zero_point_name, node)

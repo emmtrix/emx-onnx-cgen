@@ -13,6 +13,9 @@ data type in all three roles:
   - input  : a runtime-provided tensor flowing into the model
   - weight : a constant initializer (graph weight) embedded in the model
   - output : a result tensor produced by the model (via Cast)
+
+Additional tests cover FLOAT4E2M1 as quantized input/output for
+DequantizeLinear and QuantizeLinear ops.
 """
 
 from __future__ import annotations
@@ -314,3 +317,128 @@ def test_float4e2m1_backend() -> None:
         .view(np.uint8)
     )
     np.testing.assert_array_equal(out_weight, expected_w)
+
+
+# -- FLOAT4E2M1 quantization backend tests ------------------------------------
+
+
+def _make_dequantize_float4_model(
+    shape: list[int],
+    scale: float,
+    zero_point_f32: float,
+) -> onnx.ModelProto:
+    """Build a DequantizeLinear model with FLOAT4E2M1 input.
+
+    The scale and zero_point are graph initializers; the main input ``x``
+    is a runtime tensor of type FLOAT4E2M1.
+    """
+    x_info = helper.make_tensor_value_info("x", TensorProto.FLOAT4E2M1, shape)
+    y_info = helper.make_tensor_value_info("y", TensorProto.FLOAT, shape)
+    scale_t = helper.make_tensor("scale", TensorProto.FLOAT, [], [scale])
+    zp_t = helper.make_tensor(
+        "zero_point", TensorProto.FLOAT4E2M1, [], [zero_point_f32]
+    )
+    node = helper.make_node(
+        "DequantizeLinear", inputs=["x", "scale", "zero_point"], outputs=["y"]
+    )
+    graph = helper.make_graph(
+        [node],
+        "dequantize_float4_graph",
+        [x_info],
+        [y_info],
+        initializer=[scale_t, zp_t],
+    )
+    return helper.make_model(
+        graph, opset_imports=[helper.make_opsetid("", 21)], ir_version=10
+    )
+
+
+def _make_quantize_float4_model(
+    shape: list[int],
+    scale: float,
+    zero_point_f32: float,
+) -> onnx.ModelProto:
+    """Build a QuantizeLinear model with FLOAT4E2M1 output.
+
+    The scale and zero_point are graph initializers; the main input ``x``
+    is a runtime tensor of type FLOAT.
+    """
+    x_info = helper.make_tensor_value_info("x", TensorProto.FLOAT, shape)
+    y_info = helper.make_tensor_value_info("y", TensorProto.FLOAT4E2M1, shape)
+    scale_t = helper.make_tensor("scale", TensorProto.FLOAT, [], [scale])
+    zp_t = helper.make_tensor(
+        "zero_point", TensorProto.FLOAT4E2M1, [], [zero_point_f32]
+    )
+    node = helper.make_node(
+        "QuantizeLinear", inputs=["x", "scale", "zero_point"], outputs=["y"]
+    )
+    graph = helper.make_graph(
+        [node],
+        "quantize_float4_graph",
+        [x_info],
+        [y_info],
+        initializer=[scale_t, zp_t],
+    )
+    return helper.make_model(
+        graph, opset_imports=[helper.make_opsetid("", 21)], ir_version=10
+    )
+
+
+@pytest.mark.skipif(ml_dtypes is None, reason="ml_dtypes required")
+def test_float4e2m1_dequantize_backend() -> None:
+    """DequantizeLinear with FLOAT4E2M1 input: (x - zero_point) * scale."""
+    shape = [2, 3]
+    # Pick values representable exactly in float4e2m1
+    f32_vals = np.array([[1.0, 0.5, -0.5], [2.0, 0.0, -1.0]], dtype=np.float32)
+    scale = 2.0
+    zero_point_f32 = 0.0
+
+    # Encode input as float4e2m1 bit patterns (one uint8 per element)
+    f4_input = f32_vals.astype(ml_dtypes.float4_e2m1fn).view(np.uint8)
+
+    model = _make_dequantize_float4_model(shape, scale, zero_point_f32)
+    payload, generated = _compile_and_run_testbench(
+        model, testbench_inputs={"x": f4_input}
+    )
+    assert "emx_float4e2m1_t" in generated
+    assert "ref_scalar_f4e2m1_to_f32" in generated
+
+    # Decode output and compare with reference computation
+    out_data = decode_testbench_array(
+        payload["outputs"]["y"]["data"], np.dtype(np.float32)
+    )
+    zp_f4 = (
+        np.float32(zero_point_f32).astype(ml_dtypes.float4_e2m1fn).astype(np.float32)
+    )
+    expected = (
+        f32_vals.astype(ml_dtypes.float4_e2m1fn).astype(np.float32) - zp_f4
+    ) * np.float32(scale)
+    np.testing.assert_array_equal(out_data, expected)
+
+
+@pytest.mark.skipif(ml_dtypes is None, reason="ml_dtypes required")
+def test_float4e2m1_quantize_backend() -> None:
+    """QuantizeLinear with FLOAT4E2M1 output: from_f32(x / scale + to_f32(zero_point))."""
+    shape = [2, 3]
+    # Pick values representable exactly in float4e2m1
+    f32_input = np.array([[1.0, 0.5, -0.5], [2.0, 0.0, -1.0]], dtype=np.float32)
+    scale = 1.0
+    zero_point_f32 = 0.0
+
+    model = _make_quantize_float4_model(shape, scale, zero_point_f32)
+    payload, generated = _compile_and_run_testbench(
+        model, testbench_inputs={"x": f32_input}
+    )
+    assert "emx_float4e2m1_t" in generated
+    assert "ref_scalar_f4e2m1_from_f32" in generated
+
+    # Decode output and compare with reference computation
+    out_data = decode_testbench_array(
+        payload["outputs"]["y"]["data"], np.dtype(np.uint8)
+    )
+    zp_f32 = (
+        np.float32(zero_point_f32).astype(ml_dtypes.float4_e2m1fn).astype(np.float32)
+    )
+    scaled = f32_input / np.float32(scale) + zp_f32
+    expected = scaled.astype(ml_dtypes.float4_e2m1fn).view(np.uint8)
+    np.testing.assert_array_equal(out_data, expected)
