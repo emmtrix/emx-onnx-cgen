@@ -2,6 +2,18 @@
 
 These types use C23 _BitInt and require a compiler with _BitInt support
 (e.g., Clang 15+).
+
+Test coverage philosophy
+========================
+One backend test is provided per data type to verify the C ABI interfacing.
+Each test must exercise the data type in all three roles:
+
+  - input  : a runtime-provided tensor flowing into the model
+  - weight : a constant initializer (graph weight) embedded in the model
+  - output : a result tensor produced by the model
+
+Additional tests per data type are added only when a single model cannot
+exercise all three roles simultaneously.
 """
 
 from __future__ import annotations
@@ -97,13 +109,32 @@ def _compile_and_run_bitint_testbench(
     return json.loads(result.stdout), generated
 
 
-def _make_identity_model(
-    dtype: int, shape: list[int], opset: int = 21
+def _make_identity_with_weight_model(
+    dtype: int,
+    shape: list[int],
+    weight_values: list[int],
+    opset: int = 21,
 ) -> onnx.ModelProto:
-    input_info = helper.make_tensor_value_info("input", dtype, shape)
-    output_info = helper.make_tensor_value_info("output", dtype, shape)
-    node = helper.make_node("Identity", ["input"], ["output"])
-    graph = helper.make_graph([node], "test_graph", [input_info], [output_info])
+    """Build a model that exercises ``dtype`` as input, weight, and output.
+
+    The graph has one runtime input ``x`` of ``dtype``, one constant
+    initializer ``w`` of ``dtype``, and two outputs produced by passing
+    each through Identity.  This covers the data type in all three roles
+    that the interfacing test requires.
+    """
+    x_info = helper.make_tensor_value_info("x", dtype, shape)
+    y_input_info = helper.make_tensor_value_info("y_from_input", dtype, shape)
+    y_weight_info = helper.make_tensor_value_info("y_from_weight", dtype, shape)
+    weight_tensor = helper.make_tensor("w", dtype, shape, weight_values)
+    node_input = helper.make_node("Identity", ["x"], ["y_from_input"])
+    node_weight = helper.make_node("Identity", ["w"], ["y_from_weight"])
+    graph = helper.make_graph(
+        [node_input, node_weight],
+        "test_graph",
+        [x_info],
+        [y_input_info, y_weight_info],
+        initializer=[weight_tensor],
+    )
     return helper.make_model(
         graph,
         opset_imports=[helper.make_opsetid("", opset)],
@@ -114,62 +145,110 @@ def _make_identity_model(
 # -- INT4 backend test --------------------------------------------------------
 
 
-def test_int4_identity_backend() -> None:
-    model = _make_identity_model(TensorProto.INT4, [2, 3])
+def test_int4_backend() -> None:
+    """INT4 as input, weight (initializer), and output."""
+    shape = [2, 3]
     input_data = np.array([[-7, 3, 0], [1, -8, 7]], dtype=np.int8)
+    weight_values = [1, -1, 0, 3, -3, 7]
+    model = _make_identity_with_weight_model(
+        TensorProto.INT4, shape, weight_values
+    )
     payload, generated = _compile_and_run_bitint_testbench(
-        model, testbench_inputs={"input": input_data}
+        model, testbench_inputs={"x": input_data}
     )
     assert "_BitInt(4)" in generated
-    output_data = decode_testbench_array(
-        payload["outputs"]["output"]["data"], np.dtype(np.int32)
+    out_from_input = decode_testbench_array(
+        payload["outputs"]["y_from_input"]["data"], np.dtype(np.int32)
     )
-    np.testing.assert_array_equal(output_data, input_data.astype(np.int32))
+    np.testing.assert_array_equal(out_from_input, input_data.astype(np.int32))
+    out_from_weight = decode_testbench_array(
+        payload["outputs"]["y_from_weight"]["data"], np.dtype(np.int32)
+    )
+    np.testing.assert_array_equal(
+        out_from_weight,
+        np.array(weight_values, dtype=np.int32).reshape(shape),
+    )
 
 
 # -- UINT4 backend test -------------------------------------------------------
 
 
-def test_uint4_identity_backend() -> None:
-    model = _make_identity_model(TensorProto.UINT4, [2, 3])
+def test_uint4_backend() -> None:
+    """UINT4 as input, weight (initializer), and output."""
+    shape = [2, 3]
     input_data = np.array([[0, 5, 10], [15, 1, 8]], dtype=np.uint8)
+    weight_values = [0, 3, 7, 15, 2, 9]
+    model = _make_identity_with_weight_model(
+        TensorProto.UINT4, shape, weight_values
+    )
     payload, generated = _compile_and_run_bitint_testbench(
-        model, testbench_inputs={"input": input_data}
+        model, testbench_inputs={"x": input_data}
     )
     assert "unsigned _BitInt(4)" in generated
-    output_data = decode_testbench_array(
-        payload["outputs"]["output"]["data"], np.dtype(np.int32)
+    out_from_input = decode_testbench_array(
+        payload["outputs"]["y_from_input"]["data"], np.dtype(np.int32)
     )
-    np.testing.assert_array_equal(output_data, input_data.astype(np.int32))
+    np.testing.assert_array_equal(out_from_input, input_data.astype(np.int32))
+    out_from_weight = decode_testbench_array(
+        payload["outputs"]["y_from_weight"]["data"], np.dtype(np.int32)
+    )
+    np.testing.assert_array_equal(
+        out_from_weight,
+        np.array(weight_values, dtype=np.int32).reshape(shape),
+    )
 
 
 # -- INT2 backend test --------------------------------------------------------
 
 
-def test_int2_identity_backend() -> None:
-    model = _make_identity_model(TensorProto.INT2, [2, 3])
+def test_int2_backend() -> None:
+    """INT2 as input, weight (initializer), and output."""
+    shape = [2, 3]
     input_data = np.array([[-2, 1, 0], [-1, 0, 1]], dtype=np.int8)
+    weight_values = [1, 0, -1, -2, 1, 0]
+    model = _make_identity_with_weight_model(
+        TensorProto.INT2, shape, weight_values
+    )
     payload, generated = _compile_and_run_bitint_testbench(
-        model, testbench_inputs={"input": input_data}
+        model, testbench_inputs={"x": input_data}
     )
     assert "_BitInt(2)" in generated
-    output_data = decode_testbench_array(
-        payload["outputs"]["output"]["data"], np.dtype(np.int32)
+    out_from_input = decode_testbench_array(
+        payload["outputs"]["y_from_input"]["data"], np.dtype(np.int32)
     )
-    np.testing.assert_array_equal(output_data, input_data.astype(np.int32))
+    np.testing.assert_array_equal(out_from_input, input_data.astype(np.int32))
+    out_from_weight = decode_testbench_array(
+        payload["outputs"]["y_from_weight"]["data"], np.dtype(np.int32)
+    )
+    np.testing.assert_array_equal(
+        out_from_weight,
+        np.array(weight_values, dtype=np.int32).reshape(shape),
+    )
 
 
 # -- UINT2 backend test -------------------------------------------------------
 
 
-def test_uint2_identity_backend() -> None:
-    model = _make_identity_model(TensorProto.UINT2, [2, 3])
+def test_uint2_backend() -> None:
+    """UINT2 as input, weight (initializer), and output."""
+    shape = [2, 3]
     input_data = np.array([[0, 1, 2], [3, 0, 1]], dtype=np.uint8)
+    weight_values = [3, 2, 1, 0, 3, 2]
+    model = _make_identity_with_weight_model(
+        TensorProto.UINT2, shape, weight_values
+    )
     payload, generated = _compile_and_run_bitint_testbench(
-        model, testbench_inputs={"input": input_data}
+        model, testbench_inputs={"x": input_data}
     )
     assert "unsigned _BitInt(2)" in generated
-    output_data = decode_testbench_array(
-        payload["outputs"]["output"]["data"], np.dtype(np.int32)
+    out_from_input = decode_testbench_array(
+        payload["outputs"]["y_from_input"]["data"], np.dtype(np.int32)
     )
-    np.testing.assert_array_equal(output_data, input_data.astype(np.int32))
+    np.testing.assert_array_equal(out_from_input, input_data.astype(np.int32))
+    out_from_weight = decode_testbench_array(
+        payload["outputs"]["y_from_weight"]["data"], np.dtype(np.int32)
+    )
+    np.testing.assert_array_equal(
+        out_from_weight,
+        np.array(weight_values, dtype=np.int32).reshape(shape),
+    )
