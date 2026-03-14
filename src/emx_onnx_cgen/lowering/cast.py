@@ -54,9 +54,11 @@ def lower_cast(graph: Graph, node: Node) -> CastOp:
     output_shape = input_shape
     if isinstance(graph, GraphContext):
         graph.set_shape(node.outputs[0], output_shape)
+    saturate = bool(int(node.attrs.get("saturate", 1)))
     return CastOp(
         input0=node.inputs[0],
         output=node.outputs[0],
+        saturate=saturate,
     )
 
 
@@ -83,7 +85,9 @@ def lower_castlike(graph: Graph, node: Node) -> CastOp:
     output_shape = input_shape
     if isinstance(graph, GraphContext):
         graph.set_shape(node.outputs[0], output_shape)
+    saturate = bool(int(node.attrs.get("saturate", 1)))
     return CastOp(
         input0=node.inputs[0],
         output=node.outputs[0],
+        saturate=saturate,
     )
