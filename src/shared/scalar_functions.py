@@ -19,7 +19,7 @@ class _ScalarTypeInfo:
     is_signed: bool
     is_small_int: bool
     bits: int | None
-    is_float8: bool = False
+    is_typedef_float: bool = False
 
 
 @dataclass(frozen=True)
@@ -346,7 +346,7 @@ def _conversion_key_from_alias(
     dtype_info: _ScalarTypeInfo, alias: str
 ) -> ScalarFunctionKey:
     if alias == "from_f32":
-        if dtype_info.is_float8:
+        if dtype_info.is_typedef_float:
             return ScalarFunctionKey(
                 function=ScalarFunction.CONVERT_FROM_F32,
                 return_type=dtype_info.scalar_type,
@@ -358,7 +358,7 @@ def _conversion_key_from_alias(
             params=(),
         )
     if alias == "to_f32":
-        if dtype_info.is_float8:
+        if dtype_info.is_typedef_float:
             return ScalarFunctionKey(
                 function=ScalarFunction.CONVERT_FROM_BOOL,
                 return_type=dtype_info.scalar_type,
@@ -2511,7 +2511,7 @@ _SCALAR_TYPES: Dict[ScalarType, _ScalarTypeInfo] = {
         is_signed=True,
         is_small_int=False,
         bits=8,
-        is_float8=True,
+        is_typedef_float=True,
     ),
     ScalarType.F8E4M3FNUZ: _ScalarTypeInfo(
         scalar_type=ScalarType.F8E4M3FNUZ,
@@ -2523,7 +2523,7 @@ _SCALAR_TYPES: Dict[ScalarType, _ScalarTypeInfo] = {
         is_signed=True,
         is_small_int=False,
         bits=8,
-        is_float8=True,
+        is_typedef_float=True,
     ),
     ScalarType.F8E5M2: _ScalarTypeInfo(
         scalar_type=ScalarType.F8E5M2,
@@ -2535,7 +2535,7 @@ _SCALAR_TYPES: Dict[ScalarType, _ScalarTypeInfo] = {
         is_signed=True,
         is_small_int=False,
         bits=8,
-        is_float8=True,
+        is_typedef_float=True,
     ),
     ScalarType.F8E5M2FNUZ: _ScalarTypeInfo(
         scalar_type=ScalarType.F8E5M2FNUZ,
@@ -2547,7 +2547,7 @@ _SCALAR_TYPES: Dict[ScalarType, _ScalarTypeInfo] = {
         is_signed=True,
         is_small_int=False,
         bits=8,
-        is_float8=True,
+        is_typedef_float=True,
     ),
     ScalarType.F8E8M0FNU: _ScalarTypeInfo(
         scalar_type=ScalarType.F8E8M0FNU,
@@ -2559,7 +2559,7 @@ _SCALAR_TYPES: Dict[ScalarType, _ScalarTypeInfo] = {
         is_signed=False,
         is_small_int=False,
         bits=8,
-        is_float8=True,
+        is_typedef_float=True,
     ),
     ScalarType.F4E2M1: _ScalarTypeInfo(
         scalar_type=ScalarType.F4E2M1,
@@ -2571,7 +2571,7 @@ _SCALAR_TYPES: Dict[ScalarType, _ScalarTypeInfo] = {
         is_signed=True,
         is_small_int=False,
         bits=4,
-        is_float8=True,
+        is_typedef_float=True,
     ),
     ScalarType.F32: _ScalarTypeInfo(
         scalar_type=ScalarType.F32,
@@ -2777,7 +2777,7 @@ def _supported_ops(dtype_info: _ScalarTypeInfo) -> Set[str]:
         supported.add("from_f32")
     if dtype_info.is_bool:
         supported.add("to_f32")
-    if dtype_info.is_float8:
+    if dtype_info.is_typedef_float:
         supported.add("from_f32")
         supported.add("to_f32")
     return supported
@@ -2823,7 +2823,7 @@ def _scalar_info_for_key(key: ScalarFunctionKey) -> tuple[_ScalarTypeInfo, str]:
             return _scalar_type_info(key.return_type), "from_f32"
         if source_type == ScalarType.BOOL:
             target_info = _scalar_type_info(key.return_type)
-            if target_info.is_float8:
+            if target_info.is_typedef_float:
                 return target_info, "to_f32"
             if key.return_type != ScalarType.F32:
                 raise ScalarFunctionError(
@@ -2842,7 +2842,7 @@ def _generate_scalar(key: ScalarFunctionKey) -> _GeneratedScalar:
         raise ScalarFunctionError(
             f"unsupported scalar op {op_name} for {dtype_info.suffix}"
         )
-    if dtype_info.is_float8:
+    if dtype_info.is_typedef_float:
         generated = _float8_from_ops(dtype_info, op_name)
     elif dtype_info.is_float:
         param_handler = _PARAMETERIZED_FLOAT_OPS.get(key.function)
@@ -2859,7 +2859,7 @@ def _generate_scalar(key: ScalarFunctionKey) -> _GeneratedScalar:
     includes = set(generated.includes)
     if dtype_info.is_float:
         includes.update({"#include <math.h>", "#include <float.h>"})
-    if dtype_info.is_float8:
+    if dtype_info.is_typedef_float:
         includes.add("#include <stdint.h>")
     if not dtype_info.is_float and not dtype_info.is_bool:
         includes.update({"#include <stdint.h>"})
@@ -2881,7 +2881,7 @@ def _function_name_for_key(key: ScalarFunctionKey) -> str:
         source_type = _CONVERSION_SOURCE_BY_FUNCTION[key.function]
         if source_type == ScalarType.F32:
             target_info = _scalar_type_info(key.return_type)
-            if target_info.is_float8 or key.return_type in {
+            if target_info.is_typedef_float or key.return_type in {
                 ScalarType.I8,
                 ScalarType.I16,
                 ScalarType.I32,
@@ -2898,7 +2898,7 @@ def _function_name_for_key(key: ScalarFunctionKey) -> str:
             )
         if source_type == ScalarType.BOOL:
             target_info = _scalar_type_info(key.return_type)
-            if target_info.is_float8:
+            if target_info.is_typedef_float:
                 return f"{target_info.prefix}to_f32{param_suffix}"
             if key.return_type == ScalarType.F32:
                 source_info = _scalar_type_info(source_type)

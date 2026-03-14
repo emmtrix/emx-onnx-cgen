@@ -444,11 +444,16 @@ class ScalarType(str, Enum):
 
     @property
     def is_float8(self) -> bool:
-        return self.is_float and self.bits is not None and self.bits <= 8
+        return self.is_float and self.bits is not None and self.bits == 8
 
     @property
     def is_float4(self) -> bool:
         return self.is_float and self.bits is not None and self.bits == 4
+
+    @property
+    def is_typedef_float(self) -> bool:
+        """Custom float type stored as ``uint8_t`` with manual conversion."""
+        return self.is_float8 or self.is_float4
 
     @classmethod
     def from_torch_dtype(cls, dtype: object) -> "ScalarType":

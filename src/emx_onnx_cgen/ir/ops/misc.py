@@ -52,8 +52,8 @@ def _cast_fn_for_float8(
     """
     from shared.scalar_functions import ScalarFunction, ScalarFunctionKey
 
-    src_f8 = input_dtype.is_float8
-    dst_f8 = output_dtype.is_float8
+    src_f8 = input_dtype.is_typedef_float
+    dst_f8 = output_dtype.is_typedef_float
 
     if not src_f8 and not dst_f8:
         return f"({output_dtype.c_type})", ""
