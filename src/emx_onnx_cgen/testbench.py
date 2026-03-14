@@ -19,7 +19,7 @@ def _is_float_like_dtype(dtype: np.dtype) -> bool:
 
 
 def _is_float8_dtype(dtype: np.dtype) -> bool:
-    return dtype.name.startswith("float8_")
+    return dtype.name.startswith("float8_") or dtype.name.startswith("float4_")
 
 
 def decode_testbench_array(data: object, dtype: np.dtype) -> np.ndarray:

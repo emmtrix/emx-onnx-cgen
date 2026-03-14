@@ -1,8 +1,8 @@
-"""Backend tests for 8-bit floating point data types.
+"""Backend tests for 4-bit and 8-bit floating point data types.
 
 Float8 types (FLOAT8E4M3FN, FLOAT8E4M3FNUZ, FLOAT8E5M2, FLOAT8E5M2FNUZ,
-FLOAT8E8M0) are stored as ``uint8_t`` in C with typedef aliases and use
-manual conversion functions to/from ``float``.
+FLOAT8E8M0) and float4 types (FLOAT4E2M1) are stored as ``uint8_t`` in C
+with typedef aliases and use manual conversion functions to/from ``float``.
 
 Test coverage philosophy
 ========================
@@ -274,3 +274,43 @@ def test_float8e8m0fnu_backend() -> None:
     )
     expected = f32_input.astype(ml_dtypes.float8_e8m0fnu).view(np.uint8)
     np.testing.assert_array_equal(out_data, expected)
+
+
+# -- FLOAT4E2M1 backend test ------------------------------------------------
+
+
+@pytest.mark.skipif(ml_dtypes is None, reason="ml_dtypes required")
+def test_float4e2m1_backend() -> None:
+    """FLOAT4E2M1 as input, weight, and output (via Cast from float)."""
+    shape = [2, 3]
+    f32_input = np.array([[1.0, 0.5, -0.5], [3.0, 0.0, -6.0]], dtype=np.float32)
+    f32_weights = [1.0, -1.0, 0.0, 2.0, -2.0, 0.5]
+    model = _make_cast_model(
+        TensorProto.FLOAT,
+        TensorProto.FLOAT4E2M1,
+        shape,
+        weight_values=f32_weights,
+    )
+    payload, generated = _compile_and_run_testbench(
+        model, testbench_inputs={"x": f32_input}
+    )
+    assert "emx_float4e2m1_t" in generated
+    assert "ref_scalar_f4e2m1_from_f32" in generated
+
+    # Decode output and compare with ml_dtypes reference
+    out_data = decode_testbench_array(
+        payload["outputs"]["y"]["data"], np.dtype(np.uint8)
+    )
+    expected = f32_input.astype(ml_dtypes.float4_e2m1fn).view(np.uint8)
+    np.testing.assert_array_equal(out_data, expected)
+
+    out_weight = decode_testbench_array(
+        payload["outputs"]["y_from_weight"]["data"], np.dtype(np.uint8)
+    )
+    expected_w = (
+        np.array(f32_weights, dtype=np.float32)
+        .reshape(shape)
+        .astype(ml_dtypes.float4_e2m1fn)
+        .view(np.uint8)
+    )
+    np.testing.assert_array_equal(out_weight, expected_w)

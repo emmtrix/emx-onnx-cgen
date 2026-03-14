@@ -1781,6 +1781,7 @@ class CEmitter:
     @staticmethod
     def _emit_float8_typedefs(model_dtypes: set[ScalarType]) -> str | None:
         _FLOAT8_TYPEDEFS = {
+            ScalarType.F4E2M1: "typedef uint8_t emx_float4e2m1_t;",
             ScalarType.F8E4M3FN: "typedef uint8_t emx_float8e4m3fn_t;",
             ScalarType.F8E4M3FNUZ: "typedef uint8_t emx_float8e4m3fnuz_t;",
             ScalarType.F8E5M2: "typedef uint8_t emx_float8e5m2_t;",
@@ -3321,7 +3322,7 @@ class CEmitter:
                     pass
                 elif dtype == ScalarType.STRING:
                     pass
-                elif dtype.is_float8:
+                elif dtype.is_typedef_float:
                     rng_requires_u64 = True
                     rng_requires_i64 = True
                 else:
@@ -3335,8 +3336,9 @@ class CEmitter:
                 random_expr = "((rng_next_u64() & 1ull) != 0)"
             elif dtype == ScalarType.STRING:
                 random_expr = '""'
-            elif dtype.is_float8:
-                random_expr = f"({dtype.c_type})(rng_next_i64() & 0xFF)"
+            elif dtype.is_typedef_float:
+                mask = "0x0F" if dtype.is_float4 else "0xFF"
+                random_expr = f"({dtype.c_type})(rng_next_i64() & {mask})"
             else:
                 random_expr = f"({dtype.c_type})rng_next_i64()"
             constant_name = None
@@ -3769,6 +3771,7 @@ class CEmitter:
         import ml_dtypes  # noqa: F811
 
         _ML_DTYPE_MAP = {
+            ScalarType.F4E2M1: ml_dtypes.float4_e2m1fn,
             ScalarType.F8E4M3FN: ml_dtypes.float8_e4m3fn,
             ScalarType.F8E4M3FNUZ: ml_dtypes.float8_e4m3fnuz,
             ScalarType.F8E5M2: ml_dtypes.float8_e5m2,
@@ -3843,7 +3846,7 @@ class CEmitter:
             return CEmitter._format_float16(value)
         if dtype == ScalarType.BF16:
             return CEmitter._format_bfloat16(value)
-        if dtype.is_float8:
+        if dtype.is_typedef_float:
             return CEmitter._format_float8(value, dtype)
         return CEmitter._format_float(value)
 
@@ -3894,7 +3897,7 @@ class CEmitter:
             return CEmitter._format_float16(float(value))
         if dtype == ScalarType.BF16:
             return CEmitter._format_bfloat16(float(value))
-        if dtype.is_float8:
+        if dtype.is_typedef_float:
             return CEmitter._format_float8(float(value), dtype)
         if dtype == ScalarType.F32:
             return CEmitter._format_float(float(value))
@@ -3933,7 +3936,7 @@ class CEmitter:
             return self._format_float16(float(value))
         if dtype == ScalarType.BF16:
             return self._format_bfloat16(float(value))
-        if dtype.is_float8:
+        if dtype.is_typedef_float:
             return self._format_float8(float(value), dtype)
         if dtype == ScalarType.F32:
             return self._format_float(float(value))
@@ -3984,7 +3987,7 @@ class CEmitter:
             if formatted == "NAN" or formatted.endswith("INFINITY"):
                 return f"(__bf16){formatted}"
             return f"(__bf16){formatted}f"
-        if dtype.is_float8:
+        if dtype.is_typedef_float:
             return self._format_float8(float(value), dtype)
         if dtype == ScalarType.F32:
             formatted = self._format_float32_hex(float(value))
@@ -4125,7 +4128,7 @@ class CEmitter:
             return '\\"%a\\"'
         if dtype == ScalarType.F64:
             return '\\"%a\\"'
-        if dtype.is_float8:
+        if dtype.is_typedef_float:
             return "%hhu"
         if dtype == ScalarType.BOOL:
             return "%d"
@@ -4155,7 +4158,7 @@ class CEmitter:
 
     @staticmethod
     def _print_cast(dtype: ScalarType) -> str:
-        if dtype.is_float8:
+        if dtype.is_typedef_float:
             return "(unsigned int)"
         if dtype.is_float:
             return "(double)"
