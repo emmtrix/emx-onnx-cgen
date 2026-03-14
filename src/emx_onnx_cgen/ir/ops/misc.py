@@ -40,7 +40,11 @@ def _shape_product(shape: tuple[int, ...]) -> int:
 
 
 def _cast_fn_for_float8(
-    input_dtype: ScalarType, output_dtype: ScalarType, emitter: Emitter
+    input_dtype: ScalarType,
+    output_dtype: ScalarType,
+    emitter: Emitter,
+    *,
+    saturate: bool = True,
 ) -> tuple[str, str]:
     """Return ``(cast_prefix, cast_suffix)`` for the cast template.
 
@@ -62,6 +66,12 @@ def _cast_fn_for_float8(
     if registry is None:
         return f"({output_dtype.c_type})", ""
 
+    from_f32_fn = (
+        ScalarFunction.FROM_F32_NO_SAT
+        if not saturate
+        else ScalarFunction.CONVERT_FROM_F32
+    )
+
     if src_f8 and dst_f8:
         to_name = registry.request(
             ScalarFunctionKey(
@@ -71,7 +81,7 @@ def _cast_fn_for_float8(
         )
         from_name = registry.request(
             ScalarFunctionKey(
-                function=ScalarFunction.CONVERT_FROM_F32,
+                function=from_f32_fn,
                 return_type=output_dtype,
             )
         )
@@ -88,7 +98,7 @@ def _cast_fn_for_float8(
 
     from_name = registry.request(
         ScalarFunctionKey(
-            function=ScalarFunction.CONVERT_FROM_F32,
+            function=from_f32_fn,
             return_type=output_dtype,
         )
     )
@@ -101,6 +111,7 @@ class CastOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
+    saturate: bool = True
 
     def infer_types(self, ctx: OpContext) -> None:
         ctx.dtype(self.input0)
@@ -132,7 +143,7 @@ class CastOp(RenderableOpBase):
             ]
         )
         cast_prefix, cast_suffix = _cast_fn_for_float8(
-            input_dtype, output_dtype, emitter
+            input_dtype, output_dtype, emitter, saturate=self.saturate
         )
         rendered = (
             state.templates["cast"]
@@ -256,6 +267,25 @@ class QuantizeLinearOp(RenderableOpBase):
                 zero_expr = f"{params['zero_point']}[{scale_index}]"
         else:
             zero_expr = "0"
+        from_f32_fn = ""
+        to_f32_fn = ""
+        if output_dtype.is_float8:
+            from shared.scalar_functions import ScalarFunction, ScalarFunctionKey
+
+            registry = emitter.scalar_registry()
+            if registry is not None:
+                from_f32_fn = registry.request(
+                    ScalarFunctionKey(
+                        function=ScalarFunction.CONVERT_FROM_F32,
+                        return_type=output_dtype,
+                    )
+                )
+                to_f32_fn = registry.request(
+                    ScalarFunctionKey(
+                        function=ScalarFunction.CONVERT_FROM_BOOL,
+                        return_type=output_dtype,
+                    )
+                )
         rendered = (
             state.templates["quantize_linear"]
             .render(
@@ -279,6 +309,9 @@ class QuantizeLinearOp(RenderableOpBase):
                 min_literal=output_dtype.min_literal,
                 max_literal=output_dtype.max_literal,
                 dim_args=dim_args,
+                output_is_float8=output_dtype.is_float8,
+                from_f32_fn=from_f32_fn,
+                to_f32_fn=to_f32_fn,
             )
             .rstrip()
         )
@@ -487,6 +520,18 @@ class DequantizeLinearOp(RenderableOpBase):
                 zero_expr = f"{params['zero_point']}[{scale_index}]"
         else:
             zero_expr = "0"
+        to_f32_fn = ""
+        if input_dtype.is_float8:
+            from shared.scalar_functions import ScalarFunction, ScalarFunctionKey
+
+            registry = emitter.scalar_registry()
+            if registry is not None:
+                to_f32_fn = registry.request(
+                    ScalarFunctionKey(
+                        function=ScalarFunction.CONVERT_FROM_BOOL,
+                        return_type=input_dtype,
+                    )
+                )
         rendered = (
             state.templates["dequantize_linear"]
             .render(
@@ -507,6 +552,8 @@ class DequantizeLinearOp(RenderableOpBase):
                 zero_expr=zero_expr,
                 output_expr=output_expr,
                 dim_args=dim_args,
+                input_is_float8=input_dtype.is_float8,
+                to_f32_fn=to_f32_fn,
             )
             .rstrip()
         )

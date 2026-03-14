@@ -1,10 +1,10 @@
 {
-  "error": "Out of tolerance (max abs diff inf)",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Cast"
   ],
   "opset_version": 25,
-  "generated_checksum": "8bc260a41fdd352353991a4f8533f6b32a4cca9f84e912fedc97f43f0a84bf7e"
+  "generated_checksum": "d647efb6bbec8cc53b5440fe50d9415a46d00080f8a00e13817493de464bce21"
 }
