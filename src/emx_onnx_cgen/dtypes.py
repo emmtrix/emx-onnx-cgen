@@ -9,6 +9,11 @@ from .errors import UnsupportedOpError
 ONNX_TO_SCALAR_TYPE: dict[int, ScalarType] = {
     onnx.TensorProto.FLOAT16: ScalarType.F16,
     onnx.TensorProto.BFLOAT16: ScalarType.BF16,
+    onnx.TensorProto.FLOAT8E4M3FN: ScalarType.F8E4M3FN,
+    onnx.TensorProto.FLOAT8E4M3FNUZ: ScalarType.F8E4M3FNUZ,
+    onnx.TensorProto.FLOAT8E5M2: ScalarType.F8E5M2,
+    onnx.TensorProto.FLOAT8E5M2FNUZ: ScalarType.F8E5M2FNUZ,
+    onnx.TensorProto.FLOAT8E8M0: ScalarType.F8E8M0FNU,
     onnx.TensorProto.FLOAT: ScalarType.F32,
     onnx.TensorProto.DOUBLE: ScalarType.F64,
     onnx.TensorProto.BOOL: ScalarType.BOOL,

@@ -17,6 +17,23 @@ def _bfloat16_numpy_dtype() -> np.dtype:
             return np.dtype(np.float32)
 
 
+def _float8_numpy_dtype(ml_name: str) -> np.dtype:
+    """Return the canonical numpy dtype for a float8 type.
+
+    Uses the corresponding ``ml_dtypes`` type when available, falling back to
+    ``uint8``.
+    """
+    try:
+        import ml_dtypes
+
+        dtype_cls = getattr(ml_dtypes, ml_name, None)
+        if dtype_cls is not None:
+            return np.dtype(dtype_cls)
+    except ImportError:
+        pass
+    return np.dtype(np.uint8)
+
+
 def _subbyte_numpy_dtype(bits: int, *, signed: bool) -> np.dtype:
     """Return the canonical numpy dtype for a sub-byte integer type.
 
@@ -112,6 +129,71 @@ class ScalarType(str, Enum):
         True,
         False,
         16,
+    )
+    F8E4M3FN = (
+        "f8e4m3fn",
+        "float8e4m3fn",
+        "emx_float8e4m3fn_t",
+        _float8_numpy_dtype("float8_e4m3fn"),
+        "0",
+        "0xFEu",
+        "0x7Eu",
+        True,
+        True,
+        False,
+        8,
+    )
+    F8E4M3FNUZ = (
+        "f8e4m3fnuz",
+        "float8e4m3fnuz",
+        "emx_float8e4m3fnuz_t",
+        _float8_numpy_dtype("float8_e4m3fnuz"),
+        "0",
+        "0xFFu",
+        "0x7Fu",
+        True,
+        True,
+        False,
+        8,
+    )
+    F8E5M2 = (
+        "f8e5m2",
+        "float8e5m2",
+        "emx_float8e5m2_t",
+        _float8_numpy_dtype("float8_e5m2"),
+        "0",
+        "0xFCu",
+        "0x7Cu",
+        True,
+        True,
+        False,
+        8,
+    )
+    F8E5M2FNUZ = (
+        "f8e5m2fnuz",
+        "float8e5m2fnuz",
+        "emx_float8e5m2fnuz_t",
+        _float8_numpy_dtype("float8_e5m2fnuz"),
+        "0",
+        "0xFFu",
+        "0x7Fu",
+        True,
+        True,
+        False,
+        8,
+    )
+    F8E8M0FNU = (
+        "f8e8m0fnu",
+        "float8e8m0fnu",
+        "emx_float8e8m0fnu_t",
+        _float8_numpy_dtype("float8_e8m0fnu"),
+        "0",
+        "0x00u",
+        "0xFEu",
+        True,
+        False,
+        False,
+        8,
     )
     F32 = (
         "f32",
@@ -329,6 +411,10 @@ class ScalarType(str, Enum):
     @property
     def is_subbyte(self) -> bool:
         return self.bits is not None and self.bits < 8
+
+    @property
+    def is_float8(self) -> bool:
+        return self.is_float and self.bits is not None and self.bits == 8
 
     @classmethod
     def from_torch_dtype(cls, dtype: object) -> "ScalarType":

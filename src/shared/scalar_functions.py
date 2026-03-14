@@ -19,6 +19,7 @@ class _ScalarTypeInfo:
     is_signed: bool
     is_small_int: bool
     bits: int | None
+    is_float8: bool = False
 
 
 @dataclass(frozen=True)
@@ -345,12 +346,24 @@ def _conversion_key_from_alias(
     dtype_info: _ScalarTypeInfo, alias: str
 ) -> ScalarFunctionKey:
     if alias == "from_f32":
+        if dtype_info.is_float8:
+            return ScalarFunctionKey(
+                function=ScalarFunction.CONVERT_FROM_F32,
+                return_type=dtype_info.scalar_type,
+                params=(),
+            )
         return ScalarFunctionKey(
             function=ScalarFunction.CONVERT_FROM_F32,
             return_type=dtype_info.scalar_type,
             params=(),
         )
     if alias == "to_f32":
+        if dtype_info.is_float8:
+            return ScalarFunctionKey(
+                function=ScalarFunction.CONVERT_FROM_BOOL,
+                return_type=dtype_info.scalar_type,
+                params=(),
+            )
         return ScalarFunctionKey(
             function=ScalarFunction.CONVERT_FROM_BOOL,
             return_type=ScalarType.F32,
@@ -2214,6 +2227,241 @@ def _bool_from_ops(name: str) -> _GeneratedScalar:
     raise ScalarFunctionError(f"unsupported bool scalar op: {name}")
 
 
+# ---------------------------------------------------------------------------
+# Float8 scalar operations (wrap through f32)
+# ---------------------------------------------------------------------------
+
+# C code snippets for float8 ↔ float32 conversion, keyed by float8 c_type.
+_FLOAT8_TO_F32_BODY: Dict[str, List[str]] = {
+    "emx_float8e4m3fn_t": [
+        "    uint8_t s = v >> 7, e = (v >> 3) & 0xFu, m = v & 0x7u;",
+        "    if (e == 15u && m == 7u) return NAN;",
+        "    float r = (e == 0u) ? ldexpf((float)m, -9) : ldexpf((float)(m + 8), (int)e - 10);",
+        "    return s ? -r : r;",
+    ],
+    "emx_float8e4m3fnuz_t": [
+        "    if (v == 0x80u) return NAN;",
+        "    uint8_t s = v >> 7, e = (v >> 3) & 0xFu, m = v & 0x7u;",
+        "    float r = (e == 0u) ? ldexpf((float)m, -10) : ldexpf((float)(m + 8), (int)e - 11);",
+        "    return s ? -r : r;",
+    ],
+    "emx_float8e5m2_t": [
+        "    uint8_t s = v >> 7, e = (v >> 2) & 0x1Fu, m = v & 0x3u;",
+        "    if (e == 31u) { return (m != 0u) ? NAN : (s ? -INFINITY : INFINITY); }",
+        "    float r = (e == 0u) ? ldexpf((float)m, -16) : ldexpf((float)(m + 4), (int)e - 17);",
+        "    return s ? -r : r;",
+    ],
+    "emx_float8e5m2fnuz_t": [
+        "    if (v == 0x80u) return NAN;",
+        "    uint8_t s = v >> 7, e = (v >> 2) & 0x1Fu, m = v & 0x3u;",
+        "    float r = (e == 0u) ? ldexpf((float)m, -17) : ldexpf((float)(m + 4), (int)e - 18);",
+        "    return s ? -r : r;",
+    ],
+    "emx_float8e8m0fnu_t": [
+        "    if (v == 0xFFu) return NAN;",
+        "    return ldexpf(1.0f, (int)v - 127);",
+    ],
+}
+
+_FLOAT8_FROM_F32_BODY: Dict[str, List[str]] = {
+    "emx_float8e4m3fn_t": [
+        "    if (v != v) return 0x7Fu;",
+        "    uint8_t s = signbit(v) ? 0x80u : 0u;",
+        "    float a = fabsf(v);",
+        "    if (a == 0.0f) return s;",
+        "    if (a > 448.0f) return s | 0x7Eu;",
+        "    int e; float f = frexpf(a, &e); e--; f *= 2.0f;",
+        "    int be = e + 7;",
+        "    if (be >= 1) {",
+        "        int m = (int)rintf((f - 1.0f) * 8.0f);",
+        "        if (m >= 8) { m = 0; be++; }",
+        "        if (be > 15 || (be == 15 && m >= 7)) return s | 0x7Eu;",
+        "        return s | (uint8_t)((be << 3) | m);",
+        "    }",
+        "    int m = (int)rintf(ldexpf(a, 9));",
+        "    if (m >= 8) return s | (1u << 3);",
+        "    if (m <= 0) return s;",
+        "    return s | (uint8_t)m;",
+    ],
+    "emx_float8e4m3fnuz_t": [
+        "    if (v != v) return 0x80u;",
+        "    float a = fabsf(v);",
+        "    if (a == 0.0f) return 0u;",
+        "    uint8_t s = signbit(v) ? 0x80u : 0u;",
+        "    if (a > 240.0f) return s | 0x7Fu;",
+        "    int e; float f = frexpf(a, &e); e--; f *= 2.0f;",
+        "    int be = e + 8;",
+        "    if (be >= 1) {",
+        "        int m = (int)rintf((f - 1.0f) * 8.0f);",
+        "        if (m >= 8) { m = 0; be++; }",
+        "        if (be > 15) return s | 0x7Fu;",
+        "        return s | (uint8_t)((be << 3) | m);",
+        "    }",
+        "    int m = (int)rintf(ldexpf(a, 10));",
+        "    if (m >= 8) return s | (1u << 3);",
+        "    if (m <= 0) return 0u;",
+        "    return s | (uint8_t)m;",
+    ],
+    "emx_float8e5m2_t": [
+        "    if (v != v) return 0x7Fu;",
+        "    uint8_t s = signbit(v) ? 0x80u : 0u;",
+        "    float a = fabsf(v);",
+        "    if (a == 0.0f) return s;",
+        "    if (isinf(a)) return s | 0x7Cu;",
+        "    if (a > 57344.0f) return s | 0x7Bu;",
+        "    int e; float f = frexpf(a, &e); e--; f *= 2.0f;",
+        "    int be = e + 15;",
+        "    if (be >= 1) {",
+        "        int m = (int)rintf((f - 1.0f) * 4.0f);",
+        "        if (m >= 4) { m = 0; be++; }",
+        "        if (be >= 31) return s | 0x7Bu;",
+        "        return s | (uint8_t)((be << 2) | m);",
+        "    }",
+        "    int m = (int)rintf(ldexpf(a, 16));",
+        "    if (m >= 4) return s | (1u << 2);",
+        "    if (m <= 0) return s;",
+        "    return s | (uint8_t)m;",
+    ],
+    "emx_float8e5m2fnuz_t": [
+        "    if (v != v) return 0x80u;",
+        "    float a = fabsf(v);",
+        "    if (a == 0.0f) return 0u;",
+        "    uint8_t s = signbit(v) ? 0x80u : 0u;",
+        "    if (isinf(a)) return s | 0x7Fu;",
+        "    if (a > 57344.0f) return s | 0x7Fu;",
+        "    int e; float f = frexpf(a, &e); e--; f *= 2.0f;",
+        "    int be = e + 16;",
+        "    if (be >= 1) {",
+        "        int m = (int)rintf((f - 1.0f) * 4.0f);",
+        "        if (m >= 4) { m = 0; be++; }",
+        "        if (be > 31) return s | 0x7Fu;",
+        "        return s | (uint8_t)((be << 2) | m);",
+        "    }",
+        "    int m = (int)rintf(ldexpf(a, 17));",
+        "    if (m >= 4) return s | (1u << 2);",
+        "    if (m <= 0) return 0u;",
+        "    return s | (uint8_t)m;",
+    ],
+    "emx_float8e8m0fnu_t": [
+        "    if (v != v) return 0xFFu;",
+        "    float a = fabsf(v);",
+        "    if (a == 0.0f) return 0u;",
+        "    int e; (void)frexpf(a, &e); e--;",
+        "    int be = e + 127;",
+        "    if (be < 0) return 0u;",
+        "    if (be > 254) return 0xFEu;",
+        "    return (uint8_t)be;",
+    ],
+}
+
+
+def _float8_to_f32(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
+    body = _FLOAT8_TO_F32_BODY[dtype_info.c_type]
+    lines = [
+        f"static inline float {dtype_info.prefix}to_f32({dtype_info.c_type} v) {{",
+        *body,
+        "}",
+    ]
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+
+
+def _float8_from_f32(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
+    body = _FLOAT8_FROM_F32_BODY[dtype_info.c_type]
+    lines = [
+        f"static inline {dtype_info.c_type} {dtype_info.prefix}from_f32(float v) {{",
+        *body,
+        "}",
+    ]
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+
+
+def _float8_unary_from_f32(
+    dtype_info: _ScalarTypeInfo, name: str
+) -> _GeneratedScalar:
+    lines = [
+        f"static inline {dtype_info.c_type} {dtype_info.prefix}{name}({dtype_info.c_type} a) {{",
+        f"    return {dtype_info.prefix}from_f32(ref_scalar_f32_{name}({dtype_info.prefix}to_f32(a)));",
+        "}",
+    ]
+    deps = {
+        _conversion_key_from_alias(dtype_info, "from_f32"),
+        _conversion_key_from_alias(dtype_info, "to_f32"),
+        _scalar_key_from_op(_SCALAR_TYPES[ScalarType.F32], name),
+    }
+    return _GeneratedScalar(lines=lines, deps=deps, includes=set())
+
+
+def _float8_binary_from_f32(
+    dtype_info: _ScalarTypeInfo, name: str
+) -> _GeneratedScalar:
+    lines = [
+        f"static inline {dtype_info.c_type} {dtype_info.prefix}{name}({dtype_info.c_type} a, {dtype_info.c_type} b) {{",
+        "    return " + dtype_info.prefix + "from_f32(",
+        f"        ref_scalar_f32_{name}({dtype_info.prefix}to_f32(a), {dtype_info.prefix}to_f32(b))",
+        "    );",
+        "}",
+    ]
+    deps = {
+        _conversion_key_from_alias(dtype_info, "from_f32"),
+        _conversion_key_from_alias(dtype_info, "to_f32"),
+        _scalar_key_from_op(_SCALAR_TYPES[ScalarType.F32], name),
+    }
+    return _GeneratedScalar(lines=lines, deps=deps, includes=set())
+
+
+def _float8_comparison(
+    dtype_info: _ScalarTypeInfo, name: str, op: str
+) -> _GeneratedScalar:
+    lines = [
+        f"static inline bool {dtype_info.prefix}{name}({dtype_info.c_type} a, {dtype_info.c_type} b) {{",
+        f"    return {dtype_info.prefix}to_f32(a) {op} {dtype_info.prefix}to_f32(b);",
+        "}",
+    ]
+    deps = {_conversion_key_from_alias(dtype_info, "to_f32")}
+    return _GeneratedScalar(lines=lines, deps=deps, includes={"#include <stdbool.h>"})
+
+
+_FLOAT8_OP_DISPATCH: Dict[
+    str, Callable[[_ScalarTypeInfo], _GeneratedScalar]
+] = {
+    "to_f32": _float8_to_f32,
+    "from_f32": _float8_from_f32,
+    "eq": lambda d: _float8_comparison(d, "eq", "=="),
+    "ne": lambda d: _float8_comparison(d, "ne", "!="),
+    "lt": lambda d: _float8_comparison(d, "lt", "<"),
+    "le": lambda d: _float8_comparison(d, "le", "<="),
+    "gt": lambda d: _float8_comparison(d, "gt", ">"),
+    "ge": lambda d: _float8_comparison(d, "ge", ">="),
+}
+
+
+def _float8_from_ops(dtype_info: _ScalarTypeInfo, name: str) -> _GeneratedScalar:
+    canonical_name = _normalize_op_name(name)
+    if canonical_name != name:
+        lines = [
+            f"static inline {dtype_info.c_type} {dtype_info.prefix}{name}({dtype_info.c_type} a) {{",
+            f"    return {dtype_info.prefix}{canonical_name}(a);",
+            "}",
+        ]
+        deps = {_scalar_key_from_op(dtype_info, canonical_name)}
+        return _GeneratedScalar(lines=lines, deps=deps, includes=set())
+    handler = _FLOAT8_OP_DISPATCH.get(canonical_name)
+    if handler is not None:
+        return handler(dtype_info)
+    function = ScalarFunction.from_op_name(canonical_name)
+    if function.int_from_f32_arity == 1:
+        return _float8_unary_from_f32(dtype_info, canonical_name)
+    if function.int_from_f32_arity == 2:
+        return _float8_binary_from_f32(dtype_info, canonical_name)
+    if function.bool_from_f32_arity == 1:
+        return _float8_unary_from_f32(dtype_info, canonical_name)
+    if function.bool_from_f32_arity == 2:
+        return _float8_binary_from_f32(dtype_info, canonical_name)
+    if function.supports_float:
+        return _float8_unary_from_f32(dtype_info, canonical_name)
+    raise ScalarFunctionError(f"unsupported float8 scalar op: {canonical_name}")
+
+
 _SCALAR_TYPES: Dict[ScalarType, _ScalarTypeInfo] = {
     ScalarType.F16: _ScalarTypeInfo(
         scalar_type=ScalarType.F16,
@@ -2236,6 +2484,66 @@ _SCALAR_TYPES: Dict[ScalarType, _ScalarTypeInfo] = {
         is_signed=True,
         is_small_int=False,
         bits=None,
+    ),
+    ScalarType.F8E4M3FN: _ScalarTypeInfo(
+        scalar_type=ScalarType.F8E4M3FN,
+        c_type="emx_float8e4m3fn_t",
+        prefix="ref_scalar_f8e4m3fn_",
+        suffix="f8e4m3fn",
+        is_float=True,
+        is_bool=False,
+        is_signed=True,
+        is_small_int=False,
+        bits=8,
+        is_float8=True,
+    ),
+    ScalarType.F8E4M3FNUZ: _ScalarTypeInfo(
+        scalar_type=ScalarType.F8E4M3FNUZ,
+        c_type="emx_float8e4m3fnuz_t",
+        prefix="ref_scalar_f8e4m3fnuz_",
+        suffix="f8e4m3fnuz",
+        is_float=True,
+        is_bool=False,
+        is_signed=True,
+        is_small_int=False,
+        bits=8,
+        is_float8=True,
+    ),
+    ScalarType.F8E5M2: _ScalarTypeInfo(
+        scalar_type=ScalarType.F8E5M2,
+        c_type="emx_float8e5m2_t",
+        prefix="ref_scalar_f8e5m2_",
+        suffix="f8e5m2",
+        is_float=True,
+        is_bool=False,
+        is_signed=True,
+        is_small_int=False,
+        bits=8,
+        is_float8=True,
+    ),
+    ScalarType.F8E5M2FNUZ: _ScalarTypeInfo(
+        scalar_type=ScalarType.F8E5M2FNUZ,
+        c_type="emx_float8e5m2fnuz_t",
+        prefix="ref_scalar_f8e5m2fnuz_",
+        suffix="f8e5m2fnuz",
+        is_float=True,
+        is_bool=False,
+        is_signed=True,
+        is_small_int=False,
+        bits=8,
+        is_float8=True,
+    ),
+    ScalarType.F8E8M0FNU: _ScalarTypeInfo(
+        scalar_type=ScalarType.F8E8M0FNU,
+        c_type="emx_float8e8m0fnu_t",
+        prefix="ref_scalar_f8e8m0fnu_",
+        suffix="f8e8m0fnu",
+        is_float=True,
+        is_bool=False,
+        is_signed=False,
+        is_small_int=False,
+        bits=8,
+        is_float8=True,
     ),
     ScalarType.F32: _ScalarTypeInfo(
         scalar_type=ScalarType.F32,
@@ -2441,6 +2749,9 @@ def _supported_ops(dtype_info: _ScalarTypeInfo) -> Set[str]:
         supported.add("from_f32")
     if dtype_info.is_bool:
         supported.add("to_f32")
+    if dtype_info.is_float8:
+        supported.add("from_f32")
+        supported.add("to_f32")
     return supported
 
 
@@ -2483,6 +2794,9 @@ def _scalar_info_for_key(key: ScalarFunctionKey) -> tuple[_ScalarTypeInfo, str]:
         if source_type == ScalarType.F32:
             return _scalar_type_info(key.return_type), "from_f32"
         if source_type == ScalarType.BOOL:
+            target_info = _scalar_type_info(key.return_type)
+            if target_info.is_float8:
+                return target_info, "to_f32"
             if key.return_type != ScalarType.F32:
                 raise ScalarFunctionError(
                     f"unsupported scalar conversion from {source_type.value} to {key.return_type.value}"
@@ -2500,7 +2814,9 @@ def _generate_scalar(key: ScalarFunctionKey) -> _GeneratedScalar:
         raise ScalarFunctionError(
             f"unsupported scalar op {op_name} for {dtype_info.suffix}"
         )
-    if dtype_info.is_float:
+    if dtype_info.is_float8:
+        generated = _float8_from_ops(dtype_info, op_name)
+    elif dtype_info.is_float:
         param_handler = _PARAMETERIZED_FLOAT_OPS.get(key.function)
         if param_handler is not None:
             generated = param_handler(
@@ -2515,6 +2831,8 @@ def _generate_scalar(key: ScalarFunctionKey) -> _GeneratedScalar:
     includes = set(generated.includes)
     if dtype_info.is_float:
         includes.update({"#include <math.h>", "#include <float.h>"})
+    if dtype_info.is_float8:
+        includes.add("#include <stdint.h>")
     if not dtype_info.is_float and not dtype_info.is_bool:
         includes.update({"#include <stdint.h>"})
         if dtype_info.is_signed:
@@ -2534,7 +2852,8 @@ def _function_name_for_key(key: ScalarFunctionKey) -> str:
     if key.function in _CONVERSION_SOURCE_BY_FUNCTION:
         source_type = _CONVERSION_SOURCE_BY_FUNCTION[key.function]
         if source_type == ScalarType.F32:
-            if key.return_type in {
+            target_info = _scalar_type_info(key.return_type)
+            if target_info.is_float8 or key.return_type in {
                 ScalarType.I8,
                 ScalarType.I16,
                 ScalarType.I32,
@@ -2545,12 +2864,14 @@ def _function_name_for_key(key: ScalarFunctionKey) -> str:
                 ScalarType.U64,
                 ScalarType.BOOL,
             }:
-                target_info = _scalar_type_info(key.return_type)
                 return f"{target_info.prefix}from_f32{param_suffix}"
             raise ScalarFunctionError(
                 f"unsupported scalar conversion from {source_type.value} to {key.return_type.value}"
             )
         if source_type == ScalarType.BOOL:
+            target_info = _scalar_type_info(key.return_type)
+            if target_info.is_float8:
+                return f"{target_info.prefix}to_f32{param_suffix}"
             if key.return_type == ScalarType.F32:
                 source_info = _scalar_type_info(source_type)
                 return f"{source_info.prefix}to_f32{param_suffix}"
