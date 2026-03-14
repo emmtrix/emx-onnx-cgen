@@ -50,7 +50,7 @@ def _cast_fn_for_float8(
 
     For regular casts the pair ``("(target_type)", "")`` is returned.
     """
-    from shared.scalar_functions import ScalarFunction
+    from shared.scalar_functions import ScalarFunction, ScalarFunctionKey
 
     src_f8 = input_dtype.is_float8
     dst_f8 = output_dtype.is_float8
@@ -58,30 +58,40 @@ def _cast_fn_for_float8(
     if not src_f8 and not dst_f8:
         return f"({output_dtype.c_type})", ""
 
+    registry = emitter.scalar_registry()
+    if registry is None:
+        return f"({output_dtype.c_type})", ""
+
     if src_f8 and dst_f8:
-        to_name = emitter.scalar_fn(
-            ScalarFunction.CONVERT_FROM_BOOL, input_dtype
+        to_name = registry.request(
+            ScalarFunctionKey(
+                function=ScalarFunction.CONVERT_FROM_BOOL,
+                return_type=input_dtype,
+            )
         )
-        from_name = emitter.scalar_fn(
-            ScalarFunction.CONVERT_FROM_F32, output_dtype
+        from_name = registry.request(
+            ScalarFunctionKey(
+                function=ScalarFunction.CONVERT_FROM_F32,
+                return_type=output_dtype,
+            )
         )
-        if to_name is None or from_name is None:
-            return f"({output_dtype.c_type})", ""
         return f"{from_name}({to_name}(", "))"
 
     if src_f8:
-        to_name = emitter.scalar_fn(
-            ScalarFunction.CONVERT_FROM_BOOL, input_dtype
+        to_name = registry.request(
+            ScalarFunctionKey(
+                function=ScalarFunction.CONVERT_FROM_BOOL,
+                return_type=input_dtype,
+            )
         )
-        if to_name is None:
-            return f"({output_dtype.c_type})", ""
         return f"({output_dtype.c_type}){to_name}(", ")"
 
-    from_name = emitter.scalar_fn(
-        ScalarFunction.CONVERT_FROM_F32, output_dtype
+    from_name = registry.request(
+        ScalarFunctionKey(
+            function=ScalarFunction.CONVERT_FROM_F32,
+            return_type=output_dtype,
+        )
     )
-    if from_name is None:
-        return f"({output_dtype.c_type})", ""
     return f"{from_name}((float)", ")"
 
 
