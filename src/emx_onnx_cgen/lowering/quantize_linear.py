@@ -67,13 +67,17 @@ def resolve_quantize_spec(graph: Graph, node: Node) -> QuantizeSpec:
     zero_point_name = optional_name(node.inputs, 2)
     output_dtype = _resolve_output_dtype(graph, node, zero_point_name)
     if output_dtype not in {
+        ScalarType.U2,
+        ScalarType.I2,
+        ScalarType.U4,
+        ScalarType.I4,
         ScalarType.U8,
         ScalarType.I8,
         ScalarType.U16,
         ScalarType.I16,
     }:
         raise UnsupportedOpError(
-            "QuantizeLinear supports int8/uint8/int16/uint16 outputs only"
+            "QuantizeLinear supports int2/uint2/int4/uint4/int8/uint8/int16/uint16 outputs only"
         )
     if zero_point_name is not None:
         zero_point_dtype = _value_dtype(graph, zero_point_name, node)

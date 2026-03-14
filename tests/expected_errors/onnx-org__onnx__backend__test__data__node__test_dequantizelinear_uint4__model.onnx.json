@@ -1,9 +1,10 @@
 {
-  "error": "DequantizeLinear supports int8/uint8/int16/uint16/int32/uint32 inputs only",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_dequantizelinear_uint4 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "DequantizeLinear"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "ca38cc440553da3525e8993161f9e541c4c9586d9fd6d89b1ec2f857d1d7e59d"
 }

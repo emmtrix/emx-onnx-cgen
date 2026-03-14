@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1696 / 1802, 94.1% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1704 / 1802, 94.6% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 124 / 125, 99.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1696 / 1802 ONNX files (94.1%).
+Coverage 1704 / 1802 ONNX files (94.6%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -583,11 +583,11 @@ Coverage 1696 / 1802 ONNX files (94.1%).
 | node/test_dequantizelinear_e5m2/model.onnx | 25 | Data | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'x'. |
 | node/test_dequantizelinear_float4e2m1/model.onnx | 25 | Data | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'x'. |
 | node/test_dequantizelinear_int16/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
-| node/test_dequantizelinear_int2/model.onnx | 25 | Data | ❌ | DequantizeLinear supports int8/uint8/int16/uint16/int32/uint32 inputs only |
-| node/test_dequantizelinear_int4/model.onnx | 25 | Data | ❌ | DequantizeLinear supports int8/uint8/int16/uint16/int32/uint32 inputs only |
+| node/test_dequantizelinear_int2/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
+| node/test_dequantizelinear_int4/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_dequantizelinear_uint16/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
-| node/test_dequantizelinear_uint2/model.onnx | 25 | Data | ❌ | DequantizeLinear supports int8/uint8/int16/uint16/int32/uint32 inputs only |
-| node/test_dequantizelinear_uint4/model.onnx | 25 | Data | ❌ | DequantizeLinear supports int8/uint8/int16/uint16/int32/uint32 inputs only |
+| node/test_dequantizelinear_uint2/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
+| node/test_dequantizelinear_uint4/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_det_2d/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_det_nd/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_dft/model.onnx | 20 | Data | ✅ | OK (max ULP 4) |
@@ -1119,11 +1119,11 @@ Coverage 1696 / 1802 ONNX files (94.1%).
 | node/test_quantizelinear_e5m2/model.onnx | 25 | Data | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_float4e2m1/model.onnx | 25 | Data | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_int16/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
-| node/test_quantizelinear_int2/model.onnx | 25 | Data | ❌ | QuantizeLinear supports int8/uint8/int16/uint16 outputs only |
-| node/test_quantizelinear_int4/model.onnx | 25 | Data | ❌ | QuantizeLinear supports int8/uint8/int16/uint16 outputs only |
+| node/test_quantizelinear_int2/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
+| node/test_quantizelinear_int4/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_quantizelinear_uint16/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
-| node/test_quantizelinear_uint2/model.onnx | 25 | Data | ❌ | QuantizeLinear supports int8/uint8/int16/uint16 outputs only |
-| node/test_quantizelinear_uint4/model.onnx | 25 | Data | ❌ | QuantizeLinear supports int8/uint8/int16/uint16 outputs only |
+| node/test_quantizelinear_uint2/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
+| node/test_quantizelinear_uint4/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
 | node/test_range_float_type_positive_delta/model.onnx | 11 | Data | ✅ | OK (max ULP 0) |
 | node/test_range_float_type_positive_delta_expanded/model.onnx | 11 | Data | ✅ | OK (max ULP 0) |
 | node/test_range_int32_type_negative_delta/model.onnx | 11 | Data | ✅ | OK (max abs diff 0) |
