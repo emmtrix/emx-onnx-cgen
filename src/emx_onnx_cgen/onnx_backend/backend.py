@@ -225,7 +225,8 @@ def _serialize_runtime_input(
 
 def _decode_runtime_output(value: Value, payload: dict[str, object]) -> object:
     if isinstance(value.type, TensorType):
-        dtype = value.type.dtype.np_dtype
+        scalar_type = value.type.dtype
+        dtype = scalar_type.np_dtype
         array = np.array(_decode_value(payload["data"], dtype=dtype), dtype=dtype)
         shape = tuple(payload.get("shape", []))
         if shape:
@@ -240,6 +241,9 @@ def _decode_runtime_output(value: Value, payload: dict[str, object]) -> object:
             array = array.reshape(shape)
         elif array.size == 1:
             array = array.reshape(())
+        onnx_dtype = scalar_type.onnx_np_dtype
+        if onnx_dtype != dtype:
+            array = array.astype(onnx_dtype)
         return array
 
     dtype = value.type.elem.dtype.np_dtype
