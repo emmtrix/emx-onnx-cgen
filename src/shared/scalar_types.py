@@ -17,6 +17,24 @@ def _bfloat16_numpy_dtype() -> np.dtype:
             return np.dtype(np.float32)
 
 
+def _subbyte_numpy_dtype(bits: int, *, signed: bool) -> np.dtype:
+    """Return the canonical numpy dtype for a sub-byte integer type.
+
+    Uses ``ml_dtypes.int2`` / ``ml_dtypes.uint2`` / ``ml_dtypes.int4`` /
+    ``ml_dtypes.uint4`` when available, falling back to ``int8`` / ``uint8``.
+    """
+    try:
+        import ml_dtypes
+
+        name = f"{'int' if signed else 'uint'}{bits}"
+        dtype_cls = getattr(ml_dtypes, name, None)
+        if dtype_cls is not None:
+            return np.dtype(dtype_cls)
+    except ImportError:
+        pass
+    return np.dtype("int8" if signed else "uint8")
+
+
 class ScalarFunctionError(RuntimeError):
     pass
 
@@ -50,6 +68,24 @@ class ScalarType(str, Enum):
         obj.is_bool = is_bool
         obj.bits = bits
         return obj
+
+    @property
+    def onnx_np_dtype(self) -> np.dtype:
+        """Canonical numpy dtype for ONNX compatibility.
+
+        For sub-byte integer types (INT2/UINT2/INT4/UINT4) this returns the
+        corresponding ``ml_dtypes`` dtype (e.g. ``ml_dtypes.int4``) rather than
+        the storage dtype (``int8`` / ``uint8``).  All other types return the
+        same value as :attr:`np_dtype`.
+        """
+        if (
+            self.bits is not None
+            and self.bits < 8
+            and not self.is_float
+            and not self.is_bool
+        ):
+            return _subbyte_numpy_dtype(self.bits, signed=self.is_signed)
+        return self.np_dtype
 
     F16 = (
         "f16",

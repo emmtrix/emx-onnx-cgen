@@ -24,6 +24,28 @@ DEFAULT_TESTS: tuple[str, ...] = (
     "test_operator_conv_cpu",
     "test_optional_get_element_sequence_cpu",
     "test_optional_has_element_optional_input_cpu",
+    # 4-bit integer cast tests
+    "test_cast_FLOAT_to_INT4_cpu",
+    "test_cast_FLOAT16_to_INT4_cpu",
+    "test_cast_INT4_to_FLOAT_cpu",
+    "test_cast_INT4_to_FLOAT16_cpu",
+    "test_cast_INT4_to_INT8_cpu",
+    "test_cast_FLOAT_to_UINT4_cpu",
+    "test_cast_FLOAT16_to_UINT4_cpu",
+    "test_cast_UINT4_to_FLOAT_cpu",
+    "test_cast_UINT4_to_FLOAT16_cpu",
+    "test_cast_UINT4_to_UINT8_cpu",
+    # 2-bit integer cast tests
+    "test_cast_FLOAT_to_INT2_cpu",
+    "test_cast_FLOAT16_to_INT2_cpu",
+    "test_cast_INT2_to_FLOAT_cpu",
+    "test_cast_INT2_to_FLOAT16_cpu",
+    "test_cast_INT2_to_INT8_cpu",
+    "test_cast_FLOAT_to_UINT2_cpu",
+    "test_cast_FLOAT16_to_UINT2_cpu",
+    "test_cast_UINT2_to_FLOAT_cpu",
+    "test_cast_UINT2_to_FLOAT16_cpu",
+    "test_cast_UINT2_to_UINT8_cpu",
 )
 
 SELECTED_TESTS_ENV = "EMX_ONNX_BACKEND_TESTS"
