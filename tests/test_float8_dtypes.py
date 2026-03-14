@@ -133,7 +133,9 @@ def test_float8e4m3fn_backend() -> None:
     f32_input = np.array([[1.0, 0.5, -0.5], [3.25, 0.0, -1.0]], dtype=np.float32)
     f32_weights = [1.0, -1.0, 0.0, 2.0, -2.0, 0.5]
     model = _make_cast_model(
-        TensorProto.FLOAT, TensorProto.FLOAT8E4M3FN, shape,
+        TensorProto.FLOAT,
+        TensorProto.FLOAT8E4M3FN,
+        shape,
         weight_values=f32_weights,
     )
     payload, generated = _compile_and_run_testbench(
@@ -171,7 +173,9 @@ def test_float8e4m3fnuz_backend() -> None:
     f32_input = np.array([[1.0, 0.5, -0.5], [3.25, 0.0, -1.0]], dtype=np.float32)
     f32_weights = [1.0, -1.0, 0.0, 2.0, -2.0, 0.5]
     model = _make_cast_model(
-        TensorProto.FLOAT, TensorProto.FLOAT8E4M3FNUZ, shape,
+        TensorProto.FLOAT,
+        TensorProto.FLOAT8E4M3FNUZ,
+        shape,
         weight_values=f32_weights,
     )
     payload, generated = _compile_and_run_testbench(
@@ -197,7 +201,9 @@ def test_float8e5m2_backend() -> None:
     f32_input = np.array([[1.0, 0.5, -0.5], [3.0, 0.0, -1.0]], dtype=np.float32)
     f32_weights = [1.0, -1.0, 0.0, 2.0, -2.0, 0.5]
     model = _make_cast_model(
-        TensorProto.FLOAT, TensorProto.FLOAT8E5M2, shape,
+        TensorProto.FLOAT,
+        TensorProto.FLOAT8E5M2,
+        shape,
         weight_values=f32_weights,
     )
     payload, generated = _compile_and_run_testbench(
@@ -223,7 +229,9 @@ def test_float8e5m2fnuz_backend() -> None:
     f32_input = np.array([[1.0, 0.5, -0.5], [3.0, 0.0, -1.0]], dtype=np.float32)
     f32_weights = [1.0, -1.0, 0.0, 2.0, -2.0, 0.5]
     model = _make_cast_model(
-        TensorProto.FLOAT, TensorProto.FLOAT8E5M2FNUZ, shape,
+        TensorProto.FLOAT,
+        TensorProto.FLOAT8E5M2FNUZ,
+        shape,
         weight_values=f32_weights,
     )
     payload, generated = _compile_and_run_testbench(
@@ -250,7 +258,9 @@ def test_float8e8m0fnu_backend() -> None:
     f32_input = np.array([[1.0, 2.0, 4.0], [0.5, 8.0, 16.0]], dtype=np.float32)
     f32_weights = [1.0, 2.0, 4.0, 0.5, 0.25, 8.0]
     model = _make_cast_model(
-        TensorProto.FLOAT, TensorProto.FLOAT8E8M0, shape,
+        TensorProto.FLOAT,
+        TensorProto.FLOAT8E8M0,
+        shape,
         weight_values=f32_weights,
     )
     payload, generated = _compile_and_run_testbench(

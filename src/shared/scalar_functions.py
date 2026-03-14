@@ -2373,9 +2373,7 @@ def _float8_from_f32(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     return _GeneratedScalar(lines=lines, deps=set(), includes=set())
 
 
-def _float8_unary_from_f32(
-    dtype_info: _ScalarTypeInfo, name: str
-) -> _GeneratedScalar:
+def _float8_unary_from_f32(dtype_info: _ScalarTypeInfo, name: str) -> _GeneratedScalar:
     lines = [
         f"static inline {dtype_info.c_type} {dtype_info.prefix}{name}({dtype_info.c_type} a) {{",
         f"    return {dtype_info.prefix}from_f32(ref_scalar_f32_{name}({dtype_info.prefix}to_f32(a)));",
@@ -2389,9 +2387,7 @@ def _float8_unary_from_f32(
     return _GeneratedScalar(lines=lines, deps=deps, includes=set())
 
 
-def _float8_binary_from_f32(
-    dtype_info: _ScalarTypeInfo, name: str
-) -> _GeneratedScalar:
+def _float8_binary_from_f32(dtype_info: _ScalarTypeInfo, name: str) -> _GeneratedScalar:
     lines = [
         f"static inline {dtype_info.c_type} {dtype_info.prefix}{name}({dtype_info.c_type} a, {dtype_info.c_type} b) {{",
         "    return " + dtype_info.prefix + "from_f32(",
@@ -2419,9 +2415,7 @@ def _float8_comparison(
     return _GeneratedScalar(lines=lines, deps=deps, includes={"#include <stdbool.h>"})
 
 
-_FLOAT8_OP_DISPATCH: Dict[
-    str, Callable[[_ScalarTypeInfo], _GeneratedScalar]
-] = {
+_FLOAT8_OP_DISPATCH: Dict[str, Callable[[_ScalarTypeInfo], _GeneratedScalar]] = {
     "to_f32": _float8_to_f32,
     "from_f32": _float8_from_f32,
     "eq": lambda d: _float8_comparison(d, "eq", "=="),

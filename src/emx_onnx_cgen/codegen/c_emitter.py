@@ -1095,8 +1095,11 @@ class CEmitter:
             self._emit_sequence_max_len_define(),
         ]
         float8_typedefs = CEmitter._emit_float8_typedefs(
-            {*original_model.input_dtypes, *original_model.output_dtypes,
-             *(c.dtype for c in original_model.constants)}
+            {
+                *original_model.input_dtypes,
+                *original_model.output_dtypes,
+                *(c.dtype for c in original_model.constants),
+            }
         )
         if float8_typedefs:
             sections.append(float8_typedefs)
@@ -1306,8 +1309,11 @@ class CEmitter:
             self._emit_sequence_max_len_define(),
         ]
         float8_typedefs = CEmitter._emit_float8_typedefs(
-            {*original_model.input_dtypes, *original_model.output_dtypes,
-             *(c.dtype for c in original_model.constants)}
+            {
+                *original_model.input_dtypes,
+                *original_model.output_dtypes,
+                *(c.dtype for c in original_model.constants),
+            }
         )
         if float8_typedefs:
             sections.append(float8_typedefs)
