@@ -662,9 +662,7 @@ def run_cli_command(
                 operators,
                 opset_version,
                 generated_checksum,
-            ) = _verify_model(
-                args, include_build_details=False, reporter=_NullVerifyReporter()
-            )
+            ) = _verify_model(args, reporter=_NullVerifyReporter())
             return CliResult(
                 exit_code=0 if error is None else 1,
                 command_line=args.command_line,
@@ -1337,7 +1335,7 @@ def _handle_verify(args: argparse.Namespace) -> int:
         _operators,
         _opset_version,
         generated_checksum,
-    ) = _verify_model(args, include_build_details=True, reporter=reporter)
+    ) = _verify_model(args, reporter=reporter)
     if error is not None:
         _maybe_note_shape_inference_shapes_hint(reporter, args=args, error=error)
         reporter.flush_deferred()
@@ -1533,7 +1531,6 @@ def _report_per_node_accuracy(
 def _verify_model(
     args: argparse.Namespace,
     *,
-    include_build_details: bool,
     reporter: _VerifyReporter | None = None,
     result_meta: dict[str, str] | None = None,
 ) -> tuple[str | None, str | None, list[str], int | None, str | None]:
