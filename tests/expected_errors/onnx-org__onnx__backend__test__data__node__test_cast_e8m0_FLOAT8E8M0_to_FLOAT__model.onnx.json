@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported elem_type 24 (FLOAT8E8M0) for tensor 'input'.",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_cast_e8m0_FLOAT8E8M0_to_FLOAT model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Cast"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "2ca862c20cdf899acc3d0b0863eb4904700961368280045d53940213b74dd4e5"
 }

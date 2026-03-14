@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'.",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E5M2_to_FLOAT16 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Cast"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "beef12aa92af7a37bbcfb0e30f2ef42568f7995c5a8f6467c63acfeed4523900"
 }

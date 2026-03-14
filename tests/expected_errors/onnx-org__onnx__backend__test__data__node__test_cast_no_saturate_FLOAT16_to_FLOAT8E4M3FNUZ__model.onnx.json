@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'output'.",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_cast_no_saturate_FLOAT16_to_FLOAT8E4M3FNUZ model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Cast"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "0143bd4a194c7acf08325b4b76b9fda75ab808ead94b769e8f9e3c7571f872e9"
 }
