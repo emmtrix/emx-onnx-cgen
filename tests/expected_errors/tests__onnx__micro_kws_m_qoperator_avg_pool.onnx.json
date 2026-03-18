@@ -16,5 +16,8 @@
     "Softmax"
   ],
   "opset_version": 15,
-  "generated_checksum": "c76f841f9cebbdde6aa19ec9621bef77e6a9155965a6baabe921c3215d1e7189"
+  "generated_checksum": "c76f841f9cebbdde6aa19ec9621bef77e6a9155965a6baabe921c3215d1e7189",
+  "extra_cli_args": [
+    "--replicate-ort-bugs"
+  ]
 }

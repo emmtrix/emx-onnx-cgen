@@ -6,5 +6,10 @@
     "RoiAlign"
   ],
   "opset_version": 22,
-  "generated_checksum": "a8893ff145d04adc3265da015e3ea70784b80fa4e85a75cbdf6f6a0a65a8d6c0"
+  "generated_checksum": "a8893ff145d04adc3265da015e3ea70784b80fa4e85a75cbdf6f6a0a65a8d6c0",
+  "extra_cli_args": [
+    "--runtime",
+    "onnx-reference",
+    "--test-data-inputs-only"
+  ]
 }

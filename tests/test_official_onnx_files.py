@@ -21,85 +21,12 @@ LOCAL_ONNX_DATA_ROOT = Path(__file__).resolve().parents[1] / "onnx2c-org" / "tes
 LOCAL_REPO_ONNX_DATA_ROOT = Path(__file__).resolve().parent / "onnx"
 ONNX_FILE_LIMIT = 5000
 _VERBOSE_FLAGS_REPORTED = False
-MODEL_EXTRA_VERIFY_ARGS = {
-    "tests/onnx/micro_kws_m_qoperator_add_shape.onnx": ("--replicate-ort-bugs",),
-    "tests/onnx/micro_kws_m_qoperator_avg_pool.onnx": ("--replicate-ort-bugs",),
-    "tests/onnx/micro_kws_m_qoperator_softmax.onnx": ("--replicate-ort-bugs",),
-    "tests/onnx/micro_kws_m_static_qoperator.onnx": ("--replicate-ort-bugs",),
-    "onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx": (
-        "--fp32-accumulation-strategy",
-        "fp64",
-    ),
-    "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight/model.onnx": (
-        "--fp32-accumulation-strategy",
-        "fp64",
-    ),
-    "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_expanded/model.onnx": (
-        "--fp32-accumulation-strategy",
-        "fp64",
-    ),
-    "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob/model.onnx": (
-        "--fp32-accumulation-strategy",
-        "fp64",
-    ),
-    "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx": (
-        "--fp32-accumulation-strategy",
-        "fp64",
-    ),
-    "onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated_strided/model.onnx": (
-        "--fp32-accumulation-strategy",
-        "fp64",
-    ),
-    "onnx-org/onnx/backend/test/data/node/test_dft_inverse/model.onnx": (
-        "--atol-eps",
-        "2",
-    ),
-    "onnx-org/onnx/backend/test/data/node/test_dft_inverse_opset19/model.onnx": (
-        "--atol-eps",
-        "2",
-    ),
-    "onnx-org/onnx/backend/test/data/node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx": (
-        "--runtime",
-        "onnx-reference",
-        "--test-data-inputs-only",
-    ),
-    "onnx2c-org/test/mnist/model.onnx": (
-        "--max-ulp",
-        "200",
-    ),
-    "onnx-org/onnx/backend/test/data/node/test_roialign_aligned_false/model.onnx": (
-        "--runtime",
-        "onnx-reference",
-        "--test-data-inputs-only",
-    ),
-    "onnx-org/onnx/backend/test/data/node/test_roialign_aligned_true/model.onnx": (
-        "--runtime",
-        "onnx-reference",
-        "--test-data-inputs-only",
-    ),
-    "onnx-org/onnx/backend/test/data/node/test_constant/model.onnx": (
-        "--runtime",
-        "onnx-reference",
-    ),
-    "onnx-org/onnx/backend/test/data/node/test_gridsample_bicubic/model.onnx": (
-        "--runtime",
-        "onnx-reference",
-        "--test-data-inputs-only",
-    ),
-    "onnx-org/onnx/backend/test/data/node/test_affine_grid_3d/model.onnx": (
-        "--fp32-accumulation-strategy",
-        "fp64",
-    ),
-    "onnx-org/onnx/backend/test/data/node/test_affine_grid_3d_expanded/model.onnx": (
-        "--fp32-accumulation-strategy",
-        "fp64",
-    ),
-}
 @dataclass(frozen=True)
 class OnnxFileExpectation:
     path: str
     error: str
     command_line: str = ""
+    extra_cli_args: list[str] | None = None
     verification_mode: str | None = None
     operators: list[str] | None = None
     opset_version: int | None = None
@@ -232,6 +159,7 @@ def _read_expectation_file(
     data = json.loads(path.read_text(encoding="utf-8"))
     error = ""
     command_line = ""
+    extra_cli_args: list[str] | None = None
     verification_mode: str | None = None
     operators: list[str] | None = None
     opset_version: int | None = None
@@ -239,6 +167,7 @@ def _read_expectation_file(
     if isinstance(data, dict):
         error = data.get("error", "")
         command_line = data.get("command_line", "")
+        extra_cli_args = data.get("extra_cli_args")
         verification_mode = data.get("verification_mode")
         operators = data.get("operators")
         opset_version = data.get("opset_version")
@@ -260,6 +189,7 @@ def _read_expectation_file(
         path=fallback_path,
         error=error,
         command_line=command_line,
+        extra_cli_args=extra_cli_args,
         verification_mode=verification_mode,
         operators=operators,
         opset_version=opset_version,
@@ -296,6 +226,8 @@ def _write_expectation_file(
         "error": expectation.error,
         "command_line": expectation.command_line,
     }
+    if expectation.extra_cli_args:
+        payload["extra_cli_args"] = expectation.extra_cli_args
     if expectation.verification_mode is not None:
         payload["verification_mode"] = expectation.verification_mode
     if expectation.operators is not None:
@@ -495,7 +427,7 @@ def _run_expected_error_test(
                 test_data_argument,
             ]
         )
-    extra_args = MODEL_EXTRA_VERIFY_ARGS.get(repo_relative_path)
+    extra_args = expectation.extra_cli_args
     if extra_args:
         verify_args.extend(extra_args)
 
@@ -527,6 +459,7 @@ def _run_expected_error_test(
             path=expectation_path,
             error=actual_error,
             command_line=cli_result.command_line,
+            extra_cli_args=list(expectation.extra_cli_args or []),
             verification_mode=cli_result.verification_mode,
             operators=cli_result.operators,
             opset_version=cli_result.opset_version,
@@ -581,6 +514,30 @@ def test_run_expected_error_test_does_not_add_sanitize_flag(
 
     assert captured_args
     assert "--sanitize" not in captured_args[0]
+
+
+def test_read_expectation_file_reads_extra_cli_args(tmp_path: Path) -> None:
+    expectation_path = tmp_path / "expectation.json"
+    expectation_path.write_text(
+        json.dumps(
+            {
+                "error": "OK",
+                "command_line": (
+                    "verify --model-base-dir tests/onnx model.onnx "
+                    "--replicate-ort-bugs"
+                ),
+                "extra_cli_args": ["--replicate-ort-bugs"],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    loaded = _read_expectation_file(
+        expectation_path,
+        fallback_path="tests/onnx/model.onnx",
+    )
+
+    assert loaded.extra_cli_args == ["--replicate-ort-bugs"]
 
 
 @pytest.mark.order(1)

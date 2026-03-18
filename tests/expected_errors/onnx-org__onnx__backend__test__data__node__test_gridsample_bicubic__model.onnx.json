@@ -6,5 +6,10 @@
     "GridSample"
   ],
   "opset_version": 22,
-  "generated_checksum": "07d9029a6c6dd9c72ce29a4b34e06de30c091fcbcad2ae5203da137333ee8f9b"
+  "generated_checksum": "07d9029a6c6dd9c72ce29a4b34e06de30c091fcbcad2ae5203da137333ee8f9b",
+  "extra_cli_args": [
+    "--runtime",
+    "onnx-reference",
+    "--test-data-inputs-only"
+  ]
 }

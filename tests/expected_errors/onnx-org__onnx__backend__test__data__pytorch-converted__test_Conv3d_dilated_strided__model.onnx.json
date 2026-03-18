@@ -6,5 +6,9 @@
     "Conv"
   ],
   "opset_version": 6,
-  "generated_checksum": "95e9a9155315a7a4bb3768ba10e6630d059b98bf1fb4b36c2a6f043d4c08e7b5"
+  "generated_checksum": "95e9a9155315a7a4bb3768ba10e6630d059b98bf1fb4b36c2a6f043d4c08e7b5",
+  "extra_cli_args": [
+    "--fp32-accumulation-strategy",
+    "fp64"
+  ]
 }

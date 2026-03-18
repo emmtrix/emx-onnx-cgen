@@ -6,5 +6,9 @@
     "SoftmaxCrossEntropyLoss"
   ],
   "opset_version": 13,
-  "generated_checksum": "1b3ab1aefbbc41a82b3034f3d7b84d7492776cdf332cdf7fb8928f5d2aaf7066"
+  "generated_checksum": "1b3ab1aefbbc41a82b3034f3d7b84d7492776cdf332cdf7fb8928f5d2aaf7066",
+  "extra_cli_args": [
+    "--fp32-accumulation-strategy",
+    "fp64"
+  ]
 }
