@@ -1,6 +1,11 @@
 {
   "error": "OK (max ULP 10)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_roialign_aligned_false model.onnx --test-data-dir test_data_set_0 --runtime onnx-reference --test-data-inputs-only",
+  "extra_cli_args": [
+    "--runtime",
+    "onnx-reference",
+    "--test-data-inputs-only"
+  ],
   "verification_mode": "Data",
   "operators": [
     "RoiAlign"
