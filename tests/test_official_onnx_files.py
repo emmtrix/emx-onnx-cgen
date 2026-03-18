@@ -32,6 +32,10 @@ MODEL_EXTRA_VERIFY_ARGS = {
         "--fp32-accumulation-strategy",
         "fp64",
     ),
+    "onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx": (
+        "--fp32-accumulation-strategy",
+        "fp64",
+    ),
     "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight/model.onnx": (
         "--fp32-accumulation-strategy",
         "fp64",
@@ -157,6 +161,17 @@ class OnnxFileExpectation:
     operators: list[str] | None = None
     opset_version: int | None = None
     generated_checksum: str | None = None
+
+
+def normalize_verification_mode(verification_mode: str | None) -> str | None:
+    if verification_mode is None:
+        return None
+    if verification_mode == "Data":
+        return "Data/Data"
+    if "+" in verification_mode:
+        input_source, reference_source = verification_mode.split("+", maxsplit=1)
+        return f"{input_source}/{reference_source}"
+    return verification_mode
 
 
 def _repo_root() -> Path:
@@ -292,7 +307,9 @@ def _read_expectation_file(
     if isinstance(data, dict):
         error = data.get("error", "")
         command_line = data.get("command_line", "")
-        verification_mode = data.get("verification_mode")
+        verification_mode = normalize_verification_mode(
+            data.get("verification_mode")
+        )
         operators = data.get("operators")
         opset_version = data.get("opset_version")
         generated_checksum = data.get("generated_checksum")
@@ -350,7 +367,9 @@ def _write_expectation_file(
         "command_line": expectation.command_line,
     }
     if expectation.verification_mode is not None:
-        payload["verification_mode"] = expectation.verification_mode
+        payload["verification_mode"] = normalize_verification_mode(
+            expectation.verification_mode
+        )
     if expectation.operators is not None:
         payload["operators"] = expectation.operators
     if expectation.opset_version is not None:
@@ -371,6 +390,23 @@ def _collect_onnx_files(data_root: Path) -> list[str]:
     return sorted(
         p.relative_to(data_root).as_posix() for p in data_root.rglob("*.onnx")
     )[:ONNX_FILE_LIMIT]
+
+
+@pytest.mark.parametrize(
+    ("legacy_value", "expected_value"),
+    [
+        ("Data", "Data/Data"),
+        ("Random+ORT", "Random/ORT"),
+        ("Random+ONNXRef", "Random/ONNXRef"),
+        ("Random/ORT", "Random/ORT"),
+        (None, None),
+    ],
+)
+def test_normalize_verification_mode_supports_legacy_formats(
+    legacy_value: str | None,
+    expected_value: str | None,
+) -> None:
+    assert normalize_verification_mode(legacy_value) == expected_value
 
 
 def _maybe_init_onnx_org() -> None:

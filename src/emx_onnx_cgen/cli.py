@@ -293,6 +293,10 @@ class CliResult:
     verification_mode: str | None = None
 
 
+def _format_verification_mode(input_source: str, reference_source: str) -> str:
+    return f"{input_source}/{reference_source}"
+
+
 @dataclass(frozen=True)
 class _WorstDiff:
     output_name: str
@@ -648,12 +652,12 @@ def run_cli_command(
     try:
         if args.command != "compile":
             verification_mode = (
-                "Data"
+                _format_verification_mode("Data", "Data")
                 if args.test_data_dir is not None
                 else (
-                    "Random+ONNXRef"
+                    _format_verification_mode("Random", "ONNXRef")
                     if args.runtime == "onnx-reference"
-                    else "Random+ORT"
+                    else _format_verification_mode("Random", "ORT")
                 )
             )
             (
@@ -1544,7 +1548,10 @@ def _verify_model(
     def _set_verification_mode() -> None:
         if result_meta is None:
             return
-        result_meta["verification_mode"] = f"{input_source}/{reference_source}"
+        result_meta["verification_mode"] = _format_verification_mode(
+            input_source,
+            reference_source,
+        )
 
     def describe_exit_code(returncode: int) -> str:
         if returncode >= 0:
