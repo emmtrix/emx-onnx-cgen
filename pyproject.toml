@@ -22,7 +22,10 @@ dependencies = [
 
 [project.optional-dependencies]
 verify = [
-    "onnxruntime",
+    # ORT 1.24.x no longer publishes Linux cp310 wheels, so keep the latest
+    # compatible release for Python 3.10 while using the current release on 3.11+.
+    "onnxruntime==1.23.2; python_version < '3.11'",
+    "onnxruntime==1.24.4; python_version >= '3.11'",
 ]
 backend-tests = [
     "pytest",
