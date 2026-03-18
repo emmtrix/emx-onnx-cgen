@@ -101,10 +101,9 @@ main function actually runs.
 
 Sanitizers can be controlled via `EMX_ENABLE_SANITIZE` (when set, it overrides `--sanitize`).
 
-If code generation needs concrete data to resolve dynamic shapes, pass it
-explicitly to both commands via `--shape-inference-shapes "<name=...;name=...>"`.
 Do not rely on `--test-data-dir` to change generated code; it is for verification
-I/O only.
+I/O only. Models that need representative inputs to resolve dynamic shapes must
+instead be exported with static shapes.
 
 ### Golden reference updates
 
@@ -334,11 +333,10 @@ When acting as an agent in this repo:
 * problem
 * options
 * recommendation
-11. Do not let verification-only inputs change generated code implicitly. If a
-    model needs representative inputs to concretize dynamic shapes, require the
-    explicit shared CLI flag `--shape-inference-shapes` on both `compile` and
-    `verify`, and surface a clear error when it is missing. Do not make
-    `compile` or `verify` read `input_*.pb` files for code generation.
+11. Do not let verification-only inputs change generated code implicitly. Do not
+    make `compile` or `verify` read `input_*.pb` files for code generation.
+    Models that require representative inputs to resolve dynamic shapes should
+    fail with a clear error and must be re-exported with static shapes.
 12. To find operator specifications within this repository, prefer:
     * `onnx-org/docs/Operators.md` for the current consolidated operator docs.
     * `onnx-org/docs/Changelog.md` for versioned operator specs (e.g., Slice-13).
