@@ -11,7 +11,6 @@ import pytest
 from test_official_onnx_files import (
     LOCAL_ONNX_DATA_ROOT,
     LOCAL_REPO_ONNX_DATA_ROOT,
-    MODEL_EXTRA_VERIFY_ARGS,
     OnnxFileExpectation,
     _load_expectation_for_repo_relative,
     _local_onnx_file_paths,
@@ -49,6 +48,11 @@ def _render_onnx_file_support_table(
     *,
     include_expectation: Callable[[OnnxFileExpectation], bool] | None = None,
 ) -> list[str]:
+    def _file_label(expectation: OnnxFileExpectation) -> str:
+        if not expectation.extra_cli_args:
+            return expectation.path
+        return f"{expectation.path} ({' '.join(expectation.extra_cli_args)})"
+
     def _verification_mode(expectation: OnnxFileExpectation) -> str:
         return expectation.verification_mode or ""
 
@@ -68,12 +72,8 @@ def _render_onnx_file_support_table(
         )
         verification = _verification_mode(expectation)
         message = expectation.error.replace("\n", " ").strip()
-        extra_args = MODEL_EXTRA_VERIFY_ARGS.get(expectation.path)
-        if extra_args:
-            flag_text = " ".join(extra_args)
-            message = f"{message} (flags: {flag_text})".strip()
         lines.append(
-            f"| {expectation.path} | {opset} | {verification} | {supported} | {message} |"
+            f"| {_file_label(expectation)} | {opset} | {verification} | {supported} | {message} |"
         )
     return lines
 
@@ -373,6 +373,7 @@ def test_official_onnx_file_support_doc() -> None:
                 path=relative_path,
                 error=expectation.error,
                 command_line=expectation.command_line,
+                extra_cli_args=expectation.extra_cli_args,
                 verification_mode=expectation.verification_mode,
                 operators=expectation.operators,
                 opset_version=expectation.opset_version,
@@ -390,6 +391,7 @@ def test_official_onnx_file_support_doc() -> None:
                 path=local_path,
                 error=expectation.error,
                 command_line=expectation.command_line,
+                extra_cli_args=expectation.extra_cli_args,
                 verification_mode=expectation.verification_mode,
                 operators=expectation.operators,
                 opset_version=expectation.opset_version,
@@ -406,6 +408,7 @@ def test_official_onnx_file_support_doc() -> None:
                 path=local_path,
                 error=expectation.error,
                 command_line=expectation.command_line,
+                extra_cli_args=expectation.extra_cli_args,
                 verification_mode=expectation.verification_mode,
                 operators=expectation.operators,
                 opset_version=expectation.opset_version,
@@ -448,3 +451,22 @@ def test_official_onnx_file_support_doc() -> None:
     assert actual_markdown == expected_markdown
     assert actual_histogram == expected_histogram
     assert actual_support_ops == expected_support_ops
+
+
+def test_render_onnx_file_support_table_includes_extra_cli_args_in_file_column() -> None:
+    lines = _render_onnx_file_support_table(
+        [
+            OnnxFileExpectation(
+                path="node/test_example/model.onnx",
+                error="OK (max ULP 0)",
+                extra_cli_args=["--runtime", "onnx-reference"],
+                verification_mode="Data",
+                opset_version=13,
+            )
+        ]
+    )
+
+    assert (
+        "| node/test_example/model.onnx (--runtime onnx-reference) | 13 | Data | ✅ | OK (max ULP 0) |"
+        in lines
+    )

@@ -6,5 +6,9 @@
     "Constant"
   ],
   "opset_version": 25,
-  "generated_checksum": "16139f19ff072f89c20ed459deb9d671554587f5a7274c655c7d0cc9ecf6bc0e"
+  "generated_checksum": "16139f19ff072f89c20ed459deb9d671554587f5a7274c655c7d0cc9ecf6bc0e",
+  "extra_cli_args": [
+    "--runtime",
+    "onnx-reference"
+  ]
 }

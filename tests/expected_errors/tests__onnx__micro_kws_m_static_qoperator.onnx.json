@@ -15,5 +15,8 @@
     "com.microsoft::QLinearSoftmax"
   ],
   "opset_version": 15,
-  "generated_checksum": "a560b51941bc4fba94552d37cd7f5aa93cda00b0a17dfa2964c3a59f5717dc1a"
+  "generated_checksum": "a560b51941bc4fba94552d37cd7f5aa93cda00b0a17dfa2964c3a59f5717dc1a",
+  "extra_cli_args": [
+    "--replicate-ort-bugs"
+  ]
 }

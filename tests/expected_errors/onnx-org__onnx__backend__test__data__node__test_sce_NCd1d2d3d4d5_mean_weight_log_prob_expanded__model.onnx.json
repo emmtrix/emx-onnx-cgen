@@ -12,5 +12,9 @@
     "NegativeLogLikelihoodLoss"
   ],
   "opset_version": 13,
-  "generated_checksum": "70fd74da6ebe0bb62fdae6f82e8db5bf2841f8cfe09e102156ea044456289635"
+  "generated_checksum": "70fd74da6ebe0bb62fdae6f82e8db5bf2841f8cfe09e102156ea044456289635",
+  "extra_cli_args": [
+    "--fp32-accumulation-strategy",
+    "fp64"
+  ]
 }

@@ -6,5 +6,10 @@
     "AveragePool"
   ],
   "opset_version": 22,
-  "generated_checksum": "b8fd230889114575e343b856705738160171b15711322fcd9a549e3650e4aa04"
+  "generated_checksum": "b8fd230889114575e343b856705738160171b15711322fcd9a549e3650e4aa04",
+  "extra_cli_args": [
+    "--runtime",
+    "onnx-reference",
+    "--test-data-inputs-only"
+  ]
 }
