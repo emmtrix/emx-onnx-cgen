@@ -4,7 +4,6 @@ import os
 import subprocess
 import sys
 import tempfile
-from io import StringIO
 from pathlib import Path
 
 import onnx
@@ -250,19 +249,6 @@ def test_cli_model_base_dir_resolves_test_data(tmp_path: Path) -> None:
     assert args.test_data_dir == base_dir / "inputs"
 
 
-def test_cli_parse_shape_inference_shapes_flag() -> None:
-    parser = cli._build_parser()
-    args = parser.parse_args(
-        [
-            "compile",
-            "model.onnx",
-            "--shape-inference-shapes",
-            "x=2x3;size=[2,3,5,6];seq=seq[4]:8x16",
-        ]
-    )
-    assert args.shape_inference_shapes == "x=2x3;size=[2,3,5,6];seq=seq[4]:8x16"
-
-
 def test_cli_verify_rejects_model_name_flag() -> None:
     parser = cli._build_parser()
     with pytest.raises(SystemExit):
@@ -342,26 +328,6 @@ def test_cli_compile_accepts_io_bound_dynamic_intermediates(
     assert "int N" in generated
 
 
-def test_cli_compile_accepts_explicit_shape_inference_shapes(tmp_path: Path) -> None:
-    model = _make_dynamic_identity_chain_model()
-    model_path = tmp_path / "model.onnx"
-    output_path = tmp_path / "model.c"
-    onnx.save_model(model, model_path)
-
-    result = cli.run_cli_command(
-        [
-            "compile",
-            str(model_path),
-            str(output_path),
-            "--shape-inference-shapes",
-            "x=2",
-        ]
-    )
-
-    assert result.exit_code == 0
-    assert result.result == ""
-
-
 def test_cli_compile_accepts_dynamic_maxpool_reference_model(tmp_path: Path) -> None:
     output_path = tmp_path / "model.c"
     result = cli.run_cli_command(
@@ -378,38 +344,6 @@ def test_cli_compile_accepts_dynamic_maxpool_reference_model(tmp_path: Path) -> 
     assert result.generated is not None
     generated = result.generated
     assert "int N" in generated
-
-
-def test_cli_verify_notes_shape_inference_shapes_hint_from_test_data_dir(
-    tmp_path: Path,
-) -> None:
-    model = _make_dynamic_identity_chain_model()
-    model_path = tmp_path / "model.onnx"
-    test_data_dir = tmp_path / "test_data_set_0"
-    onnx.save_model(model, model_path)
-    _write_input_pb(test_data_dir, "x", np.array([1.0, 2.0], dtype=np.float32))
-
-    parser = cli._build_parser()
-    args = parser.parse_args(
-        [
-            "verify",
-            str(model_path),
-            "--test-data-dir",
-            str(test_data_dir),
-        ]
-    )
-    stream = StringIO()
-    reporter = cli._VerifyReporter(stream=stream, color_mode="never")
-    error = (
-        "Code generation needs explicit shape concretization, but no "
-        "--shape-inference-shapes were provided. Reason: tensor 'mid' has "
-        "dynamic dimensions ('N',)."
-    )
-
-    assert "--shape-inference-shapes" in error
-    cli._maybe_note_shape_inference_shapes_hint(reporter, args=args, error=error)
-    reporter.flush_deferred()
-    assert '--shape-inference-shapes "x=[1.0,2.0]"' in stream.getvalue()
 
 
 def test_augment_model_with_tensor_node_outputs_skips_non_top_level_outputs() -> None:
