@@ -806,9 +806,9 @@ def test_reduce_mean_uses_fp64_accumulator_when_requested() -> None:
     model.ir_version = 7
     onnx.checker.check_model(model)
 
-    generated = Compiler(
-        CompilerOptions(fp32_accumulation_strategy="fp64")
-    ).compile(model)
+    generated = Compiler(CompilerOptions(fp32_accumulation_strategy="fp64")).compile(
+        model
+    )
 
     assert "double acc = 0.0;" in generated
     assert "output[i0][i1][i2] = acc / 3.0;" in generated

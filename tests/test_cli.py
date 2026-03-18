@@ -311,6 +311,35 @@ def test_cli_verify_per_node_accuracy_flag_can_be_enabled() -> None:
     assert args.per_node_accuracy is True
 
 
+@pytest.mark.parametrize(
+    ("argv", "expected_mode"),
+    [
+        (["verify", "model.onnx"], "Random/ORT"),
+        (["verify", "model.onnx", "--runtime", "onnx-reference"], "Random/ONNXRef"),
+        (["verify", "model.onnx", "--test-data-dir", "test_data_set_0"], "Data/Data"),
+    ],
+)
+def test_run_cli_command_reports_verification_mode_with_slash_notation(
+    monkeypatch: pytest.MonkeyPatch,
+    argv: list[str],
+    expected_mode: str,
+) -> None:
+    def _fake_verify_model(
+        args: object,
+        *,
+        reporter: object | None = None,
+        result_meta: dict[str, str] | None = None,
+    ) -> tuple[str | None, str | None, list[str], int | None, str | None]:
+        return "OK (max ULP 0)", None, [], 13, None
+
+    monkeypatch.setattr(cli, "_verify_model", _fake_verify_model)
+
+    result = cli.run_cli_command(argv)
+
+    assert result.exit_code == 0
+    assert result.verification_mode == expected_mode
+
+
 def test_cli_compile_accepts_io_bound_dynamic_intermediates(
     tmp_path: Path,
 ) -> None:

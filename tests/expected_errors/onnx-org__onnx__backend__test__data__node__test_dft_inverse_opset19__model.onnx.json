@@ -5,7 +5,7 @@
     "--atol-eps",
     "2"
   ],
-  "verification_mode": "Data",
+  "verification_mode": "Data/Data",
   "operators": [
     "DFT"
   ],
