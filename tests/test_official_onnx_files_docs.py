@@ -453,7 +453,9 @@ def test_official_onnx_file_support_doc() -> None:
     assert actual_support_ops == expected_support_ops
 
 
-def test_render_onnx_file_support_table_includes_extra_cli_args_in_file_column() -> None:
+def test_render_onnx_file_support_table_includes_extra_cli_args_in_file_column() -> (
+    None
+):
     lines = _render_onnx_file_support_table(
         [
             OnnxFileExpectation(

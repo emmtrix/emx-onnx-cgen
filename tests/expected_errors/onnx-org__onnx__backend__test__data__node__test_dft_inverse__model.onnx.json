@@ -1,14 +1,14 @@
 {
   "error": "OK (max ULP 8)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_dft_inverse model.onnx --test-data-dir test_data_set_0 --atol-eps 2",
+  "extra_cli_args": [
+    "--atol-eps",
+    "2"
+  ],
   "verification_mode": "Data",
   "operators": [
     "DFT"
   ],
   "opset_version": 20,
-  "generated_checksum": "e873f588ef58869ba47133697c96e8f61b7f61238bd9b56ac412482d8491e7cc",
-  "extra_cli_args": [
-    "--atol-eps",
-    "2"
-  ]
+  "generated_checksum": "e873f588ef58869ba47133697c96e8f61b7f61238bd9b56ac412482d8491e7cc"
 }

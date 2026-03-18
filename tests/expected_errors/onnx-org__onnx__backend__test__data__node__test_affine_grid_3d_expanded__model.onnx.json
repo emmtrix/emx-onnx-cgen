@@ -1,6 +1,10 @@
 {
   "error": "OK (max ULP 2)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_affine_grid_3d_expanded model.onnx --test-data-dir test_data_set_0 --fp32-accumulation-strategy fp64",
+  "extra_cli_args": [
+    "--fp32-accumulation-strategy",
+    "fp64"
+  ],
   "verification_mode": "Data",
   "operators": [
     "Constant",
@@ -20,9 +24,5 @@
     "MatMul"
   ],
   "opset_version": 20,
-  "generated_checksum": "cb3fbc1ca9f5c8b0c8f39751d20a145a71d1830e36fbd63ceb59befca58b0ff7",
-  "extra_cli_args": [
-    "--fp32-accumulation-strategy",
-    "fp64"
-  ]
+  "generated_checksum": "cb3fbc1ca9f5c8b0c8f39751d20a145a71d1830e36fbd63ceb59befca58b0ff7"
 }

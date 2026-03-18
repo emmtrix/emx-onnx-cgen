@@ -21,6 +21,8 @@ LOCAL_ONNX_DATA_ROOT = Path(__file__).resolve().parents[1] / "onnx2c-org" / "tes
 LOCAL_REPO_ONNX_DATA_ROOT = Path(__file__).resolve().parent / "onnx"
 ONNX_FILE_LIMIT = 5000
 _VERBOSE_FLAGS_REPORTED = False
+
+
 @dataclass(frozen=True)
 class OnnxFileExpectation:
     path: str
@@ -523,8 +525,7 @@ def test_read_expectation_file_reads_extra_cli_args(tmp_path: Path) -> None:
             {
                 "error": "OK",
                 "command_line": (
-                    "verify --model-base-dir tests/onnx model.onnx "
-                    "--replicate-ort-bugs"
+                    "verify --model-base-dir tests/onnx model.onnx --replicate-ort-bugs"
                 ),
                 "extra_cli_args": ["--replicate-ort-bugs"],
             }

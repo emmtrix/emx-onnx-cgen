@@ -1,14 +1,14 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_affine_grid_3d model.onnx --test-data-dir test_data_set_0 --fp32-accumulation-strategy fp64",
+  "extra_cli_args": [
+    "--fp32-accumulation-strategy",
+    "fp64"
+  ],
   "verification_mode": "Data",
   "operators": [
     "AffineGrid"
   ],
   "opset_version": 20,
-  "generated_checksum": "31a0a620cec1c63e2a17eb2641e50e1a152229bc3b4c17b5a8ea55bf3984ad23",
-  "extra_cli_args": [
-    "--fp32-accumulation-strategy",
-    "fp64"
-  ]
+  "generated_checksum": "31a0a620cec1c63e2a17eb2641e50e1a152229bc3b4c17b5a8ea55bf3984ad23"
 }
