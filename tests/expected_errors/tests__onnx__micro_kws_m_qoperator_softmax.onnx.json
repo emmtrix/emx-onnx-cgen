@@ -1,6 +1,9 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir tests/onnx micro_kws_m_qoperator_softmax.onnx --replicate-ort-bugs",
+  "extra_cli_args": [
+    "--replicate-ort-bugs"
+  ],
   "verification_mode": "Random/ORT",
   "operators": [
     "Reshape",

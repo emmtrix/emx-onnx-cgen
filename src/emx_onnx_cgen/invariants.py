@@ -45,8 +45,7 @@ def check_graph_integrity(graph: Graph) -> None:
                 raise ShapeInferenceError(
                     f"Negative dimension {dim} at index {dim_index} "
                     f"for value '{value.name}'. "
-                    "Hint: export with static shapes or provide "
-                    "--shape-inference-shapes."
+                    "Hint: export with static shapes."
                 )
 
 

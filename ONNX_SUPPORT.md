@@ -55,10 +55,10 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 | node/test_affine_grid_2d_align_corners/model.onnx | 20 | Data/Data | ✅ | OK (max ULP 4) |
 | node/test_affine_grid_2d_align_corners_expanded/model.onnx | 20 | Data/Data | ✅ | OK (max ULP 4) |
 | node/test_affine_grid_2d_expanded/model.onnx | 20 | Data/Data | ✅ | OK (max ULP 5) |
-| node/test_affine_grid_3d/model.onnx | 20 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_affine_grid_3d/model.onnx (--fp32-accumulation-strategy fp64) | 20 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_affine_grid_3d_align_corners/model.onnx | 20 | Data/Data | ✅ | OK (max ULP 23) |
 | node/test_affine_grid_3d_align_corners_expanded/model.onnx | 20 | Data/Data | ✅ | OK (max ULP 23) |
-| node/test_affine_grid_3d_expanded/model.onnx | 20 | Data/Data | ✅ | OK (max ULP 2) |
+| node/test_affine_grid_3d_expanded/model.onnx (--fp32-accumulation-strategy fp64) | 20 | Data/Data | ✅ | OK (max ULP 2) |
 | node/test_ai_onnx_ml_array_feature_extractor/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_ai_onnx_ml_binarizer/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_ai_onnx_ml_label_encoder_string_int/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
@@ -241,7 +241,7 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 | node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_1d_default/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_ceil/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx (--runtime onnx-reference --test-data-inputs-only) | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_default/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_dilations/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_pads/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 3) |
@@ -533,7 +533,7 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 | node/test_concat_3d_axis_negative_1/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_concat_3d_axis_negative_2/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_concat_3d_axis_negative_3/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_constant/model.onnx | 25 | Random/ONNXRef | ✅ | OK (max ULP 0) |
+| node/test_constant/model.onnx (--runtime onnx-reference) | 25 | Random/ONNXRef | ✅ | OK (max ULP 0) |
 | node/test_constant_pad/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_constant_pad_axes/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_constant_pad_negative_axes/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
@@ -593,8 +593,8 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 | node/test_dft/model.onnx | 20 | Data/Data | ✅ | OK (max ULP 4) |
 | node/test_dft_axis/model.onnx | 20 | Data/Data | ✅ | OK (max ULP 72) |
 | node/test_dft_axis_opset19/model.onnx | 19 | Data/Data | ✅ | OK (max ULP 72) |
-| node/test_dft_inverse/model.onnx | 20 | Data/Data | ✅ | OK (max ULP 8) |
-| node/test_dft_inverse_opset19/model.onnx | 19 | Data/Data | ✅ | OK (max ULP 8) |
+| node/test_dft_inverse/model.onnx (--atol-eps 2) | 20 | Data/Data | ✅ | OK (max ULP 8) |
+| node/test_dft_inverse_opset19/model.onnx (--atol-eps 2) | 19 | Data/Data | ✅ | OK (max ULP 8) |
 | node/test_dft_opset19/model.onnx | 19 | Data/Data | ✅ | OK (max ULP 4) |
 | node/test_div/model.onnx | 14 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_div_bcast/model.onnx | 14 | Data/Data | ✅ | OK (max ULP 0) |
@@ -718,7 +718,7 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 | node/test_greater_uint8/model.onnx | 13 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_gridsample/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 2) |
 | node/test_gridsample_aligncorners_true/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_gridsample_bicubic/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 13) |
+| node/test_gridsample_bicubic/model.onnx (--runtime onnx-reference --test-data-inputs-only) | 22 | Data/Data | ✅ | OK (max ULP 13) |
 | node/test_gridsample_bicubic_align_corners_0_additional_1/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 13) |
 | node/test_gridsample_bicubic_align_corners_1_additional_1/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 34) |
 | node/test_gridsample_bilinear/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
@@ -1046,8 +1046,8 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 | node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_nllloss_NCd1d2d3_sum_weight_high_ii/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx (--fp32-accumulation-strategy fp64) | 22 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx (--fp32-accumulation-strategy fp64) | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_nllloss_NCd1d2d3d4d5_none_no_weight/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_nllloss_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_nonmaxsuppression_center_point_box_format/model.onnx | 11 | Data/Data | ✅ | OK (max abs diff 0) |
@@ -1357,8 +1357,8 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 | node/test_rms_normalization_default_axis/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_rms_normalization_default_axis_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_rnn_seq_length/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_roialign_aligned_false/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 10) |
-| node/test_roialign_aligned_true/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 11) |
+| node/test_roialign_aligned_false/model.onnx (--runtime onnx-reference --test-data-inputs-only) | 22 | Data/Data | ✅ | OK (max ULP 10) |
+| node/test_roialign_aligned_true/model.onnx (--runtime onnx-reference --test-data-inputs-only) | 22 | Data/Data | ✅ | OK (max ULP 11) |
 | node/test_roialign_mode_max/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 36) |
 | node/test_rotary_embedding/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_rotary_embedding_3d_input/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
@@ -1404,10 +1404,10 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 | node/test_sce_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 2) |
 | node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob_expanded/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 2) |
-| node/test_sce_NCd1d2d3d4d5_mean_weight/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_sce_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 2) |
-| node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 3) |
+| node/test_sce_NCd1d2d3d4d5_mean_weight/model.onnx (--fp32-accumulation-strategy fp64) | 13 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_sce_NCd1d2d3d4d5_mean_weight_expanded/model.onnx (--fp32-accumulation-strategy fp64) | 13 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob/model.onnx (--fp32-accumulation-strategy fp64) | 13 | Data/Data | ✅ | OK (max ULP 2) |
+| node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx (--fp32-accumulation-strategy fp64) | 13 | Data/Data | ✅ | OK (max ULP 3) |
 | node/test_sce_NCd1d2d3d4d5_none_no_weight/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 3) |
 | node/test_sce_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 3) |
 | node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 3) |
@@ -1721,7 +1721,7 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 | pytorch-converted/test_Conv2d_strided/model.onnx | 6 | Data/Data | ✅ | OK (max ULP 9) |
 | pytorch-converted/test_Conv3d/model.onnx | 6 | Data/Data | ✅ | OK (max ULP 4) |
 | pytorch-converted/test_Conv3d_dilated/model.onnx | 6 | Data/Data | ✅ | OK (max ULP 3) |
-| pytorch-converted/test_Conv3d_dilated_strided/model.onnx | 6 | Data/Data | ✅ | OK (max ULP 0) |
+| pytorch-converted/test_Conv3d_dilated_strided/model.onnx (--fp32-accumulation-strategy fp64) | 6 | Data/Data | ✅ | OK (max ULP 0) |
 | pytorch-converted/test_Conv3d_groups/model.onnx | 6 | Data/Data | ✅ | OK (max ULP 9) |
 | pytorch-converted/test_Conv3d_no_bias/model.onnx | 6 | Data/Data | ✅ | OK (max ULP 0) |
 | pytorch-converted/test_Conv3d_stride/model.onnx | 6 | Data/Data | ✅ | OK (max ULP 5) |
@@ -1914,7 +1914,7 @@ Coverage 124 / 125 ONNX files (99.2%).
 | local_ops/test_scatternd_indices_3x2/model.onnx | 12 | Data/Data | ✅ | OK (max ULP 0) |
 | local_ops/test_shape_const_out/model.onnx | 12 | Data/Data | ✅ | OK (max ULP 0) |
 | local_ops/test_slice_end_INT64_MAX/model.onnx | 12 | Data/Data | ✅ | OK (max ULP 0) |
-| mnist/model.onnx | 8 | Data/Data | ✅ | OK (max ULP 160) |
+| mnist/model.onnx (--max-ulp 200) | 8 | Data/Data | ✅ | OK (max ULP 160) |
 | mnist/pytorch.onnx | 9 | Data/Data | ✅ | OK (max ULP 7) |
 | old_onnx_backend/11/test_softmax_axis_0/model.onnx | 9 | Data/Data | ✅ | OK (max ULP 0) |
 | old_onnx_backend/11/test_softmax_axis_1/model.onnx | 9 | Data/Data | ✅ | OK (max ULP 0) |
@@ -1971,9 +1971,9 @@ Coverage 7 / 7 ONNX files (100.0%).
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
 | micro_kws_m_qdq.onnx | 15 | Random/ORT | ✅ | OK (max ULP 0) |
-| micro_kws_m_qoperator_add_shape.onnx | 15 | Random/ORT | ✅ | OK (max ULP 0) |
-| micro_kws_m_qoperator_avg_pool.onnx | 15 | Random/ORT | ✅ | OK (max ULP 0) |
-| micro_kws_m_qoperator_softmax.onnx | 15 | Random/ORT | ✅ | OK (max ULP 0) |
+| micro_kws_m_qoperator_add_shape.onnx (--replicate-ort-bugs) | 15 | Random/ORT | ✅ | OK (max ULP 0) |
+| micro_kws_m_qoperator_avg_pool.onnx (--replicate-ort-bugs) | 15 | Random/ORT | ✅ | OK (max ULP 0) |
+| micro_kws_m_qoperator_softmax.onnx (--replicate-ort-bugs) | 15 | Random/ORT | ✅ | OK (max ULP 0) |
 | micro_kws_m_static_fp32.onnx | 15 | Random/ORT | ✅ | OK (max ULP 6) |
 | micro_kws_m_static_qdq.onnx | 15 | Random/ORT | ✅ | OK (max ULP 0) |
-| micro_kws_m_static_qoperator.onnx | 15 | Random/ORT | ✅ | OK (max ULP 0) |
+| micro_kws_m_static_qoperator.onnx (--replicate-ort-bugs) | 15 | Random/ORT | ✅ | OK (max ULP 0) |

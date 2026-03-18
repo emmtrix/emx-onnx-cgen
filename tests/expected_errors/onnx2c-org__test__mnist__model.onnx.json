@@ -1,6 +1,10 @@
 {
   "error": "OK (max ULP 160)",
   "command_line": "verify --model-base-dir onnx2c-org/test/mnist model.onnx --test-data-dir test_data_set_0 --max-ulp 200",
+  "extra_cli_args": [
+    "--max-ulp",
+    "200"
+  ],
   "verification_mode": "Data/Data",
   "operators": [
     "Reshape",
