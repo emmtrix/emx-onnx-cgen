@@ -14,6 +14,7 @@ import sys
 import tempfile
 import time
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence, TextIO
 
@@ -158,8 +159,68 @@ class CliResult:
     verification_mode: str | None = None
 
 
-def _format_verification_mode(input_source: str, reference_source: str) -> str:
-    return f"{input_source}/{reference_source}"
+def _format_verification_mode(
+    input_source: "_VerificationInputSource | str",
+    reference_source: "_VerificationReferenceSource | str",
+) -> str:
+    left = input_source.value if isinstance(input_source, Enum) else input_source
+    right = (
+        reference_source.value
+        if isinstance(reference_source, Enum)
+        else reference_source
+    )
+    return f"{left}/{right}"
+
+
+class _VerificationInputSource(str, Enum):
+    RANDOM = "Random"
+    DATA = "Data"
+
+
+class _VerificationReferenceSource(str, Enum):
+    ORT = "ORT"
+    ONNX_REF = "ONNXRef"
+    DATA = "Data"
+
+
+@dataclass
+class _VerificationModeState:
+    input_source: _VerificationInputSource
+    reference_source: _VerificationReferenceSource
+
+    @classmethod
+    def from_args(cls, args: argparse.Namespace) -> "_VerificationModeState":
+        input_source = (
+            _VerificationInputSource.DATA
+            if args.test_data_dir is not None
+            else _VerificationInputSource.RANDOM
+        )
+        reference_source = (
+            _VerificationReferenceSource.ONNX_REF
+            if args.runtime == "onnx-reference"
+            else _VerificationReferenceSource.ORT
+        )
+        if args.test_data_dir is not None and not (
+            args.per_node_accuracy or args.test_data_inputs_only
+        ):
+            reference_source = _VerificationReferenceSource.DATA
+        return cls(input_source=input_source, reference_source=reference_source)
+
+    def format(self) -> str:
+        return _format_verification_mode(self.input_source, self.reference_source)
+
+    def use_random_inputs(self) -> None:
+        self.input_source = _VerificationInputSource.RANDOM
+
+    def use_test_data_reference(self) -> None:
+        self.reference_source = _VerificationReferenceSource.DATA
+
+    def use_runtime_reference(self, runtime_name: str) -> None:
+        self.reference_source = (
+            _VerificationReferenceSource.ONNX_REF
+            if runtime_name == "onnx-reference"
+            else _VerificationReferenceSource.ORT
+        )
 
 
 @dataclass(frozen=True)
@@ -516,15 +577,7 @@ def run_cli_command(
 
     try:
         if args.command != "compile":
-            verification_mode = (
-                _format_verification_mode("Data", "Data")
-                if args.test_data_dir is not None
-                else (
-                    _format_verification_mode("Random", "ONNXRef")
-                    if args.runtime == "onnx-reference"
-                    else _format_verification_mode("Random", "ORT")
-                )
-            )
+            verification_mode = _VerificationModeState.from_args(args).format()
             (
                 success_message,
                 error,
@@ -1374,16 +1427,12 @@ def _verify_model(
     operators: list[str] = []
     opset_version: int | None = None
     generated_checksum: str | None = None
-    input_source = "Data" if args.test_data_dir is not None else "Random"
-    reference_source = "ONNXRef" if args.runtime == "onnx-reference" else "ORT"
+    verification_mode = _VerificationModeState.from_args(args)
 
     def _set_verification_mode() -> None:
         if result_meta is None:
             return
-        result_meta["verification_mode"] = _format_verification_mode(
-            input_source,
-            reference_source,
-        )
+        result_meta["verification_mode"] = verification_mode.format()
 
     def describe_exit_code(returncode: int) -> str:
         if returncode >= 0:
@@ -1546,9 +1595,9 @@ def _verify_model(
             testbench_inputs, testbench_optional_inputs = (
                 _generate_random_testbench_inputs(graph.inputs)
             )
-            input_source = "Random"
+            verification_mode.use_random_inputs()
         if testbench_outputs is not None:
-            reference_source = "Data"
+            verification_mode.use_test_data_reference()
         if args.per_node_accuracy:
             active_reporter.note(
                 "Per-node accuracy: ignoring --test-data-dir reference outputs "
@@ -1912,7 +1961,7 @@ def _verify_model(
                     f"{', '.join(custom_domains)}"
                 )
                 runtime_name = "onnxruntime"
-            reference_source = "ONNXRef" if runtime_name == "onnx-reference" else "ORT"
+            verification_mode.use_runtime_reference(runtime_name)
             runtime_started = active_reporter.start_step(
                 f"  Running {runtime_name} [--runtime={args.runtime}]"
             )
