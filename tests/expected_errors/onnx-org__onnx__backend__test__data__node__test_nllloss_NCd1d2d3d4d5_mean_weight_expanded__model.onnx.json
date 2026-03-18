@@ -1,5 +1,5 @@
 {
-  "error": "Out of tolerance (max ULP 357)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded model.onnx --test-data-dir test_data_set_0 --fp32-accumulation-strategy fp64",
   "verification_mode": "Data/Data",
   "operators": [
@@ -15,5 +15,5 @@
     "Div"
   ],
   "opset_version": 22,
-  "generated_checksum": "10bd36b3cede540d934e91190e2f1e844e785134f23d89567d506fb0f8fc4e8d"
+  "generated_checksum": "e99c3a5bf81b44b06c5bcb4cca6cd41f44046e890260119ff75e3ff8f9bddc32"
 }
