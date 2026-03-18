@@ -241,7 +241,7 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 | node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_1d_default/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_ceil/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx (--runtime onnx-reference --test-data-inputs-only) | 22 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx (--runtime onnx-reference --test-data-inputs-only) | 22 | Data/ONNXRef | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_default/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_dilations/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_pads/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 3) |
@@ -718,7 +718,7 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 | node/test_greater_uint8/model.onnx | 13 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_gridsample/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 2) |
 | node/test_gridsample_aligncorners_true/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_gridsample_bicubic/model.onnx (--runtime onnx-reference --test-data-inputs-only) | 22 | Data/Data | ✅ | OK (max ULP 13) |
+| node/test_gridsample_bicubic/model.onnx (--runtime onnx-reference --test-data-inputs-only) | 22 | Data/ONNXRef | ✅ | OK (max ULP 13) |
 | node/test_gridsample_bicubic_align_corners_0_additional_1/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 13) |
 | node/test_gridsample_bicubic_align_corners_1_additional_1/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 34) |
 | node/test_gridsample_bilinear/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
@@ -1357,8 +1357,8 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 | node/test_rms_normalization_default_axis/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_rms_normalization_default_axis_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_rnn_seq_length/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_roialign_aligned_false/model.onnx (--runtime onnx-reference --test-data-inputs-only) | 22 | Data/Data | ✅ | OK (max ULP 10) |
-| node/test_roialign_aligned_true/model.onnx (--runtime onnx-reference --test-data-inputs-only) | 22 | Data/Data | ✅ | OK (max ULP 11) |
+| node/test_roialign_aligned_false/model.onnx (--runtime onnx-reference --test-data-inputs-only) | 22 | Data/ONNXRef | ✅ | OK (max ULP 10) |
+| node/test_roialign_aligned_true/model.onnx (--runtime onnx-reference --test-data-inputs-only) | 22 | Data/ONNXRef | ✅ | OK (max ULP 11) |
 | node/test_roialign_mode_max/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 36) |
 | node/test_rotary_embedding/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_rotary_embedding_3d_input/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |

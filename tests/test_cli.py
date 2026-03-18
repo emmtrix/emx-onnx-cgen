@@ -317,6 +317,28 @@ def test_cli_verify_per_node_accuracy_flag_can_be_enabled() -> None:
         (["verify", "model.onnx"], "Random/ORT"),
         (["verify", "model.onnx", "--runtime", "onnx-reference"], "Random/ONNXRef"),
         (["verify", "model.onnx", "--test-data-dir", "test_data_set_0"], "Data/Data"),
+        (
+            [
+                "verify",
+                "model.onnx",
+                "--test-data-dir",
+                "test_data_set_0",
+                "--test-data-inputs-only",
+            ],
+            "Data/ORT",
+        ),
+        (
+            [
+                "verify",
+                "model.onnx",
+                "--test-data-dir",
+                "test_data_set_0",
+                "--test-data-inputs-only",
+                "--runtime",
+                "onnx-reference",
+            ],
+            "Data/ONNXRef",
+        ),
     ],
 )
 def test_run_cli_command_reports_verification_mode_with_slash_notation(
