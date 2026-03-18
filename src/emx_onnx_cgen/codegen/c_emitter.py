@@ -2532,10 +2532,10 @@ class CEmitter:
                 update_expr = f"acc += {value_expr};"
                 final_expr = f"acc / {count_literal}"
             elif op.reduce_kind == "max":
-                init_literal = CEmitter._format_literal(acc_dtype, acc_dtype.min_value)
+                init_literal = acc_dtype.min_literal
                 update_expr = f"if ({value_expr} > acc) acc = {value_expr};"
             elif op.reduce_kind == "min":
-                init_literal = CEmitter._format_literal(acc_dtype, acc_dtype.max_value)
+                init_literal = acc_dtype.max_literal
                 update_expr = f"if ({value_expr} < acc) acc = {value_expr};"
             elif op.reduce_kind == "prod":
                 init_literal = CEmitter._format_literal(acc_dtype, 1)
