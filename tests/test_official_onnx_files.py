@@ -95,6 +95,8 @@ MODEL_EXTRA_VERIFY_ARGS = {
         "fp64",
     ),
 }
+
+
 @dataclass(frozen=True)
 class OnnxFileExpectation:
     path: str
