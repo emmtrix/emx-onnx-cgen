@@ -2470,6 +2470,7 @@ class CEmitter:
             output_shape_raw = self._ctx_shape(op.output)
             axes = self._derived(op, "axes")
             output_dtype = self._ctx_dtype(op.output)
+            acc_dtype = self._accumulation_dtype(output_dtype)
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
@@ -2511,51 +2512,51 @@ class CEmitter:
             init_literal = None
             final_expr = "acc"
             fabs_fn = self._scalar_function_name(
-                ScalarFunction.ABS, output_dtype, self._emit_state.scalar_registry
+                ScalarFunction.ABS, acc_dtype, self._emit_state.scalar_registry
             )
             exp_fn = self._scalar_function_name(
-                ScalarFunction.EXP, output_dtype, self._emit_state.scalar_registry
+                ScalarFunction.EXP, acc_dtype, self._emit_state.scalar_registry
             )
             log_fn = self._scalar_function_name(
-                ScalarFunction.LOG, output_dtype, self._emit_state.scalar_registry
+                ScalarFunction.LOG, acc_dtype, self._emit_state.scalar_registry
             )
             sqrt_fn = self._scalar_function_name(
-                ScalarFunction.SQRT, output_dtype, self._emit_state.scalar_registry
+                ScalarFunction.SQRT, acc_dtype, self._emit_state.scalar_registry
             )
             if op.reduce_kind == "sum":
-                init_literal = zero_literal
+                init_literal = CEmitter._format_literal(acc_dtype, 0)
                 update_expr = f"acc += {value_expr};"
             elif op.reduce_kind == "mean":
-                count_literal = CEmitter._format_literal(output_dtype, op.reduce_count)
-                init_literal = zero_literal
+                count_literal = CEmitter._format_literal(acc_dtype, op.reduce_count)
+                init_literal = CEmitter._format_literal(acc_dtype, 0)
                 update_expr = f"acc += {value_expr};"
                 final_expr = f"acc / {count_literal}"
             elif op.reduce_kind == "max":
-                init_literal = min_literal
+                init_literal = acc_dtype.min_literal
                 update_expr = f"if ({value_expr} > acc) acc = {value_expr};"
             elif op.reduce_kind == "min":
-                init_literal = max_literal
+                init_literal = acc_dtype.max_literal
                 update_expr = f"if ({value_expr} < acc) acc = {value_expr};"
             elif op.reduce_kind == "prod":
-                init_literal = CEmitter._format_literal(output_dtype, 1)
+                init_literal = CEmitter._format_literal(acc_dtype, 1)
                 update_expr = f"acc *= {value_expr};"
             elif op.reduce_kind == "l1":
-                init_literal = zero_literal
+                init_literal = CEmitter._format_literal(acc_dtype, 0)
                 update_expr = f"acc += {fabs_fn}({value_expr});"
             elif op.reduce_kind == "l2":
-                init_literal = zero_literal
+                init_literal = CEmitter._format_literal(acc_dtype, 0)
                 update_expr = f"acc += {value_expr} * {value_expr};"
                 final_expr = f"{sqrt_fn}(acc)"
             elif op.reduce_kind == "logsum":
-                init_literal = zero_literal
+                init_literal = CEmitter._format_literal(acc_dtype, 0)
                 update_expr = f"acc += {value_expr};"
                 final_expr = f"{log_fn}(acc)"
             elif op.reduce_kind == "logsumexp":
-                init_literal = zero_literal
+                init_literal = CEmitter._format_literal(acc_dtype, 0)
                 update_expr = f"acc += {exp_fn}({value_expr});"
                 final_expr = f"{log_fn}(acc)"
             elif op.reduce_kind == "sumsquare":
-                init_literal = zero_literal
+                init_literal = CEmitter._format_literal(acc_dtype, 0)
                 update_expr = f"acc += {value_expr} * {value_expr};"
             else:
                 raise CodegenError(f"Unsupported reduce kind {op.reduce_kind}")
@@ -2584,7 +2585,8 @@ class CEmitter:
                     reduce_dims=reduce_dims,
                     output_index_expr=output_index_expr,
                     init_literal=init_literal,
-                    zero_literal=zero_literal,
+                    acc_type=acc_dtype.c_type,
+                    acc_zero_literal=CEmitter._format_literal(acc_dtype, 0),
                     update_expr=update_expr,
                     final_expr=final_expr,
                     use_kahan=False,

@@ -9,9 +9,11 @@ from functools import cache
 from pathlib import Path
 from typing import Any, Callable
 
+import onnx
 import pytest
 
 from emx_onnx_cgen import cli
+from emx_onnx_cgen.compiler import Compiler
 
 EXPECTED_ERRORS_ROOT = Path(__file__).resolve().parent / "expected_errors"
 OFFICIAL_ONNX_PREFIX = "onnx-org/onnx/backend/test/data/"
@@ -21,6 +23,133 @@ LOCAL_ONNX_DATA_ROOT = Path(__file__).resolve().parents[1] / "onnx2c-org" / "tes
 LOCAL_REPO_ONNX_DATA_ROOT = Path(__file__).resolve().parent / "onnx"
 ONNX_FILE_LIMIT = 5000
 _VERBOSE_FLAGS_REPORTED = False
+MODEL_EXTRA_VERIFY_ARGS = {
+    "tests/onnx/micro_kws_m_qoperator_add_shape.onnx": ("--replicate-ort-bugs",),
+    "tests/onnx/micro_kws_m_qoperator_avg_pool.onnx": ("--replicate-ort-bugs",),
+    "tests/onnx/micro_kws_m_qoperator_softmax.onnx": ("--replicate-ort-bugs",),
+    "tests/onnx/micro_kws_m_static_qoperator.onnx": ("--replicate-ort-bugs",),
+    "onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx": (
+        "--fp32-accumulation-strategy",
+        "fp64",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx": (
+        "--fp32-accumulation-strategy",
+        "fp64",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight/model.onnx": (
+        "--fp32-accumulation-strategy",
+        "fp64",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_expanded/model.onnx": (
+        "--fp32-accumulation-strategy",
+        "fp64",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob/model.onnx": (
+        "--fp32-accumulation-strategy",
+        "fp64",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx": (
+        "--fp32-accumulation-strategy",
+        "fp64",
+    ),
+    "onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated_strided/model.onnx": (
+        "--fp32-accumulation-strategy",
+        "fp64",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_dft_inverse/model.onnx": (
+        "--atol-eps",
+        "2",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_dft_inverse_opset19/model.onnx": (
+        "--atol-eps",
+        "2",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx": (
+        "--runtime",
+        "onnx-reference",
+        "--test-data-inputs-only",
+    ),
+    "onnx2c-org/test/mnist/model.onnx": (
+        "--max-ulp",
+        "200",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_roialign_aligned_false/model.onnx": (
+        "--runtime",
+        "onnx-reference",
+        "--test-data-inputs-only",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_roialign_aligned_true/model.onnx": (
+        "--runtime",
+        "onnx-reference",
+        "--test-data-inputs-only",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_constant/model.onnx": (
+        "--runtime",
+        "onnx-reference",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_gridsample_bicubic/model.onnx": (
+        "--runtime",
+        "onnx-reference",
+        "--test-data-inputs-only",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_affine_grid_3d/model.onnx": (
+        "--fp32-accumulation-strategy",
+        "fp64",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_affine_grid_3d_expanded/model.onnx": (
+        "--fp32-accumulation-strategy",
+        "fp64",
+    ),
+}
+
+
+def _shape_inference_shapes_from_test_data(repo_relative_path: str) -> str:
+    model_path = Path(__file__).resolve().parents[1] / repo_relative_path
+    test_data_dir = model_path.parent / "test_data_set_0"
+    if not test_data_dir.exists() or not list(test_data_dir.glob("input_*.pb")):
+        test_data_dir = None
+    if test_data_dir is None:
+        raise AssertionError(
+            f"Missing test_data_set_0 for shape-inference case {repo_relative_path}"
+        )
+    model = onnx.load(model_path)
+    shape_spec = cli._derive_shape_inference_shapes_from_test_data(model, test_data_dir)
+    if not shape_spec:
+        raise AssertionError(
+            f"Could not derive shape-inference shapes for {repo_relative_path}"
+        )
+    return shape_spec
+
+
+@cache
+def _model_requires_shape_inference_shapes(model_path: str) -> bool:
+    return Compiler.requires_explicit_shape_inference_inputs(onnx.load(model_path))
+
+
+MODELS_REQUIRING_SHAPE_INFERENCE_SHAPES = ()
+
+_existing_args: tuple[str, ...] = ()
+_full_model_path = Path()
+_effective_models_requiring_shape_inference_shapes: list[str] = []
+for _model_path in MODELS_REQUIRING_SHAPE_INFERENCE_SHAPES:
+    _full_model_path = Path(__file__).resolve().parents[1] / _model_path
+    if not _full_model_path.exists():
+        continue
+    if not _model_requires_shape_inference_shapes(str(_full_model_path)):
+        continue
+    _effective_models_requiring_shape_inference_shapes.append(_model_path)
+    _existing_args = MODEL_EXTRA_VERIFY_ARGS.get(_model_path, ())
+    MODEL_EXTRA_VERIFY_ARGS[_model_path] = (
+        *_existing_args,
+        "--shape-inference-shapes",
+        _shape_inference_shapes_from_test_data(_model_path),
+    )
+MODELS_REQUIRING_SHAPE_INFERENCE_SHAPES = tuple(
+    _effective_models_requiring_shape_inference_shapes
+)
+del _existing_args
+del _full_model_path
+del _effective_models_requiring_shape_inference_shapes
 
 
 @dataclass(frozen=True)
@@ -170,6 +299,10 @@ def _read_expectation_file(
         error = data.get("error", "")
         command_line = data.get("command_line", "")
         extra_cli_args = data.get("extra_cli_args")
+        if extra_cli_args is None:
+            legacy_extra_args = MODEL_EXTRA_VERIFY_ARGS.get(fallback_path)
+            if legacy_extra_args:
+                extra_cli_args = list(legacy_extra_args)
         verification_mode = data.get("verification_mode")
         operators = data.get("operators")
         opset_version = data.get("opset_version")
