@@ -1,7 +1,7 @@
 {
   "error": "OK UNKNOWN",
   "command_line": "verify --model-base-dir onnx2c-org/test/simple_networks random_uniform.onnx",
-  "verification_mode": "Random+ORT",
+  "verification_mode": "Random/ORT",
   "operators": [
     "RandomUniform"
   ],

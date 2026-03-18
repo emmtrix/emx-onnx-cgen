@@ -1,7 +1,7 @@
 {
   "error": "Out of tolerance (max ULP 62311)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_adam_multiple model.onnx --test-data-dir test_data_set_0",
-  "verification_mode": "Data",
+  "verification_mode": "Data/Data",
   "operators": [
     "ai.onnx.preview.training::Adam"
   ],
