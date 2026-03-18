@@ -1,7 +1,7 @@
 {
   "error": "OK (max ULP 2)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis2_epsilon_expanded_ver18 model.onnx --test-data-dir test_data_set_0",
-  "verification_mode": "Data",
+  "verification_mode": "Data/Data",
   "operators": [
     "Constant",
     "Cast",

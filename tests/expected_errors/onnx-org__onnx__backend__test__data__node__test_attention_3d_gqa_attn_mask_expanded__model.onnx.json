@@ -1,7 +1,7 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_attn_mask_expanded model.onnx --test-data-dir test_data_set_0",
-  "verification_mode": "Data",
+  "verification_mode": "Data/Data",
   "operators": [
     "Shape",
     "Constant",

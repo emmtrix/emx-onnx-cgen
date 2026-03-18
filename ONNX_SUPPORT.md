@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1801 / 1802, 99.9% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1800 / 1802, 99.9% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 124 / 125, 99.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1801 / 1802 ONNX files (99.9%).
+Coverage 1800 / 1802 ONNX files (99.9%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1047,7 +1047,7 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 | node/test_nllloss_NCd1d2d3_sum_weight_high_ii/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | 22 | Data/Data | ❌ | Out of tolerance (max ULP 357) |
 | node/test_nllloss_NCd1d2d3d4d5_none_no_weight/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_nllloss_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_nonmaxsuppression_center_point_box_format/model.onnx | 11 | Data/Data | ✅ | OK (max abs diff 0) |

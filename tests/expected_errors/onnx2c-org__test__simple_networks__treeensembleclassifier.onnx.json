@@ -1,7 +1,7 @@
 {
   "error": "OK (max abs diff 0, max ULP 0)",
   "command_line": "verify --model-base-dir onnx2c-org/test/simple_networks treeensembleclassifier.onnx",
-  "verification_mode": "Random+ORT",
+  "verification_mode": "Random/ORT",
   "operators": [
     "ai.onnx.ml::TreeEnsembleClassifier"
   ],

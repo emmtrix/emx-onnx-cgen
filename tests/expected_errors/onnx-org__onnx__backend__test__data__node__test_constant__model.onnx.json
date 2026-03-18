@@ -1,7 +1,7 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_constant model.onnx --runtime onnx-reference",
-  "verification_mode": "Random+ONNXRef",
+  "verification_mode": "Random/ONNXRef",
   "operators": [
     "Constant"
   ],

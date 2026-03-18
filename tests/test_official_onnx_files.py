@@ -307,9 +307,7 @@ def _read_expectation_file(
     if isinstance(data, dict):
         error = data.get("error", "")
         command_line = data.get("command_line", "")
-        verification_mode = normalize_verification_mode(
-            data.get("verification_mode")
-        )
+        verification_mode = normalize_verification_mode(data.get("verification_mode"))
         operators = data.get("operators")
         opset_version = data.get("opset_version")
         generated_checksum = data.get("generated_checksum")

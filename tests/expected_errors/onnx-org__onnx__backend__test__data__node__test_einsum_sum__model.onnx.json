@@ -1,7 +1,7 @@
 {
   "error": "OK (max ULP 1)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_einsum_sum model.onnx --test-data-dir test_data_set_0",
-  "verification_mode": "Data",
+  "verification_mode": "Data/Data",
   "operators": [
     "Einsum"
   ],
