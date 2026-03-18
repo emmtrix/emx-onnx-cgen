@@ -19,7 +19,6 @@ from test_official_onnx_files import (
     _maybe_init_onnx_org,
     _official_onnx_file_paths,
     _repo_root,
-    normalize_verification_mode,
 )
 
 OFFICIAL_ONNX_FILE_SUPPORT_PATH = (
@@ -51,7 +50,7 @@ def _render_onnx_file_support_table(
     include_expectation: Callable[[OnnxFileExpectation], bool] | None = None,
 ) -> list[str]:
     def _verification_mode(expectation: OnnxFileExpectation) -> str:
-        return normalize_verification_mode(expectation.verification_mode) or ""
+        return expectation.verification_mode or ""
 
     predicate = include_expectation or (lambda expectation: True)
     lines = [
