@@ -32,6 +32,10 @@ MODEL_EXTRA_VERIFY_ARGS = {
         "--fp32-accumulation-strategy",
         "fp64",
     ),
+    "onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx": (
+        "--fp32-accumulation-strategy",
+        "fp64",
+    ),
     "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight/model.onnx": (
         "--fp32-accumulation-strategy",
         "fp64",

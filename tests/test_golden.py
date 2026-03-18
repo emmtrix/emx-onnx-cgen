@@ -787,6 +787,33 @@ def test_codegen_testbench_output_format_txt_emmtrix_custom_ulp() -> None:
     assert "#ULP123.5" in generated
 
 
+def test_reduce_mean_uses_fp64_accumulator_when_requested() -> None:
+    input_info = helper.make_tensor_value_info("input", TensorProto.FLOAT, [2, 3, 4])
+    output = helper.make_tensor_value_info("output", TensorProto.FLOAT, [2, 1, 4])
+    node = helper.make_node(
+        "ReduceMean",
+        inputs=["input"],
+        outputs=["output"],
+        axes=[1],
+        keepdims=1,
+    )
+    graph = helper.make_graph([node], "reduce_mean_fp64_graph", [input_info], [output])
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+
+    generated = Compiler(
+        CompilerOptions(fp32_accumulation_strategy="fp64")
+    ).compile(model)
+
+    assert "double acc = 0.0;" in generated
+    assert "output[i0][i1][i2] = acc / 3.0;" in generated
+
+
 def test_codegen_testbench_uses_large_temp_threshold_for_io_buffers() -> None:
     model = _make_add_model()
 
