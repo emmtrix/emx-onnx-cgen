@@ -4,7 +4,7 @@
   "extra_cli_args": [
     "--replicate-ort-bugs"
   ],
-  "verification_mode": "Random+ORT",
+  "verification_mode": "Random/ORT",
   "operators": [
     "Reshape",
     "QuantizeLinear",

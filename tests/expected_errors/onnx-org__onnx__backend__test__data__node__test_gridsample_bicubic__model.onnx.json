@@ -6,7 +6,7 @@
     "onnx-reference",
     "--test-data-inputs-only"
   ],
-  "verification_mode": "Data",
+  "verification_mode": "Data/Data",
   "operators": [
     "GridSample"
   ],

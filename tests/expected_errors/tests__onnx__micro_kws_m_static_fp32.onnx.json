@@ -1,7 +1,7 @@
 {
   "error": "OK (max ULP 6)",
   "command_line": "verify --model-base-dir tests/onnx micro_kws_m_static_fp32.onnx",
-  "verification_mode": "Random+ORT",
+  "verification_mode": "Random/ORT",
   "operators": [
     "Reshape",
     "Conv",

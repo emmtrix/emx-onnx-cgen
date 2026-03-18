@@ -5,7 +5,7 @@
     "--runtime",
     "onnx-reference"
   ],
-  "verification_mode": "Random+ONNXRef",
+  "verification_mode": "Random/ONNXRef",
   "operators": [
     "Constant"
   ],

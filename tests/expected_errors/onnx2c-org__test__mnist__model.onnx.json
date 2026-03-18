@@ -5,7 +5,7 @@
     "--max-ulp",
     "200"
   ],
-  "verification_mode": "Data",
+  "verification_mode": "Data/Data",
   "operators": [
     "Reshape",
     "Conv",
