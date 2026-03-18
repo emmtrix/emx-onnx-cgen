@@ -12,7 +12,6 @@ import onnx
 
 from shared.scalar_types import ScalarType
 
-from .onnxruntime_utils import make_deterministic_session_options
 from .codegen.c_emitter import (
     CEmitter,
     ConstTensor,
@@ -97,7 +96,6 @@ class CompilerOptions:
     testbench_outputs: Mapping[str, np.ndarray | list[np.ndarray]] | None = None
     testbench_optional_inputs: Mapping[str, bool] | None = None
     testbench_output_format: str = "json"
-    shape_inference_inputs: Mapping[str, np.ndarray] | None = None
     truncate_weights_after: int | None = None
     large_temp_threshold_bytes: int = 1024
     large_weight_threshold: int = 100 * 1024
@@ -178,12 +176,9 @@ class Compiler:
             lambda: import_onnx(prepared_model, _prepared=True),
         )
         missing_shape_reason = self._shape_concretization_requirement_reason(graph)
-        if (
-            missing_shape_reason is not None
-            and not self._options.shape_inference_inputs
-        ):
+        if missing_shape_reason is not None:
             lowered = self._time_step(
-                "lower_model_without_concretize",
+                "lower_model_without_dynamic_shape_support",
                 lambda: self._try_lower_without_shape_concretization(
                     prepared_model, graph
                 ),
@@ -198,25 +193,9 @@ class Compiler:
                     variable_dim_outputs=variable_dim_outputs,
                 )
             raise UnsupportedOpError(
-                "Code generation needs explicit shape concretization, but no "
-                "--shape-inference-shapes were provided. "
+                "Code generation requires static shapes. "
                 f"Reason: {missing_shape_reason}. "
-                "Hint: pass --shape-inference-shapes with explicit input specs "
-                "(for example x=1x3x224x224;size=[1,3,224,224]) to compile/verify, "
-                "or export the model with static shapes."
-            )
-        graph = self._time_step(
-            "concretize_shapes",
-            lambda: self._concretize_graph_shapes(prepared_model, graph),
-        )
-        unresolved_shape_reason = self._unresolved_shape_concretization_reason(graph)
-        if unresolved_shape_reason is not None:
-            raise UnsupportedOpError(
-                "Code generation still has unresolved dynamic shapes after "
-                "shape concretization. "
-                f"Reason: {unresolved_shape_reason}. "
-                "Hint: provide more representative --shape-inference-shapes or "
-                "export the model with static shapes."
+                "Hint: export the model with static shapes."
             )
         variable_dim_inputs, variable_dim_outputs = self._time_step(
             "collect_variable_dims", lambda: self._collect_variable_dims(graph)
@@ -365,36 +344,6 @@ class Compiler:
         return None
 
     @staticmethod
-    def _unresolved_shape_concretization_reason(graph: Graph) -> str | None:
-        allowed_internal_dim_params = Compiler._allowed_internal_dim_params(graph)
-        for value in graph.inputs:
-            reason = _value_requires_explicit_shape_concretization(
-                value,
-                allow_top_level_tensor_dims=True,
-                check_sequence_dims=True,
-            )
-            if reason is not None:
-                return reason
-        for value in graph.values:
-            reason = _value_requires_explicit_shape_concretization(
-                value,
-                allow_top_level_tensor_dims=False,
-                check_sequence_dims=False,
-                allowed_tensor_dim_params=allowed_internal_dim_params,
-            )
-            if reason is not None:
-                return reason
-        for value in graph.outputs:
-            reason = _value_requires_explicit_shape_concretization(
-                value,
-                allow_top_level_tensor_dims=True,
-                check_sequence_dims=False,
-            )
-            if reason is not None:
-                return reason
-        return None
-
-    @staticmethod
     def _allowed_internal_dim_params(graph: Graph) -> set[str]:
         dim_params: set[str] = set()
         for value in graph.inputs + graph.outputs:
@@ -407,18 +356,6 @@ class Compiler:
                     dim_param for dim_param in value.type.elem.dim_params if dim_param
                 )
         return dim_params
-
-    @classmethod
-    def requires_explicit_shape_inference_inputs(cls, model: onnx.ModelProto) -> bool:
-        prepared_model = prepare_onnx_model(model)
-        graph = import_onnx(prepared_model, _prepared=True)
-        if cls._shape_concretization_requirement_reason(graph) is None:
-            return False
-        compiler = cls(CompilerOptions())
-        return (
-            compiler._try_lower_without_shape_concretization(prepared_model, graph)
-            is None
-        )
 
     @staticmethod
     def _collect_variable_dims(
@@ -584,146 +521,6 @@ class Compiler:
             nodes=identity_nodes,
             initializers=tuple(renamed_initializers),
             values=graph.values,
-            opset_imports=graph.opset_imports,
-        )
-
-    def _concretize_graph_shapes(self, model: onnx.ModelProto, graph: Graph) -> Graph:
-        shape_inputs = self._options.shape_inference_inputs
-        if not shape_inputs:
-            return graph
-        if not any(
-            (isinstance(value.type, TensorType) and bool(value.type.dim_params))
-            or (
-                isinstance(value.type, SequenceType)
-                and bool(value.type.elem.dim_params)
-            )
-            for value in graph.values + graph.inputs + graph.outputs
-        ):
-            return graph
-        try:
-            import onnxruntime as ort
-        except Exception:
-            return graph
-        has_sequence_insert = any(
-            node.op_type == "SequenceInsert" for node in graph.nodes
-        )
-        sequence_elem_shapes_by_name: dict[str, tuple[int, ...]] = {}
-        if not has_sequence_insert:
-            for value in graph.inputs:
-                if not isinstance(value.type, SequenceType):
-                    continue
-                array = shape_inputs.get(value.name)
-                if not isinstance(array, np.ndarray) or array.ndim < 1:
-                    continue
-                sequence_elem_shapes_by_name[value.name] = tuple(
-                    int(dim) for dim in array.shape[1:]
-                )
-
-        ort_inputs: dict[str, np.ndarray] = {}
-        output_names: list[str] = []
-        output_arrays: list[object] = []
-        try:
-            model_with_outputs = onnx.ModelProto()
-            model_with_outputs.CopyFrom(model)
-            existing_outputs = {
-                output.name for output in model_with_outputs.graph.output
-            }
-            value_info_by_name = {
-                value_info.name: value_info
-                for value_info in model_with_outputs.graph.value_info
-            }
-            for value in graph.values:
-                if value.name in existing_outputs:
-                    continue
-                value_info = value_info_by_name.get(value.name)
-                if value_info is None:
-                    dims: list[int | str | None] = []
-                    if not isinstance(value.type, TensorType):
-                        continue
-                    for index, dim in enumerate(value.type.shape):
-                        dim_param = None
-                        if index < len(value.type.dim_params):
-                            dim_param = value.type.dim_params[index]
-                        dims.append(dim_param if dim_param else None)
-                    elem_type = _onnx_elem_type(value.type.dtype.np_dtype)
-                    value_info = onnx.helper.make_tensor_value_info(
-                        value.name, elem_type, dims
-                    )
-                model_with_outputs.graph.output.append(value_info)
-                existing_outputs.add(value.name)
-            output_names = [output.name for output in model_with_outputs.graph.output]
-            sess_options = make_deterministic_session_options(ort)
-            sess = ort.InferenceSession(
-                model_with_outputs.SerializeToString(),
-                sess_options=sess_options,
-                providers=["CPUExecutionProvider"],
-            )
-            graph_tensor_inputs = {
-                value.name
-                for value in graph.inputs
-                if isinstance(value.type, TensorType)
-            }
-            ort_inputs = {
-                name: array
-                for name, array in shape_inputs.items()
-                if name in graph_tensor_inputs and isinstance(array, np.ndarray)
-            }
-            if ort_inputs:
-                output_arrays = sess.run(None, ort_inputs)
-            else:
-                output_arrays = []
-                output_names = []
-        except Exception:
-            if not sequence_elem_shapes_by_name:
-                return graph
-
-        shapes_by_name: dict[str, tuple[int, ...]] = {}
-        for name, array in zip(output_names, output_arrays):
-            if isinstance(array, np.ndarray):
-                shapes_by_name[name] = tuple(int(dim) for dim in array.shape)
-        for name, array in ort_inputs.items():
-            if isinstance(array, np.ndarray):
-                shapes_by_name[name] = tuple(int(dim) for dim in array.shape)
-
-        def concretize_value(value: Value) -> Value:
-            if not isinstance(value.type, TensorType):
-                if isinstance(value.type, SequenceType):
-                    elem_shape = sequence_elem_shapes_by_name.get(value.name)
-                    if elem_shape is None:
-                        return value
-                    elem = value.type.elem
-                    return Value(
-                        name=value.name,
-                        type=SequenceType(
-                            elem=TensorType(
-                                dtype=elem.dtype,
-                                shape=elem_shape,
-                                dim_params=(None,) * len(elem_shape),
-                                is_optional=elem.is_optional,
-                            ),
-                            is_optional=value.type.is_optional,
-                        ),
-                    )
-                return value
-            shape = shapes_by_name.get(value.name)
-            if shape is None:
-                return value
-            return Value(
-                name=value.name,
-                type=TensorType(
-                    dtype=value.type.dtype,
-                    shape=shape,
-                    dim_params=(None,) * len(shape),
-                    is_optional=value.type.is_optional,
-                ),
-            )
-
-        return Graph(
-            inputs=tuple(concretize_value(value) for value in graph.inputs),
-            outputs=tuple(concretize_value(value) for value in graph.outputs),
-            nodes=graph.nodes,
-            initializers=graph.initializers,
-            values=tuple(concretize_value(value) for value in graph.values),
             opset_imports=graph.opset_imports,
         )
 
