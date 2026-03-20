@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
 import tempfile
 from pathlib import Path
@@ -31,6 +32,7 @@ import onnx
 import pytest
 from onnx import TensorProto, helper
 
+from emx_onnx_cgen.cli import _resolve_compiler
 from emx_onnx_cgen.compiler import Compiler, CompilerOptions
 from emx_onnx_cgen.testbench import decode_testbench_array
 
@@ -46,7 +48,13 @@ def _compile_and_run_testbench(
     testbench_inputs: dict[str, np.ndarray] | None = None,
 ) -> tuple[dict[str, object], str]:
     """Compile and run a testbench for a model that uses float8 types."""
-    cc = os.environ.get("CC") or "cc"
+    compiler_cmd = _resolve_compiler(os.environ.get("CC"), prefer_ccache=False)
+    if compiler_cmd is None:
+        compiler = shutil.which("gcc") or shutil.which("clang")
+        if compiler is not None:
+            compiler_cmd = [compiler]
+    if compiler_cmd is None:
+        pytest.skip("C compiler not available (set CC or install gcc/clang)")
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
         c_path = temp_path / "model.c"
@@ -56,7 +64,7 @@ def _compile_and_run_testbench(
         generated = compiler.compile(model)
         c_path.write_text(generated, encoding="utf-8")
         subprocess.run(
-            [cc, "-std=c99", "-O2", str(c_path), "-o", str(exe_path), "-lm"],
+            [*compiler_cmd, "-std=c99", "-O2", str(c_path), "-o", str(exe_path), "-lm"],
             check=True,
             capture_output=True,
             text=True,
@@ -149,19 +157,18 @@ def test_float8e4m3fn_backend() -> None:
 
     # Decode output and compare with ml_dtypes reference
     out_data = decode_testbench_array(
-        payload["outputs"]["y"]["data"], np.dtype(np.uint8)
+        payload["outputs"]["y"]["data"], ml_dtypes.float8_e4m3fn
     )
-    expected = f32_input.astype(ml_dtypes.float8_e4m3fn).view(np.uint8)
+    expected = f32_input.astype(ml_dtypes.float8_e4m3fn)
     np.testing.assert_array_equal(out_data, expected)
 
     out_weight = decode_testbench_array(
-        payload["outputs"]["y_from_weight"]["data"], np.dtype(np.uint8)
+        payload["outputs"]["y_from_weight"]["data"], ml_dtypes.float8_e4m3fn
     )
     expected_w = (
         np.array(f32_weights, dtype=np.float32)
         .reshape(shape)
         .astype(ml_dtypes.float8_e4m3fn)
-        .view(np.uint8)
     )
     np.testing.assert_array_equal(out_weight, expected_w)
 
@@ -188,9 +195,9 @@ def test_float8e4m3fnuz_backend() -> None:
     assert "ref_scalar_f8e4m3fnuz_from_f32" in generated
 
     out_data = decode_testbench_array(
-        payload["outputs"]["y"]["data"], np.dtype(np.uint8)
+        payload["outputs"]["y"]["data"], ml_dtypes.float8_e4m3fnuz
     )
-    expected = f32_input.astype(ml_dtypes.float8_e4m3fnuz).view(np.uint8)
+    expected = f32_input.astype(ml_dtypes.float8_e4m3fnuz)
     np.testing.assert_array_equal(out_data, expected)
 
 
@@ -216,9 +223,9 @@ def test_float8e5m2_backend() -> None:
     assert "ref_scalar_f8e5m2_from_f32" in generated
 
     out_data = decode_testbench_array(
-        payload["outputs"]["y"]["data"], np.dtype(np.uint8)
+        payload["outputs"]["y"]["data"], ml_dtypes.float8_e5m2
     )
-    expected = f32_input.astype(ml_dtypes.float8_e5m2).view(np.uint8)
+    expected = f32_input.astype(ml_dtypes.float8_e5m2)
     np.testing.assert_array_equal(out_data, expected)
 
 
@@ -244,9 +251,9 @@ def test_float8e5m2fnuz_backend() -> None:
     assert "ref_scalar_f8e5m2fnuz_from_f32" in generated
 
     out_data = decode_testbench_array(
-        payload["outputs"]["y"]["data"], np.dtype(np.uint8)
+        payload["outputs"]["y"]["data"], ml_dtypes.float8_e5m2fnuz
     )
-    expected = f32_input.astype(ml_dtypes.float8_e5m2fnuz).view(np.uint8)
+    expected = f32_input.astype(ml_dtypes.float8_e5m2fnuz)
     np.testing.assert_array_equal(out_data, expected)
 
 
@@ -273,9 +280,9 @@ def test_float8e8m0fnu_backend() -> None:
     assert "ref_scalar_f8e8m0fnu_from_f32" in generated
 
     out_data = decode_testbench_array(
-        payload["outputs"]["y"]["data"], np.dtype(np.uint8)
+        payload["outputs"]["y"]["data"], ml_dtypes.float8_e8m0fnu
     )
-    expected = f32_input.astype(ml_dtypes.float8_e8m0fnu).view(np.uint8)
+    expected = f32_input.astype(ml_dtypes.float8_e8m0fnu)
     np.testing.assert_array_equal(out_data, expected)
 
 
@@ -302,19 +309,18 @@ def test_float4e2m1_backend() -> None:
 
     # Decode output and compare with ml_dtypes reference
     out_data = decode_testbench_array(
-        payload["outputs"]["y"]["data"], np.dtype(np.uint8)
+        payload["outputs"]["y"]["data"], ml_dtypes.float4_e2m1fn
     )
-    expected = f32_input.astype(ml_dtypes.float4_e2m1fn).view(np.uint8)
+    expected = f32_input.astype(ml_dtypes.float4_e2m1fn)
     np.testing.assert_array_equal(out_data, expected)
 
     out_weight = decode_testbench_array(
-        payload["outputs"]["y_from_weight"]["data"], np.dtype(np.uint8)
+        payload["outputs"]["y_from_weight"]["data"], ml_dtypes.float4_e2m1fn
     )
     expected_w = (
         np.array(f32_weights, dtype=np.float32)
         .reshape(shape)
         .astype(ml_dtypes.float4_e2m1fn)
-        .view(np.uint8)
     )
     np.testing.assert_array_equal(out_weight, expected_w)
 
@@ -434,11 +440,11 @@ def test_float4e2m1_quantize_backend() -> None:
 
     # Decode output and compare with reference computation
     out_data = decode_testbench_array(
-        payload["outputs"]["y"]["data"], np.dtype(np.uint8)
+        payload["outputs"]["y"]["data"], ml_dtypes.float4_e2m1fn
     )
     zp_f32 = (
         np.float32(zero_point_f32).astype(ml_dtypes.float4_e2m1fn).astype(np.float32)
     )
     scaled = f32_input / np.float32(scale) + zp_f32
-    expected = scaled.astype(ml_dtypes.float4_e2m1fn).view(np.uint8)
+    expected = scaled.astype(ml_dtypes.float4_e2m1fn)
     np.testing.assert_array_equal(out_data, expected)
