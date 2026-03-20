@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from itertools import chain
 from typing import Mapping
 
 import numpy as np
@@ -57,7 +58,7 @@ class Graph:
     opset_imports: tuple[tuple[str, int], ...] = ()
 
     def find_value(self, name: str) -> Value:
-        for value in self.inputs + self.outputs + self.values:
+        for value in chain(self.inputs, self.outputs, self.values):
             if value.name == name:
                 return value
         for initializer in self.initializers:

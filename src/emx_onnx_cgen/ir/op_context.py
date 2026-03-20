@@ -39,23 +39,18 @@ class OpContext:
         self._derived.setdefault(id(op), {})[key] = value
 
     def get_derived(self, op: object, key: str, default: object = _MISSING) -> object:
-        derived = self._derived.get(id(op), {})
-        if key in derived:
-            return derived[key]
-        if default is _MISSING:
-            return _MISSING
-        return default
+        return self._derived.get(id(op), {}).get(key, default)
 
     def require_derived(self, op: object, key: str) -> object:
-        derived = self._derived.get(id(op), {})
-        if key in derived:
-            return derived[key]
-        raise KeyError(f"Missing derived value '{key}' for op {op.__class__.__name__}")
+        try:
+            return self._derived[id(op)][key]
+        except KeyError:
+            raise KeyError(f"Missing derived value '{key}' for op {op.__class__.__name__}") from None
 
     def copy_derived(self, source_op: object, target_op: object) -> None:
         derived = self._derived.get(id(source_op))
         if derived:
-            self._derived[id(target_op)] = dict(derived)
+            self._derived[id(target_op)] = derived.copy()
 
     def __getattr__(self, name: str):
         return getattr(self.graph, name)

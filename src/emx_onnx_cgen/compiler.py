@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import hashlib
+from itertools import chain
 import os
 from pathlib import Path
 import time
@@ -316,37 +317,29 @@ class Compiler:
     @staticmethod
     def _shape_concretization_requirement_reason(graph: Graph) -> str | None:
         allowed_internal_dim_params = Compiler._allowed_internal_dim_params(graph)
-        for value in graph.inputs:
-            reason = _value_requires_explicit_shape_concretization(
-                value,
-                allow_top_level_tensor_dims=True,
-                check_sequence_dims=True,
-            )
-            if reason is not None:
-                return reason
-        for value in graph.values:
-            reason = _value_requires_explicit_shape_concretization(
-                value,
-                allow_top_level_tensor_dims=False,
-                check_sequence_dims=True,
-                allowed_tensor_dim_params=allowed_internal_dim_params,
-            )
-            if reason is not None:
-                return reason
-        for value in graph.outputs:
-            reason = _value_requires_explicit_shape_concretization(
-                value,
-                allow_top_level_tensor_dims=True,
-                check_sequence_dims=True,
-            )
-            if reason is not None:
-                return reason
+        checks: list[
+            tuple[tuple[Value, ...], bool, set[str] | None]
+        ] = [
+            (graph.inputs, True, None),
+            (graph.values, False, allowed_internal_dim_params),
+            (graph.outputs, True, None),
+        ]
+        for values, allow_top_level, allowed_params in checks:
+            for value in values:
+                reason = _value_requires_explicit_shape_concretization(
+                    value,
+                    allow_top_level_tensor_dims=allow_top_level,
+                    check_sequence_dims=True,
+                    allowed_tensor_dim_params=allowed_params,
+                )
+                if reason is not None:
+                    return reason
         return None
 
     @staticmethod
     def _allowed_internal_dim_params(graph: Graph) -> set[str]:
         dim_params: set[str] = set()
-        for value in graph.inputs + graph.outputs:
+        for value in chain(graph.inputs, graph.outputs):
             if isinstance(value.type, TensorType):
                 dim_params.update(
                     dim_param for dim_param in value.type.dim_params if dim_param
@@ -637,40 +630,35 @@ class Compiler:
 
         input_names = tuple(value.name for value in graph.inputs)
 
-        def is_optional_value_type(value_type: ValueType) -> bool:
-            return bool(getattr(value_type, "is_optional", False))
+        def _optional_name(value: Value) -> str | None:
+            return (
+                _optional_flag_name(value.name)
+                if getattr(value.type, "is_optional", False)
+                else None
+            )
 
-        input_optional_names = tuple(
-            (
-                _optional_flag_name(value.name)
-                if is_optional_value_type(value.type)
-                else None
-            )
-            for value in graph.inputs
-        )
-        input_types = tuple(value.type for value in graph.inputs)
-        input_shapes = tuple(
-            tensor_type(value.name, value.type).shape for value in graph.inputs
-        )
-        input_dtypes = tuple(
-            tensor_type(value.name, value.type).dtype for value in graph.inputs
-        )
-        output_names = tuple(value.name for value in graph.outputs)
-        output_optional_names = tuple(
-            (
-                _optional_flag_name(value.name)
-                if is_optional_value_type(value.type)
-                else None
-            )
-            for value in graph.outputs
-        )
-        output_types = tuple(value.type for value in graph.outputs)
-        output_shapes = tuple(
-            tensor_type(value.name, value.type).shape for value in graph.outputs
-        )
-        output_dtypes = tuple(
-            tensor_type(value.name, value.type).dtype for value in graph.outputs
-        )
+        def _collect_specs(values: tuple[Value, ...]):
+            names = tuple(v.name for v in values)
+            optional = tuple(_optional_name(v) for v in values)
+            types = tuple(v.type for v in values)
+            shapes = tuple(tensor_type(v.name, v.type).shape for v in values)
+            dtypes = tuple(tensor_type(v.name, v.type).dtype for v in values)
+            return names, optional, shapes, dtypes, types
+
+        (
+            input_names,
+            input_optional_names,
+            input_shapes,
+            input_dtypes,
+            input_types,
+        ) = _collect_specs(graph.inputs)
+        (
+            output_names,
+            output_optional_names,
+            output_shapes,
+            output_dtypes,
+            output_types,
+        ) = _collect_specs(graph.outputs)
         return (
             input_names,
             input_optional_names,
