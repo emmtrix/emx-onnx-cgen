@@ -1046,6 +1046,21 @@ class CEmitter:
             input_dim_names=input_dim_names,
             output_dim_names=output_dim_names,
         )
+        emitted_testbench = None
+        if emit_testbench and testbench_template is not None:
+            emitted_testbench = self._emit_testbench(
+                model,
+                testbench_template,
+                testbench_output_format=testbench_output_format,
+                testbench_inputs=testbench_inputs,
+                testbench_outputs=testbench_outputs,
+                testbench_optional_inputs=testbench_optional_inputs,
+                input_dim_names=input_dim_names,
+                output_dim_names=output_dim_names,
+                dim_order=dim_order,
+                dim_values=dim_values,
+                weight_data_filename=self._weight_data_filename(model),
+            )
         scalar_functions = scalar_registry.render()
         scalar_include_lines = (
             scalar_registry.include_lines() if scalar_functions else []
@@ -1138,23 +1153,11 @@ class CEmitter:
                 wrapper_fn,
             )
         )
-        if emit_testbench and testbench_template is not None:
+        if emitted_testbench is not None:
             sections.extend(
                 (
                     "",
-                    self._emit_testbench(
-                        model,
-                        testbench_template,
-                        testbench_output_format=testbench_output_format,
-                        testbench_inputs=testbench_inputs,
-                        testbench_outputs=testbench_outputs,
-                        testbench_optional_inputs=testbench_optional_inputs,
-                        input_dim_names=input_dim_names,
-                        output_dim_names=output_dim_names,
-                        dim_order=dim_order,
-                        dim_values=dim_values,
-                        weight_data_filename=self._weight_data_filename(model),
-                    ),
+                    emitted_testbench,
                 )
             )
         sections.append("")
@@ -1260,6 +1263,21 @@ class CEmitter:
             input_dim_names=input_dim_names,
             output_dim_names=output_dim_names,
         )
+        emitted_testbench = None
+        if emit_testbench and testbench_template is not None:
+            emitted_testbench = self._emit_testbench(
+                model,
+                testbench_template,
+                testbench_output_format=testbench_output_format,
+                testbench_inputs=testbench_inputs,
+                testbench_outputs=testbench_outputs,
+                testbench_optional_inputs=testbench_optional_inputs,
+                input_dim_names=input_dim_names,
+                output_dim_names=output_dim_names,
+                dim_order=dim_order,
+                dim_values=dim_values,
+                weight_data_filename=self._weight_data_filename(model),
+            )
         scalar_functions = scalar_registry.render()
         scalar_include_lines = (
             scalar_registry.include_lines() if scalar_functions else []
@@ -1347,23 +1365,11 @@ class CEmitter:
                 wrapper_fn,
             )
         )
-        if emit_testbench and testbench_template is not None:
+        if emitted_testbench is not None:
             sections.extend(
                 (
                     "",
-                    self._emit_testbench(
-                        model,
-                        testbench_template,
-                        testbench_output_format=testbench_output_format,
-                        testbench_inputs=testbench_inputs,
-                        testbench_outputs=testbench_outputs,
-                        testbench_optional_inputs=testbench_optional_inputs,
-                        input_dim_names=input_dim_names,
-                        output_dim_names=output_dim_names,
-                        dim_order=dim_order,
-                        dim_values=dim_values,
-                        weight_data_filename=self._weight_data_filename(model),
-                    ),
+                    emitted_testbench,
                 )
             )
         sections.append("")
@@ -3200,6 +3206,8 @@ class CEmitter:
         dim_values: Mapping[str, int],
         weight_data_filename: str,
     ) -> str:
+        scalar_registry = self._emit_state.scalar_registry
+
         def concrete_shape_for_testbench(
             shape: tuple[int, ...],
             dim_names: Mapping[int, CodegenDim] | None,
@@ -3418,8 +3426,9 @@ class CEmitter:
                     "is_string": dtype == ScalarType.STRING,
                     "c_type": dtype.c_type,
                     "random_expr": random_expr,
-                    "print_format": self._print_format(dtype),
-                    "print_cast": self._print_cast(dtype),
+                    "print_format": self._testbench_print_format(dtype),
+                    "print_cast": self._testbench_print_cast(dtype, scalar_registry),
+                    "print_suffix": self._testbench_print_suffix(dtype),
                     "constant_name": constant_name,
                     "constant_lines": constant_lines,
                     "json_name": json_name,
@@ -3498,8 +3507,9 @@ class CEmitter:
                     "dtype": dtype,
                     "is_string": dtype == ScalarType.STRING,
                     "c_type": dtype.c_type,
-                    "print_format": self._print_format(dtype),
-                    "print_cast": self._print_cast(dtype),
+                    "print_format": self._testbench_print_format(dtype),
+                    "print_cast": self._testbench_print_cast(dtype, scalar_registry),
+                    "print_suffix": self._testbench_print_suffix(dtype),
                     "json_name": json_name,
                     "is_sequence": is_sequence_output,
                     "count_name": f"{name}__count",
@@ -4189,6 +4199,30 @@ class CEmitter:
         if dtype == ScalarType.STRING:
             return ""
         raise CodegenError(f"Unsupported dtype {dtype.onnx_name}")
+
+    def _testbench_print_format(self, dtype: ScalarType) -> str:
+        if dtype.is_typedef_float:
+            return '\\"%a\\"'
+        return self._print_format(dtype)
+
+    def _testbench_print_cast(
+        self, dtype: ScalarType, scalar_registry: ScalarFunctionRegistry
+    ) -> str:
+        if dtype.is_typedef_float:
+            fn_name = scalar_registry.request(
+                ScalarFunctionKey(
+                    function=ScalarFunction.CONVERT_FROM_BOOL,
+                    return_type=dtype,
+                )
+            )
+            return f"(double){fn_name}("
+        return self._print_cast(dtype)
+
+    @staticmethod
+    def _testbench_print_suffix(dtype: ScalarType) -> str:
+        if dtype.is_typedef_float:
+            return ")"
+        return ""
 
 
 def _format_multiline_value(value: str | None) -> list[str]:

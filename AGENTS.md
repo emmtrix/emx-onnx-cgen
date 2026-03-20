@@ -77,6 +77,9 @@ When making architectural decisions, prefer clean and maintainable design even i
 pytest -q --maxfail=10
 ```
 
+- If a repository-local virtual environment exists at `.venv/`, always use its
+  Python interpreter and tools (for example `.venv/Scripts/python.exe` on
+  Windows) instead of a system-wide `python`, `py`, or `pytest`.
 - When reporting executed tests, include the test duration (if known) in your feedback.
 - Prefer running only targeted tests known to be affected by your changes.
 - Skip running tests for documentation-only changes unless explicitly requested.
