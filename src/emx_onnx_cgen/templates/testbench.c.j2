@@ -224,7 +224,7 @@ for (idx_t {{ output.loop_vars[depth] }} = 0; {{ output.loop_vars[depth] }} < {{
 {% if output.is_string %}
 printf("\"%s\"", {{ output.name }}{{ output.array_index_expr }});
 {% else %}
-printf("{{ output.print_format }}", {{ output.print_cast }}{{ output.name }}{{ output.array_index_expr }});
+printf("{{ output.print_format }}", {{ output.print_cast }}{{ output.name }}{{ output.array_index_expr }}{{ output.print_suffix }});
 {% endif %}
 {% for depth in range(output.rank - 1, -1, -1) %}
 {% if depth < output.rank - 1 %}
@@ -266,7 +266,7 @@ for (idx_t {{ output.loop_vars[depth] }} = 0; {{ output.loop_vars[depth] }} < {{
 {% if output.is_string %}
 printf("%s", {{ output.name }}{{ output.array_index_expr }});
 {% else %}
-printf("{{ output.print_format }}", {{ output.print_cast }}{{ output.name }}{{ output.array_index_expr }});
+printf("{{ output.print_format }}", {{ output.print_cast }}{{ output.name }}{{ output.array_index_expr }}{{ output.print_suffix }});
 {% endif %}
 {% for depth in range(output.rank - 1, -1, -1) %}
 {% if depth < output.rank - 1 %}

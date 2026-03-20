@@ -2258,7 +2258,7 @@ _FLOAT8_TO_F32_BODY: Dict[str, List[str]] = {
         "    return s ? -r : r;",
     ],
     "emx_float8e5m2fnuz_t": [
-        "    if (v == 0x80u) return NAN;",
+        "    if (v == 0x80u || v == 0x7Fu || v == 0xFFu) return NAN;",
         "    uint8_t s = v >> 7, e = (v >> 2) & 0x1Fu, m = v & 0x3u;",
         "    float r = (e == 0u) ? ldexpf((float)m, -17) : ldexpf((float)(m + 4), (int)e - 18);",
         "    return s ? -r : r;",

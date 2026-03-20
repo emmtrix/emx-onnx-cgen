@@ -25,6 +25,7 @@ DEFAULT_TESTS: tuple[str, ...] = (
     "test_cast_FLOAT8E5M2_to_FLOAT_cpu",
     "test_cast_FLOAT_to_FLOAT8E5M2FNUZ_cpu",
     "test_cast_FLOAT8E5M2FNUZ_to_FLOAT_cpu",
+    "test_cast_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ_cpu",
     "test_cast_e8m0_FLOAT_to_FLOAT8E8M0_cpu",
     "test_cast_e8m0_FLOAT8E8M0_to_FLOAT_cpu",
     "test_cast_FLOAT_to_FLOAT4E2M1_cpu",

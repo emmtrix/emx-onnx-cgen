@@ -9,8 +9,6 @@ import numpy as np
 import onnx
 import pytest
 from onnx import TensorProto, helper
-from onnx import numpy_helper
-from onnx.backend.test.runner import Runner
 
 from emx_onnx_cgen.onnx_backend import backend as backend_module
 
@@ -80,21 +78,6 @@ def _make_sequence_length_from_dynamic_split_model() -> onnx.ModelProto:
     return model
 
 
-def _load_backend_test_io(test_dir: Path) -> tuple[list[np.ndarray], list[np.ndarray]]:
-    data_dir = test_dir / "test_data_set_0"
-    inputs: list[np.ndarray] = []
-    outputs: list[np.ndarray] = []
-    for input_path in sorted(data_dir.glob("input_*.pb")):
-        tensor = onnx.TensorProto()
-        tensor.ParseFromString(input_path.read_bytes())
-        inputs.append(numpy_helper.to_array(tensor))
-    for output_path in sorted(data_dir.glob("output_*.pb")):
-        tensor = onnx.TensorProto()
-        tensor.ParseFromString(output_path.read_bytes())
-        outputs.append(numpy_helper.to_array(tensor))
-    return inputs, outputs
-
-
 def test_sequence_inputs_reject_lengths_above_fixed_backend_capacity() -> None:
     model = _make_sequence_io_model()
     metadata = backend_module._build_backend_metadata(model)
@@ -156,32 +139,3 @@ def test_backend_runs_dynamic_split_to_sequence_with_empty_tensor() -> None:
 
     assert len(outputs) == 1
     assert int(np.asarray(outputs[0]).item()) == 3
-
-
-@pytest.mark.skipif(
-    backend_module._resolve_compiler(None, prefer_ccache=False) is None,
-    reason="No C compiler available for backend integration test.",
-)
-def test_backend_matches_official_float8_no_saturate_case() -> None:
-    test_dir = (
-        Path(__file__).resolve().parents[1]
-        / "onnx-org"
-        / "onnx"
-        / "backend"
-        / "test"
-        / "data"
-        / "node"
-        / "test_cast_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ"
-    )
-    model = onnx.load(test_dir / "model.onnx")
-    inputs, expected_outputs = _load_backend_test_io(test_dir)
-
-    outputs = backend_module.EmxOnnxCgenBackend.run_model(model, inputs)
-
-    Runner.assert_similar_outputs(
-        expected_outputs,
-        outputs,
-        rtol=0.001,
-        atol=1e-7,
-        model_dir=str(test_dir),
-    )
