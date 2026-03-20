@@ -3427,9 +3427,7 @@ class CEmitter:
                     "c_type": dtype.c_type,
                     "random_expr": random_expr,
                     "print_format": self._testbench_print_format(dtype),
-                    "print_cast": self._testbench_print_cast(
-                        dtype, scalar_registry
-                    ),
+                    "print_cast": self._testbench_print_cast(dtype, scalar_registry),
                     "print_suffix": self._testbench_print_suffix(dtype),
                     "constant_name": constant_name,
                     "constant_lines": constant_lines,
@@ -3510,9 +3508,7 @@ class CEmitter:
                     "is_string": dtype == ScalarType.STRING,
                     "c_type": dtype.c_type,
                     "print_format": self._testbench_print_format(dtype),
-                    "print_cast": self._testbench_print_cast(
-                        dtype, scalar_registry
-                    ),
+                    "print_cast": self._testbench_print_cast(dtype, scalar_registry),
                     "print_suffix": self._testbench_print_suffix(dtype),
                     "json_name": json_name,
                     "is_sequence": is_sequence_output,
