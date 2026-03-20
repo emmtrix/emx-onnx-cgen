@@ -271,4 +271,4 @@ How verification works:
   
 ## Maintained by
 
-This project is maintained by [emmtrix](https://www.emmtrix.com).
+This project is maintained by [emmtrix Technologies GmbH](https://www.emmtrix.com).
