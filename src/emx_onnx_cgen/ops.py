@@ -247,7 +247,7 @@ def _prelu_binary_spec(dtype: ScalarType) -> BinaryOpSpec:
     )
 
 
-def _binary_specs_fp(suffix: str, dtype: ScalarType) -> dict:
+def _make_binary_specs_float(suffix: str, dtype: ScalarType) -> dict:
     return {
         ScalarFunction.ADD: BinaryOpSpec("+", OperatorKind.INFIX, np.add),
         ScalarFunction.DIV: BinaryOpSpec("/", OperatorKind.INFIX, np.true_divide),
@@ -270,8 +270,8 @@ def _binary_specs_fp(suffix: str, dtype: ScalarType) -> dict:
     }
 
 
-BINARY_SPECS_DOUBLE = _binary_specs_fp("", ScalarType.F64)
-BINARY_SPECS_FLOAT = _binary_specs_fp("f", ScalarType.F32)
+BINARY_SPECS_DOUBLE = _make_binary_specs_float("", ScalarType.F64)
+BINARY_SPECS_FLOAT = _make_binary_specs_float("f", ScalarType.F32)
 
 UNARY_SYMBOLS_BY_DTYPE = {
     ScalarType.BOOL: UNARY_SYMBOLS_BOOL,
