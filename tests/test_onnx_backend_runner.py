@@ -19,6 +19,10 @@ def test_default_backend_tests_cover_float8_castlike_no_saturate_regressions() -
     assert "test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FNUZ_cpu" in DEFAULT_TESTS
 
 
+def test_default_backend_tests_cover_sequence_map_dynamic_sequence_regression() -> None:
+    assert "test_sequence_map_add_2_sequences_cpu" in DEFAULT_TESTS
+
+
 def test_build_pytest_args_uses_explicit_node_ids() -> None:
     args = build_pytest_args(
         selected_tests=("test_abs_cpu", "test_add_cpu"),
