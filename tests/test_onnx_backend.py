@@ -9,8 +9,11 @@ import numpy as np
 import onnx
 import pytest
 from onnx import TensorProto, helper
+from onnx import numpy_helper
 
 from emx_onnx_cgen.onnx_backend import backend as backend_module
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 def _make_identity_model() -> onnx.ModelProto:
@@ -139,3 +142,68 @@ def test_backend_runs_dynamic_split_to_sequence_with_empty_tensor() -> None:
 
     assert len(outputs) == 1
     assert int(np.asarray(outputs[0]).item()) == 3
+
+
+def test_serialize_runtime_input_handles_dynamic_sequence_shapes() -> None:
+    model = onnx.load(
+        PROJECT_ROOT
+        / "onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences/model.onnx"
+    )
+    metadata = backend_module._build_backend_metadata(model)
+    seq_value = metadata.inputs[0]
+    sequence = [
+        np.arange(6, dtype=np.float32),
+        np.arange(1, dtype=np.float32),
+        np.arange(4, dtype=np.float32),
+    ]
+    buffer = io.BytesIO()
+
+    backend_module._serialize_runtime_input(
+        buffer,
+        value=seq_value,
+        input_data=sequence,
+        lowered_sequence_input_shapes=metadata.lowered_sequence_input_shapes,
+    )
+
+    expected_elem_shape = metadata.lowered_sequence_input_shapes[seq_value.name][0]
+    expected_size = (
+        np.dtype(np.float32).itemsize
+        * backend_module._SEQUENCE_MAX_LEN
+        * expected_elem_shape
+    )
+    assert len(buffer.getvalue()) == 4 + expected_size
+
+
+def test_backend_runs_sequence_map_add_2_sequences_with_variable_shapes() -> None:
+    if backend_module._resolve_compiler(None, prefer_ccache=False) is None:
+        pytest.skip("No C compiler available for backend integration test.")
+
+    model = onnx.load(
+        PROJECT_ROOT
+        / "onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences/model.onnx"
+    )
+    data_dir = (
+        PROJECT_ROOT
+        / "onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences/test_data_set_0"
+    )
+
+    def _load_sequence(path: Path) -> list[np.ndarray]:
+        sequence = onnx.SequenceProto()
+        sequence.ParseFromString(path.read_bytes())
+        return [numpy_helper.to_array(tensor) for tensor in sequence.tensor_values]
+
+    inputs = [
+        _load_sequence(data_dir / "input_0.pb"),
+        _load_sequence(data_dir / "input_1.pb"),
+    ]
+    expected = _load_sequence(data_dir / "output_0.pb")
+
+    outputs = backend_module.EmxOnnxCgenBackend.run_model(model, inputs)
+
+    assert len(outputs) == 1
+    actual = outputs[0]
+    assert [tuple(np.asarray(item).shape) for item in actual] == [
+        tuple(item.shape) for item in expected
+    ]
+    for actual_item, expected_item in zip(actual, expected, strict=True):
+        np.testing.assert_allclose(actual_item, expected_item)

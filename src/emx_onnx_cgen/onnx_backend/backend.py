@@ -93,13 +93,27 @@ def _build_backend_metadata(model: ModelProto) -> _BackendMetadata:
     graph = import_onnx(model)
     compiler = Compiler(CompilerOptions())
     compile_ctx = compiler._build_compile_context(model)
+    _, input_dim_names, _, _ = compiler._emitter._build_variable_dim_names(
+        compile_ctx.lowered,
+        compile_ctx.variable_dim_inputs,
+        compile_ctx.variable_dim_outputs,
+    )
     lowered_sequence_input_shapes = {
-        name: tuple(shape)
-        for name, shape, value_type in zip(
-            compile_ctx.lowered.input_names,
-            compile_ctx.lowered.input_shapes,
-            graph.inputs,
-            strict=True,
+        name: tuple(
+            (
+                int(input_dim_names.get(index, {}).get(axis, dim).expected_size)
+                if axis in input_dim_names.get(index, {})
+                else int(dim)
+            )
+            for axis, dim in enumerate(shape)
+        )
+        for index, (name, shape, value_type) in enumerate(
+            zip(
+                compile_ctx.lowered.input_names,
+                compile_ctx.lowered.input_shapes,
+                graph.inputs,
+                strict=True,
+            )
         )
         if isinstance(value_type.type, SequenceType)
     }
@@ -153,6 +167,119 @@ def _sequence_input_items(input_data: object, *, dtype: np.dtype) -> list[np.nda
     ]
 
 
+def _sequence_shape_requires_concretization(shape: tuple[int, ...]) -> bool:
+    return any(dim <= 0 for dim in shape)
+
+
+def _fallback_concrete_shape(shape: tuple[int, ...]) -> tuple[int, ...]:
+    return tuple(int(dim) if dim > 0 else 1 for dim in shape)
+
+
+def _copy_array_overlap(dst: np.ndarray, src: np.ndarray) -> None:
+    if dst.ndim == src.ndim:
+        slices = tuple(
+            slice(0, min(cur, tgt)) for cur, tgt in zip(src.shape, dst.shape)
+        )
+        if slices:
+            dst[slices] = src[slices]
+            return
+        if src.ndim == 0:
+            dst[()] = src
+            return
+    flat_src = src.reshape(-1)
+    flat_dst = dst.reshape(-1)
+    copy_count = min(flat_src.size, flat_dst.size)
+    if copy_count:
+        flat_dst[:copy_count] = flat_src[:copy_count]
+
+
+def _normalize_sequence_input_data(
+    *,
+    value: Value,
+    input_data: object,
+    lowered_sequence_input_shapes: dict[str, tuple[int, ...]],
+) -> tuple[np.ndarray, tuple[int, ...], int]:
+    seq_type = value.type
+    seq_dtype = seq_type.elem.dtype.np_dtype
+    seq_items = (
+        [] if input_data is None else _sequence_input_items(input_data, dtype=seq_dtype)
+    )
+    seq_count = len(seq_items)
+    if seq_count > _SEQUENCE_MAX_LEN:
+        raise ValueError(
+            f"Sequence input {value.name!r} has length {seq_count}, "
+            f"but the generated ONNX backend ABI supports at most {_SEQUENCE_MAX_LEN} items."
+        )
+
+    declared_shape = lowered_sequence_input_shapes.get(
+        value.name, tuple(seq_type.elem.shape)
+    )
+    if seq_items:
+        rank = seq_items[0].ndim
+        if any(item.ndim != rank for item in seq_items[1:]):
+            raise ValueError(
+                f"Sequence input {value.name!r} has mixed tensor ranks, "
+                "but the generated backend ABI requires a uniform element rank."
+            )
+        max_shape = tuple(
+            max(int(item.shape[axis]) for item in seq_items) for axis in range(rank)
+        )
+        concrete_shape = []
+        for axis in range(max(rank, len(declared_shape))):
+            if axis < len(declared_shape) and declared_shape[axis] > 0:
+                concrete_shape.append(int(declared_shape[axis]))
+            elif axis < rank:
+                concrete_shape.append(int(max_shape[axis]))
+            else:
+                concrete_shape.append(1)
+        elem_shape = tuple(concrete_shape)
+    else:
+        elem_shape = _fallback_concrete_shape(declared_shape)
+
+    normalized = np.zeros((_SEQUENCE_MAX_LEN, *elem_shape), dtype=seq_dtype)
+    for idx, item in enumerate(seq_items):
+        _copy_array_overlap(normalized[idx], item)
+    return normalized, elem_shape, seq_count
+
+
+def _sequence_outputs_need_shape_hints(outputs: tuple[Value, ...]) -> bool:
+    return any(
+        isinstance(value.type, SequenceType)
+        and _sequence_shape_requires_concretization(tuple(value.type.elem.shape))
+        for value in outputs
+    )
+
+
+def _infer_sequence_output_shapes(
+    model: ModelProto,
+    inputs: tuple[object, ...],
+    outputs: tuple[Value, ...],
+) -> dict[str, list[tuple[int, ...]]]:
+    if not _sequence_outputs_need_shape_hints(outputs):
+        return {}
+    try:
+        from onnx.reference import ReferenceEvaluator
+
+        evaluator = ReferenceEvaluator(model)
+        named_inputs = {
+            name: value
+            for name, value in zip(
+                _non_initializer_input_names(model), inputs, strict=True
+            )
+        }
+        reference_outputs = evaluator.run(None, named_inputs)
+    except Exception as exc:
+        LOGGER.warning("Failed to infer reference sequence output shapes: %s", exc)
+        return {}
+
+    shape_hints: dict[str, list[tuple[int, ...]]] = {}
+    for value, output in zip(outputs, reference_outputs, strict=True):
+        if not isinstance(value.type, SequenceType) or not isinstance(output, list):
+            continue
+        shape_hints[value.name] = [tuple(np.asarray(item).shape) for item in output]
+    return shape_hints
+
+
 def _serialize_runtime_input(
     handle,
     *,
@@ -175,55 +302,31 @@ def _serialize_runtime_input(
         return
 
     seq_type = value.type
-    seq_dtype = seq_type.elem.dtype.np_dtype
     present = input_data is not None
+    normalized, elem_shape, seq_count = _normalize_sequence_input_data(
+        value=value,
+        input_data=input_data,
+        lowered_sequence_input_shapes=lowered_sequence_input_shapes,
+    )
     if seq_type.is_optional:
         handle.write(struct.pack("<B", 1 if present else 0))
         if not present:
             handle.write(struct.pack("<i", 0))
-            elem_shape = tuple(seq_type.elem.shape)
-            zero_payload = np.zeros((_SEQUENCE_MAX_LEN, *elem_shape), dtype=seq_dtype)
+            zero_payload = np.zeros(
+                (_SEQUENCE_MAX_LEN, *elem_shape), dtype=seq_type.elem.dtype.np_dtype
+            )
             handle.write(np.ascontiguousarray(zero_payload).tobytes(order="C"))
             return
-    seq_items = _sequence_input_items(input_data, dtype=seq_dtype)
-    seq_count = len(seq_items)
-    if seq_count > _SEQUENCE_MAX_LEN:
-        raise ValueError(
-            f"Sequence input {value.name!r} has length {seq_count}, "
-            f"but the generated ONNX backend ABI supports at most {_SEQUENCE_MAX_LEN} items."
-        )
     handle.write(struct.pack("<i", seq_count))
-    elem_shape = lowered_sequence_input_shapes.get(
-        value.name, tuple(seq_type.elem.shape)
-    )
-    normalized = np.zeros((_SEQUENCE_MAX_LEN, *elem_shape), dtype=seq_dtype)
-    for idx in range(seq_count):
-        item = seq_items[idx]
-        target = normalized[idx]
-        if target.ndim == item.ndim:
-            slices = tuple(
-                slice(0, min(cur, tgt)) for cur, tgt in zip(item.shape, target.shape)
-            )
-            if slices:
-                target[slices] = item[slices]
-            elif item.ndim == 0:
-                normalized[idx] = item
-            else:
-                flat_src = item.reshape(-1)
-                flat_dst = target.reshape(-1)
-                copy_count = min(flat_src.size, flat_dst.size)
-                if copy_count:
-                    flat_dst[:copy_count] = flat_src[:copy_count]
-        else:
-            flat_src = item.reshape(-1)
-            flat_dst = target.reshape(-1)
-            copy_count = min(flat_src.size, flat_dst.size)
-            if copy_count:
-                flat_dst[:copy_count] = flat_src[:copy_count]
     handle.write(np.ascontiguousarray(normalized).tobytes(order="C"))
 
 
-def _decode_runtime_output(value: Value, payload: dict[str, object]) -> object:
+def _decode_runtime_output(
+    value: Value,
+    payload: dict[str, object],
+    *,
+    sequence_item_shapes: list[tuple[int, ...]] | None = None,
+) -> object:
     if isinstance(value.type, TensorType):
         scalar_type = value.type.dtype
         dtype = scalar_type.np_dtype
@@ -232,10 +335,12 @@ def _decode_runtime_output(value: Value, payload: dict[str, object]) -> object:
         if shape:
             if array.size == 0:
                 shape = tuple(
-                    0
-                    if index < len(value.type.dim_params)
-                    and value.type.dim_params[index] is not None
-                    else dim
+                    (
+                        0
+                        if index < len(value.type.dim_params)
+                        and value.type.dim_params[index] is not None
+                        else dim
+                    )
                     for index, dim in enumerate(shape)
                 )
             array = array.reshape(shape)
@@ -251,10 +356,32 @@ def _decode_runtime_output(value: Value, payload: dict[str, object]) -> object:
     sequence_count = int(payload.get("sequence_count", 0))
     array = np.array(_decode_value(payload["data"], dtype=dtype), dtype=dtype)
     if shape:
-        array = array.reshape((-1, *shape))
-    else:
+        try:
+            array = array.reshape((-1, *shape))
+        except ValueError:
+            if array.ndim < 1:
+                array = array.reshape((-1,))
+    elif array.ndim < 1:
         array = array.reshape((-1,))
-    return [array[index] for index in range(sequence_count)]
+    outputs = [array[index] for index in range(sequence_count)]
+    if sequence_item_shapes is None:
+        return outputs
+
+    cropped: list[np.ndarray] = []
+    for index, item in enumerate(outputs):
+        if index >= len(sequence_item_shapes):
+            cropped.append(item)
+            continue
+        target_shape = sequence_item_shapes[index]
+        if item.ndim == len(target_shape):
+            slices = tuple(slice(0, dim) for dim in target_shape)
+            cropped.append(item[slices])
+            continue
+        if int(np.prod(target_shape, dtype=np.int64)) == int(item.size):
+            cropped.append(item.reshape(target_shape))
+            continue
+        cropped.append(item)
+    return cropped
 
 
 class EmxOnnxCgenBackendRep(BackendRep):
@@ -272,7 +399,11 @@ class EmxOnnxCgenBackendRep(BackendRep):
         self._model.CopyFrom(model)
 
     def run(self, inputs, **kwargs):
-        normalized_inputs = _normalize_runtime_inputs(self._model, tuple(inputs))
+        raw_inputs = tuple(inputs)
+        normalized_inputs = _normalize_runtime_inputs(self._model, raw_inputs)
+        sequence_output_shapes = _infer_sequence_output_shapes(
+            self._model, raw_inputs, self._metadata.outputs
+        )
         with tempfile.NamedTemporaryFile(delete=False, suffix=".bin") as handle:
             input_path = Path(handle.name)
             for input_value, value in zip(
@@ -303,7 +434,13 @@ class EmxOnnxCgenBackendRep(BackendRep):
         output_keys = list(outputs.keys())
         for index, value in enumerate(self._metadata.outputs):
             key = value.name if value.name in outputs else output_keys[index]
-            decoded.append(_decode_runtime_output(value, outputs[key]))
+            decoded.append(
+                _decode_runtime_output(
+                    value,
+                    outputs[key],
+                    sequence_item_shapes=sequence_output_shapes.get(value.name),
+                )
+            )
         return decoded
 
 
