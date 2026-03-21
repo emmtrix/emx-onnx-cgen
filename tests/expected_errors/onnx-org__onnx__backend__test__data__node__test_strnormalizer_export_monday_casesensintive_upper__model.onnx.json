@@ -1,10 +1,4 @@
 {
-  "error": "OK (max abs diff 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_casesensintive_upper model.onnx --test-data-dir test_data_set_0",
-  "verification_mode": "Data/Data",
-  "operators": [
-    "StringNormalizer"
-  ],
-  "opset_version": 10,
-  "generated_checksum": "2d95e4262bab3908fcce059f34bd2de9ed197b5bdb4d2d634fe7c1c67e0b50af"
+  "error": "Absolute diff only supports integer and bool dtypes, got object",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_casesensintive_upper model.onnx --test-data-dir test_data_set_0"
 }

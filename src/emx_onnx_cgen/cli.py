@@ -576,9 +576,7 @@ def _worst_non_ulp_float_diff(
         return 0.0, None
     dtype = expected.dtype
     if np.issubdtype(dtype, np.integer) or np.issubdtype(dtype, np.bool_):
-        raise ValueError(
-            f"Non-ULP float diff requires a floating dtype, got {dtype}"
-        )
+        raise ValueError(f"Non-ULP float diff requires a floating dtype, got {dtype}")
     actual_cast = actual.astype(dtype, copy=False)
     expected_cast = expected.astype(dtype, copy=False)
     max_diff = 0.0
@@ -615,7 +613,7 @@ def _compare_numeric_outputs(
     if dtype.is_float:
         if _supports_ulp_comparison(dtype):
             return "ulp", *worst_ulp_diff(actual, expected, atol_eps=atol_eps)
-        return "abs", * _worst_non_ulp_float_diff(actual, expected)
+        return "abs", *_worst_non_ulp_float_diff(actual, expected)
     return "abs", *_worst_abs_diff(actual, expected)
 
 

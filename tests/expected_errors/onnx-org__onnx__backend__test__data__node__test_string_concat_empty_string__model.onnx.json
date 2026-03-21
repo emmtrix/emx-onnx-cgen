@@ -1,10 +1,4 @@
 {
-  "error": "OK (max abs diff 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_string_concat_empty_string model.onnx --test-data-dir test_data_set_0",
-  "verification_mode": "Data/Data",
-  "operators": [
-    "StringConcat"
-  ],
-  "opset_version": 20,
-  "generated_checksum": "1cc98ccc0311b415371e71467474c7c609922e793358465f7e18bc5aa5fe431b"
+  "error": "Absolute diff only supports integer and bool dtypes, got object",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_string_concat_empty_string model.onnx --test-data-dir test_data_set_0"
 }

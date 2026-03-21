@@ -317,9 +317,7 @@ class Compiler:
     @staticmethod
     def _shape_concretization_requirement_reason(graph: Graph) -> str | None:
         allowed_internal_dim_params = Compiler._allowed_internal_dim_params(graph)
-        concretization_checks: list[
-            tuple[tuple[Value, ...], bool, set[str] | None]
-        ] = [
+        concretization_checks: list[tuple[tuple[Value, ...], bool, set[str] | None]] = [
             (graph.inputs, True, None),
             (graph.values, False, allowed_internal_dim_params),
             (graph.outputs, True, None),
