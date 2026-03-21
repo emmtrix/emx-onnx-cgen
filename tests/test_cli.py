@@ -484,3 +484,55 @@ def test_cli_compile_rejects_testbench_output_format_txt_emmtrix_invalid_ulp() -
                 "txt-emmtrix:abc",
             ]
         )
+
+
+def test_worst_abs_diff_rejects_float_dtype() -> None:
+    with pytest.raises(ValueError, match="integer and bool dtypes"):
+        cli._worst_abs_diff(
+            np.array([1.0], dtype=np.float32),
+            np.array([2.0], dtype=np.float32),
+        )
+
+
+def test_compare_numeric_outputs_detects_float8_nan_mismatch() -> None:
+    if ScalarType.F8E4M3FNUZ.np_dtype == np.dtype(np.uint8):
+        pytest.skip("ml_dtypes float8 support is unavailable.")
+
+    actual = np.array([240.0], dtype=ScalarType.F8E4M3FNUZ.np_dtype)
+    expected = np.array([float("nan")], dtype=ScalarType.F8E4M3FNUZ.np_dtype)
+
+    metric_kind, max_diff, worst = cli._compare_numeric_outputs(
+        actual,
+        expected,
+        dtype=ScalarType.F8E4M3FNUZ,
+        atol_eps=1.0,
+    )
+
+    assert metric_kind == "abs"
+    assert np.isinf(max_diff)
+    assert worst is not None
+    assert worst[0] == (0,)
+    assert worst[1] == 240.0
+    assert np.isnan(worst[2])
+
+
+def test_compare_numeric_outputs_detects_float4_nan_mismatch() -> None:
+    if ScalarType.F4E2M1.np_dtype == np.dtype(np.uint8):
+        pytest.skip("ml_dtypes float4 support is unavailable.")
+
+    actual = np.array([1.0], dtype=ScalarType.F4E2M1.np_dtype)
+    expected = np.array([float("nan")], dtype=ScalarType.F4E2M1.np_dtype)
+
+    metric_kind, max_diff, worst = cli._compare_numeric_outputs(
+        actual,
+        expected,
+        dtype=ScalarType.F4E2M1,
+        atol_eps=1.0,
+    )
+
+    assert metric_kind == "abs"
+    assert max_diff > 0
+    assert worst is not None
+    assert worst[0] == (0,)
+    assert worst[1] == 1.0
+    assert worst[2] != worst[1]

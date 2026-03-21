@@ -536,6 +536,10 @@ def _worst_abs_diff(
     if actual.size == 0:
         return 0, None
     dtype = expected.dtype
+    if not (np.issubdtype(dtype, np.integer) or np.issubdtype(dtype, np.bool_)):
+        raise ValueError(
+            f"Absolute diff only supports integer and bool dtypes, got {dtype}"
+        )
     actual_cast = actual.astype(dtype, copy=False)
     expected_cast = expected.astype(dtype, copy=False)
     max_diff: float | int = 0
@@ -546,13 +550,7 @@ def _worst_abs_diff(
         expected_scalar = expected_value[()]
         if actual_scalar == expected_scalar:
             continue
-        try:
-            if np.issubdtype(dtype, np.integer) or np.issubdtype(dtype, np.bool_):
-                diff: float | int = abs(int(actual_scalar) - int(expected_scalar))
-            else:
-                diff = float(abs(actual_scalar - expected_scalar))
-        except Exception:
-            diff = 1
+        diff: float | int = abs(int(actual_scalar) - int(expected_scalar))
         if diff > max_diff:
             max_diff = diff
             worst = (
@@ -561,6 +559,64 @@ def _worst_abs_diff(
                 expected_scalar,
             )
     return max_diff, worst
+
+
+def _supports_ulp_comparison(dtype: ScalarType) -> bool:
+    return dtype in {ScalarType.F16, ScalarType.F32, ScalarType.F64}
+
+
+def _worst_non_ulp_float_diff(
+    actual: "np.ndarray", expected: "np.ndarray"
+) -> tuple[float, tuple[tuple[int, ...], float, float] | None]:
+    if actual.shape != expected.shape:
+        raise ValueError(
+            f"Shape mismatch for diff calculation: {actual.shape} vs {expected.shape}"
+        )
+    if actual.size == 0:
+        return 0.0, None
+    dtype = expected.dtype
+    if np.issubdtype(dtype, np.integer) or np.issubdtype(dtype, np.bool_):
+        raise ValueError(
+            f"Non-ULP float diff requires a floating dtype, got {dtype}"
+        )
+    actual_cast = actual.astype(dtype, copy=False)
+    expected_cast = expected.astype(dtype, copy=False)
+    max_diff = 0.0
+    worst: tuple[tuple[int, ...], float, float] | None = None
+    iterator = np.nditer([actual_cast, expected_cast], flags=["refs_ok", "multi_index"])
+    for actual_value, expected_value in iterator:
+        actual_scalar = float(actual_value[()])
+        expected_scalar = float(expected_value[()])
+        if np.isnan(actual_scalar) and np.isnan(expected_scalar):
+            continue
+        if actual_scalar == expected_scalar:
+            continue
+        if np.isnan(actual_scalar) or np.isnan(expected_scalar):
+            diff = float("inf")
+        else:
+            diff = abs(actual_scalar - expected_scalar)
+        if diff > max_diff:
+            max_diff = diff
+            worst = (
+                iterator.multi_index,
+                actual_scalar,
+                expected_scalar,
+            )
+    return max_diff, worst
+
+
+def _compare_numeric_outputs(
+    actual: "np.ndarray",
+    expected: "np.ndarray",
+    *,
+    dtype: ScalarType,
+    atol_eps: float,
+) -> tuple[str, float | int, tuple[tuple[int, ...], object, object] | None]:
+    if dtype.is_float:
+        if _supports_ulp_comparison(dtype):
+            return "ulp", *worst_ulp_diff(actual, expected, atol_eps=atol_eps)
+        return "abs", * _worst_non_ulp_float_diff(actual, expected)
+    return "abs", *_worst_abs_diff(actual, expected)
 
 
 def run_cli_command(
@@ -1334,14 +1390,16 @@ def _report_per_node_accuracy(
         reporter.info(f"    {node_name} [{node.op_type}]")
         for output_name in compared_output_names:
             actual, reference = decoded_outputs[output_name]
-            dtype = output_dtypes[output_name].np_dtype
+            scalar_type = output_dtypes[output_name]
             reporter.start_step(f"      {output_name}")
-            if np.issubdtype(dtype, np.floating):
-                output_max_ulp, _ = worst_ulp_diff(
-                    actual,
-                    reference,
-                    atol_eps=atol_eps,
-                )
+            metric_kind, output_max, _ = _compare_numeric_outputs(
+                actual,
+                reference,
+                dtype=scalar_type,
+                atol_eps=atol_eps,
+            )
+            if metric_kind == "ulp":
+                output_max_ulp = int(output_max)
                 if output_max_ulp > node_peak_ulp:
                     node_peak_ulp = output_max_ulp
                 if output_max_ulp > max_ulp_limit:
@@ -1350,7 +1408,7 @@ def _report_per_node_accuracy(
                 else:
                     reporter.step_ok_detail(f"max ULP {output_max_ulp}")
             else:
-                output_max_abs, _ = _worst_abs_diff(actual, reference)
+                output_max_abs = output_max
                 if output_max_abs > node_peak_abs:
                     node_peak_abs = output_max_abs
                 if output_max_abs > 0:
@@ -2123,12 +2181,14 @@ def _verify_model(
                     expected_trimmed = expected_item[slices]
                     node = output_nodes.get(value.name)
                     node_name = node.name if node else None
-                    if np.issubdtype(expected_item.dtype, np.floating):
-                        output_max, output_worst = worst_ulp_diff(
-                            actual_trimmed,
-                            expected_trimmed,
-                            atol_eps=args.atol_eps,
-                        )
+                    scalar_type = value.type.elem.dtype
+                    metric_kind, output_max, output_worst = _compare_numeric_outputs(
+                        actual_trimmed,
+                        expected_trimmed,
+                        dtype=scalar_type,
+                        atol_eps=args.atol_eps,
+                    )
+                    if metric_kind == "ulp":
                         if output_worst is not None:
                             metrics.observe_ulp(
                                 output_name=value.name,
@@ -2141,10 +2201,6 @@ def _verify_model(
                         else:
                             metrics.has_ulp = True
                     else:
-                        output_max, output_worst = _worst_abs_diff(
-                            actual_trimmed,
-                            expected_trimmed,
-                        )
                         if output_worst is not None:
                             metrics.observe_abs(
                                 output_name=value.name,
@@ -2169,13 +2225,14 @@ def _verify_model(
                 output_data, runtime_out = pair
                 node = output_nodes.get(value.name)
                 node_name = node.name if node else None
-                info = output_dtypes[value.name]
-                if np.issubdtype(info.np_dtype, np.floating):
-                    output_max, output_worst = worst_ulp_diff(
-                        output_data,
-                        runtime_out,
-                        atol_eps=args.atol_eps,
-                    )
+                scalar_type = output_dtypes[value.name]
+                metric_kind, output_max, output_worst = _compare_numeric_outputs(
+                    output_data,
+                    runtime_out,
+                    dtype=scalar_type,
+                    atol_eps=args.atol_eps,
+                )
+                if metric_kind == "ulp":
                     if output_worst is not None:
                         metrics.observe_ulp(
                             output_name=value.name,
@@ -2188,7 +2245,6 @@ def _verify_model(
                     else:
                         metrics.has_ulp = True
                 else:
-                    output_max, output_worst = _worst_abs_diff(output_data, runtime_out)
                     if output_worst is not None:
                         metrics.observe_abs(
                             output_name=value.name,
