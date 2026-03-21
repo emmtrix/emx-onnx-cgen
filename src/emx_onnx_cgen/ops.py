@@ -122,6 +122,7 @@ UNARY_SYMBOLS_BOOL = {
     ScalarFunction.BITWISE_NOT: "bitwise_not",
 }
 
+
 def _unary_symbols_int(abs_func: str) -> dict:
     return {
         ScalarFunction.ABS: abs_func,
@@ -184,10 +185,29 @@ UNARY_SYMBOLS_DOUBLE = {
     ScalarFunction.ATANH: "atanh",
 }
 
-_FLOAT_SUFFIX_FUNCTIONS = frozenset({
-    "fabs", "acos", "acosh", "asin", "asinh", "atan", "ceil", "cos", "cosh",
-    "erf", "exp", "floor", "log", "sin", "sinh", "sqrt", "tan", "tanh", "atanh",
-})
+_FLOAT_SUFFIX_FUNCTIONS = frozenset(
+    {
+        "fabs",
+        "acos",
+        "acosh",
+        "asin",
+        "asinh",
+        "atan",
+        "ceil",
+        "cos",
+        "cosh",
+        "erf",
+        "exp",
+        "floor",
+        "log",
+        "sin",
+        "sinh",
+        "sqrt",
+        "tan",
+        "tanh",
+        "atanh",
+    }
+)
 
 UNARY_SYMBOLS_FLOAT = {
     k: (v + "f" if v in _FLOAT_SUFFIX_FUNCTIONS else v)
@@ -262,9 +282,7 @@ def _make_binary_specs_float(suffix: str, dtype: ScalarType) -> dict:
         ScalarFunction.REMAINDER: BinaryOpSpec(
             "remainder", OperatorKind.FUNC, np.remainder
         ),
-        ScalarFunction.POW: BinaryOpSpec(
-            "pow" + suffix, OperatorKind.FUNC, np.power
-        ),
+        ScalarFunction.POW: BinaryOpSpec("pow" + suffix, OperatorKind.FUNC, np.power),
         ScalarFunction.PRELU: _prelu_binary_spec(dtype),
         ScalarFunction.SUB: BinaryOpSpec("-", OperatorKind.INFIX, np.subtract),
     }

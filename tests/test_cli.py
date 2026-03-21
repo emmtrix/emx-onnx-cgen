@@ -159,6 +159,24 @@ def test_cli_verify_reduce_model() -> None:
     _run_cli_verify(model)
 
 
+def test_cli_verify_string_output_model() -> None:
+    input_info = helper.make_tensor_value_info("x", TensorProto.STRING, [2])
+    output_info = helper.make_tensor_value_info("y", TensorProto.STRING, [2])
+    model = helper.make_model(
+        helper.make_graph(
+            [helper.make_node("Identity", inputs=["x"], outputs=["y"])],
+            "string_identity_graph",
+            [input_info],
+            [output_info],
+        ),
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    _run_cli_verify(model)
+
+
 def test_cli_testbench_filename_and_include() -> None:
     output_path = Path("out.c")
     testbench_path = output_path.with_name(
@@ -484,3 +502,66 @@ def test_cli_compile_rejects_testbench_output_format_txt_emmtrix_invalid_ulp() -
                 "txt-emmtrix:abc",
             ]
         )
+
+
+def test_worst_abs_diff_rejects_float_dtype() -> None:
+    with pytest.raises(ValueError, match="integer and bool dtypes"):
+        cli._worst_abs_diff(
+            np.array([1.0], dtype=np.float32),
+            np.array([2.0], dtype=np.float32),
+        )
+
+
+def test_compare_numeric_outputs_detects_float8_nan_mismatch() -> None:
+    if ScalarType.F8E4M3FNUZ.np_dtype == np.dtype(np.uint8):
+        pytest.skip("ml_dtypes float8 support is unavailable.")
+
+    actual = np.array([240.0], dtype=ScalarType.F8E4M3FNUZ.np_dtype)
+    expected = np.array([float("nan")], dtype=ScalarType.F8E4M3FNUZ.np_dtype)
+
+    metric_kind, max_diff, worst = cli._compare_numeric_outputs(
+        actual,
+        expected,
+        dtype=ScalarType.F8E4M3FNUZ,
+        atol_eps=1.0,
+    )
+
+    assert metric_kind == "abs"
+    assert np.isinf(max_diff)
+    assert worst is not None
+    assert worst[0] == (0,)
+    assert worst[1] == 240.0
+    assert np.isnan(worst[2])
+
+
+def test_compare_numeric_outputs_detects_float4_nan_mismatch() -> None:
+    if ScalarType.F4E2M1.np_dtype == np.dtype(np.uint8):
+        pytest.skip("ml_dtypes float4 support is unavailable.")
+
+    actual = np.array([1.0], dtype=ScalarType.F4E2M1.np_dtype)
+    expected = np.array([float("nan")], dtype=ScalarType.F4E2M1.np_dtype)
+
+    metric_kind, max_diff, worst = cli._compare_numeric_outputs(
+        actual,
+        expected,
+        dtype=ScalarType.F4E2M1,
+        atol_eps=1.0,
+    )
+
+    assert metric_kind == "abs"
+    assert max_diff > 0
+    assert worst is not None
+    assert worst[0] == (0,)
+    assert worst[1] == 1.0
+    assert worst[2] != worst[1]
+
+
+def test_first_exact_mismatch_detects_string_values() -> None:
+    actual = np.array(["monday", "tuesday"], dtype=object)
+    expected = np.array(["monday", "wednesday"], dtype=object)
+
+    assert cli._first_exact_mismatch(actual, expected) == (
+        (1,),
+        "tuesday",
+        "wednesday",
+    )

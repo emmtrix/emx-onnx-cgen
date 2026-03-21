@@ -100,6 +100,7 @@ def _make_cast_model(
     shape: list[int],
     weight_values: list[float] | None = None,
     opset: int = 25,
+    saturate: int | None = None,
 ) -> onnx.ModelProto:
     """Build a model that casts from_dtype to to_dtype.
 
@@ -109,14 +110,17 @@ def _make_cast_model(
     """
     x_info = helper.make_tensor_value_info("x", from_dtype, shape)
     y_info = helper.make_tensor_value_info("y", to_dtype, shape)
-    nodes = [helper.make_node("Cast", ["x"], ["y"], to=to_dtype)]
+    cast_attrs: dict[str, int] = {"to": to_dtype}
+    if saturate is not None:
+        cast_attrs["saturate"] = saturate
+    nodes = [helper.make_node("Cast", ["x"], ["y"], **cast_attrs)]
     outputs = [y_info]
     initializers = []
 
     if weight_values is not None:
         yw_info = helper.make_tensor_value_info("y_from_weight", to_dtype, shape)
         weight_tensor = helper.make_tensor("w", from_dtype, shape, weight_values)
-        nodes.append(helper.make_node("Cast", ["w"], ["y_from_weight"], to=to_dtype))
+        nodes.append(helper.make_node("Cast", ["w"], ["y_from_weight"], **cast_attrs))
         outputs.append(yw_info)
         initializers.append(weight_tensor)
 
@@ -199,6 +203,51 @@ def test_float8e4m3fnuz_backend() -> None:
     )
     expected = f32_input.astype(ml_dtypes.float8_e4m3fnuz)
     np.testing.assert_array_equal(out_data, expected)
+
+
+@pytest.mark.skipif(ml_dtypes is None, reason="ml_dtypes required")
+@pytest.mark.parametrize(
+    ("to_dtype", "ml_dtype", "helper_name"),
+    [
+        (
+            TensorProto.FLOAT8E4M3FN,
+            ml_dtypes.float8_e4m3fn,
+            "ref_scalar_f8e4m3fn_from_f32_no_sat",
+        ),
+        (
+            TensorProto.FLOAT8E4M3FNUZ,
+            ml_dtypes.float8_e4m3fnuz,
+            "ref_scalar_f8e4m3fnuz_from_f32_no_sat",
+        ),
+    ],
+)
+def test_float8_no_saturate_backend_overflow_uses_nan(
+    to_dtype: int,
+    ml_dtype: np.dtype,
+    helper_name: str,
+) -> None:
+    shape = [2, 3]
+    f32_input = np.array(
+        [[0.5, 1.0, -1.0], [1e9, -1e9, np.nan]],
+        dtype=np.float32,
+    )
+    model = _make_cast_model(
+        TensorProto.FLOAT,
+        to_dtype,
+        shape,
+        saturate=0,
+    )
+    payload, generated = _compile_and_run_testbench(
+        model, testbench_inputs={"x": f32_input}
+    )
+
+    assert helper_name in generated
+
+    out_data = decode_testbench_array(payload["outputs"]["y"]["data"], ml_dtype)
+    expected = f32_input.astype(ml_dtype)
+    np.testing.assert_array_equal(np.isnan(out_data), np.isnan(expected))
+    finite_mask = ~np.isnan(expected)
+    np.testing.assert_array_equal(out_data[finite_mask], expected[finite_mask])
 
 
 # -- FLOAT8E5M2 backend test -------------------------------------------------

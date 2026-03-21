@@ -45,7 +45,9 @@ class OpContext:
         try:
             return self._derived[id(op)][key]
         except KeyError:
-            raise KeyError(f"Missing derived value '{key}' for op {op.__class__.__name__}") from None
+            raise KeyError(
+                f"Missing derived value '{key}' for op {op.__class__.__name__}"
+            ) from None
 
     def copy_derived(self, source_op: object, target_op: object) -> None:
         derived = self._derived.get(id(source_op))
