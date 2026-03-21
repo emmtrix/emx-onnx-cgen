@@ -601,7 +601,9 @@ def _first_exact_mismatch(
             continue
         return (
             iterator.multi_index,
-            actual_scalar.item() if isinstance(actual_scalar, np.generic) else actual_scalar,
+            actual_scalar.item()
+            if isinstance(actual_scalar, np.generic)
+            else actual_scalar,
             expected_scalar.item()
             if isinstance(expected_scalar, np.generic)
             else expected_scalar,
@@ -672,7 +674,9 @@ def _compare_numeric_outputs(
             return "ulp", *worst_ulp_diff(actual, expected, atol_eps=atol_eps)
         return "abs", *_worst_non_ulp_float_diff(actual, expected)
     if not _supports_abs_diff_dtype(dtype.np_dtype):
-        raise ValueError(f"Numeric comparison requires a numeric dtype, got {dtype.np_dtype}")
+        raise ValueError(
+            f"Numeric comparison requires a numeric dtype, got {dtype.np_dtype}"
+        )
     return "abs", *_worst_abs_diff(actual, expected)
 
 
