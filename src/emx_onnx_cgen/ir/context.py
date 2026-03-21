@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from itertools import chain
 
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from .model import Graph, Initializer, Node, TensorType, Value
@@ -17,7 +18,7 @@ class GraphContext:
     _value_cache: dict[str, Value] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        for value in self.graph.inputs + self.graph.outputs + self.graph.values:
+        for value in chain(self.graph.inputs, self.graph.outputs, self.graph.values):
             self._value_cache[value.name] = value
         for initializer in self.graph.initializers:
             if initializer.name not in self._value_cache:
@@ -37,22 +38,29 @@ class GraphContext:
             raise KeyError(name)
         return value
 
-    def dtype(self, name: str, node: Node | None = None) -> ScalarType:
-        if name in self._dtype_cache:
-            return self._dtype_cache[name]
+    def _resolve_tensor_value(
+        self, name: str, node: Node | None, kind: str
+    ) -> TensorType:
         try:
             value = self.graph.find_value(name)
         except KeyError as exc:
             op_type = node.op_type if node is not None else "unknown"
             raise ShapeInferenceError(
-                f"Missing dtype for value '{name}' in op {op_type}. "
+                f"Missing {kind} for value '{name}' in op {op_type}. "
                 "Hint: run ONNX shape inference or export with static shapes."
             ) from exc
         if not isinstance(value.type, TensorType):
+            op_type = node.op_type if node is not None else "unknown"
             raise UnsupportedOpError(
-                f"Unsupported non-tensor value '{name}' in op {node.op_type if node is not None else 'unknown'}."
+                f"Unsupported non-tensor value '{name}' in op {op_type}."
             )
-        dtype = value.type.dtype
+        return value.type
+
+    def dtype(self, name: str, node: Node | None = None) -> ScalarType:
+        if name in self._dtype_cache:
+            return self._dtype_cache[name]
+        tensor_type = self._resolve_tensor_value(name, node, "dtype")
+        dtype = tensor_type.dtype
         if not isinstance(dtype, ScalarType):
             raise UnsupportedOpError(f"Unsupported dtype {dtype}")
         self._dtype_cache[name] = dtype
@@ -64,20 +72,9 @@ class GraphContext:
     def shape(self, name: str, node: Node | None = None) -> tuple[int, ...]:
         if name in self._shape_cache:
             return self._shape_cache[name]
-        try:
-            value = self.graph.find_value(name)
-        except KeyError as exc:
-            op_type = node.op_type if node is not None else "unknown"
-            raise ShapeInferenceError(
-                f"Missing shape for value '{name}' in op {op_type}. "
-                "Hint: run ONNX shape inference or export with static shapes."
-            ) from exc
-        if not isinstance(value.type, TensorType):
-            raise UnsupportedOpError(
-                f"Unsupported non-tensor value '{name}' in op {node.op_type if node is not None else 'unknown'}."
-            )
-        self._shape_cache[name] = value.type.shape
-        return value.type.shape
+        tensor_type = self._resolve_tensor_value(name, node, "shape")
+        self._shape_cache[name] = tensor_type.shape
+        return tensor_type.shape
 
     def set_shape(self, name: str, shape: tuple[int, ...]) -> None:
         self._shape_cache[name] = shape
@@ -92,10 +89,7 @@ class GraphContext:
         return self._producer_cache.get(output_name)
 
     def opset_version(self, domain: str = "") -> int | None:
-        if domain in {"", "ai.onnx"}:
-            domains = {"", "ai.onnx"}
-        else:
-            domains = {domain}
+        domains = {"", "ai.onnx"} if domain in {"", "ai.onnx"} else {domain}
         for opset_domain, version in self.graph.opset_imports:
             if opset_domain in domains:
                 return int(version)

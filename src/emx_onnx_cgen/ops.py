@@ -122,41 +122,21 @@ UNARY_SYMBOLS_BOOL = {
     ScalarFunction.BITWISE_NOT: "bitwise_not",
 }
 
-UNARY_SYMBOLS_INT64 = {
-    ScalarFunction.ABS: "llabs",
-    ScalarFunction.BITWISE_NOT: "bitwise_not",
-    ScalarFunction.POSITIVE: "identity",
-    ScalarFunction.NEG: "neg",
-    ScalarFunction.ROUND: "round",
-    ScalarFunction.SIGN: "sign",
-}
+def _unary_symbols_int(abs_func: str) -> dict:
+    return {
+        ScalarFunction.ABS: abs_func,
+        ScalarFunction.BITWISE_NOT: "bitwise_not",
+        ScalarFunction.POSITIVE: "identity",
+        ScalarFunction.NEG: "neg",
+        ScalarFunction.ROUND: "round",
+        ScalarFunction.SIGN: "sign",
+    }
 
-UNARY_SYMBOLS_INT32 = {
-    ScalarFunction.ABS: "abs",
-    ScalarFunction.BITWISE_NOT: "bitwise_not",
-    ScalarFunction.POSITIVE: "identity",
-    ScalarFunction.NEG: "neg",
-    ScalarFunction.ROUND: "round",
-    ScalarFunction.SIGN: "sign",
-}
 
-UNARY_SYMBOLS_INT16 = {
-    ScalarFunction.ABS: "abs",
-    ScalarFunction.BITWISE_NOT: "bitwise_not",
-    ScalarFunction.POSITIVE: "identity",
-    ScalarFunction.NEG: "neg",
-    ScalarFunction.ROUND: "round",
-    ScalarFunction.SIGN: "sign",
-}
-
-UNARY_SYMBOLS_INT8 = {
-    ScalarFunction.ABS: "abs",
-    ScalarFunction.BITWISE_NOT: "bitwise_not",
-    ScalarFunction.POSITIVE: "identity",
-    ScalarFunction.NEG: "neg",
-    ScalarFunction.ROUND: "round",
-    ScalarFunction.SIGN: "sign",
-}
+UNARY_SYMBOLS_INT64 = _unary_symbols_int("llabs")
+UNARY_SYMBOLS_INT32 = _unary_symbols_int("abs")
+UNARY_SYMBOLS_INT16 = UNARY_SYMBOLS_INT32
+UNARY_SYMBOLS_INT8 = UNARY_SYMBOLS_INT32
 
 UNARY_SYMBOLS_UINT = {
     ScalarFunction.BITWISE_NOT: "bitwise_not",
@@ -204,56 +184,20 @@ UNARY_SYMBOLS_DOUBLE = {
     ScalarFunction.ATANH: "atanh",
 }
 
+_FLOAT_SUFFIX_FUNCTIONS = frozenset({
+    "fabs", "acos", "acosh", "asin", "asinh", "atan", "ceil", "cos", "cosh",
+    "erf", "exp", "floor", "log", "sin", "sinh", "sqrt", "tan", "tanh", "atanh",
+})
+
 UNARY_SYMBOLS_FLOAT = {
-    ScalarFunction.ABS: "fabsf",
-    ScalarFunction.ACOS: "acosf",
-    ScalarFunction.ACOSH: "acoshf",
-    ScalarFunction.ASIN: "asinf",
-    ScalarFunction.ASINH: "asinhf",
-    ScalarFunction.ATAN: "atanf",
-    ScalarFunction.CEIL: "ceilf",
-    ScalarFunction.COS: "cosf",
-    ScalarFunction.COSH: "coshf",
-    ScalarFunction.ELU: "elu",
-    ScalarFunction.ERF: "erff",
-    ScalarFunction.EXP: "expf",
-    ScalarFunction.FLOOR: "floorf",
-    ScalarFunction.GELU: "gelu",
-    ScalarFunction.GELU_TANH: "gelu_tanh",
-    ScalarFunction.HARDSIGMOID: "hardsigmoid",
-    ScalarFunction.HARDSWISH: "hardswish",
-    ScalarFunction.LEAKY_RELU: "leaky_relu",
-    ScalarFunction.POSITIVE: "identity",
-    ScalarFunction.LOG: "logf",
-    ScalarFunction.MISH: "mish",
-    ScalarFunction.NEG: "neg",
-    ScalarFunction.RECIPROCAL: "reciprocal",
-    ScalarFunction.RELU: "relu",
-    ScalarFunction.ROUND: "round",
-    ScalarFunction.SELU: "selu",
-    ScalarFunction.SIGMOID: "sigmoid",
-    ScalarFunction.SIGN: "sign",
-    ScalarFunction.SIN: "sinf",
-    ScalarFunction.SINH: "sinhf",
-    ScalarFunction.SOFTPLUS: "softplus",
-    ScalarFunction.SOFTSIGN: "softsign",
-    ScalarFunction.SQRT: "sqrtf",
-    ScalarFunction.TAN: "tanf",
-    ScalarFunction.TANH: "tanhf",
-    ScalarFunction.THRESHOLDED_RELU: "thresholded_relu",
-    ScalarFunction.ATANH: "atanhf",
+    k: (v + "f" if v in _FLOAT_SUFFIX_FUNCTIONS else v)
+    for k, v in UNARY_SYMBOLS_DOUBLE.items()
 }
 
 BINARY_SPECS_BOOL = {
-    ScalarFunction.LOGICAL_AND: BinaryOpSpec(
-        "&&", OperatorKind.INFIX, lambda left, right: np.logical_and(left, right)
-    ),
-    ScalarFunction.LOGICAL_OR: BinaryOpSpec(
-        "||", OperatorKind.INFIX, lambda left, right: np.logical_or(left, right)
-    ),
-    ScalarFunction.LOGICAL_XOR: BinaryOpSpec(
-        "!=", OperatorKind.INFIX, lambda left, right: np.logical_xor(left, right)
-    ),
+    ScalarFunction.LOGICAL_AND: BinaryOpSpec("&&", OperatorKind.INFIX, np.logical_and),
+    ScalarFunction.LOGICAL_OR: BinaryOpSpec("||", OperatorKind.INFIX, np.logical_or),
+    ScalarFunction.LOGICAL_XOR: BinaryOpSpec("!=", OperatorKind.INFIX, np.logical_xor),
 }
 
 COMPARE_SPECS = {
@@ -265,38 +209,24 @@ COMPARE_SPECS = {
 }
 
 BINARY_SPECS_INT = {
-    ScalarFunction.ADD: BinaryOpSpec(
-        "+", OperatorKind.INFIX, lambda left, right: left + right
-    ),
-    ScalarFunction.BITWISE_AND: BinaryOpSpec(
-        "&", OperatorKind.INFIX, lambda left, right: left & right
-    ),
-    ScalarFunction.BITWISE_OR: BinaryOpSpec(
-        "|", OperatorKind.INFIX, lambda left, right: left | right
-    ),
-    ScalarFunction.BITWISE_XOR: BinaryOpSpec(
-        "^", OperatorKind.INFIX, lambda left, right: left ^ right
-    ),
+    ScalarFunction.ADD: BinaryOpSpec("+", OperatorKind.INFIX, np.add),
+    ScalarFunction.BITWISE_AND: BinaryOpSpec("&", OperatorKind.INFIX, np.bitwise_and),
+    ScalarFunction.BITWISE_OR: BinaryOpSpec("|", OperatorKind.INFIX, np.bitwise_or),
+    ScalarFunction.BITWISE_XOR: BinaryOpSpec("^", OperatorKind.INFIX, np.bitwise_xor),
     ScalarFunction.BITWISE_LEFT_SHIFT: BinaryOpSpec(
         "<<", OperatorKind.INFIX, np.left_shift
     ),
     ScalarFunction.BITWISE_RIGHT_SHIFT: BinaryOpSpec(
         ">>", OperatorKind.INFIX, np.right_shift
     ),
-    ScalarFunction.DIV: BinaryOpSpec(
-        "/", OperatorKind.INFIX, lambda left, right: left // right
-    ),
+    ScalarFunction.DIV: BinaryOpSpec("/", OperatorKind.INFIX, np.floor_divide),
     ScalarFunction.FMOD: BinaryOpSpec("%", OperatorKind.INFIX, np.fmod),
     ScalarFunction.REMAINDER: BinaryOpSpec("remainder", OperatorKind.FUNC, np.mod),
     ScalarFunction.MAXIMUM: BinaryOpSpec("maximum", OperatorKind.FUNC, np.maximum),
     ScalarFunction.MINIMUM: BinaryOpSpec("minimum", OperatorKind.FUNC, np.minimum),
     ScalarFunction.POW: BinaryOpSpec("pow", OperatorKind.FUNC, np.power),
-    ScalarFunction.SUB: BinaryOpSpec(
-        "-", OperatorKind.INFIX, lambda left, right: left - right
-    ),
-    ScalarFunction.MUL: BinaryOpSpec(
-        "*", OperatorKind.INFIX, lambda left, right: left * right
-    ),
+    ScalarFunction.SUB: BinaryOpSpec("-", OperatorKind.INFIX, np.subtract),
+    ScalarFunction.MUL: BinaryOpSpec("*", OperatorKind.INFIX, np.multiply),
 }
 
 
@@ -317,51 +247,31 @@ def _prelu_binary_spec(dtype: ScalarType) -> BinaryOpSpec:
     )
 
 
-BINARY_SPECS_DOUBLE = {
-    ScalarFunction.ADD: BinaryOpSpec(
-        "+", OperatorKind.INFIX, lambda left, right: left + right
-    ),
-    ScalarFunction.DIV: BinaryOpSpec(
-        "/", OperatorKind.INFIX, lambda left, right: left / right
-    ),
-    ScalarFunction.MAXIMUM: BinaryOpSpec("fmax", OperatorKind.FUNC, np.maximum),
-    ScalarFunction.MEAN: _mean_binary_spec(ScalarType.F64),
-    ScalarFunction.MINIMUM: BinaryOpSpec("fmin", OperatorKind.FUNC, np.minimum),
-    ScalarFunction.MUL: BinaryOpSpec(
-        "*", OperatorKind.INFIX, lambda left, right: left * right
-    ),
-    ScalarFunction.REMAINDER: BinaryOpSpec(
-        "remainder", OperatorKind.FUNC, np.remainder
-    ),
-    ScalarFunction.POW: BinaryOpSpec("pow", OperatorKind.FUNC, np.power),
-    ScalarFunction.PRELU: _prelu_binary_spec(ScalarType.F64),
-    ScalarFunction.SUB: BinaryOpSpec(
-        "-", OperatorKind.INFIX, lambda left, right: left - right
-    ),
-}
+def _make_binary_specs_float(suffix: str, dtype: ScalarType) -> dict:
+    return {
+        ScalarFunction.ADD: BinaryOpSpec("+", OperatorKind.INFIX, np.add),
+        ScalarFunction.DIV: BinaryOpSpec("/", OperatorKind.INFIX, np.true_divide),
+        ScalarFunction.MAXIMUM: BinaryOpSpec(
+            "fmax" + suffix, OperatorKind.FUNC, np.maximum
+        ),
+        ScalarFunction.MEAN: _mean_binary_spec(dtype),
+        ScalarFunction.MINIMUM: BinaryOpSpec(
+            "fmin" + suffix, OperatorKind.FUNC, np.minimum
+        ),
+        ScalarFunction.MUL: BinaryOpSpec("*", OperatorKind.INFIX, np.multiply),
+        ScalarFunction.REMAINDER: BinaryOpSpec(
+            "remainder", OperatorKind.FUNC, np.remainder
+        ),
+        ScalarFunction.POW: BinaryOpSpec(
+            "pow" + suffix, OperatorKind.FUNC, np.power
+        ),
+        ScalarFunction.PRELU: _prelu_binary_spec(dtype),
+        ScalarFunction.SUB: BinaryOpSpec("-", OperatorKind.INFIX, np.subtract),
+    }
 
-BINARY_SPECS_FLOAT = {
-    ScalarFunction.ADD: BinaryOpSpec(
-        "+", OperatorKind.INFIX, lambda left, right: left + right
-    ),
-    ScalarFunction.DIV: BinaryOpSpec(
-        "/", OperatorKind.INFIX, lambda left, right: left / right
-    ),
-    ScalarFunction.MAXIMUM: BinaryOpSpec("fmaxf", OperatorKind.FUNC, np.maximum),
-    ScalarFunction.MEAN: _mean_binary_spec(ScalarType.F32),
-    ScalarFunction.MINIMUM: BinaryOpSpec("fminf", OperatorKind.FUNC, np.minimum),
-    ScalarFunction.MUL: BinaryOpSpec(
-        "*", OperatorKind.INFIX, lambda left, right: left * right
-    ),
-    ScalarFunction.REMAINDER: BinaryOpSpec(
-        "remainder", OperatorKind.FUNC, np.remainder
-    ),
-    ScalarFunction.POW: BinaryOpSpec("powf", OperatorKind.FUNC, np.power),
-    ScalarFunction.PRELU: _prelu_binary_spec(ScalarType.F32),
-    ScalarFunction.SUB: BinaryOpSpec(
-        "-", OperatorKind.INFIX, lambda left, right: left - right
-    ),
-}
+
+BINARY_SPECS_DOUBLE = _make_binary_specs_float("", ScalarType.F64)
+BINARY_SPECS_FLOAT = _make_binary_specs_float("f", ScalarType.F32)
 
 UNARY_SYMBOLS_BY_DTYPE = {
     ScalarType.BOOL: UNARY_SYMBOLS_BOOL,
@@ -527,9 +437,7 @@ def binary_op_symbol(
     if not dtype.is_float:
         return None
     if function == ScalarFunction.FMOD:
-        fmod = 0
-        if attrs is not None:
-            fmod = int(attrs.get("fmod", 0))
+        fmod = int(attrs.get("fmod", 0)) if attrs else 0
         if validate_attrs and fmod != 1:
             raise UnsupportedOpError(
                 "Mod only supports fmod=1 for floating point types"
