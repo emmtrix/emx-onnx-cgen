@@ -159,6 +159,24 @@ def test_cli_verify_reduce_model() -> None:
     _run_cli_verify(model)
 
 
+def test_cli_verify_string_output_model() -> None:
+    input_info = helper.make_tensor_value_info("x", TensorProto.STRING, [2])
+    output_info = helper.make_tensor_value_info("y", TensorProto.STRING, [2])
+    model = helper.make_model(
+        helper.make_graph(
+            [helper.make_node("Identity", inputs=["x"], outputs=["y"])],
+            "string_identity_graph",
+            [input_info],
+            [output_info],
+        ),
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    _run_cli_verify(model)
+
+
 def test_cli_testbench_filename_and_include() -> None:
     output_path = Path("out.c")
     testbench_path = output_path.with_name(
@@ -536,3 +554,14 @@ def test_compare_numeric_outputs_detects_float4_nan_mismatch() -> None:
     assert worst[0] == (0,)
     assert worst[1] == 1.0
     assert worst[2] != worst[1]
+
+
+def test_first_exact_mismatch_detects_string_values() -> None:
+    actual = np.array(["monday", "tuesday"], dtype=object)
+    expected = np.array(["monday", "wednesday"], dtype=object)
+
+    assert cli._first_exact_mismatch(actual, expected) == (
+        (1,),
+        "tuesday",
+        "wednesday",
+    )

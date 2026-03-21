@@ -1,4 +1,10 @@
 {
-  "error": "Absolute diff only supports integer and bool dtypes, got object",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_casesensintive_nochangecase model.onnx --test-data-dir test_data_set_0"
+  "error": "OK (no numeric comparisons)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_casesensintive_nochangecase model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "StringNormalizer"
+  ],
+  "opset_version": 10,
+  "generated_checksum": "5b847a34c0c0082af0748e9d7f06d1a4067b99a6e954e2f52676ad8927f1d3bd"
 }

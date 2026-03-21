@@ -1,4 +1,10 @@
 {
-  "error": "Absolute diff only supports integer and bool dtypes, got object",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_string_split_maxsplit model.onnx --test-data-dir test_data_set_0"
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_string_split_maxsplit model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "StringSplit"
+  ],
+  "opset_version": 20,
+  "generated_checksum": "d140535cd795e3b13098c95248053f65f2952e6d95a2bc148f612b171b6db681"
 }

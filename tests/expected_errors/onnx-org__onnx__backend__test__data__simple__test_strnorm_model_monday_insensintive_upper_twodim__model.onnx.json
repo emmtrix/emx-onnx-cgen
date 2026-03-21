@@ -1,4 +1,10 @@
 {
-  "error": "Absolute diff only supports integer and bool dtypes, got object",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_insensintive_upper_twodim model.onnx --test-data-dir test_data_set_0"
+  "error": "OK (no numeric comparisons)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_insensintive_upper_twodim model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "StringNormalizer"
+  ],
+  "opset_version": 10,
+  "generated_checksum": "aa4919cfc53685e84f4c0c25b94bbc01aac7a70aa28e0e0ebeb82e87f950cca3"
 }

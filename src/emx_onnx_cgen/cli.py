@@ -379,6 +379,26 @@ class _VerificationIssue:
             metrics=metrics,
         )
 
+    @classmethod
+    def value_mismatch(
+        cls,
+        *,
+        output_name: str,
+        index: tuple[int, ...],
+        got: object,
+        reference: object,
+    ) -> "_VerificationIssue":
+        return cls(
+            code="value_mismatch",
+            message=f"Output value mismatch for {output_name}",
+            details={
+                "output": output_name,
+                "index": index,
+                "got": got,
+                "reference": reference,
+            },
+        )
+
 
 class _VerifyReporter:
     def __init__(
@@ -561,8 +581,45 @@ def _worst_abs_diff(
     return max_diff, worst
 
 
+def _first_exact_mismatch(
+    actual: "np.ndarray", expected: "np.ndarray"
+) -> tuple[tuple[int, ...], object, object] | None:
+    if actual.shape != expected.shape:
+        raise ValueError(
+            f"Shape mismatch for exact comparison: {actual.shape} vs {expected.shape}"
+        )
+    if actual.size == 0:
+        return None
+    dtype = expected.dtype
+    actual_cast = actual.astype(dtype, copy=False)
+    expected_cast = expected.astype(dtype, copy=False)
+    iterator = np.nditer([actual_cast, expected_cast], flags=["refs_ok", "multi_index"])
+    for actual_value, expected_value in iterator:
+        actual_scalar = actual_value[()]
+        expected_scalar = expected_value[()]
+        if actual_scalar == expected_scalar:
+            continue
+        return (
+            iterator.multi_index,
+            actual_scalar.item() if isinstance(actual_scalar, np.generic) else actual_scalar,
+            expected_scalar.item()
+            if isinstance(expected_scalar, np.generic)
+            else expected_scalar,
+        )
+    return None
+
+
 def _supports_ulp_comparison(dtype: ScalarType) -> bool:
     return dtype in {ScalarType.F16, ScalarType.F32, ScalarType.F64}
+
+
+def _supports_abs_diff_dtype(dtype: np.dtype) -> bool:
+    resolved = np.dtype(dtype)
+    return np.issubdtype(resolved, np.integer) or np.issubdtype(resolved, np.bool_)
+
+
+def _supports_numeric_output_comparison(dtype: ScalarType) -> bool:
+    return dtype.is_float or _supports_abs_diff_dtype(dtype.np_dtype)
 
 
 def _worst_non_ulp_float_diff(
@@ -614,6 +671,8 @@ def _compare_numeric_outputs(
         if _supports_ulp_comparison(dtype):
             return "ulp", *worst_ulp_diff(actual, expected, atol_eps=atol_eps)
         return "abs", *_worst_non_ulp_float_diff(actual, expected)
+    if not _supports_abs_diff_dtype(dtype.np_dtype):
+        raise ValueError(f"Numeric comparison requires a numeric dtype, got {dtype.np_dtype}")
     return "abs", *_worst_abs_diff(actual, expected)
 
 
@@ -2180,6 +2239,19 @@ def _verify_model(
                     node = output_nodes.get(value.name)
                     node_name = node.name if node else None
                     scalar_type = value.type.elem.dtype
+                    if not _supports_numeric_output_comparison(scalar_type):
+                        output_mismatch = _first_exact_mismatch(
+                            actual_trimmed, expected_trimmed
+                        )
+                        if output_mismatch is not None:
+                            issue = _VerificationIssue.value_mismatch(
+                                output_name=value.name,
+                                index=(sequence_index, *output_mismatch[0]),
+                                got=output_mismatch[1],
+                                reference=output_mismatch[2],
+                            )
+                            raise AssertionError(issue.format())
+                        continue
                     metric_kind, output_max, output_worst = _compare_numeric_outputs(
                         actual_trimmed,
                         expected_trimmed,
@@ -2224,6 +2296,17 @@ def _verify_model(
                 node = output_nodes.get(value.name)
                 node_name = node.name if node else None
                 scalar_type = output_dtypes[value.name]
+                if not _supports_numeric_output_comparison(scalar_type):
+                    output_mismatch = _first_exact_mismatch(output_data, runtime_out)
+                    if output_mismatch is not None:
+                        issue = _VerificationIssue.value_mismatch(
+                            output_name=value.name,
+                            index=output_mismatch[0],
+                            got=output_mismatch[1],
+                            reference=output_mismatch[2],
+                        )
+                        raise AssertionError(issue.format())
+                    continue
                 metric_kind, output_max, output_worst = _compare_numeric_outputs(
                     output_data,
                     runtime_out,
