@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 205 / 205
+Supported operators: 203 / 203
 
 | Operator | Supported |
 | --- | --- |
@@ -181,8 +181,6 @@ Supported operators: 205 / 205
 | SplitToSequence | ✅ |
 | Sqrt | ✅ |
 | Squeeze | ✅ |
-| StringConcat | ✅ |
-| StringNormalizer | ✅ |
 | StringSplit | ✅ |
 | Sub | ✅ |
 | Sum | ✅ |
