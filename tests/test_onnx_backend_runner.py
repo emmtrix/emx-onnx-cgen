@@ -14,6 +14,11 @@ def test_selected_tests_from_env_supports_run_all_flag() -> None:
     assert selected_tests_from_env(env={"EMX_ONNX_BACKEND_RUN_ALL": "1"}) is None
 
 
+def test_default_backend_tests_cover_float8_castlike_no_saturate_regressions() -> None:
+    assert "test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FN_cpu" in DEFAULT_TESTS
+    assert "test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FNUZ_cpu" in DEFAULT_TESTS
+
+
 def test_build_pytest_args_uses_explicit_node_ids() -> None:
     args = build_pytest_args(
         selected_tests=("test_abs_cpu", "test_add_cpu"),
