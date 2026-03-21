@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1779 / 1802, 98.7% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1801 / 1802, 99.9% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 124 / 125, 99.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1779 / 1802 ONNX files (98.7%).
+Coverage 1801 / 1802 ONNX files (99.9%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1571,23 +1571,23 @@ Coverage 1779 / 1802 ONNX files (98.7%).
 | node/test_squeeze_negative_axes/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_stft/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 15) |
 | node/test_stft_with_window/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 99) |
-| node/test_string_concat/model.onnx |  |  | ❌ | Absolute diff only supports integer and bool dtypes, got object |
-| node/test_string_concat_broadcasting/model.onnx |  |  | ❌ | Absolute diff only supports integer and bool dtypes, got object |
-| node/test_string_concat_empty_string/model.onnx |  |  | ❌ | Absolute diff only supports integer and bool dtypes, got object |
-| node/test_string_concat_utf8/model.onnx |  |  | ❌ | Absolute diff only supports integer and bool dtypes, got object |
-| node/test_string_concat_zero_dimensional/model.onnx |  |  | ❌ | Absolute diff only supports integer and bool dtypes, got object |
-| node/test_string_split_basic/model.onnx |  |  | ❌ | Absolute diff only supports integer and bool dtypes, got object |
-| node/test_string_split_consecutive_delimiters/model.onnx |  |  | ❌ | Absolute diff only supports integer and bool dtypes, got object |
-| node/test_string_split_empty_string_delimiter/model.onnx |  |  | ❌ | Absolute diff only supports integer and bool dtypes, got object |
+| node/test_string_concat/model.onnx | 20 | Data/Data | ✅ | OK (no numeric comparisons) |
+| node/test_string_concat_broadcasting/model.onnx | 20 | Data/Data | ✅ | OK (no numeric comparisons) |
+| node/test_string_concat_empty_string/model.onnx | 20 | Data/Data | ✅ | OK (no numeric comparisons) |
+| node/test_string_concat_utf8/model.onnx | 20 | Data/Data | ✅ | OK (no numeric comparisons) |
+| node/test_string_concat_zero_dimensional/model.onnx | 20 | Data/Data | ✅ | OK (no numeric comparisons) |
+| node/test_string_split_basic/model.onnx | 20 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_string_split_consecutive_delimiters/model.onnx | 20 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_string_split_empty_string_delimiter/model.onnx | 20 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_string_split_empty_tensor/model.onnx | 20 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_string_split_maxsplit/model.onnx |  |  | ❌ | Absolute diff only supports integer and bool dtypes, got object |
-| node/test_string_split_no_delimiter/model.onnx |  |  | ❌ | Absolute diff only supports integer and bool dtypes, got object |
-| node/test_strnormalizer_export_monday_casesensintive_lower/model.onnx |  |  | ❌ | Absolute diff only supports integer and bool dtypes, got object |
-| node/test_strnormalizer_export_monday_casesensintive_nochangecase/model.onnx |  |  | ❌ | Absolute diff only supports integer and bool dtypes, got object |
-| node/test_strnormalizer_export_monday_casesensintive_upper/model.onnx |  |  | ❌ | Absolute diff only supports integer and bool dtypes, got object |
-| node/test_strnormalizer_export_monday_empty_output/model.onnx |  |  | ❌ | Absolute diff only supports integer and bool dtypes, got object |
-| node/test_strnormalizer_export_monday_insensintive_upper_twodim/model.onnx |  |  | ❌ | Absolute diff only supports integer and bool dtypes, got object |
-| node/test_strnormalizer_nostopwords_nochangecase/model.onnx |  |  | ❌ | Absolute diff only supports integer and bool dtypes, got object |
+| node/test_string_split_maxsplit/model.onnx | 20 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_string_split_no_delimiter/model.onnx | 20 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_strnormalizer_export_monday_casesensintive_lower/model.onnx | 10 | Data/Data | ✅ | OK (no numeric comparisons) |
+| node/test_strnormalizer_export_monday_casesensintive_nochangecase/model.onnx | 10 | Data/Data | ✅ | OK (no numeric comparisons) |
+| node/test_strnormalizer_export_monday_casesensintive_upper/model.onnx | 10 | Data/Data | ✅ | OK (no numeric comparisons) |
+| node/test_strnormalizer_export_monday_empty_output/model.onnx | 10 | Data/Data | ✅ | OK (no numeric comparisons) |
+| node/test_strnormalizer_export_monday_insensintive_upper_twodim/model.onnx | 10 | Data/Data | ✅ | OK (no numeric comparisons) |
+| node/test_strnormalizer_nostopwords_nochangecase/model.onnx | 10 | Data/Data | ✅ | OK (no numeric comparisons) |
 | node/test_sub/model.onnx | 14 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_sub_bcast/model.onnx | 14 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_sub_example/model.onnx | 14 | Data/Data | ✅ | OK (max ULP 0) |
@@ -1821,12 +1821,12 @@ Coverage 1779 / 1802 ONNX files (98.7%).
 | simple/test_shrink/model.onnx | 10 | Data/Data | ✅ | OK (max ULP 0) |
 | simple/test_sign_model/model.onnx | 9 | Data/Data | ✅ | OK (max ULP 0) |
 | simple/test_single_relu_model/model.onnx | 9 | Data/Data | ✅ | OK (max ULP 0) |
-| simple/test_strnorm_model_monday_casesensintive_lower/model.onnx |  |  | ❌ | Absolute diff only supports integer and bool dtypes, got object |
-| simple/test_strnorm_model_monday_casesensintive_nochangecase/model.onnx |  |  | ❌ | Absolute diff only supports integer and bool dtypes, got object |
-| simple/test_strnorm_model_monday_casesensintive_upper/model.onnx |  |  | ❌ | Absolute diff only supports integer and bool dtypes, got object |
-| simple/test_strnorm_model_monday_empty_output/model.onnx |  |  | ❌ | Absolute diff only supports integer and bool dtypes, got object |
-| simple/test_strnorm_model_monday_insensintive_upper_twodim/model.onnx |  |  | ❌ | Absolute diff only supports integer and bool dtypes, got object |
-| simple/test_strnorm_model_nostopwords_nochangecase/model.onnx |  |  | ❌ | Absolute diff only supports integer and bool dtypes, got object |
+| simple/test_strnorm_model_monday_casesensintive_lower/model.onnx | 10 | Data/Data | ✅ | OK (no numeric comparisons) |
+| simple/test_strnorm_model_monday_casesensintive_nochangecase/model.onnx | 10 | Data/Data | ✅ | OK (no numeric comparisons) |
+| simple/test_strnorm_model_monday_casesensintive_upper/model.onnx | 10 | Data/Data | ✅ | OK (no numeric comparisons) |
+| simple/test_strnorm_model_monday_empty_output/model.onnx | 10 | Data/Data | ✅ | OK (no numeric comparisons) |
+| simple/test_strnorm_model_monday_insensintive_upper_twodim/model.onnx | 10 | Data/Data | ✅ | OK (no numeric comparisons) |
+| simple/test_strnorm_model_nostopwords_nochangecase/model.onnx | 10 | Data/Data | ✅ | OK (no numeric comparisons) |
 
 ## ONNX2C test coverage
 
