@@ -1,10 +1,9 @@
 {
-  "error": "OK (max abs diff 0)",
+  "error": "Test data inputs require normalization/reshaping for the testbench format, so verify would no longer compare against the official output_*.pb fixtures. Re-export the model with static shapes or rerun with --test-data-inputs-only to opt into runtime-reference verification explicitly.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_front model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "SequenceInsert"
   ],
-  "opset_version": 11,
-  "generated_checksum": "3df51e428173b809ec3872a33161758b8aa408344076bcd64cdcd42ca0fd3815"
+  "opset_version": 11
 }

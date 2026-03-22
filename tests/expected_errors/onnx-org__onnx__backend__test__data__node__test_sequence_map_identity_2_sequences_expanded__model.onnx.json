@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "Test data inputs require normalization/reshaping for the testbench format, so verify would no longer compare against the official output_*.pb fixtures. Re-export the model with static shapes or rerun with --test-data-inputs-only to opt into runtime-reference verification explicitly.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
@@ -8,6 +8,5 @@
     "SequenceEmpty",
     "Loop"
   ],
-  "opset_version": 17,
-  "generated_checksum": "0b3f8886b260735bf527d29a5c733e8975b72d1d159cd1e1cf07d166a23b6967"
+  "opset_version": 17
 }

@@ -7,8 +7,8 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1801 / 1802, 99.9% | 1.20.1 |
-| [ONNX2C test coverage](#onnx2c-test-coverage) | 124 / 125, 99.2% | n/a |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1791 / 1802, 99.4% | 1.20.1 |
+| [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1801 / 1802 ONNX files (99.9%).
+Coverage 1791 / 1802 ONNX files (99.4%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1466,20 +1466,20 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 | node/test_selu_example/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 2) |
 | node/test_selu_example_expanded_ver18/model.onnx | 18 | Data/Data | ✅ | OK (max ULP 2) |
 | node/test_selu_expanded_ver18/model.onnx | 18 | Data/Data | ✅ | OK (max ULP 24) |
-| node/test_sequence_insert_at_back/model.onnx | 11 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_sequence_insert_at_front/model.onnx | 11 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_sequence_insert_at_back/model.onnx | 11 | Data/Data | ❌ | Test data inputs require normalization/reshaping for the testbench format, so verify would no longer compare against the official output_*.pb fixtures. Re-export the model with static shapes or rerun with --test-data-inputs-only to opt into runtime-reference verification explicitly. |
+| node/test_sequence_insert_at_front/model.onnx | 11 | Data/Data | ❌ | Test data inputs require normalization/reshaping for the testbench format, so verify would no longer compare against the official output_*.pb fixtures. Re-export the model with static shapes or rerun with --test-data-inputs-only to opt into runtime-reference verification explicitly. |
 | node/test_sequence_map_add_1_sequence_1_tensor/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_sequence_map_add_2_sequences/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_sequence_map_add_2_sequences_expanded/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_sequence_map_extract_shapes/model.onnx | 17 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_sequence_map_extract_shapes_expanded/model.onnx | 17 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_sequence_map_add_2_sequences/model.onnx | 17 | Data/Data | ❌ | Test data inputs require normalization/reshaping for the testbench format, so verify would no longer compare against the official output_*.pb fixtures. Re-export the model with static shapes or rerun with --test-data-inputs-only to opt into runtime-reference verification explicitly. |
+| node/test_sequence_map_add_2_sequences_expanded/model.onnx | 17 | Data/Data | ❌ | Test data inputs require normalization/reshaping for the testbench format, so verify would no longer compare against the official output_*.pb fixtures. Re-export the model with static shapes or rerun with --test-data-inputs-only to opt into runtime-reference verification explicitly. |
+| node/test_sequence_map_extract_shapes/model.onnx | 17 | Data/Data | ❌ | Test data inputs require normalization/reshaping for the testbench format, so verify would no longer compare against the official output_*.pb fixtures. Re-export the model with static shapes or rerun with --test-data-inputs-only to opt into runtime-reference verification explicitly. |
+| node/test_sequence_map_extract_shapes_expanded/model.onnx | 17 | Data/Data | ❌ | Test data inputs require normalization/reshaping for the testbench format, so verify would no longer compare against the official output_*.pb fixtures. Re-export the model with static shapes or rerun with --test-data-inputs-only to opt into runtime-reference verification explicitly. |
 | node/test_sequence_map_identity_1_sequence/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx | 17 | Data/Data | ❌ | Test data inputs require normalization/reshaping for the testbench format, so verify would no longer compare against the official output_*.pb fixtures. Re-export the model with static shapes or rerun with --test-data-inputs-only to opt into runtime-reference verification explicitly. |
+| node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx | 17 | Data/Data | ❌ | Test data inputs require normalization/reshaping for the testbench format, so verify would no longer compare against the official output_*.pb fixtures. Re-export the model with static shapes or rerun with --test-data-inputs-only to opt into runtime-reference verification explicitly. |
 | node/test_sequence_map_identity_1_sequence_expanded/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_sequence_map_identity_2_sequences/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_sequence_map_identity_2_sequences_expanded/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_identity_2_sequences/model.onnx | 17 | Data/Data | ❌ | Test data inputs require normalization/reshaping for the testbench format, so verify would no longer compare against the official output_*.pb fixtures. Re-export the model with static shapes or rerun with --test-data-inputs-only to opt into runtime-reference verification explicitly. |
+| node/test_sequence_map_identity_2_sequences_expanded/model.onnx | 17 | Data/Data | ❌ | Test data inputs require normalization/reshaping for the testbench format, so verify would no longer compare against the official output_*.pb fixtures. Re-export the model with static shapes or rerun with --test-data-inputs-only to opt into runtime-reference verification explicitly. |
 | node/test_shape/model.onnx | 25 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_shape_clip_end/model.onnx | 25 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_shape_clip_start/model.onnx | 25 | Data/Data | ✅ | OK (max abs diff 0) |
@@ -1832,7 +1832,7 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 
 Test directory: `onnx2c-org/test`
 
-Coverage 124 / 125 ONNX files (99.2%).
+Coverage 123 / 125 ONNX files (98.4%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1915,7 +1915,7 @@ Coverage 124 / 125 ONNX files (99.2%).
 | local_ops/test_shape_const_out/model.onnx | 12 | Data/Data | ✅ | OK (max ULP 0) |
 | local_ops/test_slice_end_INT64_MAX/model.onnx | 12 | Data/Data | ✅ | OK (max ULP 0) |
 | mnist/model.onnx (--max-ulp 200) | 8 | Data/Data | ✅ | OK (max ULP 160) |
-| mnist/pytorch.onnx | 9 | Data/Data | ✅ | OK (max ULP 7) |
+| mnist/pytorch.onnx | 9 | Data/Data | ❌ | Test data inputs require normalization/reshaping for the testbench format, so verify would no longer compare against the official output_*.pb fixtures. Re-export the model with static shapes or rerun with --test-data-inputs-only to opt into runtime-reference verification explicitly. |
 | old_onnx_backend/11/test_softmax_axis_0/model.onnx | 9 | Data/Data | ✅ | OK (max ULP 0) |
 | old_onnx_backend/11/test_softmax_axis_1/model.onnx | 9 | Data/Data | ✅ | OK (max ULP 0) |
 | old_onnx_backend/11/test_softmax_default_axis/model.onnx | 9 | Data/Data | ✅ | OK (max ULP 0) |

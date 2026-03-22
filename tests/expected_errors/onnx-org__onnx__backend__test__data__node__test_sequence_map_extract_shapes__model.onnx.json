@@ -1,10 +1,9 @@
 {
-  "error": "OK (max abs diff 0)",
+  "error": "Test data inputs require normalization/reshaping for the testbench format, so verify would no longer compare against the official output_*.pb fixtures. Re-export the model with static shapes or rerun with --test-data-inputs-only to opt into runtime-reference verification explicitly.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "SequenceMap"
   ],
-  "opset_version": 17,
-  "generated_checksum": "dfb883ce3eb5a7ce2de670ebc2566249bc39d33f92a35a029698ce983af76cd1"
+  "opset_version": 17
 }
