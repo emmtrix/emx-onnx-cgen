@@ -110,10 +110,40 @@ def _make_dynamic_identity_chain_model() -> onnx.ModelProto:
     return model
 
 
+def _make_sequence_identity_model() -> onnx.ModelProto:
+    input_info = helper.make_tensor_sequence_value_info("x", TensorProto.FLOAT, [1])
+    output_info = helper.make_tensor_sequence_value_info("y", TensorProto.FLOAT, [1])
+    graph = helper.make_graph(
+        [helper.make_node("Identity", inputs=["x"], outputs=["y"])],
+        "sequence_identity_graph",
+        [input_info],
+        [output_info],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _write_input_pb(data_dir: Path, name: str, values: np.ndarray) -> None:
     data_dir.mkdir(parents=True, exist_ok=True)
     tensor = numpy_helper.from_array(values, name=name)
     (data_dir / "input_0.pb").write_bytes(tensor.SerializeToString())
+
+
+def _write_sequence_input_pb(
+    data_dir: Path, *, index: int, values: list[np.ndarray]
+) -> None:
+    data_dir.mkdir(parents=True, exist_ok=True)
+    sequence = onnx.SequenceProto()
+    sequence.tensor_values.extend(
+        [numpy_helper.from_array(value) for value in values]
+    )
+    (data_dir / f"input_{index}.pb").write_bytes(sequence.SerializeToString())
 
 
 def test_summarize_build_failure_prefers_error_line() -> None:
@@ -175,6 +205,88 @@ def test_cli_verify_string_output_model() -> None:
     model.ir_version = 7
     onnx.checker.check_model(model)
     _run_cli_verify(model)
+
+
+def test_cli_verify_detects_sequence_output_shape_mismatch() -> None:
+    result = cli.run_cli_command(
+        [
+            "verify",
+            "--model-base-dir",
+            str(
+                PROJECT_ROOT
+                / "onnx-org"
+                / "onnx"
+                / "backend"
+                / "test"
+                / "data"
+                / "node"
+                / "test_sequence_insert_at_back"
+            ),
+            "model.onnx",
+            "--test-data-dir",
+            "test_data_set_0",
+            "--test-data-inputs-only",
+        ]
+    )
+
+    assert result.exit_code == 1
+    assert result.result is not None
+    assert "Output shape mismatch for output_sequence[0]" in result.result
+
+
+def test_cli_verify_rejects_implicit_runtime_fallback_for_normalized_test_inputs() -> None:
+    result = cli.run_cli_command(
+        [
+            "verify",
+            "--model-base-dir",
+            str(
+                PROJECT_ROOT
+                / "onnx-org"
+                / "onnx"
+                / "backend"
+                / "test"
+                / "data"
+                / "node"
+                / "test_sequence_map_add_2_sequences"
+            ),
+            "model.onnx",
+            "--test-data-dir",
+            "test_data_set_0",
+        ]
+    )
+
+    assert result.exit_code == 1
+    assert result.result is not None
+    assert "Test data inputs require normalization/reshaping" in result.result
+    assert "--test-data-inputs-only" in result.result
+
+
+def test_cli_verify_rejects_sequence_inputs_above_fixed_capacity(
+    tmp_path: Path,
+) -> None:
+    model = _make_sequence_identity_model()
+    model_path = tmp_path / "model.onnx"
+    test_data_dir = tmp_path / "test_data_set_0"
+    onnx.save_model(model, model_path)
+    _write_sequence_input_pb(
+        test_data_dir,
+        index=0,
+        values=[np.array([float(index)], dtype=np.float32) for index in range(33)],
+    )
+
+    result = cli.run_cli_command(
+        [
+            "verify",
+            str(model_path),
+            "--test-data-dir",
+            str(test_data_dir),
+            "--test-data-inputs-only",
+        ]
+    )
+
+    assert result.exit_code == 1
+    assert result.result is not None
+    assert "supports at most 32 items" in result.result
 
 
 def test_cli_testbench_filename_and_include() -> None:

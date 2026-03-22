@@ -347,6 +347,24 @@ class _VerificationIssue:
         )
 
     @classmethod
+    def sequence_length_mismatch(
+        cls,
+        *,
+        output_name: str,
+        actual_count: int,
+        expected_count: int,
+    ) -> "_VerificationIssue":
+        return cls(
+            code="sequence_length_mismatch",
+            message=f"Sequence length mismatch for {output_name}",
+            details={
+                "output": output_name,
+                "actual_count": actual_count,
+                "expected_count": expected_count,
+            },
+        )
+
+    @classmethod
     def shape_mismatch(
         cls,
         *,
@@ -1696,12 +1714,13 @@ def _verify_model(
         if not args.per_node_accuracy and not args.test_data_inputs_only:
             testbench_outputs = _load_test_data_outputs(model, args.test_data_dir)
             if adjusted_test_inputs and testbench_outputs is not None:
-                active_reporter.note(
-                    "Ignoring test-data outputs because test-data inputs were "
-                    "normalized/reshaped for the testbench format; using runtime "
-                    "reference instead."
+                raise CodegenError(
+                    "Test data inputs require normalization/reshaping for the "
+                    "testbench format, so verify would no longer compare against "
+                    "the official output_*.pb fixtures. Re-export the model with "
+                    "static shapes or rerun with --test-data-inputs-only to opt "
+                    "into runtime-reference verification explicitly."
                 )
-                testbench_outputs = None
         elif args.test_data_inputs_only and args.test_data_dir is not None:
             active_reporter.note(
                 "Ignoring test-data outputs by request; using runtime reference instead."
@@ -1863,6 +1882,16 @@ def _verify_model(
                             )
                             continue
                     seq_count = int(seq_data.shape[0])
+                    if seq_count > 32:
+                        return (
+                            None,
+                            f"Sequence input {name!r} has length {seq_count}, "
+                            "but the generated testbench ABI supports at most 32 "
+                            "items.",
+                            operators,
+                            opset_version,
+                            generated_checksum,
+                        )
                     handle.write(struct.pack("<i", seq_count))
                     elem_shape = lowered_sequence_input_shapes.get(
                         name, tuple(seq_type.elem.shape)
@@ -2206,36 +2235,36 @@ def _verify_model(
                 sequence_count = int(output_payload.get("sequence_count", 0))
                 expected_count = len(expected_sequence)
                 if sequence_count != expected_count:
-                    active_reporter.note(
-                        f"Sequence length differs for {value.name}: "
-                        f"{sequence_count} vs {expected_count}."
+                    issue = _VerificationIssue.sequence_length_mismatch(
+                        output_name=value.name,
+                        actual_count=sequence_count,
+                        expected_count=expected_count,
                     )
-                compare_count = min(sequence_count, expected_count)
-                actual_sequence = [actual_data[index] for index in range(compare_count)]
-                expected_trimmed_sequence = expected_sequence[:compare_count]
+                    raise AssertionError(issue.format())
+                actual_sequence = [actual_data[index] for index in range(sequence_count)]
                 for sequence_index, (actual_item, expected_item) in enumerate(
-                    zip(actual_sequence, expected_trimmed_sequence)
+                    zip(actual_sequence, expected_sequence)
                 ):
                     if actual_item.ndim != expected_item.ndim:
-                        active_reporter.note(
-                            f"Skipping rank-mismatched sequence item {value.name}[{sequence_index}]: "
-                            f"{actual_item.ndim} vs {expected_item.ndim}."
+                        issue = _VerificationIssue.shape_mismatch(
+                            output_name=f"{value.name}[{sequence_index}]",
+                            actual_shape=tuple(actual_item.shape),
+                            expected_shape=tuple(expected_item.shape),
+                            actual_size=int(actual_item.size),
+                            expected_size=int(expected_item.size),
                         )
-                        continue
-                    overlap_shape = tuple(
-                        min(actual_dim, expected_dim)
-                        for actual_dim, expected_dim in zip(
-                            actual_item.shape, expected_item.shape
+                        raise AssertionError(issue.format())
+                    if actual_item.shape != expected_item.shape:
+                        issue = _VerificationIssue.shape_mismatch(
+                            output_name=f"{value.name}[{sequence_index}]",
+                            actual_shape=tuple(actual_item.shape),
+                            expected_shape=tuple(expected_item.shape),
+                            actual_size=int(actual_item.size),
+                            expected_size=int(expected_item.size),
                         )
-                    )
-                    if overlap_shape != expected_item.shape:
-                        active_reporter.note(
-                            f"Comparing overlapping region for {value.name}[{sequence_index}] "
-                            f"with shapes {actual_item.shape} vs {expected_item.shape}."
-                        )
-                    slices = tuple(slice(0, dim) for dim in overlap_shape)
-                    actual_trimmed = actual_item[slices]
-                    expected_trimmed = expected_item[slices]
+                        raise AssertionError(issue.format())
+                    actual_trimmed = actual_item
+                    expected_trimmed = expected_item
                     node = output_nodes.get(value.name)
                     node_name = node.name if node else None
                     scalar_type = value.type.elem.dtype
