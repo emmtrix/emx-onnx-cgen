@@ -1,10 +1,9 @@
 {
-  "error": "OK (max abs diff 0)",
+  "error": "Unsupported test-data sequence input for verify: variable sequence element shapes are not supported",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_back model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "SequenceInsert"
   ],
-  "opset_version": 11,
-  "generated_checksum": "d7efd43963a5f0cd54cd84e6267ccde0b54c5be20ee28c278723831198ec1ad0"
+  "opset_version": 11
 }

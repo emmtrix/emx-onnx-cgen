@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 7)",
+  "error": "Unsupported test-data sequence input for verify: variable sequence element shapes are not supported",
   "command_line": "verify --model-base-dir onnx2c-org/test/mnist pytorch.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
@@ -7,6 +7,5 @@
     "Constant",
     "BatchNormalization"
   ],
-  "opset_version": 9,
-  "generated_checksum": "300954b84f996882052d11dca0351b14b8cc74fcd383b86a2ebff7be5cc12c8f"
+  "opset_version": 9
 }
