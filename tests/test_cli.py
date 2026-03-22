@@ -257,8 +257,10 @@ def test_cli_verify_rejects_implicit_runtime_fallback_for_normalized_test_inputs
 
     assert result.exit_code == 1
     assert result.result is not None
-    assert "Test data inputs require normalization/reshaping" in result.result
-    assert "--test-data-inputs-only" in result.result
+    assert (
+        "Unsupported test-data sequence input for verify: variable "
+        "sequence element shapes are not supported"
+    ) in result.result
 
 
 def test_cli_verify_rejects_sequence_inputs_above_fixed_capacity(

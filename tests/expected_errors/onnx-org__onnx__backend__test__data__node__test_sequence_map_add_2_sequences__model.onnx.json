@@ -1,5 +1,5 @@
 {
-  "error": "Test data inputs require normalization/reshaping for the testbench format, so verify would no longer compare against the official output_*.pb fixtures. Re-export the model with static shapes or rerun with --test-data-inputs-only to opt into runtime-reference verification explicitly.",
+  "error": "Unsupported test-data sequence input for verify: variable sequence element shapes are not supported",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [

@@ -1715,11 +1715,8 @@ def _verify_model(
             testbench_outputs = _load_test_data_outputs(model, args.test_data_dir)
             if adjusted_test_inputs and testbench_outputs is not None:
                 raise CodegenError(
-                    "Test data inputs require normalization/reshaping for the "
-                    "testbench format, so verify would no longer compare against "
-                    "the official output_*.pb fixtures. Re-export the model with "
-                    "static shapes or rerun with --test-data-inputs-only to opt "
-                    "into runtime-reference verification explicitly."
+                    "Unsupported test-data sequence input for verify: variable "
+                    "sequence element shapes are not supported"
                 )
         elif args.test_data_inputs_only and args.test_data_dir is not None:
             active_reporter.note(
