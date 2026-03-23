@@ -1,10 +1,10 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "Output shape mismatch for seq[0] (actual_shape=(0, 6), actual_size=0, expected_shape=(1, 6), expected_size=6, output=seq[0])",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_split_to_sequence_2 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "SplitToSequence"
   ],
   "opset_version": 24,
-  "generated_checksum": "e66434a164b24d2b8e1d5336aaadc45984d01ee07ec48e0d1b696330e24bbf1f"
+  "generated_checksum": "0892ffe7fd41cd22d2e53d852de5d90fc12740b17327537c4088bfee0669a3f4"
 }

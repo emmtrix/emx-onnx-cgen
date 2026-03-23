@@ -1,9 +1,14 @@
 {
-  "error": "Unsupported test-data sequence input for verify: variable sequence element shapes are not supported",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_back model.onnx --test-data-dir test_data_set_0",
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_back model.onnx --test-data-dir test_data_set_0 --sequence-element-shape 'sequence=[<=4]'",
+  "extra_cli_args": [
+    "--sequence-element-shape",
+    "sequence=[<=4]"
+  ],
   "verification_mode": "Data/Data",
   "operators": [
     "SequenceInsert"
   ],
-  "opset_version": 11
+  "opset_version": 11,
+  "generated_checksum": "9684a511f37f3b14808ab7bc29a1ec81f56976576f1300e47a406b70e6d3b808"
 }

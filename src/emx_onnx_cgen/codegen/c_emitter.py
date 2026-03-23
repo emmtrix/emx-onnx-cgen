@@ -19,6 +19,7 @@ import numpy as np
 
 from ..errors import CodegenError
 from ..testbench_output_format import parse_testbench_output_format
+from ..sequence_shape_hints import SequenceElementShapeHint
 from ..ir.op_base import (
     OpBase,
     CodegenDim,
@@ -86,11 +87,13 @@ from ..ir.ops import (
     QLinearMatMulOp,
     QLinearSoftmaxOp,
     LoopSequenceInsertOp,
+    LoopSequenceMapOp,
     RangeOp,
     SequenceAtOp,
     SequenceConstructOp,
     SequenceEmptyOp,
     SequenceEraseOp,
+    SequenceIdentityOp,
     SequenceInsertOp,
     SequenceLengthOp,
     ReduceOp,
@@ -323,6 +326,8 @@ class _EmitState:
     fft_kernel_registry: FFTKernelRegistry
     dim_args: str
     tensor_dim_names: Mapping[str, Mapping[int, CodegenDim]]
+    sequence_shape_hints: Mapping[str, SequenceElementShapeHint]
+    sequence_dim_max_sizes: Mapping[str, int]
     op_context: OpContext
     value_name_map: Mapping[str, str]
 
@@ -339,6 +344,7 @@ class CEmitter:
         large_temp_threshold_bytes: int = 1024,
         large_weight_threshold: int = 1024,
         replicate_ort_bugs: bool = False,
+        sequence_element_shapes: Mapping[str, SequenceElementShapeHint] | None = None,
     ) -> None:
         loader = (
             FileSystemLoader(str(template_dir))
@@ -368,6 +374,7 @@ class CEmitter:
             raise CodegenError("large_weight_threshold must be >= 0")
         self._large_weight_threshold = large_weight_threshold
         self._replicate_ort_bugs = replicate_ort_bugs
+        self._sequence_element_shapes = dict(sequence_element_shapes or {})
         self._emit_state: _EmitState | None = None
 
     def _setup_template_resolvers(
@@ -510,8 +517,32 @@ class CEmitter:
         _visited: set[str] | None = None,
     ) -> tuple[int, ...]:
         elem = self._ctx_sequence_elem_type(sequence_name)
+        explicit_hint = (
+            self._emit_state.sequence_shape_hints.get(sequence_name)
+            if self._emit_state is not None
+            else self._sequence_element_shapes.get(sequence_name)
+        )
+        if explicit_hint is not None:
+            return explicit_hint.max_shape
         if elem.shape != ():
-            return elem.shape
+            resolved_shape: list[int] = []
+            if self._emit_state is not None:
+                symbol_sizes = self._emit_state.sequence_dim_max_sizes
+            else:
+                symbol_sizes = {}
+            for axis, dim in enumerate(elem.shape):
+                if dim >= 0:
+                    resolved_shape.append(dim)
+                    continue
+                dim_param = elem.dim_params[axis] if axis < len(elem.dim_params) else None
+                if dim_param and dim_param in symbol_sizes:
+                    resolved_shape.append(symbol_sizes[dim_param])
+                    continue
+                if dim_param:
+                    resolved_shape.append(CodegenDim(dim_param).expected_size)
+                    continue
+                resolved_shape.append(CodegenDim(f"{sequence_name}_dim_{axis}").expected_size)
+            return tuple(resolved_shape)
         if _visited is None:
             _visited = set()
         if sequence_name in _visited:
@@ -546,6 +577,76 @@ class CEmitter:
                 )
                 inferred = self._merge_sequence_storage_shape(inferred, downstream)
         return inferred
+
+    def _build_sequence_dim_max_sizes(
+        self,
+        model: LoweredModel,
+        sequence_shape_hints: Mapping[str, SequenceElementShapeHint],
+    ) -> dict[str, int]:
+        symbol_sizes: dict[str, int] = {}
+        for name, value_type in zip(model.input_names, model.input_types):
+            if not isinstance(value_type, SequenceType):
+                continue
+            hint = sequence_shape_hints.get(name)
+            if hint is None:
+                continue
+            for axis, dim_hint in enumerate(hint.dims):
+                if axis >= len(value_type.elem.dim_params):
+                    continue
+                dim_param = value_type.elem.dim_params[axis]
+                if not dim_param:
+                    continue
+                current = symbol_sizes.get(dim_param)
+                if current is None or dim_hint.max_size > current:
+                    symbol_sizes[dim_param] = dim_hint.max_size
+        return symbol_sizes
+
+    def _sequence_dynamic_axes(
+        self, sequence_name: str, *, _visited: set[str] | None = None
+    ) -> tuple[int, ...]:
+        hint = (
+            self._emit_state.sequence_shape_hints.get(sequence_name)
+            if self._emit_state is not None
+            else self._sequence_element_shapes.get(sequence_name)
+        )
+        if hint is not None:
+            return hint.dynamic_axes
+        if self._emit_state is None:
+            return ()
+        value = self._emit_state.op_context.find_value(self._ctx_name(sequence_name))
+        if not isinstance(value.type, SequenceType):
+            return ()
+        direct_axes = tuple(
+            axis
+            for axis, (dim, dim_param) in enumerate(
+                zip(value.type.elem.shape, value.type.elem.dim_params)
+            )
+            if dim < 0 or dim_param is not None
+        )
+        if direct_axes:
+            return direct_axes
+        if _visited is None:
+            _visited = set()
+        if sequence_name in _visited:
+            return ()
+        _visited.add(sequence_name)
+        producer = self._emit_state.op_context.producer(self._ctx_name(sequence_name))
+        if producer is None:
+            return ()
+        if producer.op_type in {"SequenceInsert", "SequenceErase", "Identity"} and producer.inputs:
+            src_name = producer.inputs[0]
+            return self._sequence_dynamic_axes(src_name, _visited=_visited)
+        return ()
+
+    @staticmethod
+    def _sequence_dim_array_name(name: str, axis: int) -> str:
+        return f"{name}__dim_{axis}"
+
+    def _sequence_dim_arg_names(self, name: str) -> list[str]:
+        return [
+            self._sequence_dim_array_name(name, axis)
+            for axis in self._sequence_dynamic_axes(name)
+        ]
 
     def _derived(self, op: OpBase, key: str) -> object:
         if self._emit_state is None:
@@ -998,6 +1099,13 @@ class CEmitter:
         self._setup_template_resolvers(scalar_registry, fft_kernel_registry)
         testbench_template = templates.get("testbench")
         initial_name_map = self._build_value_name_map(name_map, {})
+        sequence_shape_hints = {
+            name_map.get(name, name): hint
+            for name, hint in self._sequence_element_shapes.items()
+        }
+        sequence_dim_max_sizes = self._build_sequence_dim_max_sizes(
+            model, sequence_shape_hints
+        )
         self._emit_state = _EmitState(
             model=model,
             templates=templates,
@@ -1005,6 +1113,8 @@ class CEmitter:
             fft_kernel_registry=fft_kernel_registry,
             dim_args=dim_args,
             tensor_dim_names=tensor_dim_names,
+            sequence_shape_hints=sequence_shape_hints,
+            sequence_dim_max_sizes=sequence_dim_max_sizes,
             op_context=model.op_context,
             value_name_map=initial_name_map,
         )
@@ -1215,6 +1325,13 @@ class CEmitter:
         self._setup_template_resolvers(scalar_registry, fft_kernel_registry)
         testbench_template = templates.get("testbench")
         initial_name_map = self._build_value_name_map(name_map, {})
+        sequence_shape_hints = {
+            name_map.get(name, name): hint
+            for name, hint in self._sequence_element_shapes.items()
+        }
+        sequence_dim_max_sizes = self._build_sequence_dim_max_sizes(
+            model, sequence_shape_hints
+        )
         self._emit_state = _EmitState(
             model=model,
             templates=templates,
@@ -1222,6 +1339,8 @@ class CEmitter:
             fft_kernel_registry=fft_kernel_registry,
             dim_args=dim_args,
             tensor_dim_names=tensor_dim_names,
+            sequence_shape_hints=sequence_shape_hints,
+            sequence_dim_max_sizes=sequence_dim_max_sizes,
             op_context=model.op_context,
             value_name_map=initial_name_map,
         )
@@ -1433,6 +1552,13 @@ class CEmitter:
         self._setup_template_resolvers(scalar_registry, fft_kernel_registry)
         tensor_dim_names = self._build_tensor_dim_names(model, {}, {}, name_map)
         initial_name_map = self._build_value_name_map(name_map, {})
+        sequence_shape_hints = {
+            name_map.get(name, name): hint
+            for name, hint in self._sequence_element_shapes.items()
+        }
+        sequence_dim_max_sizes = self._build_sequence_dim_max_sizes(
+            model, sequence_shape_hints
+        )
         self._emit_state = _EmitState(
             model=model,
             templates=templates,
@@ -1440,6 +1566,8 @@ class CEmitter:
             fft_kernel_registry=fft_kernel_registry,
             dim_args=dim_args,
             tensor_dim_names=tensor_dim_names,
+            sequence_shape_hints=sequence_shape_hints,
+            sequence_dim_max_sizes=sequence_dim_max_sizes,
             op_context=model.op_context,
             value_name_map=initial_name_map,
         )
@@ -2022,6 +2150,57 @@ class CEmitter:
         for index, op in enumerate(resolved_ops):
             op_name = self._op_function_name(model, index)
             op_args = list(op.call_args())
+            if isinstance(op, SequenceIdentityOp):
+                op_args = [
+                    op.input_sequence,
+                    f"{op.input_sequence}__count",
+                    op.output_sequence,
+                    f"{op.output_sequence}__count",
+                    *self._sequence_dim_arg_names(op.input_sequence),
+                    *self._sequence_dim_arg_names(op.output_sequence),
+                    *(
+                        [op.input_present, op.output_present]
+                        if op.input_present is not None and op.output_present is not None
+                        else []
+                    ),
+                ]
+            elif isinstance(op, SequenceInsertOp):
+                op_args = [
+                    op.input_sequence,
+                    f"{op.input_sequence}__count",
+                    *self._sequence_dim_arg_names(op.input_sequence),
+                    op.tensor,
+                    *([op.position] if op.position is not None else []),
+                    op.output_sequence,
+                    f"{op.output_sequence}__count",
+                    *self._sequence_dim_arg_names(op.output_sequence),
+                ]
+            elif isinstance(op, SequenceEraseOp):
+                op_args = [
+                    op.input_sequence,
+                    f"{op.input_sequence}__count",
+                    *self._sequence_dim_arg_names(op.input_sequence),
+                    *([op.position] if op.position is not None else []),
+                    op.output_sequence,
+                    f"{op.output_sequence}__count",
+                    *self._sequence_dim_arg_names(op.output_sequence),
+                ]
+            elif isinstance(op, LoopSequenceMapOp):
+                op_args = [op.trip_count, op.cond]
+                for name in op.input_sequences:
+                    op_args.extend(
+                        [name, f"{name}__count", *self._sequence_dim_arg_names(name)]
+                    )
+                for name in op.input_tensors:
+                    op_args.append(name)
+                for name in op.output_sequences:
+                    op_args.extend(
+                        [
+                            name,
+                            f"{name}__count",
+                            *self._sequence_dim_arg_names(name),
+                        ]
+                    )
             if isinstance(
                 op,
                 (
@@ -2067,15 +2246,20 @@ class CEmitter:
             )
         ):
             if isinstance(value_type, SequenceType):
+                sequence_shape = self._sequence_storage_shape(name)
                 elem_suffix = self._param_array_suffix(
-                    shape,
-                    input_dim_names.get(index),
+                    sequence_shape,
                     dtype=dtype,
                 )
                 params.append(
                     f"const {dtype.c_type} {name}[EMX_SEQUENCE_MAX_LEN]{elem_suffix}"
                 )
                 params.append(f"idx_t {name}__count")
+                for axis in self._sequence_dynamic_axes(name):
+                    params.append(
+                        "const idx_t "
+                        f"{self._sequence_dim_array_name(name, axis)}[EMX_SEQUENCE_MAX_LEN]"
+                    )
                 optional_flag = optional_flags.get(name)
                 if optional_flag is not None:
                     params.append(f"_Bool {optional_flag}")
@@ -2096,15 +2280,19 @@ class CEmitter:
             )
         ):
             if isinstance(value_type, SequenceType):
+                sequence_shape = self._sequence_storage_shape(name)
                 elem_suffix = self._param_array_suffix(
-                    shape,
-                    output_dim_names.get(index),
+                    sequence_shape,
                     dtype=dtype,
                 )
                 params.append(
                     f"{dtype.c_type} {name}[EMX_SEQUENCE_MAX_LEN]{elem_suffix}"
                 )
                 params.append(f"idx_t *{name}__count")
+                for axis in self._sequence_dynamic_axes(name):
+                    params.append(
+                        f"idx_t {self._sequence_dim_array_name(name, axis)}[EMX_SEQUENCE_MAX_LEN]"
+                    )
                 optional_flag = output_optional_flags.get(name)
                 if optional_flag is not None:
                     params.append(f"_Bool *{optional_flag}")
@@ -2409,6 +2597,12 @@ class CEmitter:
 
     def sequence_storage_shape(self, name: str) -> tuple[int, ...]:
         return self._sequence_storage_shape(name)
+
+    def sequence_dynamic_axes(self, name: str) -> tuple[int, ...]:
+        return self._sequence_dynamic_axes(name)
+
+    def sequence_dim_array_name(self, name: str, axis: int) -> str:
+        return self._sequence_dim_array_name(name, axis)
 
     def format_value(self, value: float | int | bool, dtype: ScalarType) -> str:
         return self._format_value(value, dtype)
@@ -3002,13 +3196,17 @@ class CEmitter:
             return dim_names
 
         input_dim_names: dict[int, dict[int, CodegenDim]] = {}
-        for index, shape in enumerate(model.input_shapes):
+        for index, (shape, value_type) in enumerate(zip(model.input_shapes, model.input_types)):
+            if isinstance(value_type, SequenceType):
+                continue
             dim_names = _build_dim_names("input", index, shape, variable_dim_inputs)
             if dim_names:
                 input_dim_names[index] = dim_names
 
         output_dim_names: dict[int, dict[int, CodegenDim]] = {}
-        for index, shape in enumerate(model.output_shapes):
+        for index, (shape, value_type) in enumerate(zip(model.output_shapes, model.output_types)):
+            if isinstance(value_type, SequenceType):
+                continue
             dim_names = _build_dim_names("output", index, shape, variable_dim_outputs)
             if dim_names:
                 output_dim_names[index] = dim_names
@@ -3252,6 +3450,12 @@ class CEmitter:
             dim_names = input_dim_names.get(index) or self.dim_names_for(name)
             is_sequence_input = isinstance(value_type, SequenceType)
             constant_values = testbench_inputs.get(name)
+            sequence_dim_axes = self._sequence_dynamic_axes(name) if is_sequence_input else ()
+            sequence_items = (
+                [np.asarray(item) for item in constant_values]
+                if is_sequence_input and isinstance(constant_values, list)
+                else None
+            )
             input_actual_shape: tuple[int, ...] | None = None
             if isinstance(constant_values, np.ndarray):
                 if is_sequence_input and constant_values.ndim >= 1:
@@ -3271,11 +3475,14 @@ class CEmitter:
                             int(actual_dim),
                         )
                         dim_values[dim_ref.name] = observed_dim_values[dim_ref.name]
-            concrete_codegen_shape = concrete_shape_for_testbench(
-                shape,
-                dim_names,
-                actual_shape=input_actual_shape,
-            )
+            if is_sequence_input:
+                concrete_codegen_shape = self._sequence_storage_shape(name)
+            else:
+                concrete_codegen_shape = concrete_shape_for_testbench(
+                    shape,
+                    dim_names,
+                    actual_shape=input_actual_shape,
+                )
             runtime_shape = tuple(
                 (
                     dim_names[axis].name
@@ -3305,6 +3512,8 @@ class CEmitter:
                         )
                         normalized[overlap] = constant_values[overlap]
                     constant_values = normalized
+            elif is_sequence_input and sequence_items is not None:
+                constant_values = None
             loop_shape = CEmitter._codegen_shape(concrete_codegen_shape)
             if is_sequence_input:
                 if (
@@ -3444,6 +3653,14 @@ class CEmitter:
                     "count_name": f"{name}__count",
                     "count_value": loop_shape[0] if is_sequence_input else 1,
                     "storage": input_storage,
+                    "sequence_dim_arrays": tuple(
+                        {
+                            "axis": axis,
+                            "name": self._sequence_dim_array_name(name, axis),
+                            "default_value": concrete_codegen_shape[axis],
+                        }
+                        for axis in sequence_dim_axes
+                    ),
                 }
             )
         outputs = []
@@ -3459,6 +3676,7 @@ class CEmitter:
             json_name = self._ctx_name(name)
             dim_names = output_dim_names.get(index) or self.dim_names_for(name)
             output_values = testbench_outputs.get(name) if testbench_outputs else None
+            sequence_dim_axes = self._sequence_dynamic_axes(name) if isinstance(value_type, SequenceType) else ()
             output_actual_shape: tuple[int, ...] | None = None
             if isinstance(output_values, np.ndarray):
                 output_actual_shape = tuple(int(dim) for dim in output_values.shape)
@@ -3471,11 +3689,14 @@ class CEmitter:
                             int(actual_dim),
                         )
                         dim_values[dim_ref.name] = observed_dim_values[dim_ref.name]
-            concrete_codegen_shape = concrete_shape_for_testbench(
-                shape,
-                dim_names,
-                actual_shape=output_actual_shape,
-            )
+            if isinstance(value_type, SequenceType):
+                concrete_codegen_shape = self._sequence_storage_shape(name)
+            else:
+                concrete_codegen_shape = concrete_shape_for_testbench(
+                    shape,
+                    dim_names,
+                    actual_shape=output_actual_shape,
+                )
             is_sequence_output = isinstance(value_type, SequenceType)
             loop_shape = (1,) if not concrete_codegen_shape else concrete_codegen_shape
             if is_sequence_output:
@@ -3515,6 +3736,14 @@ class CEmitter:
                     "count_name": f"{name}__count",
                     "optional_flag_name": optional_flag,
                     "storage": output_storage,
+                    "sequence_dim_arrays": tuple(
+                        {
+                            "axis": axis,
+                            "name": self._sequence_dim_array_name(name, axis),
+                            "value": concrete_codegen_shape[axis],
+                        }
+                        for axis in sequence_dim_axes
+                    ),
                 }
             )
         try:
@@ -3559,11 +3788,16 @@ class CEmitter:
         for name, values in testbench_inputs.items():
             if dtype_map.get(name) not in float_dtypes:
                 continue
-            flat_values = (
-                values.reshape(-1).tolist()
-                if isinstance(values, np.ndarray)
-                else values
-            )
+            if isinstance(values, np.ndarray):
+                flat_values = values.reshape(-1).tolist()
+            elif isinstance(values, list):
+                flat_values = [
+                    item
+                    for tensor in values
+                    for item in np.asarray(tensor).reshape(-1).tolist()
+                ]
+            else:
+                flat_values = values
             for value in flat_values:
                 if not math.isfinite(float(value)):
                     return True

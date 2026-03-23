@@ -1,10 +1,9 @@
 {
-  "error": "OK (no numeric comparisons)",
+  "error": "Code generation requires explicit ragged-sequence bounds. Reason: sequence 'x' has unknown or dynamic element dimensions. Hint: pass --sequence-element-shape x=[...]",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_identity_sequence model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "Identity"
   ],
-  "opset_version": 25,
-  "generated_checksum": "da9583d80356032d7fb9d0d91ecdf64310aac139e921cfe3a2b5bfb159bfca3a"
+  "opset_version": 25
 }

@@ -24,11 +24,17 @@ void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     }
 
     for (idx_t seq = 0; seq < erase_index; ++seq) {
+{% for dim in output_dim_arrays %}
+        {{ dim.name }}[seq] = {{ input_dim_arrays[loop.index0].name }}[seq];
+{% endfor %}
         for (idx_t elem = 0; elem < {{ element_count }}; ++elem) {
             (({{ c_type }} *){{ output_sequence }}[seq])[elem] = ((const {{ c_type }} *){{ input_sequence }}[seq])[elem];
         }
     }
     for (idx_t seq = erase_index + 1; seq < input_count; ++seq) {
+{% for dim in output_dim_arrays %}
+        {{ dim.name }}[seq - 1] = {{ input_dim_arrays[loop.index0].name }}[seq];
+{% endfor %}
         for (idx_t elem = 0; elem < {{ element_count }}; ++elem) {
             (({{ c_type }} *){{ output_sequence }}[seq - 1])[elem] = ((const {{ c_type }} *){{ input_sequence }}[seq])[elem];
         }
