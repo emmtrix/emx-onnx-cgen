@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "Out of tolerance (max ULP 2007321857)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/simple/test_sequence_model1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
@@ -8,5 +8,5 @@
     "SequenceAt"
   ],
   "opset_version": 12,
-  "generated_checksum": "166ad5086b272c8aa5f30ff99a658074f274cee7e54cd3c7a249cf33492f7114"
+  "generated_checksum": "7f6a5c332d24096dd73819eb0f2225fd681f02c2e861d9acb9687aee7805afbd"
 }

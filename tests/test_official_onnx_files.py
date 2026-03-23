@@ -85,6 +85,54 @@ MODEL_EXTRA_VERIFY_ARGS = {
         "--runtime",
         "onnx-reference",
     ),
+    "onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_back/model.onnx": (
+        "--sequence-element-shape",
+        "sequence=[<=4]",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_front/model.onnx": (
+        "--sequence-element-shape",
+        "sequence=[<=4]",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences/model.onnx": (
+        "--sequence-element-shape",
+        "x0=[<=6]",
+        "--sequence-element-shape",
+        "x1=[<=6]",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences_expanded/model.onnx": (
+        "--sequence-element-shape",
+        "x0=[<=6]",
+        "--sequence-element-shape",
+        "x1=[<=6]",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes/model.onnx": (
+        "--sequence-element-shape",
+        "in_seq=[<=40,<=30,3]",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes_expanded/model.onnx": (
+        "--sequence-element-shape",
+        "in_seq=[<=40,<=30,3]",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx": (
+        "--sequence-element-shape",
+        "x0=[<=9]",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx": (
+        "--sequence-element-shape",
+        "x0=[<=9]",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences/model.onnx": (
+        "--sequence-element-shape",
+        "x0=[<=9]",
+        "--sequence-element-shape",
+        "x1=[<=8]",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences_expanded/model.onnx": (
+        "--sequence-element-shape",
+        "x0=[<=9]",
+        "--sequence-element-shape",
+        "x1=[<=8]",
+    ),
     "onnx-org/onnx/backend/test/data/node/test_gridsample_bicubic/model.onnx": (
         "--runtime",
         "onnx-reference",

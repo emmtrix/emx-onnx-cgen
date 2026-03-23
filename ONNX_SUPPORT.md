@@ -767,7 +767,7 @@ Coverage 1791 / 1802 ONNX files (99.4%).
 | node/test_hardswish_expanded/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_identity/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_identity_opt/model.onnx | 16 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_identity_sequence/model.onnx | 25 | Data/Data | ✅ | OK (no numeric comparisons) |
+| node/test_identity_sequence/model.onnx | 25 | Data/Data | ❌ | Code generation requires explicit ragged-sequence bounds. Reason: sequence 'x' has unknown or dynamic element dimensions. Hint: pass --sequence-element-shape x=[...] |
 | node/test_if/model.onnx | 11 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_if_opt/model.onnx | 16 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_if_seq/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
@@ -904,8 +904,8 @@ Coverage 1791 / 1802 ONNX files (99.4%).
 | node/test_logsoftmax_negative_axis_expanded/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 1) |
 | node/test_logsoftmax_negative_axis_expanded_ver18/model.onnx | 18 | Data/Data | ✅ | OK (max ULP 1) |
 | node/test_loop11/model.onnx | 11 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_loop13_seq/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_loop16_seq_none/model.onnx | 16 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_loop13_seq/model.onnx | 13 | Data/Data | ❌ | Sequence length mismatch for seq_res (actual_count=10, expected_count=5, output=seq_res) |
+| node/test_loop16_seq_none/model.onnx | 16 | Data/Data | ❌ | Sequence length mismatch for seq_res (actual_count=5, expected_count=6, output=seq_res) |
 | node/test_lpnormalization_default/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_lppool_1d_default/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_lppool_2d_default/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
@@ -1466,20 +1466,20 @@ Coverage 1791 / 1802 ONNX files (99.4%).
 | node/test_selu_example/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 2) |
 | node/test_selu_example_expanded_ver18/model.onnx | 18 | Data/Data | ✅ | OK (max ULP 2) |
 | node/test_selu_expanded_ver18/model.onnx | 18 | Data/Data | ✅ | OK (max ULP 24) |
-| node/test_sequence_insert_at_back/model.onnx | 11 | Data/Data | ❌ | Unsupported test-data sequence input for verify: variable sequence element shapes are not supported |
-| node/test_sequence_insert_at_front/model.onnx | 11 | Data/Data | ❌ | Unsupported test-data sequence input for verify: variable sequence element shapes are not supported |
-| node/test_sequence_map_add_1_sequence_1_tensor/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_sequence_map_add_2_sequences/model.onnx | 17 | Data/Data | ❌ | Unsupported test-data sequence input for verify: variable sequence element shapes are not supported |
-| node/test_sequence_map_add_2_sequences_expanded/model.onnx | 17 | Data/Data | ❌ | Unsupported test-data sequence input for verify: variable sequence element shapes are not supported |
-| node/test_sequence_map_extract_shapes/model.onnx | 17 | Data/Data | ❌ | Unsupported test-data sequence input for verify: variable sequence element shapes are not supported |
-| node/test_sequence_map_extract_shapes_expanded/model.onnx | 17 | Data/Data | ❌ | Unsupported test-data sequence input for verify: variable sequence element shapes are not supported |
-| node/test_sequence_map_identity_1_sequence/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx | 17 | Data/Data | ❌ | Unsupported test-data sequence input for verify: variable sequence element shapes are not supported |
-| node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx | 17 | Data/Data | ❌ | Unsupported test-data sequence input for verify: variable sequence element shapes are not supported |
-| node/test_sequence_map_identity_1_sequence_expanded/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_sequence_map_identity_2_sequences/model.onnx | 17 | Data/Data | ❌ | Unsupported test-data sequence input for verify: variable sequence element shapes are not supported |
-| node/test_sequence_map_identity_2_sequences_expanded/model.onnx | 17 | Data/Data | ❌ | Unsupported test-data sequence input for verify: variable sequence element shapes are not supported |
+| node/test_sequence_insert_at_back/model.onnx (--sequence-element-shape sequence=[<=4]) | 11 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_sequence_insert_at_front/model.onnx (--sequence-element-shape sequence=[<=4]) | 11 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_sequence_map_add_1_sequence_1_tensor/model.onnx | 17 | Data/Data | ❌ | Code generation requires explicit ragged-sequence bounds. Reason: sequence 'x0' has unknown or dynamic element dimensions. Hint: pass --sequence-element-shape x0=[...] |
+| node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx | 17 | Data/Data | ❌ | Code generation requires explicit ragged-sequence bounds. Reason: sequence 'x0' has unknown or dynamic element dimensions. Hint: pass --sequence-element-shape x0=[...] |
+| node/test_sequence_map_add_2_sequences/model.onnx (--sequence-element-shape x0=[<=6] --sequence-element-shape x1=[<=6]) | 17 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_add_2_sequences_expanded/model.onnx (--sequence-element-shape x0=[<=6] --sequence-element-shape x1=[<=6]) | 17 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_extract_shapes/model.onnx (--sequence-element-shape in_seq=[<=40,<=30,3]) | 17 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_sequence_map_extract_shapes_expanded/model.onnx (--sequence-element-shape in_seq=[<=40,<=30,3]) | 17 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_sequence_map_identity_1_sequence/model.onnx | 17 | Data/Data | ❌ | Code generation requires explicit ragged-sequence bounds. Reason: sequence 'x' has unknown or dynamic element dimensions. Hint: pass --sequence-element-shape x=[...] |
+| node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx (--sequence-element-shape x0=[<=9]) | 17 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx (--sequence-element-shape x0=[<=9]) | 17 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_identity_1_sequence_expanded/model.onnx | 17 | Data/Data | ❌ | Code generation requires explicit ragged-sequence bounds. Reason: sequence 'x' has unknown or dynamic element dimensions. Hint: pass --sequence-element-shape x=[...] |
+| node/test_sequence_map_identity_2_sequences/model.onnx (--sequence-element-shape x0=[<=9] --sequence-element-shape x1=[<=8]) | 17 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_identity_2_sequences_expanded/model.onnx (--sequence-element-shape x0=[<=9] --sequence-element-shape x1=[<=8]) | 17 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_shape/model.onnx | 25 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_shape_clip_end/model.onnx | 25 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_shape_clip_start/model.onnx | 25 | Data/Data | ✅ | OK (max abs diff 0) |
@@ -1554,8 +1554,8 @@ Coverage 1791 / 1802 ONNX files (99.4%).
 | node/test_split_equal_parts_2d_opset13/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_split_equal_parts_default_axis_opset13/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_split_equal_parts_default_axis_opset18/model.onnx | 18 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_split_to_sequence_1/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_split_to_sequence_2/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_split_to_sequence_1/model.onnx | 24 | Data/Data | ❌ | Output shape mismatch for seq[0] (actual_shape=(0, 10), actual_size=0, expected_shape=(3, 2), expected_size=6, output=seq[0]) |
+| node/test_split_to_sequence_2/model.onnx | 24 | Data/Data | ❌ | Output shape mismatch for seq[0] (actual_shape=(0, 6), actual_size=0, expected_shape=(1, 6), expected_size=6, output=seq[0]) |
 | node/test_split_to_sequence_nokeepdims/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_split_variable_parts_1d_opset13/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_split_variable_parts_1d_opset18/model.onnx | 18 | Data/Data | ✅ | OK (max ULP 0) |
@@ -1810,7 +1810,7 @@ Coverage 1791 / 1802 ONNX files (99.4%).
 | simple/test_expand_shape_model4/model.onnx | 9 | Data/Data | ✅ | OK (max ULP 0) |
 | simple/test_gradient_of_add/model.onnx | 12 | Data/Data | ✅ | OK (max ULP 0) |
 | simple/test_gradient_of_add_and_mul/model.onnx | 12 | Data/Data | ✅ | OK (max ULP 0) |
-| simple/test_sequence_model1/model.onnx | 12 | Data/Data | ✅ | OK (max ULP 0) |
+| simple/test_sequence_model1/model.onnx | 12 | Data/Data | ❌ | Out of tolerance (max ULP 2007321857) |
 | simple/test_sequence_model2/model.onnx | 12 | Data/Data | ✅ | OK (max ULP 0) |
 | simple/test_sequence_model3/model.onnx | 12 | Data/Data | ✅ | OK (max ULP 0) |
 | simple/test_sequence_model4/model.onnx | 12 | Data/Data | ✅ | OK (max ULP 0) |
