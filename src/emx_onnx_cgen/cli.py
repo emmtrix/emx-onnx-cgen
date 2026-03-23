@@ -1960,7 +1960,9 @@ def _verify_model(
                     limit = min(seq_count, 32)
                     if limit > 0:
                         for idx in range(limit):
-                            item = np.asarray(seq_items[idx]).astype(seq_dtype, copy=False)
+                            item = np.asarray(seq_items[idx]).astype(
+                                seq_dtype, copy=False
+                            )
                             target = normalized[idx]
                             if target.ndim == item.ndim:
                                 slices = tuple(
@@ -2641,11 +2643,11 @@ def _load_test_data_inputs(
             if hint is not None:
                 mismatch = validate_runtime_shape(hint, tensor.shape)
                 if mismatch is not None:
-                    raise CodegenError(
-                        f"Sequence input {name} item shape {mismatch}."
-                    )
+                    raise CodegenError(f"Sequence input {name} item shape {mismatch}.")
                 continue
-            if tensor_type.shape.dim and len(tensor.shape) != len(tensor_type.shape.dim):
+            if tensor_type.shape.dim and len(tensor.shape) != len(
+                tensor_type.shape.dim
+            ):
                 raise CodegenError(
                     f"Sequence input {name} has rank {tensor.ndim}, but the model "
                     f"expects rank {len(tensor_type.shape.dim)}."

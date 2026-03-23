@@ -78,9 +78,7 @@ def test_compile_ragged_sequence_signature_uses_dim_arrays_and_max_shape() -> No
     seq_output = helper.make_tensor_sequence_value_info(
         "seq_out", TensorProto.FLOAT, ["N"]
     )
-    identity_node = helper.make_node(
-        "Identity", inputs=["seq_in"], outputs=["seq_out"]
-    )
+    identity_node = helper.make_node("Identity", inputs=["seq_in"], outputs=["seq_out"])
     graph = helper.make_graph(
         [identity_node],
         "ragged_sequence_signature_graph",

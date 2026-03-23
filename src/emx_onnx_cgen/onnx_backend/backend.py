@@ -221,7 +221,9 @@ def _infer_sequence_element_shapes(
     graph = import_onnx(model)
     explicit_hints = dict(explicit_hints or {})
     input_names = _non_initializer_input_names(model)
-    named_inputs = {name: value for name, value in zip(input_names, inputs, strict=True)}
+    named_inputs = {
+        name: value for name, value in zip(input_names, inputs, strict=True)
+    }
     inferred = dict(explicit_hints)
     for value in graph.inputs:
         if not isinstance(value.type, SequenceType):
@@ -233,7 +235,9 @@ def _infer_sequence_element_shapes(
         input_data = named_inputs.get(value.name)
         seq_dtype = value.type.elem.dtype.np_dtype
         seq_items = (
-            [] if input_data is None else _sequence_input_items(input_data, dtype=seq_dtype)
+            []
+            if input_data is None
+            else _sequence_input_items(input_data, dtype=seq_dtype)
         )
         if not seq_items:
             raise ValueError(
@@ -321,7 +325,9 @@ def _prepare_sequence_input_data(
         )
 
     hint = sequence_element_shapes.get(value.name)
-    declared_shape = lowered_sequence_input_shapes.get(value.name, tuple(seq_type.elem.shape))
+    declared_shape = lowered_sequence_input_shapes.get(
+        value.name, tuple(seq_type.elem.shape)
+    )
     if hint is not None:
         elem_shape = hint.max_shape
         dynamic_axes = hint.dynamic_axes
@@ -335,7 +341,9 @@ def _prepare_sequence_input_data(
         elem_shape = _fallback_concrete_shape(declared_shape)
         dynamic_axes = ()
         for index, item in enumerate(seq_items):
-            if tuple(int(dim) for dim in item.shape) != tuple(int(dim) for dim in elem_shape):
+            if tuple(int(dim) for dim in item.shape) != tuple(
+                int(dim) for dim in elem_shape
+            ):
                 raise ValueError(
                     f"Sequence input {value.name!r} element {index} has shape "
                     f"{tuple(int(dim) for dim in item.shape)!r}, expected {elem_shape!r}."
