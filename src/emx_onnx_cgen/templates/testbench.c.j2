@@ -228,20 +228,16 @@ static void testbench_print_json(
             printf(",");
         }
         printf("[");
-{% for dim in output.sequence_dim_arrays %}
+{% for dim in output.sequence_item_shape_dims %}
         if ({{ loop.index0 }}) {
             printf(",");
         }
+{% if dim.name %}
         printf("%d", (int){{ dim.name }}[seq]);
-{% endfor %}
-{% if not output.sequence_dim_arrays %}
-{% for axis in range(output.rank - 1) %}
-        if ({{ axis }}) {
-            printf(",");
-        }
-        printf("%d", {{ output.shape[axis + 1] }});
-{% endfor %}
+{% else %}
+        printf("%d", {{ dim.value }});
 {% endif %}
+{% endfor %}
         printf("]");
     }
     printf("], \"data\":\n      ");

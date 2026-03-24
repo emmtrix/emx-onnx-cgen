@@ -2127,6 +2127,12 @@ class CEmitter:
                     f"    {storage}{c_type} {temp.name}[EMX_SEQUENCE_MAX_LEN]{suffix};"
                 )
                 lines.append(f"    idx_t {temp.name}__count = 0;")
+                for axis in self._sequence_dynamic_axes(temp.name):
+                    lines.append(
+                        "    "
+                        f"idx_t {self._sequence_dim_array_name(temp.name, axis)}"
+                        "[EMX_SEQUENCE_MAX_LEN] = {0};"
+                    )
             elif self._temp_buffer_uses_heap(temp, dim_names):
                 lines.extend(
                     f"    {line}"
@@ -2201,6 +2207,17 @@ class CEmitter:
                             *self._sequence_dim_arg_names(name),
                         ]
                     )
+            elif isinstance(op, SplitToSequenceOp):
+                op_args = [op.input0]
+                if op.split is not None:
+                    op_args.append(op.split)
+                op_args.extend(
+                    [
+                        op.output_sequence,
+                        f"{op.output_sequence}__count",
+                        *self._sequence_dim_arg_names(op.output_sequence),
+                    ]
+                )
             if isinstance(
                 op,
                 (
@@ -2213,9 +2230,9 @@ class CEmitter:
                     LoopSequenceInsertOp,
                 ),
             ):
-                output_count_arg = op_args[-1]
-                if output_count_arg in sequence_temp_count_names:
-                    op_args[-1] = f"&{output_count_arg}"
+                for arg_index, arg in enumerate(op_args):
+                    if arg in sequence_temp_count_names:
+                        op_args[arg_index] = f"&{arg}"
             args = [*dim_order, *op_args]
             call = ", ".join(args)
             lines.append(f"    {op_name}({call});")
@@ -3743,6 +3760,18 @@ class CEmitter:
                             "value": concrete_codegen_shape[axis],
                         }
                         for axis in sequence_dim_axes
+                    ),
+                    "sequence_item_shape_dims": tuple(
+                        {
+                            "axis": axis,
+                            "name": (
+                                self._sequence_dim_array_name(name, axis)
+                                if axis in sequence_dim_axes
+                                else None
+                            ),
+                            "value": concrete_codegen_shape[axis],
+                        }
+                        for axis in range(len(concrete_codegen_shape))
                     ),
                 }
             )

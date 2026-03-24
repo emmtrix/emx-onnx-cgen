@@ -6371,7 +6371,12 @@ class SplitToSequenceOp(RenderableOpBase):
         args = [self.input0]
         if self.split is not None:
             args.append(self.split)
-        args.extend([self.output_sequence, f"{self.output_sequence}__count"])
+        args.extend(
+            [
+                self.output_sequence,
+                f"{self.output_sequence}__count",
+            ]
+        )
         return tuple(args)
 
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
@@ -6402,6 +6407,7 @@ class SplitToSequenceOp(RenderableOpBase):
         output_shape_expr = CEmitterCompat.shape_dim_exprs(
             storage_shape, emitter.dim_names_for(self.output_sequence)
         )
+        dynamic_output_axes = emitter.sequence_dynamic_axes(self.output_sequence)
         param_specs = [
             (params["input0"], c_type, input_suffix, True),
         ]
@@ -6427,6 +6433,15 @@ class SplitToSequenceOp(RenderableOpBase):
                     False,
                 ),
                 (f"{params['output_sequence']}__count", "idx_t *", "", False),
+                *[
+                    (
+                        emitter.sequence_dim_array_name(self.output_sequence, axis),
+                        "idx_t",
+                        "[EMX_SEQUENCE_MAX_LEN]",
+                        False,
+                    )
+                    for axis in dynamic_output_axes
+                ],
             ]
         )
         param_decls = emitter.build_param_decls(param_specs)
@@ -6460,6 +6475,26 @@ class SplitToSequenceOp(RenderableOpBase):
                 keepdims=self.keepdims,
                 output_axis_capacity=(
                     output_shape_expr[self.axis] if self.keepdims else 1
+                ),
+                output_dim_arrays=tuple(
+                    {
+                        "axis": axis,
+                        "name": emitter.sequence_dim_array_name(
+                            self.output_sequence, axis
+                        ),
+                        "expr": (
+                            "chunk"
+                            if self.keepdims and axis == self.axis
+                            else (
+                                input_shape_expr[axis]
+                                if self.keepdims
+                                else input_shape_expr[
+                                    axis if axis < self.axis else axis + 1
+                                ]
+                            )
+                        ),
+                    }
+                    for axis in dynamic_output_axes
                 ),
                 c_type=c_type,
             )
