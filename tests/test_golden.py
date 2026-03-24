@@ -780,7 +780,10 @@ def test_codegen_loop_sequence_map_uses_runtime_tensor_shape_for_copy() -> None:
     )
     generated = compiler.compile(model)
     assert "for (idx_t e = 0; e < y1__dim_0[(idx_t)i]; ++e)" in generated
-    assert "for (idx_t e = 0; e < 10; ++e) { output_sequence_1[(idx_t)i][e]" not in generated
+    assert (
+        "for (idx_t e = 0; e < 10; ++e) { output_sequence_1[(idx_t)i][e]"
+        not in generated
+    )
 
 
 def test_codegen_golden_matmul() -> None:
