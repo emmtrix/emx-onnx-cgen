@@ -1923,9 +1923,7 @@ def _verify_model(
                     else:
                         concrete_shape = tuple(
                             max(int(cur), int(inferred))
-                            for cur, inferred in zip(
-                                concrete_shape, inferred_shape
-                            )
+                            for cur, inferred in zip(concrete_shape, inferred_shape)
                         )
                 if (
                     hint is None
