@@ -2400,10 +2400,7 @@ class CEmitter:
                 output_count_names.add(f"{op.output_sequence}__count")
             if output_count_names:
                 for arg_index, arg in enumerate(op_args):
-                    if (
-                        arg in output_count_names
-                        and arg in sequence_temp_count_names
-                    ):
+                    if arg in output_count_names and arg in sequence_temp_count_names:
                         op_args[arg_index] = f"&{arg}"
             args = [*dim_order, *op_args]
             call = ", ".join(args)
