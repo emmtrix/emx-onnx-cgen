@@ -7,6 +7,9 @@ void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             input_count = EMX_SEQUENCE_MAX_LEN;
         }
         for (idx_t seq = 0; seq < input_count; ++seq) {
+{% for dim in output_dim_arrays %}
+            {{ dim.name }}[seq] = 1;
+{% endfor %}
             for (idx_t elem = 0; elem < {{ element_count }}; ++elem) {
                 {{ output_sequence }}[seq][elem] = {{ input_sequence }}[seq][elem];
             }
@@ -14,6 +17,9 @@ void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     } else {
         input_count = {{ default_count }};
 {% for seq in range(default_count) %}
+{% for dim in output_dim_arrays %}
+        {{ dim.name }}[{{ seq }}] = 1;
+{% endfor %}
         for (idx_t elem = 0; elem < {{ element_count }}; ++elem) {
             {{ output_sequence }}[{{ seq }}][elem] = {{ default_data[seq] }};
         }
@@ -25,6 +31,9 @@ void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         input_count = EMX_SEQUENCE_MAX_LEN;
     }
     for (idx_t seq = 0; seq < input_count; ++seq) {
+{% for dim in output_dim_arrays %}
+        {{ dim.name }}[seq] = 1;
+{% endfor %}
         for (idx_t elem = 0; elem < {{ element_count }}; ++elem) {
             {{ output_sequence }}[seq][elem] = {{ input_sequence }}[seq][elem];
         }
