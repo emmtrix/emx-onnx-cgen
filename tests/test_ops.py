@@ -61,6 +61,7 @@ from emx_onnx_cgen.lowering import variadic as _variadic  # noqa: F401
 from emx_onnx_cgen.lowering import load_lowering_registry
 from emx_onnx_cgen.lowering.registry import get_lowering
 from emx_onnx_cgen.onnx_import import import_onnx
+from emx_onnx_cgen.sequence_shape_hints import parse_sequence_element_shape_hints
 from emx_onnx_cgen.testbench import decode_testbench_array
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -5990,7 +5991,13 @@ def test_compile_prunes_unused_sequence_empty_state_from_sequence_map() -> None:
         PROJECT_ROOT
         / "onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences/model.onnx"
     )
-    generated = Compiler(CompilerOptions()).compile(model)
+    generated = Compiler(
+        CompilerOptions(
+            sequence_element_shapes=parse_sequence_element_shape_hints(
+                ["x0=[<=6]", "x1=[<=6]"]
+            )
+        )
+    ).compile(model)
     assert "SequenceMap_0_state_0_empty" not in generated
     assert "tmp1_SequenceMap_0_state_0" not in generated
 

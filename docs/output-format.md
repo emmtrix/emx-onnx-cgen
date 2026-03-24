@@ -259,6 +259,44 @@ For sequence tensor IO, generated model entrypoints use a fixed-capacity ABI:
 - Input: `const T name[EMX_SEQUENCE_MAX_LEN][elem_shape...]` plus `idx_t name__count`.
 - Output: `T name[EMX_SEQUENCE_MAX_LEN][elem_shape...]` plus `idx_t *name__count`.
 
+### Ragged input sequences
+
+Ragged sequence inputs are not accepted implicitly. If a sequence input has
+unknown or dynamic element dimensions, `compile` and `verify` require an
+explicit `--sequence-element-shape` declaration.
+
+Example:
+
+```bash
+emx-onnx-cgen verify model.onnx \
+  --sequence-element-shape sequence=[<=8]
+```
+
+The syntax is:
+
+- `name=[4,5]`: fixed rank 2, fixed shape `[4,5]`
+- `name=[<=8]`: fixed rank 1, variable length per item, max `[8]`
+- `name=[<=40,<=30,3]`: fixed rank 3, per-item dims bounded by `[40,30,3]`
+
+When such a hint is present, the generated C ABI uses:
+
+- a max-sized sequence data buffer:
+  `const T name[EMX_SEQUENCE_MAX_LEN][max_elem_shape...]`
+- the usual sequence count:
+  `idx_t name__count`
+- one extra per-item dim array for every dynamic sequence element axis:
+  `const idx_t name__dim_<axis>[EMX_SEQUENCE_MAX_LEN]`
+
+Outputs follow the same convention, except `name__count` is passed by pointer:
+
+- `T name[EMX_SEQUENCE_MAX_LEN][max_elem_shape...]`
+- `idx_t *name__count`
+- `idx_t name__dim_<axis>[EMX_SEQUENCE_MAX_LEN]`
+
+Only the first `name__count` entries of the per-axis dim arrays are meaningful.
+The testbench JSON output includes `item_shapes` for sequence outputs so verify
+can compare the true per-item shapes instead of the padded max-sized storage.
+
 ### Static shapes: N-dimensional arrays
 
 For fully static shapes, tensors are represented as N-dimensional C arrays, e.g.:

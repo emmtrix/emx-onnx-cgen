@@ -5,6 +5,14 @@ void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     }
 
     for (idx_t seq = 0; seq < input_count; ++seq) {
+{% for dim in output_dim_arrays %}
+        {{ dim.name }}[seq] =
+{% if dim.axis < input_dim_arrays | length %}
+            {{ input_dim_arrays[loop.index0].name }}[seq];
+{% else %}
+            0;
+{% endif %}
+{% endfor %}
         for (idx_t elem = 0; elem < {{ element_count }}; ++elem) {
             (({{ c_type }} *){{ output_sequence }}[seq])[elem] = ((const {{ c_type }} *){{ input_sequence }}[seq])[elem];
         }

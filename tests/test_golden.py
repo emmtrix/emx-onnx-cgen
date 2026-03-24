@@ -14,6 +14,7 @@ from onnx.reference import ReferenceEvaluator
 
 from emx_onnx_cgen import Compiler
 from emx_onnx_cgen.compiler import CompilerOptions
+from emx_onnx_cgen.sequence_shape_hints import parse_sequence_element_shape_hints
 from golden_utils import assert_golden
 
 
@@ -124,6 +125,29 @@ def _make_sequence_io_model() -> onnx.ModelProto:
         "sequence_io_graph",
         [seq_input, tensor_input],
         [seq_output, tensor_output],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    return model
+
+
+def _make_ragged_sequence_identity_model() -> onnx.ModelProto:
+    seq_input = helper.make_tensor_sequence_value_info(
+        "seq_in", TensorProto.FLOAT, ["N"]
+    )
+    seq_output = helper.make_tensor_sequence_value_info(
+        "seq_out", TensorProto.FLOAT, ["N"]
+    )
+    identity_node = helper.make_node("Identity", inputs=["seq_in"], outputs=["seq_out"])
+    graph = helper.make_graph(
+        [identity_node],
+        "ragged_sequence_identity_graph",
+        [seq_input],
+        [seq_output],
     )
     model = helper.make_model(
         graph,
@@ -438,6 +462,21 @@ def test_codegen_golden_sequence_io() -> None:
     assert_golden(generated, golden_path)
 
 
+def test_codegen_golden_ragged_sequence_identity() -> None:
+    model = _make_ragged_sequence_identity_model()
+    compiler = Compiler(
+        CompilerOptions(
+            model_name="ragged_sequence_identity_model",
+            sequence_element_shapes=parse_sequence_element_shape_hints(
+                ["seq_in=[<=8]"]
+            ),
+        )
+    )
+    generated = compiler.compile(model)
+    golden_path = Path(__file__).parent / "golden" / "ragged_sequence_identity_model.c"
+    assert_golden(generated, golden_path)
+
+
 def test_codegen_golden_dynamic_dims() -> None:
     model = _mark_dynamic_dims(
         _make_relu_model(),
@@ -728,6 +767,20 @@ def test_codegen_loop13_seq_emits_runtime_loop() -> None:
     generated = compiler.compile(model)
     assert "for (int64_t idx = 0; idx < append_count; ++idx)" in generated
     assert "loop_insert_table" in generated
+
+
+def test_codegen_loop_sequence_map_uses_runtime_tensor_shape_for_copy() -> None:
+    model = _load_official_onnx_model(
+        "onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx"
+    )
+    compiler = Compiler(
+        CompilerOptions(
+            sequence_element_shapes=parse_sequence_element_shape_hints(["x0=[<=9]"])
+        )
+    )
+    generated = compiler.compile(model)
+    assert "for (idx_t e = 0; e < y1__dim_0[(idx_t)i]; ++e)" in generated
+    assert "for (idx_t e = 0; e < 10; ++e) { output_sequence_1[(idx_t)i][e]" not in generated
 
 
 def test_codegen_golden_matmul() -> None:

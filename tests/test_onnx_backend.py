@@ -12,6 +12,7 @@ from onnx import TensorProto, helper
 from onnx import numpy_helper
 
 from emx_onnx_cgen.onnx_backend import backend as backend_module
+from emx_onnx_cgen.sequence_shape_hints import parse_sequence_element_shape_hints
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -96,6 +97,7 @@ def test_sequence_inputs_reject_lengths_above_fixed_backend_capacity() -> None:
             value=seq_value,
             input_data=oversized_sequence,
             lowered_sequence_input_shapes=metadata.lowered_sequence_input_shapes,
+            sequence_element_shapes=metadata.sequence_element_shapes,
         )
 
 
@@ -103,7 +105,12 @@ def test_prepare_keeps_compiled_artifact_alive_only_for_backend_rep_lifetime() -
     model = _make_identity_model()
     created: dict[str, Path] = {}
 
-    def fake_compile_model(_model: onnx.ModelProto) -> backend_module._CompiledArtifact:
+    def fake_compile_model(
+        _model: onnx.ModelProto,
+        *,
+        sequence_element_shapes: dict[str, object] | None = None,
+    ) -> backend_module._CompiledArtifact:
+        del sequence_element_shapes
         temp_dir = tempfile.TemporaryDirectory(prefix="emx_onnx_backend_test_")
         temp_path = Path(temp_dir.name)
         executable = temp_path / "model"
@@ -149,7 +156,11 @@ def test_serialize_runtime_input_handles_dynamic_sequence_shapes() -> None:
         PROJECT_ROOT
         / "onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences/model.onnx"
     )
-    metadata = backend_module._build_backend_metadata(model)
+    sequence_hints = parse_sequence_element_shape_hints(["x0=[<=6]", "x1=[<=6]"])
+    metadata = backend_module._build_backend_metadata(
+        model,
+        sequence_element_shapes=sequence_hints,
+    )
     seq_value = metadata.inputs[0]
     sequence = [
         np.arange(6, dtype=np.float32),
@@ -163,6 +174,7 @@ def test_serialize_runtime_input_handles_dynamic_sequence_shapes() -> None:
         value=seq_value,
         input_data=sequence,
         lowered_sequence_input_shapes=metadata.lowered_sequence_input_shapes,
+        sequence_element_shapes=metadata.sequence_element_shapes,
     )
 
     expected_elem_shape = metadata.lowered_sequence_input_shapes[seq_value.name][0]
@@ -171,7 +183,12 @@ def test_serialize_runtime_input_handles_dynamic_sequence_shapes() -> None:
         * backend_module._SEQUENCE_MAX_LEN
         * expected_elem_shape
     )
-    assert len(buffer.getvalue()) == 4 + expected_size
+    dynamic_dim_bytes = (
+        len(metadata.sequence_element_shapes[seq_value.name].dynamic_axes)
+        * len(sequence)
+        * 4
+    )
+    assert len(buffer.getvalue()) == 4 + dynamic_dim_bytes + expected_size
 
 
 def test_backend_runs_sequence_map_add_2_sequences_with_variable_shapes() -> None:
