@@ -93,6 +93,18 @@ MODEL_EXTRA_VERIFY_ARGS = {
         "--sequence-element-shape",
         "sequence=[<=4]",
     ),
+    "onnx-org/onnx/backend/test/data/node/test_identity_sequence/model.onnx": (
+        "--sequence-element-shape",
+        "x=[1,1,2,2]",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor/model.onnx": (
+        "--sequence-element-shape",
+        "x0=[10]",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx": (
+        "--sequence-element-shape",
+        "x0=[10]",
+    ),
     "onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences/model.onnx": (
         "--sequence-element-shape",
         "x0=[<=6]",
@@ -112,6 +124,14 @@ MODEL_EXTRA_VERIFY_ARGS = {
     "onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes_expanded/model.onnx": (
         "--sequence-element-shape",
         "in_seq=[<=40,<=30,3]",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence/model.onnx": (
+        "--sequence-element-shape",
+        "x=[10]",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_expanded/model.onnx": (
+        "--sequence-element-shape",
+        "x=[10]",
     ),
     "onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx": (
         "--sequence-element-shape",

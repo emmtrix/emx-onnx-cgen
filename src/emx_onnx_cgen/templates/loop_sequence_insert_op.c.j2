@@ -54,7 +54,20 @@ void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 
     static const {{ c_type }} loop_insert_table[{{ table_len }}] = { {{ table_data | join(', ') }} };
     for (int64_t idx = 0; idx < append_count; ++idx) {
+{% if prefix_slices %}
+        const idx_t out_index = input_count + (idx_t)idx;
+        const idx_t slice_len = (idx_t)idx + 1;
+{% for dim in output_dim_arrays %}
+{% if dim.axis == 0 %}
+        {{ dim.name }}[out_index] = slice_len;
+{% endif %}
+{% endfor %}
+        for (idx_t elem = 0; elem < slice_len; ++elem) {
+            {{ output_sequence }}[out_index][elem] = loop_insert_table[elem];
+        }
+{% else %}
         {{ output_sequence }}[input_count + (idx_t)idx][0] = loop_insert_table[idx];
+{% endif %}
     }
     *{{ output_sequence }}__count = input_count + (idx_t)append_count;
 }

@@ -1,10 +1,9 @@
 {
-  "error": "Sequence length mismatch for seq_res (actual_count=5, expected_count=6, output=seq_res)",
+  "error": "Unsupported op Loop",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_loop16_seq_none model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "Loop"
   ],
-  "opset_version": 16,
-  "generated_checksum": "1e74cd267e949fc27663b3859f447ea5d0528de061430dfdb72f345cfdfc3ee0"
+  "opset_version": 16
 }

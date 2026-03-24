@@ -16,6 +16,7 @@ from jinja2 import (
     select_autoescape,
 )
 import numpy as np
+from onnx import GraphProto
 
 from ..errors import CodegenError
 from ..testbench_output_format import parse_testbench_output_format
@@ -510,6 +511,97 @@ class CEmitter:
             return right
         return tuple(max(a, b) for a, b in zip(left, right))
 
+    def _sequence_shape_source_name(
+        self,
+        sequence_name: str,
+        *,
+        _visited: set[str] | None = None,
+    ) -> str | None:
+        if self._emit_state is None:
+            return None
+        if _visited is None:
+            _visited = set()
+        if sequence_name in _visited:
+            return None
+        _visited.add(sequence_name)
+        producer = self._emit_state.op_context.producer(self._ctx_name(sequence_name))
+        if producer is None or not producer.inputs:
+            return None
+        if producer.op_type in {"Identity", "SequenceErase", "SequenceInsert"}:
+            src_name = producer.inputs[0]
+            src_value = self._emit_state.op_context.find_value(self._ctx_name(src_name))
+            return src_name if isinstance(src_value.type, SequenceType) else None
+        if producer.op_type == "Loop" and producer.inputs:
+            trip_count_producer = self._emit_state.op_context.producer(
+                self._ctx_name(producer.inputs[0])
+            )
+            if (
+                trip_count_producer is not None
+                and trip_count_producer.op_type == "SequenceLength"
+                and trip_count_producer.inputs
+            ):
+                src_name = trip_count_producer.inputs[0]
+                src_value = self._emit_state.op_context.find_value(
+                    self._ctx_name(src_name)
+                )
+                if isinstance(src_value.type, SequenceType):
+                    return src_name
+        if producer.op_type != "SequenceMap":
+            return None
+        output_rank = len(self._ctx_sequence_elem_type(sequence_name).shape)
+        for src_name in producer.inputs:
+            src_value = self._emit_state.op_context.find_value(self._ctx_name(src_name))
+            if not isinstance(src_value.type, SequenceType):
+                continue
+            if len(src_value.type.elem.shape) == output_rank:
+                return src_name
+        return None
+
+    @staticmethod
+    def _loop_sequence_insert_capacity(body: object) -> int | None:
+        if not isinstance(body, GraphProto):
+            return None
+        seq_insert_nodes = [
+            node
+            for node in body.node
+            if node.op_type == "SequenceInsert" and len(node.input) >= 2
+        ]
+        if len(seq_insert_nodes) != 1:
+            return None
+        slice_name = seq_insert_nodes[0].input[1]
+        slice_node = next(
+            (
+                node
+                for node in body.node
+                if node.op_type == "Slice"
+                and len(node.output) == 1
+                and node.output[0] == slice_name
+                and node.input
+            ),
+            None,
+        )
+        if slice_node is None:
+            return None
+        const_name = slice_node.input[0]
+        const_node = next(
+            (
+                node
+                for node in body.node
+                if node.op_type == "Constant"
+                and len(node.output) == 1
+                and node.output[0] == const_name
+            ),
+            None,
+        )
+        if const_node is None:
+            return None
+        value_attr = next(
+            (attr for attr in const_node.attribute if attr.name == "value"), None
+        )
+        if value_attr is None or len(value_attr.t.dims) != 1:
+            return None
+        return int(value_attr.t.dims[0])
+
     def _sequence_storage_shape(
         self,
         sequence_name: str,
@@ -547,12 +639,23 @@ class CEmitter:
             _visited = set()
         if sequence_name in _visited:
             return (1,)
+        shape_source = self._sequence_shape_source_name(
+            sequence_name, _visited=_visited
+        )
+        if shape_source is not None:
+            return self._sequence_storage_shape(shape_source, _visited=_visited)
         _visited.add(sequence_name)
 
         if self._emit_state is None:
             raise CodegenError("Emitter state not initialized")
         mapped_name = self._ctx_name(sequence_name)
         producer = self._emit_state.op_context.producer(mapped_name)
+        if producer is not None and producer.op_type == "Loop":
+            loop_capacity = self._loop_sequence_insert_capacity(
+                producer.attrs.get("body")
+            )
+            if loop_capacity is not None:
+                return (loop_capacity,)
         inferred = (1,)
         if producer is not None and producer.op_type == "SequenceInsert":
             in_sequence = producer.inputs[0]
@@ -565,6 +668,15 @@ class CEmitter:
                 producer.inputs[0], _visited=_visited
             )
         for node in self._emit_state.op_context.nodes:
+            if node.op_type == "Loop" and sequence_name in node.inputs[2:]:
+                loop_capacity = self._loop_sequence_insert_capacity(
+                    node.attrs.get("body")
+                )
+                if loop_capacity is not None:
+                    inferred = self._merge_sequence_storage_shape(
+                        inferred, (loop_capacity,)
+                    )
+                continue
             if not node.inputs or node.inputs[0] != mapped_name:
                 continue
             if node.op_type != "SequenceInsert" or len(node.inputs) < 2:
@@ -616,6 +728,15 @@ class CEmitter:
         value = self._emit_state.op_context.find_value(self._ctx_name(sequence_name))
         if not isinstance(value.type, SequenceType):
             return ()
+        if _visited is None:
+            _visited = set()
+        if sequence_name in _visited:
+            return ()
+        shape_source = self._sequence_shape_source_name(
+            sequence_name, _visited=_visited
+        )
+        if shape_source is not None:
+            return self._sequence_dynamic_axes(shape_source, _visited=_visited)
         direct_axes = tuple(
             axis
             for axis, (dim, dim_param) in enumerate(
@@ -625,12 +746,14 @@ class CEmitter:
         )
         if direct_axes:
             return direct_axes
-        if _visited is None:
-            _visited = set()
-        if sequence_name in _visited:
-            return ()
-        _visited.add(sequence_name)
         producer = self._emit_state.op_context.producer(self._ctx_name(sequence_name))
+        if producer is not None and producer.op_type == "Loop":
+            loop_capacity = self._loop_sequence_insert_capacity(
+                producer.attrs.get("body")
+            )
+            if loop_capacity is not None:
+                return (0,)
+        _visited.add(sequence_name)
         if producer is None:
             return ()
         if producer.op_type in {"SequenceInsert", "SequenceErase", "Identity"} and producer.inputs:
@@ -2211,6 +2334,22 @@ class CEmitter:
                 op_args = [op.input0]
                 if op.split is not None:
                     op_args.append(op.split)
+                op_args.extend(
+                    [
+                        op.output_sequence,
+                        f"{op.output_sequence}__count",
+                        *self._sequence_dim_arg_names(op.output_sequence),
+                    ]
+                )
+            elif isinstance(op, LoopSequenceInsertOp):
+                op_args = [
+                    op.trip_count,
+                    op.cond,
+                    op.input_sequence,
+                    f"{op.input_sequence}__count",
+                ]
+                if op.input_sequence_present is not None:
+                    op_args.append(op.input_sequence_present)
                 op_args.extend(
                     [
                         op.output_sequence,

@@ -87,6 +87,64 @@ def _sequence_input_items(input_data: object) -> list[np.ndarray]:
     return [np.asarray(array[index]) for index in range(int(array.shape[0]))]
 
 
+def _loop_sequence_insert_capacity_from_body(body: onnx.GraphProto) -> int | None:
+    seq_insert_nodes = [
+        node
+        for node in body.node
+        if node.op_type == "SequenceInsert" and len(node.input) >= 2
+    ]
+    if len(seq_insert_nodes) != 1:
+        return None
+    slice_name = seq_insert_nodes[0].input[1]
+    slice_node = next(
+        (
+            node
+            for node in body.node
+            if node.op_type == "Slice"
+            and len(node.output) == 1
+            and node.output[0] == slice_name
+            and node.input
+        ),
+        None,
+    )
+    if slice_node is None:
+        return None
+    const_name = slice_node.input[0]
+    const_node = next(
+        (
+            node
+            for node in body.node
+            if node.op_type == "Constant"
+            and len(node.output) == 1
+            and node.output[0] == const_name
+        ),
+        None,
+    )
+    if const_node is None:
+        return None
+    value_attr = next(
+        (attr for attr in const_node.attribute if attr.name == "value"), None
+    )
+    if value_attr is None or len(value_attr.t.dims) != 1:
+        return None
+    return int(value_attr.t.dims[0])
+
+
+def _infer_sequence_fixture_storage_shape(
+    model: onnx.ModelProto, input_name: str
+) -> tuple[int, ...] | None:
+    for node in model.graph.node:
+        if node.op_type != "Loop" or input_name not in node.input[2:]:
+            continue
+        body = next((attr.g for attr in node.attribute if attr.name == "body"), None)
+        if body is None:
+            continue
+        capacity = _loop_sequence_insert_capacity_from_body(body)
+        if capacity is not None:
+            return (capacity,)
+    return None
+
+
 def _random_tensor_input(
     shape: tuple[int, ...], dtype: ScalarType, rng: np.random.Generator
 ) -> np.ndarray:
@@ -1820,6 +1878,21 @@ def _verify_model(
                 if hint is not None:
                     concrete_shape = hint.max_shape
                 input_data = testbench_inputs.get(name)
+                if hint is None and isinstance(input_data, list):
+                    seq_items = [np.asarray(item) for item in input_data]
+                    if seq_items:
+                        ranks = {item.ndim for item in seq_items}
+                        if len(ranks) == 1:
+                            concrete_shape = tuple(
+                                max(int(item.shape[axis]) for item in seq_items)
+                                for axis in range(seq_items[0].ndim)
+                            )
+                    elif concrete_shape == ():
+                        inferred_shape = _infer_sequence_fixture_storage_shape(
+                            model, name
+                        )
+                        if inferred_shape is not None:
+                            concrete_shape = inferred_shape
                 if (
                     hint is None
                     and isinstance(input_data, np.ndarray)
@@ -1890,27 +1963,10 @@ def _verify_model(
                             generated_checksum,
                         )
                     if isinstance(value.type, TensorType):
-                        array_data = np.asarray(input_data)
-                        dtype = input_dtypes[name].np_dtype
-                        if value.type.is_optional:
-                            present = bool(
-                                (testbench_optional_inputs or {}).get(name, True)
-                            )
-                            handle.write(struct.pack("<B", 1 if present else 0))
-                            if not present:
-                                continue
-                        runtime_dims = _tensor_runtime_dim_values(value, array_data)
-                        if runtime_dims:
-                            handle.write(
-                                struct.pack(f"<{len(runtime_dims)}i", *runtime_dims)
-                            )
-                        if input_dtypes[name] == ScalarType.STRING:
-                            blob = _serialize_string_tensor(array_data)
-                        else:
-                            blob = np.ascontiguousarray(
-                                array_data.astype(dtype, copy=False)
-                            ).tobytes(order="C")
-                        handle.write(blob)
+                        # The generated testbench inlines tensor fixture inputs as
+                        # static data and only reads non-constant sequence inputs
+                        # from testbench_inputs.bin. Keep the file layout aligned
+                        # with testbench_read_input_file().
                         continue
                     seq_type = value.type
                     seq_dtype = seq_type.elem.dtype.np_dtype

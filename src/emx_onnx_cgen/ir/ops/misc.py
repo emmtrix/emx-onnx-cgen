@@ -4429,6 +4429,8 @@ class LoopSequenceInsertOp(RenderableOpBase):
     default_sequence_data: tuple[float | int, ...] = ()
     # Initial sequence values used when input_sequence_present is False (absent).
     # Extracted from the then-branch SequenceConstruct in the loop body.
+    prefix_slices: bool = False
+    # When True, append x[:i+1] style slices from table_data instead of scalars.
 
     def call_args(self) -> tuple[str, ...]:
         args: list[str] = [
@@ -4490,6 +4492,7 @@ class LoopSequenceInsertOp(RenderableOpBase):
         ]
         if input_present_param is not None:
             param_specs.append((input_present_param, "_Bool", "", True))
+        output_dynamic_axes = emitter.sequence_dynamic_axes(self.output_sequence)
         param_specs.extend(
             [
                 (
@@ -4504,6 +4507,15 @@ class LoopSequenceInsertOp(RenderableOpBase):
                     "",
                     False,
                 ),
+                *[
+                    (
+                        emitter.sequence_dim_array_name(self.output_sequence, axis),
+                        "idx_t",
+                        "[EMX_SEQUENCE_MAX_LEN]",
+                        False,
+                    )
+                    for axis in output_dynamic_axes
+                ],
             ]
         )
         param_decls = emitter.build_param_decls(param_specs)
@@ -4531,6 +4543,16 @@ class LoopSequenceInsertOp(RenderableOpBase):
                 c_type=seq_dtype.c_type,
                 default_data=default_data,
                 default_count=len(self.default_sequence_data),
+                prefix_slices=self.prefix_slices,
+                output_dim_arrays=tuple(
+                    {
+                        "axis": axis,
+                        "name": emitter.sequence_dim_array_name(
+                            self.output_sequence, axis
+                        ),
+                    }
+                    for axis in output_dynamic_axes
+                ),
             )
             .rstrip()
         )

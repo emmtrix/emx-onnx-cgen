@@ -1,6 +1,10 @@
 {
-  "error": "Code generation requires explicit ragged-sequence bounds. Reason: sequence 'x' has unknown or dynamic element dimensions. Hint: pass --sequence-element-shape x=[...]",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_expanded model.onnx --test-data-dir test_data_set_0",
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_expanded model.onnx --test-data-dir test_data_set_0 --sequence-element-shape 'x=[10]'",
+  "extra_cli_args": [
+    "--sequence-element-shape",
+    "x=[10]"
+  ],
   "verification_mode": "Data/Data",
   "operators": [
     "SequenceLength",
@@ -8,5 +12,6 @@
     "SequenceEmpty",
     "Loop"
   ],
-  "opset_version": 17
+  "opset_version": 17,
+  "generated_checksum": "faab9f3d89cde8d8912d6792d103b96de90c7e5f9c11083a39959c373113f1e0"
 }
