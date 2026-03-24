@@ -6777,7 +6777,11 @@ class SequenceAtOp(RenderableOpBase):
                 input_sequence=params["input_sequence"],
                 position=params["position"],
                 output=params["output"],
-                element_count=CEmitterCompat.element_count_expr(output_shape),
+                element_count=CEmitterCompat.element_count_expr(
+                    CEmitterCompat.shape_dim_exprs(
+                        output_shape, emitter.dim_names_for(self.output)
+                    )
+                ),
                 c_type=c_type,
             )
             .rstrip()
@@ -7041,8 +7045,13 @@ class SequenceInsertOp(RenderableOpBase):
         tensor_suffix = emitter.param_array_suffix(
             tensor_shape, emitter.dim_names_for(self.tensor)
         )
+        input_sequence_shape = emitter.sequence_storage_shape(self.input_sequence)
+        output_sequence_shape = emitter.sequence_storage_shape(self.output_sequence)
         sequence_suffix = emitter.param_array_suffix(
-            emitter.sequence_storage_shape(self.input_sequence),
+            input_sequence_shape,
+        )
+        output_sequence_suffix = emitter.param_array_suffix(
+            output_sequence_shape,
         )
         position_dtype = (
             emitter.ctx_dtype(self.position)
@@ -7084,7 +7093,7 @@ class SequenceInsertOp(RenderableOpBase):
                 (
                     params["output_sequence"],
                     c_type,
-                    f"[EMX_SEQUENCE_MAX_LEN]{sequence_suffix}",
+                    f"[EMX_SEQUENCE_MAX_LEN]{output_sequence_suffix}",
                     False,
                 ),
                 (f"{params['output_sequence']}__count", "idx_t *", "", False),
@@ -7137,7 +7146,7 @@ class SequenceInsertOp(RenderableOpBase):
                     for axis in dynamic_output_axes
                 ),
                 sequence_element_count=CEmitterCompat.element_count_expr(
-                    emitter.sequence_storage_shape(self.input_sequence)
+                    input_sequence_shape
                 ),
                 tensor_element_count=CEmitterCompat.element_count_expr(tensor_shape),
                 c_type=c_type,

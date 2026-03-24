@@ -532,6 +532,8 @@ class CEmitter:
             src_value = self._emit_state.op_context.find_value(self._ctx_name(src_name))
             return src_name if isinstance(src_value.type, SequenceType) else None
         if producer.op_type == "Loop" and producer.inputs:
+            if self._loop_sequence_map_output_kind(sequence_name) == "shape":
+                return None
             trip_count_producer = self._emit_state.op_context.producer(
                 self._ctx_name(producer.inputs[0])
             )
@@ -602,6 +604,17 @@ class CEmitter:
             return None
         return int(value_attr.t.dims[0])
 
+    def _loop_sequence_map_output_kind(self, sequence_name: str) -> str | None:
+        if self._emit_state is None:
+            return None
+        for op in self._emit_state.model.ops:
+            if not isinstance(op, LoopSequenceMapOp):
+                continue
+            for out_name, kind in zip(op.output_sequences, op.output_kinds):
+                if out_name == sequence_name:
+                    return kind
+        return None
+
     def _sequence_storage_shape(
         self,
         sequence_name: str,
@@ -643,17 +656,17 @@ class CEmitter:
             _visited = set()
         if sequence_name in _visited:
             return (1,)
-        shape_source = self._sequence_shape_source_name(
-            sequence_name, _visited=_visited
-        )
-        if shape_source is not None:
-            return self._sequence_storage_shape(shape_source, _visited=_visited)
-        _visited.add(sequence_name)
-
         if self._emit_state is None:
             raise CodegenError("Emitter state not initialized")
         mapped_name = self._ctx_name(sequence_name)
         producer = self._emit_state.op_context.producer(mapped_name)
+        if producer is None or producer.op_type != "SequenceInsert":
+            shape_source = self._sequence_shape_source_name(
+                sequence_name, _visited=_visited
+            )
+            if shape_source is not None:
+                return self._sequence_storage_shape(shape_source, _visited=_visited)
+        _visited.add(sequence_name)
         if producer is not None and producer.op_type == "Loop":
             loop_capacity = self._loop_sequence_insert_capacity(
                 producer.attrs.get("body")
@@ -2365,7 +2378,14 @@ class CEmitter:
                         *self._sequence_dim_arg_names(op.output_sequence),
                     ]
                 )
-            if isinstance(
+            output_count_names: set[str] = set()
+            if isinstance(op, SequenceIdentityOp):
+                output_count_names.add(f"{op.output_sequence}__count")
+            elif isinstance(op, LoopSequenceMapOp):
+                output_count_names.update(
+                    f"{name}__count" for name in op.output_sequences
+                )
+            elif isinstance(
                 op,
                 (
                     SequenceConstructOp,
@@ -2377,8 +2397,13 @@ class CEmitter:
                     LoopSequenceInsertOp,
                 ),
             ):
+                output_count_names.add(f"{op.output_sequence}__count")
+            if output_count_names:
                 for arg_index, arg in enumerate(op_args):
-                    if arg in sequence_temp_count_names:
+                    if (
+                        arg in output_count_names
+                        and arg in sequence_temp_count_names
+                    ):
                         op_args[arg_index] = f"&{arg}"
             args = [*dim_order, *op_args]
             call = ", ".join(args)
