@@ -4712,6 +4712,20 @@ class LoopSequenceMapOp(RenderableOpBase):
                 )
         param_decls = emitter.build_param_decls(decls)
 
+        def _runtime_output_shape_exprs(
+            sequence_name: str,
+            output_elem_shape: tuple[int, ...],
+        ) -> tuple[str | int, ...]:
+            dynamic_axes = set(emitter.sequence_dynamic_axes(sequence_name))
+            return tuple(
+                (
+                    f"{emitter.sequence_dim_array_name(sequence_name, axis)}[(idx_t)i]"
+                    if axis in dynamic_axes
+                    else dim
+                )
+                for axis, dim in enumerate(output_elem_shape)
+            )
+
         lines = [f"void {op_name}({dim_args}{', '.join(param_decls)}) {{"]
         lines.append(
             f"    const int64_t trip_raw = (int64_t){params['trip_count']}[0];"
@@ -4737,7 +4751,7 @@ class LoopSequenceMapOp(RenderableOpBase):
             in1_seq = self.output_input1_is_sequence[out_idx]
             output_elem_shape = emitter.sequence_storage_shape(out_name)
             elem_count = CEmitterCompat.element_count_expr(
-                CEmitterCompat.shape_dim_exprs(output_elem_shape, {})
+                _runtime_output_shape_exprs(out_name, output_elem_shape)
             )
             for axis in emitter.sequence_dynamic_axes(out_name):
                 if kind == "shape":

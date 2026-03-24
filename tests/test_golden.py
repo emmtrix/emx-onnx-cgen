@@ -769,6 +769,20 @@ def test_codegen_loop13_seq_emits_runtime_loop() -> None:
     assert "loop_insert_table" in generated
 
 
+def test_codegen_loop_sequence_map_uses_runtime_tensor_shape_for_copy() -> None:
+    model = _load_official_onnx_model(
+        "onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx"
+    )
+    compiler = Compiler(
+        CompilerOptions(
+            sequence_element_shapes=parse_sequence_element_shape_hints(["x0=[<=9]"])
+        )
+    )
+    generated = compiler.compile(model)
+    assert "for (idx_t e = 0; e < y1__dim_0[(idx_t)i]; ++e)" in generated
+    assert "for (idx_t e = 0; e < 10; ++e) { output_sequence_1[(idx_t)i][e]" not in generated
+
+
 def test_codegen_golden_matmul() -> None:
     model = _make_matmul_model()
     compiler = Compiler()
