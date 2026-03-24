@@ -203,8 +203,11 @@ ONNX dtypes are currently unsupported.
 Notes:
 
 - Fixed-width integer types use `<stdint.h>` (for example, `int32_t`).
+- Sub-byte integer types use C23 `_BitInt` / `unsigned _BitInt`.
 - `bfloat16` uses `__bf16`; support depends on the target compiler/toolchain.
 - `float16` uses C's `_Float16` type; support depends on the target compiler.
+- `float8*` / `float4*` tensors use typedef aliases to `uint8_t` plus generated
+  conversion helpers.
 - `string` tensors are represented as fixed-size `'\0'`-terminated C strings
   (`char[EMX_STRING_MAX_LEN]` per element).
 
@@ -214,20 +217,20 @@ Notes:
 | float16 | `_Float16` |
 | float | `float` |
 | double | `double` |
-| float8e4m3fn | not supported |
-| float8e4m3fnuz | not supported |
-| float8e5m2 | not supported |
-| float8e5m2fnuz | not supported |
-| float8e8m0 | not supported |
-| float4e2m1 | not supported |
-| int2 | not supported |
-| int4 | not supported |
+| float8e4m3fn | `emx_float8e4m3fn_t` |
+| float8e4m3fnuz | `emx_float8e4m3fnuz_t` |
+| float8e5m2 | `emx_float8e5m2_t` |
+| float8e5m2fnuz | `emx_float8e5m2fnuz_t` |
+| float8e8m0 | `emx_float8e8m0fnu_t` |
+| float4e2m1 | `emx_float4e2m1_t` |
+| int2 | `_BitInt(2)` |
+| int4 | `_BitInt(4)` |
 | int8 | `int8_t` |
 | int16 | `int16_t` |
 | int32 | `int32_t` |
 | int64 | `int64_t` |
-| uint2 | not supported |
-| uint4 | not supported |
+| uint2 | `unsigned _BitInt(2)` |
+| uint4 | `unsigned _BitInt(4)` |
 | uint8 | `uint8_t` |
 | uint16 | `uint16_t` |
 | uint32 | `uint32_t` |
