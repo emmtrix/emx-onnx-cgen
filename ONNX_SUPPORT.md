@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1791 / 1802, 99.4% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1793 / 1802, 99.5% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1791 / 1802 ONNX files (99.4%).
+Coverage 1793 / 1802 ONNX files (99.5%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -767,7 +767,7 @@ Coverage 1791 / 1802 ONNX files (99.4%).
 | node/test_hardswish_expanded/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_identity/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_identity_opt/model.onnx | 16 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_identity_sequence/model.onnx | 25 | Data/Data | ✅ | OK (no numeric comparisons) |
+| node/test_identity_sequence/model.onnx (--sequence-element-shape x=[1,1,2,2]) | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_if/model.onnx | 11 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_if_opt/model.onnx | 16 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_if_seq/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
@@ -905,7 +905,7 @@ Coverage 1791 / 1802 ONNX files (99.4%).
 | node/test_logsoftmax_negative_axis_expanded_ver18/model.onnx | 18 | Data/Data | ✅ | OK (max ULP 1) |
 | node/test_loop11/model.onnx | 11 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_loop13_seq/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_loop16_seq_none/model.onnx | 16 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_loop16_seq_none/model.onnx | 16 | Data/Data | ❌ | Unsupported op Loop |
 | node/test_lpnormalization_default/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_lppool_1d_default/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_lppool_2d_default/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
@@ -1466,20 +1466,20 @@ Coverage 1791 / 1802 ONNX files (99.4%).
 | node/test_selu_example/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 2) |
 | node/test_selu_example_expanded_ver18/model.onnx | 18 | Data/Data | ✅ | OK (max ULP 2) |
 | node/test_selu_expanded_ver18/model.onnx | 18 | Data/Data | ✅ | OK (max ULP 24) |
-| node/test_sequence_insert_at_back/model.onnx | 11 | Data/Data | ❌ | Unsupported test-data sequence input for verify: variable sequence element shapes are not supported |
-| node/test_sequence_insert_at_front/model.onnx | 11 | Data/Data | ❌ | Unsupported test-data sequence input for verify: variable sequence element shapes are not supported |
-| node/test_sequence_map_add_1_sequence_1_tensor/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_sequence_map_add_2_sequences/model.onnx | 17 | Data/Data | ❌ | Unsupported test-data sequence input for verify: variable sequence element shapes are not supported |
-| node/test_sequence_map_add_2_sequences_expanded/model.onnx | 17 | Data/Data | ❌ | Unsupported test-data sequence input for verify: variable sequence element shapes are not supported |
-| node/test_sequence_map_extract_shapes/model.onnx | 17 | Data/Data | ❌ | Unsupported test-data sequence input for verify: variable sequence element shapes are not supported |
-| node/test_sequence_map_extract_shapes_expanded/model.onnx | 17 | Data/Data | ❌ | Unsupported test-data sequence input for verify: variable sequence element shapes are not supported |
-| node/test_sequence_map_identity_1_sequence/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx | 17 | Data/Data | ❌ | Unsupported test-data sequence input for verify: variable sequence element shapes are not supported |
-| node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx | 17 | Data/Data | ❌ | Unsupported test-data sequence input for verify: variable sequence element shapes are not supported |
-| node/test_sequence_map_identity_1_sequence_expanded/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_sequence_map_identity_2_sequences/model.onnx | 17 | Data/Data | ❌ | Unsupported test-data sequence input for verify: variable sequence element shapes are not supported |
-| node/test_sequence_map_identity_2_sequences_expanded/model.onnx | 17 | Data/Data | ❌ | Unsupported test-data sequence input for verify: variable sequence element shapes are not supported |
+| node/test_sequence_insert_at_back/model.onnx (--sequence-element-shape sequence=[<=4]) | 11 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_sequence_insert_at_front/model.onnx (--sequence-element-shape sequence=[<=4]) | 11 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_sequence_map_add_1_sequence_1_tensor/model.onnx (--sequence-element-shape x0=[10]) | 17 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx (--sequence-element-shape x0=[10]) | 17 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_add_2_sequences/model.onnx (--sequence-element-shape x0=[<=6] --sequence-element-shape x1=[<=6]) | 17 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_add_2_sequences_expanded/model.onnx (--sequence-element-shape x0=[<=6] --sequence-element-shape x1=[<=6]) | 17 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_extract_shapes/model.onnx (--sequence-element-shape in_seq=[<=40,<=30,3]) |  |  | ❌ | tuple index out of range |
+| node/test_sequence_map_extract_shapes_expanded/model.onnx (--sequence-element-shape in_seq=[<=40,<=30,3]) |  |  | ❌ | tuple index out of range |
+| node/test_sequence_map_identity_1_sequence/model.onnx (--sequence-element-shape x=[10]) | 17 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx (--sequence-element-shape x0=[<=9]) | 17 | Data/Data | ❌ | Testbench execution failed: exit code 1 |
+| node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx (--sequence-element-shape x0=[<=9]) | 17 | Data/Data | ❌ | Testbench execution failed: exit code 1 |
+| node/test_sequence_map_identity_1_sequence_expanded/model.onnx (--sequence-element-shape x=[10]) | 17 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_identity_2_sequences/model.onnx (--sequence-element-shape x0=[<=9] --sequence-element-shape x1=[<=8]) | 17 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_identity_2_sequences_expanded/model.onnx (--sequence-element-shape x0=[<=9] --sequence-element-shape x1=[<=8]) | 17 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_shape/model.onnx | 25 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_shape_clip_end/model.onnx | 25 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_shape_clip_start/model.onnx | 25 | Data/Data | ✅ | OK (max abs diff 0) |
@@ -1810,9 +1810,9 @@ Coverage 1791 / 1802 ONNX files (99.4%).
 | simple/test_expand_shape_model4/model.onnx | 9 | Data/Data | ✅ | OK (max ULP 0) |
 | simple/test_gradient_of_add/model.onnx | 12 | Data/Data | ✅ | OK (max ULP 0) |
 | simple/test_gradient_of_add_and_mul/model.onnx | 12 | Data/Data | ✅ | OK (max ULP 0) |
-| simple/test_sequence_model1/model.onnx | 12 | Data/Data | ✅ | OK (max ULP 0) |
-| simple/test_sequence_model2/model.onnx | 12 | Data/Data | ✅ | OK (max ULP 0) |
-| simple/test_sequence_model3/model.onnx | 12 | Data/Data | ✅ | OK (max ULP 0) |
+| simple/test_sequence_model1/model.onnx | 12 | Data/Data | ❌ | Failed to build testbench (model.c:249:49: error: passing argument 3 of ‘node3_sequenceinsert’ makes integer from pointer without a cast [-Wint-conversion]). |
+| simple/test_sequence_model2/model.onnx | 12 | Data/Data | ❌ | Failed to build testbench (model.c:202:37: error: passing argument 2 of ‘node1_sequenceerase’ makes integer from pointer without a cast [-Wint-conversion]). |
+| simple/test_sequence_model3/model.onnx | 12 | Data/Data | ❌ | Failed to build testbench (model.c:259:38: error: passing argument 2 of ‘node2_sequenceinsert’ makes integer from pointer without a cast [-Wint-conversion]). |
 | simple/test_sequence_model4/model.onnx | 12 | Data/Data | ✅ | OK (max ULP 0) |
 | simple/test_sequence_model5/model.onnx | 12 | Data/Data | ✅ | OK (max ULP 0) |
 | simple/test_sequence_model6/model.onnx | 12 | Data/Data | ✅ | OK (max abs diff 0) |

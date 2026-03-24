@@ -50,6 +50,11 @@ void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             {% if keepdims %}
             copy_elems *= chunk;
             {% endif %}
+            if (outer_idx == 0) {
+            {% for dim in output_dim_arrays %}
+                {{ dim.name }}[sequence_idx] = {{ dim.expr }};
+            {% endfor %}
+            }
             {{ c_type }} *output_ptr =
                 (({{ c_type }} *){{ output_sequence }}[sequence_idx]) + outer_idx * output_outer_stride;
             memcpy(

@@ -4429,6 +4429,8 @@ class LoopSequenceInsertOp(RenderableOpBase):
     default_sequence_data: tuple[float | int, ...] = ()
     # Initial sequence values used when input_sequence_present is False (absent).
     # Extracted from the then-branch SequenceConstruct in the loop body.
+    prefix_slices: bool = False
+    # When True, append x[:i+1] style slices from table_data instead of scalars.
 
     def call_args(self) -> tuple[str, ...]:
         args: list[str] = [
@@ -4490,6 +4492,7 @@ class LoopSequenceInsertOp(RenderableOpBase):
         ]
         if input_present_param is not None:
             param_specs.append((input_present_param, "_Bool", "", True))
+        output_dynamic_axes = emitter.sequence_dynamic_axes(self.output_sequence)
         param_specs.extend(
             [
                 (
@@ -4504,6 +4507,15 @@ class LoopSequenceInsertOp(RenderableOpBase):
                     "",
                     False,
                 ),
+                *[
+                    (
+                        emitter.sequence_dim_array_name(self.output_sequence, axis),
+                        "idx_t",
+                        "[EMX_SEQUENCE_MAX_LEN]",
+                        False,
+                    )
+                    for axis in output_dynamic_axes
+                ],
             ]
         )
         param_decls = emitter.build_param_decls(param_specs)
@@ -4531,6 +4543,16 @@ class LoopSequenceInsertOp(RenderableOpBase):
                 c_type=seq_dtype.c_type,
                 default_data=default_data,
                 default_count=len(self.default_sequence_data),
+                prefix_slices=self.prefix_slices,
+                output_dim_arrays=tuple(
+                    {
+                        "axis": axis,
+                        "name": emitter.sequence_dim_array_name(
+                            self.output_sequence, axis
+                        ),
+                    }
+                    for axis in output_dynamic_axes
+                ),
             )
             .rstrip()
         )
@@ -4634,18 +4656,26 @@ class LoopSequenceMapOp(RenderableOpBase):
         for idx, name in enumerate(self.input_sequences):
             seq_dtype = emitter.ctx_sequence_elem_type(name).dtype
             seq_shape = emitter.sequence_storage_shape(name)
-            seq_dim_names = emitter.dim_names_for(name)
             decls.append(
                 (
                     params[f"input_sequence_{idx}"],
                     seq_dtype.c_type,
-                    f"[EMX_SEQUENCE_MAX_LEN]{emitter.param_array_suffix(seq_shape, seq_dim_names)}",
+                    f"[EMX_SEQUENCE_MAX_LEN]{emitter.param_array_suffix(seq_shape)}",
                     True,
                 )
             )
             decls.append(
                 (f"{params[f'input_sequence_{idx}']}__count", "idx_t", "", True)
             )
+            for axis in emitter.sequence_dynamic_axes(name):
+                decls.append(
+                    (
+                        emitter.sequence_dim_array_name(name, axis),
+                        "idx_t",
+                        "[EMX_SEQUENCE_MAX_LEN]",
+                        True,
+                    )
+                )
         for idx, name in enumerate(self.input_tensors):
             dtype = emitter.ctx_dtype(name)
             shape = emitter.ctx_shape(name)
@@ -4660,18 +4690,26 @@ class LoopSequenceMapOp(RenderableOpBase):
         for idx, name in enumerate(self.output_sequences):
             seq_dtype = emitter.ctx_sequence_elem_type(name).dtype
             seq_shape = emitter.sequence_storage_shape(name)
-            seq_dim_names = emitter.dim_names_for(name)
             decls.append(
                 (
                     params[f"output_sequence_{idx}"],
                     seq_dtype.c_type,
-                    f"[EMX_SEQUENCE_MAX_LEN]{emitter.param_array_suffix(seq_shape, seq_dim_names)}",
+                    f"[EMX_SEQUENCE_MAX_LEN]{emitter.param_array_suffix(seq_shape)}",
                     False,
                 )
             )
             decls.append(
                 (f"{params[f'output_sequence_{idx}']}__count", "idx_t *", "", False)
             )
+            for axis in emitter.sequence_dynamic_axes(name):
+                decls.append(
+                    (
+                        emitter.sequence_dim_array_name(name, axis),
+                        "idx_t",
+                        "[EMX_SEQUENCE_MAX_LEN]",
+                        False,
+                    )
+                )
         param_decls = emitter.build_param_decls(decls)
 
         lines = [f"void {op_name}({dim_args}{', '.join(param_decls)}) {{"]
@@ -4698,18 +4736,45 @@ class LoopSequenceMapOp(RenderableOpBase):
             in0_seq = self.output_input0_is_sequence[out_idx]
             in1_seq = self.output_input1_is_sequence[out_idx]
             output_elem_shape = emitter.sequence_storage_shape(out_name)
-            output_elem_dim_names = emitter.dim_names_for(out_name)
             elem_count = CEmitterCompat.element_count_expr(
-                CEmitterCompat.shape_dim_exprs(
-                    output_elem_shape,
-                    output_elem_dim_names,
-                )
+                CEmitterCompat.shape_dim_exprs(output_elem_shape, {})
             )
+            for axis in emitter.sequence_dynamic_axes(out_name):
+                if kind == "shape":
+                    if in0_seq:
+                        lines.append(
+                            f"        {emitter.sequence_dim_array_name(out_name, axis)}[(idx_t)i] = 1;"
+                        )
+                    else:
+                        dim_ref = emitter.dim_names_for(in0).get(axis)
+                        dim_expr = (
+                            dim_ref.name
+                            if dim_ref is not None
+                            else emitter.ctx_shape(in0)[axis]
+                        )
+                        lines.append(
+                            f"        {emitter.sequence_dim_array_name(out_name, axis)}[(idx_t)i] = {dim_expr};"
+                        )
+                elif in0_seq:
+                    lines.append(
+                        f"        {emitter.sequence_dim_array_name(out_name, axis)}[(idx_t)i] = "
+                        f"{emitter.sequence_dim_array_name(in0, axis)}[(idx_t)i];"
+                    )
+                else:
+                    dim_ref = emitter.dim_names_for(in0).get(axis)
+                    dim_expr = (
+                        dim_ref.name
+                        if dim_ref is not None
+                        else emitter.ctx_shape(in0)[axis]
+                    )
+                    lines.append(
+                        f"        {emitter.sequence_dim_array_name(out_name, axis)}[(idx_t)i] = {dim_expr};"
+                    )
             if kind == "shape":
                 source_shape = (
                     CEmitterCompat.shape_dim_exprs(
                         emitter.sequence_storage_shape(in0),
-                        emitter.dim_names_for(in0),
+                        {},
                     )
                     if in0_seq
                     else CEmitterCompat.shape_dim_exprs(
@@ -4718,7 +4783,15 @@ class LoopSequenceMapOp(RenderableOpBase):
                     )
                 )
                 for dim_idx, dim in enumerate(source_shape):
-                    lines.append(f"        {out_param}[(idx_t)i][{dim_idx}] = {dim};")
+                    if in0_seq and dim_idx in emitter.sequence_dynamic_axes(in0):
+                        dim_expr = (
+                            f"{emitter.sequence_dim_array_name(in0, dim_idx)}[(idx_t)i]"
+                        )
+                    else:
+                        dim_expr = dim
+                    lines.append(
+                        f"        {out_param}[(idx_t)i][{dim_idx}] = {dim_expr};"
+                    )
             elif kind == "identity":
                 src_name = (
                     seq_param_by_name[in0] if in0_seq else tensor_param_by_name[in0]
@@ -6330,7 +6403,12 @@ class SplitToSequenceOp(RenderableOpBase):
         args = [self.input0]
         if self.split is not None:
             args.append(self.split)
-        args.extend([self.output_sequence, f"{self.output_sequence}__count"])
+        args.extend(
+            [
+                self.output_sequence,
+                f"{self.output_sequence}__count",
+            ]
+        )
         return tuple(args)
 
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
@@ -6341,19 +6419,7 @@ class SplitToSequenceOp(RenderableOpBase):
         output_dtype = emitter.op_output_dtype(self)
         c_type = output_dtype.c_type
         input_shape = emitter.ctx_shape(self.input0)
-        if self.keepdims:
-            output_shape_list = list(input_shape)
-            if self.split_sizes:
-                output_shape_list[self.axis] = max(self.split_sizes)
-            elif self.split is None:
-                output_shape_list[self.axis] = 1
-            else:
-                output_shape_list[self.axis] = input_shape[self.axis]
-            output_shape = tuple(output_shape_list)
-        else:
-            output_shape = tuple(
-                dim for index, dim in enumerate(input_shape) if index != self.axis
-            )
+        storage_shape = emitter.sequence_storage_shape(self.output_sequence)
         params = emitter.shared_param_map(
             [
                 ("input0", self.input0),
@@ -6365,14 +6431,15 @@ class SplitToSequenceOp(RenderableOpBase):
             input_shape, emitter.dim_names_for(self.input0)
         )
         output_suffix = emitter.param_array_suffix(
-            output_shape, emitter.dim_names_for(self.output_sequence)
+            storage_shape, emitter.dim_names_for(self.output_sequence)
         )
         input_shape_expr = CEmitterCompat.shape_dim_exprs(
             input_shape, emitter.dim_names_for(self.input0)
         )
         output_shape_expr = CEmitterCompat.shape_dim_exprs(
-            output_shape, emitter.dim_names_for(self.output_sequence)
+            storage_shape, emitter.dim_names_for(self.output_sequence)
         )
+        dynamic_output_axes = emitter.sequence_dynamic_axes(self.output_sequence)
         param_specs = [
             (params["input0"], c_type, input_suffix, True),
         ]
@@ -6398,6 +6465,15 @@ class SplitToSequenceOp(RenderableOpBase):
                     False,
                 ),
                 (f"{params['output_sequence']}__count", "idx_t *", "", False),
+                *[
+                    (
+                        emitter.sequence_dim_array_name(self.output_sequence, axis),
+                        "idx_t",
+                        "[EMX_SEQUENCE_MAX_LEN]",
+                        False,
+                    )
+                    for axis in dynamic_output_axes
+                ],
             ]
         )
         param_decls = emitter.build_param_decls(param_specs)
@@ -6431,6 +6507,26 @@ class SplitToSequenceOp(RenderableOpBase):
                 keepdims=self.keepdims,
                 output_axis_capacity=(
                     output_shape_expr[self.axis] if self.keepdims else 1
+                ),
+                output_dim_arrays=tuple(
+                    {
+                        "axis": axis,
+                        "name": emitter.sequence_dim_array_name(
+                            self.output_sequence, axis
+                        ),
+                        "expr": (
+                            "chunk"
+                            if self.keepdims and axis == self.axis
+                            else (
+                                input_shape_expr[axis]
+                                if self.keepdims
+                                else input_shape_expr[
+                                    axis if axis < self.axis else axis + 1
+                                ]
+                            )
+                        ),
+                    }
+                    for axis in dynamic_output_axes
                 ),
                 c_type=c_type,
             )
@@ -6681,7 +6777,11 @@ class SequenceAtOp(RenderableOpBase):
                 input_sequence=params["input_sequence"],
                 position=params["position"],
                 output=params["output"],
-                element_count=CEmitterCompat.element_count_expr(output_shape),
+                element_count=CEmitterCompat.element_count_expr(
+                    CEmitterCompat.shape_dim_exprs(
+                        output_shape, emitter.dim_names_for(self.output)
+                    )
+                ),
                 c_type=c_type,
             )
             .rstrip()
@@ -6789,15 +6889,27 @@ class SequenceIdentityOp(RenderableOpBase):
         emitter.op_output_dtype(self)
         elem_type = emitter.ctx_sequence_elem_type(self.input_sequence)
         elem_shape = emitter.sequence_storage_shape(self.input_sequence)
-        tensor_suffix = emitter.param_array_suffix(
-            elem_shape, emitter.dim_names_for(self.input_sequence)
-        )
+        tensor_suffix = emitter.param_array_suffix(elem_shape)
         params = emitter.shared_param_map(
             [
                 ("input_sequence", self.input_sequence),
                 ("output_sequence", self.output_sequence),
                 ("input_present", self.input_present),
                 ("output_present", self.output_present),
+                *[
+                    (
+                        f"input_sequence_dim_{axis}",
+                        emitter.sequence_dim_array_name(self.input_sequence, axis),
+                    )
+                    for axis in emitter.sequence_dynamic_axes(self.input_sequence)
+                ],
+                *[
+                    (
+                        f"output_sequence_dim_{axis}",
+                        emitter.sequence_dim_array_name(self.output_sequence, axis),
+                    )
+                    for axis in emitter.sequence_dynamic_axes(self.output_sequence)
+                ],
             ]
         )
         param_specs = [
@@ -6815,6 +6927,24 @@ class SequenceIdentityOp(RenderableOpBase):
                 False,
             ),
             (f"{params['output_sequence']}__count", "idx_t *", "", False),
+            *[
+                (
+                    params[f"input_sequence_dim_{axis}"],
+                    "idx_t",
+                    "[EMX_SEQUENCE_MAX_LEN]",
+                    True,
+                )
+                for axis in emitter.sequence_dynamic_axes(self.input_sequence)
+            ],
+            *[
+                (
+                    params[f"output_sequence_dim_{axis}"],
+                    "idx_t",
+                    "[EMX_SEQUENCE_MAX_LEN]",
+                    False,
+                )
+                for axis in emitter.sequence_dynamic_axes(self.output_sequence)
+            ],
         ]
         if params["input_present"] is not None and params["output_present"] is not None:
             param_specs.extend(
@@ -6833,6 +6963,20 @@ class SequenceIdentityOp(RenderableOpBase):
                 output_sequence=params["output_sequence"],
                 input_present=params["input_present"],
                 output_present=params["output_present"],
+                input_dim_arrays=tuple(
+                    {
+                        "axis": axis,
+                        "name": params[f"input_sequence_dim_{axis}"],
+                    }
+                    for axis in emitter.sequence_dynamic_axes(self.input_sequence)
+                ),
+                output_dim_arrays=tuple(
+                    {
+                        "axis": axis,
+                        "name": params[f"output_sequence_dim_{axis}"],
+                    }
+                    for axis in emitter.sequence_dynamic_axes(self.output_sequence)
+                ),
                 element_count=CEmitterCompat.element_count_expr(elem_shape),
                 c_type=elem_type.dtype.c_type,
             )
@@ -6901,15 +7045,21 @@ class SequenceInsertOp(RenderableOpBase):
         tensor_suffix = emitter.param_array_suffix(
             tensor_shape, emitter.dim_names_for(self.tensor)
         )
+        input_sequence_shape = emitter.sequence_storage_shape(self.input_sequence)
+        output_sequence_shape = emitter.sequence_storage_shape(self.output_sequence)
         sequence_suffix = emitter.param_array_suffix(
-            emitter.sequence_storage_shape(self.input_sequence),
-            emitter.dim_names_for(self.input_sequence),
+            input_sequence_shape,
+        )
+        output_sequence_suffix = emitter.param_array_suffix(
+            output_sequence_shape,
         )
         position_dtype = (
             emitter.ctx_dtype(self.position)
             if self.position is not None
             else ScalarType.I64
         )
+        dynamic_input_axes = emitter.sequence_dynamic_axes(self.input_sequence)
+        dynamic_output_axes = emitter.sequence_dynamic_axes(self.output_sequence)
         param_specs = [
             (
                 params["input_sequence"],
@@ -6918,6 +7068,15 @@ class SequenceInsertOp(RenderableOpBase):
                 True,
             ),
             (f"{params['input_sequence']}__count", "idx_t", "", True),
+            *[
+                (
+                    emitter.sequence_dim_array_name(self.input_sequence, axis),
+                    "idx_t",
+                    "[EMX_SEQUENCE_MAX_LEN]",
+                    True,
+                )
+                for axis in dynamic_input_axes
+            ],
             (params["tensor"], c_type, tensor_suffix, True),
         ]
         if params["position"] is not None:
@@ -6934,10 +7093,19 @@ class SequenceInsertOp(RenderableOpBase):
                 (
                     params["output_sequence"],
                     c_type,
-                    f"[EMX_SEQUENCE_MAX_LEN]{sequence_suffix}",
+                    f"[EMX_SEQUENCE_MAX_LEN]{output_sequence_suffix}",
                     False,
                 ),
                 (f"{params['output_sequence']}__count", "idx_t *", "", False),
+                *[
+                    (
+                        emitter.sequence_dim_array_name(self.output_sequence, axis),
+                        "idx_t",
+                        "[EMX_SEQUENCE_MAX_LEN]",
+                        False,
+                    )
+                    for axis in dynamic_output_axes
+                ],
             ]
         )
         param_decls = emitter.build_param_decls(param_specs)
@@ -6951,7 +7119,36 @@ class SequenceInsertOp(RenderableOpBase):
                 tensor=params["tensor"],
                 position=params["position"],
                 output_sequence=params["output_sequence"],
-                element_count=CEmitterCompat.element_count_expr(tensor_shape),
+                input_dim_arrays=tuple(
+                    {
+                        "axis": axis,
+                        "name": emitter.sequence_dim_array_name(
+                            self.input_sequence, axis
+                        ),
+                    }
+                    for axis in dynamic_input_axes
+                ),
+                output_dim_arrays=tuple(
+                    {
+                        "axis": axis,
+                        "name": emitter.sequence_dim_array_name(
+                            self.output_sequence, axis
+                        ),
+                        "tensor_dim": (
+                            emitter.dim_names_for(self.tensor).get(axis)
+                            if axis < len(tensor_shape)
+                            else None
+                        ),
+                        "tensor_shape": tensor_shape[axis]
+                        if axis < len(tensor_shape)
+                        else 1,
+                    }
+                    for axis in dynamic_output_axes
+                ),
+                sequence_element_count=CEmitterCompat.element_count_expr(
+                    input_sequence_shape
+                ),
+                tensor_element_count=CEmitterCompat.element_count_expr(tensor_shape),
                 c_type=c_type,
             )
             .rstrip()
@@ -7182,10 +7379,10 @@ class SequenceEraseOp(RenderableOpBase):
             if self.position is not None
             else ScalarType.I64
         )
-        tensor_suffix = emitter.param_array_suffix(
-            elem_shape, emitter.dim_names_for(self.input_sequence)
-        )
+        tensor_suffix = emitter.param_array_suffix(elem_shape)
         sequence_suffix = tensor_suffix
+        dynamic_input_axes = emitter.sequence_dynamic_axes(self.input_sequence)
+        dynamic_output_axes = emitter.sequence_dynamic_axes(self.output_sequence)
         param_specs = [
             (
                 params["input_sequence"],
@@ -7194,6 +7391,15 @@ class SequenceEraseOp(RenderableOpBase):
                 True,
             ),
             (f"{params['input_sequence']}__count", "idx_t", "", True),
+            *[
+                (
+                    emitter.sequence_dim_array_name(self.input_sequence, axis),
+                    "idx_t",
+                    "[EMX_SEQUENCE_MAX_LEN]",
+                    True,
+                )
+                for axis in dynamic_input_axes
+            ],
         ]
         if params["position"] is not None:
             param_specs.append(
@@ -7213,6 +7419,15 @@ class SequenceEraseOp(RenderableOpBase):
                     False,
                 ),
                 (f"{params['output_sequence']}__count", "idx_t *", "", False),
+                *[
+                    (
+                        emitter.sequence_dim_array_name(self.output_sequence, axis),
+                        "idx_t",
+                        "[EMX_SEQUENCE_MAX_LEN]",
+                        False,
+                    )
+                    for axis in dynamic_output_axes
+                ],
             ]
         )
         param_decls = emitter.build_param_decls(param_specs)
@@ -7225,6 +7440,24 @@ class SequenceEraseOp(RenderableOpBase):
                 input_sequence=params["input_sequence"],
                 position=params["position"],
                 output_sequence=params["output_sequence"],
+                input_dim_arrays=tuple(
+                    {
+                        "axis": axis,
+                        "name": emitter.sequence_dim_array_name(
+                            self.input_sequence, axis
+                        ),
+                    }
+                    for axis in dynamic_input_axes
+                ),
+                output_dim_arrays=tuple(
+                    {
+                        "axis": axis,
+                        "name": emitter.sequence_dim_array_name(
+                            self.output_sequence, axis
+                        ),
+                    }
+                    for axis in dynamic_output_axes
+                ),
                 element_count=CEmitterCompat.element_count_expr(elem_shape),
                 c_type=c_type,
             )

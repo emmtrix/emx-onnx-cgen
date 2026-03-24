@@ -5,6 +5,7 @@ import re
 from onnx import TensorProto, helper
 
 from emx_onnx_cgen.compiler import Compiler, CompilerOptions
+from emx_onnx_cgen.sequence_shape_hints import parse_sequence_element_shape_hints
 
 
 def _signature_param_names(source: str) -> list[str]:
@@ -68,3 +69,36 @@ def test_compile_sequence_signature_uses_fixed_capacity_and_count() -> None:
     assert "idx_t seq_in__count" in source
     assert "float seq_out[EMX_SEQUENCE_MAX_LEN][2][3]" in source
     assert "idx_t *seq_out__count" in source
+
+
+def test_compile_ragged_sequence_signature_uses_dim_arrays_and_max_shape() -> None:
+    seq_input = helper.make_tensor_sequence_value_info(
+        "seq_in", TensorProto.FLOAT, ["N"]
+    )
+    seq_output = helper.make_tensor_sequence_value_info(
+        "seq_out", TensorProto.FLOAT, ["N"]
+    )
+    identity_node = helper.make_node("Identity", inputs=["seq_in"], outputs=["seq_out"])
+    graph = helper.make_graph(
+        [identity_node],
+        "ragged_sequence_signature_graph",
+        [seq_input],
+        [seq_output],
+    )
+    model = helper.make_model(graph)
+    compiler = Compiler(
+        CompilerOptions(
+            model_name="model",
+            sequence_element_shapes=parse_sequence_element_shape_hints(
+                ["seq_in=[<=8]"]
+            ),
+        )
+    )
+    source = compiler.compile(model)
+
+    assert "const float seq_in[EMX_SEQUENCE_MAX_LEN][8]" in source
+    assert "idx_t seq_in__count" in source
+    assert "const idx_t seq_in__dim_0[EMX_SEQUENCE_MAX_LEN]" in source
+    assert "float seq_out[EMX_SEQUENCE_MAX_LEN][8]" in source
+    assert "idx_t *seq_out__count" in source
+    assert "idx_t seq_out__dim_0[EMX_SEQUENCE_MAX_LEN]" in source

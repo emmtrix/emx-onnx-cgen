@@ -43,6 +43,9 @@ from .lowering import load_lowering_registry
 from .lowering.common import ensure_supported_dtype, shape_product
 from .lowering.registry import get_lowering_registry
 from .onnx_import import import_onnx, prepare_onnx_model
+from .sequence_shape_hints import (
+    SequenceElementShapeHint,
+)
 
 # Keep this env var near the lowering loop so future shape-debug work can find it fast.
 _DEBUG_LOWERING_FAILURES_ENV = "EMX_DEBUG_LOWERING_FAILURES"
@@ -101,6 +104,7 @@ class CompilerOptions:
     large_temp_threshold_bytes: int = 1024
     large_weight_threshold: int = 100 * 1024
     replicate_ort_bugs: bool = False
+    sequence_element_shapes: Mapping[str, SequenceElementShapeHint] | None = None
     # Developer-only switch: attach the failing lowering node with typed I/O context.
     debug_lowering_failures: bool = False
     timings: dict[str, float] | None = None
@@ -140,6 +144,7 @@ class Compiler:
             large_temp_threshold_bytes=options.large_temp_threshold_bytes,
             large_weight_threshold=options.large_weight_threshold,
             replicate_ort_bugs=options.replicate_ort_bugs,
+            sequence_element_shapes=options.sequence_element_shapes,
         )
         load_lowering_registry()
 
@@ -176,7 +181,10 @@ class Compiler:
             "import_onnx",
             lambda: import_onnx(prepared_model, _prepared=True),
         )
-        missing_shape_reason = self._shape_concretization_requirement_reason(graph)
+        self._validate_sequence_element_shape_hints(graph)
+        missing_shape_reason = self._shape_concretization_requirement_reason(
+            graph, prepared_model
+        )
         if missing_shape_reason is not None:
             lowered = self._time_step(
                 "lower_model_without_dynamic_shape_support",
@@ -185,6 +193,14 @@ class Compiler:
                 ),
             )
             if lowered is not None:
+                ragged_input_reason = self._ragged_sequence_input_requirement_reason(
+                    graph, prepared_model
+                )
+                if ragged_input_reason is not None:
+                    raise UnsupportedOpError(
+                        "Code generation requires explicit ragged-sequence bounds. "
+                        f"Reason: {ragged_input_reason}"
+                    )
                 variable_dim_inputs, variable_dim_outputs = self._time_step(
                     "collect_variable_dims", lambda: self._collect_variable_dims(graph)
                 )
@@ -209,6 +225,25 @@ class Compiler:
             variable_dim_inputs=variable_dim_inputs,
             variable_dim_outputs=variable_dim_outputs,
         )
+
+    def _ragged_sequence_input_requirement_reason(
+        self,
+        graph: Graph,
+        model: onnx.ModelProto,
+    ) -> str | None:
+        sequence_hints = self._options.sequence_element_shapes or {}
+        for value in graph.inputs:
+            if not isinstance(value.type, SequenceType):
+                continue
+            if value.name in sequence_hints:
+                continue
+            if not self._model_sequence_input_requires_shape_hint(model, value.name):
+                continue
+            return (
+                f"sequence '{value.name}' has unknown or dynamic element dimensions. "
+                f"Hint: pass --sequence-element-shape {value.name}=[...]"
+            )
+        return None
 
     def compile(self, model: onnx.ModelProto) -> str:
         ctx = self._build_compile_context(model)
@@ -314,11 +349,92 @@ class Compiler:
         )
         return generated, data_source, weight_data
 
+    def _validate_sequence_element_shape_hints(self, graph: Graph) -> None:
+        hints = self._options.sequence_element_shapes or {}
+        if not hints:
+            return
+        input_values = {value.name: value for value in graph.inputs}
+        for input_name, hint in hints.items():
+            value = input_values.get(input_name)
+            if value is None:
+                raise UnsupportedOpError(
+                    "Unknown sequence input in --sequence-element-shape: "
+                    f"{input_name!r}."
+                )
+            if not isinstance(value.type, SequenceType):
+                raise UnsupportedOpError(
+                    f"--sequence-element-shape {input_name}={hint.format()} requires "
+                    "a sequence input."
+                )
+            model_rank = len(value.type.elem.shape)
+            if model_rank and model_rank != hint.rank:
+                raise UnsupportedOpError(
+                    f"Sequence input {input_name!r} has rank {model_rank} in the "
+                    f"model, but --sequence-element-shape specifies rank {hint.rank}."
+                )
+            for axis, model_dim in enumerate(value.type.elem.shape):
+                if axis >= hint.rank:
+                    break
+                if model_dim >= 0 and hint.dims[axis].max_size != int(model_dim):
+                    raise UnsupportedOpError(
+                        f"Sequence input {input_name!r} axis {axis} is fixed to "
+                        f"{model_dim} in the model, but "
+                        f"--sequence-element-shape specifies {hint.format()}."
+                    )
+
     @staticmethod
-    def _shape_concretization_requirement_reason(graph: Graph) -> str | None:
+    def _model_sequence_input_requires_shape_hint(
+        model: onnx.ModelProto, input_name: str
+    ) -> bool:
+        initializer_names = {
+            initializer.name for initializer in model.graph.initializer
+        }
+        for value_info in model.graph.input:
+            if value_info.name in initializer_names or value_info.name != input_name:
+                continue
+            if value_info.type.WhichOneof("value") != "sequence_type":
+                return False
+            elem_type = value_info.type.sequence_type.elem_type
+            if elem_type.WhichOneof("value") != "tensor_type":
+                return False
+            tensor_type = elem_type.tensor_type
+            if not tensor_type.HasField("shape"):
+                return True
+            return any(
+                dim.HasField("dim_param") or not dim.HasField("dim_value")
+                for dim in tensor_type.shape.dim
+            )
+        return False
+
+    def _shape_concretization_requirement_reason(
+        self, graph: Graph, model: onnx.ModelProto
+    ) -> str | None:
+        sequence_hints = self._options.sequence_element_shapes or {}
         allowed_internal_dim_params = Compiler._allowed_internal_dim_params(graph)
+
+        for value in graph.inputs:
+            if isinstance(value.type, SequenceType):
+                hint = sequence_hints.get(value.name)
+                requires_hint = self._model_sequence_input_requires_shape_hint(
+                    model, value.name
+                )
+                if requires_hint and hint is None:
+                    return (
+                        f"sequence '{value.name}' has unknown or dynamic element "
+                        "dimensions. Hint: pass "
+                        f"--sequence-element-shape {value.name}=[...]"
+                    )
+                continue
+            reason = _value_requires_explicit_shape_concretization(
+                value,
+                allow_top_level_tensor_dims=True,
+                check_sequence_dims=False,
+                allowed_tensor_dim_params=None,
+            )
+            if reason is not None:
+                return reason
+
         concretization_checks: list[tuple[tuple[Value, ...], bool, set[str] | None]] = [
-            (graph.inputs, True, None),
             (graph.values, False, allowed_internal_dim_params),
             (graph.outputs, True, None),
         ]
@@ -327,7 +443,7 @@ class Compiler:
                 reason = _value_requires_explicit_shape_concretization(
                     value,
                     allow_top_level_tensor_dims=allow_top_level,
-                    check_sequence_dims=True,
+                    check_sequence_dims=False,
                     allowed_tensor_dim_params=allowed_params,
                 )
                 if reason is not None:
