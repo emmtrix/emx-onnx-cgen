@@ -281,10 +281,37 @@ def test_cli_verify_accepts_ragged_sequence_inputs_with_shape_hints() -> None:
             "model.onnx",
             "--test-data-dir",
             "test_data_set_0",
+            "--test-data-inputs-only",
             "--sequence-element-shape",
             "x0=[<=6]",
             "--sequence-element-shape",
             "x1=[<=6]",
+        ]
+    )
+
+    assert result.exit_code == 0
+    assert result.result is not None
+    assert result.result.startswith("OK")
+
+
+def test_cli_verify_accepts_loop_optional_sequence_scalar_default() -> None:
+    result = cli.run_cli_command(
+        [
+            "verify",
+            "--model-base-dir",
+            str(
+                PROJECT_ROOT
+                / "onnx-org"
+                / "onnx"
+                / "backend"
+                / "test"
+                / "data"
+                / "node"
+                / "test_loop16_seq_none"
+            ),
+            "model.onnx",
+            "--test-data-dir",
+            "test_data_set_0",
         ]
     )
 
@@ -319,6 +346,25 @@ def test_cli_verify_rejects_sequence_inputs_above_fixed_capacity(
     assert result.exit_code == 1
     assert result.result is not None
     assert "supports at most 32 items" in result.result
+
+
+def test_normalize_scalar_equivalent_sequence_items_accepts_scalar_and_ones() -> None:
+    actual = np.array([0.0], dtype=np.float32)
+    expected = np.array(0.0, dtype=np.float32)
+
+    normalized = cli._normalize_scalar_equivalent_sequence_items(actual, expected)
+
+    assert normalized is not None
+    normalized_actual, normalized_expected = normalized
+    assert normalized_actual.shape == (1,)
+    assert normalized_expected.shape == (1,)
+
+
+def test_normalize_scalar_equivalent_sequence_items_rejects_non_scalar() -> None:
+    actual = np.array([0.0, 1.0], dtype=np.float32)
+    expected = np.array(0.0, dtype=np.float32)
+
+    assert cli._normalize_scalar_equivalent_sequence_items(actual, expected) is None
 
 
 def test_cli_testbench_filename_and_include() -> None:

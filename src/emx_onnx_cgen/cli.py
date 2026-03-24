@@ -498,6 +498,27 @@ class _VerificationIssue:
         )
 
 
+def _is_scalar_equivalent_shape(shape: Sequence[int]) -> bool:
+    return len(shape) == 0 or all(int(dim) == 1 for dim in shape)
+
+
+def _normalize_scalar_equivalent_sequence_items(
+    actual_item: np.ndarray,
+    expected_item: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray] | None:
+    actual_shape = tuple(int(dim) for dim in actual_item.shape)
+    expected_shape = tuple(int(dim) for dim in expected_item.shape)
+    if actual_shape == expected_shape:
+        return actual_item, expected_item
+    if actual_item.size != 1 or expected_item.size != 1:
+        return None
+    if not _is_scalar_equivalent_shape(actual_shape):
+        return None
+    if not _is_scalar_equivalent_shape(expected_shape):
+        return None
+    return actual_item.reshape((1,)), expected_item.reshape((1,))
+
+
 class _VerifyReporter:
     def __init__(
         self,
@@ -1893,6 +1914,19 @@ def _verify_model(
                         )
                         if inferred_shape is not None:
                             concrete_shape = inferred_shape
+                inferred_shape = _infer_sequence_fixture_storage_shape(model, name)
+                if inferred_shape is not None:
+                    if concrete_shape == () or len(concrete_shape) != len(
+                        inferred_shape
+                    ):
+                        concrete_shape = inferred_shape
+                    else:
+                        concrete_shape = tuple(
+                            max(int(cur), int(inferred))
+                            for cur, inferred in zip(
+                                concrete_shape, inferred_shape
+                            )
+                        )
                 if (
                     hint is None
                     and isinstance(input_data, np.ndarray)
@@ -2363,7 +2397,13 @@ def _verify_model(
                 for sequence_index, (actual_item, expected_item) in enumerate(
                     zip(actual_sequence, expected_sequence)
                 ):
-                    if actual_item.ndim != expected_item.ndim:
+                    normalized_items = _normalize_scalar_equivalent_sequence_items(
+                        actual_item, expected_item
+                    )
+                    if normalized_items is None and (
+                        actual_item.ndim != expected_item.ndim
+                        or actual_item.shape != expected_item.shape
+                    ):
                         issue = _VerificationIssue.shape_mismatch(
                             output_name=f"{value.name}[{sequence_index}]",
                             actual_shape=tuple(actual_item.shape),
@@ -2372,17 +2412,11 @@ def _verify_model(
                             expected_size=int(expected_item.size),
                         )
                         raise AssertionError(issue.format())
-                    if actual_item.shape != expected_item.shape:
-                        issue = _VerificationIssue.shape_mismatch(
-                            output_name=f"{value.name}[{sequence_index}]",
-                            actual_shape=tuple(actual_item.shape),
-                            expected_shape=tuple(expected_item.shape),
-                            actual_size=int(actual_item.size),
-                            expected_size=int(expected_item.size),
-                        )
-                        raise AssertionError(issue.format())
-                    actual_trimmed = actual_item
-                    expected_trimmed = expected_item
+                    if normalized_items is not None:
+                        actual_trimmed, expected_trimmed = normalized_items
+                    else:
+                        actual_trimmed = actual_item
+                        expected_trimmed = expected_item
                     node = output_nodes.get(value.name)
                     node_name = node.name if node else None
                     scalar_type = value.type.elem.dtype
