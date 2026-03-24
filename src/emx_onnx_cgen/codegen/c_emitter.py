@@ -626,14 +626,18 @@ class CEmitter:
                 if dim >= 0:
                     resolved_shape.append(dim)
                     continue
-                dim_param = elem.dim_params[axis] if axis < len(elem.dim_params) else None
+                dim_param = (
+                    elem.dim_params[axis] if axis < len(elem.dim_params) else None
+                )
                 if dim_param and dim_param in symbol_sizes:
                     resolved_shape.append(symbol_sizes[dim_param])
                     continue
                 if dim_param:
                     resolved_shape.append(CodegenDim(dim_param).expected_size)
                     continue
-                resolved_shape.append(CodegenDim(f"{sequence_name}_dim_{axis}").expected_size)
+                resolved_shape.append(
+                    CodegenDim(f"{sequence_name}_dim_{axis}").expected_size
+                )
             return tuple(resolved_shape)
         if _visited is None:
             _visited = set()
@@ -756,7 +760,10 @@ class CEmitter:
         _visited.add(sequence_name)
         if producer is None:
             return ()
-        if producer.op_type in {"SequenceInsert", "SequenceErase", "Identity"} and producer.inputs:
+        if (
+            producer.op_type in {"SequenceInsert", "SequenceErase", "Identity"}
+            and producer.inputs
+        ):
             src_name = producer.inputs[0]
             return self._sequence_dynamic_axes(src_name, _visited=_visited)
         return ()
@@ -2289,7 +2296,8 @@ class CEmitter:
                     *self._sequence_dim_arg_names(op.output_sequence),
                     *(
                         [op.input_present, op.output_present]
-                        if op.input_present is not None and op.output_present is not None
+                        if op.input_present is not None
+                        and op.output_present is not None
                         else []
                     ),
                 ]
@@ -3352,7 +3360,9 @@ class CEmitter:
             return dim_names
 
         input_dim_names: dict[int, dict[int, CodegenDim]] = {}
-        for index, (shape, value_type) in enumerate(zip(model.input_shapes, model.input_types)):
+        for index, (shape, value_type) in enumerate(
+            zip(model.input_shapes, model.input_types)
+        ):
             if isinstance(value_type, SequenceType):
                 continue
             dim_names = _build_dim_names("input", index, shape, variable_dim_inputs)
@@ -3360,7 +3370,9 @@ class CEmitter:
                 input_dim_names[index] = dim_names
 
         output_dim_names: dict[int, dict[int, CodegenDim]] = {}
-        for index, (shape, value_type) in enumerate(zip(model.output_shapes, model.output_types)):
+        for index, (shape, value_type) in enumerate(
+            zip(model.output_shapes, model.output_types)
+        ):
             if isinstance(value_type, SequenceType):
                 continue
             dim_names = _build_dim_names("output", index, shape, variable_dim_outputs)
@@ -3606,7 +3618,9 @@ class CEmitter:
             dim_names = input_dim_names.get(index) or self.dim_names_for(name)
             is_sequence_input = isinstance(value_type, SequenceType)
             constant_values = testbench_inputs.get(name)
-            sequence_dim_axes = self._sequence_dynamic_axes(name) if is_sequence_input else ()
+            sequence_dim_axes = (
+                self._sequence_dynamic_axes(name) if is_sequence_input else ()
+            )
             sequence_items = (
                 [np.asarray(item) for item in constant_values]
                 if is_sequence_input and isinstance(constant_values, list)
@@ -3832,7 +3846,11 @@ class CEmitter:
             json_name = self._ctx_name(name)
             dim_names = output_dim_names.get(index) or self.dim_names_for(name)
             output_values = testbench_outputs.get(name) if testbench_outputs else None
-            sequence_dim_axes = self._sequence_dynamic_axes(name) if isinstance(value_type, SequenceType) else ()
+            sequence_dim_axes = (
+                self._sequence_dynamic_axes(name)
+                if isinstance(value_type, SequenceType)
+                else ()
+            )
             output_actual_shape: tuple[int, ...] | None = None
             if isinstance(output_values, np.ndarray):
                 output_actual_shape = tuple(int(dim) for dim in output_values.shape)

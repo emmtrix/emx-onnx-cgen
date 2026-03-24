@@ -386,7 +386,9 @@ class Compiler:
     def _model_sequence_input_requires_shape_hint(
         model: onnx.ModelProto, input_name: str
     ) -> bool:
-        initializer_names = {initializer.name for initializer in model.graph.initializer}
+        initializer_names = {
+            initializer.name for initializer in model.graph.initializer
+        }
         for value_info in model.graph.input:
             if value_info.name in initializer_names or value_info.name != input_name:
                 continue

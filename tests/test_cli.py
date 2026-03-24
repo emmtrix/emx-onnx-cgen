@@ -140,9 +140,7 @@ def _write_sequence_input_pb(
 ) -> None:
     data_dir.mkdir(parents=True, exist_ok=True)
     sequence = onnx.SequenceProto()
-    sequence.tensor_values.extend(
-        [numpy_helper.from_array(value) for value in values]
-    )
+    sequence.tensor_values.extend([numpy_helper.from_array(value) for value in values])
     (data_dir / f"input_{index}.pb").write_bytes(sequence.SerializeToString())
 
 
@@ -234,7 +232,9 @@ def test_cli_verify_requires_shape_hint_for_ragged_sequence_inputs() -> None:
     assert "Code generation requires explicit ragged-sequence bounds" in result.result
 
 
-def test_cli_verify_rejects_implicit_runtime_fallback_for_normalized_test_inputs() -> None:
+def test_cli_verify_rejects_implicit_runtime_fallback_for_normalized_test_inputs() -> (
+    None
+):
     result = cli.run_cli_command(
         [
             "verify",

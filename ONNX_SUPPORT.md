@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1791 / 1802, 99.4% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1790 / 1802, 99.3% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1791 / 1802 ONNX files (99.4%).
+Coverage 1790 / 1802 ONNX files (99.3%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1475,8 +1475,8 @@ Coverage 1791 / 1802 ONNX files (99.4%).
 | node/test_sequence_map_extract_shapes/model.onnx (--sequence-element-shape in_seq=[<=40,<=30,3]) | 17 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_sequence_map_extract_shapes_expanded/model.onnx (--sequence-element-shape in_seq=[<=40,<=30,3]) | 17 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_sequence_map_identity_1_sequence/model.onnx | 17 | Data/Data | ❌ | Code generation requires explicit ragged-sequence bounds. Reason: sequence 'x' has unknown or dynamic element dimensions. Hint: pass --sequence-element-shape x=[...] |
-| node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx (--sequence-element-shape x0=[<=9]) | 17 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx (--sequence-element-shape x0=[<=9]) | 17 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx (--sequence-element-shape x0=[<=9]) | 17 | Data/Data | ❌ | Testbench execution failed: exit code 1 |
+| node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx (--sequence-element-shape x0=[<=9]) | 17 | Data/Data | ❌ | Testbench execution failed: exit code 1 |
 | node/test_sequence_map_identity_1_sequence_expanded/model.onnx | 17 | Data/Data | ❌ | Code generation requires explicit ragged-sequence bounds. Reason: sequence 'x' has unknown or dynamic element dimensions. Hint: pass --sequence-element-shape x=[...] |
 | node/test_sequence_map_identity_2_sequences/model.onnx (--sequence-element-shape x0=[<=9] --sequence-element-shape x1=[<=8]) | 17 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_sequence_map_identity_2_sequences_expanded/model.onnx (--sequence-element-shape x0=[<=9] --sequence-element-shape x1=[<=8]) | 17 | Data/Data | ✅ | OK (max ULP 0) |
@@ -1810,7 +1810,7 @@ Coverage 1791 / 1802 ONNX files (99.4%).
 | simple/test_expand_shape_model4/model.onnx | 9 | Data/Data | ✅ | OK (max ULP 0) |
 | simple/test_gradient_of_add/model.onnx | 12 | Data/Data | ✅ | OK (max ULP 0) |
 | simple/test_gradient_of_add_and_mul/model.onnx | 12 | Data/Data | ✅ | OK (max ULP 0) |
-| simple/test_sequence_model1/model.onnx | 12 | Data/Data | ❌ | Out of tolerance (max ULP 2007321857) |
+| simple/test_sequence_model1/model.onnx | 12 | Data/Data | ✅ | OK (max ULP 0) |
 | simple/test_sequence_model2/model.onnx | 12 | Data/Data | ✅ | OK (max ULP 0) |
 | simple/test_sequence_model3/model.onnx | 12 | Data/Data | ✅ | OK (max ULP 0) |
 | simple/test_sequence_model4/model.onnx | 12 | Data/Data | ✅ | OK (max ULP 0) |

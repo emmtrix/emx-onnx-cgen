@@ -473,9 +473,7 @@ def test_codegen_golden_ragged_sequence_identity() -> None:
         )
     )
     generated = compiler.compile(model)
-    golden_path = (
-        Path(__file__).parent / "golden" / "ragged_sequence_identity_model.c"
-    )
+    golden_path = Path(__file__).parent / "golden" / "ragged_sequence_identity_model.c"
     assert_golden(generated, golden_path)
 
 

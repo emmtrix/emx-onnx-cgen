@@ -183,7 +183,11 @@ def test_serialize_runtime_input_handles_dynamic_sequence_shapes() -> None:
         * backend_module._SEQUENCE_MAX_LEN
         * expected_elem_shape
     )
-    dynamic_dim_bytes = len(metadata.sequence_element_shapes[seq_value.name].dynamic_axes) * len(sequence) * 4
+    dynamic_dim_bytes = (
+        len(metadata.sequence_element_shapes[seq_value.name].dynamic_axes)
+        * len(sequence)
+        * 4
+    )
     assert len(buffer.getvalue()) == 4 + dynamic_dim_bytes + expected_size
 
 

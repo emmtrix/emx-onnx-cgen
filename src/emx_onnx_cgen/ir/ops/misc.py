@@ -4747,7 +4747,11 @@ class LoopSequenceMapOp(RenderableOpBase):
                         )
                     else:
                         dim_ref = emitter.dim_names_for(in0).get(axis)
-                        dim_expr = dim_ref.name if dim_ref is not None else emitter.ctx_shape(in0)[axis]
+                        dim_expr = (
+                            dim_ref.name
+                            if dim_ref is not None
+                            else emitter.ctx_shape(in0)[axis]
+                        )
                         lines.append(
                             f"        {emitter.sequence_dim_array_name(out_name, axis)}[(idx_t)i] = {dim_expr};"
                         )
@@ -4758,7 +4762,11 @@ class LoopSequenceMapOp(RenderableOpBase):
                     )
                 else:
                     dim_ref = emitter.dim_names_for(in0).get(axis)
-                    dim_expr = dim_ref.name if dim_ref is not None else emitter.ctx_shape(in0)[axis]
+                    dim_expr = (
+                        dim_ref.name
+                        if dim_ref is not None
+                        else emitter.ctx_shape(in0)[axis]
+                    )
                     lines.append(
                         f"        {emitter.sequence_dim_array_name(out_name, axis)}[(idx_t)i] = {dim_expr};"
                     )
@@ -4781,7 +4789,9 @@ class LoopSequenceMapOp(RenderableOpBase):
                         )
                     else:
                         dim_expr = dim
-                    lines.append(f"        {out_param}[(idx_t)i][{dim_idx}] = {dim_expr};")
+                    lines.append(
+                        f"        {out_param}[(idx_t)i][{dim_idx}] = {dim_expr};"
+                    )
             elif kind == "identity":
                 src_name = (
                     seq_param_by_name[in0] if in0_seq else tensor_param_by_name[in0]
