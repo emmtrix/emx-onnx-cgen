@@ -111,7 +111,7 @@ Optional for verification and tests:
 When iterating on the CLI entrypoint and you want to ensure you are running the in-tree code:
 
 ```bash
-PYTHONPATH=src python -m emx_onnx_cgen.cli --help
+PYTHONPATH=src python -m emx_onnx_cgen --help
 ```
 
 ---
@@ -139,15 +139,15 @@ Verification compares the generated code against a runtime backend (ONNX referen
 emx-onnx-cgen verify path/to/model.onnx
 ```
 
-If a test/expectation passes `--sanitize` but your local compiler setup cannot
-link sanitizers, you can force-disable sanitizer flags:
+If a test or expectation uses `--sanitize` but your local compiler setup cannot
+link sanitizers, you can override the flag via `EMX_ENABLE_SANITIZE=0`:
 
 ```bash
 # Linux/macOS
-EMX_DISABLE_SANITIZE=1 emx-onnx-cgen verify --sanitize path/to/model.onnx
+EMX_ENABLE_SANITIZE=0 emx-onnx-cgen verify --sanitize path/to/model.onnx
 
 # Windows PowerShell
-$env:EMX_DISABLE_SANITIZE = "1"
+$env:EMX_ENABLE_SANITIZE = "0"
 emx-onnx-cgen verify --sanitize path/to/model.onnx
 ```
 

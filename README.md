@@ -188,25 +188,29 @@ These options are accepted by both `compile` and `verify`:
 
 - `--model-base-dir`: Base directory for resolving the model path (and related paths).
 - `--color`: Colorize CLI output (`auto`, `always`, `never`; default: `auto`).
+- `--verbose` / `-v`: Enable verbose logging (includes codegen timing).
+- `--truncate-weights-after`: Truncate inline weight initializers after `N` values and insert `...` placeholders.
 - `--large-weight-threshold`: Store weights in a binary file once the cumulative byte size exceeds this threshold (default: `102400`; set to `0` to disable).
 - `--large-temp-threshold`: Mark local arrays larger than this threshold as static (default: `1024`). This applies to generated model temporaries and to generated testbench input/output buffers.
-- `--fp32-accumulation-strategy`: Accumulation strategy for float32 inputs (`simple` uses float32, `fp64` uses double; default: `fp64`).
+- `--restrict-arrays` / `--no-restrict-arrays`: Enable or disable `restrict` qualifiers on generated array parameters.
+- `--fp32-accumulation-strategy`: Accumulation strategy for float32 inputs (`simple` uses float32, `fp64` uses double; default: `simple`).
 - `--fp16-accumulation-strategy`: Accumulation strategy for float16 inputs (`simple` uses float16, `fp32` uses float; default: `fp32`).
 - `--replicate-ort-bugs`: Compatibility switch for verification/debugging. Enables emulation of known behavior differences of the ONNX Runtime version pinned in `requirements-ci.txt`.
+- `--sequence-element-shape`: Declare rank and per-axis maxima for sequence inputs with variable element shapes.
 
 ### `compile`
 
 ```bash
-emx-onnx-cgen compile <model.onnx> <output.c> [options]
+emx-onnx-cgen compile <model.onnx> [output.c] [options]
 ```
 
 Options:
 
 - `--model-name`: Override the generated model name (default: output file stem).
 - `--emit-testbench`: Emit a JSON-producing `main()` testbench for validation.
+- `--testbench-output-format`: Choose the generated testbench output format (`json`, `txt`, `txt-emmtrix`, or `txt-emmtrix:<float>`).
 - `--testbench-file`: Emit the testbench into a separate C file at the given path (implies `--emit-testbench`). If not set, the testbench is embedded in the main output C file (legacy behavior).
 - `--emit-data-file`: Emit constant data arrays into a companion `_data` C file.
-- `--no-restrict-arrays`: Disable `restrict` qualifiers on generated array parameters.
 
 ### `verify`
 
@@ -219,9 +223,12 @@ Options:
 - `--cc`: Explicit C compiler command for building the testbench binary.
 - `--sanitize`: Enable sanitizer instrumentation when compiling the verification binary (`-fsanitize=address,undefined`). If `EMX_ENABLE_SANITIZE` is set, it overrides this flag.
 - `--per-node-accuracy`: Also compare intermediate tensor outputs and print max error per node.
+- `--test-data-dir`: Seed verification inputs from `input_*.pb` files instead of generating random testbench inputs.
+- `--test-data-inputs-only`: Read only `input_*.pb` from `--test-data-dir` and still compare outputs against the selected runtime.
 - `--max-ulp`: Maximum allowed ULP distance for floating outputs (default: `100`).
 - `--atol-eps`: Absolute tolerance as a multiple of machine epsilon for floating outputs (default: `1.0`).
 - `--runtime`: Runtime backend for verification (`onnxruntime` or `onnx-reference`, default: `onnxruntime`).
+- `--expected-checksum`: Exit early with `CHECKSUM` when the generated C checksum matches the expected SHA-256.
 - `--replicate-ort-bugs`: Verification-only compatibility mode to reproduce known behavior differences of the ONNX Runtime version pinned in `requirements-ci.txt`.
 - `--temp-dir-root`: Root directory in which to create a temporary verification directory (default: system temp dir).
 - `--temp-dir`: Exact directory to use for temporary verification files (default: create a temporary directory).
