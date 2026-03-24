@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "Failed to build testbench (model.c:259:38: error: passing argument 2 of \u2018node2_sequenceinsert\u2019 makes integer from pointer without a cast [-Wint-conversion]).",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/simple/test_sequence_model3 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
@@ -9,5 +9,5 @@
     "SequenceAt"
   ],
   "opset_version": 12,
-  "generated_checksum": "70339fe3056690716aa432cec694a15c073c7ce412198955abebc7205500de24"
+  "generated_checksum": "40cc231faa67e31f7f2c39303a6e4b81c0891b2506d0743b732df035b0782923"
 }
