@@ -1,9 +1,16 @@
 {
-  "error": "Unsupported test-data sequence input for verify: variable sequence element shapes are not supported",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences model.onnx --test-data-dir test_data_set_0",
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences model.onnx --test-data-dir test_data_set_0 --sequence-element-shape 'x0=[<=9]' --sequence-element-shape 'x1=[<=8]'",
+  "extra_cli_args": [
+    "--sequence-element-shape",
+    "x0=[<=9]",
+    "--sequence-element-shape",
+    "x1=[<=8]"
+  ],
   "verification_mode": "Data/Data",
   "operators": [
     "SequenceMap"
   ],
-  "opset_version": 17
+  "opset_version": 17,
+  "generated_checksum": "5da4c3ad45fec1a8253c2cda3bc1737f692a2b873165bbb0237f4930db0f3cda"
 }

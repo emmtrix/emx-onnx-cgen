@@ -405,9 +405,10 @@ def _lower_loop_sequence_insert(
         start_index = int(start_values[0])
         if start_index < 0:
             start_index += len(table_values)
-        if start_index < 0 or start_index >= len(table_values):
+        if start_index < 0 or start_index > len(table_values):
             raise UnsupportedOpError("Unsupported op Loop")
-        table_values = [table_values[start_index]] * len(table_values)
+        if start_index != 0:
+            raise UnsupportedOpError("Unsupported op Loop")
 
     trip_count_shape = value_shape(graph, node.inputs[0], node)
     cond_shape = value_shape(graph, node.inputs[1], node)
@@ -422,8 +423,6 @@ def _lower_loop_sequence_insert(
         raise UnsupportedOpError("Unsupported op Loop")
     if input_value.type.elem.shape != output_value.type.elem.shape:
         raise UnsupportedOpError("Unsupported op Loop")
-    if input_value.type.elem.shape != ():
-        raise UnsupportedOpError("Unsupported op Loop")
 
     elem_dtype = input_value.type.elem.dtype
     if elem_dtype.name not in {"F32", "F64", "I32", "I64", "I16"}:
@@ -436,8 +435,9 @@ def _lower_loop_sequence_insert(
         output_sequence=node.outputs[0],
         table_data=tuple(table_values),
         table_shape=(int(table.shape[0]),),
-        elem_shape=input_value.type.elem.shape,
+        elem_shape=(int(table.shape[0]),),
         elem_dtype=input_value.type.elem.dtype,
+        prefix_slices=True,
     )
 
 
@@ -601,8 +601,10 @@ def _lower_loop_optional_sequence_insert(
         raise UnsupportedOpError("Unsupported op Loop")
     if input_value.type.elem.shape != output_value.type.elem.shape:
         raise UnsupportedOpError("Unsupported op Loop")
-    if input_value.type.elem.shape != ():
-        raise UnsupportedOpError("Unsupported op Loop")
+    if default_values:
+        raise UnsupportedOpError(
+            "Loop optional sequence insert with mixed element ranks is not supported"
+        )
 
     elem_dtype = input_value.type.elem.dtype
     if elem_dtype.name not in {"F32", "F64", "I32", "I64", "I16"}:

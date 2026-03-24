@@ -14,6 +14,7 @@ from onnx.reference import ReferenceEvaluator
 
 from emx_onnx_cgen import Compiler
 from emx_onnx_cgen.compiler import CompilerOptions
+from emx_onnx_cgen.sequence_shape_hints import parse_sequence_element_shape_hints
 from golden_utils import assert_golden
 
 
@@ -124,6 +125,29 @@ def _make_sequence_io_model() -> onnx.ModelProto:
         "sequence_io_graph",
         [seq_input, tensor_input],
         [seq_output, tensor_output],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    return model
+
+
+def _make_ragged_sequence_identity_model() -> onnx.ModelProto:
+    seq_input = helper.make_tensor_sequence_value_info(
+        "seq_in", TensorProto.FLOAT, ["N"]
+    )
+    seq_output = helper.make_tensor_sequence_value_info(
+        "seq_out", TensorProto.FLOAT, ["N"]
+    )
+    identity_node = helper.make_node("Identity", inputs=["seq_in"], outputs=["seq_out"])
+    graph = helper.make_graph(
+        [identity_node],
+        "ragged_sequence_identity_graph",
+        [seq_input],
+        [seq_output],
     )
     model = helper.make_model(
         graph,
@@ -435,6 +459,21 @@ def test_codegen_golden_sequence_io() -> None:
     compiler = Compiler(CompilerOptions(model_name="sequence_io_model"))
     generated = compiler.compile(model)
     golden_path = Path(__file__).parent / "golden" / "sequence_io_model.c"
+    assert_golden(generated, golden_path)
+
+
+def test_codegen_golden_ragged_sequence_identity() -> None:
+    model = _make_ragged_sequence_identity_model()
+    compiler = Compiler(
+        CompilerOptions(
+            model_name="ragged_sequence_identity_model",
+            sequence_element_shapes=parse_sequence_element_shape_hints(
+                ["seq_in=[<=8]"]
+            ),
+        )
+    )
+    generated = compiler.compile(model)
+    golden_path = Path(__file__).parent / "golden" / "ragged_sequence_identity_model.c"
     assert_golden(generated, golden_path)
 
 

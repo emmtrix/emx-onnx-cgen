@@ -140,9 +140,7 @@ def _write_sequence_input_pb(
 ) -> None:
     data_dir.mkdir(parents=True, exist_ok=True)
     sequence = onnx.SequenceProto()
-    sequence.tensor_values.extend(
-        [numpy_helper.from_array(value) for value in values]
-    )
+    sequence.tensor_values.extend([numpy_helper.from_array(value) for value in values])
     (data_dir / f"input_{index}.pb").write_bytes(sequence.SerializeToString())
 
 
@@ -207,7 +205,7 @@ def test_cli_verify_string_output_model() -> None:
     _run_cli_verify(model)
 
 
-def test_cli_verify_detects_sequence_output_shape_mismatch() -> None:
+def test_cli_verify_requires_shape_hint_for_ragged_sequence_inputs() -> None:
     result = cli.run_cli_command(
         [
             "verify",
@@ -231,10 +229,12 @@ def test_cli_verify_detects_sequence_output_shape_mismatch() -> None:
 
     assert result.exit_code == 1
     assert result.result is not None
-    assert "Output shape mismatch for output_sequence[0]" in result.result
+    assert "Code generation requires explicit ragged-sequence bounds" in result.result
 
 
-def test_cli_verify_rejects_implicit_runtime_fallback_for_normalized_test_inputs() -> None:
+def test_cli_verify_rejects_implicit_runtime_fallback_for_normalized_test_inputs() -> (
+    None
+):
     result = cli.run_cli_command(
         [
             "verify",
@@ -261,6 +261,36 @@ def test_cli_verify_rejects_implicit_runtime_fallback_for_normalized_test_inputs
         "Unsupported test-data sequence input for verify: variable "
         "sequence element shapes are not supported"
     ) in result.result
+
+
+def test_cli_verify_accepts_ragged_sequence_inputs_with_shape_hints() -> None:
+    result = cli.run_cli_command(
+        [
+            "verify",
+            "--model-base-dir",
+            str(
+                PROJECT_ROOT
+                / "onnx-org"
+                / "onnx"
+                / "backend"
+                / "test"
+                / "data"
+                / "node"
+                / "test_sequence_map_add_2_sequences"
+            ),
+            "model.onnx",
+            "--test-data-dir",
+            "test_data_set_0",
+            "--sequence-element-shape",
+            "x0=[<=6]",
+            "--sequence-element-shape",
+            "x1=[<=6]",
+        ]
+    )
+
+    assert result.exit_code == 0
+    assert result.result is not None
+    assert result.result.startswith("OK")
 
 
 def test_cli_verify_rejects_sequence_inputs_above_fixed_capacity(
