@@ -1,10 +1,14 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor model.onnx --test-data-dir test_data_set_0",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor model.onnx --test-data-dir test_data_set_0 --sequence-element-shape 'x0=[10]'",
+  "extra_cli_args": [
+    "--sequence-element-shape",
+    "x0=[10]"
+  ],
   "verification_mode": "Data/Data",
   "operators": [
     "SequenceMap"
   ],
   "opset_version": 17,
-  "generated_checksum": "86655cdd7bf955a187e73b6220c005ef1654c8c626f6d22613954b81697fccec"
+  "generated_checksum": "b1cef3497c42897f7e9fa515559e02fde474fb67af455910d71a036dd285d05c"
 }

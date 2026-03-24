@@ -18,15 +18,43 @@ void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     {% endif %}
 
     for (idx_t seq = 0; seq < insert_index; ++seq) {
-        for (idx_t elem = 0; elem < {{ element_count }}; ++elem) {
+{% for dim in output_dim_arrays %}
+        {{ dim.name }}[seq] =
+{% if dim.axis < input_dim_arrays | length %}
+            {{ input_dim_arrays[loop.index0].name }}[seq];
+{% elif dim.tensor_dim %}
+            {{ dim.tensor_dim.name }};
+{% else %}
+            {{ dim.tensor_shape }};
+{% endif %}
+{% endfor %}
+        for (idx_t elem = 0; elem < {{ sequence_element_count }}; ++elem) {
             (({{ c_type }} *){{ output_sequence }}[seq])[elem] = ((const {{ c_type }} *){{ input_sequence }}[seq])[elem];
         }
     }
-    for (idx_t elem = 0; elem < {{ element_count }}; ++elem) {
+{% for dim in output_dim_arrays %}
+    {{ dim.name }}[insert_index] =
+{% if dim.tensor_dim %}
+        {{ dim.tensor_dim.name }};
+{% else %}
+        {{ dim.tensor_shape }};
+{% endif %}
+{% endfor %}
+    for (idx_t elem = 0; elem < {{ tensor_element_count }}; ++elem) {
         (({{ c_type }} *){{ output_sequence }}[insert_index])[elem] = ((const {{ c_type }} *){{ tensor }})[elem];
     }
     for (idx_t seq = insert_index; seq < input_count; ++seq) {
-        for (idx_t elem = 0; elem < {{ element_count }}; ++elem) {
+{% for dim in output_dim_arrays %}
+        {{ dim.name }}[seq + 1] =
+{% if dim.axis < input_dim_arrays | length %}
+            {{ input_dim_arrays[loop.index0].name }}[seq];
+{% elif dim.tensor_dim %}
+            {{ dim.tensor_dim.name }};
+{% else %}
+        {{ dim.tensor_shape }};
+{% endif %}
+{% endfor %}
+        for (idx_t elem = 0; elem < {{ sequence_element_count }}; ++elem) {
             (({{ c_type }} *){{ output_sequence }}[seq + 1])[elem] = ((const {{ c_type }} *){{ input_sequence }}[seq])[elem];
         }
     }

@@ -31,6 +31,11 @@ from .ir.model import SequenceType, TensorType
 from .onnx_import import import_onnx
 from .determinism import deterministic_reference_runtime
 from .onnxruntime_utils import make_deterministic_session_options
+from .sequence_shape_hints import (
+    SequenceElementShapeHint,
+    parse_sequence_element_shape_hints,
+    validate_runtime_shape,
+)
 from .testbench_output_format import parse_testbench_output_format
 from .testbench import decode_testbench_array
 from .verification import worst_ulp_diff
@@ -71,6 +76,73 @@ def _tensor_runtime_dim_values(value: Any, input_data: object) -> tuple[int, ...
             f"{expected_rank}."
         )
     return tuple(int(array.shape[axis]) for axis in dynamic_axes)
+
+
+def _sequence_input_items(input_data: object) -> list[np.ndarray]:
+    if isinstance(input_data, list):
+        return [np.asarray(item) for item in input_data]
+    array = np.asarray(input_data)
+    if array.ndim < 1:
+        raise ValueError("Sequence input data must be at least rank 1.")
+    return [np.asarray(array[index]) for index in range(int(array.shape[0]))]
+
+
+def _loop_sequence_insert_capacity_from_body(body: onnx.GraphProto) -> int | None:
+    seq_insert_nodes = [
+        node
+        for node in body.node
+        if node.op_type == "SequenceInsert" and len(node.input) >= 2
+    ]
+    if len(seq_insert_nodes) != 1:
+        return None
+    slice_name = seq_insert_nodes[0].input[1]
+    slice_node = next(
+        (
+            node
+            for node in body.node
+            if node.op_type == "Slice"
+            and len(node.output) == 1
+            and node.output[0] == slice_name
+            and node.input
+        ),
+        None,
+    )
+    if slice_node is None:
+        return None
+    const_name = slice_node.input[0]
+    const_node = next(
+        (
+            node
+            for node in body.node
+            if node.op_type == "Constant"
+            and len(node.output) == 1
+            and node.output[0] == const_name
+        ),
+        None,
+    )
+    if const_node is None:
+        return None
+    value_attr = next(
+        (attr for attr in const_node.attribute if attr.name == "value"), None
+    )
+    if value_attr is None or len(value_attr.t.dims) != 1:
+        return None
+    return int(value_attr.t.dims[0])
+
+
+def _infer_sequence_fixture_storage_shape(
+    model: onnx.ModelProto, input_name: str
+) -> tuple[int, ...] | None:
+    for node in model.graph.node:
+        if node.op_type != "Loop" or input_name not in node.input[2:]:
+            continue
+        body = next((attr.g for attr in node.attribute if attr.name == "body"), None)
+        if body is None:
+            continue
+        capacity = _loop_sequence_insert_capacity_from_body(body)
+        if capacity is not None:
+            return (capacity,)
+    return None
 
 
 def _random_tensor_input(
@@ -141,6 +213,14 @@ def _summarize_build_failure(stderr: str) -> str | None:
 def _parse_testbench_output_format_arg(value: str) -> str:
     try:
         parse_testbench_output_format(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(str(exc)) from exc
+    return value
+
+
+def _parse_sequence_element_shape_arg(value: str) -> str:
+    try:
+        parse_sequence_element_shape_hints([value])
     except ValueError as exc:
         raise argparse.ArgumentTypeError(str(exc)) from exc
     return value
@@ -832,6 +912,20 @@ def _build_parser() -> argparse.ArgumentParser:
             ),
         )
 
+    def add_sequence_shape_hint_flag(subparser: argparse.ArgumentParser) -> None:
+        subparser.add_argument(
+            "--sequence-element-shape",
+            action="append",
+            default=[],
+            type=_parse_sequence_element_shape_arg,
+            help=(
+                "Declare the rank and per-axis maxima for a sequence input with "
+                "variable element shapes, for example "
+                "--sequence-element-shape sequence=[<=8] or "
+                "--sequence-element-shape boxes=[<=100,4]."
+            ),
+        )
+
     compile_parser = subparsers.add_parser(
         "compile", help="Compile an ONNX model into C source"
     )
@@ -927,6 +1021,7 @@ def _build_parser() -> argparse.ArgumentParser:
     add_fp32_accumulation_strategy_flag(compile_parser)
     add_fp16_accumulation_strategy_flag(compile_parser)
     add_runtime_compat_flag(compile_parser)
+    add_sequence_shape_hint_flag(compile_parser)
 
     verify_parser = subparsers.add_parser(
         "verify",
@@ -1073,6 +1168,7 @@ def _build_parser() -> argparse.ArgumentParser:
     add_fp32_accumulation_strategy_flag(verify_parser)
     add_fp16_accumulation_strategy_flag(verify_parser)
     add_runtime_compat_flag(verify_parser)
+    add_sequence_shape_hint_flag(verify_parser)
     return parser
 
 
@@ -1164,6 +1260,7 @@ def _compile_model(
     model_path: Path = args.model
     model_name = args.model_name or "model"
     active_reporter = reporter or _NullVerifyReporter()
+    sequence_element_shapes = _sequence_element_shape_map(args)
     load_started = active_reporter.start_step(f"Loading model {model_path.name}")
     timings: dict[str, float] = {}
     try:
@@ -1199,6 +1296,7 @@ def _compile_model(
             fp32_accumulation_strategy=args.fp32_accumulation_strategy,
             fp16_accumulation_strategy=args.fp16_accumulation_strategy,
             replicate_ort_bugs=args.replicate_ort_bugs,
+            sequence_element_shapes=sequence_element_shapes,
             truncate_weights_after=args.truncate_weights_after,
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,
@@ -1258,6 +1356,7 @@ def _compile_testbench_declarations(
     model_path: Path = args.model
     model_name = args.model_name or "model"
     active_reporter = reporter or _NullVerifyReporter()
+    sequence_element_shapes = _sequence_element_shape_map(args)
     try:
         model, _model_checksum = _load_model_and_checksum(model_path)
     except OSError as exc:
@@ -1271,6 +1370,7 @@ def _compile_testbench_declarations(
         fp32_accumulation_strategy=args.fp32_accumulation_strategy,
         fp16_accumulation_strategy=args.fp16_accumulation_strategy,
         replicate_ort_bugs=args.replicate_ort_bugs,
+        sequence_element_shapes=sequence_element_shapes,
         truncate_weights_after=args.truncate_weights_after,
         large_temp_threshold_bytes=args.large_temp_threshold_bytes,
         large_weight_threshold=args.large_weight_threshold,
@@ -1565,6 +1665,7 @@ def _verify_model(
     opset_version: int | None = None
     generated_checksum: str | None = None
     verification_mode = _VerificationModeState.from_args(args)
+    sequence_element_shapes = _sequence_element_shape_map(args)
 
     def _set_verification_mode() -> None:
         if result_meta is None:
@@ -1707,7 +1808,11 @@ def _verify_model(
             testbench_optional_inputs,
             adjusted_test_inputs,
             _loaded_test_data_inputs,
-        ) = _load_test_data_inputs(model, args.test_data_dir)
+        ) = _load_test_data_inputs(
+            model,
+            args.test_data_dir,
+            sequence_element_shapes=sequence_element_shapes,
+        )
         _decode_image_decoder_inputs(model, testbench_inputs)
         if args.test_data_dir is not None and testbench_inputs is None:
             raise CodegenError(
@@ -1747,6 +1852,7 @@ def _verify_model(
             fp32_accumulation_strategy=args.fp32_accumulation_strategy,
             fp16_accumulation_strategy=args.fp16_accumulation_strategy,
             replicate_ort_bugs=args.replicate_ort_bugs,
+            sequence_element_shapes=sequence_element_shapes,
             truncate_weights_after=args.truncate_weights_after,
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,
@@ -1768,9 +1874,28 @@ def _verify_model(
                 if isinstance(value_type, TensorType):
                     continue
                 concrete_shape = tuple(shape)
+                hint = sequence_element_shapes.get(name)
+                if hint is not None:
+                    concrete_shape = hint.max_shape
                 input_data = testbench_inputs.get(name)
+                if hint is None and isinstance(input_data, list):
+                    seq_items = [np.asarray(item) for item in input_data]
+                    if seq_items:
+                        ranks = {item.ndim for item in seq_items}
+                        if len(ranks) == 1:
+                            concrete_shape = tuple(
+                                max(int(item.shape[axis]) for item in seq_items)
+                                for axis in range(seq_items[0].ndim)
+                            )
+                    elif concrete_shape == ():
+                        inferred_shape = _infer_sequence_fixture_storage_shape(
+                            model, name
+                        )
+                        if inferred_shape is not None:
+                            concrete_shape = inferred_shape
                 if (
-                    isinstance(input_data, np.ndarray)
+                    hint is None
+                    and isinstance(input_data, np.ndarray)
                     and input_data.ndim >= 1
                     and any(dim < 0 for dim in concrete_shape)
                 ):
@@ -1838,51 +1963,40 @@ def _verify_model(
                             generated_checksum,
                         )
                     if isinstance(value.type, TensorType):
-                        array_data = np.asarray(input_data)
-                        dtype = input_dtypes[name].np_dtype
-                        if value.type.is_optional:
-                            present = bool(
-                                (testbench_optional_inputs or {}).get(name, True)
-                            )
-                            handle.write(struct.pack("<B", 1 if present else 0))
-                            if not present:
-                                continue
-                        runtime_dims = _tensor_runtime_dim_values(value, array_data)
-                        if runtime_dims:
-                            handle.write(
-                                struct.pack(f"<{len(runtime_dims)}i", *runtime_dims)
-                            )
-                        if input_dtypes[name] == ScalarType.STRING:
-                            blob = _serialize_string_tensor(array_data)
-                        else:
-                            blob = np.ascontiguousarray(
-                                array_data.astype(dtype, copy=False)
-                            ).tobytes(order="C")
-                        handle.write(blob)
+                        # The generated testbench inlines tensor fixture inputs as
+                        # static data and only reads non-constant sequence inputs
+                        # from testbench_inputs.bin. Keep the file layout aligned
+                        # with testbench_read_input_file().
                         continue
                     seq_type = value.type
                     seq_dtype = seq_type.elem.dtype.np_dtype
-                    seq_data = np.asarray(input_data).astype(seq_dtype, copy=False)
-                    if seq_data.ndim < 1:
+                    seq_items = _sequence_input_items(input_data)
+                    hint = sequence_element_shapes.get(name)
+                    if hint is None and _model_sequence_input_requires_shape_hint(
+                        model, name
+                    ):
                         return (
                             None,
-                            f"Sequence input {name} must be at least 1D.",
+                            f"Sequence input {name!r} requires --sequence-element-shape.",
                             operators,
                             opset_version,
                             generated_checksum,
                         )
                     present = bool((testbench_optional_inputs or {}).get(name, True))
+                    elem_shape = lowered_sequence_input_shapes.get(
+                        name, tuple(seq_type.elem.shape)
+                    )
+                    dynamic_axes = hint.dynamic_axes if hint is not None else ()
                     if seq_type.is_optional:
                         handle.write(struct.pack("<B", 1 if present else 0))
                         if not present:
                             handle.write(struct.pack("<i", 0))
-                            elem_shape = tuple(seq_type.elem.shape)
                             zero_payload = np.zeros((32, *elem_shape), dtype=seq_dtype)
                             handle.write(
                                 np.ascontiguousarray(zero_payload).tobytes(order="C")
                             )
                             continue
-                    seq_count = int(seq_data.shape[0])
+                    seq_count = len(seq_items)
                     if seq_count > 32:
                         return (
                             None,
@@ -1894,14 +2008,17 @@ def _verify_model(
                             generated_checksum,
                         )
                     handle.write(struct.pack("<i", seq_count))
-                    elem_shape = lowered_sequence_input_shapes.get(
-                        name, tuple(seq_type.elem.shape)
-                    )
+                    for axis in dynamic_axes:
+                        dims = [int(item.shape[axis]) for item in seq_items]
+                        if dims:
+                            handle.write(struct.pack(f"<{len(dims)}i", *dims))
                     normalized = np.zeros((32, *elem_shape), dtype=seq_dtype)
                     limit = min(seq_count, 32)
                     if limit > 0:
                         for idx in range(limit):
-                            item = np.asarray(seq_data[idx])
+                            item = np.asarray(seq_items[idx]).astype(
+                                seq_dtype, copy=False
+                            )
                             target = normalized[idx]
                             if target.ndim == item.ndim:
                                 slices = tuple(
@@ -2047,19 +2164,10 @@ def _verify_model(
                     )
                     continue
                 if isinstance(value.type, SequenceType):
-                    seq_values = np.asarray(values)
-                    if seq_values.ndim < 1:
-                        return (
-                            None,
-                            f"Sequence input {value.name} must be at least 1D.",
-                            operators,
-                            opset_version,
-                            generated_checksum,
-                        )
                     seq_dtype = value.type.elem.dtype.np_dtype
                     inputs[value.name] = [
-                        np.asarray(seq_values[index]).astype(seq_dtype, copy=False)
-                        for index in range(int(seq_values.shape[0]))
+                        np.asarray(item).astype(seq_dtype, copy=False)
+                        for item in _sequence_input_items(values)
                     ]
         else:
             payload_inputs = payload.get("inputs", {})
@@ -2242,7 +2350,16 @@ def _verify_model(
                         expected_count=expected_count,
                     )
                     raise AssertionError(issue.format())
-                actual_sequence = [actual_data[index] for index in range(sequence_count)]
+                item_shapes = output_payload.get("item_shapes")
+                actual_sequence: list[np.ndarray] = []
+                for index in range(sequence_count):
+                    actual_item = actual_data[index]
+                    if item_shapes is not None:
+                        actual_shape = tuple(int(dim) for dim in item_shapes[index])
+                        actual_item = np.asarray(
+                            actual_item[tuple(slice(0, dim) for dim in actual_shape)]
+                        )
+                    actual_sequence.append(actual_item)
                 for sequence_index, (actual_item, expected_item) in enumerate(
                     zip(actual_sequence, expected_sequence)
                 ):
@@ -2510,13 +2627,17 @@ def _decode_image_decoder_inputs(
 
 
 def _load_test_data_inputs(
-    model: onnx.ModelProto, data_dir: Path | None
+    model: onnx.ModelProto,
+    data_dir: Path | None,
+    *,
+    sequence_element_shapes: Mapping[str, SequenceElementShapeHint] | None = None,
 ) -> tuple[
-    dict[str, "np.ndarray"] | None,
+    dict[str, "np.ndarray | list[np.ndarray]"] | None,
     dict[str, bool] | None,
     bool,
-    dict[str, "np.ndarray"] | None,
+    dict[str, "np.ndarray | list[np.ndarray]"] | None,
 ]:
+    sequence_element_shapes = sequence_element_shapes or {}
     if data_dir is None:
         return None, None, False, None
     if not data_dir.exists():
@@ -2550,65 +2671,60 @@ def _load_test_data_inputs(
                 value_kind or "unknown",
             )
             return None, None, False, None
-    inputs: dict[str, np.ndarray] = {}
+    inputs: dict[str, np.ndarray | list[np.ndarray]] = {}
     optional_flags: dict[str, bool] = {}
     reshaped_tensor_inputs = False
     normalized_sequence_inputs = False
 
-    def _sequence_tensor_values_to_array(
+    def _sequence_tensor_values_to_list(
         *,
         name: str,
         tensors: list[np.ndarray],
         tensor_type: onnx.TypeProto.Tensor,
-    ) -> np.ndarray:
+    ) -> list[np.ndarray]:
         nonlocal normalized_sequence_inputs
+        hint = sequence_element_shapes.get(name)
         if not tensors:
             dtype_info = onnx._mapping.TENSOR_TYPE_MAP.get(tensor_type.elem_type)
             if dtype_info is None:
                 raise CodegenError(f"Sequence input {name} has unsupported elem_type.")
-            shape = [
+            if hint is not None:
+                return []
+            shape = tuple(
                 dim.dim_value if dim.HasField("dim_value") else 1
                 for dim in tensor_type.shape.dim
-            ]
-            return np.zeros((0, *shape), dtype=dtype_info.np_dtype)
+            )
+            return [np.zeros(shape, dtype=dtype_info.np_dtype) for _ in range(0)]
+        for tensor in tensors:
+            if hint is not None:
+                mismatch = validate_runtime_shape(hint, tensor.shape)
+                if mismatch is not None:
+                    raise CodegenError(f"Sequence input {name} item shape {mismatch}.")
+                continue
+            if tensor_type.shape.dim and len(tensor.shape) != len(
+                tensor_type.shape.dim
+            ):
+                raise CodegenError(
+                    f"Sequence input {name} has rank {tensor.ndim}, but the model "
+                    f"expects rank {len(tensor_type.shape.dim)}."
+                )
         first_shape = tensors[0].shape
         if any(tensor.shape != first_shape for tensor in tensors[1:]):
+            if hint is not None:
+                return [np.asarray(tensor) for tensor in tensors]
             if any(tensor.ndim != tensors[0].ndim for tensor in tensors[1:]):
                 LOGGER.warning(
                     "Skipping sequence input %s with mixed tensor ranks in test data.",
                     name,
                 )
                 raise CodegenError(f"Sequence input {name} has mixed tensor ranks.")
-            max_shape = tuple(
-                max(tensor.shape[axis] for tensor in tensors)
-                for axis in range(tensors[0].ndim)
-            )
-            target_shape: list[int] = []
-            for axis, max_dim in enumerate(max_shape):
-                if axis < len(tensor_type.shape.dim):
-                    dim = tensor_type.shape.dim[axis]
-                    if dim.HasField("dim_value") and dim.dim_value > 0:
-                        target_shape.append(int(dim.dim_value))
-                        continue
-                target_shape.append(int(max_dim))
             LOGGER.warning(
                 "Sequence test input %s has variable element shapes; "
-                "normalizing to %s for testbench binary input.",
+                "ragged inputs require explicit --sequence-element-shape hints.",
                 name,
-                tuple(target_shape),
             )
             normalized_sequence_inputs = True
-            normalized: list[np.ndarray] = []
-            for tensor in tensors:
-                item = np.zeros(tuple(target_shape), dtype=tensor.dtype)
-                slices = tuple(
-                    slice(0, min(cur_dim, tgt_dim))
-                    for cur_dim, tgt_dim in zip(tensor.shape, target_shape)
-                )
-                item[slices] = tensor[slices]
-                normalized.append(item)
-            return np.stack(normalized, axis=0)
-        return np.stack(tensors, axis=0)
+        return [np.asarray(tensor) for tensor in tensors]
 
     for index, path in enumerate(input_files):
         value_info = model_inputs[index]
@@ -2651,7 +2767,7 @@ def _load_test_data_inputs(
             seq = onnx.SequenceProto()
             seq.ParseFromString(path.read_bytes())
             tensors = [numpy_helper.to_array(tensor) for tensor in seq.tensor_values]
-            inputs[value_info.name] = _sequence_tensor_values_to_array(
+            inputs[value_info.name] = _sequence_tensor_values_to_list(
                 name=value_info.name,
                 tensors=tensors,
                 tensor_type=elem_type.tensor_type,
@@ -2702,14 +2818,14 @@ def _load_test_data_inputs(
                     numpy_helper.to_array(tensor)
                     for tensor in optional.sequence_value.tensor_values
                 ]
-                inputs[value_info.name] = _sequence_tensor_values_to_array(
+                inputs[value_info.name] = _sequence_tensor_values_to_list(
                     name=value_info.name,
                     tensors=tensors,
                     tensor_type=seq_elem.tensor_type,
                 )
                 optional_flags[value_info.name] = True
             else:
-                inputs[value_info.name] = _sequence_tensor_values_to_array(
+                inputs[value_info.name] = _sequence_tensor_values_to_list(
                     name=value_info.name,
                     tensors=[],
                     tensor_type=seq_elem.tensor_type,
@@ -2824,6 +2940,37 @@ def _format_command_line(argv: Sequence[str] | None) -> str:
     if not filtered:
         return ""
     return shlex.join(filtered)
+
+
+def _sequence_element_shape_map(
+    args: argparse.Namespace,
+) -> dict[str, SequenceElementShapeHint]:
+    return parse_sequence_element_shape_hints(args.sequence_element_shape)
+
+
+def _model_sequence_input_requires_shape_hint(
+    model: onnx.ModelProto, input_name: str
+) -> bool:
+    initializer_names = {initializer.name for initializer in model.graph.initializer}
+    initializer_names.update(
+        sparse_init.name for sparse_init in model.graph.sparse_initializer
+    )
+    for value_info in model.graph.input:
+        if value_info.name in initializer_names or value_info.name != input_name:
+            continue
+        if value_info.type.WhichOneof("value") != "sequence_type":
+            return False
+        elem_type = value_info.type.sequence_type.elem_type
+        if elem_type.WhichOneof("value") != "tensor_type":
+            return False
+        tensor_type = elem_type.tensor_type
+        if not tensor_type.HasField("shape"):
+            return True
+        return any(
+            dim.HasField("dim_param") or not dim.HasField("dim_value")
+            for dim in tensor_type.shape.dim
+        )
+    return False
 
 
 def _load_model_and_checksum(
