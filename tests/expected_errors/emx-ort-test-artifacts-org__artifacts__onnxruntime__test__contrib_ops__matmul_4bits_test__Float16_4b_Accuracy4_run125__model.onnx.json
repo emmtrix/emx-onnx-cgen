@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op MatMulNBits",
+  "error": "OK (max ULP 1)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run125 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::MatMulNBits"
-  ]
+  ],
+  "generated_checksum": "007dcfcc7b25d66a544677b9fff47aebccb6093df5738ff0b36ff57ead40eb50"
 }
