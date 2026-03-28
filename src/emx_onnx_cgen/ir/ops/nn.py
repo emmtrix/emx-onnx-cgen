@@ -326,8 +326,8 @@ class FusedMatMulOp(MatMulLikeOpBase):
                 f"FusedMatMul inner dimensions must match, got {k_left} and {k_right}"
             )
 
-        batch_shape, input0_batch_shape, input1_batch_shape = (
-            _broadcast_batch_shapes(eff0_expanded[:-2], eff1_expanded[:-2])
+        batch_shape, input0_batch_shape, input1_batch_shape = _broadcast_batch_shapes(
+            eff0_expanded[:-2], eff1_expanded[:-2]
         )
 
         if left_vector and right_vector:
@@ -430,12 +430,8 @@ class FusedMatMulOp(MatMulLikeOpBase):
                     col_var if col_var is not None else "0",
                 ]
 
-        input0_index_expr = f"{input0}" + "".join(
-            f"[{i}]" for i in input0_indices
-        )
-        input1_index_expr = f"{input1}" + "".join(
-            f"[{i}]" for i in input1_indices
-        )
+        input0_index_expr = f"{input0}" + "".join(f"[{i}]" for i in input0_indices)
+        input1_index_expr = f"{input1}" + "".join(f"[{i}]" for i in input1_indices)
         return input0_index_expr, input1_index_expr
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
@@ -503,9 +499,7 @@ class FusedMatMulOp(MatMulLikeOpBase):
         acc_dtype = emitter.accumulation_dtype(emitter.ctx_dtype(self.output))
         acc_zero_literal = emitter.format_literal(acc_dtype, 0)
         has_alpha = self.alpha != 1.0
-        alpha_literal = (
-            emitter.format_literal(dtype, self.alpha) if has_alpha else None
-        )
+        alpha_literal = emitter.format_literal(dtype, self.alpha) if has_alpha else None
         param_decls = emitter.build_param_decls(
             [
                 (params["input0"], c_type, input0_suffix, True),
@@ -1029,9 +1023,7 @@ class MatMulNBitsOp(RenderableOpBase):
             zp_c_type = (
                 self.zero_points_dtype.c_type if self.zero_points_dtype else "uint8_t"
             )
-            param_entries.append(
-                (params["zero_points"], zp_c_type, zp_suffix, True)
-            )
+            param_entries.append((params["zero_points"], zp_c_type, zp_suffix, True))
         else:
             param_entries.append((None, "", "", True))
 
@@ -1045,9 +1037,7 @@ class MatMulNBitsOp(RenderableOpBase):
         else:
             param_entries.append((None, "", "", True))
 
-        output_suffix = emitter.param_array_suffix(
-            self.output_shape, output_dim_names
-        )
+        output_suffix = emitter.param_array_suffix(self.output_shape, output_dim_names)
         param_entries.append(
             (params["output"], self.output_dtype.c_type, output_suffix, False)
         )
@@ -1102,9 +1092,7 @@ class MatMulNBitsOp(RenderableOpBase):
             (self.scales, (self.n, self.n_blocks_per_col)),
         ]
         if self.zero_points is not None:
-            inputs.append(
-                (self.zero_points, emitter.ctx_shape(self.zero_points))
-            )
+            inputs.append((self.zero_points, emitter.ctx_shape(self.zero_points)))
         if self.bias is not None:
             inputs.append((self.bias, (self.n,)))
         return tuple(inputs)
@@ -1115,10 +1103,22 @@ class MatMulNBitsOp(RenderableOpBase):
 # These must match ORT's ``blockwise_quant_block_bnb4.h``.
 # ---------------------------------------------------------------------------
 _FP4_DEQUANT_TABLE: tuple[float, ...] = (
-    0.0, 5.208333333e-03, 0.66666667, 1.0,
-    0.33333333, 0.50000000, 0.16666667, 0.25000000,
-    -0.0, -5.208333333e-03, -0.66666667, -1.0,
-    -0.33333333, -0.50000000, -0.16666667, -0.25000000,
+    0.0,
+    5.208333333e-03,
+    0.66666667,
+    1.0,
+    0.33333333,
+    0.50000000,
+    0.16666667,
+    0.25000000,
+    -0.0,
+    -5.208333333e-03,
+    -0.66666667,
+    -1.0,
+    -0.33333333,
+    -0.50000000,
+    -0.16666667,
+    -0.25000000,
 )
 
 _NF4_DEQUANT_TABLE: tuple[float, ...] = (
@@ -1231,8 +1231,12 @@ class MatMulBnb4Op(RenderableOpBase):
             (params["input0"], self.input0_dtype.c_type, input0_suffix, True),
             (params["input1"], self.b_dtype.c_type, b_suffix, True),
             (params["absmax"], self.absmax_dtype.c_type, absmax_suffix, True),
-            (params["output"], self.output_dtype.c_type,
-             emitter.param_array_suffix(self.output_shape, output_dim_names), False),
+            (
+                params["output"],
+                self.output_dtype.c_type,
+                emitter.param_array_suffix(self.output_shape, output_dim_names),
+                False,
+            ),
         ]
 
         param_decls = emitter.build_param_decls(param_entries)
@@ -1753,8 +1757,7 @@ class QGemmOp(GemmLikeOpBase):
         input_b_shape = ctx.shape(self.input_b)
         if len(input_a_shape) != 2 or len(input_b_shape) != 2:
             raise UnsupportedOpError(
-                f"QGemm supports 2D inputs only, "
-                f"got {input_a_shape} x {input_b_shape}"
+                f"QGemm supports 2D inputs only, got {input_a_shape} x {input_b_shape}"
             )
         if trans_a:
             m, k_left = input_a_shape[1], input_a_shape[0]
@@ -1825,9 +1828,7 @@ class QGemmOp(GemmLikeOpBase):
         a_zero_suffix = emitter.param_array_suffix(self.a_zero_shape)
         b_scale_suffix = emitter.param_array_suffix(self.b_scale_shape)
         b_zero_suffix = emitter.param_array_suffix(self.b_zero_shape)
-        c_suffix = (
-            emitter.param_array_suffix(c_shape) if c_shape is not None else ""
-        )
+        c_suffix = emitter.param_array_suffix(c_shape) if c_shape is not None else ""
 
         output_dtype = emitter.ctx_dtype(self.output)
         output_c_type = output_dtype.c_type

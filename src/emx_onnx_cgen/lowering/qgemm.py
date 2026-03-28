@@ -16,9 +16,7 @@ def _ensure_scalar_input(
 ) -> tuple[int, ...]:
     shape = _value_shape(graph, name, node)
     if shape not in {(), (1,)}:
-        raise UnsupportedOpError(
-            f"QGemm {label} must be scalar, got shape {shape}"
-        )
+        raise UnsupportedOpError(f"QGemm {label} must be scalar, got shape {shape}")
     return shape
 
 
@@ -106,8 +104,7 @@ def lower_qgemm(graph: Graph, node: Node) -> QGemmOp:
     if b_zero_shape not in {(), (1,)}:
         if not (len(b_zero_shape) == 1 and b_zero_shape[0] == n):
             raise UnsupportedOpError(
-                f"QGemm b_zero_point must be scalar or shape [{n}], "
-                f"got {b_zero_shape}"
+                f"QGemm b_zero_point must be scalar or shape [{n}], got {b_zero_shape}"
             )
 
     # Determine output dtype.

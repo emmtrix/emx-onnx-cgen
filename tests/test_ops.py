@@ -7982,9 +7982,7 @@ def _make_fused_matmul_model(
         domain="com.microsoft",
         **(attrs or {}),
     )
-    graph = helper.make_graph(
-        [node], "fusedmatmul_graph", [input_a, input_b], [output]
-    )
+    graph = helper.make_graph([node], "fusedmatmul_graph", [input_a, input_b], [output])
     model = helper.make_model(
         graph,
         producer_name="onnx2c",

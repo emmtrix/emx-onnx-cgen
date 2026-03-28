@@ -15,9 +15,7 @@ _SUPPORTED_QUANT_TYPES = {0, 1}  # 0 = FP4, 1 = NF4
 def _int_attr(node: Node, name: str) -> int:
     val = node.attrs.get(name)
     if val is None:
-        raise UnsupportedOpError(
-            f"MatMulBnb4 requires attribute '{name}'"
-        )
+        raise UnsupportedOpError(f"MatMulBnb4 requires attribute '{name}'")
     return int(val)
 
 
@@ -25,8 +23,7 @@ def _int_attr(node: Node, name: str) -> int:
 def lower_matmul_bnb4(graph: Graph, node: Node) -> MatMulBnb4Op:
     if len(node.inputs) != 3 or len(node.outputs) != 1:
         raise UnsupportedOpError(
-            "MatMulBnb4 must have exactly 3 inputs (A, B, absmax) "
-            "and 1 output"
+            "MatMulBnb4 must have exactly 3 inputs (A, B, absmax) and 1 output"
         )
 
     k = _int_attr(node, "K")
