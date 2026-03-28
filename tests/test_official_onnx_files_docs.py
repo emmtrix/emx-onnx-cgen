@@ -11,12 +11,14 @@ import pytest
 from test_official_onnx_files import (
     LOCAL_ONNX_DATA_ROOT,
     LOCAL_REPO_ONNX_DATA_ROOT,
+    ORT_ARTIFACTS_ONNX_DATA_ROOT,
     OnnxFileExpectation,
     _load_expectation_for_repo_relative,
     _local_onnx_file_paths,
     _local_repo_onnx_file_paths,
     _maybe_init_onnx_org,
     _official_onnx_file_paths,
+    _ort_artifacts_onnx_file_paths,
     _repo_root,
 )
 
@@ -103,6 +105,7 @@ def _render_onnx_file_support_section(
 def _render_onnx_file_support_markdown(
     official_expectations: list[OnnxFileExpectation],
     local_expectations: list[OnnxFileExpectation],
+    ort_artifact_expectations: list[OnnxFileExpectation],
     local_repo_expectations: list[OnnxFileExpectation],
 ) -> str:
     onnx_version = ONNX_VERSION_PATH.read_text(encoding="utf-8").strip()
@@ -128,6 +131,17 @@ def _render_onnx_file_support_markdown(
         if local_total_count
         else 0.0
     )
+    ort_artifact_supported_count = sum(
+        1
+        for expectation in ort_artifact_expectations
+        if _is_success_message(expectation.error)
+    )
+    ort_artifact_total_count = len(ort_artifact_expectations)
+    ort_artifact_support_percent = (
+        (ort_artifact_supported_count / ort_artifact_total_count) * 100.0
+        if ort_artifact_total_count
+        else 0.0
+    )
     local_repo_supported_count = sum(
         1
         for expectation in local_repo_expectations
@@ -139,14 +153,7 @@ def _render_onnx_file_support_markdown(
         if local_repo_total_count
         else 0.0
     )
-    lines = [
-        *_generated_header(),
-        "# ONNX test coverage",
-        "",
-        "Overview:",
-        "",
-        "| Test suite | Coverage | Version |",
-        "| --- | --- | --- |",
+    overview_rows = [
         (
             "| [Official ONNX test coverage](#official-onnx-test-coverage) "
             f"| {official_supported_count} / {official_total_count}, "
@@ -157,11 +164,65 @@ def _render_onnx_file_support_markdown(
             f"| {local_supported_count} / {local_total_count}, "
             f"{local_support_percent:.1f}% | n/a |"
         ),
+    ]
+    if ort_artifact_expectations:
+        overview_rows.append(
+            (
+                "| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) "
+                f"| {ort_artifact_supported_count} / {ort_artifact_total_count}, "
+                f"{ort_artifact_support_percent:.1f}% | n/a |"
+            )
+        )
+    overview_rows.append(
         (
             "| [Local ONNX test coverage](#local-onnx-test-coverage) "
             f"| {local_repo_supported_count} / {local_repo_total_count}, "
             f"{local_repo_support_percent:.1f}% | n/a |"
+        )
+    )
+    sections = [
+        *_render_onnx_file_support_section(
+            title="Official ONNX test coverage",
+            test_directory="onnx-org/onnx/backend/test/data",
+            expectations=official_expectations,
         ),
+        "",
+        *_render_onnx_file_support_section(
+            title="ONNX2C test coverage",
+            test_directory="onnx2c-org/test",
+            expectations=local_expectations,
+        ),
+    ]
+    if ort_artifact_expectations:
+        sections.extend(
+            [
+                "",
+                *_render_onnx_file_support_section(
+                    title="ONNX Runtime artifact coverage",
+                    test_directory="emx-ort-test-artifacts-org/artifacts/onnxruntime",
+                    expectations=ort_artifact_expectations,
+                ),
+            ]
+        )
+    sections.extend(
+        [
+            "",
+            *_render_onnx_file_support_section(
+                title="Local ONNX test coverage",
+                test_directory="tests/onnx",
+                expectations=local_repo_expectations,
+            ),
+        ]
+    )
+    lines = [
+        *_generated_header(),
+        "# ONNX test coverage",
+        "",
+        "Overview:",
+        "",
+        "| Test suite | Coverage | Version |",
+        "| --- | --- | --- |",
+        *overview_rows,
         "",
         "See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.",
         "",
@@ -183,23 +244,7 @@ def _render_onnx_file_support_markdown(
             "ONNX test data files)."
         ),
         "",
-        *_render_onnx_file_support_section(
-            title="Official ONNX test coverage",
-            test_directory="onnx-org/onnx/backend/test/data",
-            expectations=official_expectations,
-        ),
-        "",
-        *_render_onnx_file_support_section(
-            title="ONNX2C test coverage",
-            test_directory="onnx2c-org/test",
-            expectations=local_expectations,
-        ),
-        "",
-        *_render_onnx_file_support_section(
-            title="Local ONNX test coverage",
-            test_directory="tests/onnx",
-            expectations=local_repo_expectations,
-        ),
+        *sections,
     ]
     return "\n".join(lines)
 
@@ -277,11 +322,13 @@ def _render_error_histogram_markdown(
 def _render_support_histogram_markdown(
     official_expectations: list[OnnxFileExpectation],
     local_expectations: list[OnnxFileExpectation],
+    ort_artifact_expectations: list[OnnxFileExpectation],
     local_repo_expectations: list[OnnxFileExpectation],
 ) -> str:
     merged_expectations = [
         *official_expectations,
         *local_expectations,
+        *ort_artifact_expectations,
         *local_repo_expectations,
     ]
     histogram_markdown = _render_error_histogram_markdown(
@@ -313,6 +360,7 @@ def _render_support_histogram_markdown(
 def _render_supported_ops_markdown(
     official_expectations: list[OnnxFileExpectation],
     local_expectations: list[OnnxFileExpectation],
+    ort_artifact_expectations: list[OnnxFileExpectation],
     local_repo_expectations: list[OnnxFileExpectation],
 ) -> str:
     supported_ops: set[str] = set()
@@ -320,6 +368,7 @@ def _render_supported_ops_markdown(
     for expectation in (
         *official_expectations,
         *local_expectations,
+        *ort_artifact_expectations,
         *local_repo_expectations,
     ):
         if not expectation.operators:
@@ -398,6 +447,23 @@ def test_official_onnx_file_support_doc() -> None:
             )
         )
 
+    ort_artifact_prefix = ORT_ARTIFACTS_ONNX_DATA_ROOT.relative_to(repo_root).as_posix()
+    ort_artifact_expectations: list[OnnxFileExpectation] = []
+    for local_path in _ort_artifacts_onnx_file_paths():
+        repo_relative = f"{ort_artifact_prefix}/{local_path}"
+        expectation = _load_expectation_for_repo_relative(repo_relative)
+        ort_artifact_expectations.append(
+            OnnxFileExpectation(
+                path=local_path,
+                error=expectation.error,
+                command_line=expectation.command_line,
+                extra_cli_args=expectation.extra_cli_args,
+                verification_mode=expectation.verification_mode,
+                operators=expectation.operators,
+                opset_version=expectation.opset_version,
+            )
+        )
+
     local_repo_prefix = LOCAL_REPO_ONNX_DATA_ROOT.relative_to(repo_root).as_posix()
     local_repo_expectations: list[OnnxFileExpectation] = []
     for local_path in _local_repo_onnx_file_paths():
@@ -417,16 +483,19 @@ def test_official_onnx_file_support_doc() -> None:
     expected_markdown = _render_onnx_file_support_markdown(
         official_expectations,
         local_expectations,
+        ort_artifact_expectations,
         local_repo_expectations,
     )
     expected_histogram = _render_support_histogram_markdown(
         official_expectations,
         local_expectations,
+        ort_artifact_expectations,
         local_repo_expectations,
     )
     expected_support_ops = _render_supported_ops_markdown(
         official_expectations,
         local_expectations,
+        ort_artifact_expectations,
         local_repo_expectations,
     )
     if os.getenv("UPDATE_REFS"):
@@ -472,3 +541,28 @@ def test_render_onnx_file_support_table_includes_extra_cli_args_in_file_column()
         "| node/test_example/model.onnx (--runtime onnx-reference) | 13 | Data | ✅ | OK (max ULP 0) |"
         in lines
     )
+
+
+def test_render_onnx_file_support_markdown_includes_ort_artifact_section(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    version_path = tmp_path / "VERSION_NUMBER"
+    version_path.write_text("test-version\n", encoding="utf-8")
+    monkeypatch.setattr("test_official_onnx_files_docs.ONNX_VERSION_PATH", version_path)
+
+    markdown = _render_onnx_file_support_markdown(
+        official_expectations=[],
+        local_expectations=[],
+        ort_artifact_expectations=[
+            OnnxFileExpectation(
+                path="test/model.onnx",
+                error="OK",
+                opset_version=21,
+            )
+        ],
+        local_repo_expectations=[],
+    )
+
+    assert "ONNX Runtime artifact coverage" in markdown
+    assert "emx-ort-test-artifacts-org/artifacts/onnxruntime" in markdown

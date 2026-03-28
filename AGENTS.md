@@ -20,6 +20,8 @@ The directories **`emx-pytorch2c-org/`** and **`onnx2c-org/`** serve as **refere
   *Note:* It may generate **ugly C code**. Use it for semantic reference and operator handling, not as a style template.
 - **`emx-pytorch2c-org/`** is a **Python-based PyTorch → C compiler**.
   *Note:* It may contain **poor design choices / architecture smells**. Use it for concepts, codegen patterns, and testing approaches, but do **not** replicate the design blindly.
+- **`emx-ort-test-artifacts-org/`** is an **artifact repository with ONNX Runtime-derived model corpora** used as an additional verification/test source.
+  *Note:* Treat it as test data input. Do **not** modify its contents from this repository.
 
 When making architectural decisions, prefer clean and maintainable design even if it diverges from these repositories.
 
