@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 205 / 205
+Supported operators: 209 / 241
 
 | Operator | Supported |
 | --- | --- |
@@ -48,6 +48,7 @@ Supported operators: 205 / 205
 | ConvTranspose | ✅ |
 | Cos | ✅ |
 | Cosh | ✅ |
+| Crop | ❌ |
 | CumSum | ✅ |
 | DFT | ✅ |
 | DeformConv | ✅ |
@@ -86,6 +87,7 @@ Supported operators: 205 / 205
 | Identity | ✅ |
 | If | ✅ |
 | ImageDecoder | ✅ |
+| ImageScaler | ❌ |
 | InstanceNormalization | ✅ |
 | IsInf | ✅ |
 | IsNaN | ✅ |
@@ -210,7 +212,41 @@ Supported operators: 205 / 205
 | ai.onnx.preview.training::Adam | ✅ |
 | ai.onnx.preview.training::Gradient | ✅ |
 | ai.onnx.preview.training::Momentum | ✅ |
+| com.microsoft::DequantizeLinear | ✅ |
+| com.microsoft::DynamicQuantizeLSTM | ❌ |
+| com.microsoft::FusedMatMul | ❌ |
+| com.microsoft::GatherBlockQuantized | ❌ |
+| com.microsoft::GridSample | ✅ |
+| com.microsoft::Inverse | ❌ |
+| com.microsoft::MatMulBnb4 | ❌ |
+| com.microsoft::MatMulInteger16 | ❌ |
+| com.microsoft::MatMulIntegerToFloat | ❌ |
+| com.microsoft::MatMulNBits | ❌ |
+| com.microsoft::MaxpoolWithMask | ❌ |
+| com.microsoft::MoE | ❌ |
+| com.microsoft::MultiHeadAttention | ❌ |
+| com.microsoft::MurmurHash3 | ❌ |
+| com.microsoft::NGramRepeatBlock | ❌ |
+| com.microsoft::NhwcMaxPool | ❌ |
+| com.microsoft::QAttention | ❌ |
+| com.microsoft::QEmbedLayerNormalization | ❌ |
+| com.microsoft::QGemm | ❌ |
 | com.microsoft::QLinearAdd | ✅ |
 | com.microsoft::QLinearAveragePool | ✅ |
+| com.microsoft::QLinearConcat | ❌ |
+| com.microsoft::QLinearGlobalAveragePool | ❌ |
+| com.microsoft::QLinearLeakyRelu | ❌ |
 | com.microsoft::QLinearMul | ✅ |
+| com.microsoft::QLinearSigmoid | ❌ |
 | com.microsoft::QLinearSoftmax | ✅ |
+| com.microsoft::QLinearWhere | ❌ |
+| com.microsoft::QuantizeLinear | ✅ |
+| com.microsoft::RotaryEmbedding | ❌ |
+| com.microsoft::SampleOp | ❌ |
+| com.microsoft::SkipLayerNormalization | ❌ |
+| com.microsoft::SparseToDenseMatMul | ❌ |
+| com.microsoft::Tokenizer | ❌ |
+| com.microsoft::Trilu | ✅ |
+| com.microsoft::UnfoldTensor | ❌ |
+| com.microsoft::Unique | ❌ |
+| com.microsoft::WordConvEmbedding | ❌ |

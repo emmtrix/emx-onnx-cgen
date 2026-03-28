@@ -1,0 +1,9 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/trilu_test/two_by_two_long_lower_run0 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "com.microsoft::Trilu"
+  ],
+  "generated_checksum": "8a83389339921e184771926b176cd1c0b2d8c3028eb25cf983095f7717fe8b5e"
+}

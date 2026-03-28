@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/layer_norm_op_test/LayerNorm_NormSize1_NoBias_run0 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "LayerNormalization"
+  ],
+  "opset_version": 17,
+  "generated_checksum": "9e32b8275249d42cabeede41501f021b0d80b627d774d191bc83054b197904f7"
+}

@@ -1,0 +1,9 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/qlinear_binary_op_test/AddS8VectorScalarBroadcast_run0 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "com.microsoft::QLinearAdd"
+  ],
+  "generated_checksum": "cb4597d1ff006b9d7dc8ff60dade67c3cb3aaf77dab04f372ad06631cb20c3c0"
+}

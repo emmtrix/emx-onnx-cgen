@@ -1,0 +1,9 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/trilu_test/three_dim_float_lower_run0 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "com.microsoft::Trilu"
+  ],
+  "generated_checksum": "9a25f756a5ac8288ea3a4bd68601f84db598f113dfeaf1cabd5151262d8c67d3"
+}

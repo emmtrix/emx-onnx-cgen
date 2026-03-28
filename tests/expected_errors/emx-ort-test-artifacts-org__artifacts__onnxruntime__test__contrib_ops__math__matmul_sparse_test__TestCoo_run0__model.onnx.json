@@ -1,0 +1,8 @@
+{
+  "error": "Unsupported value type 'sparse_tensor_type' for 'A'. Hint: export the model with tensor inputs/outputs.",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/math/matmul_sparse_test/TestCoo_run0 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "com.microsoft::SparseToDenseMatMul"
+  ]
+}

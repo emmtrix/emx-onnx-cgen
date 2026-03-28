@@ -1,0 +1,8 @@
+{
+  "error": "Unsupported op NGramRepeatBlock",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/ngram_repeat_block_op_test/NGramSize_3_run0 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "com.microsoft::NGramRepeatBlock"
+  ]
+}

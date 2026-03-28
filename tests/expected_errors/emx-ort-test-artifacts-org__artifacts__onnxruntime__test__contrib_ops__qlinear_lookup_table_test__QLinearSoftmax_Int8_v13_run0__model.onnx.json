@@ -1,0 +1,9 @@
+{
+  "error": "Out of tolerance (max abs diff 1)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/qlinear_lookup_table_test/QLinearSoftmax_Int8_v13_run0 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "com.microsoft::QLinearSoftmax"
+  ],
+  "generated_checksum": "6bf1538e348f3848e7e55c5b84c80c5e79c6688be27c3f6f2e16ba9e49298ef9"
+}

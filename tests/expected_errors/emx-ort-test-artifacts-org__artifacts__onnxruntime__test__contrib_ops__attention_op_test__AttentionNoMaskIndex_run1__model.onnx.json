@@ -1,0 +1,8 @@
+{
+  "error": "Unsupported op Attention",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/attention_op_test/AttentionNoMaskIndex_run1 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "com.microsoft::Attention"
+  ]
+}
