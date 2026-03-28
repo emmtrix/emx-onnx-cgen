@@ -9,6 +9,7 @@ Overview:
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1801 / 1802, 99.9% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
+| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 1652 / 4182, 39.5% | n/a |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 1654 / 4182, 39.6% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
@@ -1967,6 +1968,7 @@ Coverage 123 / 125 ONNX files (98.4%).
 
 Test directory: `emx-ort-test-artifacts-org/artifacts/onnxruntime`
 
+Coverage 1652 / 4182 ONNX files (39.5%).
 Coverage 1654 / 4182 ONNX files (39.6%).
 
 | File | Opset | Verification | Supported | Error |
@@ -3663,774 +3665,774 @@ Coverage 1654 / 4182 ONNX files (39.6%).
 | test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run97/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run98/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run99/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_bnb4_test/Float32_run0/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run1/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run10/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run100/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run101/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run102/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run103/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run104/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run105/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run106/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run107/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run108/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run109/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run11/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run110/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run111/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run112/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run113/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run114/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run115/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run116/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run117/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run118/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run119/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run12/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run120/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run121/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run122/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run123/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run124/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run125/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run126/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run127/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run128/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run129/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run13/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run130/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run131/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run132/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run133/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run134/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run135/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run136/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run137/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run138/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run139/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run14/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run140/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run141/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run142/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run143/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run144/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run145/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run146/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run147/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run148/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run149/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run15/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run150/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run151/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run152/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run153/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run154/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run155/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run156/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run157/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run158/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run159/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run16/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run160/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run161/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run162/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run163/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run164/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run165/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run166/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run167/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run168/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run169/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run17/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run170/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run171/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run172/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run173/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run174/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run175/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run176/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run177/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run178/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run179/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run18/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run180/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run181/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run182/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run183/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run184/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run185/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run186/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run187/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run188/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run189/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run19/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run190/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run191/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run192/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run193/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run194/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run195/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run196/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run197/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run198/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run199/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run2/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run20/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run200/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run201/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run202/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run203/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run204/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run205/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run206/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run207/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run208/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run209/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run21/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run210/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run211/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run212/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run213/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run214/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run215/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run216/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run217/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run218/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run219/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run22/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run220/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run221/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run222/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run223/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run224/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run225/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run226/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run227/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run228/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run229/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run23/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run230/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run231/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run232/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run233/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run234/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run235/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run236/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run237/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run238/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run239/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run24/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run240/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run241/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run242/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run243/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run244/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run245/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run246/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run247/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run248/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run249/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run25/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run250/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run251/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run252/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run253/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run254/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run255/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run256/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run257/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run258/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run259/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run26/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run260/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run261/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run262/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run263/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run264/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run265/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run266/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run267/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run268/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run269/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run27/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run270/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run271/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run272/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run273/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run274/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run275/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run276/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run277/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run278/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run279/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run28/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run280/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run281/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run282/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run283/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run284/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run285/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run286/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run287/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run288/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run289/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run29/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run290/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run291/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run292/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run293/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run294/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run295/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run296/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run297/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run298/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run299/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run3/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run30/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run300/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run301/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run302/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run303/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run304/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run305/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run306/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run307/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run308/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run309/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run31/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run310/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run311/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run312/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run313/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run314/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run315/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run316/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run317/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run318/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run319/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run32/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run320/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run321/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run322/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run323/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run324/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run325/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run326/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run327/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run328/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run329/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run33/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run330/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run331/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run332/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run333/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run334/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run335/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run336/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run337/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run338/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run339/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run34/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run340/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run341/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run342/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run343/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run344/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run345/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run346/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run347/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run348/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run349/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run35/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run350/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run351/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run352/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run353/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run354/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run355/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run356/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run357/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run358/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run359/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run36/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run360/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run361/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run362/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run363/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run364/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run365/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run366/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run367/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run368/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run369/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run37/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run370/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run371/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run372/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run373/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run374/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run375/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run376/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run377/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run378/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run379/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run38/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run380/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run381/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run382/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run383/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run384/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run385/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run386/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run387/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run388/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run389/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run39/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run390/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run391/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run392/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run393/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run394/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run395/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run396/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run397/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run398/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run399/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run4/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run40/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run400/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run401/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run402/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run403/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run404/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run405/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run406/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run407/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run408/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run409/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run41/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run410/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run411/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run412/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run413/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run414/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run415/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run416/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run417/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run418/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run419/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run42/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run420/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run421/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run422/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run423/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run424/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run425/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run426/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run427/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run428/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run429/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run43/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run430/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run431/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run432/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run433/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run434/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run435/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run436/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run437/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run438/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run439/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run44/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run440/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run441/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run442/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run443/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run444/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run445/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run446/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run447/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run448/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run449/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run45/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run450/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run451/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run452/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run453/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run454/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run455/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run456/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run457/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run458/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run459/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run46/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run460/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run461/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run462/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run463/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run464/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run465/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run466/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run467/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run468/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run469/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run47/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run470/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run471/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run472/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run473/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run474/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run475/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run476/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run477/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run478/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run479/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run48/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run480/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run481/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run482/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run483/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run484/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run485/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run486/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run487/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run488/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run489/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run49/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run490/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run491/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run492/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run493/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run494/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run495/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run496/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run497/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run498/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run499/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run5/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run50/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run500/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run501/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run502/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run503/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run504/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run505/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run506/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run507/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run508/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run509/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run51/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run510/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run511/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run512/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run513/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run514/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run515/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run516/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run517/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run518/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run519/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run52/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run520/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run521/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run522/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run523/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run524/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run525/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run526/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run527/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run528/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run529/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run53/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run530/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run531/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run532/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run533/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run534/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run535/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run536/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run537/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run538/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run539/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run54/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run540/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run541/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run542/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run543/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run544/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run545/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run546/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run547/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run548/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run549/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run55/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run550/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run551/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run552/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run553/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run554/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run555/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run556/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run557/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run558/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run559/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run56/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run560/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run561/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run562/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run563/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run564/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run565/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run566/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run567/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run568/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run569/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run57/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run570/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run571/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run572/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run573/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run574/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run575/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run576/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run577/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run578/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run579/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run58/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run580/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run581/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run582/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run583/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run584/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run585/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run586/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run587/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run588/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run589/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run59/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run590/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run591/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run592/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run593/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run594/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run595/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run596/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run597/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run598/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run599/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run6/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run60/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run600/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run601/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run602/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run603/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run604/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run605/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run606/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run607/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run608/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run609/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run61/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run610/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run611/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run612/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run613/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run614/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run615/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run616/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run617/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run618/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run619/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run62/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run620/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run621/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run622/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run623/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run624/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run625/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run626/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run627/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run628/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run629/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run63/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run630/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run631/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run632/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run633/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run634/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run635/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run636/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run637/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run638/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run639/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run64/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run640/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run641/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run642/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run643/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run644/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run645/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run646/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run647/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run648/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run649/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run65/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run650/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run651/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run652/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run653/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run654/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run655/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run656/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run657/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run658/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run659/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run66/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run660/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run661/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run662/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run663/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run664/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run665/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run666/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run667/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run668/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run669/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run67/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run670/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run671/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run672/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run673/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run674/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run675/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run676/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run677/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run678/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run679/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run68/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run680/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run681/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run682/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run683/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run684/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run685/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run686/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run687/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run688/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run689/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run69/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run690/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run691/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run692/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run693/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run694/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run695/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run696/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run697/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run698/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run699/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run7/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run70/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run700/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run701/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run702/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run703/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run704/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run705/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run706/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run707/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run708/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run709/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run71/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run710/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run711/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run712/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run713/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run714/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run715/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run716/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run717/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run718/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run719/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run72/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run720/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run721/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run722/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run723/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run724/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run725/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run726/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run727/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run728/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run729/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run73/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run730/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run731/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run732/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run733/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run734/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run735/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run736/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run737/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run738/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run739/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run74/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run740/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run741/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run742/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run743/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run744/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run745/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run746/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run747/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run748/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run749/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run75/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run750/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run751/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run752/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run753/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run754/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run755/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run756/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run757/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run758/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run759/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run76/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run760/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run761/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run762/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run763/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run764/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run765/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run766/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run767/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run77/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run78/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run79/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run8/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run80/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run81/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run82/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run83/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run84/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run85/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run86/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run87/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run88/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run89/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run9/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run90/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run91/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run92/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run93/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run94/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run95/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run96/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run97/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run98/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
-| test/contrib_ops/matmul_bnb4_test/Float32_run99/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulBnb4 |
+| test/contrib_ops/matmul_bnb4_test/Float32_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run100/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run101/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run102/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run103/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run104/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run105/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run106/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run107/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run108/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run109/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run11/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run110/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run111/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run112/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run113/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run114/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run115/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run116/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run117/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run118/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run119/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run120/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run121/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run122/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run123/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run124/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run125/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run126/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run127/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run128/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run129/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run13/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run130/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run131/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run132/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run133/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run134/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run135/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run136/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run137/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run138/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run139/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run14/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run140/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run141/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run142/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run143/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run144/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run145/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run146/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run147/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run148/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run149/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run15/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run150/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run151/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run152/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run153/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run154/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run155/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run156/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run157/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run158/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run159/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run160/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run161/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run162/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run163/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run164/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run165/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run166/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run167/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run168/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run169/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run17/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run170/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run171/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run172/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run173/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run174/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run175/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run176/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run177/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run178/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run179/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run18/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run180/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run181/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run182/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run183/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run184/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run185/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run186/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run187/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run188/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run189/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run19/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run190/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run191/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run192/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run193/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run194/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run195/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run196/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run197/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run198/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run199/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run20/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run200/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run201/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run202/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run203/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run204/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run205/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run206/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run207/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run208/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run209/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run21/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run210/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run211/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run212/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run213/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run214/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run215/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run216/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run217/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run218/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run219/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run220/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run221/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run222/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run223/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run224/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run225/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run226/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run227/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run228/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run229/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run23/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run230/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run231/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run232/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run233/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run234/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run235/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run236/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run237/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run238/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run239/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run24/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run240/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run241/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run242/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run243/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run244/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run245/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run246/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run247/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run248/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run249/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run25/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run250/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run251/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run252/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run253/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run254/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run255/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run256/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run257/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run258/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run259/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run26/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run260/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run261/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run262/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run263/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run264/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run265/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run266/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run267/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run268/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run269/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run27/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run270/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run271/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run272/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run273/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run274/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run275/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run276/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run277/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run278/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run279/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run28/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run280/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run281/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run282/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run283/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run284/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run285/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run286/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run287/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run288/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run289/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run29/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run290/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run291/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run292/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run293/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run294/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run295/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run296/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run297/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run298/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run299/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run30/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run300/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run301/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run302/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run303/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run304/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run305/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run306/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run307/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run308/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run309/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run31/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run310/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run311/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run312/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run313/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run314/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run315/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run316/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run317/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run318/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run319/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run32/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run320/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run321/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run322/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run323/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run324/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run325/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run326/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run327/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run328/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run329/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run33/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run330/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run331/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run332/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run333/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run334/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run335/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run336/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run337/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run338/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run339/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run34/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run340/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run341/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run342/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run343/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run344/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run345/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run346/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run347/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run348/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run349/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run35/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run350/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run351/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run352/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run353/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run354/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run355/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run356/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run357/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run358/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run359/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run36/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run360/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run361/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run362/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run363/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run364/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run365/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run366/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run367/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run368/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run369/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run37/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run370/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run371/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run372/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run373/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run374/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run375/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run376/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run377/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run378/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run379/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run38/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run380/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run381/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run382/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run383/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run384/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run385/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run386/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run387/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run388/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run389/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run39/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run390/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run391/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run392/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run393/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run394/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run395/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run396/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run397/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run398/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run399/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run40/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run400/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run401/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run402/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run403/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run404/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run405/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run406/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run407/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run408/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run409/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run41/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run410/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run411/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run412/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run413/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run414/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run415/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run416/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run417/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run418/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run419/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run42/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run420/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run421/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run422/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run423/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run424/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run425/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run426/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run427/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run428/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run429/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run43/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run430/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run431/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run432/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run433/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run434/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run435/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run436/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run437/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run438/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run439/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run44/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run440/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run441/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run442/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run443/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run444/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run445/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run446/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run447/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run448/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run449/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run45/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run450/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run451/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run452/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run453/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run454/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run455/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run456/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run457/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run458/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run459/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run46/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run460/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run461/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run462/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run463/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run464/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run465/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run466/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run467/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run468/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run469/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run47/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run470/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run471/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run472/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run473/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run474/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run475/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run476/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run477/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run478/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run479/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run48/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run480/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run481/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run482/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run483/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run484/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run485/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run486/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run487/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run488/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run489/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run49/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run490/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run491/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run492/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run493/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run494/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run495/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run496/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run497/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run498/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run499/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run50/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run500/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run501/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run502/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run503/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run504/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run505/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run506/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run507/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run508/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run509/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run51/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run510/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run511/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run512/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run513/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run514/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run515/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run516/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run517/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run518/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run519/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run52/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run520/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run521/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run522/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run523/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run524/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run525/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run526/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run527/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run528/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run529/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run53/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run530/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run531/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run532/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run533/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run534/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run535/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run536/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run537/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run538/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run539/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run54/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run540/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run541/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run542/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run543/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run544/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run545/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run546/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run547/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run548/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run549/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run55/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run550/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run551/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run552/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run553/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run554/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run555/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run556/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run557/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run558/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run559/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run56/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run560/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run561/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run562/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run563/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run564/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run565/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run566/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run567/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run568/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run569/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run57/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run570/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run571/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run572/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run573/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run574/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run575/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run576/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run577/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run578/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run579/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run58/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run580/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run581/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run582/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run583/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run584/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run585/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run586/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run587/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run588/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run589/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run59/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run590/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run591/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run592/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run593/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run594/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run595/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run596/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run597/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run598/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run599/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run60/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run600/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run601/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run602/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run603/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run604/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run605/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run606/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run607/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run608/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run609/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run61/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run610/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run611/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run612/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run613/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run614/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run615/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run616/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run617/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run618/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run619/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run62/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run620/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run621/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run622/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run623/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run624/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run625/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run626/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run627/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run628/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run629/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run63/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run630/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run631/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run632/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run633/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run634/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run635/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run636/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run637/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run638/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run639/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run64/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run640/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run641/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run642/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run643/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run644/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run645/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run646/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run647/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run648/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run649/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run65/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run650/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run651/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run652/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run653/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run654/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run655/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run656/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run657/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run658/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run659/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run66/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run660/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run661/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run662/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run663/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run664/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run665/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run666/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run667/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run668/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run669/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run67/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run670/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run671/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run672/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run673/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run674/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run675/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run676/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run677/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run678/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run679/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run68/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run680/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run681/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run682/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run683/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run684/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run685/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run686/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run687/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run688/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run689/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run69/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run690/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run691/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run692/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run693/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run694/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run695/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run696/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run697/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run698/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run699/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run70/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run700/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run701/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run702/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run703/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run704/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run705/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run706/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run707/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run708/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run709/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run71/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run710/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run711/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run712/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run713/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run714/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run715/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run716/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run717/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run718/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run719/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run72/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run720/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run721/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run722/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run723/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run724/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run725/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run726/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run727/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run728/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run729/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run73/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run730/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run731/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run732/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run733/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run734/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run735/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run736/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run737/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run738/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run739/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run74/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run740/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run741/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run742/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run743/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run744/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run745/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run746/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run747/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run748/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run749/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run75/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run750/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run751/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run752/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run753/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run754/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run755/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run756/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run757/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run758/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run759/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run76/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run760/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run761/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run762/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run763/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run764/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run765/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run766/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run767/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run77/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run78/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run79/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run80/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run81/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run82/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run83/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run84/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run85/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run86/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run87/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run88/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run89/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run90/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run91/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run92/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run93/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run94/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run95/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run96/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run97/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run98/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_bnb4_test/Float32_run99/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_integer16_test/MatMulInteger16_1_run0/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulInteger16 |
 | test/contrib_ops/matmul_integer16_test/MatMulInteger16_2_run0/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulInteger16 |
 | test/contrib_ops/matmul_integer16_test/MatMulInteger16_3_run0/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulInteger16 |
