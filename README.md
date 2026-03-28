@@ -275,6 +275,9 @@ How verification works:
 - **emx-regex-cgen**  
   A regex-to-C code generator used to implement the ONNX `RegexFullMatch` operator in emx-onnx-cgen.  
   https://github.com/emmtrix/emx-regex-cgen
+- **emx-ort-test-artifacts**  
+  Repository containing exported ONNX test artifacts (`*.onnx` / `*.pb` files) produced by the ONNX Runtime test infrastructure.  
+  https://github.com/emmtrix/emx-ort-test-artifacts
   
 ## Maintained by
 

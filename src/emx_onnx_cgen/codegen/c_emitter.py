@@ -1049,6 +1049,7 @@ class CEmitter:
                 "matmul_integer": self._env.get_template("matmul_integer_op.c.j2"),
                 "matmul_nbits": self._env.get_template("matmul_nbits_op.c.j2"),
                 "matmul": self._env.get_template("matmul_op.c.j2"),
+                "fused_matmul": self._env.get_template("fused_matmul_op.c.j2"),
                 "einsum": self._env.get_template("einsum_op.c.j2"),
                 "gemm": self._env.get_template("gemm_op.c.j2"),
                 "qgemm": self._env.get_template("qgemm_op.c.j2"),

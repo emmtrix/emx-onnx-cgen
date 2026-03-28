@@ -231,7 +231,7 @@ Supported operators: 211 / 258
 | com.microsoft::ExpandDims | ❌ |
 | com.microsoft::FastGelu | ❌ |
 | com.microsoft::FusedConv | ❌ |
-| com.microsoft::FusedMatMul | ❌ |
+| com.microsoft::FusedMatMul | ✅ |
 | com.microsoft::GatherBlockQuantized | ❌ |
 | com.microsoft::GridSample | ✅ |
 | com.microsoft::Inverse | ❌ |
