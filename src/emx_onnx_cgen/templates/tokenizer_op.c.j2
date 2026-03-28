@@ -1,0 +1,205 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const char (*emx_in_flat_)[EMX_STRING_MAX_LEN] =
+        (const char (*)[EMX_STRING_MAX_LEN]){{ input0 }};
+    char (*emx_out_flat_)[EMX_STRING_MAX_LEN] =
+        (char (*)[EMX_STRING_MAX_LEN]){{ output }};
+{% if mode == "sep_regex" or mode == "tokenexp" %}
+{% for p in patterns %}
+    static regex_t emx_re_{{ loop.index0 }}_;
+    static int emx_re_{{ loop.index0 }}_ok_ = 0;
+    if (!emx_re_{{ loop.index0 }}_ok_) {
+        regcomp(&emx_re_{{ loop.index0 }}_, {{ p }}, REG_EXTENDED);
+        emx_re_{{ loop.index0 }}_ok_ = 1;
+    }
+{% endfor %}
+{% endif %}
+    static char emx_tok_a_[{{ buf_size }}][EMX_STRING_MAX_LEN];
+{% if mode == "sep_literal" or mode == "sep_regex" %}
+    static char emx_tok_b_[{{ buf_size }}][EMX_STRING_MAX_LEN];
+{% endif %}
+    for (idx_t emx_i_ = 0; emx_i_ < {{ input_count }}; ++emx_i_) {
+        const char *src = emx_in_flat_[emx_i_];
+        idx_t emx_out_base_ = emx_i_ * (idx_t){{ max_tokens }};
+        for (idx_t emx_j_ = 0; emx_j_ < (idx_t){{ max_tokens }}; ++emx_j_) {
+            emx_out_flat_[emx_out_base_ + emx_j_][0] = '\0';
+        }
+        char (*emx_cur_)[EMX_STRING_MAX_LEN] = emx_tok_a_;
+        idx_t emx_n_cur_ = 0;
+        idx_t emx_n_tok_ = 0;
+{% if mode == "sep_literal" or mode == "sep_regex" %}
+        char (*emx_nxt_)[EMX_STRING_MAX_LEN] = emx_tok_b_;
+        idx_t emx_n_nxt_ = 0;
+{% endif %}
+{% if mode == "char_level" %}
+        {
+            const char *emx_p_ = src;
+            while (*emx_p_ != '\0' && emx_n_cur_ < (idx_t){{ buf_size }}) {
+                unsigned char emx_b_ = (unsigned char)*emx_p_;
+                idx_t emx_clen_ = (emx_b_ < 0x80u) ? (idx_t)1 :
+                                   (emx_b_ < 0xE0u) ? (idx_t)2 :
+                                   (emx_b_ < 0xF0u) ? (idx_t)3 : (idx_t)4;
+                if (emx_clen_ >= (idx_t){{ mincharnum }}) {
+                    size_t emx_k_ = 0;
+                    while (emx_k_ < (size_t)emx_clen_ && emx_k_ + 1 < EMX_STRING_MAX_LEN) {
+                        emx_cur_[emx_n_cur_][emx_k_] = emx_p_[emx_k_];
+                        ++emx_k_;
+                    }
+                    emx_cur_[emx_n_cur_][emx_k_] = '\0';
+                    ++emx_n_cur_;
+                }
+                emx_p_ += emx_clen_;
+            }
+        }
+        emx_n_tok_ = emx_n_cur_;
+{% elif mode == "sep_literal" or mode == "sep_regex" %}
+        {
+            const char *emx_p_ = src;
+            size_t emx_pos_ = 0;
+            while (*emx_p_ != '\0' && emx_pos_ + 1 < EMX_STRING_MAX_LEN) {
+                emx_cur_[0][emx_pos_++] = *emx_p_++;
+            }
+            emx_cur_[0][emx_pos_] = '\0';
+            emx_n_cur_ = (*src != '\0') ? (idx_t)1 : (idx_t)0;
+        }
+{% for idx in range(patterns | length) %}
+        emx_n_nxt_ = 0;
+        for (idx_t emx_t_ = 0; emx_t_ < emx_n_cur_; ++emx_t_) {
+            const char *emx_p_ = emx_cur_[emx_t_];
+            for (;;) {
+{% if mode == "sep_literal" %}
+                const char *emx_found_ = strstr(emx_p_, {{ patterns[idx] }});
+                int emx_matched_ = (emx_found_ != NULL);
+                size_t emx_before_ = emx_matched_ ? (size_t)(emx_found_ - emx_p_) : (size_t)0;
+                size_t emx_sep_len_ = emx_matched_ ? (size_t){{ sep_lens[idx] }} : (size_t)0;
+{% else %}
+                regmatch_t emx_rm_[1];
+                int emx_matched_ = (regexec(&emx_re_{{ idx }}_, emx_p_, 1, emx_rm_, 0) == 0 &&
+                                    emx_rm_[0].rm_so >= 0);
+                size_t emx_before_ = emx_matched_ ? (size_t)emx_rm_[0].rm_so : (size_t)0;
+                size_t emx_sep_len_ = emx_matched_ ?
+                    (size_t)(emx_rm_[0].rm_eo - emx_rm_[0].rm_so) : (size_t)0;
+                const char *emx_found_ = emx_matched_ ? (emx_p_ + emx_rm_[0].rm_so) : NULL;
+{% endif %}
+                if (!emx_matched_) {
+                    if (*emx_p_ != '\0' && emx_n_nxt_ < (idx_t){{ buf_size }}) {
+                        size_t emx_pos_ = 0;
+                        while (*emx_p_ != '\0' && emx_pos_ + 1 < EMX_STRING_MAX_LEN) {
+                            emx_nxt_[emx_n_nxt_][emx_pos_++] = *emx_p_++;
+                        }
+                        emx_nxt_[emx_n_nxt_][emx_pos_] = '\0';
+                        ++emx_n_nxt_;
+                    }
+                    break;
+                }
+                if (emx_before_ > 0 && emx_n_nxt_ < (idx_t){{ buf_size }}) {
+                    size_t emx_pos_ = 0;
+                    const char *emx_end_ = emx_p_ + emx_before_;
+                    while (emx_p_ != emx_end_ && emx_pos_ + 1 < EMX_STRING_MAX_LEN) {
+                        emx_nxt_[emx_n_nxt_][emx_pos_++] = *emx_p_++;
+                    }
+                    emx_nxt_[emx_n_nxt_][emx_pos_] = '\0';
+                    ++emx_n_nxt_;
+                }
+                if (emx_sep_len_ == 0) {
+                    ++emx_p_;
+                } else {
+                    emx_p_ = emx_found_ + emx_sep_len_;
+                }
+            }
+        }
+        {
+            char (*emx_tmp_)[EMX_STRING_MAX_LEN] = emx_cur_;
+            emx_cur_ = emx_nxt_;
+            emx_nxt_ = emx_tmp_;
+            idx_t emx_n_tmp_ = emx_n_cur_;
+            emx_n_cur_ = emx_n_nxt_;
+            emx_n_nxt_ = emx_n_tmp_;
+        }
+{% endfor %}
+        emx_n_tok_ = 0;
+        for (idx_t emx_t_ = 0; emx_t_ < emx_n_cur_; ++emx_t_) {
+            const char *emx_s_ = emx_cur_[emx_t_];
+            idx_t emx_nc_ = 0;
+            for (const char *emx_cp_ = emx_s_; *emx_cp_ != '\0'; ++emx_cp_) {
+                unsigned char emx_byt_ = (unsigned char)*emx_cp_;
+                if (emx_byt_ < 0x80u || emx_byt_ >= 0xC0u) ++emx_nc_;
+            }
+            if (emx_nc_ >= (idx_t){{ mincharnum }}) {
+                if (emx_t_ != emx_n_tok_) {
+                    size_t emx_mc_ = 0;
+                    while (emx_cur_[emx_t_][emx_mc_] != '\0' && emx_mc_ + 1 < EMX_STRING_MAX_LEN) {
+                        emx_cur_[emx_n_tok_][emx_mc_] = emx_cur_[emx_t_][emx_mc_];
+                        ++emx_mc_;
+                    }
+                    emx_cur_[emx_n_tok_][emx_mc_] = '\0';
+                }
+                ++emx_n_tok_;
+            }
+        }
+{% elif mode == "tokenexp" %}
+        {
+            const char *emx_p_ = src;
+            emx_n_cur_ = 0;
+            while (*emx_p_ != '\0' && emx_n_cur_ < (idx_t){{ buf_size }}) {
+                regmatch_t emx_rm_[1];
+                if (regexec(&emx_re_0_, emx_p_, 1, emx_rm_, 0) != 0) break;
+                if (emx_rm_[0].rm_so < 0) break;
+                size_t emx_mlen_ = (size_t)(emx_rm_[0].rm_eo - emx_rm_[0].rm_so);
+                idx_t emx_nc_ = 0;
+                for (size_t emx_ci_ = 0; emx_ci_ < emx_mlen_; ++emx_ci_) {
+                    unsigned char emx_byt_ = (unsigned char)(emx_p_[emx_rm_[0].rm_so + emx_ci_]);
+                    if (emx_byt_ < 0x80u || emx_byt_ >= 0xC0u) ++emx_nc_;
+                }
+                if (emx_nc_ >= (idx_t){{ mincharnum }}) {
+                    size_t emx_pos_ = 0;
+                    for (size_t emx_ci_ = 0; emx_ci_ < emx_mlen_ && emx_pos_ + 1 < EMX_STRING_MAX_LEN; ++emx_ci_) {
+                        emx_cur_[emx_n_cur_][emx_pos_++] = emx_p_[emx_rm_[0].rm_so + emx_ci_];
+                    }
+                    emx_cur_[emx_n_cur_][emx_pos_] = '\0';
+                    ++emx_n_cur_;
+                }
+                if (emx_rm_[0].rm_eo == 0) {
+                    ++emx_p_;
+                } else {
+                    emx_p_ += emx_rm_[0].rm_eo;
+                }
+            }
+        }
+        emx_n_tok_ = emx_n_cur_;
+{% endif %}
+        idx_t emx_out_idx_ = emx_out_base_;
+{% if mark %}
+        if (emx_out_idx_ < emx_out_base_ + (idx_t){{ max_tokens }}) {
+            emx_out_flat_[emx_out_idx_][0] = '\x02';
+            emx_out_flat_[emx_out_idx_][1] = '\0';
+            ++emx_out_idx_;
+        }
+{% endif %}
+        for (idx_t emx_t_ = 0; emx_t_ < emx_n_tok_ &&
+             emx_out_idx_ < emx_out_base_ + (idx_t){{ max_tokens }} - (idx_t){{ mark }}; ++emx_t_) {
+            const char *emx_tsrc_ = emx_cur_[emx_t_];
+            char *emx_tdst_ = emx_out_flat_[emx_out_idx_];
+            size_t emx_pos_ = 0;
+            while (*emx_tsrc_ != '\0' && emx_pos_ + 1 < EMX_STRING_MAX_LEN) {
+                emx_tdst_[emx_pos_++] = *emx_tsrc_++;
+            }
+            emx_tdst_[emx_pos_] = '\0';
+            ++emx_out_idx_;
+        }
+{% if mark %}
+        if (emx_out_idx_ < emx_out_base_ + (idx_t){{ max_tokens }}) {
+            emx_out_flat_[emx_out_idx_][0] = '\x03';
+            emx_out_flat_[emx_out_idx_][1] = '\0';
+            ++emx_out_idx_;
+        }
+{% endif %}
+        for (; emx_out_idx_ < emx_out_base_ + (idx_t){{ max_tokens }}; ++emx_out_idx_) {
+            const char *emx_pad_ = {{ pad_value_literal }};
+            size_t emx_pos_ = 0;
+            while (*emx_pad_ != '\0' && emx_pos_ + 1 < EMX_STRING_MAX_LEN) {
+                emx_out_flat_[emx_out_idx_][emx_pos_++] = *emx_pad_++;
+            }
+            emx_out_flat_[emx_out_idx_][emx_pos_] = '\0';
+        }
+    }
+}

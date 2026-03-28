@@ -122,6 +122,7 @@ _LOWERING_MODULES = [
     "tensor_scatter",
     "tfidf_vectorizer",
     "tile",
+    "tokenizer",
     "tree_ensemble",
     "tree_ensemble_classifier",
     "topk",
