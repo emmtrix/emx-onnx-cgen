@@ -73,6 +73,7 @@ from ..ir.ops import (
     LpNormalizationOp,
     LpPoolOp,
     LrnOp,
+    MsAttentionOp,
     RnnOp,
     LstmOp,
     MatMulOp,
@@ -1055,6 +1056,7 @@ class CEmitter:
                 "gemm": self._env.get_template("gemm_op.c.j2"),
                 "qgemm": self._env.get_template("qgemm_op.c.j2"),
                 "attention": self._env.get_template("attention_op.c.j2"),
+                "ms_attention": self._env.get_template("ms_attention_op.c.j2"),
                 "rotary_embedding": self._env.get_template("rotary_embedding_op.c.j2"),
                 "conv": self._env.get_template("conv_op.c.j2"),
                 "conv_integer": self._env.get_template("conv_integer_op.c.j2"),
@@ -2170,6 +2172,7 @@ class CEmitter:
             | EinsumOp
             | GemmOp
             | AttentionOp
+            | MsAttentionOp
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp

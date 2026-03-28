@@ -9,8 +9,7 @@ Aggregates non-success verification outcomes.
 | --- | --- | --- |
 | MatMulNBits g_idx (input 4) is not supported | 238 |  |
 | AveragePool has unsupported attributes | 72 |  |
-| Out of tolerance | 69 | 7, 17 |
-| Unsupported op Attention | 65 |  |
+| Out of tolerance | 72 | 7, 17 |
 | Unsupported op DynamicQuantizeLSTM | 50 |  |
 | Unsupported op MatMulIntegerToFloat | 48 |  |
 | Unsupported op DynamicQuantizeMatMul | 39 |  |
@@ -122,71 +121,9 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/attention_lstm_op_test/ForwardLstmWithBahdanauAMZeroAttention_run0/model.onnx |  | Data/Data | ❌ | Unsupported op AttnLSTM |
 | test/contrib_ops/attention_lstm_op_test/ForwardLstmWithBahdanauAM_run0/model.onnx |  | Data/Data | ❌ | Unsupported op AttnLSTM |
 | test/contrib_ops/attention_lstm_op_test/ReverseLstmWithBahdanauAMShortenSeqLength_run0/model.onnx |  | Data/Data | ❌ | Unsupported op AttnLSTM |
-| test/contrib_ops/attention_op_test/Attention3DMask_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/Attention3DMask_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionBatch1AttentionBias_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionBatch1AttentionBias_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionBatch1WithQKVAttr1_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionBatch1WithQKVAttr1_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionBatch1WithQKVAttr2_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionBatch1WithQKVAttr2_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionBatch1_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionBatch1_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionBatch2AttentionBias_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionBatch2AttentionBias_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionBatch2AttentionMask_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionBatch2AttentionMask_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionBatch2LeftPaddingMaskIndex2_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionBatch2LeftPaddingMaskIndex2_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionBatch2MaskIndex2_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionBatch2MaskIndex2_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionBatch2_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionBatch2_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionDummyMask2D_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionDummyMask2D_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionEmptyPastState_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionEmptyPastState_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionLeftPaddingMaskIndex2_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionLeftPaddingMaskIndex2_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionMask1DEndNoWord_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionMask1DEndNoWord_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionMask1DNoWord_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionMask1DNoWord_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionMask2DNoWord_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionMask2DNoWord_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionMask3DNoWord_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionMask3DNoWord_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionMaskExceedSequence_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionMaskExceedSequence_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionMaskIndexOutOfRange_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionMaskIndexOutOfRange_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionMaskPartialSequence_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionMaskPartialSequence_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionNoMaskIndex_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionNoMaskIndex_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionPastStateBatch1_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionPastStateBatch1_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionPastStateBatch2WithPadding_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionPastStateBatch2WithPadding_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionPastStateBatch2_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionPastStateBatch2_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionPastState_dynamic_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionPrunedModel_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionPrunedModel_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionRightPaddingMaskIndex2_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionRightPaddingMaskIndex2_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionUnidirectional3DMask_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionUnidirectional3DMask_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionUnidirectionalAttentionMask_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionUnidirectionalAttentionMask_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionUnidirectional_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionUnidirectional_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionWithNormFactor_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/AttentionWithNormFactor_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/Attention_Mask1D_Fp32_B2_S64_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/Attention_Mask2D_Fp32_B2_S32_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/SharedPrepackedWeights_run0/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
-| test/contrib_ops/attention_op_test/SharedPrepackedWeights_run1/model.onnx |  | Data/Data | ❌ | Unsupported op Attention |
+| test/contrib_ops/attention_op_test/AttentionPastState_dynamic_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 58877) |
+| test/contrib_ops/attention_op_test/Attention_Mask1D_Fp32_B2_S64_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 739520) |
+| test/contrib_ops/attention_op_test/Attention_Mask2D_Fp32_B2_S32_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 980293) |
 | test/contrib_ops/bifurcation_detector_op_test/Test1_run0/model.onnx |  | Data/Data | ❌ | Unsupported op BifurcationDetector |
 | test/contrib_ops/bifurcation_detector_op_test/Test2_run0/model.onnx |  | Data/Data | ❌ | Unsupported op BifurcationDetector |
 | test/contrib_ops/cdist_op_test/DoubleEuclidean_run0/model.onnx |  | Data/Data | ❌ | Unsupported op CDist |
