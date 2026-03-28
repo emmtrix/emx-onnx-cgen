@@ -646,6 +646,167 @@ class ConcatOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class QLinearConcatOp(RenderableOpBase):
+    __io_inputs__ = (
+        "output_scale",
+        "output_zero_point",
+        "inputs",
+        "input_scales",
+        "input_zero_points",
+    )
+    __io_outputs__ = ("output",)
+    output_scale: str
+    output_zero_point: str
+    inputs: tuple[str, ...]
+    input_scales: tuple[str, ...]
+    input_zero_points: tuple[str, ...]
+    output: str
+    axis: int
+    input_shapes: tuple[tuple[int, ...], ...]
+    output_shape: tuple[int, ...]
+    dtype: ScalarType
+    output_scale_dtype: ScalarType
+    input_scale_dtypes: tuple[ScalarType, ...]
+    output_scale_shape: tuple[int, ...]
+    output_zero_shape: tuple[int, ...]
+    input_scale_shapes: tuple[tuple[int, ...], ...]
+    input_zero_shapes: tuple[tuple[int, ...], ...]
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        includes: set[str] = {"#include <math.h>"}
+        if ctx.dtype(self.output).is_integer:
+            includes.add("#include <limits.h>")
+        return includes
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+
+        n = len(self.inputs)
+
+        param_map_entries = [
+            ("output_scale", self.output_scale),
+            ("output_zero_point", self.output_zero_point),
+        ]
+        for i in range(n):
+            param_map_entries.append((f"input_{i}", self.inputs[i]))
+        for i in range(n):
+            param_map_entries.append((f"input_scale_{i}", self.input_scales[i]))
+        for i in range(n):
+            param_map_entries.append((f"input_zero_{i}", self.input_zero_points[i]))
+        param_map_entries.append(("output", self.output))
+        params = emitter.shared_param_map(param_map_entries)
+
+        output_shape = self.output_shape
+        axis = self.axis
+        outer = CEmitterCompat.element_count(output_shape[:axis] or (1,))
+        inner = CEmitterCompat.element_count(output_shape[axis + 1 :] or (1,))
+        axis_sizes = tuple(shape[axis] for shape in self.input_shapes)
+
+        param_decls_list = [
+            (
+                params["output_scale"],
+                self.output_scale_dtype.c_type,
+                emitter.param_array_suffix(self.output_scale_shape),
+                True,
+            ),
+            (
+                params["output_zero_point"],
+                self.dtype.c_type,
+                emitter.param_array_suffix(self.output_zero_shape),
+                True,
+            ),
+        ]
+        # All data inputs first (matching __io_inputs__ order)
+        for i in range(n):
+            param_decls_list.append(
+                (
+                    params[f"input_{i}"],
+                    self.dtype.c_type,
+                    emitter.param_array_suffix(self.input_shapes[i]),
+                    True,
+                )
+            )
+        # All input scales
+        for i in range(n):
+            param_decls_list.append(
+                (
+                    params[f"input_scale_{i}"],
+                    self.input_scale_dtypes[i].c_type,
+                    emitter.param_array_suffix(self.input_scale_shapes[i]),
+                    True,
+                )
+            )
+        # All input zero points
+        for i in range(n):
+            param_decls_list.append(
+                (
+                    params[f"input_zero_{i}"],
+                    self.dtype.c_type,
+                    emitter.param_array_suffix(self.input_zero_shapes[i]),
+                    True,
+                )
+            )
+        param_decls_list.append(
+            (
+                params["output"],
+                self.dtype.c_type,
+                emitter.param_array_suffix(output_shape),
+                False,
+            )
+        )
+        param_decls = emitter.build_param_decls(param_decls_list)
+
+        all_scale_dtypes = set(self.input_scale_dtypes) | {self.output_scale_dtype}
+        compute_dtype = (
+            ScalarType.F64 if ScalarType.F64 in all_scale_dtypes else ScalarType.F32
+        )
+        compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
+
+        scale_index = "0"
+        input_names = tuple(params[f"input_{i}"] for i in range(n))
+        input_scale_exprs = tuple(
+            f"{params[f'input_scale_{i}']}[{scale_index}]" for i in range(n)
+        )
+        input_zero_exprs = tuple(
+            f"{params[f'input_zero_{i}']}[{scale_index}]" for i in range(n)
+        )
+        y_scale_expr = f"{params['output_scale']}[{scale_index}]"
+        y_zero_expr = f"{params['output_zero_point']}[{scale_index}]"
+        output_name = params["output"]
+
+        rendered = (
+            state.templates["qlinear_concat"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input_names=input_names,
+                output_name=output_name,
+                params=param_decls,
+                compute_type=compute_type,
+                output_c_type=self.dtype.c_type,
+                y_scale_expr=y_scale_expr,
+                y_zero_expr=y_zero_expr,
+                input_scale_exprs=input_scale_exprs,
+                input_zero_exprs=input_zero_exprs,
+                axis_sizes=axis_sizes,
+                input_count=n,
+                outer=outer,
+                inner=inner,
+                compute_dtype=compute_dtype,
+                min_literal=self.dtype.min_literal,
+                max_literal=self.dtype.max_literal,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.output_shape
+
+
+@dataclass(frozen=True)
 class CompressOp(RenderableOpBase):
     __io_inputs__ = ("data", "condition")
     __io_outputs__ = ("output",)

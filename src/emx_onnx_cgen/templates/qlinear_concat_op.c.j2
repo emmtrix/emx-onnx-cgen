@@ -1,0 +1,29 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const {{ compute_type }} y_scale_val = ({{ compute_type }}){{ y_scale_expr }};
+    const {{ compute_type }} y_zero_val = ({{ compute_type }}){{ y_zero_expr }};
+    const void *x_ptrs[] = { {% for n in input_names %}{{ n }}{% if not loop.last %}, {% endif %}{% endfor %} };
+    const {{ compute_type }} x_scales[] = { {% for e in input_scale_exprs %}({{ compute_type }})({{ e }}){% if not loop.last %}, {% endif %}{% endfor %} };
+    const int32_t x_zeros[] = { {% for e in input_zero_exprs %}(int32_t)({{ e }}){% if not loop.last %}, {% endif %}{% endfor %} };
+    const idx_t axis_sizes[] = { {% for s in axis_sizes %}{{ s }}{% if not loop.last %}, {% endif %}{% endfor %} };
+    idx_t total_axis = 0;
+    for (idx_t i = 0; i < {{ input_count }}; ++i) {
+        total_axis += axis_sizes[i];
+    }
+    {{ output_c_type }} *y_flat = ({{ output_c_type }} *){{ output_name }};
+    for (idx_t outer_idx = 0; outer_idx < {{ outer }}; ++outer_idx) {
+        idx_t axis_elem_offset = 0;
+        for (idx_t inp = 0; inp < {{ input_count }}; ++inp) {
+            const idx_t n_elems = axis_sizes[inp] * {{ inner }};
+            const {{ output_c_type }} *x_flat = (const {{ output_c_type }} *)x_ptrs[inp];
+            for (idx_t elem = 0; elem < n_elems; ++elem) {
+                {{ compute_type }} real_val = ({{ compute_type }})((int32_t)x_flat[outer_idx * n_elems + elem] - x_zeros[inp]) * x_scales[inp];
+                {{ compute_type }} scaled = real_val / y_scale_val + y_zero_val;
+                {{ compute_type }} rounded = {{ scalar_fn(SF.NEARBYINT, compute_dtype) }}(scaled);
+                rounded = {{ scalar_fn(SF.MAXIMUM, compute_dtype) }}(rounded, ({{ compute_type }}){{ min_literal }});
+                rounded = {{ scalar_fn(SF.MINIMUM, compute_dtype) }}(rounded, ({{ compute_type }}){{ max_literal }});
+                y_flat[outer_idx * total_axis * {{ inner }} + axis_elem_offset + elem] = ({{ output_c_type }})rounded;
+            }
+            axis_elem_offset += n_elems;
+        }
+    }
+}

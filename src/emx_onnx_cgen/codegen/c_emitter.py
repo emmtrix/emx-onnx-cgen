@@ -1040,6 +1040,7 @@ class CEmitter:
                     "dynamic_quantize_linear_op.c.j2"
                 ),
                 "qlinear_add": self._env.get_template("qlinear_add_op.c.j2"),
+                "qlinear_concat": self._env.get_template("qlinear_concat_op.c.j2"),
                 "qlinear_mul": self._env.get_template("qlinear_mul_op.c.j2"),
                 "qlinear_matmul": self._env.get_template("qlinear_matmul_op.c.j2"),
                 "qlinear_avg_pool": self._env.get_template(

@@ -82,6 +82,7 @@ _LOWERING_MODULES = [
     "qgemm",
     "qlinear_conv",
     "qlinear_add",
+    "qlinear_concat",
     "qlinear_matmul",
     "qlinear_mul",
     "qlinear_softmax",
