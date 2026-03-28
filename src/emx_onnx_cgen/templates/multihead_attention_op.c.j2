@@ -43,6 +43,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     }
                     {% endif %}
                     {% if unidirectional %}
+                    {# ORT does not apply causal masking for the last query position (qi == q_seq - 1). #}
                     if (ki > qi + {{ past_seq }} && qi < {{ q_seq - 1 }}) {
                         score = {{ min_literal }};
                     }
