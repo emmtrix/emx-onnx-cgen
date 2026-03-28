@@ -333,6 +333,49 @@ def _make_attention_model() -> onnx.ModelProto:
     )
 
 
+def _make_ms_attention_model() -> onnx.ModelProto:
+    """Build a com.microsoft::Attention model with fused QKV projection."""
+    batch, seq_len, input_hidden = 1, 2, 4
+    num_heads = 2
+    hidden = 4
+    total_qkv = 3 * hidden
+    input_info = helper.make_tensor_value_info(
+        "input", TensorProto.FLOAT, [batch, seq_len, input_hidden]
+    )
+    weight_info = helper.make_tensor_value_info(
+        "weight", TensorProto.FLOAT, [input_hidden, total_qkv]
+    )
+    bias_info = helper.make_tensor_value_info(
+        "bias", TensorProto.FLOAT, [total_qkv]
+    )
+    output = helper.make_tensor_value_info(
+        "output", TensorProto.FLOAT, [batch, seq_len, hidden]
+    )
+    node = helper.make_node(
+        "Attention",
+        inputs=["input", "weight", "bias"],
+        outputs=[output.name],
+        domain="com.microsoft",
+        num_heads=num_heads,
+    )
+    graph = helper.make_graph(
+        [node],
+        "ms_attention_graph",
+        [input_info, weight_info, bias_info],
+        [output],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[
+            helper.make_operatorsetid("", 13),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+    return model
+
+
 def _make_average_pool_model() -> onnx.ModelProto:
     input_shape = [1, 1, 4, 4]
     output_shape = [1, 1, 2, 2]
@@ -685,6 +728,7 @@ OP_GOLDEN_CASES = [
     ),
     ("gemm", "gemm", _make_gemm_model),
     ("attention", "attention", _make_attention_model),
+    ("ms_attention", "ms_attention", _make_ms_attention_model),
     ("conv", "conv", _make_conv_model),
     ("deformconv", "deform_conv", _make_deform_conv_model),
     ("averagepool", "average_pool", _make_average_pool_model),

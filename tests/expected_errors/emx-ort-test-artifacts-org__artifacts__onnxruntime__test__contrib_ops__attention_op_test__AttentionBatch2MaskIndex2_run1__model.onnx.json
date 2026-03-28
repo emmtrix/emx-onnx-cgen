@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op Attention",
+  "error": "OK (max ULP 5)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/attention_op_test/AttentionBatch2MaskIndex2_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::Attention"
-  ]
+  ],
+  "generated_checksum": "7a6a5ed466d4c91c41b832b09e05411ed745ba9def4203a4423edb64622db94b"
 }
