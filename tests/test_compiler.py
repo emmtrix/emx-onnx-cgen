@@ -7,7 +7,7 @@ from onnx import TensorProto, helper
 import pytest
 
 from emx_onnx_cgen.compiler import Compiler, CompilerOptions
-from emx_onnx_cgen.errors import ShapeInferenceError
+from emx_onnx_cgen.errors import ShapeInferenceError, UnsupportedOpError
 
 
 def _make_split_dynamic_dim_model() -> onnx.ModelProto:
@@ -238,6 +238,32 @@ def test_compile_debug_lowering_failure_context_enabled() -> None:
         "y0: tensor[dtype=float, shape=(-1, 1, 3), dim_params=('N', None, None)]"
         in message
     )
+
+
+def test_compile_reports_unsupported_op_with_domain() -> None:
+    model = helper.make_model(
+        helper.make_graph(
+            nodes=[
+                helper.make_node(
+                    "CustomUnsupported",
+                    ["x"],
+                    ["y"],
+                    domain="com.microsoft",
+                )
+            ],
+            name="custom_unsupported_graph",
+            inputs=[helper.make_tensor_value_info("x", TensorProto.FLOAT, [1])],
+            outputs=[helper.make_tensor_value_info("y", TensorProto.FLOAT, [1])],
+        ),
+        opset_imports=[helper.make_opsetid("com.microsoft", 1)],
+    )
+
+    compiler = Compiler(CompilerOptions())
+
+    with pytest.raises(
+        UnsupportedOpError, match=r"Unsupported op com\.microsoft\.CustomUnsupported"
+    ):
+        compiler.compile(model)
 
 
 def test_compile_resolves_constant_of_shape_from_negated_int_list() -> None:

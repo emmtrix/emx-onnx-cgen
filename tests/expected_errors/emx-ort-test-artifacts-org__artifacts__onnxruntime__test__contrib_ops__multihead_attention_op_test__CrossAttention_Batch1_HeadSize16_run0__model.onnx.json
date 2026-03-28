@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op MultiHeadAttention",
+  "error": "Unsupported op com.microsoft.MultiHeadAttention",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch1_HeadSize16_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
