@@ -6556,6 +6556,103 @@ class MaxPoolOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class NhwcMaxPoolOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
+    input0: str
+    output: str
+    batch: int
+    channels: int
+    spatial_rank: int
+    in_spatial: tuple[int, ...]
+    out_spatial: tuple[int, ...]
+    kernel_shape: tuple[int, ...]
+    strides: tuple[int, ...]
+    pads: tuple[int, ...]
+    dilations: tuple[int, ...]
+    ceil_mode: bool
+    dtype: ScalarType
+
+    _INT_TYPES = frozenset(
+        {ScalarType.I64, ScalarType.I32, ScalarType.I16, ScalarType.I8}
+    )
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        includes: set[str] = set()
+        if self.dtype.is_float:
+            includes.add("#include <math.h>")
+        if self.dtype in self._INT_TYPES:
+            includes.add("#include <limits.h>")
+        return includes
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.output)
+        c_type = output_dtype.c_type
+        min_literal = output_dtype.min_literal
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("output", self.output),
+            ]
+        )
+        input_shape = (self.batch, *self.in_spatial, self.channels)
+        output_shape = (self.batch, *self.out_spatial, self.channels)
+        input_dim_names = emitter.dim_names_for(self.input0)
+        output_dim_names = emitter.dim_names_for(self.output)
+        input_shape_expr = CEmitterCompat.shape_dim_exprs(input_shape, input_dim_names)
+        output_shape_expr = CEmitterCompat.shape_dim_exprs(
+            output_shape, output_dim_names
+        )
+        input_suffix = emitter.param_array_suffix(input_shape, input_dim_names)
+        output_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        rendered = (
+            state.templates["nhwc_maxpool"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                min_literal=min_literal,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                dtype=self.dtype,
+                batch=input_shape_expr[0],
+                channels=input_shape_expr[-1],
+                spatial_rank=self.spatial_rank,
+                in_spatial=input_shape_expr[1:-1],
+                out_spatial=output_shape_expr[1:-1],
+                kernel_shape=self.kernel_shape,
+                strides=self.strides,
+                pads=self.pads,
+                dilations=self.dilations,
+                ceil_mode=int(self.ceil_mode),
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return (self.batch, *self.out_spatial, self.channels)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        shape = self.computed_output_shape(emitter)
+        return ((self.output, shape, self.dtype),)
+
+
+@dataclass(frozen=True)
 class MaxUnpoolOp(RenderableOpBase):
     __io_inputs__ = ("input0", "indices")
     __io_outputs__ = ("output",)
