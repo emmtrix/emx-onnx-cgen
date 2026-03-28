@@ -1080,6 +1080,9 @@ class CEmitter:
                 "gru": self._env.get_template("gru_op.c.j2"),
                 "rnn": self._env.get_template("rnn_op.c.j2"),
                 "lstm": self._env.get_template("lstm_op.c.j2"),
+                "dynamic_quantize_lstm": self._env.get_template(
+                    "dynamic_quantize_lstm_op.c.j2"
+                ),
                 "adam": self._env.get_template("adam_op.c.j2"),
                 "adagrad": self._env.get_template("adagrad_op.c.j2"),
                 "momentum": self._env.get_template("momentum_op.c.j2"),

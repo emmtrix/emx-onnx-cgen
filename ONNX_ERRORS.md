@@ -10,7 +10,6 @@ Aggregates non-success verification outcomes.
 | MatMulNBits g_idx (input 4) is not supported | 238 |  |
 | AveragePool has unsupported attributes | 72 |  |
 | Out of tolerance | 72 | 7, 17 |
-| Unsupported op com.microsoft.DynamicQuantizeLSTM | 50 |  |
 | Unsupported op com.microsoft.MatMulIntegerToFloat | 48 |  |
 | Unsupported op com.microsoft.DynamicQuantizeMatMul | 39 |  |
 | Unsupported op com.microsoft.QLinearConcat | 36 |  |
@@ -963,56 +962,6 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/quantize_attention_op_test/QAttentionUnidirectional_U8U8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
 | test/contrib_ops/quantize_attention_op_test/SharedPrepackedWeights_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
 | test/contrib_ops/quantize_attention_op_test/SharedPrepackedWeights_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run10/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run11/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run12/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run13/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run14/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run15/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run16/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run17/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run18/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run19/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run20/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run21/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run22/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run23/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run4/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run5/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run6/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run7/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run8/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run9/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SharedPrepackedWeights_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SharedPrepackedWeights_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run10/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run11/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run12/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run13/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run14/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run15/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run16/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run17/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run18/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run19/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run20/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run21/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run22/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run23/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run4/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run5/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run6/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run7/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run8/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run9/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
 | test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_CustomRotaryDim_SmallData_Phi_Packed_Batching_run0/model.onnx |  | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
 | test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_CustomRotaryDim_SmallData_Phi_Packed_Batching_run1/model.onnx |  | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
 | test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_CustomRotaryDim_SmallData_Phi_run0/model.onnx |  | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
