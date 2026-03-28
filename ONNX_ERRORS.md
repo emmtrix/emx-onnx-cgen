@@ -8,8 +8,8 @@ Aggregates non-success verification outcomes.
 | Error message | Count | Opset versions |
 | --- | --- | --- |
 | MatMulNBits g_idx (input 4) is not supported | 238 |  |
-| Out of tolerance | 75 | 7, 17 |
 | AveragePool has unsupported attributes | 72 |  |
+| Out of tolerance | 69 | 7, 17 |
 | Unsupported op Attention | 65 |  |
 | Unsupported op DynamicQuantizeLSTM | 50 |  |
 | Unsupported op MatMulIntegerToFloat | 48 |  |
@@ -26,6 +26,7 @@ Aggregates non-success verification outcomes.
 | Unsupported op DynamicSlice | 12 | 1 |
 | Unsupported op QEmbedLayerNormalization | 12 |  |
 | Unsupported op ExpandDims | 11 |  |
+| Testbench execution failed: exit code 1 | 10 |  |
 | Unsupported op CropAndResize | 10 |  |
 | Unsupported op EmbedLayerNormalization | 10 |  |
 | Unsupported op QLinearWhere | 10 |  |
@@ -41,7 +42,6 @@ Aggregates non-success verification outcomes.
 | GatherBlockQuantized axis 3 is out of range for rank 3 | 4 |  |
 | GatherBlockQuantized scales shape (2, 2, 1) does not match expected (2, 3, 1) (data_shape=(2, 3, 4), quantize_axis=2, block_size=16, packed=False) | 4 |  |
 | GatherBlockQuantized scales shape (2, 3, 1) does not match expected (2, 3, 2) (data_shape=(2, 3, 4), quantize_axis=2, block_size=16, packed=True) | 4 |  |
-| Output shape mismatch for output (actual_shape=(1, 3, 16), actual_size=48, expected_shape=(1, 3, 4), expected_size=12, output=output) | 4 |  |
 | QLinearSoftmax axis -2 is out of bounds for shape () | 4 |  |
 | Unique must have 1 input and 4 outputs | 4 |  |
 | Unsupported op Crop | 4 | 1, 7 |
@@ -52,9 +52,9 @@ Aggregates non-success verification outcomes.
 | Output shape mismatch for Y (actual_shape=(3, 2, 3, 2), actual_size=36, expected_shape=(3, 2, 3, 1), expected_size=18, output=Y) | 3 |  |
 | Unsupported op CDist | 3 |  |
 | Unsupported op FastGelu | 3 |  |
-| Failed to build testbench (model.c:125:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Werror=incompatible-pointer-types]). | 2 |  |
-| Failed to build testbench (model.c:137:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Werror=incompatible-pointer-types]). | 2 |  |
-| Failed to build testbench (model.c:139:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Werror=incompatible-pointer-types]). | 2 |  |
+| Failed to build testbench (model.c:125:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Wincompatible-pointer-types]). | 2 |  |
+| Failed to build testbench (model.c:137:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Wincompatible-pointer-types]). | 2 |  |
+| Failed to build testbench (model.c:139:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Wincompatible-pointer-types]). | 2 |  |
 | FusedMatMul inner dimensions must match after transposition, got effective shapes (2, 2, 3) and (3, 1, 4) (original: (2, 2, 3) and (3, 1, 4)) | 2 |  |
 | GatherBlockQuantized data dtype must be integer, got int64 | 2 |  |
 | GatherBlockQuantized data dtype must be integer, got uint64 | 2 |  |
@@ -355,12 +355,12 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run3/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized axis -1 is out of range for rank 3 |
 | test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run4/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized axis -1 is out of range for rank 3 |
 | test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run5/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized axis -1 is out of range for rank 3 |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 3004735551) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run1/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 3004735551) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run2/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 2977326117) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run3/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 2977326117) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run4/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1096810496) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run5/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1096810496) |
+| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run0/model.onnx |  | Data/Data | ❌ | Testbench execution failed: exit code 1 |
+| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run1/model.onnx |  | Data/Data | ❌ | Testbench execution failed: exit code 1 |
+| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run2/model.onnx |  | Data/Data | ❌ | Testbench execution failed: exit code 1 |
+| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run3/model.onnx |  | Data/Data | ❌ | Testbench execution failed: exit code 1 |
+| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run4/model.onnx |  | Data/Data | ❌ | Testbench execution failed: exit code 1 |
+| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run5/model.onnx |  | Data/Data | ❌ | Testbench execution failed: exit code 1 |
 | test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run0/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized axis 3 is out of range for rank 3 |
 | test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run1/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized axis 3 is out of range for rank 3 |
 | test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run2/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized axis -1 is out of range for rank 3 |
@@ -395,12 +395,12 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run15/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized indices must be int32 or int64 |
 | test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run16/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized indices must be int32 or int64 |
 | test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run17/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized indices must be int32 or int64 |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run2/model.onnx |  | Data/Data | ❌ | Output shape mismatch for output (actual_shape=(1, 3, 16), actual_size=48, expected_shape=(1, 3, 4), expected_size=12, output=output) |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run2/model.onnx |  | Data/Data | ❌ | Testbench execution failed: exit code 1 |
 | test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run22/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized indices must be int32 or int64 |
 | test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run23/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized indices must be int32 or int64 |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run3/model.onnx |  | Data/Data | ❌ | Output shape mismatch for output (actual_shape=(1, 3, 16), actual_size=48, expected_shape=(1, 3, 4), expected_size=12, output=output) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run4/model.onnx |  | Data/Data | ❌ | Output shape mismatch for output (actual_shape=(1, 3, 16), actual_size=48, expected_shape=(1, 3, 4), expected_size=12, output=output) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run5/model.onnx |  | Data/Data | ❌ | Output shape mismatch for output (actual_shape=(1, 3, 16), actual_size=48, expected_shape=(1, 3, 4), expected_size=12, output=output) |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run3/model.onnx |  | Data/Data | ❌ | Testbench execution failed: exit code 1 |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run4/model.onnx |  | Data/Data | ❌ | Testbench execution failed: exit code 1 |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run5/model.onnx |  | Data/Data | ❌ | Testbench execution failed: exit code 1 |
 | test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run6/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized scales shape (2, 3, 1) does not match expected (2, 3, 2) (data_shape=(2, 3, 4), quantize_axis=2, block_size=16, packed=True) |
 | test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run7/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized scales shape (2, 3, 1) does not match expected (2, 3, 2) (data_shape=(2, 3, 4), quantize_axis=2, block_size=16, packed=True) |
 | test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run8/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized scales shape (2, 3, 1) does not match expected (2, 3, 2) (data_shape=(2, 3, 4), quantize_axis=2, block_size=16, packed=True) |
@@ -720,16 +720,16 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run93/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run97/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run98/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run0/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:125:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Werror=incompatible-pointer-types]). |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run1/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:139:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Werror=incompatible-pointer-types]). |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run0/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:125:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Wincompatible-pointer-types]). |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run1/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:139:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Wincompatible-pointer-types]). |
 | test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run2/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
 | test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run3/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run4/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:137:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Werror=incompatible-pointer-types]). |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run5/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:125:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Werror=incompatible-pointer-types]). |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run6/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:139:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Werror=incompatible-pointer-types]). |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run4/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:137:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Wincompatible-pointer-types]). |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run5/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:125:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Wincompatible-pointer-types]). |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run6/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:139:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Wincompatible-pointer-types]). |
 | test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run7/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
 | test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run8/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run9/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:137:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Werror=incompatible-pointer-types]). |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run9/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:137:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Wincompatible-pointer-types]). |
 | test/contrib_ops/matmul_integer16_test/MatMulInteger16_1_run0/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulInteger16 |
 | test/contrib_ops/matmul_integer16_test/MatMulInteger16_2_run0/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulInteger16 |
 | test/contrib_ops/matmul_integer16_test/MatMulInteger16_3_run0/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulInteger16 |

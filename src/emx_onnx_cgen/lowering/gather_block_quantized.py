@@ -31,9 +31,7 @@ _QUANTIZED_DTYPES = {
 
 
 @register_lowering("GatherBlockQuantized")
-def lower_gather_block_quantized(
-    graph: Graph, node: Node
-) -> GatherBlockQuantizedOp:
+def lower_gather_block_quantized(graph: Graph, node: Node) -> GatherBlockQuantizedOp:
     if len(node.inputs) not in {3, 4} or len(node.outputs) != 1:
         raise UnsupportedOpError(
             "GatherBlockQuantized must have 3 or 4 inputs and 1 output"
@@ -69,13 +67,9 @@ def lower_gather_block_quantized(
             f"got {data_dtype.onnx_name}"
         )
     if indices_dtype not in {ScalarType.I32, ScalarType.I64}:
-        raise UnsupportedOpError(
-            "GatherBlockQuantized indices must be int32 or int64"
-        )
+        raise UnsupportedOpError("GatherBlockQuantized indices must be int32 or int64")
     if not scales_dtype.is_float:
-        raise UnsupportedOpError(
-            "GatherBlockQuantized scales must be float"
-        )
+        raise UnsupportedOpError("GatherBlockQuantized scales must be float")
     if output_dtype != scales_dtype:
         raise UnsupportedOpError(
             "GatherBlockQuantized output dtype must match scales dtype"
@@ -118,9 +112,7 @@ def lower_gather_block_quantized(
         # When data is packed, zero_points may also be packed.
         if packed:
             expected_zp_shape = list(data_shape)
-            expected_zp_shape[quantize_axis] = math.ceil(
-                n_blocks / values_per_element
-            )
+            expected_zp_shape[quantize_axis] = math.ceil(n_blocks / values_per_element)
             if zero_point_shape == tuple(expected_zp_shape):
                 zero_points_packed = True
             elif zero_point_shape == tuple(expected_scales_shape):

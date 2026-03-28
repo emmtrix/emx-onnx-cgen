@@ -872,9 +872,7 @@ class GatherBlockQuantizedOp(RenderableOpBase):
         data_suffix = emitter.param_array_suffix(data_shape)
         indices_suffix = emitter.param_array_suffix(indices_shape)
         scales_suffix = emitter.param_array_suffix(scales_shape)
-        output_suffix = emitter.param_array_suffix(
-            output_shape_raw, output_dim_names
-        )
+        output_suffix = emitter.param_array_suffix(output_shape_raw, output_dim_names)
 
         param_entries: list[tuple[str | None, str, str, bool] | tuple] = [
             (params["data"], data_dtype.c_type, data_suffix, True),
@@ -903,9 +901,7 @@ class GatherBlockQuantizedOp(RenderableOpBase):
         indices_vars = (
             ("0",)
             if indices_rank == 0
-            else output_loop_vars[
-                self.gather_axis : self.gather_axis + indices_rank
-            ]
+            else output_loop_vars[self.gather_axis : self.gather_axis + indices_rank]
         )
 
         # Build data index expression from output loop vars.
@@ -985,9 +981,7 @@ class GatherBlockQuantizedOp(RenderableOpBase):
             (self.scales, emitter.ctx_shape(self.scales)),
         ]
         if self.zero_points is not None:
-            inputs.append(
-                (self.zero_points, emitter.ctx_shape(self.zero_points))
-            )
+            inputs.append((self.zero_points, emitter.ctx_shape(self.zero_points)))
         return tuple(inputs)
 
 
