@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 210 / 258
+Supported operators: 211 / 258
 
 | Operator | Supported |
 | --- | --- |
@@ -247,7 +247,7 @@ Supported operators: 210 / 258
 | com.microsoft::NhwcMaxPool | ❌ |
 | com.microsoft::QAttention | ❌ |
 | com.microsoft::QEmbedLayerNormalization | ❌ |
-| com.microsoft::QGemm | ❌ |
+| com.microsoft::QGemm | ✅ |
 | com.microsoft::QLinearAdd | ✅ |
 | com.microsoft::QLinearAveragePool | ✅ |
 | com.microsoft::QLinearConcat | ❌ |
