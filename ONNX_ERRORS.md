@@ -18,7 +18,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op com.microsoft.MultiHeadAttention | 28 |  |
 | Unsupported op com.microsoft.Tokenizer | 28 |  |
 | Unsupported op com.microsoft.QAttention | 24 |  |
-| Unsupported op com.microsoft.MurmurHash3 | 17 |  |
 | Unsupported op com.microsoft.SkipLayerNormalization | 17 |  |
 | LayerNormalization scale rank must match normalized rank | 15 | 7, 17 |
 | RotaryEmbedding inputs must share the same dtype | 12 |  |
@@ -83,6 +82,7 @@ Aggregates non-success verification outcomes.
 | FusedMatMul inner dimensions must match after transposition, got effective shapes (3, 2, 2) and (1, 3, 4) (original: (3, 2, 2) and (1, 4, 3)) | 1 |  |
 | FusedMatMul inner dimensions must match after transposition, got effective shapes (3, 2, 2) and (3, 1, 4) (original: (3, 2, 2) and (3, 1, 4)) | 1 |  |
 | FusedMatMul inner dimensions must match after transposition, got effective shapes (3, 2, 2) and (4, 3, 1) (original: (3, 2, 2) and (4, 1, 3)) | 1 |  |
+| MurmurHash3 does not support input dtype int8; supported: int32, int64, float, double, string | 1 |  |
 | Output shape mismatch for Y (actual_shape=(3, 2, 4), actual_size=24, expected_shape=(1, 2, 4), expected_size=8, output=Y) | 1 |  |
 | Output shape mismatch for Y (actual_shape=(3, 3, 2, 2), actual_size=36, expected_shape=(3, 2, 3, 1), expected_size=18, output=Y) | 1 |  |
 | Unsupported op ai.onnx.ImageScaler | 1 | 7 |
@@ -743,23 +743,7 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/multihead_attention_op_test/SelfAttention_WithPastAndPresent_NoMask_NoRelPosBias_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MultiHeadAttention |
 | test/contrib_ops/multihead_attention_op_test/SelfAttention_WithPastAndPresent_NoMask_NoRelPosBias_run4/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MultiHeadAttention |
 | test/contrib_ops/multihead_attention_op_test/SelfAttention_WithPastAndPresent_NoMask_NoRelPosBias_run5/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MultiHeadAttention |
-| test/contrib_ops/murmur_hash3_test/DefaultSeed_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/MoreDataFloat_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/MoreDataInt_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/MultipleStringsKeyUIntResult_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/NonZeroSeedUIntResult_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/NonZeroSeed_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/StringKeyIntResult_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/StringKeyIntWithSeed42_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/StringKeyUIntResult_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/StringKeyUIntWithSeed42_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/UnsupportedInputType_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/ZeroSeedDoubleResult_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/ZeroSeedFloatResult_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/ZeroSeedUIntResult2_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/ZeroSeedUIntResult3_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/ZeroSeedUIntResult_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/ZeroSeed_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
+| test/contrib_ops/murmur_hash3_test/UnsupportedInputType_run0/model.onnx |  | Data/Data | ❌ | MurmurHash3 does not support input dtype int8; supported: int32, int64, float, double, string |
 | test/contrib_ops/ngram_repeat_block_op_test/NGramSize_3_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.NGramRepeatBlock |
 | test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch1_Float16_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QEmbedLayerNormalization |
 | test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch1_Float16_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QEmbedLayerNormalization |
