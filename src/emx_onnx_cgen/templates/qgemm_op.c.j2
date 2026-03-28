@@ -1,0 +1,64 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const {{ compute_type }} a_scale_val = ({{ compute_type }}){{ a_scale }}[0];
+    const int32_t a_zero = (int32_t){{ a_zero_point }}[0];
+{% if has_y_scale %}
+    const {{ compute_type }} y_scale_val = ({{ compute_type }}){{ y_scale }}[0];
+    const int32_t y_zero = (int32_t){{ y_zero_point }}[0];
+{% endif %}
+    for (idx_t i = 0; i < {{ m }}; ++i) {
+        for (idx_t j = 0; j < {{ n }}; ++j) {
+{% if b_scale_per_column %}
+            const {{ compute_type }} b_scale_val = ({{ compute_type }}){{ b_scale }}[j];
+            const int32_t b_zero = (int32_t){{ b_zero_point }}[j];
+{% else %}
+            const {{ compute_type }} b_scale_val = ({{ compute_type }}){{ b_scale }}[0];
+            const int32_t b_zero = (int32_t){{ b_zero_point }}[0];
+{% endif %}
+            int64_t acc = 0;
+            for (idx_t k = 0; k < {{ k }}; ++k) {
+{% if trans_a %}
+                const int32_t a_val = (int32_t){{ input_a }}[k][i];
+{% else %}
+                const int32_t a_val = (int32_t){{ input_a }}[i][k];
+{% endif %}
+{% if trans_b %}
+                const int32_t b_val = (int32_t){{ input_b }}[j][k];
+{% else %}
+                const int32_t b_val = (int32_t){{ input_b }}[k][j];
+{% endif %}
+                acc += (int64_t)(a_val - a_zero) * (int64_t)(b_val - b_zero);
+            }
+{% if input_c %}
+{% if c_rank == 2 %}
+            idx_t c_i = {% if c_dim0 == 1 %}0{% else %}i{% endif %};
+            idx_t c_j = {% if c_dim1 == 1 %}0{% else %}j{% endif %};
+            acc += (int64_t){{ input_c }}[c_i][c_j];
+{% elif c_rank == 1 %}
+{% if c_axis == "row" %}
+            idx_t c_i = {% if c_dim1 == 1 %}0{% else %}i{% endif %};
+            acc += (int64_t){{ input_c }}[c_i];
+{% else %}
+            idx_t c_j = {% if c_dim1 == 1 %}0{% else %}j{% endif %};
+            acc += (int64_t){{ input_c }}[c_j];
+{% endif %}
+{% else %}
+            acc += (int64_t){{ input_c }}[0];
+{% endif %}
+{% endif %}
+            {{ compute_type }} result = {{ alpha_literal }} * a_scale_val * b_scale_val * ({{ compute_type }})acc;
+{% if has_y_scale %}
+            {{ compute_type }} scaled = result / y_scale_val + ({{ compute_type }})y_zero;
+            int64_t quantized = (int64_t){{ scalar_fn(SF.LLRINT, compute_dtype) }}(scaled);
+            if (quantized < (int64_t){{ min_literal }}) {
+                quantized = (int64_t){{ min_literal }};
+            } else if (quantized > (int64_t){{ max_literal }}) {
+                quantized = (int64_t){{ max_literal }};
+            }
+            {{ output }}[i][j] = ({{ output_c_type }})quantized;
+{% else %}
+            {{ output }}[i][j] = ({{ output_c_type }})result;
+{% endif %}
+        }
+    }
+}
+

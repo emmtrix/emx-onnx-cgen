@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op NhwcMaxPool",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run17 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::NhwcMaxPool"
-  ]
+  ],
+  "generated_checksum": "a0815702ad4c80c8e60a55813ee5c8c6cb4017ee3d2fd5e097a5cd14fe26fd48"
 }

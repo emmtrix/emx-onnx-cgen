@@ -7962,3 +7962,218 @@ def test_array_feature_extractor_reference_compare() -> None:
         output_shape=[3, 2],
     )
     _run_reference_testbench_compare(model)
+
+
+def _make_fused_matmul_model(
+    *,
+    input_a_shape: list[int],
+    input_b_shape: list[int],
+    output_shape: list[int],
+    attrs: dict[str, object] | None = None,
+    dtype: int = TensorProto.FLOAT,
+) -> onnx.ModelProto:
+    input_a = helper.make_tensor_value_info("in0", dtype, input_a_shape)
+    input_b = helper.make_tensor_value_info("in1", dtype, input_b_shape)
+    output = helper.make_tensor_value_info("out", dtype, output_shape)
+    node = helper.make_node(
+        "FusedMatMul",
+        inputs=["in0", "in1"],
+        outputs=["out"],
+        domain="com.microsoft",
+        **(attrs or {}),
+    )
+    graph = helper.make_graph([node], "fusedmatmul_graph", [input_a, input_b], [output])
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[
+            helper.make_operatorsetid("", 13),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+    return model
+
+
+def test_fused_matmul_basic_compiles() -> None:
+    model = _make_fused_matmul_model(
+        input_a_shape=[2, 3],
+        input_b_shape=[3, 4],
+        output_shape=[2, 4],
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_fused_matmul_trans_a_compiles() -> None:
+    model = _make_fused_matmul_model(
+        input_a_shape=[3, 2],
+        input_b_shape=[3, 4],
+        output_shape=[2, 4],
+        attrs={"transA": 1},
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_fused_matmul_trans_b_compiles() -> None:
+    model = _make_fused_matmul_model(
+        input_a_shape=[2, 3],
+        input_b_shape=[4, 3],
+        output_shape=[2, 4],
+        attrs={"transB": 1},
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_fused_matmul_alpha_compiles() -> None:
+    model = _make_fused_matmul_model(
+        input_a_shape=[2, 3],
+        input_b_shape=[3, 4],
+        output_shape=[2, 4],
+        attrs={"alpha": 0.5},
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_fused_matmul_trans_a_and_b_with_alpha_compiles() -> None:
+    model = _make_fused_matmul_model(
+        input_a_shape=[3, 2],
+        input_b_shape=[4, 3],
+        output_shape=[2, 4],
+        attrs={"transA": 1, "transB": 1, "alpha": 2.0},
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_fused_matmul_batched_compiles() -> None:
+    model = _make_fused_matmul_model(
+        input_a_shape=[2, 3, 4],
+        input_b_shape=[2, 4, 5],
+        output_shape=[2, 3, 5],
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_fused_matmul_batched_trans_a_compiles() -> None:
+    model = _make_fused_matmul_model(
+        input_a_shape=[2, 4, 3],
+        input_b_shape=[2, 4, 5],
+        output_shape=[2, 3, 5],
+        attrs={"transA": 1},
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_fused_matmul_batched_trans_batch_a_compiles() -> None:
+    model = _make_fused_matmul_model(
+        input_a_shape=[2, 3, 4, 5],
+        input_b_shape=[3, 2, 5, 6],
+        output_shape=[3, 2, 4, 6],
+        attrs={"transBatchA": 1},
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_fused_matmul_basic_testbench() -> None:
+    model = _make_fused_matmul_model(
+        input_a_shape=[2, 3],
+        input_b_shape=[3, 4],
+        output_shape=[2, 4],
+    )
+    _run_testbench_compare(model)
+
+
+def test_fused_matmul_trans_a_testbench() -> None:
+    model = _make_fused_matmul_model(
+        input_a_shape=[3, 2],
+        input_b_shape=[3, 4],
+        output_shape=[2, 4],
+        attrs={"transA": 1},
+    )
+    _run_testbench_compare(model)
+
+
+def test_fused_matmul_trans_b_testbench() -> None:
+    model = _make_fused_matmul_model(
+        input_a_shape=[2, 3],
+        input_b_shape=[4, 3],
+        output_shape=[2, 4],
+        attrs={"transB": 1},
+    )
+    _run_testbench_compare(model)
+
+
+def test_fused_matmul_alpha_testbench() -> None:
+    model = _make_fused_matmul_model(
+        input_a_shape=[2, 3],
+        input_b_shape=[3, 4],
+        output_shape=[2, 4],
+        attrs={"alpha": 0.5},
+    )
+    _run_testbench_compare(model)
+
+
+def test_fused_matmul_trans_a_b_alpha_testbench() -> None:
+    model = _make_fused_matmul_model(
+        input_a_shape=[3, 2],
+        input_b_shape=[4, 3],
+        output_shape=[2, 4],
+        attrs={"transA": 1, "transB": 1, "alpha": 2.0},
+    )
+    _run_testbench_compare(model)
+
+
+def test_fused_matmul_batched_testbench() -> None:
+    model = _make_fused_matmul_model(
+        input_a_shape=[2, 3, 4],
+        input_b_shape=[2, 4, 5],
+        output_shape=[2, 3, 5],
+    )
+    _run_testbench_compare(model)
+
+
+def test_fused_matmul_batched_trans_a_testbench() -> None:
+    model = _make_fused_matmul_model(
+        input_a_shape=[2, 4, 3],
+        input_b_shape=[2, 4, 5],
+        output_shape=[2, 3, 5],
+        attrs={"transA": 1},
+    )
+    _run_testbench_compare(model)
+
+
+def test_fused_matmul_batched_broadcast_testbench() -> None:
+    model = _make_fused_matmul_model(
+        input_a_shape=[2, 3, 4],
+        input_b_shape=[4, 5],
+        output_shape=[2, 3, 5],
+    )
+    _run_testbench_compare(model)
+
+
+def test_fused_matmul_batched_trans_batch_a_testbench() -> None:
+    model = _make_fused_matmul_model(
+        input_a_shape=[2, 3, 4, 5],
+        input_b_shape=[3, 2, 5, 6],
+        output_shape=[3, 2, 4, 6],
+        attrs={"transBatchA": 1},
+    )
+    rng = np.random.default_rng(42)
+    a = rng.standard_normal((2, 3, 4, 5)).astype(np.float32)
+    b = rng.standard_normal((3, 2, 5, 6)).astype(np.float32)
+    # transBatchA reverses batch dims: A_eff = A.transpose(1, 0, 2, 3)
+    a_eff = a.transpose(1, 0, 2, 3)
+    expected = np.matmul(a_eff, b)
+    payload = _compile_and_run_testbench(model, testbench_inputs={"in0": a, "in1": b})
+    output_data = decode_testbench_array(
+        payload["outputs"]["out"]["data"], expected.dtype
+    )
+    output_data = output_data.reshape(expected.shape)
+    np.testing.assert_allclose(output_data, expected, rtol=1e-4, atol=1e-5)

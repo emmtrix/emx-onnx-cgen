@@ -70,9 +70,7 @@ def _resolve_matmul_nbits_spec(
 def _int_attr(node: Node, name: str) -> int:
     val = node.attrs.get(name)
     if val is None:
-        raise UnsupportedOpError(
-            f"MatMulNBits requires attribute '{name}'"
-        )
+        raise UnsupportedOpError(f"MatMulNBits requires attribute '{name}'")
     return int(val)
 
 
@@ -124,9 +122,7 @@ def lower_matmul_nbits(graph: Graph, node: Node) -> MatMulNBitsOp:
     bias = _optional_input(node, 5)
 
     if g_idx is not None:
-        raise UnsupportedOpError(
-            "MatMulNBits g_idx (input 4) is not supported"
-        )
+        raise UnsupportedOpError("MatMulNBits g_idx (input 4) is not supported")
 
     zero_points_dtype: ScalarType | None = None
     zero_points_packed = False
