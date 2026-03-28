@@ -4,6 +4,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 from dataclasses import dataclass
 from functools import cache
 from pathlib import Path
@@ -535,6 +536,10 @@ def _is_failure_expectation(expectation: OnnxFileExpectation) -> bool:
     return not expectation.error.startswith("OK")
 
 
+def _is_unsupported_op_result(error: str) -> bool:
+    return error.startswith("Unsupported op ")
+
+
 def _should_use_expected_checksum(expectation: OnnxFileExpectation) -> bool:
     if expectation.generated_checksum is None:
         return False
@@ -616,7 +621,7 @@ def _run_expected_error_test(
     if actual_error == "CHECKSUM":
         actual_error = expected_error
 
-    if os.getenv("UPDATE_REFS"):
+    if os.getenv("UPDATE_REFS") or _is_unsupported_op_result(actual_error):
         actual_expectation = OnnxFileExpectation(
             path=expectation_path,
             error=actual_error,
@@ -676,6 +681,58 @@ def test_run_expected_error_test_does_not_add_sanitize_flag(
 
     assert captured_args
     assert "--sanitize" not in captured_args[0]
+
+
+def test_run_expected_error_test_updates_ref_for_unsupported_op(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    repo_root = tmp_path / "repo"
+    model_dir = repo_root / "tests" / "onnx"
+    model_dir.mkdir(parents=True)
+    model_path = model_dir / "model.onnx"
+    model_path.write_bytes(b"")
+
+    written: list[tuple[OnnxFileExpectation, str]] = []
+
+    def _fake_run_cli_command(argv: list[str]) -> cli.CliResult:
+        return cli.CliResult(
+            exit_code=1,
+            command_line="verify --model-base-dir tests/onnx model.onnx",
+            result="Unsupported op ai.onnx.CustomUnsupported",
+        )
+
+    def _fake_write_expectation_file(
+        expectation: OnnxFileExpectation,
+        *,
+        repo_relative_path: str,
+    ) -> None:
+        written.append((expectation, repo_relative_path))
+
+    monkeypatch.setattr(cli, "run_cli_command", _fake_run_cli_command)
+    monkeypatch.setattr(
+        sys.modules[__name__],
+        "_write_expectation_file",
+        _fake_write_expectation_file,
+    )
+    monkeypatch.delenv("UPDATE_REFS", raising=False)
+
+    _run_expected_error_test(
+        repo_root=repo_root,
+        repo_relative_path="tests/onnx/model.onnx",
+        model_path=model_path,
+        expectation=OnnxFileExpectation(
+            path="tests/onnx/model.onnx",
+            error="Unsupported op ai.onnx.LegacyName",
+        ),
+        expectation_path="tests/onnx/model.onnx",
+    )
+
+    assert len(written) == 1
+    expectation, repo_relative_path = written[0]
+    assert repo_relative_path == "tests/onnx/model.onnx"
+    assert expectation.error == "Unsupported op ai.onnx.CustomUnsupported"
+    assert expectation.command_line == "verify --model-base-dir tests/onnx model.onnx"
 
 
 def test_read_expectation_file_reads_extra_cli_args(tmp_path: Path) -> None:
