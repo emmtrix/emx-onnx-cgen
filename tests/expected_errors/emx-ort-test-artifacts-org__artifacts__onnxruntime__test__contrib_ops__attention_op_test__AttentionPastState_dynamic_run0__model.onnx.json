@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op Attention",
+  "error": "Out of tolerance (max ULP 58877)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/attention_op_test/AttentionPastState_dynamic_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::Attention"
-  ]
+  ],
+  "generated_checksum": "a1d573c889327fb2ce7390e5f99b2d2b8448883b3be6fdefcda49eec492a128b"
 }

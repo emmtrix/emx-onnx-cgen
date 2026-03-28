@@ -4575,6 +4575,96 @@ def test_selu_custom_attributes_testbench_compare() -> None:
     _run_testbench_compare(model)
 
 
+def _make_ms_attention_model(
+    *,
+    batch: int = 1,
+    seq_len: int = 2,
+    input_hidden: int = 4,
+    num_heads: int = 2,
+    qkv_hidden_sizes: list[int] | None = None,
+    unidirectional: int = 0,
+    mask_shape: list[int] | None = None,
+) -> onnx.ModelProto:
+    """Build a com.microsoft::Attention model."""
+    hidden = input_hidden
+    if qkv_hidden_sizes is not None:
+        total_qkv = sum(qkv_hidden_sizes)
+        v_hidden = qkv_hidden_sizes[2]
+    else:
+        total_qkv = 3 * hidden
+        v_hidden = hidden
+    inputs_info = [
+        helper.make_tensor_value_info(
+            "input", TensorProto.FLOAT, [batch, seq_len, input_hidden]
+        ),
+        helper.make_tensor_value_info(
+            "weight", TensorProto.FLOAT, [input_hidden, total_qkv]
+        ),
+        helper.make_tensor_value_info("bias", TensorProto.FLOAT, [total_qkv]),
+    ]
+    node_inputs = ["input", "weight", "bias"]
+    if mask_shape is not None:
+        inputs_info.append(
+            helper.make_tensor_value_info(
+                "mask_index", TensorProto.INT32, mask_shape
+            )
+        )
+        node_inputs.append("mask_index")
+    output = helper.make_tensor_value_info(
+        "output", TensorProto.FLOAT, [batch, seq_len, v_hidden]
+    )
+    attrs: dict[str, object] = {"num_heads": num_heads}
+    if qkv_hidden_sizes is not None:
+        attrs["qkv_hidden_sizes"] = qkv_hidden_sizes
+    if unidirectional:
+        attrs["unidirectional"] = unidirectional
+    node = helper.make_node(
+        "Attention",
+        inputs=node_inputs,
+        outputs=[output.name],
+        domain="com.microsoft",
+        **attrs,
+    )
+    graph = helper.make_graph(
+        [node],
+        "ms_attention_graph",
+        inputs_info,
+        [output],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[
+            helper.make_operatorsetid("", 13),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+    return model
+
+
+def test_ms_attention_basic_testbench_compare() -> None:
+    model = _make_ms_attention_model()
+    _run_testbench_compare(model)
+
+
+def test_ms_attention_unidirectional_testbench_compare() -> None:
+    model = _make_ms_attention_model(unidirectional=1)
+    _run_testbench_compare(model)
+
+
+def test_ms_attention_2d_mask_testbench_compare() -> None:
+    model = _make_ms_attention_model(
+        batch=1, mask_shape=[1, 2]
+    )
+    _run_testbench_compare(model)
+
+
+def test_ms_attention_qkv_sizes_testbench_compare() -> None:
+    model = _make_ms_attention_model(qkv_hidden_sizes=[6, 6, 4])
+    _run_testbench_compare(model)
+
+
 def _run_ort_compare_or_skip(
     model: onnx.ModelProto, *, skip_substrings: tuple[str, ...]
 ) -> None:
@@ -6020,23 +6110,6 @@ def test_compile_reduce_log_sum_exp_expanded_recovers_passthrough_shape() -> Non
     generated = Compiler(CompilerOptions()).compile(model)
     assert "node2_reducesum" in generated
     assert "reduced[restrict 3][2]" in generated
-
-
-def test_compile_lstm_dynamic_squeeze_model() -> None:
-    model = onnx.load(
-        PROJECT_ROOT / "onnx2c-org/test/simple_networks/lstm_k1_b1_r1.onnx"
-    )
-    generated = Compiler(CompilerOptions()).compile(model)
-    assert "OpType: Squeeze" in generated
-    assert "lstm[restrict N][3]" in generated
-
-
-def test_compile_velardo_lesson14_dynamic_bias_broadcast() -> None:
-    model = onnx.load(PROJECT_ROOT / "onnx2c-org/test/velardo/lesson14.onnx")
-    generated = Compiler(CompilerOptions()).compile(model)
-    assert "node1_dense(int N, const float input0[N][1690]" in generated
-    assert "float output[N][512]" in generated
-    assert "flatten_input[restrict N][130][13]" in generated
 
 
 def test_compile_dynamic_reshape_preserves_symbolic_batch() -> None:

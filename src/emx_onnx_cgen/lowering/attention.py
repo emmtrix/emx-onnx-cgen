@@ -355,8 +355,17 @@ def resolve_attention_spec(
     )
 
 
+def _is_ms_attention(node: Node) -> bool:
+    """Detect com.microsoft::Attention variant by its exclusive attributes."""
+    return "num_heads" in node.attrs and "q_num_heads" not in node.attrs
+
+
 @register_lowering("Attention")
 def lower_attention(graph: Graph, node: Node) -> AttentionOp:
+    if _is_ms_attention(node):
+        from .ms_attention import lower_ms_attention
+
+        return lower_ms_attention(graph, node)
     input_q = node.inputs[0]
     input_k = node.inputs[1]
     input_v = node.inputs[2]
