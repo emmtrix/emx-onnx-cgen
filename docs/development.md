@@ -21,7 +21,7 @@ The project is a Python package with a CLI:
 - Package sources live under `src/` (import root is `src/emx_onnx_cgen`).
 - Templates are shipped as package data (Jinja2 templates).
 
-The repository also contains submodules used for tests and reference material (e.g. official ONNX backend test data and local operator tests).
+The repository also contains submodules used for tests and reference material (for example official ONNX backend test data and ONNX Runtime-derived artifacts).
 
 ---
 
@@ -206,12 +206,11 @@ In CI (PRs), the test workflow runs with `UPDATE_REFS=1` and may auto-commit upd
 
 ---
 
-## Submodules (onnx-org / onnx2c-org / emx-ort-test-artifacts-org)
+## Submodules (onnx-org / emx-ort-test-artifacts-org)
 
 Some tests require data from submodules:
 
 * Official ONNX backend test data (may be stored via Git LFS in the upstream project).
-* Local operator test data.
 * Additional ONNX Runtime-derived artifact models under `emx-ort-test-artifacts-org/artifacts/onnxruntime`.
 
 CI initializes submodules recursively. Locally, you can do the same:

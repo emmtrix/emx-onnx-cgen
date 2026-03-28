@@ -9,12 +9,10 @@ from typing import Callable
 import pytest
 
 from test_official_onnx_files import (
-    LOCAL_ONNX_DATA_ROOT,
     LOCAL_REPO_ONNX_DATA_ROOT,
     ORT_ARTIFACTS_ONNX_DATA_ROOT,
     OnnxFileExpectation,
     _load_expectation_for_repo_relative,
-    _local_onnx_file_paths,
     _local_repo_onnx_file_paths,
     _maybe_init_onnx_org,
     _official_onnx_file_paths,
@@ -104,7 +102,6 @@ def _render_onnx_file_support_section(
 
 def _render_onnx_file_support_markdown(
     official_expectations: list[OnnxFileExpectation],
-    local_expectations: list[OnnxFileExpectation],
     ort_artifact_expectations: list[OnnxFileExpectation],
     local_repo_expectations: list[OnnxFileExpectation],
 ) -> str:
@@ -115,20 +112,9 @@ def _render_onnx_file_support_markdown(
         if _is_success_message(expectation.error)
     )
     official_total_count = len(official_expectations)
-    local_supported_count = sum(
-        1
-        for expectation in local_expectations
-        if _is_success_message(expectation.error)
-    )
-    local_total_count = len(local_expectations)
     official_support_percent = (
         (official_supported_count / official_total_count) * 100.0
         if official_total_count
-        else 0.0
-    )
-    local_support_percent = (
-        (local_supported_count / local_total_count) * 100.0
-        if local_total_count
         else 0.0
     )
     ort_artifact_supported_count = sum(
@@ -159,11 +145,6 @@ def _render_onnx_file_support_markdown(
             f"| {official_supported_count} / {official_total_count}, "
             f"{official_support_percent:.1f}% | {onnx_version} |"
         ),
-        (
-            "| [ONNX2C test coverage](#onnx2c-test-coverage) "
-            f"| {local_supported_count} / {local_total_count}, "
-            f"{local_support_percent:.1f}% | n/a |"
-        ),
     ]
     if ort_artifact_expectations:
         overview_rows.append(
@@ -185,12 +166,6 @@ def _render_onnx_file_support_markdown(
             title="Official ONNX test coverage",
             test_directory="onnx-org/onnx/backend/test/data",
             expectations=official_expectations,
-        ),
-        "",
-        *_render_onnx_file_support_section(
-            title="ONNX2C test coverage",
-            test_directory="onnx2c-org/test",
-            expectations=local_expectations,
         ),
     ]
     if ort_artifact_expectations:
@@ -321,13 +296,11 @@ def _render_error_histogram_markdown(
 
 def _render_support_histogram_markdown(
     official_expectations: list[OnnxFileExpectation],
-    local_expectations: list[OnnxFileExpectation],
     ort_artifact_expectations: list[OnnxFileExpectation],
     local_repo_expectations: list[OnnxFileExpectation],
 ) -> str:
     merged_expectations = [
         *official_expectations,
-        *local_expectations,
         *ort_artifact_expectations,
         *local_repo_expectations,
     ]
@@ -359,7 +332,6 @@ def _render_support_histogram_markdown(
 
 def _render_supported_ops_markdown(
     official_expectations: list[OnnxFileExpectation],
-    local_expectations: list[OnnxFileExpectation],
     ort_artifact_expectations: list[OnnxFileExpectation],
     local_repo_expectations: list[OnnxFileExpectation],
 ) -> str:
@@ -367,7 +339,6 @@ def _render_supported_ops_markdown(
     all_ops: set[str] = set()
     for expectation in (
         *official_expectations,
-        *local_expectations,
         *ort_artifact_expectations,
         *local_repo_expectations,
     ):
@@ -430,23 +401,6 @@ def test_official_onnx_file_support_doc() -> None:
         )
 
     repo_root = _repo_root()
-    local_prefix = LOCAL_ONNX_DATA_ROOT.relative_to(repo_root).as_posix()
-    local_expectations: list[OnnxFileExpectation] = []
-    for local_path in _local_onnx_file_paths():
-        repo_relative = f"{local_prefix}/{local_path}"
-        expectation = _load_expectation_for_repo_relative(repo_relative)
-        local_expectations.append(
-            OnnxFileExpectation(
-                path=local_path,
-                error=expectation.error,
-                command_line=expectation.command_line,
-                extra_cli_args=expectation.extra_cli_args,
-                verification_mode=expectation.verification_mode,
-                operators=expectation.operators,
-                opset_version=expectation.opset_version,
-            )
-        )
-
     ort_artifact_prefix = ORT_ARTIFACTS_ONNX_DATA_ROOT.relative_to(repo_root).as_posix()
     ort_artifact_expectations: list[OnnxFileExpectation] = []
     for local_path in _ort_artifacts_onnx_file_paths():
@@ -482,19 +436,16 @@ def test_official_onnx_file_support_doc() -> None:
         )
     expected_markdown = _render_onnx_file_support_markdown(
         official_expectations,
-        local_expectations,
         ort_artifact_expectations,
         local_repo_expectations,
     )
     expected_histogram = _render_support_histogram_markdown(
         official_expectations,
-        local_expectations,
         ort_artifact_expectations,
         local_repo_expectations,
     )
     expected_support_ops = _render_supported_ops_markdown(
         official_expectations,
-        local_expectations,
         ort_artifact_expectations,
         local_repo_expectations,
     )
@@ -553,7 +504,6 @@ def test_render_onnx_file_support_markdown_includes_ort_artifact_section(
 
     markdown = _render_onnx_file_support_markdown(
         official_expectations=[],
-        local_expectations=[],
         ort_artifact_expectations=[
             OnnxFileExpectation(
                 path="test/model.onnx",

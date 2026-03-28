@@ -58,7 +58,6 @@ local_scheme = "no-local-version"
 extend-exclude = [
     "emx-ort-test-artifacts-org",
     "emx-pytorch2c-org",
-    "onnx2c-org",
     "onnx-org",
 ]
 
@@ -66,7 +65,6 @@ extend-exclude = [
 exclude = [
     "emx-ort-test-artifacts-org/",
     "emx-pytorch2c-org/",
-    "onnx2c-org/",
     "onnx-org/",
     "tests/",
 ]

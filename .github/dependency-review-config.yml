@@ -1,10 +1,10 @@
 # Dependency Review configuration for emx-onnx-cgen.
 #
-# The onnx-org/ and onnx2c-org/ directories are read-only reference submodules
-# (upstream ONNX library source).  They pin protobuf==4.25.1 in their own
-# minimum/release-build requirement files.  Those files are never installed by
-# this project; the project's own constraint is protobuf>=5.29.6 (pyproject.toml
-# and requirements-ci.txt).
+# The onnx-org/ directory is a read-only reference submodule (upstream ONNX
+# library source). It pins protobuf==4.25.1 in its own minimum/release-build
+# requirement files. Those files are never installed by this project; the
+# project's own constraint is protobuf>=5.29.6 (pyproject.toml and
+# requirements-ci.txt).
 #
 # The two GHSAs below are therefore allowed exclusively because their only
 # remaining occurrence in this repository is inside those reference submodules.

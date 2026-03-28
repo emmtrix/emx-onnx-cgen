@@ -92,8 +92,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op MoE | 1 |  |
 | Unsupported op NGramRepeatBlock | 1 |  |
 | Unsupported op SampleOp | 1 |  |
-| Unsupported test-data sequence input for verify: variable sequence element shapes are not supported | 1 | 9 |
-| onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 1 | 12 |
 
 ## Error frequency by opset
 
@@ -107,8 +105,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op Crop | 7 | 2 |
 | Unsupported op Scale | 7 | 2 |
 | Unsupported op ImageScaler | 7 | 1 |
-| Unsupported test-data sequence input for verify: variable sequence element shapes are not supported | 9 | 1 |
-| onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
 | Out of tolerance | 17 | 7 |
 | LayerNormalization scale rank must match normalized rank | 17 | 6 |
 
@@ -118,8 +114,6 @@ Lists every ONNX file with a non-success verification outcome.
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
-| local_ops/test_gemm_CM_transA/model.onnx | 12 | Data/Data | ❌ | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'sclbl-onnx-node1' Status Message: Gemm: Invalid bias shape for broadcast |
-| mnist/pytorch.onnx | 9 | Data/Data | ❌ | Unsupported test-data sequence input for verify: variable sequence element shapes are not supported |
 | node/test_adam_multiple/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 62311) |
 | test/contrib_ops/attention_lstm_op_test/BidirectionLstmWithBahdanauAM2BatchShortenSeqLen_run0/model.onnx |  | Data/Data | ❌ | Unsupported op AttnLSTM |
 | test/contrib_ops/attention_lstm_op_test/BidirectionLstmWithBahdanauAMShortenSeqLength_run0/model.onnx |  | Data/Data | ❌ | Unsupported op AttnLSTM |
