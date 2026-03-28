@@ -39,6 +39,7 @@ _LOWERING_MODULES = [
     "expand",
     "eye_like",
     "flatten",
+    "fused_matmul",
     "gather",
     "gather_elements",
     "gather_nd",
