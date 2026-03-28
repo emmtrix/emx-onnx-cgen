@@ -63,6 +63,7 @@ _LOWERING_MODULES = [
     "lstm",
     "matmul",
     "matmul_integer",
+    "matmul_nbits",
     "maxpool",
     "maxunpool",
     "mean_variance_normalization",

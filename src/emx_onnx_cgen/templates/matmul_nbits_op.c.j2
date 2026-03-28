@@ -1,0 +1,42 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% for idx in range(output_loop_vars | length) %}
+    {% for indent in range(loop.index0) %}    {% endfor %}for (idx_t {{ output_loop_vars[idx] }} = 0; {{ output_loop_vars[idx] }} < {{ output_loop_bounds[idx] }}; ++{{ output_loop_vars[idx] }}) {
+{% endfor %}
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ acc_type }} acc = {{ acc_zero }};
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}for (idx_t k = 0; k < {{ k }}; ++k) {
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}idx_t block_idx = k / {{ block_size }};
+{% if bits == 8 %}
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}idx_t byte_idx = k % {{ block_size }};
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}int quant_val = (int)(unsigned char){{ input1 }}[{{ n_var }}][block_idx][byte_idx];
+{% else %}
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}idx_t k_in_block = k % {{ block_size }};
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}idx_t byte_idx = k_in_block * {{ bits }} / 8;
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}idx_t bit_shift = (k_in_block * {{ bits }}) % 8;
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}int quant_val = ((int)(unsigned char){{ input1 }}[{{ n_var }}][block_idx][byte_idx] >> bit_shift) & {{ bit_mask }};
+{% endif %}
+{% if has_zero_points %}
+{% if zero_points_packed %}
+{% if bits == 8 %}
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}int zp = (int)(unsigned char){{ zero_points }}[{{ n_var }}][block_idx];
+{% else %}
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}idx_t zp_byte_idx = block_idx * {{ bits }} / 8;
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}idx_t zp_bit_shift = (block_idx * {{ bits }}) % 8;
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}int zp = ((int)(unsigned char){{ zero_points }}[{{ n_var }}][zp_byte_idx] >> zp_bit_shift) & {{ bit_mask }};
+{% endif %}
+{% else %}
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}{{ acc_type }} zp = ({{ acc_type }}){{ zero_points }}[{{ n_var }}][block_idx];
+{% endif %}
+{% else %}
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}int zp = {{ default_zero_point }};
+{% endif %}
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}{{ acc_type }} dequant = (({{ acc_type }})quant_val - ({{ acc_type }})zp) * ({{ acc_type }}){{ scales }}[{{ n_var }}][block_idx];
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}acc += ({{ acc_type }}){{ input0_index_expr }} * dequant;
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}}
+{% if has_bias %}
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}acc += ({{ acc_type }}){{ bias }}[{{ n_var }}];
+{% endif %}
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ output_index_expr }} = ({{ output_c_type }})acc;
+{% for idx in range(output_loop_vars | length) | reverse %}
+    {% for indent in range(loop.index0) %}    {% endfor %}}
+{% endfor %}
+}
