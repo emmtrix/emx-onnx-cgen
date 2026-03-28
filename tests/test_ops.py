@@ -4605,9 +4605,7 @@ def _make_ms_attention_model(
     node_inputs = ["input", "weight", "bias"]
     if mask_shape is not None:
         inputs_info.append(
-            helper.make_tensor_value_info(
-                "mask_index", TensorProto.INT32, mask_shape
-            )
+            helper.make_tensor_value_info("mask_index", TensorProto.INT32, mask_shape)
         )
         node_inputs.append("mask_index")
     output = helper.make_tensor_value_info(
@@ -4654,9 +4652,7 @@ def test_ms_attention_unidirectional_testbench_compare() -> None:
 
 
 def test_ms_attention_2d_mask_testbench_compare() -> None:
-    model = _make_ms_attention_model(
-        batch=1, mask_shape=[1, 2]
-    )
+    model = _make_ms_attention_model(batch=1, mask_shape=[1, 2])
     _run_testbench_compare(model)
 
 
