@@ -80,6 +80,7 @@ _LOWERING_MODULES = [
     "one_hot",
     "pad",
     "qgemm",
+    "qattention",
     "qlinear_conv",
     "qlinear_add",
     "qlinear_matmul",
