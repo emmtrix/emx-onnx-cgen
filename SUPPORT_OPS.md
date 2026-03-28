@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 209 / 241
+Supported operators: 210 / 258
 
 | Operator | Supported |
 | --- | --- |
@@ -13,6 +13,7 @@ Supported operators: 209 / 241
 | Acos | ✅ |
 | Acosh | ✅ |
 | Add | ✅ |
+| Affine | ❌ |
 | AffineGrid | ✅ |
 | And | ✅ |
 | ArgMax | ✅ |
@@ -58,6 +59,7 @@ Supported operators: 209 / 241
 | Div | ✅ |
 | Dropout | ✅ |
 | DynamicQuantizeLinear | ✅ |
+| DynamicSlice | ❌ |
 | Einsum | ✅ |
 | Elu | ✅ |
 | Equal | ✅ |
@@ -154,6 +156,7 @@ Supported operators: 209 / 241
 | RotaryEmbedding | ✅ |
 | Round | ✅ |
 | STFT | ✅ |
+| Scale | ❌ |
 | Scan | ✅ |
 | Scatter | ✅ |
 | ScatterElements | ✅ |
@@ -212,8 +215,22 @@ Supported operators: 209 / 241
 | ai.onnx.preview.training::Adam | ✅ |
 | ai.onnx.preview.training::Gradient | ✅ |
 | ai.onnx.preview.training::Momentum | ✅ |
+| com.microsoft::Attention | ❌ |
+| com.microsoft::AttnLSTM | ❌ |
+| com.microsoft::BiasGelu | ❌ |
+| com.microsoft::BifurcationDetector | ❌ |
+| com.microsoft::CDist | ❌ |
+| com.microsoft::ConvTransposeWithDynamicPads | ❌ |
+| com.microsoft::CropAndResize | ❌ |
+| com.microsoft::DecoderMaskedMultiHeadAttention | ❌ |
 | com.microsoft::DequantizeLinear | ✅ |
 | com.microsoft::DynamicQuantizeLSTM | ❌ |
+| com.microsoft::DynamicQuantizeMatMul | ❌ |
+| com.microsoft::DynamicTimeWarping | ❌ |
+| com.microsoft::EmbedLayerNormalization | ❌ |
+| com.microsoft::ExpandDims | ❌ |
+| com.microsoft::FastGelu | ❌ |
+| com.microsoft::FusedConv | ❌ |
 | com.microsoft::FusedMatMul | ❌ |
 | com.microsoft::GatherBlockQuantized | ❌ |
 | com.microsoft::GridSample | ✅ |
@@ -221,7 +238,7 @@ Supported operators: 209 / 241
 | com.microsoft::MatMulBnb4 | ❌ |
 | com.microsoft::MatMulInteger16 | ❌ |
 | com.microsoft::MatMulIntegerToFloat | ❌ |
-| com.microsoft::MatMulNBits | ❌ |
+| com.microsoft::MatMulNBits | ✅ |
 | com.microsoft::MaxpoolWithMask | ❌ |
 | com.microsoft::MoE | ❌ |
 | com.microsoft::MultiHeadAttention | ❌ |
