@@ -1,9 +1,9 @@
 {
-  "error": "Out of tolerance (max ULP 796392)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/quantize_lstm_op_test/SmallSize_run19 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::DynamicQuantizeLSTM"
   ],
-  "generated_checksum": "0f2008037eadbb81e5ab6d4a48151f71c3caf077a7cdf3d8671cddb6726e0269"
+  "generated_checksum": "8f1211d912000c1bc74f3d9731df072c90e1ef0d8417484e5904d939b4b81aa2"
 }
