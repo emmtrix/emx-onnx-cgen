@@ -72,11 +72,9 @@ def lower_dynamic_quantize_matmul(
 
     # Validate b_zero_point shape now that we know N.
     if b_zero_name is not None and b_zero_shape is not None:
-        if b_zero_shape in {(), (1,)}:
-            pass  # scalar
-        elif len(b_zero_shape) == 1 and b_zero_shape[0] == n:
+        if len(b_zero_shape) == 1 and b_zero_shape[0] == n:
             b_zero_per_column = True
-        else:
+        elif b_zero_shape not in {(), (1,)}:
             raise UnsupportedOpError(
                 f"DynamicQuantizeMatMul b_zero_point must be scalar or shape [{n}], "
                 f"got {b_zero_shape}"
