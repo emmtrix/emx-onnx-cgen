@@ -7,8 +7,6 @@ Aggregates non-success verification outcomes.
 
 | Error message | Count | Opset versions |
 | --- | --- | --- |
-| Unsupported op QGemm | 624 |  |
-| Unsupported op MatMulBnb4 | 768 |  |
 | Unsupported op NhwcMaxPool | 562 |  |
 | MatMulNBits g_idx (input 4) is not supported | 238 |  |
 | Unsupported op GatherBlockQuantized | 222 |  |
