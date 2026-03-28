@@ -22,7 +22,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op MultiHeadAttention | 28 |  |
 | Unsupported op Tokenizer | 28 |  |
 | Unsupported op QAttention | 24 |  |
-| Unsupported op QGemm | 21 |  |
 | Unsupported op MurmurHash3 | 17 |  |
 | Unsupported op SkipLayerNormalization | 17 |  |
 | LayerNormalization scale rank must match normalized rank | 15 | 7, 17 |
@@ -2487,27 +2486,6 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/qlinear_where_test/QLinearWhereVectorAll_run1/model.onnx |  | Data/Data | ❌ | Unsupported op QLinearWhere |
 | test/contrib_ops/qlinear_where_test/QLinearWhereVectorX_VectorY_MatrixCondition_run0/model.onnx |  | Data/Data | ❌ | Unsupported op QLinearWhere |
 | test/contrib_ops/qlinear_where_test/QLinearWhereVectorX_VectorY_MatrixCondition_run1/model.onnx |  | Data/Data | ❌ | Unsupported op QLinearWhere |
-| test/contrib_ops/quant_gemm_test/GEMV_run52/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run53/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run54/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run55/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run56/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run57/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run58/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run59/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run6/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run60/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run61/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run62/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run63/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run64/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run65/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run66/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run67/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run68/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run69/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run7/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run70/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
 | test/contrib_ops/quantize_attention_op_test/QAttentionBatch1_run0/model.onnx |  | Data/Data | ❌ | Unsupported op QAttention |
 | test/contrib_ops/quantize_attention_op_test/QAttentionBatch1_run1/model.onnx |  | Data/Data | ❌ | Unsupported op QAttention |
 | test/contrib_ops/quantize_attention_op_test/QAttentionBatch2_run0/model.onnx |  | Data/Data | ❌ | Unsupported op QAttention |
