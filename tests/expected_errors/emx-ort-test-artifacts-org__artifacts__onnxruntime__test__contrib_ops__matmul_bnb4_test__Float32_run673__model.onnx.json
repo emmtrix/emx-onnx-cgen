@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op MatMulBnb4",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/matmul_bnb4_test/Float32_run673 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::MatMulBnb4"
-  ]
+  ],
+  "generated_checksum": "c016ed699519208852ae0a86b330f7624516bca59e53218b7f162914cc1ebbfc"
 }

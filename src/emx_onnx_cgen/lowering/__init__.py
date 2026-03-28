@@ -63,6 +63,7 @@ _LOWERING_MODULES = [
     "lrn",
     "lstm",
     "matmul",
+    "matmul_bnb4",
     "matmul_integer",
     "matmul_nbits",
     "maxpool",
