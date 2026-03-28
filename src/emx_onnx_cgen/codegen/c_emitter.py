@@ -1052,6 +1052,7 @@ class CEmitter:
                 "fused_matmul": self._env.get_template("fused_matmul_op.c.j2"),
                 "einsum": self._env.get_template("einsum_op.c.j2"),
                 "gemm": self._env.get_template("gemm_op.c.j2"),
+                "qgemm": self._env.get_template("qgemm_op.c.j2"),
                 "attention": self._env.get_template("attention_op.c.j2"),
                 "rotary_embedding": self._env.get_template("rotary_embedding_op.c.j2"),
                 "conv": self._env.get_template("conv_op.c.j2"),

@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op QGemm",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/quant_gemm_test/GEMV_run239 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::QGemm"
-  ]
+  ],
+  "generated_checksum": "5bb5a5cdc516cf4811a33bbca9c06c3b3034ca6c9c9406a1901480d7142f9582"
 }
