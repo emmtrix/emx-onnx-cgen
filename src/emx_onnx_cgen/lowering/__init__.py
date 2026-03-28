@@ -41,6 +41,7 @@ _LOWERING_MODULES = [
     "flatten",
     "fused_matmul",
     "gather",
+    "gather_block_quantized",
     "gather_elements",
     "gather_nd",
     "gemm",

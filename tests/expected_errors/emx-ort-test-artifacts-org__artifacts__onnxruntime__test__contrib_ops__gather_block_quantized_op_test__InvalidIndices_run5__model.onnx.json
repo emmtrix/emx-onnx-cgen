@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op GatherBlockQuantized",
+  "error": "Out of tolerance (max ULP 1096810496)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run5 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::GatherBlockQuantized"
-  ]
+  ],
+  "generated_checksum": "757c51fa86aa68b1b918625f329fe5a88bf7c5c57c4f483c6a788905ae21410e"
 }

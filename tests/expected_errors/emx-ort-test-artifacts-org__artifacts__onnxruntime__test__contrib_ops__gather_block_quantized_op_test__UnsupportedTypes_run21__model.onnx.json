@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op GatherBlockQuantized",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run21 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::GatherBlockQuantized"
-  ]
+  ],
+  "generated_checksum": "5443bc5c1fa3152bc215aeccf487b00ff3730ce694cd91e0a4368d5ab1eee913"
 }
