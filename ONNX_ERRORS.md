@@ -10,10 +10,9 @@ Aggregates non-success verification outcomes.
 | Unsupported op MatMulBnb4 | 768 |  |
 | Unsupported op QGemm | 624 |  |
 | Unsupported op NhwcMaxPool | 562 |  |
-| Unsupported op MatMulNBits | 306 |  |
+| MatMulNBits g_idx (input 4) is not supported | 238 |  |
 | Unsupported op GatherBlockQuantized | 222 |  |
 | Unsupported op FusedMatMul | 192 |  |
-| MatMulNBits g_idx (input 4) is not supported | 119 |  |
 | AveragePool has unsupported attributes | 72 |  |
 | Unsupported op Attention | 65 |  |
 | Unsupported op DynamicQuantizeLSTM | 50 |  |
@@ -873,312 +872,125 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run67/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run68/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run7/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run70/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run71/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run72/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run73/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run74/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run75/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run76/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run77/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run78/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run79/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run8/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run80/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run81/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run82/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run83/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run84/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run85/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run86/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run87/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run88/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run89/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run9/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run90/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run91/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run92/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run93/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run94/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run95/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run96/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run97/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run98/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run99/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run0/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run1/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run10/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run100/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run101/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run102/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run103/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run104/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run105/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run106/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run107/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run108/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run109/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run11/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run110/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run111/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run112/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run113/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run114/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run115/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run116/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run117/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run118/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run119/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run12/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run13/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run14/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run15/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run16/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run17/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run18/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run19/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run2/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run20/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run21/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run22/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run23/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run24/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run25/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run26/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run27/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run28/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run29/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run3/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run30/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run31/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run32/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run33/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run34/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run35/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run36/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run37/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run38/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run39/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run4/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run40/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run41/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run42/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run43/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run44/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run45/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run46/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run47/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run48/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run49/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run5/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run50/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run51/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run52/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run53/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run54/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run55/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run56/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run57/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run58/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run59/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run6/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run60/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run61/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run62/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run63/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run64/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run65/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run66/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run67/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run68/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run69/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run7/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run70/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run71/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run72/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run73/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run74/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run75/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run76/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run77/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run78/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run79/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run8/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run80/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run81/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run82/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run83/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run84/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run85/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run86/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run87/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run88/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run89/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run9/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run90/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run91/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run92/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run93/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run94/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run95/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run96/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run97/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run98/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run99/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run0/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run1/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run10/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run11/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run12/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run13/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run14/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run15/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run16/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run17/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run18/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run19/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run2/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run20/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run21/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run22/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run23/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run24/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run25/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run26/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run27/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run28/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run29/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run3/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run30/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run31/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run32/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run33/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run34/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run35/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run36/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run37/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run38/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run39/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run4/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run5/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run6/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run7/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run8/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run9/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run0/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run1/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run2/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run3/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run4/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run5/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run6/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run7/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run8/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run0/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run1/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run10/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run100/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run101/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run102/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run103/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run104/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run105/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run106/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run107/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run108/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run109/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run11/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run110/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run111/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run112/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run113/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run114/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run115/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run116/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run117/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run118/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run119/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run12/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run120/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run121/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run122/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run123/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run124/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run13/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run14/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run15/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run16/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run17/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run18/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run19/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run2/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run20/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run21/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run22/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run23/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run24/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run25/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run26/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run27/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run28/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run29/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run3/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run30/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run31/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run32/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run33/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run34/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run35/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run36/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run37/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run38/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run39/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run4/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run40/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run41/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run42/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run43/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run44/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run45/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run46/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run47/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run48/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run49/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run5/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run50/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run51/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run52/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run53/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run54/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run55/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run56/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run57/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run58/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run59/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run6/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run60/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run61/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run62/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run63/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run64/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run65/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run66/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run67/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run68/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run69/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run7/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run70/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run71/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run72/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run73/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run74/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run75/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run76/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run77/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run78/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run79/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run8/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run80/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulNBits |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run72/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run73/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run77/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run78/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run8/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run82/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run83/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run87/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run88/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run92/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run93/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run97/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run98/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run102/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run103/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run107/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run108/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run112/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run113/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run117/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run118/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run12/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run13/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run17/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run18/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run2/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run22/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run23/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run27/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run28/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run3/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run32/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run33/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run37/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run38/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run42/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run43/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run47/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run48/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run52/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run53/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run57/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run58/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run62/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run63/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run67/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run68/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run7/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run72/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run73/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run77/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run78/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run8/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run82/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run83/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run87/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run88/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run92/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run93/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run97/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run98/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run12/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run13/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run17/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run18/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run2/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run22/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run23/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run27/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run28/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run3/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run32/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run33/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run37/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run38/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run7/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run8/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run102/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run103/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run107/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run108/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run112/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run113/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run117/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run118/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run12/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run122/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run123/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run13/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run17/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run18/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run2/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run22/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run23/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run27/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run28/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run3/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run32/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run33/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run37/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run38/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run42/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run43/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run47/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run48/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run52/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run53/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run57/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run58/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run62/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run63/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run67/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run68/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run7/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run72/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run73/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run77/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run78/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run8/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run82/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run83/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run87/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
