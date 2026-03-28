@@ -1039,6 +1039,9 @@ class CEmitter:
                 "dynamic_quantize_linear": self._env.get_template(
                     "dynamic_quantize_linear_op.c.j2"
                 ),
+                "dynamic_quantize_matmul": self._env.get_template(
+                    "dynamic_quantize_matmul_op.c.j2"
+                ),
                 "qlinear_add": self._env.get_template("qlinear_add_op.c.j2"),
                 "qlinear_mul": self._env.get_template("qlinear_mul_op.c.j2"),
                 "qlinear_matmul": self._env.get_template("qlinear_matmul_op.c.j2"),

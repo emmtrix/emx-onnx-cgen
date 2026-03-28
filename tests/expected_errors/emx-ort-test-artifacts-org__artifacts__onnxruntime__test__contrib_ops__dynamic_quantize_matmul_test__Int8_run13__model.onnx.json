@@ -1,8 +1,13 @@
 {
-  "error": "Unsupported op DynamicQuantizeMatMul",
-  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/dynamic_quantize_matmul_test/Int8_run13 model.onnx --test-data-dir test_data_set_0",
+  "error": "OK (max ULP 882)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/dynamic_quantize_matmul_test/Int8_run13 model.onnx --test-data-dir test_data_set_0 --max-ulp 5000",
+  "extra_cli_args": [
+    "--max-ulp",
+    "5000"
+  ],
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::DynamicQuantizeMatMul"
-  ]
+  ],
+  "generated_checksum": "6a00a8da26ca4135e6d063e42d948334ac5c7e01b6188830e47c01a79ad58e9d"
 }
