@@ -247,7 +247,7 @@ Supported operators: 211 / 258
 | com.microsoft::NhwcMaxPool | ❌ |
 | com.microsoft::QAttention | ❌ |
 | com.microsoft::QEmbedLayerNormalization | ❌ |
-| com.microsoft::QGemm | ❌ |
+| com.microsoft::QGemm | ✅ |
 | com.microsoft::QLinearAdd | ✅ |
 | com.microsoft::QLinearAveragePool | ✅ |
 | com.microsoft::QLinearConcat | ❌ |
