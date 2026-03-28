@@ -132,7 +132,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     for (int d = 0; d < {{ qk_head_size }}; ++d) {
                         {{ present }}[0][b][h][ki][d] = {{ past }}[0][b][h][ki][d];
                     }
-                    for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                    for (int d = 0; d < {{ v_head_size }}; ++d) {
                         {{ present }}[1][b][h][ki][d] = {{ past }}[1][b][h][ki][d];
                     }
                 } else {

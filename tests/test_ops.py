@@ -4658,7 +4658,6 @@ def test_ms_attention_2d_mask_testbench_compare() -> None:
         batch=1, mask_shape=[1, 2]
     )
     _run_testbench_compare(model)
-    _run_testbench_compare(model)
 
 
 def test_ms_attention_qkv_sizes_testbench_compare() -> None:
