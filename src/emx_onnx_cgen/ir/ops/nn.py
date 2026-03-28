@@ -642,6 +642,191 @@ class MatMulIntegerOp(MatMulLikeOpBase):
 
 
 @dataclass(frozen=True)
+class MatMulNBitsOp(RenderableOpBase):
+    """N-bit block-quantized matrix multiplication (com.microsoft contrib op).
+
+    Computes ``Y = A @ dequantize(B) [+ bias]`` where B is packed N-bit
+    unsigned integers with per-block scales and optional zero-points.
+    """
+
+    __io_inputs__ = ("input0", "input1", "scales", "zero_points", "bias")
+    __io_outputs__ = ("output",)
+
+    input0: str
+    input1: str
+    scales: str
+    zero_points: str | None
+    bias: str | None
+    output: str
+
+    bits: int
+    block_size: int
+    k: int
+    n: int
+    accuracy_level: int
+    n_blocks_per_col: int
+    blob_size: int
+
+    input0_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    batch_shape: tuple[int, ...]
+    m: int
+
+    input0_dtype: ScalarType
+    output_dtype: ScalarType
+    b_dtype: ScalarType
+    scales_dtype: ScalarType
+    zero_points_dtype: ScalarType | None
+    zero_points_packed: bool
+    bias_dtype: ScalarType | None
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("input1", self.input1),
+                ("scales", self.scales),
+                ("zero_points", self.zero_points),
+                ("bias", self.bias),
+                ("output", self.output),
+            ]
+        )
+
+        output_shape_raw = CEmitterCompat.codegen_shape(self.output_shape)
+        output_dim_names = emitter.dim_names_for(self.output)
+        output_shape = CEmitterCompat.shape_dim_exprs(
+            self.output_shape, output_dim_names
+        )
+        output_loop_vars = CEmitterCompat.loop_vars(output_shape_raw)
+        output_index_expr = f"{params['output']}" + "".join(
+            f"[{var}]" for var in output_loop_vars
+        )
+
+        batch_rank = len(self.batch_shape)
+        batch_vars = output_loop_vars[:batch_rank]
+        m_var = output_loop_vars[-2] if len(output_loop_vars) >= 2 else "i0"
+        n_var = output_loop_vars[-1] if output_loop_vars else "i0"
+
+        input0_index_parts = list(batch_vars) + [m_var, "k"]
+        input0_index_expr = f"{params['input0']}" + "".join(
+            f"[{var}]" for var in input0_index_parts
+        )
+
+        input0_suffix = emitter.param_array_suffix(
+            self.input0_shape, emitter.dim_names_for(self.input0)
+        )
+
+        b_shape = (self.n, self.n_blocks_per_col, self.blob_size)
+        b_suffix = emitter.param_array_suffix(b_shape)
+
+        scales_shape = (self.n, self.n_blocks_per_col)
+        scales_suffix = emitter.param_array_suffix(scales_shape)
+
+        acc_dtype = emitter.accumulation_dtype(self.output_dtype)
+        acc_zero_literal = emitter.format_literal(acc_dtype, 0)
+
+        b_c_type = self.b_dtype.c_type
+
+        param_entries: list[tuple[str | None, str, str, bool] | tuple] = [
+            (params["input0"], self.input0_dtype.c_type, input0_suffix, True),
+            (params["input1"], b_c_type, b_suffix, True),
+            (params["scales"], self.scales_dtype.c_type, scales_suffix, True),
+        ]
+
+        zp_suffix = ""
+        if params["zero_points"]:
+            zp_shape_raw = emitter.ctx_shape(self.zero_points)  # type: ignore[arg-type]
+            zp_suffix = emitter.param_array_suffix(zp_shape_raw)
+            zp_c_type = (
+                self.zero_points_dtype.c_type if self.zero_points_dtype else "uint8_t"
+            )
+            param_entries.append(
+                (params["zero_points"], zp_c_type, zp_suffix, True)
+            )
+        else:
+            param_entries.append((None, "", "", True))
+
+        if params["bias"]:
+            bias_shape = (self.n,)
+            bias_suffix = emitter.param_array_suffix(bias_shape)
+            bias_c_type = (
+                self.bias_dtype.c_type if self.bias_dtype else self.output_dtype.c_type
+            )
+            param_entries.append((params["bias"], bias_c_type, bias_suffix, True))
+        else:
+            param_entries.append((None, "", "", True))
+
+        output_suffix = emitter.param_array_suffix(
+            self.output_shape, output_dim_names
+        )
+        param_entries.append(
+            (params["output"], self.output_dtype.c_type, output_suffix, False)
+        )
+
+        param_decls = emitter.build_param_decls(param_entries)
+
+        bit_mask = (1 << self.bits) - 1
+        default_zero_point = 1 << (self.bits - 1)
+
+        rendered = (
+            state.templates["matmul_nbits"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                params=param_decls,
+                dim_args=dim_args,
+                acc_type=acc_dtype.c_type,
+                acc_zero=acc_zero_literal,
+                output_c_type=self.output_dtype.c_type,
+                output_loop_vars=output_loop_vars,
+                output_loop_bounds=output_shape,
+                output_index_expr=output_index_expr,
+                input0_index_expr=input0_index_expr,
+                input1=params["input1"],
+                scales=params["scales"],
+                zero_points=params["zero_points"],
+                bias=params["bias"],
+                n_var=n_var,
+                k=self.k,
+                bits=self.bits,
+                block_size=self.block_size,
+                bit_mask=bit_mask,
+                default_zero_point=default_zero_point,
+                has_zero_points=params["zero_points"] is not None,
+                zero_points_packed=self.zero_points_packed,
+                has_bias=params["bias"] is not None,
+                b_c_type=b_c_type,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.output_shape
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        inputs: list[tuple[str, tuple[int, ...]]] = [
+            (self.input0, emitter.ctx_shape(self.input0)),
+            (self.input1, (self.n, self.n_blocks_per_col, self.blob_size)),
+            (self.scales, (self.n, self.n_blocks_per_col)),
+        ]
+        if self.zero_points is not None:
+            inputs.append(
+                (self.zero_points, emitter.ctx_shape(self.zero_points))
+            )
+        if self.bias is not None:
+            inputs.append((self.bias, (self.n,)))
+        return tuple(inputs)
+
+
+@dataclass(frozen=True)
 class EinsumOp(MatMulLikeOpBase):
     __io_inputs__ = ("inputs",)
     inputs: tuple[str, ...]

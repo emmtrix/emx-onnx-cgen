@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op MatMulNBits",
+  "error": "Failed to build testbench (model.c:137:31: error: passing argument 3 of \u2018node0_node1\u2019 from incompatible pointer type [-Werror=incompatible-pointer-types]).",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run9 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::MatMulNBits"
-  ]
+  ],
+  "generated_checksum": "18f2c7594ceafeeb8e2b6551a808e48af64a1c32529912f08c83b0974e7f413a"
 }
