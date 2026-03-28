@@ -8250,3 +8250,176 @@ def test_fused_matmul_batched_trans_batch_a_testbench() -> None:
     )
     output_data = output_data.reshape(expected.shape)
     np.testing.assert_allclose(output_data, expected, rtol=1e-4, atol=1e-5)
+
+
+def _make_dynamic_quantize_lstm_model(
+    *,
+    seq_length: int,
+    batch_size: int,
+    input_size: int,
+    hidden_size: int,
+    num_directions: int = 1,
+    include_bias: bool = False,
+    include_initial_state: bool = False,
+    per_channel_weights: bool = False,
+) -> onnx.ModelProto:
+    assert num_directions in (1, 2)
+    direction = "forward" if num_directions == 1 else "bidirectional"
+    four_h = 4 * hidden_size
+    x_shape = [seq_length, batch_size, input_size]
+    # DynamicQuantizeLSTM uses transposed W: (num_dir, input_size, 4H)
+    w_shape = [num_directions, input_size, four_h]
+    r_shape = [num_directions, hidden_size, four_h]
+    if per_channel_weights:
+        scale_shape = [num_directions, four_h]
+    else:
+        scale_shape = [num_directions]
+
+    inputs = [
+        helper.make_tensor_value_info("X", TensorProto.FLOAT, x_shape),
+        helper.make_tensor_value_info("W", TensorProto.INT8, w_shape),
+        helper.make_tensor_value_info("R", TensorProto.INT8, r_shape),
+    ]
+    input_names = ["X", "W", "R", "", ""]
+    if include_initial_state:
+        state_shape = [num_directions, batch_size, hidden_size]
+        inputs.append(
+            helper.make_tensor_value_info("initial_h", TensorProto.FLOAT, state_shape)
+        )
+        inputs.append(
+            helper.make_tensor_value_info("initial_c", TensorProto.FLOAT, state_shape)
+        )
+        input_names[3] = ""
+        input_names[4] = ""
+        input_names.append("initial_h")
+        input_names.append("initial_c")
+    else:
+        input_names.extend(["", ""])
+    if include_bias:
+        inputs.append(
+            helper.make_tensor_value_info(
+                "B", TensorProto.FLOAT, [num_directions, 8 * hidden_size]
+            )
+        )
+        input_names.append("B")
+    else:
+        input_names.append("")
+    inputs.extend(
+        [
+            helper.make_tensor_value_info("W_scale", TensorProto.FLOAT, scale_shape),
+            helper.make_tensor_value_info("W_zp", TensorProto.INT8, scale_shape),
+            helper.make_tensor_value_info("R_scale", TensorProto.FLOAT, scale_shape),
+            helper.make_tensor_value_info("R_zp", TensorProto.INT8, scale_shape),
+        ]
+    )
+    input_names.extend(["W_scale", "W_zp", "R_scale", "R_zp"])
+
+    y_shape = [seq_length, num_directions, batch_size, hidden_size]
+    state_out_shape = [num_directions, batch_size, hidden_size]
+    outputs = [
+        helper.make_tensor_value_info("Y", TensorProto.FLOAT, y_shape),
+        helper.make_tensor_value_info("Y_h", TensorProto.FLOAT, state_out_shape),
+        helper.make_tensor_value_info("Y_c", TensorProto.FLOAT, state_out_shape),
+    ]
+    node = helper.make_node(
+        "DynamicQuantizeLSTM",
+        inputs=input_names,
+        outputs=["Y", "Y_h", "Y_c"],
+        hidden_size=hidden_size,
+        direction=direction,
+        domain="com.microsoft",
+    )
+    graph = helper.make_graph([node], "dqlstm", inputs, outputs)
+    model = helper.make_model(
+        graph,
+        opset_imports=[helper.make_operatorsetid("com.microsoft", 1)],
+    )
+    model.ir_version = 7
+    return model
+
+
+def _run_dqlstm_testbench_compare(model: onnx.ModelProto) -> None:
+    """Compile DynamicQuantizeLSTM model and compare C output against ORT.
+
+    Uses a relaxed tolerance because ORT uses integer arithmetic internally,
+    while our C code dequantizes weights and computes in float.
+    """
+    rng = np.random.default_rng(42)
+    inputs: dict[str, np.ndarray] = {}
+    for value_info in model.graph.input:
+        elem_type = value_info.type.tensor_type.elem_type
+        dtype = _tensorproto_to_dtype(elem_type)
+        shape = _value_info_shape(value_info)
+        if dtype in (np.int8,):
+            if value_info.name.endswith("_zp"):
+                arr = np.zeros(shape, dtype=np.int8)
+            else:
+                arr = rng.integers(-64, 63, size=shape, dtype=np.int8)
+        elif dtype == np.float32:
+            arr = rng.standard_normal(shape).astype(np.float32) * 0.1
+            if value_info.name.endswith("_scale"):
+                arr = np.abs(arr) + 0.001
+        else:
+            arr = rng.standard_normal(shape).astype(dtype)
+        inputs[value_info.name] = arr
+
+    session = ort.InferenceSession(
+        model.SerializeToString(), providers=["CPUExecutionProvider"]
+    )
+    ort_outputs = session.run(None, inputs)
+    payload = _compile_and_run_testbench(model, testbench_inputs=inputs)
+    outputs_payload = payload.get("outputs", {})
+    for output_info, ort_output in zip(model.graph.output, ort_outputs):
+        output_payload = outputs_payload.get(output_info.name)
+        if output_payload is None:
+            raise AssertionError(f"Missing output {output_info.name} in testbench data")
+        output_data = decode_testbench_array(output_payload["data"], ort_output.dtype)
+        output_data = output_data.reshape(ort_output.shape)
+        # Use larger atol to account for ORT integer arithmetic vs our float arithmetic
+        np.testing.assert_allclose(output_data, ort_output, rtol=1e-2, atol=0.05)
+
+
+def test_dynamic_quantize_lstm_per_tensor_testbench() -> None:
+    model = _make_dynamic_quantize_lstm_model(
+        seq_length=2,
+        batch_size=2,
+        input_size=3,
+        hidden_size=4,
+        per_channel_weights=False,
+    )
+    _run_dqlstm_testbench_compare(model)
+
+
+def test_dynamic_quantize_lstm_per_channel_testbench() -> None:
+    model = _make_dynamic_quantize_lstm_model(
+        seq_length=2,
+        batch_size=2,
+        input_size=3,
+        hidden_size=4,
+        per_channel_weights=True,
+    )
+    _run_dqlstm_testbench_compare(model)
+
+
+def test_dynamic_quantize_lstm_bidirectional_testbench() -> None:
+    model = _make_dynamic_quantize_lstm_model(
+        seq_length=2,
+        batch_size=2,
+        input_size=3,
+        hidden_size=4,
+        num_directions=2,
+        per_channel_weights=False,
+    )
+    _run_dqlstm_testbench_compare(model)
+
+
+def test_dynamic_quantize_lstm_with_initial_state_testbench() -> None:
+    model = _make_dynamic_quantize_lstm_model(
+        seq_length=2,
+        batch_size=2,
+        input_size=3,
+        hidden_size=4,
+        include_initial_state=True,
+        per_channel_weights=False,
+    )
+    _run_dqlstm_testbench_compare(model)

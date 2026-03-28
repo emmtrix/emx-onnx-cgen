@@ -1,0 +1,215 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    {% for dir in range(num_directions) %}
+    {
+        const int dir = {{ dir }};
+        const int reverse = {% if direction == "reverse" %}1{% elif direction == "bidirectional" and dir == 1 %}1{% else %}0{% endif %};
+        {% set act_f = activation_functions[dir * 3] %}
+        {% set act_g = activation_functions[dir * 3 + 1] %}
+        {% set act_h = activation_functions[dir * 3 + 2] %}
+        {{ c_type }} H_prev[{{ batch_size }}][{{ hidden_size }}];
+        {{ c_type }} C_prev[{{ batch_size }}][{{ hidden_size }}];
+        for (int b = 0; b < {{ batch_size }}; ++b) {
+            for (int h = 0; h < {{ hidden_size }}; ++h) {
+                {% if input_initial_h %}
+                {% if layout == 0 %}
+                H_prev[b][h] = {{ input_initial_h }}[dir][b][h];
+                {% else %}
+                H_prev[b][h] = {{ input_initial_h }}[b][dir][h];
+                {% endif %}
+                {% else %}
+                H_prev[b][h] = {{ zero_literal }};
+                {% endif %}
+                {% if input_initial_c %}
+                {% if layout == 0 %}
+                C_prev[b][h] = {{ input_initial_c }}[dir][b][h];
+                {% else %}
+                C_prev[b][h] = {{ input_initial_c }}[b][dir][h];
+                {% endif %}
+                {% else %}
+                C_prev[b][h] = {{ zero_literal }};
+                {% endif %}
+            }
+        }
+        {% if not per_channel_weights %}
+        {% if not per_channel_weights %}
+        const {{ c_type }} w_scale_val = ({{ c_type }}){{ input_w_scale }}[dir];
+        const {{ c_type }} w_zp_val = ({{ c_type }}){{ input_w_zero_point }}[dir];
+        const {{ c_type }} r_scale_val = ({{ c_type }}){{ input_r_scale }}[dir];
+        const {{ c_type }} r_zp_val = ({{ c_type }}){{ input_r_zero_point }}[dir];
+        {% endif %}
+        {% endif %}
+        for (int b = 0; b < {{ batch_size }}; ++b) {
+            int seq_limit = {{ seq_length }};
+            {% if input_sequence_lens %}
+            seq_limit = (int){{ input_sequence_lens }}[b];
+            if (seq_limit < 0) {
+                seq_limit = 0;
+            }
+            if (seq_limit > {{ seq_length }}) {
+                seq_limit = {{ seq_length }};
+            }
+            {% endif %}
+            for (int step = 0; step < seq_limit; ++step) {
+                int t = reverse ? (seq_limit - 1 - step) : step;
+                {{ c_type }} H_next[{{ hidden_size }}];
+                {{ c_type }} C_next[{{ hidden_size }}];
+                for (int h = 0; h < {{ hidden_size }}; ++h) {
+                    {{ c_type }} gate_i = {{ zero_literal }};
+                    {{ c_type }} gate_o = {{ zero_literal }};
+                    {{ c_type }} gate_f = {{ zero_literal }};
+                    {{ c_type }} gate_c = {{ zero_literal }};
+                    {% if per_channel_weights %}
+                    const {{ c_type }} ws_i = ({{ c_type }}){{ input_w_scale }}[dir][h];
+                    const {{ c_type }} wz_i = ({{ c_type }}){{ input_w_zero_point }}[dir][h];
+                    const {{ c_type }} ws_o = ({{ c_type }}){{ input_w_scale }}[dir][{{ hidden_size }} + h];
+                    const {{ c_type }} wz_o = ({{ c_type }}){{ input_w_zero_point }}[dir][{{ hidden_size }} + h];
+                    const {{ c_type }} ws_f = ({{ c_type }}){{ input_w_scale }}[dir][{{ hidden_size }} * 2 + h];
+                    const {{ c_type }} wz_f = ({{ c_type }}){{ input_w_zero_point }}[dir][{{ hidden_size }} * 2 + h];
+                    const {{ c_type }} ws_c = ({{ c_type }}){{ input_w_scale }}[dir][{{ hidden_size }} * 3 + h];
+                    const {{ c_type }} wz_c = ({{ c_type }}){{ input_w_zero_point }}[dir][{{ hidden_size }} * 3 + h];
+                    const {{ c_type }} rs_i = ({{ c_type }}){{ input_r_scale }}[dir][h];
+                    const {{ c_type }} rz_i = ({{ c_type }}){{ input_r_zero_point }}[dir][h];
+                    const {{ c_type }} rs_o = ({{ c_type }}){{ input_r_scale }}[dir][{{ hidden_size }} + h];
+                    const {{ c_type }} rz_o = ({{ c_type }}){{ input_r_zero_point }}[dir][{{ hidden_size }} + h];
+                    const {{ c_type }} rs_f = ({{ c_type }}){{ input_r_scale }}[dir][{{ hidden_size }} * 2 + h];
+                    const {{ c_type }} rz_f = ({{ c_type }}){{ input_r_zero_point }}[dir][{{ hidden_size }} * 2 + h];
+                    const {{ c_type }} rs_c = ({{ c_type }}){{ input_r_scale }}[dir][{{ hidden_size }} * 3 + h];
+                    const {{ c_type }} rz_c = ({{ c_type }}){{ input_r_zero_point }}[dir][{{ hidden_size }} * 3 + h];
+                    {% endif %}
+                    for (int i = 0; i < {{ input_size }}; ++i) {
+                        {% if layout == 0 %}
+                        {{ c_type }} x_val = {{ input_x }}[t][b][i];
+                        {% else %}
+                        {{ c_type }} x_val = {{ input_x }}[b][t][i];
+                        {% endif %}
+                        {% if per_channel_weights %}
+                        gate_i += x_val * (({{ c_type }}){{ input_w }}[dir][i][h] - wz_i) * ws_i;
+                        gate_o += x_val * (({{ c_type }}){{ input_w }}[dir][i][{{ hidden_size }} + h] - wz_o) * ws_o;
+                        gate_f += x_val * (({{ c_type }}){{ input_w }}[dir][i][{{ hidden_size }} * 2 + h] - wz_f) * ws_f;
+                        gate_c += x_val * (({{ c_type }}){{ input_w }}[dir][i][{{ hidden_size }} * 3 + h] - wz_c) * ws_c;
+                        {% else %}
+                        gate_i += x_val * (({{ c_type }}){{ input_w }}[dir][i][h] - w_zp_val) * w_scale_val;
+                        gate_o += x_val * (({{ c_type }}){{ input_w }}[dir][i][{{ hidden_size }} + h] - w_zp_val) * w_scale_val;
+                        gate_f += x_val * (({{ c_type }}){{ input_w }}[dir][i][{{ hidden_size }} * 2 + h] - w_zp_val) * w_scale_val;
+                        gate_c += x_val * (({{ c_type }}){{ input_w }}[dir][i][{{ hidden_size }} * 3 + h] - w_zp_val) * w_scale_val;
+                        {% endif %}
+                    }
+                    for (int i = 0; i < {{ hidden_size }}; ++i) {
+                        {{ c_type }} h_val = H_prev[b][i];
+                        {% if per_channel_weights %}
+                        gate_i += h_val * (({{ c_type }}){{ input_r }}[dir][i][h] - rz_i) * rs_i;
+                        gate_o += h_val * (({{ c_type }}){{ input_r }}[dir][i][{{ hidden_size }} + h] - rz_o) * rs_o;
+                        gate_f += h_val * (({{ c_type }}){{ input_r }}[dir][i][{{ hidden_size }} * 2 + h] - rz_f) * rs_f;
+                        gate_c += h_val * (({{ c_type }}){{ input_r }}[dir][i][{{ hidden_size }} * 3 + h] - rz_c) * rs_c;
+                        {% else %}
+                        gate_i += h_val * (({{ c_type }}){{ input_r }}[dir][i][h] - r_zp_val) * r_scale_val;
+                        gate_o += h_val * (({{ c_type }}){{ input_r }}[dir][i][{{ hidden_size }} + h] - r_zp_val) * r_scale_val;
+                        gate_f += h_val * (({{ c_type }}){{ input_r }}[dir][i][{{ hidden_size }} * 2 + h] - r_zp_val) * r_scale_val;
+                        gate_c += h_val * (({{ c_type }}){{ input_r }}[dir][i][{{ hidden_size }} * 3 + h] - r_zp_val) * r_scale_val;
+                        {% endif %}
+                    }
+                    {% if input_b %}
+                    gate_i += {{ input_b }}[dir][h] + {{ input_b }}[dir][{{ hidden_size }} * 4 + h];
+                    gate_o += {{ input_b }}[dir][{{ hidden_size }} + h] + {{ input_b }}[dir][{{ hidden_size }} * 5 + h];
+                    gate_f += {{ input_b }}[dir][{{ hidden_size }} * 2 + h] + {{ input_b }}[dir][{{ hidden_size }} * 6 + h];
+                    gate_c += {{ input_b }}[dir][{{ hidden_size }} * 3 + h] + {{ input_b }}[dir][{{ hidden_size }} * 7 + h];
+                    {% endif %}
+                    {% if use_clip %}
+                    if (gate_i > {{ clip_literal }}) {
+                        gate_i = {{ clip_literal }};
+                    } else if (gate_i < -{{ clip_literal }}) {
+                        gate_i = -{{ clip_literal }};
+                    }
+                    if (gate_o > {{ clip_literal }}) {
+                        gate_o = {{ clip_literal }};
+                    } else if (gate_o < -{{ clip_literal }}) {
+                        gate_o = -{{ clip_literal }};
+                    }
+                    if (gate_f > {{ clip_literal }}) {
+                        gate_f = {{ clip_literal }};
+                    } else if (gate_f < -{{ clip_literal }}) {
+                        gate_f = -{{ clip_literal }};
+                    }
+                    if (gate_c > {{ clip_literal }}) {
+                        gate_c = {{ clip_literal }};
+                    } else if (gate_c < -{{ clip_literal }}) {
+                        gate_c = -{{ clip_literal }};
+                    }
+                    {% endif %}
+                    {% if input_p %}
+                    {{ c_type }} i_gate = {{ act_f }}(
+                        gate_i + {{ input_p }}[dir][h] * C_prev[b][h]);
+                    {% else %}
+                    {{ c_type }} i_gate = {{ act_f }}(gate_i);
+                    {% endif %}
+                    {% if input_forget %}
+                    {{ c_type }} f_gate = ({{ c_type }}){{ one_literal }} - i_gate;
+                    {% else %}
+                    {% if input_p %}
+                    {{ c_type }} f_gate = {{ act_f }}(
+                        gate_f + {{ input_p }}[dir][{{ hidden_size }} * 2 + h] * C_prev[b][h]);
+                    {% else %}
+                    {{ c_type }} f_gate = {{ act_f }}(gate_f);
+                    {% endif %}
+                    {% endif %}
+                    {{ c_type }} c_gate = {{ act_g }}(gate_c);
+                    {{ c_type }} c_new = f_gate * C_prev[b][h] + i_gate * c_gate;
+                    {% if input_p %}
+                    {{ c_type }} o_gate = {{ act_f }}(
+                        gate_o + {{ input_p }}[dir][{{ hidden_size }} + h] * c_new);
+                    {% else %}
+                    {{ c_type }} o_gate = {{ act_f }}(gate_o);
+                    {% endif %}
+                    {{ c_type }} h_new = o_gate * {{ act_h }}(c_new);
+                    C_next[h] = c_new;
+                    H_next[h] = h_new;
+                    {% if output_y %}
+                    {% if layout == 0 %}
+                    {{ output_y }}[t][dir][b][h] = h_new;
+                    {% else %}
+                    {{ output_y }}[b][t][dir][h] = h_new;
+                    {% endif %}
+                    {% endif %}
+                }
+                for (int h = 0; h < {{ hidden_size }}; ++h) {
+                    C_prev[b][h] = C_next[h];
+                    H_prev[b][h] = H_next[h];
+                }
+            }
+            {% if output_y %}
+            for (int step = seq_limit; step < {{ seq_length }}; ++step) {
+                for (int h = 0; h < {{ hidden_size }}; ++h) {
+                    {% if layout == 0 %}
+                    {{ output_y }}[step][dir][b][h] = {{ zero_literal }};
+                    {% else %}
+                    {{ output_y }}[b][step][dir][h] = {{ zero_literal }};
+                    {% endif %}
+                }
+            }
+            {% endif %}
+        }
+        {% if output_y_h %}
+        for (int b = 0; b < {{ batch_size }}; ++b) {
+            for (int h = 0; h < {{ hidden_size }}; ++h) {
+                {% if layout == 0 %}
+                {{ output_y_h }}[dir][b][h] = H_prev[b][h];
+                {% else %}
+                {{ output_y_h }}[b][dir][h] = H_prev[b][h];
+                {% endif %}
+            }
+        }
+        {% endif %}
+        {% if output_y_c %}
+        for (int b = 0; b < {{ batch_size }}; ++b) {
+            for (int h = 0; h < {{ hidden_size }}; ++h) {
+                {% if layout == 0 %}
+                {{ output_y_c }}[dir][b][h] = C_prev[b][h];
+                {% else %}
+                {{ output_y_c }}[b][dir][h] = C_prev[b][h];
+                {% endif %}
+            }
+        }
+        {% endif %}
+    }
+    {% endfor %}
+}
