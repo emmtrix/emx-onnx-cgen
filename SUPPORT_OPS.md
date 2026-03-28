@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 210 / 258
+Supported operators: 211 / 258
 
 | Operator | Supported |
 | --- | --- |
@@ -231,7 +231,7 @@ Supported operators: 210 / 258
 | com.microsoft::ExpandDims | ❌ |
 | com.microsoft::FastGelu | ❌ |
 | com.microsoft::FusedConv | ❌ |
-| com.microsoft::FusedMatMul | ❌ |
+| com.microsoft::FusedMatMul | ✅ |
 | com.microsoft::GatherBlockQuantized | ❌ |
 | com.microsoft::GridSample | ✅ |
 | com.microsoft::Inverse | ❌ |
