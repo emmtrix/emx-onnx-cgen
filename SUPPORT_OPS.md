@@ -6,6 +6,7 @@
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
 Supported operators: 211 / 258
+Supported operators: 214 / 258
 
 | Operator | Supported |
 | --- | --- |
@@ -233,9 +234,11 @@ Supported operators: 211 / 258
 | com.microsoft::FusedConv | ❌ |
 | com.microsoft::FusedMatMul | ❌ |
 | com.microsoft::GatherBlockQuantized | ✅ |
+| com.microsoft::FusedMatMul | ✅ |
+| com.microsoft::GatherBlockQuantized | ❌ |
 | com.microsoft::GridSample | ✅ |
 | com.microsoft::Inverse | ❌ |
-| com.microsoft::MatMulBnb4 | ❌ |
+| com.microsoft::MatMulBnb4 | ✅ |
 | com.microsoft::MatMulInteger16 | ❌ |
 | com.microsoft::MatMulIntegerToFloat | ❌ |
 | com.microsoft::MatMulNBits | ✅ |
@@ -244,10 +247,10 @@ Supported operators: 211 / 258
 | com.microsoft::MultiHeadAttention | ❌ |
 | com.microsoft::MurmurHash3 | ❌ |
 | com.microsoft::NGramRepeatBlock | ❌ |
-| com.microsoft::NhwcMaxPool | ❌ |
+| com.microsoft::NhwcMaxPool | ✅ |
 | com.microsoft::QAttention | ❌ |
 | com.microsoft::QEmbedLayerNormalization | ❌ |
-| com.microsoft::QGemm | ❌ |
+| com.microsoft::QGemm | ✅ |
 | com.microsoft::QLinearAdd | ✅ |
 | com.microsoft::QLinearAveragePool | ✅ |
 | com.microsoft::QLinearConcat | ❌ |
