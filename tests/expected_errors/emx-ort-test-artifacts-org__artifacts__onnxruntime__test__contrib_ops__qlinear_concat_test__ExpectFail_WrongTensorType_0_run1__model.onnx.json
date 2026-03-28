@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op QLinearConcat",
+  "error": "QLinearConcat all inputs must have the same dtype, got (<ScalarType.U8: 'u8'>, <ScalarType.I8: 'i8'>, <ScalarType.I8: 'i8'>)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/qlinear_concat_test/ExpectFail_WrongTensorType_0_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
