@@ -1,0 +1,186 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const {{ c_type }} scale = {{ scale_literal }};
+    {% if mask_type != 0 %}
+    const {{ c_type }} mask_filter_value = {{ mask_filter_literal }};
+    {% endif %}
+    for (int b = 0; b < {{ batch }}; ++b) {
+        for (int h = 0; h < {{ num_heads }}; ++h) {
+            for (int qi = 0; qi < {{ seq_len }}; ++qi) {
+                {{ c_type }} scores[{{ total_seq }}];
+                {{ c_type }} max_score = {{ min_literal }};
+                for (int ki = 0; ki < {{ total_seq }}; ++ki) {
+                    {{ c_type }} score = {{ zero_literal }};
+                    {% if past %}
+                    if (ki < {{ past_seq }}) {
+                        for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                            {{ c_type }} q_val = {{ zero_literal }};
+                            for (int j = 0; j < {{ input_hidden_size }}; ++j) {
+                                q_val += {{ input0 }}[b][qi][j] * {{ weight }}[j][h * {{ qk_head_size }} + d];
+                            }
+                            q_val += {{ bias }}[h * {{ qk_head_size }} + d];
+                            score += q_val * {{ past }}[0][b][h][ki][d];
+                        }
+                    } else {
+                        int k_idx = ki - {{ past_seq }};
+                        for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                            {{ c_type }} q_val = {{ zero_literal }};
+                            for (int j = 0; j < {{ input_hidden_size }}; ++j) {
+                                q_val += {{ input0 }}[b][qi][j] * {{ weight }}[j][h * {{ qk_head_size }} + d];
+                            }
+                            q_val += {{ bias }}[h * {{ qk_head_size }} + d];
+                            {{ c_type }} k_val = {{ zero_literal }};
+                            for (int j = 0; j < {{ input_hidden_size }}; ++j) {
+                                k_val += {{ input0 }}[b][k_idx][j] * {{ weight }}[j][{{ q_hidden_size }} + h * {{ qk_head_size }} + d];
+                            }
+                            k_val += {{ bias }}[{{ q_hidden_size }} + h * {{ qk_head_size }} + d];
+                            score += q_val * k_val;
+                        }
+                    }
+                    {% else %}
+                    for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                        {{ c_type }} q_val = {{ zero_literal }};
+                        for (int j = 0; j < {{ input_hidden_size }}; ++j) {
+                            q_val += {{ input0 }}[b][qi][j] * {{ weight }}[j][h * {{ qk_head_size }} + d];
+                        }
+                        q_val += {{ bias }}[h * {{ qk_head_size }} + d];
+                        {{ c_type }} k_val = {{ zero_literal }};
+                        for (int j = 0; j < {{ input_hidden_size }}; ++j) {
+                            k_val += {{ input0 }}[b][ki][j] * {{ weight }}[j][{{ q_hidden_size }} + h * {{ qk_head_size }} + d];
+                        }
+                        k_val += {{ bias }}[{{ q_hidden_size }} + h * {{ qk_head_size }} + d];
+                        score += q_val * k_val;
+                    }
+                    {% endif %}
+                    score *= scale;
+                    {% if mask_type == 1 %}
+                    if (ki >= {{ mask_index }}[b]) {
+                        score += mask_filter_value;
+                    }
+                    {% elif mask_type == 2 %}
+                    {
+                        int mask_end = {{ mask_index }}[b];
+                        int mask_start = {{ mask_index }}[{{ batch }} + b];
+                        if (ki < mask_start || ki >= mask_end) {
+                            score += mask_filter_value;
+                        }
+                    }
+                    {% elif mask_type == 3 %}
+                    if (ki < {{ mask_shape[1] }}) {
+                        if ({{ mask_index }}[b][ki] == 0) {
+                            score += mask_filter_value;
+                        }
+                    }
+                    {% elif mask_type == 4 %}
+                    if (ki < {{ mask_shape[2] }}) {
+                        if ({{ mask_index }}[b][qi][ki] == 0) {
+                            score += mask_filter_value;
+                        }
+                    }
+                    {% endif %}
+                    {% if unidirectional %}
+                    if (ki > qi + {{ past_seq }}) {
+                        score = {{ min_literal }};
+                    }
+                    {% endif %}
+                    {% if extra_add_qk %}
+                    score += {{ extra_add_qk }}[b][h][qi][ki];
+                    {% endif %}
+                    scores[ki] = score;
+                    max_score = {{ scalar_fn(SF.MAXIMUM, dtype) }}(max_score, score);
+                }
+                {{ c_type }} sum = {{ zero_literal }};
+                for (int ki = 0; ki < {{ total_seq }}; ++ki) {
+                    {{ c_type }} w = {{ zero_literal }};
+                    if (max_score != {{ min_literal }}) {
+                        w = {{ scalar_fn(SF.EXP, dtype) }}(scores[ki] - max_score);
+                    }
+                    scores[ki] = w;
+                    sum += w;
+                }
+                {{ c_type }} inv_sum = sum == {{ zero_literal }} ? {{ zero_literal }} : ({{ c_type }})1 / sum;
+                for (int vd = 0; vd < {{ v_head_size }}; ++vd) {
+                    {{ c_type }} acc = {{ zero_literal }};
+                    for (int ki = 0; ki < {{ total_seq }}; ++ki) {
+                        {{ c_type }} weight_val = scores[ki] * inv_sum;
+                        {% if past %}
+                        if (ki < {{ past_seq }}) {
+                            acc += weight_val * {{ past }}[1][b][h][ki][vd];
+                        } else {
+                            int v_idx = ki - {{ past_seq }};
+                            {{ c_type }} v_val = {{ zero_literal }};
+                            for (int j = 0; j < {{ input_hidden_size }}; ++j) {
+                                v_val += {{ input0 }}[b][v_idx][j] * {{ weight }}[j][{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + vd];
+                            }
+                            v_val += {{ bias }}[{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + vd];
+                            acc += weight_val * v_val;
+                        }
+                        {% else %}
+                        {
+                            {{ c_type }} v_val = {{ zero_literal }};
+                            for (int j = 0; j < {{ input_hidden_size }}; ++j) {
+                                v_val += {{ input0 }}[b][ki][j] * {{ weight }}[j][{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + vd];
+                            }
+                            v_val += {{ bias }}[{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + vd];
+                            acc += weight_val * v_val;
+                        }
+                        {% endif %}
+                    }
+                    {{ output }}[b][qi][h * {{ v_head_size }} + vd] = acc;
+                }
+            }
+        }
+    }
+    {% if present %}
+    for (int b = 0; b < {{ batch }}; ++b) {
+        for (int h = 0; h < {{ num_heads }}; ++h) {
+            for (int ki = 0; ki < {{ total_seq }}; ++ki) {
+                {% if past %}
+                if (ki < {{ past_seq }}) {
+                    for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                        {{ present }}[0][b][h][ki][d] = {{ past }}[0][b][h][ki][d];
+                    }
+                    for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                        {{ present }}[1][b][h][ki][d] = {{ past }}[1][b][h][ki][d];
+                    }
+                } else {
+                    int s_idx = ki - {{ past_seq }};
+                    for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                        {{ c_type }} k_val = {{ zero_literal }};
+                        for (int j = 0; j < {{ input_hidden_size }}; ++j) {
+                            k_val += {{ input0 }}[b][s_idx][j] * {{ weight }}[j][{{ q_hidden_size }} + h * {{ qk_head_size }} + d];
+                        }
+                        k_val += {{ bias }}[{{ q_hidden_size }} + h * {{ qk_head_size }} + d];
+                        {{ present }}[0][b][h][ki][d] = k_val;
+                    }
+                    for (int d = 0; d < {{ v_head_size }}; ++d) {
+                        {{ c_type }} v_val = {{ zero_literal }};
+                        for (int j = 0; j < {{ input_hidden_size }}; ++j) {
+                            v_val += {{ input0 }}[b][s_idx][j] * {{ weight }}[j][{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + d];
+                        }
+                        v_val += {{ bias }}[{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + d];
+                        {{ present }}[1][b][h][ki][d] = v_val;
+                    }
+                }
+                {% else %}
+                for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                    {{ c_type }} k_val = {{ zero_literal }};
+                    for (int j = 0; j < {{ input_hidden_size }}; ++j) {
+                        k_val += {{ input0 }}[b][ki][j] * {{ weight }}[j][{{ q_hidden_size }} + h * {{ qk_head_size }} + d];
+                    }
+                    k_val += {{ bias }}[{{ q_hidden_size }} + h * {{ qk_head_size }} + d];
+                    {{ present }}[0][b][h][ki][d] = k_val;
+                }
+                for (int d = 0; d < {{ v_head_size }}; ++d) {
+                    {{ c_type }} v_val = {{ zero_literal }};
+                    for (int j = 0; j < {{ input_hidden_size }}; ++j) {
+                        v_val += {{ input0 }}[b][ki][j] * {{ weight }}[j][{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + d];
+                    }
+                    v_val += {{ bias }}[{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + d];
+                    {{ present }}[1][b][h][ki][d] = v_val;
+                }
+                {% endif %}
+            }
+        }
+    }
+    {% endif %}
+}
