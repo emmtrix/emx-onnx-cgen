@@ -40,6 +40,7 @@ _LOWERING_MODULES = [
     "eye_like",
     "flatten",
     "gather",
+    "gather_block_quantized",
     "gather_elements",
     "gather_nd",
     "gemm",

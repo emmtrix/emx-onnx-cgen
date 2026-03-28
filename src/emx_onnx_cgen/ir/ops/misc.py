@@ -816,6 +816,182 @@ class GatherOp(GatherLikeOpBase):
 
 
 @dataclass(frozen=True)
+class GatherBlockQuantizedOp(RenderableOpBase):
+    """Block-quantized gather with inline dequantization (com.microsoft)."""
+
+    __io_inputs__ = ("data", "indices", "scales", "zero_points")
+    __io_outputs__ = ("output",)
+
+    data: str
+    indices: str
+    scales: str
+    zero_points: str | None
+    output: str
+
+    gather_axis: int
+    quantize_axis: int
+    block_size: int
+    bits: int
+    packed: bool
+    values_per_element: int
+    logical_quantize_dim: int
+    n_blocks: int
+    zero_points_packed: bool
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+
+        params = emitter.shared_param_map(
+            [
+                ("data", self.data),
+                ("indices", self.indices),
+                ("scales", self.scales),
+                ("zero_points", self.zero_points),
+                ("output", self.output),
+            ]
+        )
+
+        output_shape_raw = emitter.ctx_shape(self.output)
+        output_dim_names = emitter.dim_names_for(self.output)
+        output_shape = CEmitterCompat.shape_dim_exprs(
+            output_shape_raw, output_dim_names
+        )
+        output_loop_vars = CEmitterCompat.loop_vars(output_shape_raw)
+
+        data_shape = emitter.ctx_shape(self.data)
+        data_dtype = emitter.ctx_dtype(self.data)
+        scales_dtype = emitter.ctx_dtype(self.scales)
+        output_dtype = emitter.ctx_dtype(self.output)
+        indices_dtype = emitter.ctx_dtype(self.indices)
+        indices_shape = emitter.ctx_shape(self.indices)
+
+        scales_shape = emitter.ctx_shape(self.scales)
+        data_suffix = emitter.param_array_suffix(data_shape)
+        indices_suffix = emitter.param_array_suffix(indices_shape)
+        scales_suffix = emitter.param_array_suffix(scales_shape)
+        output_suffix = emitter.param_array_suffix(
+            output_shape_raw, output_dim_names
+        )
+
+        param_entries: list[tuple[str | None, str, str, bool] | tuple] = [
+            (params["data"], data_dtype.c_type, data_suffix, True),
+            (params["indices"], indices_dtype.c_type, indices_suffix, True),
+            (params["scales"], scales_dtype.c_type, scales_suffix, True),
+        ]
+
+        if params["zero_points"]:
+            zp_shape = emitter.ctx_shape(self.zero_points)  # type: ignore[arg-type]
+            zp_suffix = emitter.param_array_suffix(zp_shape)
+            param_entries.append(
+                (params["zero_points"], data_dtype.c_type, zp_suffix, True)
+            )
+        else:
+            param_entries.append((None, "", "", True))
+
+        param_entries.append(
+            (params["output"], output_dtype.c_type, output_suffix, False)
+        )
+        param_decls = emitter.build_param_decls(param_entries)
+
+        # Index mapping for gather + dequantize.
+        # output_loop_vars span the output dimensions.
+        # gather_axis is replaced by indices in the output.
+        indices_rank = len(indices_shape)
+        indices_vars = (
+            ("0",)
+            if indices_rank == 0
+            else output_loop_vars[
+                self.gather_axis : self.gather_axis + indices_rank
+            ]
+        )
+
+        # Build data index expression from output loop vars.
+        # Axes before gather_axis map directly,
+        # the gather_axis dimension maps to the gathered index,
+        # axes after gather_axis map to output vars shifted by (indices_rank - 1).
+        data_index_parts: list[str] = []
+        # Track which output var corresponds to which data dim.
+        output_var_cursor = 0
+        for d in range(len(data_shape)):
+            if d == self.gather_axis:
+                data_index_parts.append("gather_index")
+                output_var_cursor += indices_rank
+            else:
+                data_index_parts.append(output_loop_vars[output_var_cursor])
+                output_var_cursor += 1
+
+        # The quantize_axis in the *output* may be shifted by gather.
+        # Map the data's quantize_axis to the correct output loop variable.
+        qaxis_output_var = data_index_parts[self.quantize_axis]
+        if qaxis_output_var == "gather_index":
+            # quantize_axis == gather_axis — the variable is the gather index.
+            qaxis_output_var = "gather_index"
+
+        compute_type = "double" if output_dtype == ScalarType.F64 else "float"
+        bit_mask = (1 << self.bits) - 1
+        # Unsigned quantized data uses midpoint zero to center values.
+        if not data_dtype.is_signed:
+            default_zero_point = 1 << (self.bits - 1)
+        else:
+            default_zero_point = 0
+
+        rendered = (
+            state.templates["gather_block_quantized"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                params=param_decls,
+                dim_args=dim_args,
+                data=params["data"],
+                indices=params["indices"],
+                scales=params["scales"],
+                zero_points=params["zero_points"],
+                output=params["output"],
+                output_shape=output_shape,
+                output_loop_vars=output_loop_vars,
+                data_index_parts=data_index_parts,
+                indices_vars=indices_vars,
+                axis_dim=data_shape[self.gather_axis],
+                gather_axis=self.gather_axis,
+                quantize_axis=self.quantize_axis,
+                block_size=self.block_size,
+                bits=self.bits,
+                packed=self.packed,
+                values_per_element=self.values_per_element,
+                qaxis_output_var=qaxis_output_var,
+                compute_type=compute_type,
+                output_c_type=output_dtype.c_type,
+                bit_mask=bit_mask,
+                default_zero_point=default_zero_point,
+                has_zero_points=params["zero_points"] is not None,
+                zero_points_packed=self.zero_points_packed,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return emitter.ctx_shape(self.output)
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        inputs: list[tuple[str, tuple[int, ...]]] = [
+            (self.data, emitter.ctx_shape(self.data)),
+            (self.indices, emitter.ctx_shape(self.indices)),
+            (self.scales, emitter.ctx_shape(self.scales)),
+        ]
+        if self.zero_points is not None:
+            inputs.append(
+                (self.zero_points, emitter.ctx_shape(self.zero_points))
+            )
+        return tuple(inputs)
+
+
+@dataclass(frozen=True)
 class ArrayFeatureExtractorOp(RenderableOpBase):
     __io_inputs__ = ("data", "indices")
     __io_outputs__ = ("output",)

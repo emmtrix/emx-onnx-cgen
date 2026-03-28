@@ -1097,6 +1097,9 @@ class CEmitter:
                 "compress": self._env.get_template("compress_op.c.j2"),
                 "gather_elements": self._env.get_template("gather_elements_op.c.j2"),
                 "gather": self._env.get_template("gather_op.c.j2"),
+                "gather_block_quantized": self._env.get_template(
+                    "gather_block_quantized_op.c.j2"
+                ),
                 "gather_nd": self._env.get_template("gather_nd_op.c.j2"),
                 "scatter": self._env.get_template("scatter_op.c.j2"),
                 "scatter_elements": self._env.get_template("scatter_elements_op.c.j2"),
