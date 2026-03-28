@@ -1,0 +1,21 @@
+EMX_NODE_FN void {{ op_name }}({{ params | join(', ') }}) {
+{% for idx in range(output_loop_vars | length) %}
+    {% for indent in range(loop.index0) %}    {% endfor %}for (idx_t {{ output_loop_vars[idx] }} = 0; {{ output_loop_vars[idx] }} < {{ output_loop_bounds[idx] }}; ++{{ output_loop_vars[idx] }}) {
+{% endfor %}
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ acc_type }} acc = {{ zero_literal }};
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}for (idx_t k = 0; k < {{ k }}; ++k) {
+{% if acc_type == c_type %}
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}acc += {{ input0_index_expr }} * {{ input1_index_expr }};
+{% else %}
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}acc += (({{ acc_type }}){{ input0_index_expr }}) * (({{ acc_type }}){{ input1_index_expr }});
+{% endif %}
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}}
+{% if has_alpha %}
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ output_index_expr }} = acc * {{ alpha_literal }};
+{% else %}
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ output_index_expr }} = acc;
+{% endif %}
+{% for idx in range(output_loop_vars | length) | reverse %}
+    {% for indent in range(loop.index0) %}    {% endfor %}}
+{% endfor %}
+}
