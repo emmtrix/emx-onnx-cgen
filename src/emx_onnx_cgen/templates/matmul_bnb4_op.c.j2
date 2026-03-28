@@ -1,0 +1,23 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    static const {{ acc_type }} dequant_table[16] = {
+{% for val in dequant_table %}
+        {{ val }}{{ "," if not loop.last else "" }}
+{% endfor %}
+    };
+{% for idx in range(output_loop_vars | length) %}
+    {% for indent in range(loop.index0) %}    {% endfor %}for (idx_t {{ output_loop_vars[idx] }} = 0; {{ output_loop_vars[idx] }} < {{ output_loop_bounds[idx] }}; ++{{ output_loop_vars[idx] }}) {
+{% endfor %}
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ acc_type }} acc = {{ acc_zero }};
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}for (idx_t k = 0; k < {{ k }}; ++k) {
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}idx_t flat_idx = {{ n_var }} * {{ k }} + k;
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}idx_t block_idx = flat_idx / {{ block_size }};
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}idx_t byte_idx = flat_idx / 2;
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}int quant_val = (flat_idx % 2 == 0) ? (((int)(unsigned char){{ input1 }}[byte_idx] >> 4) & 0xF) : ((int)(unsigned char){{ input1 }}[byte_idx] & 0xF);
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}{{ acc_type }} dequant = dequant_table[quant_val] * ({{ acc_type }}){{ absmax }}[block_idx];
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}acc += ({{ acc_type }}){{ input0_index_expr }} * dequant;
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}}
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ output_index_expr }} = ({{ output_c_type }})acc;
+{% for idx in range(output_loop_vars | length) | reverse %}
+    {% for indent in range(loop.index0) %}    {% endfor %}}
+{% endfor %}
+}

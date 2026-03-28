@@ -826,6 +826,175 @@ class MatMulNBitsOp(RenderableOpBase):
         return tuple(inputs)
 
 
+# ---------------------------------------------------------------------------
+# FP4 / NF4 lookup tables used by bitsandbytes 4-bit quantisation.
+# These must match ORT's ``blockwise_quant_block_bnb4.h``.
+# ---------------------------------------------------------------------------
+_FP4_DEQUANT_TABLE: tuple[float, ...] = (
+    0.0, 5.208333333e-03, 0.66666667, 1.0,
+    0.33333333, 0.50000000, 0.16666667, 0.25000000,
+    -0.0, -5.208333333e-03, -0.66666667, -1.0,
+    -0.33333333, -0.50000000, -0.16666667, -0.25000000,
+)
+
+_NF4_DEQUANT_TABLE: tuple[float, ...] = (
+    -1.0,
+    -0.6961928009986877,
+    -0.5250730514526367,
+    -0.39491748809814453,
+    -0.28444138169288635,
+    -0.18477343022823334,
+    -0.09105003625154495,
+    0.0,
+    0.07958029955625534,
+    0.16093020141124725,
+    0.24611230194568634,
+    0.33791524171829224,
+    0.44070982933044434,
+    0.5626170039176941,
+    0.7229568362236023,
+    1.0,
+)
+
+
+@dataclass(frozen=True)
+class MatMulBnb4Op(RenderableOpBase):
+    """BitsAndBytes 4-bit block-quantized matrix multiplication (com.microsoft).
+
+    Computes ``Y = A @ dequantize(B)`` where B is a flat packed uint8 array
+    of 4-bit FP4 or NF4 values, dequantised using a per-block ``absmax``
+    scale factor.  Two 4-bit values are packed per byte (high-nibble first).
+    The weight matrix is the transposed original ``[K, N]`` weight stored as
+    ``[N, K]`` flattened and blockwise-quantised.
+    """
+
+    __io_inputs__ = ("input0", "input1", "absmax")
+    __io_outputs__ = ("output",)
+
+    input0: str
+    input1: str
+    absmax: str
+    output: str
+
+    k: int
+    n: int
+    block_size: int
+    quant_type: int  # 0 = FP4, 1 = NF4
+
+    input0_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    m: int
+
+    input0_dtype: ScalarType
+    output_dtype: ScalarType
+    b_dtype: ScalarType
+    absmax_dtype: ScalarType
+
+    n_blocks: int
+    packed_size: int
+
+    def _dequant_table(self) -> tuple[float, ...]:
+        return _NF4_DEQUANT_TABLE if self.quant_type == 1 else _FP4_DEQUANT_TABLE
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("input1", self.input1),
+                ("absmax", self.absmax),
+                ("output", self.output),
+            ]
+        )
+
+        # Output loop structure  (..., M, N)
+        output_shape_raw = CEmitterCompat.codegen_shape(self.output_shape)
+        output_dim_names = emitter.dim_names_for(self.output)
+        output_shape = CEmitterCompat.shape_dim_exprs(
+            self.output_shape, output_dim_names
+        )
+        output_loop_vars = CEmitterCompat.loop_vars(output_shape_raw)
+        output_index_expr = f"{params['output']}" + "".join(
+            f"[{var}]" for var in output_loop_vars
+        )
+
+        n_var = output_loop_vars[-1] if output_loop_vars else "i0"
+
+        # Input A indexing  (..., m, k)
+        input0_index_parts = list(output_loop_vars[:-1]) + ["k"]
+        input0_index_expr = f"{params['input0']}" + "".join(
+            f"[{var}]" for var in input0_index_parts
+        )
+
+        input0_suffix = emitter.param_array_suffix(
+            self.input0_shape, emitter.dim_names_for(self.input0)
+        )
+
+        # B is flat packed: shape (packed_size,)
+        b_suffix = emitter.param_array_suffix((self.packed_size,))
+
+        # absmax is flat: shape (n_blocks,)
+        absmax_suffix = emitter.param_array_suffix((self.n_blocks,))
+
+        acc_dtype = emitter.accumulation_dtype(self.output_dtype)
+        acc_zero_literal = emitter.format_literal(acc_dtype, 0)
+
+        param_entries: list[tuple[str | None, str, str, bool] | tuple] = [
+            (params["input0"], self.input0_dtype.c_type, input0_suffix, True),
+            (params["input1"], self.b_dtype.c_type, b_suffix, True),
+            (params["absmax"], self.absmax_dtype.c_type, absmax_suffix, True),
+            (params["output"], self.output_dtype.c_type,
+             emitter.param_array_suffix(self.output_shape, output_dim_names), False),
+        ]
+
+        param_decls = emitter.build_param_decls(param_entries)
+
+        # Format lookup table values as C float literals
+        table = self._dequant_table()
+        table_strs = [f"{v:.17e}f" for v in table]
+
+        rendered = (
+            state.templates["matmul_bnb4"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                params=param_decls,
+                dim_args=dim_args,
+                acc_type=acc_dtype.c_type,
+                acc_zero=acc_zero_literal,
+                output_c_type=self.output_dtype.c_type,
+                output_loop_vars=output_loop_vars,
+                output_loop_bounds=output_shape,
+                output_index_expr=output_index_expr,
+                input0_index_expr=input0_index_expr,
+                input1=params["input1"],
+                absmax=params["absmax"],
+                n_var=n_var,
+                k=self.k,
+                block_size=self.block_size,
+                dequant_table=table_strs,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.output_shape
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return (
+            (self.input0, emitter.ctx_shape(self.input0)),
+            (self.input1, (self.packed_size,)),
+            (self.absmax, (self.n_blocks,)),
+        )
+
+
 @dataclass(frozen=True)
 class EinsumOp(MatMulLikeOpBase):
     __io_inputs__ = ("inputs",)
