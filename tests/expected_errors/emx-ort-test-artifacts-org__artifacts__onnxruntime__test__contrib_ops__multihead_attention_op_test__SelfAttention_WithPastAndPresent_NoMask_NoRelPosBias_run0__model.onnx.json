@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op MultiHeadAttention",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/multihead_attention_op_test/SelfAttention_WithPastAndPresent_NoMask_NoRelPosBias_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::MultiHeadAttention"
-  ]
+  ],
+  "generated_checksum": "f447fd6370e12fcfadc7c35a9cccee6c0bb8ce4d5606af74e8dbbf9801efb7e6"
 }

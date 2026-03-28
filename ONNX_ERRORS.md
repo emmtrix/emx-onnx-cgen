@@ -8,14 +8,13 @@ Aggregates non-success verification outcomes.
 | Error message | Count | Opset versions |
 | --- | --- | --- |
 | MatMulNBits g_idx (input 4) is not supported | 238 |  |
+| Out of tolerance | 78 | 7, 17 |
 | AveragePool has unsupported attributes | 72 |  |
-| Out of tolerance | 72 | 7, 17 |
 | Unsupported op DynamicQuantizeLSTM | 50 |  |
 | Unsupported op MatMulIntegerToFloat | 48 |  |
 | Unsupported op DynamicQuantizeMatMul | 39 |  |
 | Unsupported op QLinearConcat | 36 |  |
 | Unsupported op QLinearGlobalAveragePool | 36 |  |
-| Unsupported op MultiHeadAttention | 28 |  |
 | Unsupported op Tokenizer | 28 |  |
 | Unsupported op QAttention | 24 |  |
 | Unsupported op MurmurHash3 | 17 |  |
@@ -715,34 +714,12 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_NoBias_test_U8U8_run3/model.onnx |  | Data/Data | ❌ | Unsupported op MatMulIntegerToFloat |
 | test/contrib_ops/maxpool_mask_test/MaxPoolWithMask_run0/model.onnx |  | Data/Data | ❌ | Unsupported op MaxpoolWithMask |
 | test/contrib_ops/moe_test/MoECpuTest_BasicSwiGLU_run0/model.onnx |  | Data/Data | ❌ | Unsupported op MoE |
-| test/contrib_ops/multihead_attention_op_test/CrossAttentionWithPast_run0/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/CrossAttentionWithPast_run1/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch1_HeadSize16_run0/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch1_HeadSize16_run1/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch1_HeadSize16_run2/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch1_HeadSize16_run3/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch1_HeadSize8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch1_HeadSize8_run1/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize16_8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize16_8_run1/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize16_8_run2/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize16_8_run3/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize40_run0/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize40_run1/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize40_run2/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize40_run3/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_DiffSequenceLengths_run0/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_DiffSequenceLengths_run1/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_DiffSequenceLengths_run2/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_DiffSequenceLengths_run3/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_DiffSequenceLengths_run4/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_DiffSequenceLengths_run5/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/SelfAttention_WithPastAndPresent_NoMask_NoRelPosBias_run0/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/SelfAttention_WithPastAndPresent_NoMask_NoRelPosBias_run1/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/SelfAttention_WithPastAndPresent_NoMask_NoRelPosBias_run2/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/SelfAttention_WithPastAndPresent_NoMask_NoRelPosBias_run3/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/SelfAttention_WithPastAndPresent_NoMask_NoRelPosBias_run4/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
-| test/contrib_ops/multihead_attention_op_test/SelfAttention_WithPastAndPresent_NoMask_NoRelPosBias_run5/model.onnx |  | Data/Data | ❌ | Unsupported op MultiHeadAttention |
+| test/contrib_ops/multihead_attention_op_test/CrossAttentionWithPast_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 35654) |
+| test/contrib_ops/multihead_attention_op_test/CrossAttentionWithPast_run1/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 35654) |
+| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize40_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1985353729) |
+| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize40_run1/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1985353729) |
+| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize40_run2/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1024) |
+| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize40_run3/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1024) |
 | test/contrib_ops/murmur_hash3_test/DefaultSeed_run0/model.onnx |  | Data/Data | ❌ | Unsupported op MurmurHash3 |
 | test/contrib_ops/murmur_hash3_test/MoreDataFloat_run0/model.onnx |  | Data/Data | ❌ | Unsupported op MurmurHash3 |
 | test/contrib_ops/murmur_hash3_test/MoreDataInt_run0/model.onnx |  | Data/Data | ❌ | Unsupported op MurmurHash3 |
