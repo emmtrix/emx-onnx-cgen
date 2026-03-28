@@ -8,12 +8,9 @@ Aggregates non-success verification outcomes.
 | Error message | Count | Opset versions |
 | --- | --- | --- |
 | MatMulNBits g_idx (input 4) is not supported | 238 |  |
-| Unsupported op FusedMatMul | 192 |  |
-| Unsupported op GatherBlockQuantized | 222 |  |
+| Out of tolerance | 75 | 7, 17 |
 | AveragePool has unsupported attributes | 72 |  |
-| Out of tolerance | 69 | 7, 17 |
 | Unsupported op Attention | 65 |  |
-| Out of tolerance | 54 | 7, 17 |
 | Unsupported op DynamicQuantizeLSTM | 50 |  |
 | Unsupported op MatMulIntegerToFloat | 48 |  |
 | Unsupported op DynamicQuantizeMatMul | 39 |  |
@@ -40,11 +37,11 @@ Aggregates non-success verification outcomes.
 | Unsupported op BiasGelu | 6 |  |
 | Unsupported op WordConvEmbedding | 6 |  |
 | Unsupported op Inverse | 5 |  |
+| FusedMatMul batch dimensions are not broadcastable: (2,) vs (4,) | 4 |  |
 | GatherBlockQuantized axis 3 is out of range for rank 3 | 4 |  |
 | GatherBlockQuantized scales shape (2, 2, 1) does not match expected (2, 3, 1) (data_shape=(2, 3, 4), quantize_axis=2, block_size=16, packed=False) | 4 |  |
 | GatherBlockQuantized scales shape (2, 3, 1) does not match expected (2, 3, 2) (data_shape=(2, 3, 4), quantize_axis=2, block_size=16, packed=True) | 4 |  |
 | Output shape mismatch for output (actual_shape=(1, 3, 16), actual_size=48, expected_shape=(1, 3, 4), expected_size=12, output=output) | 4 |  |
-| FusedMatMul batch dimensions are not broadcastable: (2,) vs (4,) | 4 |  |
 | QLinearSoftmax axis -2 is out of bounds for shape () | 4 |  |
 | Unique must have 1 input and 4 outputs | 4 |  |
 | Unsupported op Crop | 4 | 1, 7 |
@@ -58,6 +55,7 @@ Aggregates non-success verification outcomes.
 | Failed to build testbench (model.c:125:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Werror=incompatible-pointer-types]). | 2 |  |
 | Failed to build testbench (model.c:137:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Werror=incompatible-pointer-types]). | 2 |  |
 | Failed to build testbench (model.c:139:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Werror=incompatible-pointer-types]). | 2 |  |
+| FusedMatMul inner dimensions must match after transposition, got effective shapes (2, 2, 3) and (3, 1, 4) (original: (2, 2, 3) and (3, 1, 4)) | 2 |  |
 | GatherBlockQuantized data dtype must be integer, got int64 | 2 |  |
 | GatherBlockQuantized data dtype must be integer, got uint64 | 2 |  |
 | GatherBlockQuantized scales shape (2, 2, 1) does not match expected (2, 3, 1) (data_shape=(2, 3, 2), quantize_axis=2, block_size=16, packed=True) | 2 |  |
@@ -69,7 +67,6 @@ Aggregates non-success verification outcomes.
 | GatherBlockQuantized supports bits in [4, 8], got 7 | 2 |  |
 | Output shape mismatch for output (actual_shape=(1, 3, 8), actual_size=24, expected_shape=(1, 3, 4), expected_size=12, output=output) | 2 |  |
 | Output shape mismatch for output (actual_shape=(2, 1, 4), actual_size=8, expected_shape=(1, 3, 4), expected_size=12, output=output) | 2 |  |
-| FusedMatMul inner dimensions must match after transposition, got effective shapes (2, 2, 3) and (3, 1, 4) (original: (2, 2, 3) and (3, 1, 4)) | 2 |  |
 | Unsupported op Affine | 2 | 7 |
 | Unsupported op BifurcationDetector | 2 |  |
 | Unsupported op DecoderMaskedMultiHeadAttention | 2 |  |
@@ -306,198 +303,52 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/fused_conv_test/Conv2D_HardSigmoid_run0/model.onnx |  | Data/Data | ❌ | Unsupported op FusedConv |
 | test/contrib_ops/fused_conv_test/Conv2D_Relu_run0/model.onnx |  | Data/Data | ❌ | Unsupported op FusedConv |
 | test/contrib_ops/fused_conv_test/Cpu_Conv2D_Bias_Z_Relu_run0/model.onnx |  | Data/Data | ❌ | Unsupported op FusedConv |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run0/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run1/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run10/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run11/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run2/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run3/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run4/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run5/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run6/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run7/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run8/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run9/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run0/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run1/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run10/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run11/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run12/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run13/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run14/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run15/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run16/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run17/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run18/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run19/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run2/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run20/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run21/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run22/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run23/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run24/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run25/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run26/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run27/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run28/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run29/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run3/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run30/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run31/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run32/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run33/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run34/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run35/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run36/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run37/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run38/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run39/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run4/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run40/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run41/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run42/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run43/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run44/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run45/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run46/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run47/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run48/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run49/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run5/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run50/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run51/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run52/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run53/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run54/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run55/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run56/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run57/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run58/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run59/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run6/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run60/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run61/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run62/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run63/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run64/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run65/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run66/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run67/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run68/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run69/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run7/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run70/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run71/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run8/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run9/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run0/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run1/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run10/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run11/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run12/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run13/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run14/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run15/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run16/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run17/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run18/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run19/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run2/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run20/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run21/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run22/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run23/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run3/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run4/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run5/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run6/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run7/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run8/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run9/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run0/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run1/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run10/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run11/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run2/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run3/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run4/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run5/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run6/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run7/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run8/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run9/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run0/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run1/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run10/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run11/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run12/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run13/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run14/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run15/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run16/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run17/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run18/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run19/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run2/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run20/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run21/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run22/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run23/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run3/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run4/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run5/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run6/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run7/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run8/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run9/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run0/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run1/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run10/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run11/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run12/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run13/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run14/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run15/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run16/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run17/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run18/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run19/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run2/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run20/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run21/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run22/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run23/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run24/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run25/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run26/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run27/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run28/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run29/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run3/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run30/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run31/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run32/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run33/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run34/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run35/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run36/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run37/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run38/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run39/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run4/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run40/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run41/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run42/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run43/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run44/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run45/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run46/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run47/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run5/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run6/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run7/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run8/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run9/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 6684672) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run10/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 14680064) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run11/model.onnx |  | Data/Data | ❌ | FusedMatMul batch dimensions are not broadcastable: (1, 3) vs (3, 2) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run12/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (3, 2, 2) and (1, 3, 4) (original: (3, 2, 2) and (1, 3, 4)) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run13/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (3, 2, 1) and (1, 3, 4) (original: (3, 1, 2) and (1, 3, 4)) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run14/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 16777216) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run15/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 22020096) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run16/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (2, 2, 3) and (3, 1, 4) (original: (2, 3, 2) and (3, 1, 4)) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run17/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (1, 2, 3) and (3, 1, 4) (original: (1, 3, 2) and (3, 1, 4)) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run18/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 8388608) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run19/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 8388608) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run2/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 6815744) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run20/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (3, 2, 2) and (3, 1, 4) (original: (3, 2, 2) and (3, 1, 4)) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run21/model.onnx |  | Data/Data | ❌ | Output shape mismatch for Y (actual_shape=(3, 2, 4), actual_size=24, expected_shape=(1, 2, 4), expected_size=8, output=Y) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run22/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 25165824) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run23/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 29360128) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run24/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 6684672) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run26/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 6815744) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run27/model.onnx |  | Data/Data | ❌ | FusedMatMul batch dimensions are not broadcastable: (1, 3) vs (3, 2) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run28/model.onnx |  | Data/Data | ❌ | FusedMatMul batch dimensions are not broadcastable: (2,) vs (4,) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run29/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 12058624) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run3/model.onnx |  | Data/Data | ❌ | FusedMatMul batch dimensions are not broadcastable: (1, 3) vs (3, 2) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run30/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 11272192) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run31/model.onnx |  | Data/Data | ❌ | Output shape mismatch for Y (actual_shape=(3, 2, 3, 2), actual_size=36, expected_shape=(3, 2, 3, 1), expected_size=18, output=Y) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run32/model.onnx |  | Data/Data | ❌ | FusedMatMul batch dimensions are not broadcastable: (2,) vs (4,) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run33/model.onnx |  | Data/Data | ❌ | FusedMatMul batch dimensions are not broadcastable: (2,) vs (4,) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run34/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 17301504) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run35/model.onnx |  | Data/Data | ❌ | Output shape mismatch for Y (actual_shape=(3, 3, 2, 2), actual_size=36, expected_shape=(3, 2, 3, 1), expected_size=18, output=Y) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run36/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (3, 2, 2) and (1, 3, 4) (original: (3, 2, 2) and (1, 4, 3)) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run37/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (3, 2, 1) and (1, 3, 4) (original: (3, 1, 2) and (1, 4, 3)) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run38/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 16777216) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run39/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 22020096) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run4/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (2, 2, 3) and (3, 1, 4) (original: (2, 2, 3) and (3, 1, 4)) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run40/model.onnx |  | Data/Data | ❌ | FusedMatMul batch dimensions are not broadcastable: (2,) vs (4,) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run41/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 12058624) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run42/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 11272192) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run43/model.onnx |  | Data/Data | ❌ | Output shape mismatch for Y (actual_shape=(3, 2, 3, 2), actual_size=36, expected_shape=(3, 2, 3, 1), expected_size=18, output=Y) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run44/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (3, 2, 2) and (4, 3, 1) (original: (3, 2, 2) and (4, 1, 3)) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run45/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (3, 2, 1) and (4, 3, 1) (original: (3, 1, 2) and (4, 1, 3)) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run46/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 25165824) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run47/model.onnx |  | Data/Data | ❌ | Output shape mismatch for Y (actual_shape=(3, 2, 3, 2), actual_size=36, expected_shape=(3, 2, 3, 1), expected_size=18, output=Y) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run5/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (1, 2, 3) and (3, 1, 4) (original: (1, 2, 3) and (3, 1, 4)) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run6/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 8388608) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run7/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 8388608) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run8/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (2, 2, 3) and (3, 1, 4) (original: (2, 2, 3) and (3, 1, 4)) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run9/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (2, 1, 3) and (3, 1, 4) (original: (2, 1, 3) and (3, 1, 4)) |
 | test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run0/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized axis 3 is out of range for rank 3 |
 | test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run1/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized axis 3 is out of range for rank 3 |
 | test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run2/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized axis -1 is out of range for rank 3 |
@@ -558,274 +409,6 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/gather_block_quantized_op_test/UnsupportedUInt8DataType_run1/model.onnx |  | Data/Data | ❌ | Output shape mismatch for output (actual_shape=(2, 1, 4), actual_size=8, expected_shape=(1, 3, 4), expected_size=12, output=output) |
 | test/contrib_ops/gather_block_quantized_op_test/UnsupportedUInt8DataType_run2/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized indices must be int32 or int64 |
 | test/contrib_ops/gather_block_quantized_op_test/UnsupportedUInt8DataType_run3/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized indices must be int32 or int64 |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 6684672) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run10/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 14680064) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run11/model.onnx |  | Data/Data | ❌ | FusedMatMul batch dimensions are not broadcastable: (1, 3) vs (3, 2) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run12/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (3, 2, 2) and (1, 3, 4) (original: (3, 2, 2) and (1, 3, 4)) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run13/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (3, 2, 1) and (1, 3, 4) (original: (3, 1, 2) and (1, 3, 4)) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run14/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 16777216) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run15/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 22020096) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run16/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (2, 2, 3) and (3, 1, 4) (original: (2, 3, 2) and (3, 1, 4)) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run17/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (1, 2, 3) and (3, 1, 4) (original: (1, 3, 2) and (3, 1, 4)) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run18/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 8388608) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run19/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 8388608) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run2/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 6815744) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run20/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (3, 2, 2) and (3, 1, 4) (original: (3, 2, 2) and (3, 1, 4)) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run21/model.onnx |  | Data/Data | ❌ | Output shape mismatch for Y (actual_shape=(3, 2, 4), actual_size=24, expected_shape=(1, 2, 4), expected_size=8, output=Y) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run22/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 25165824) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run23/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 29360128) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run24/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 6684672) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run26/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 6815744) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run27/model.onnx |  | Data/Data | ❌ | FusedMatMul batch dimensions are not broadcastable: (1, 3) vs (3, 2) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run28/model.onnx |  | Data/Data | ❌ | FusedMatMul batch dimensions are not broadcastable: (2,) vs (4,) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run29/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 12058624) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run3/model.onnx |  | Data/Data | ❌ | FusedMatMul batch dimensions are not broadcastable: (1, 3) vs (3, 2) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run30/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 11272192) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run31/model.onnx |  | Data/Data | ❌ | Output shape mismatch for Y (actual_shape=(3, 2, 3, 2), actual_size=36, expected_shape=(3, 2, 3, 1), expected_size=18, output=Y) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run32/model.onnx |  | Data/Data | ❌ | FusedMatMul batch dimensions are not broadcastable: (2,) vs (4,) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run33/model.onnx |  | Data/Data | ❌ | FusedMatMul batch dimensions are not broadcastable: (2,) vs (4,) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run34/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 17301504) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run35/model.onnx |  | Data/Data | ❌ | Output shape mismatch for Y (actual_shape=(3, 3, 2, 2), actual_size=36, expected_shape=(3, 2, 3, 1), expected_size=18, output=Y) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run36/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (3, 2, 2) and (1, 3, 4) (original: (3, 2, 2) and (1, 4, 3)) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run37/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (3, 2, 1) and (1, 3, 4) (original: (3, 1, 2) and (1, 4, 3)) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run38/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 16777216) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run39/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 22020096) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run4/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (2, 2, 3) and (3, 1, 4) (original: (2, 2, 3) and (3, 1, 4)) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run40/model.onnx |  | Data/Data | ❌ | FusedMatMul batch dimensions are not broadcastable: (2,) vs (4,) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run41/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 12058624) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run42/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 11272192) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run43/model.onnx |  | Data/Data | ❌ | Output shape mismatch for Y (actual_shape=(3, 2, 3, 2), actual_size=36, expected_shape=(3, 2, 3, 1), expected_size=18, output=Y) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run44/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (3, 2, 2) and (4, 3, 1) (original: (3, 2, 2) and (4, 1, 3)) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run45/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (3, 2, 1) and (4, 3, 1) (original: (3, 1, 2) and (4, 1, 3)) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run46/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 25165824) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run47/model.onnx |  | Data/Data | ❌ | Output shape mismatch for Y (actual_shape=(3, 2, 3, 2), actual_size=36, expected_shape=(3, 2, 3, 1), expected_size=18, output=Y) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run5/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (1, 2, 3) and (3, 1, 4) (original: (1, 2, 3) and (3, 1, 4)) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run6/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 8388608) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run7/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 8388608) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run8/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (2, 2, 3) and (3, 1, 4) (original: (2, 2, 3) and (3, 1, 4)) |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run9/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (2, 1, 3) and (3, 1, 4) (original: (2, 1, 3) and (3, 1, 4)) |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run10/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run11/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run12/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run13/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run14/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run15/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run6/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run7/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run8/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run9/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_8Bits_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_8Bits_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_8Bits_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_8Bits_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_8Bits_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_8Bits_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_8Bits_run6/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_8Bits_run7/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run10/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run11/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run12/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run13/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run14/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run15/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run6/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run7/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run8/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run9/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_4Bits_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_4Bits_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_4Bits_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_4Bits_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_4Bits_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_4Bits_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_4Bits_run6/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_4Bits_run7/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_8Bits_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_8Bits_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_8Bits_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_8Bits_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_8Bits_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_8Bits_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_8Bits_run6/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_8Bits_run7/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run10/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run11/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run12/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run13/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run14/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run15/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run16/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run17/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run18/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run19/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run20/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run21/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run22/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run23/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run24/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run25/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run26/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run27/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run28/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run29/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run30/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run31/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run6/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run7/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run8/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run9/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run10/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run11/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run12/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run13/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run14/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run15/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run16/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run17/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run18/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run19/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run20/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run21/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run22/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run23/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run24/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run25/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run26/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run27/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run28/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run29/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run30/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run31/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run6/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run7/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run8/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run9/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run10/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run11/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run12/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run13/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run14/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run15/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run16/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run17/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run18/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run19/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run20/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run21/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run22/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run23/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run24/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run25/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run26/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run27/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run28/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run29/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run30/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run31/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run6/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run7/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run8/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run9/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidBlockSize_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidBlockSize_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidBlockSize_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidBlockSize_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidBlockSize_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidBlockSize_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run10/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run11/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run6/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run7/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run8/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run9/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run10/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run11/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run12/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run13/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run14/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run15/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run16/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run17/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run18/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run19/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run20/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run21/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run22/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run23/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run6/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run7/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run8/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run9/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedUInt8DataType_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedUInt8DataType_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedUInt8DataType_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedUInt8DataType_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
 | test/contrib_ops/gridsample_test/gridsample_aligncorners_true_run0/model.onnx |  | Data/Data | ❌ | GridSample mode 'bilinear' is not supported |
 | test/contrib_ops/gridsample_test/gridsample_default_run0/model.onnx |  | Data/Data | ❌ | GridSample mode 'bilinear' is not supported |
 | test/contrib_ops/gridsample_test/gridsample_mode_bicubic_run0/model.onnx |  | Data/Data | ❌ | GridSample mode 'bicubic' is not supported |
