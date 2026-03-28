@@ -11,12 +11,11 @@ Aggregates non-success verification outcomes.
 | Unsupported op QGemm | 624 |  |
 | Unsupported op NhwcMaxPool | 562 |  |
 | MatMulNBits g_idx (input 4) is not supported | 238 |  |
-| Unsupported op GatherBlockQuantized | 222 |  |
 | Unsupported op FusedMatMul | 192 |  |
 | AveragePool has unsupported attributes | 72 |  |
 | Unsupported op Attention | 65 |  |
+| Out of tolerance | 54 | 7, 17 |
 | Unsupported op DynamicQuantizeLSTM | 50 |  |
-| Out of tolerance | 48 | 7, 17 |
 | Unsupported op MatMulIntegerToFloat | 48 |  |
 | Unsupported op DynamicQuantizeMatMul | 39 |  |
 | Unsupported op QLinearConcat | 36 |  |
@@ -34,12 +33,18 @@ Aggregates non-success verification outcomes.
 | Unsupported op CropAndResize | 10 |  |
 | Unsupported op EmbedLayerNormalization | 10 |  |
 | Unsupported op QLinearWhere | 10 |  |
+| GatherBlockQuantized axis -1 is out of range for rank 3 | 8 |  |
+| GatherBlockQuantized indices must be int32 or int64 | 8 |  |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 8 |  |
 | GridSample mode '*' is not supported | 7 |  |
 | Unsupported op AttnLSTM | 6 |  |
 | Unsupported op BiasGelu | 6 |  |
 | Unsupported op WordConvEmbedding | 6 |  |
 | Unsupported op Inverse | 5 |  |
+| GatherBlockQuantized axis 3 is out of range for rank 3 | 4 |  |
+| GatherBlockQuantized scales shape (2, 2, 1) does not match expected (2, 3, 1) (data_shape=(2, 3, 4), quantize_axis=2, block_size=16, packed=False) | 4 |  |
+| GatherBlockQuantized scales shape (2, 3, 1) does not match expected (2, 3, 2) (data_shape=(2, 3, 4), quantize_axis=2, block_size=16, packed=True) | 4 |  |
+| Output shape mismatch for output (actual_shape=(1, 3, 16), actual_size=48, expected_shape=(1, 3, 4), expected_size=12, output=output) | 4 |  |
 | QLinearSoftmax axis -2 is out of bounds for shape () | 4 |  |
 | Unique must have 1 input and 4 outputs | 4 |  |
 | Unsupported op Crop | 4 | 1, 7 |
@@ -51,6 +56,17 @@ Aggregates non-success verification outcomes.
 | Failed to build testbench (model.c:125:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Werror=incompatible-pointer-types]). | 2 |  |
 | Failed to build testbench (model.c:137:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Werror=incompatible-pointer-types]). | 2 |  |
 | Failed to build testbench (model.c:139:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Werror=incompatible-pointer-types]). | 2 |  |
+| GatherBlockQuantized data dtype must be integer, got int64 | 2 |  |
+| GatherBlockQuantized data dtype must be integer, got uint64 | 2 |  |
+| GatherBlockQuantized scales shape (2, 2, 1) does not match expected (2, 3, 1) (data_shape=(2, 3, 2), quantize_axis=2, block_size=16, packed=True) | 2 |  |
+| GatherBlockQuantized supports bits in [4, 8], got 1 | 2 |  |
+| GatherBlockQuantized supports bits in [4, 8], got 2 | 2 |  |
+| GatherBlockQuantized supports bits in [4, 8], got 3 | 2 |  |
+| GatherBlockQuantized supports bits in [4, 8], got 5 | 2 |  |
+| GatherBlockQuantized supports bits in [4, 8], got 6 | 2 |  |
+| GatherBlockQuantized supports bits in [4, 8], got 7 | 2 |  |
+| Output shape mismatch for output (actual_shape=(1, 3, 8), actual_size=24, expected_shape=(1, 3, 4), expected_size=12, output=output) | 2 |  |
+| Output shape mismatch for output (actual_shape=(2, 1, 4), actual_size=8, expected_shape=(1, 3, 4), expected_size=12, output=output) | 2 |  |
 | Unsupported op Affine | 2 | 7 |
 | Unsupported op BifurcationDetector | 2 |  |
 | Unsupported op DecoderMaskedMultiHeadAttention | 2 |  |
@@ -466,228 +482,66 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run7/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
 | test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run8/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
 | test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run9/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run10/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run11/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run12/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run13/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run14/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run15/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run6/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run7/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run8/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run9/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_8Bits_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_8Bits_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_8Bits_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_8Bits_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_8Bits_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_8Bits_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_8Bits_run6/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_8Bits_run7/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run10/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run11/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run12/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run13/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run14/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run15/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run6/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run7/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run8/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run9/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_4Bits_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_4Bits_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_4Bits_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_4Bits_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_4Bits_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_4Bits_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_4Bits_run6/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_4Bits_run7/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_8Bits_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_8Bits_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_8Bits_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_8Bits_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_8Bits_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_8Bits_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_8Bits_run6/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_8Bits_run7/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run10/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run11/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run12/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run13/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run14/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run15/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run16/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run17/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run18/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run19/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run20/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run21/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run22/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run23/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run24/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run25/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run26/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run27/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run28/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run29/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run30/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run31/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run6/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run7/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run8/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_run9/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run10/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run11/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run12/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run13/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run14/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run15/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run16/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run17/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run18/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run19/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run20/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run21/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run22/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run23/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run24/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run25/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run26/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run27/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run28/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run29/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run30/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run31/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run6/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run7/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run8/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run9/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run10/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run11/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run12/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run13/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run14/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run15/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run16/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run17/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run18/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run19/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run20/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run21/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run22/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run23/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run24/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run25/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run26/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run27/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run28/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run29/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run30/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run31/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run6/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run7/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run8/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run9/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidBlockSize_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidBlockSize_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidBlockSize_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidBlockSize_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidBlockSize_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidBlockSize_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run10/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run11/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run6/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run7/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run8/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run9/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run10/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run11/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run12/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run13/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run14/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run15/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run16/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run17/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run18/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run19/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run20/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run21/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run22/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run23/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run4/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run5/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run6/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run7/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run8/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run9/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedUInt8DataType_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedUInt8DataType_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedUInt8DataType_run2/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedUInt8DataType_run3/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
+| test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run0/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized axis 3 is out of range for rank 3 |
+| test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run1/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized axis 3 is out of range for rank 3 |
+| test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run2/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized axis -1 is out of range for rank 3 |
+| test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run3/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized axis -1 is out of range for rank 3 |
+| test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run4/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized axis -1 is out of range for rank 3 |
+| test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run5/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized axis -1 is out of range for rank 3 |
+| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 3004735551) |
+| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run1/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 3004735551) |
+| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run2/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 2977326117) |
+| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run3/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 2977326117) |
+| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run4/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1096810496) |
+| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run5/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1096810496) |
+| test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run0/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized axis 3 is out of range for rank 3 |
+| test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run1/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized axis 3 is out of range for rank 3 |
+| test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run2/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized axis -1 is out of range for rank 3 |
+| test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run3/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized axis -1 is out of range for rank 3 |
+| test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run4/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized axis -1 is out of range for rank 3 |
+| test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run5/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized axis -1 is out of range for rank 3 |
+| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run0/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized supports bits in [4, 8], got 1 |
+| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run1/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized supports bits in [4, 8], got 1 |
+| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run10/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized supports bits in [4, 8], got 7 |
+| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run11/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized supports bits in [4, 8], got 7 |
+| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run2/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized supports bits in [4, 8], got 2 |
+| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run3/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized supports bits in [4, 8], got 2 |
+| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run4/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized supports bits in [4, 8], got 3 |
+| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run5/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized supports bits in [4, 8], got 3 |
+| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run6/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized supports bits in [4, 8], got 5 |
+| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run7/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized supports bits in [4, 8], got 5 |
+| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run8/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized supports bits in [4, 8], got 6 |
+| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run9/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized supports bits in [4, 8], got 6 |
+| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run0/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized scales shape (2, 2, 1) does not match expected (2, 3, 1) (data_shape=(2, 3, 4), quantize_axis=2, block_size=16, packed=False) |
+| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run1/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized scales shape (2, 2, 1) does not match expected (2, 3, 1) (data_shape=(2, 3, 4), quantize_axis=2, block_size=16, packed=False) |
+| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run2/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized scales shape (2, 2, 1) does not match expected (2, 3, 1) (data_shape=(2, 3, 4), quantize_axis=2, block_size=16, packed=False) |
+| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run3/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized scales shape (2, 2, 1) does not match expected (2, 3, 1) (data_shape=(2, 3, 4), quantize_axis=2, block_size=16, packed=False) |
+| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run4/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized scales shape (2, 2, 1) does not match expected (2, 3, 1) (data_shape=(2, 3, 2), quantize_axis=2, block_size=16, packed=True) |
+| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run5/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized scales shape (2, 2, 1) does not match expected (2, 3, 1) (data_shape=(2, 3, 2), quantize_axis=2, block_size=16, packed=True) |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run0/model.onnx |  | Data/Data | ❌ | Output shape mismatch for output (actual_shape=(1, 3, 8), actual_size=24, expected_shape=(1, 3, 4), expected_size=12, output=output) |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run1/model.onnx |  | Data/Data | ❌ | Output shape mismatch for output (actual_shape=(1, 3, 8), actual_size=24, expected_shape=(1, 3, 4), expected_size=12, output=output) |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run10/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized data dtype must be integer, got int64 |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run11/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized data dtype must be integer, got int64 |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run12/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized data dtype must be integer, got uint64 |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run13/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized data dtype must be integer, got uint64 |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run14/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized indices must be int32 or int64 |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run15/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized indices must be int32 or int64 |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run16/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized indices must be int32 or int64 |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run17/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized indices must be int32 or int64 |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run2/model.onnx |  | Data/Data | ❌ | Output shape mismatch for output (actual_shape=(1, 3, 16), actual_size=48, expected_shape=(1, 3, 4), expected_size=12, output=output) |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run22/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized indices must be int32 or int64 |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run23/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized indices must be int32 or int64 |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run3/model.onnx |  | Data/Data | ❌ | Output shape mismatch for output (actual_shape=(1, 3, 16), actual_size=48, expected_shape=(1, 3, 4), expected_size=12, output=output) |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run4/model.onnx |  | Data/Data | ❌ | Output shape mismatch for output (actual_shape=(1, 3, 16), actual_size=48, expected_shape=(1, 3, 4), expected_size=12, output=output) |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run5/model.onnx |  | Data/Data | ❌ | Output shape mismatch for output (actual_shape=(1, 3, 16), actual_size=48, expected_shape=(1, 3, 4), expected_size=12, output=output) |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run6/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized scales shape (2, 3, 1) does not match expected (2, 3, 2) (data_shape=(2, 3, 4), quantize_axis=2, block_size=16, packed=True) |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run7/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized scales shape (2, 3, 1) does not match expected (2, 3, 2) (data_shape=(2, 3, 4), quantize_axis=2, block_size=16, packed=True) |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run8/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized scales shape (2, 3, 1) does not match expected (2, 3, 2) (data_shape=(2, 3, 4), quantize_axis=2, block_size=16, packed=True) |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run9/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized scales shape (2, 3, 1) does not match expected (2, 3, 2) (data_shape=(2, 3, 4), quantize_axis=2, block_size=16, packed=True) |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedUInt8DataType_run0/model.onnx |  | Data/Data | ❌ | Output shape mismatch for output (actual_shape=(2, 1, 4), actual_size=8, expected_shape=(1, 3, 4), expected_size=12, output=output) |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedUInt8DataType_run1/model.onnx |  | Data/Data | ❌ | Output shape mismatch for output (actual_shape=(2, 1, 4), actual_size=8, expected_shape=(1, 3, 4), expected_size=12, output=output) |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedUInt8DataType_run2/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized indices must be int32 or int64 |
+| test/contrib_ops/gather_block_quantized_op_test/UnsupportedUInt8DataType_run3/model.onnx |  | Data/Data | ❌ | GatherBlockQuantized indices must be int32 or int64 |
 | test/contrib_ops/gridsample_test/gridsample_aligncorners_true_run0/model.onnx |  | Data/Data | ❌ | GridSample mode 'bilinear' is not supported |
 | test/contrib_ops/gridsample_test/gridsample_default_run0/model.onnx |  | Data/Data | ❌ | GridSample mode 'bilinear' is not supported |
 | test/contrib_ops/gridsample_test/gridsample_mode_bicubic_run0/model.onnx |  | Data/Data | ❌ | GridSample mode 'bicubic' is not supported |

@@ -81,7 +81,6 @@ def lower_gather_block_quantized(
             "GatherBlockQuantized output dtype must match scales dtype"
         )
 
-    data_rank = len(data_shape)
     gather_axis = normalize_axis(gather_axis, data_shape, node)
     quantize_axis = normalize_axis(quantize_axis, data_shape, node)
 
