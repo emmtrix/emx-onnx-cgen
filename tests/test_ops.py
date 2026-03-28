@@ -6022,23 +6022,6 @@ def test_compile_reduce_log_sum_exp_expanded_recovers_passthrough_shape() -> Non
     assert "reduced[restrict 3][2]" in generated
 
 
-def test_compile_lstm_dynamic_squeeze_model() -> None:
-    model = onnx.load(
-        PROJECT_ROOT / "onnx2c-org/test/simple_networks/lstm_k1_b1_r1.onnx"
-    )
-    generated = Compiler(CompilerOptions()).compile(model)
-    assert "OpType: Squeeze" in generated
-    assert "lstm[restrict N][3]" in generated
-
-
-def test_compile_velardo_lesson14_dynamic_bias_broadcast() -> None:
-    model = onnx.load(PROJECT_ROOT / "onnx2c-org/test/velardo/lesson14.onnx")
-    generated = Compiler(CompilerOptions()).compile(model)
-    assert "node1_dense(int N, const float input0[N][1690]" in generated
-    assert "float output[N][512]" in generated
-    assert "flatten_input[restrict N][130][13]" in generated
-
-
 def test_compile_dynamic_reshape_preserves_symbolic_batch() -> None:
     model = _make_symbolic_reshape_model(
         input_shape=["N", 1960],

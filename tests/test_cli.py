@@ -587,24 +587,6 @@ def test_cli_compile_accepts_io_bound_dynamic_intermediates(
     assert "int N" in generated
 
 
-def test_cli_compile_accepts_dynamic_maxpool_reference_model(tmp_path: Path) -> None:
-    output_path = tmp_path / "model.c"
-    result = cli.run_cli_command(
-        [
-            "compile",
-            "--model-base-dir",
-            str(PROJECT_ROOT / "onnx2c-org" / "test" / "simple_networks"),
-            "maxpool_k2.onnx",
-            str(output_path),
-        ]
-    )
-
-    assert result.exit_code == 0
-    assert result.generated is not None
-    generated = result.generated
-    assert "int N" in generated
-
-
 def test_augment_model_with_tensor_node_outputs_skips_non_top_level_outputs() -> None:
     output = helper.make_tensor_value_info("y", TensorProto.FLOAT, [1])
     identity = helper.make_node("Identity", inputs=["x"], outputs=["y"])

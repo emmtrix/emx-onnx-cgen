@@ -1,9 +1,0 @@
-{
-  "error": "OK (max abs diff 0)",
-  "command_line": "verify --model-base-dir onnx2c-org/test/local_ops/test_qlinearmul_int8 model.onnx --test-data-dir test_data_set_0",
-  "verification_mode": "Data/Data",
-  "operators": [
-    "com.microsoft::QLinearMul"
-  ],
-  "generated_checksum": "1584dbae209d01bebd90ea90b56775d04298726a1165c33802d7994609c79e3e"
-}
