@@ -14,10 +14,8 @@ This document describes the working conventions for humans and automated agents 
 
 ## Related Repositories / References
 
-The directories **`emx-pytorch2c-org/`** and **`onnx2c-org/`** serve as **reference implementations / knowledge bases** for ideas, operator coverage, and practical edge cases:
+The directory **`emx-pytorch2c-org/`** serves as a **reference implementation / knowledge base** for ideas, operator coverage, and practical edge cases:
 
-- **`onnx2c-org/`** is a **C++ implementation** with similar goals (ONNX → C compilation, deterministic codegen, minimal runtime).
-  *Note:* It may generate **ugly C code**. Use it for semantic reference and operator handling, not as a style template.
 - **`emx-pytorch2c-org/`** is a **Python-based PyTorch → C compiler**.
   *Note:* It may contain **poor design choices / architecture smells**. Use it for concepts, codegen patterns, and testing approaches, but do **not** replicate the design blindly.
 - **`emx-ort-test-artifacts-org/`** is an **artifact repository with ONNX Runtime-derived model corpora** used as an additional verification/test source.
