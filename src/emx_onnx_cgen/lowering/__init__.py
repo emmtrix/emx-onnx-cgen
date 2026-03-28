@@ -65,6 +65,7 @@ _LOWERING_MODULES = [
     "matmul_integer",
     "matmul_nbits",
     "maxpool",
+    "nhwc_maxpool",
     "maxunpool",
     "mean_variance_normalization",
     "mel_weight_matrix",
