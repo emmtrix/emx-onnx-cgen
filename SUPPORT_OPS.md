@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 215 / 258
+Supported operators: 216 / 258
 
 | Operator | Supported |
 | --- | --- |
@@ -215,7 +215,7 @@ Supported operators: 215 / 258
 | ai.onnx.preview.training::Adam | ✅ |
 | ai.onnx.preview.training::Gradient | ✅ |
 | ai.onnx.preview.training::Momentum | ✅ |
-| com.microsoft::Attention | ❌ |
+| com.microsoft::Attention | ✅ |
 | com.microsoft::AttnLSTM | ❌ |
 | com.microsoft::BiasGelu | ❌ |
 | com.microsoft::BifurcationDetector | ❌ |
