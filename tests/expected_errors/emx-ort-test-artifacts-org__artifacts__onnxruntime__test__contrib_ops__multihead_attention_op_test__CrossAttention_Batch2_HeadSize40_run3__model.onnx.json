@@ -1,0 +1,8 @@
+{
+  "error": "Unsupported op MultiHeadAttention",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize40_run3 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "com.microsoft::MultiHeadAttention"
+  ]
+}

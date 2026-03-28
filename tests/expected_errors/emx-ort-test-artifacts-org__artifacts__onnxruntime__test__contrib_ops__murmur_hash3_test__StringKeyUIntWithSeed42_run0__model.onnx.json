@@ -1,0 +1,8 @@
+{
+  "error": "Unsupported op MurmurHash3",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/murmur_hash3_test/StringKeyUIntWithSeed42_run0 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "com.microsoft::MurmurHash3"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/trilu_test/two_by_two_double_lower_run0 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "com.microsoft::Trilu"
+  ],
+  "generated_checksum": "05bec713dd504769f4076f2153c42d8a2626db1aec4f55cf62859e6f2fc57304"
+}

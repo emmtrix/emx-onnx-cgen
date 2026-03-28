@@ -1,0 +1,10 @@
+{
+  "error": "Out of tolerance (max ULP 5632)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/layer_norm_op_test/BERTLayerNorm_run0 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "LayerNormalization"
+  ],
+  "opset_version": 17,
+  "generated_checksum": "07a01fc612dfedfbf2313ddf214854fd0dbe5b499d3bd0d403b46466c1bf1d1a"
+}

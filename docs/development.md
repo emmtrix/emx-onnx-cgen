@@ -206,12 +206,13 @@ In CI (PRs), the test workflow runs with `UPDATE_REFS=1` and may auto-commit upd
 
 ---
 
-## Submodules (onnx-org / onnx2c-org)
+## Submodules (onnx-org / onnx2c-org / emx-ort-test-artifacts-org)
 
 Some tests require data from submodules:
 
 * Official ONNX backend test data (may be stored via Git LFS in the upstream project).
 * Local operator test data.
+* Additional ONNX Runtime-derived artifact models under `emx-ort-test-artifacts-org/artifacts/onnxruntime`.
 
 CI initializes submodules recursively. Locally, you can do the same:
 

@@ -7,3 +7,6 @@ url = https://github.com/emmtrix/emx-pytorch2c.git
 [submodule "onnx-org"]
 	path = onnx-org
 	url = https://github.com/onnx/onnx.git
+[submodule "emx-ort-test-artifacts-org"]
+	path = emx-ort-test-artifacts-org
+	url = https://github.com/emmtrix/emx-ort-test-artifacts

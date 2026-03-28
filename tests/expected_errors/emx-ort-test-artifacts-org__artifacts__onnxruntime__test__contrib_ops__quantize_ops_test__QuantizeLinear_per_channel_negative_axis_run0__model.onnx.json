@@ -1,0 +1,9 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/quantize_ops_test/QuantizeLinear_per_channel_negative_axis_run0 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "com.microsoft::QuantizeLinear"
+  ],
+  "generated_checksum": "c49ebffb499156dcbe762e524afff9d47f197c9a4bab8deaa66cb7f817de8f1b"
+}

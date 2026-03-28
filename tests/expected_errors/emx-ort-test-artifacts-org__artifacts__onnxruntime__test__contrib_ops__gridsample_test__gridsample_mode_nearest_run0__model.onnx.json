@@ -1,0 +1,9 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gridsample_test/gridsample_mode_nearest_run0 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "com.microsoft::GridSample"
+  ],
+  "generated_checksum": "df6ce07f3d4a4ff0193ff6608149150f1a7b5db9fc65b3f7c505238d683315ec"
+}

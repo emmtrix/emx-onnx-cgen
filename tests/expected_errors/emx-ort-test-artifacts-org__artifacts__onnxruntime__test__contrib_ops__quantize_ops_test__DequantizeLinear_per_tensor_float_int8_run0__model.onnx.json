@@ -1,0 +1,9 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/quantize_ops_test/DequantizeLinear_per_tensor_float_int8_run0 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "com.microsoft::DequantizeLinear"
+  ],
+  "generated_checksum": "eaf8fe59353162595a7971343a15bc9b3d286da37481977ff4c669ac06c3cc5c"
+}

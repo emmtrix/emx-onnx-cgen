@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 21)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Broadcast_Inner_Mixed_run0 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "LayerNormalization"
+  ],
+  "opset_version": 17,
+  "generated_checksum": "212d31608dc359f6c8e4bd04a2b3234d85a20fe05c8a955d2b739f2f133b7691"
+}

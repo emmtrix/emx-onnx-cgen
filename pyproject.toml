@@ -56,6 +56,7 @@ local_scheme = "no-local-version"
 
 [tool.ruff]
 extend-exclude = [
+    "emx-ort-test-artifacts-org",
     "emx-pytorch2c-org",
     "onnx2c-org",
     "onnx-org",
@@ -63,6 +64,7 @@ extend-exclude = [
 
 [tool.vulture]
 exclude = [
+    "emx-ort-test-artifacts-org/",
     "emx-pytorch2c-org/",
     "onnx2c-org/",
     "onnx-org/",

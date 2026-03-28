@@ -1,0 +1,9 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/quantize_ops_test/QuantizeLinear_per_tensor_float_int8_run0 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "com.microsoft::QuantizeLinear"
+  ],
+  "generated_checksum": "bcead9f28ad25208f0598be8592f572d7752f488cff3b2792fe4ae6517da7003"
+}

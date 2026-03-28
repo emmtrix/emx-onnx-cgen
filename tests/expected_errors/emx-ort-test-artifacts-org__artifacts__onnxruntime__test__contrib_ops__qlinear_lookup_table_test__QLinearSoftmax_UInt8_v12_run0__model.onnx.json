@@ -1,0 +1,9 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/qlinear_lookup_table_test/QLinearSoftmax_UInt8_v12_run0 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "com.microsoft::QLinearSoftmax"
+  ],
+  "generated_checksum": "d4fdf3dd25af0246a9b6885b545c9c7ca9f6a4e8362e57c57712cd2745459968"
+}
