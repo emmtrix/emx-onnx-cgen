@@ -8,13 +8,9 @@ Aggregates non-success verification outcomes.
 | Error message | Count | Opset versions |
 | --- | --- | --- |
 | MatMulNBits g_idx (input 4) is not supported | 238 |  |
-| Unsupported op GatherBlockQuantized | 222 |  |
-| Unsupported op FusedMatMul | 192 |  |
-| Out of tolerance | 98 | 7, 17 |
+| Out of tolerance | 119 | 7, 17 |
 | AveragePool has unsupported attributes | 72 |  |
-| Out of tolerance | 69 | 7, 17 |
 | Unsupported op Attention | 65 |  |
-| Unsupported op DynamicQuantizeLSTM | 50 |  |
 | Unsupported op MatMulIntegerToFloat | 48 |  |
 | Unsupported op DynamicQuantizeMatMul | 39 |  |
 | Unsupported op QLinearConcat | 36 |  |
