@@ -8,7 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1801 / 1802, 99.9% | 1.20.1 |
-| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 3208 / 4182, 76.7% | n/a |
+| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 3224 / 4182, 77.1% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -1832,7 +1832,7 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 
 Test directory: `emx-ort-test-artifacts-org/artifacts/onnxruntime`
 
-Coverage 3208 / 4182 ONNX files (76.7%).
+Coverage 3224 / 4182 ONNX files (77.1%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -4378,23 +4378,23 @@ Coverage 3208 / 4182 ONNX files (76.7%).
 | test/contrib_ops/multihead_attention_op_test/SelfAttention_WithPastAndPresent_NoMask_NoRelPosBias_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MultiHeadAttention |
 | test/contrib_ops/multihead_attention_op_test/SelfAttention_WithPastAndPresent_NoMask_NoRelPosBias_run4/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MultiHeadAttention |
 | test/contrib_ops/multihead_attention_op_test/SelfAttention_WithPastAndPresent_NoMask_NoRelPosBias_run5/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MultiHeadAttention |
-| test/contrib_ops/murmur_hash3_test/DefaultSeed_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/MoreDataFloat_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/MoreDataInt_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/MultipleStringsKeyUIntResult_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/NonZeroSeedUIntResult_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/NonZeroSeed_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/StringKeyIntResult_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/StringKeyIntWithSeed42_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/StringKeyUIntResult_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/StringKeyUIntWithSeed42_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/UnsupportedInputType_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/ZeroSeedDoubleResult_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/ZeroSeedFloatResult_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/ZeroSeedUIntResult2_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/ZeroSeedUIntResult3_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/ZeroSeedUIntResult_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
-| test/contrib_ops/murmur_hash3_test/ZeroSeed_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MurmurHash3 |
+| test/contrib_ops/murmur_hash3_test/DefaultSeed_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/murmur_hash3_test/MoreDataFloat_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/murmur_hash3_test/MoreDataInt_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/murmur_hash3_test/MultipleStringsKeyUIntResult_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/murmur_hash3_test/NonZeroSeedUIntResult_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/murmur_hash3_test/NonZeroSeed_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/murmur_hash3_test/StringKeyIntResult_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/murmur_hash3_test/StringKeyIntWithSeed42_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/murmur_hash3_test/StringKeyUIntResult_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/murmur_hash3_test/StringKeyUIntWithSeed42_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/murmur_hash3_test/UnsupportedInputType_run0/model.onnx |  | Data/Data | ❌ | MurmurHash3 does not support input dtype int8; supported: int32, int64, float, double, string |
+| test/contrib_ops/murmur_hash3_test/ZeroSeedDoubleResult_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/murmur_hash3_test/ZeroSeedFloatResult_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/murmur_hash3_test/ZeroSeedUIntResult2_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/murmur_hash3_test/ZeroSeedUIntResult3_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/murmur_hash3_test/ZeroSeedUIntResult_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/murmur_hash3_test/ZeroSeed_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/ngram_repeat_block_op_test/NGramSize_3_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.NGramRepeatBlock |
 | test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run1/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
