@@ -258,6 +258,290 @@ class MatMulOp(MatMulLikeOpBase):
 
 
 @dataclass(frozen=True)
+class FusedMatMulOp(MatMulLikeOpBase):
+    input0: str
+    input1: str
+    output: str
+    alpha: float
+    trans_a: bool
+    trans_b: bool
+    trans_batch_a: bool
+    trans_batch_b: bool
+
+    @staticmethod
+    def _effective_shape(
+        shape: tuple[int, ...], trans: bool, trans_batch: bool
+    ) -> tuple[int, ...]:
+        """Return the effective shape after batch and matrix transpositions."""
+        if len(shape) < 2:
+            return shape
+        batch = shape[:-2]
+        mat = shape[-2:]
+        if trans_batch and len(batch) > 1:
+            batch = tuple(reversed(batch))
+        if trans:
+            mat = (mat[1], mat[0])
+        return batch + mat
+
+    def infer_types(self, ctx: OpContext) -> None:
+        input0_dtype = ctx.dtype(self.input0)
+        input1_dtype = ctx.dtype(self.input1)
+        if input0_dtype != input1_dtype:
+            raise UnsupportedOpError(
+                "FusedMatMul expects matching input dtypes, "
+                f"got {input0_dtype.onnx_name} and {input1_dtype.onnx_name}"
+            )
+        if not input0_dtype.is_float:
+            raise UnsupportedOpError(
+                f"FusedMatMul supports float types only, got {input0_dtype.onnx_name}"
+            )
+        try:
+            output_dtype = ctx.dtype(self.output)
+        except ShapeInferenceError:
+            ctx.set_dtype(self.output, input0_dtype)
+            output_dtype = input0_dtype
+        if output_dtype != input0_dtype:
+            raise UnsupportedOpError(
+                "FusedMatMul expects output dtype to match inputs, "
+                f"got {output_dtype.onnx_name} and {input0_dtype.onnx_name}"
+            )
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        input0_shape = ctx.shape(self.input0)
+        input1_shape = ctx.shape(self.input1)
+
+        eff0 = self._effective_shape(input0_shape, self.trans_a, self.trans_batch_a)
+        eff1 = self._effective_shape(input1_shape, self.trans_b, self.trans_batch_b)
+
+        left_vector = len(eff0) == 1
+        right_vector = len(eff1) == 1
+        eff0_expanded = (1, eff0[0]) if left_vector else eff0
+        eff1_expanded = (eff1[0], 1) if right_vector else eff1
+
+        m, k_left = eff0_expanded[-2], eff0_expanded[-1]
+        k_right, n = eff1_expanded[-2], eff1_expanded[-1]
+
+        if k_left != k_right:
+            raise ShapeInferenceError(
+                f"FusedMatMul inner dimensions must match, got {k_left} and {k_right}"
+            )
+
+        batch_shape, input0_batch_shape, input1_batch_shape = (
+            _broadcast_batch_shapes(eff0_expanded[:-2], eff1_expanded[:-2])
+        )
+
+        if left_vector and right_vector:
+            output_shape = batch_shape
+        elif left_vector:
+            output_shape = batch_shape + (n,)
+        elif right_vector:
+            output_shape = batch_shape + (m,)
+        else:
+            output_shape = batch_shape + (m, n)
+
+        try:
+            expected = ctx.shape(self.output)
+        except ShapeInferenceError:
+            expected = None
+        if expected is not None and expected != output_shape:
+            raise ShapeInferenceError(
+                f"FusedMatMul output shape must be {output_shape}, got {expected}"
+            )
+        ctx.set_shape(self.output, output_shape)
+        ctx.set_derived(self, "batch_shape", batch_shape)
+        ctx.set_derived(self, "input0_batch_shape", input0_batch_shape)
+        ctx.set_derived(self, "input1_batch_shape", input1_batch_shape)
+        ctx.set_derived(self, "m", m)
+        ctx.set_derived(self, "n", n)
+        ctx.set_derived(self, "k", k_left)
+        ctx.set_derived(self, "left_vector", left_vector)
+        ctx.set_derived(self, "right_vector", right_vector)
+
+    def _fused_matmul_index_exprs(
+        self,
+        batch_vars: tuple[str, ...],
+        row_var: str | None,
+        col_var: str | None,
+        batch_rank: int,
+        *,
+        input0: str,
+        input1: str,
+        left_vector: bool,
+        right_vector: bool,
+        input0_shape: tuple[int, ...],
+        input1_shape: tuple[int, ...],
+        input0_batch_shape: tuple[int, ...],
+        input1_batch_shape: tuple[int, ...],
+    ) -> tuple[str, str]:
+        def batch_indices(
+            batch_shape: tuple[int, ...],
+            actual_rank: int,
+            trans_batch: bool,
+        ) -> list[str]:
+            if actual_rank == 0:
+                return []
+            offset = batch_rank - actual_rank
+            indices: list[str] = []
+            for idx in range(actual_rank):
+                dim = batch_shape[offset + idx]
+                var = batch_vars[offset + idx]
+                indices.append("0" if dim == 1 else var)
+            if trans_batch and len(indices) > 1:
+                indices = list(reversed(indices))
+            return indices
+
+        if left_vector:
+            input0_indices: list[str] = ["k"]
+        else:
+            input0_batch_rank = len(input0_shape) - 2
+            input0_bi = batch_indices(
+                input0_batch_shape, input0_batch_rank, self.trans_batch_a
+            )
+            if self.trans_a:
+                input0_indices = [
+                    *input0_bi,
+                    "k",
+                    row_var if row_var is not None else "0",
+                ]
+            else:
+                input0_indices = [
+                    *input0_bi,
+                    row_var if row_var is not None else "0",
+                    "k",
+                ]
+
+        if right_vector:
+            input1_indices: list[str] = ["k"]
+        else:
+            input1_batch_rank = len(input1_shape) - 2
+            input1_bi = batch_indices(
+                input1_batch_shape, input1_batch_rank, self.trans_batch_b
+            )
+            if self.trans_b:
+                input1_indices = [
+                    *input1_bi,
+                    col_var if col_var is not None else "0",
+                    "k",
+                ]
+            else:
+                input1_indices = [
+                    *input1_bi,
+                    "k",
+                    col_var if col_var is not None else "0",
+                ]
+
+        input0_index_expr = f"{input0}" + "".join(
+            f"[{i}]" for i in input0_indices
+        )
+        input1_index_expr = f"{input1}" + "".join(
+            f"[{i}]" for i in input1_indices
+        )
+        return input0_index_expr, input1_index_expr
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dtype = emitter.op_output_dtype(self)
+        c_type = dtype.c_type
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("input1", self.input1),
+                ("output", self.output),
+            ]
+        )
+        input0_shape = emitter.ctx_shape(self.input0)
+        input1_shape = emitter.ctx_shape(self.input1)
+        input0_dim_names = emitter.dim_names_for(self.input0)
+        input1_dim_names = emitter.dim_names_for(self.input1)
+        output_shape_raw = emitter.ctx_shape(self.output)
+        output_dim_names = emitter.dim_names_for(self.output)
+        output_shape = CEmitterCompat.shape_dim_exprs(
+            output_shape_raw, output_dim_names
+        )
+        output_loop_vars = CEmitterCompat.loop_vars(output_shape)
+        output_index_expr = f"{params['output']}" + "".join(
+            f"[{var}]" for var in output_loop_vars
+        )
+        batch_shape = emitter.derived(self, "batch_shape")
+        batch_rank = len(batch_shape)
+        batch_vars = output_loop_vars[:batch_rank]
+        left_vector = bool(emitter.derived(self, "left_vector"))
+        right_vector = bool(emitter.derived(self, "right_vector"))
+        if left_vector and right_vector:
+            row_var = None
+            col_var = None
+        elif left_vector:
+            row_var = None
+            col_var = output_loop_vars[-1]
+        elif right_vector:
+            row_var = output_loop_vars[-1]
+            col_var = None
+        else:
+            row_var = output_loop_vars[-2]
+            col_var = output_loop_vars[-1]
+        input0_batch_shape = emitter.derived(self, "input0_batch_shape")
+        input1_batch_shape = emitter.derived(self, "input1_batch_shape")
+        input0_index_expr, input1_index_expr = self._fused_matmul_index_exprs(
+            batch_vars,
+            row_var,
+            col_var,
+            batch_rank,
+            input0=params["input0"],
+            input1=params["input1"],
+            left_vector=left_vector,
+            right_vector=right_vector,
+            input0_shape=input0_shape,
+            input1_shape=input1_shape,
+            input0_batch_shape=input0_batch_shape,
+            input1_batch_shape=input1_batch_shape,
+        )
+        input0_suffix = emitter.param_array_suffix(input0_shape, input0_dim_names)
+        input1_suffix = emitter.param_array_suffix(input1_shape, input1_dim_names)
+        output_suffix = emitter.param_array_suffix(output_shape_raw, output_dim_names)
+        acc_dtype = emitter.accumulation_dtype(emitter.ctx_dtype(self.output))
+        acc_zero_literal = emitter.format_literal(acc_dtype, 0)
+        has_alpha = self.alpha != 1.0
+        alpha_literal = (
+            emitter.format_literal(dtype, self.alpha) if has_alpha else None
+        )
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input0_suffix, True),
+                (params["input1"], c_type, input1_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        m = int(emitter.derived(self, "m"))
+        n = int(emitter.derived(self, "n"))
+        k = int(emitter.derived(self, "k"))
+        rendered = (
+            state.templates["fused_matmul"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                params=param_decls,
+                c_type=c_type,
+                acc_type=acc_dtype.c_type,
+                zero_literal=acc_zero_literal,
+                output_loop_vars=output_loop_vars,
+                output_loop_bounds=output_shape,
+                output_index_expr=output_index_expr,
+                input0_index_expr=input0_index_expr,
+                input1_index_expr=input1_index_expr,
+                m=m,
+                n=n,
+                k=k,
+                has_alpha=has_alpha,
+                alpha_literal=alpha_literal,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+
+@dataclass(frozen=True)
 class QLinearMatMulOp(MatMulLikeOpBase):
     __io_inputs__ = (
         "input0",
@@ -1390,6 +1674,288 @@ class GemmOp(GemmLikeOpBase):
         ctx.set_derived(self, "k", k_left)
         ctx.set_derived(self, "c_shape", c_shape)
         ctx.set_derived(self, "c_axis", c_axis)
+
+
+@dataclass(frozen=True)
+class QGemmOp(GemmLikeOpBase):
+    """Quantized GEMM (com.microsoft contrib op).
+
+    Computes ``Y = alpha * (dequantize(A) @ dequantize(B)) [+ C]``, optionally
+    re-quantized to the output type when ``y_scale`` / ``y_zero_point`` are
+    present.  B may use per-column quantization.
+    """
+
+    __io_inputs__ = (
+        "input_a",
+        "a_scale",
+        "a_zero_point",
+        "input_b",
+        "b_scale",
+        "b_zero_point",
+        "input_c",
+        "y_scale",
+        "y_zero_point",
+    )
+
+    input_a: str
+    a_scale: str
+    a_zero_point: str
+    input_b: str
+    b_scale: str
+    b_zero_point: str
+    input_c: str | None
+    y_scale: str | None
+    y_zero_point: str | None
+    output: str
+    trans_a: int
+    trans_b: int
+    alpha: float
+    input_a_dtype: ScalarType
+    input_b_dtype: ScalarType
+    dtype: ScalarType
+    a_scale_dtype: ScalarType
+    b_scale_dtype: ScalarType
+    y_scale_dtype: ScalarType | None
+    c_dtype: ScalarType | None
+    a_scale_shape: tuple[int, ...]
+    a_zero_shape: tuple[int, ...]
+    b_scale_shape: tuple[int, ...]
+    b_zero_shape: tuple[int, ...]
+    y_scale_shape: tuple[int, ...] | None
+    y_zero_shape: tuple[int, ...] | None
+    b_scale_per_column: bool
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        includes: set[str] = {"#include <math.h>"}
+        output_dtype = ctx.dtype(self.output)
+        if output_dtype.is_integer:
+            includes.add("#include <limits.h>")
+        return includes
+
+    def infer_types(self, ctx: OpContext) -> None:
+        try:
+            output_dtype = ctx.dtype(self.output)
+        except ShapeInferenceError:
+            ctx.set_dtype(self.output, self.dtype)
+            output_dtype = self.dtype
+        if output_dtype != self.dtype:
+            raise UnsupportedOpError(
+                "QGemm output dtype mismatch, "
+                f"expected {self.dtype.onnx_name}, got {output_dtype.onnx_name}"
+            )
+        ctx.set_derived(self, "trans_a", bool(self.trans_a))
+        ctx.set_derived(self, "trans_b", bool(self.trans_b))
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        trans_a = ctx.require_derived(self, "trans_a")
+        trans_b = ctx.require_derived(self, "trans_b")
+        input_a_shape = ctx.shape(self.input_a)
+        input_b_shape = ctx.shape(self.input_b)
+        if len(input_a_shape) != 2 or len(input_b_shape) != 2:
+            raise UnsupportedOpError(
+                f"QGemm supports 2D inputs only, "
+                f"got {input_a_shape} x {input_b_shape}"
+            )
+        if trans_a:
+            m, k_left = input_a_shape[1], input_a_shape[0]
+        else:
+            m, k_left = input_a_shape
+        if trans_b:
+            n, k_right = input_b_shape[0], input_b_shape[1]
+        else:
+            k_right, n = input_b_shape
+        if k_left != k_right:
+            raise ShapeInferenceError(
+                f"QGemm inner dimensions must match, got {k_left} and {k_right}"
+            )
+        output_shape = (m, n)
+        try:
+            expected = ctx.shape(self.output)
+        except ShapeInferenceError:
+            expected = None
+        if expected is not None and expected != output_shape:
+            raise ShapeInferenceError(
+                f"QGemm output shape must be {output_shape}, got {expected}"
+            )
+        ctx.set_shape(self.output, output_shape)
+        c_shape = None
+        c_axis = "none"
+        if self.input_c is not None:
+            bias_shape = ctx.shape(self.input_c)
+            c_shape, c_axis = GemmOp._validate_bias_shape(output_shape, bias_shape)
+        ctx.set_derived(self, "m", m)
+        ctx.set_derived(self, "n", n)
+        ctx.set_derived(self, "k", k_left)
+        ctx.set_derived(self, "c_shape", c_shape)
+        ctx.set_derived(self, "c_axis", c_axis)
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        params = emitter.shared_param_map(
+            [
+                ("input_a", self.input_a),
+                ("a_scale", self.a_scale),
+                ("a_zero_point", self.a_zero_point),
+                ("input_b", self.input_b),
+                ("b_scale", self.b_scale),
+                ("b_zero_point", self.b_zero_point),
+                ("input_c", self.input_c),
+                ("y_scale", self.y_scale),
+                ("y_zero_point", self.y_zero_point),
+                ("output", self.output),
+            ]
+        )
+
+        m = int(emitter.derived(self, "m"))
+        n = int(emitter.derived(self, "n"))
+        k = int(emitter.derived(self, "k"))
+        trans_a = bool(emitter.derived(self, "trans_a"))
+        trans_b = bool(emitter.derived(self, "trans_b"))
+        c_shape = emitter.derived(self, "c_shape")
+        c_axis = str(emitter.derived(self, "c_axis"))
+
+        input_a_shape = (k, m) if trans_a else (m, k)
+        input_b_shape = (n, k) if trans_b else (k, n)
+        input_a_suffix = emitter.param_array_suffix(input_a_shape)
+        input_b_suffix = emitter.param_array_suffix(input_b_shape)
+        output_suffix = emitter.param_array_suffix((m, n))
+        a_scale_suffix = emitter.param_array_suffix(self.a_scale_shape)
+        a_zero_suffix = emitter.param_array_suffix(self.a_zero_shape)
+        b_scale_suffix = emitter.param_array_suffix(self.b_scale_shape)
+        b_zero_suffix = emitter.param_array_suffix(self.b_zero_shape)
+        c_suffix = (
+            emitter.param_array_suffix(c_shape) if c_shape is not None else ""
+        )
+
+        output_dtype = emitter.ctx_dtype(self.output)
+        output_c_type = output_dtype.c_type
+        a_c_type = self.input_a_dtype.c_type
+        b_c_type = self.input_b_dtype.c_type
+
+        param_entries: list[tuple[str | None, str, str, bool]] = [
+            (params["input_a"], a_c_type, input_a_suffix, True),
+            (params["a_scale"], self.a_scale_dtype.c_type, a_scale_suffix, True),
+            (
+                params["a_zero_point"],
+                self.input_a_dtype.c_type,
+                a_zero_suffix,
+                True,
+            ),
+            (params["input_b"], b_c_type, input_b_suffix, True),
+            (params["b_scale"], self.b_scale_dtype.c_type, b_scale_suffix, True),
+            (
+                params["b_zero_point"],
+                self.input_b_dtype.c_type,
+                b_zero_suffix,
+                True,
+            ),
+        ]
+        if params["input_c"]:
+            assert self.c_dtype is not None
+            param_entries.append(
+                (params["input_c"], self.c_dtype.c_type, c_suffix, True)
+            )
+        else:
+            param_entries.append((None, "", "", True))
+
+        if self.y_scale is not None:
+            assert self.y_scale_dtype is not None
+            assert self.y_scale_shape is not None
+            assert self.y_zero_shape is not None
+            y_scale_suffix = emitter.param_array_suffix(self.y_scale_shape)
+            y_zero_suffix = emitter.param_array_suffix(self.y_zero_shape)
+            param_entries.append(
+                (params["y_scale"], self.y_scale_dtype.c_type, y_scale_suffix, True)
+            )
+            param_entries.append(
+                (params["y_zero_point"], output_c_type, y_zero_suffix, True)
+            )
+        param_entries.append((params["output"], output_c_type, output_suffix, False))
+        param_decls = emitter.build_param_decls(param_entries)
+
+        # Determine compute type (double for best precision).
+        compute_dtype = ScalarType.F64
+        compute_type = "double"
+
+        if output_dtype.is_signed:
+            min_literal = "-128"
+            max_literal = "127"
+        elif output_dtype.is_integer:
+            min_literal = "0"
+            max_literal = "255"
+        else:
+            min_literal = "0"
+            max_literal = "255"
+
+        has_y_scale = self.y_scale is not None
+        alpha_literal = emitter.format_literal(ScalarType.F64, self.alpha)
+
+        if c_shape is None:
+            c_rank = 0
+            c_dim0 = 0
+            c_dim1 = 0
+        elif len(c_shape) == 0:
+            c_rank = 0
+            c_dim0 = 0
+            c_dim1 = 0
+        elif len(c_shape) == 1:
+            c_rank = 1
+            c_dim0 = 1
+            c_dim1 = c_shape[0]
+        else:
+            c_rank = 2
+            c_dim0 = c_shape[0]
+            c_dim1 = c_shape[1]
+
+        rendered = (
+            state.templates["qgemm"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input_a=params["input_a"],
+                a_scale=params["a_scale"],
+                a_zero_point=params["a_zero_point"],
+                input_b=params["input_b"],
+                b_scale=params["b_scale"],
+                b_zero_point=params["b_zero_point"],
+                input_c=params["input_c"],
+                y_scale=params.get("y_scale"),
+                y_zero_point=params.get("y_zero_point"),
+                output=params["output"],
+                params=param_decls,
+                a_c_type=a_c_type,
+                b_c_type=b_c_type,
+                output_c_type=output_c_type,
+                c_c_type=self.c_dtype.c_type if self.c_dtype is not None else "",
+                compute_type=compute_type,
+                compute_dtype=compute_dtype,
+                dtype=output_dtype,
+                alpha_literal=alpha_literal,
+                trans_a=int(trans_a),
+                trans_b=int(trans_b),
+                m=m,
+                n=n,
+                k=k,
+                c_rank=c_rank,
+                c_dim0=c_dim0,
+                c_dim1=c_dim1,
+                c_axis=c_axis,
+                has_y_scale=has_y_scale,
+                b_scale_per_column=self.b_scale_per_column,
+                min_literal=min_literal,
+                max_literal=max_literal,
+                dim_args=emitter.dim_args_str(),
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        m = int(emitter.derived(self, "m"))
+        n = int(emitter.derived(self, "n"))
+        return (m, n)
 
 
 @dataclass(frozen=True)

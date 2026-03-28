@@ -10,6 +10,7 @@ Overview:
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1801 / 1802, 99.9% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 1652 / 4182, 39.5% | n/a |
+| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 1654 / 4182, 39.6% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -1968,6 +1969,7 @@ Coverage 123 / 125 ONNX files (98.4%).
 Test directory: `emx-ort-test-artifacts-org/artifacts/onnxruntime`
 
 Coverage 1652 / 4182 ONNX files (39.5%).
+Coverage 1654 / 4182 ONNX files (39.6%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -2152,198 +2154,198 @@ Coverage 1652 / 4182 ONNX files (39.5%).
 | test/contrib_ops/fused_conv_test/Conv2D_HardSigmoid_run0/model.onnx |  | Data/Data | ❌ | Unsupported op FusedConv |
 | test/contrib_ops/fused_conv_test/Conv2D_Relu_run0/model.onnx |  | Data/Data | ❌ | Unsupported op FusedConv |
 | test/contrib_ops/fused_conv_test/Cpu_Conv2D_Bias_Z_Relu_run0/model.onnx |  | Data/Data | ❌ | Unsupported op FusedConv |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run0/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run1/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run10/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run11/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run2/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run3/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run4/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run5/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run6/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run7/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run8/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run9/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run0/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run1/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run10/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run11/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run12/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run13/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run14/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run15/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run16/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run17/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run18/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run19/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run2/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run20/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run21/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run22/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run23/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run24/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run25/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run26/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run27/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run28/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run29/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run3/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run30/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run31/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run32/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run33/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run34/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run35/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run36/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run37/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run38/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run39/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run4/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run40/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run41/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run42/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run43/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run44/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run45/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run46/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run47/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run48/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run49/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run5/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run50/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run51/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run52/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run53/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run54/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run55/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run56/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run57/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run58/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run59/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run6/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run60/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run61/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run62/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run63/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run64/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run65/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run66/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run67/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run68/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run69/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run7/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run70/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run71/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run8/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run9/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run0/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run1/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run10/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run11/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run12/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run13/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run14/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run15/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run16/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run17/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run18/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run19/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run2/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run20/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run21/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run22/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run23/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run3/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run4/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run5/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run6/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run7/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run8/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run9/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run0/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run1/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run10/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run11/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run2/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run3/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run4/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run5/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run6/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run7/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run8/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run9/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run0/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run1/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run10/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run11/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run12/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run13/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run14/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run15/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run16/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run17/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run18/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run19/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run2/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run20/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run21/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run22/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run23/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run3/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run4/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run5/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run6/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run7/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run8/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run9/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run0/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run1/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run10/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run11/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run12/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run13/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run14/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run15/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run16/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run17/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run18/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run19/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run2/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run20/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run21/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run22/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run23/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run24/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run25/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run26/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run27/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run28/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run29/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run3/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run30/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run31/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run32/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run33/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run34/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run35/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run36/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run37/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run38/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run39/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run4/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run40/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run41/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run42/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run43/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run44/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run45/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run46/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run47/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run5/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run6/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run7/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run8/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
-| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run9/model.onnx |  | Data/Data | ❌ | Unsupported op FusedMatMul |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run11/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run11/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run13/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run14/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run15/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run17/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run18/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run19/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run20/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run21/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run23/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run24/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run25/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run26/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run27/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run28/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run29/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run30/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run31/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run32/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run33/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run34/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run35/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run36/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run37/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run38/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run39/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run40/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run41/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run42/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run43/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run44/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run45/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run46/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run47/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run48/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run49/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run50/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run51/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run52/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run53/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run54/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run55/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run56/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run57/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run58/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run59/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run60/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run61/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run62/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run63/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run64/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run65/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run66/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run67/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run68/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run69/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run70/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run71/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run11/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run13/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run14/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run15/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run17/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run18/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run19/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run20/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run21/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run23/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeAB_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run11/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeA_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run11/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run13/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run14/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run15/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run17/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run18/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run19/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run20/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run21/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run23/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 6684672) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run10/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 14680064) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run11/model.onnx |  | Data/Data | ❌ | FusedMatMul batch dimensions are not broadcastable: (1, 3) vs (3, 2) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run12/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (3, 2, 2) and (1, 3, 4) (original: (3, 2, 2) and (1, 3, 4)) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run13/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (3, 2, 1) and (1, 3, 4) (original: (3, 1, 2) and (1, 3, 4)) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run14/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 16777216) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run15/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 22020096) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run16/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (2, 2, 3) and (3, 1, 4) (original: (2, 3, 2) and (3, 1, 4)) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run17/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (1, 2, 3) and (3, 1, 4) (original: (1, 3, 2) and (3, 1, 4)) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run18/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 8388608) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run19/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 8388608) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run2/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 6815744) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run20/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (3, 2, 2) and (3, 1, 4) (original: (3, 2, 2) and (3, 1, 4)) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run21/model.onnx |  | Data/Data | ❌ | Output shape mismatch for Y (actual_shape=(3, 2, 4), actual_size=24, expected_shape=(1, 2, 4), expected_size=8, output=Y) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run22/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 25165824) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run23/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 29360128) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run24/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 6684672) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run25/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run26/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 6815744) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run27/model.onnx |  | Data/Data | ❌ | FusedMatMul batch dimensions are not broadcastable: (1, 3) vs (3, 2) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run28/model.onnx |  | Data/Data | ❌ | FusedMatMul batch dimensions are not broadcastable: (2,) vs (4,) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run29/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 12058624) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run3/model.onnx |  | Data/Data | ❌ | FusedMatMul batch dimensions are not broadcastable: (1, 3) vs (3, 2) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run30/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 11272192) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run31/model.onnx |  | Data/Data | ❌ | Output shape mismatch for Y (actual_shape=(3, 2, 3, 2), actual_size=36, expected_shape=(3, 2, 3, 1), expected_size=18, output=Y) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run32/model.onnx |  | Data/Data | ❌ | FusedMatMul batch dimensions are not broadcastable: (2,) vs (4,) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run33/model.onnx |  | Data/Data | ❌ | FusedMatMul batch dimensions are not broadcastable: (2,) vs (4,) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run34/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 17301504) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run35/model.onnx |  | Data/Data | ❌ | Output shape mismatch for Y (actual_shape=(3, 3, 2, 2), actual_size=36, expected_shape=(3, 2, 3, 1), expected_size=18, output=Y) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run36/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (3, 2, 2) and (1, 3, 4) (original: (3, 2, 2) and (1, 4, 3)) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run37/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (3, 2, 1) and (1, 3, 4) (original: (3, 1, 2) and (1, 4, 3)) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run38/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 16777216) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run39/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 22020096) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run4/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (2, 2, 3) and (3, 1, 4) (original: (2, 2, 3) and (3, 1, 4)) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run40/model.onnx |  | Data/Data | ❌ | FusedMatMul batch dimensions are not broadcastable: (2,) vs (4,) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run41/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 12058624) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run42/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 11272192) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run43/model.onnx |  | Data/Data | ❌ | Output shape mismatch for Y (actual_shape=(3, 2, 3, 2), actual_size=36, expected_shape=(3, 2, 3, 1), expected_size=18, output=Y) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run44/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (3, 2, 2) and (4, 3, 1) (original: (3, 2, 2) and (4, 1, 3)) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run45/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (3, 2, 1) and (4, 3, 1) (original: (3, 1, 2) and (4, 1, 3)) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run46/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 25165824) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run47/model.onnx |  | Data/Data | ❌ | Output shape mismatch for Y (actual_shape=(3, 2, 3, 2), actual_size=36, expected_shape=(3, 2, 3, 1), expected_size=18, output=Y) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run5/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (1, 2, 3) and (3, 1, 4) (original: (1, 2, 3) and (3, 1, 4)) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run6/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 8388608) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run7/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 8388608) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run8/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (2, 2, 3) and (3, 1, 4) (original: (2, 2, 3) and (3, 1, 4)) |
+| test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run9/model.onnx |  | Data/Data | ❌ | FusedMatMul inner dimensions must match after transposition, got effective shapes (2, 1, 3) and (3, 1, 4) (original: (2, 1, 3) and (3, 1, 4)) |
 | test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run0/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
 | test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run1/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
 | test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run10/model.onnx |  | Data/Data | ❌ | Unsupported op GatherBlockQuantized |
@@ -5345,630 +5347,630 @@ Coverage 1652 / 4182 ONNX files (39.5%).
 | test/contrib_ops/qlinear_where_test/QLinearWhereVectorAll_run1/model.onnx |  | Data/Data | ❌ | Unsupported op QLinearWhere |
 | test/contrib_ops/qlinear_where_test/QLinearWhereVectorX_VectorY_MatrixCondition_run0/model.onnx |  | Data/Data | ❌ | Unsupported op QLinearWhere |
 | test/contrib_ops/qlinear_where_test/QLinearWhereVectorX_VectorY_MatrixCondition_run1/model.onnx |  | Data/Data | ❌ | Unsupported op QLinearWhere |
-| test/contrib_ops/quant_gemm_test/GEMM_run0/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run1/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run10/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run100/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run101/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run102/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run103/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run104/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run105/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run106/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run107/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run108/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run109/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run11/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run110/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run111/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run112/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run113/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run114/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run115/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run116/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run117/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run118/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run119/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run12/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run120/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run121/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run122/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run123/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run124/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run125/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run126/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run127/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run128/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run129/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run13/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run130/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run131/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run132/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run133/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run134/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run135/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run136/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run137/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run138/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run139/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run14/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run140/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run141/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run142/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run143/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run144/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run145/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run146/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run147/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run148/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run149/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run15/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run150/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run151/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run152/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run153/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run154/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run155/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run156/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run157/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run158/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run159/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run16/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run160/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run161/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run162/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run163/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run164/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run165/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run166/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run167/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run168/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run169/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run17/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run170/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run171/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run172/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run173/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run174/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run175/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run176/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run177/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run178/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run179/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run18/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run180/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run181/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run182/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run183/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run184/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run185/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run186/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run187/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run188/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run189/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run19/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run190/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run191/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run2/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run20/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run21/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run22/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run23/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run24/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run25/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run26/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run27/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run28/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run29/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run3/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run30/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run31/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run32/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run33/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run34/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run35/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run36/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run37/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run38/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run39/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run4/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run40/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run41/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run42/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run43/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run44/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run45/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run46/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run47/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run48/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run49/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run5/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run50/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run51/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run52/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run53/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run54/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run55/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run56/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run57/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run58/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run59/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run6/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run60/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run61/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run62/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run63/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run64/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run65/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run66/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run67/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run68/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run69/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run7/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run70/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run71/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run72/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run73/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run74/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run75/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run76/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run77/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run78/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run79/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run8/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run80/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run81/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run82/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run83/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run84/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run85/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run86/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run87/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run88/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run89/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run9/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run90/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run91/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run92/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run93/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run94/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run95/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run96/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run97/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run98/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMM_run99/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run0/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run1/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run10/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run100/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run101/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run102/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run103/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run104/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run105/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run106/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run107/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run108/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run109/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run11/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run110/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run111/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run112/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run113/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run114/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run115/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run116/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run117/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run118/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run119/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run12/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run120/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run121/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run122/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run123/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run124/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run125/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run126/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run127/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run128/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run129/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run13/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run130/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run131/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run132/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run133/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run134/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run135/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run136/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run137/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run138/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run139/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run14/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run140/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run141/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run142/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run143/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run144/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run145/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run146/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run147/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run148/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run149/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run15/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run150/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run151/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run152/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run153/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run154/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run155/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run156/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run157/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run158/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run159/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run16/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run160/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run161/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run162/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run163/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run164/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run165/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run166/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run167/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run168/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run169/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run17/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run170/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run171/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run172/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run173/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run174/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run175/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run176/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run177/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run178/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run179/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run18/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run180/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run181/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run182/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run183/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run184/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run185/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run186/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run187/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run188/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run189/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run19/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run190/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run191/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run192/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run193/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run194/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run195/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run196/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run197/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run198/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run199/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run2/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run20/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run200/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run201/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run202/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run203/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run204/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run205/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run206/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run207/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run208/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run209/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run21/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run210/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run211/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run212/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run213/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run214/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run215/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run216/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run217/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run218/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run219/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run22/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run220/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run221/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run222/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run223/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run224/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run225/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run226/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run227/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run228/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run229/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run23/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run230/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run231/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run232/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run233/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run234/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run235/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run236/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run237/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run238/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run239/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run24/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run240/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run241/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run242/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run243/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run244/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run245/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run246/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run247/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run248/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run249/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run25/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run250/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run251/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run252/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run253/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run254/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run255/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run256/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run257/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run258/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run259/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run26/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run260/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run261/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run262/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run263/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run264/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run265/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run266/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run267/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run268/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run269/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run27/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run270/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run271/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run272/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run273/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run274/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run275/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run276/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run277/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run278/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run279/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run28/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run280/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run281/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run282/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run283/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run284/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run285/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run286/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run287/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run29/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run3/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run30/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run31/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run32/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run33/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run34/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run35/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run36/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run37/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run38/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run39/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run4/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run40/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run41/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run42/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run43/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run44/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run45/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run46/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run47/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run48/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run49/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run5/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run50/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run51/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run52/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run53/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run54/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run55/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run56/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run57/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run58/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run59/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run6/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run60/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run61/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run62/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run63/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run64/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run65/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run66/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run67/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run68/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run69/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run7/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run70/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run71/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run72/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run73/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run74/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run75/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run76/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run77/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run78/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run79/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run8/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run80/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run81/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run82/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run83/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run84/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run85/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run86/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run87/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run88/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run89/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run9/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run90/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run91/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run92/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run93/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run94/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run95/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run96/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run97/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run98/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/GEMV_run99/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run0/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run1/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run10/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run100/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run101/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run102/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run103/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run104/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run105/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run106/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run107/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run108/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run109/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run11/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run110/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run111/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run112/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run113/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run114/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run115/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run116/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run117/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run118/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run119/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run12/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run120/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run121/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run122/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run123/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run124/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run125/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run126/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run127/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run128/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run129/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run13/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run130/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run131/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run132/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run133/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run134/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run135/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run136/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run137/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run138/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run139/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run14/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run140/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run141/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run142/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run143/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run15/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run16/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run17/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run18/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run19/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run2/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run20/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run21/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run22/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run23/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run24/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run25/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run26/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run27/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run28/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run29/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run3/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run30/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run31/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run32/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run33/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run34/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run35/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run36/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run37/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run38/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run39/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run4/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run40/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run41/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run42/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run43/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run44/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run45/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run46/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run47/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run48/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run49/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run5/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run50/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run51/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run52/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run53/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run54/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run55/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run56/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run57/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run58/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run59/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run6/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run60/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run61/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run62/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run63/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run64/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run65/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run66/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run67/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run68/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run69/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run7/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run70/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run71/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run72/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run73/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run74/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run75/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run76/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run77/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run78/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run79/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run8/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run80/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run81/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run82/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run83/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run84/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run85/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run86/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run87/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run88/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run89/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run9/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run90/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run91/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run92/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run93/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run94/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run95/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run96/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run97/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run98/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
-| test/contrib_ops/quant_gemm_test/Scalar_run99/model.onnx |  | Data/Data | ❌ | Unsupported op QGemm |
+| test/contrib_ops/quant_gemm_test/GEMM_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run1/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run100/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run101/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run102/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run103/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run104/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run105/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run106/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run107/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run108/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run109/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run11/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run110/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run111/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run112/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run113/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run114/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run115/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run116/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run117/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run118/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run119/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run120/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run121/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run122/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run123/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run124/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run125/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run126/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run127/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run128/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMM_run129/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run13/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run130/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run131/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run132/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run133/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run134/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run135/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run136/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run137/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run138/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run139/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run14/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run140/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run141/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run142/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run143/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run144/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run145/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run146/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run147/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run148/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run149/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run15/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run150/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run151/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run152/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMM_run153/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run154/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run155/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run156/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run157/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run158/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run159/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run160/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run161/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run162/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run163/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run164/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run165/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run166/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run167/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run168/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run169/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run17/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run170/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run171/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run172/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run173/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run174/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run175/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run176/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMM_run177/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run178/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run179/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run18/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run180/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run181/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run182/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMM_run183/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run184/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run185/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run186/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run187/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run188/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run189/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run19/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run190/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run191/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run20/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run21/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run23/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run24/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run25/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run26/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run27/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run28/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run29/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run3/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run30/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run31/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run32/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run33/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run34/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run35/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run36/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run37/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run38/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run39/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run40/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run41/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run42/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run43/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run44/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run45/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run46/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run47/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run48/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run49/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run5/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run50/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run51/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run52/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run53/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run54/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run55/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run56/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMM_run57/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run58/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run59/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run60/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run61/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run62/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run63/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run64/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run65/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run66/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run67/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run68/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run69/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run7/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run70/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run71/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run72/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run73/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run74/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run75/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run76/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run77/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run78/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run79/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMM_run80/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run81/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run82/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run83/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run84/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run85/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run86/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run87/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run88/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run89/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run9/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run90/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run91/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run92/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMM_run93/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run94/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run95/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run96/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run97/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run98/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run99/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run1/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run100/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run101/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run102/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run103/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run104/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run105/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run106/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run107/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run108/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run109/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run11/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run110/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run111/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run112/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run113/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run114/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run115/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run116/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run117/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run118/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run119/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run120/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run121/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run122/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run123/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run124/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run125/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run126/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run127/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run128/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run129/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run13/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run130/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run131/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run132/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run133/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run134/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run135/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run136/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run137/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run138/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run139/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run14/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run140/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run141/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run142/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run143/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run144/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run145/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run146/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run147/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run148/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run149/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run15/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run150/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run151/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run152/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run153/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run154/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run155/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run156/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run157/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run158/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run159/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run160/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run161/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run162/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run163/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run164/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run165/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run166/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run167/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run168/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run169/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run17/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run170/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run171/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run172/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run173/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run174/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run175/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run176/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run177/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run178/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run179/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run18/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run180/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run181/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run182/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run183/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run184/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run185/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run186/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run187/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run188/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run189/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run19/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run190/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run191/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run192/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run193/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run194/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run195/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run196/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run197/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run198/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run199/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run20/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run200/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run201/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run202/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run203/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run204/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run205/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run206/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run207/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run208/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run209/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run21/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run210/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run211/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run212/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run213/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run214/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run215/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run216/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run217/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run218/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run219/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run220/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run221/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run222/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run223/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run224/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run225/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run226/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run227/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run228/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run229/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run23/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run230/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run231/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run232/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run233/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run234/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run235/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run236/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run237/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run238/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run239/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run24/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run240/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run241/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run242/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run243/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run244/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run245/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run246/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run247/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run248/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run249/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run25/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run250/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run251/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run252/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run253/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run254/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run255/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run256/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run257/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run258/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run259/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run26/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run260/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run261/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run262/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
+| test/contrib_ops/quant_gemm_test/GEMV_run263/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run264/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run265/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run266/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run267/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run268/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run269/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run27/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run270/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
+| test/contrib_ops/quant_gemm_test/GEMV_run271/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run272/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
+| test/contrib_ops/quant_gemm_test/GEMV_run273/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run274/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run275/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run276/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run277/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run278/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run279/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run28/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run280/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run281/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run282/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run283/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run284/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run285/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run286/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run287/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run29/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run3/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run30/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run31/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run32/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run33/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run34/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run35/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run36/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run37/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run38/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run39/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run40/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run41/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run42/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run43/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run44/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run45/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run46/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run47/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run48/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run49/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run5/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run50/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run51/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run52/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run53/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run54/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run55/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run56/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run57/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run58/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run59/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run60/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run61/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run62/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run63/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run64/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run65/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run66/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run67/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run68/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run69/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run7/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run70/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run71/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run72/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run73/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run74/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run75/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run76/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run77/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run78/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run79/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run80/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run81/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run82/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run83/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run84/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run85/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run86/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run87/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run88/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run89/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run9/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run90/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run91/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run92/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run93/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run94/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run95/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run96/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run97/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run98/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run99/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run1/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run100/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run101/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run102/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run103/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run104/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run105/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run106/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run107/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run108/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run109/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run11/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run110/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run111/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run112/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run113/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run114/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run115/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run116/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run117/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run118/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run119/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run120/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run121/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run122/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/Scalar_run123/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run124/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run125/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run126/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run127/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run128/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run129/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run13/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run130/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run131/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run132/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run133/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run134/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run135/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run136/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run137/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run138/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run139/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run14/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run140/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run141/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run142/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run143/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run15/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run17/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run18/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run19/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run20/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run21/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run23/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run24/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run25/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run26/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run27/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run28/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run29/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run3/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run30/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run31/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run32/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run33/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run34/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run35/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run36/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run37/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run38/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run39/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run40/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run41/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run42/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run43/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run44/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run45/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run46/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run47/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run48/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run49/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run5/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run50/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run51/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run52/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run53/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run54/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run55/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run56/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run57/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run58/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run59/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run60/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run61/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run62/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run63/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run64/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run65/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run66/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run67/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run68/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run69/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run7/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run70/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run71/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run72/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run73/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run74/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run75/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run76/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run77/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run78/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run79/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run80/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/Scalar_run81/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run82/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run83/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run84/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run85/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run86/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run87/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run88/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run89/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run9/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run90/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run91/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run92/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run93/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run94/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run95/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run96/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run97/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run98/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/Scalar_run99/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quantize_attention_op_test/QAttentionBatch1_run0/model.onnx |  | Data/Data | ❌ | Unsupported op QAttention |
 | test/contrib_ops/quantize_attention_op_test/QAttentionBatch1_run1/model.onnx |  | Data/Data | ❌ | Unsupported op QAttention |
 | test/contrib_ops/quantize_attention_op_test/QAttentionBatch2_run0/model.onnx |  | Data/Data | ❌ | Unsupported op QAttention |

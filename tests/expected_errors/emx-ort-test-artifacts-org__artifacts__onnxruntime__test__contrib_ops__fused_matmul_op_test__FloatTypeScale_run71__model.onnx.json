@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op FusedMatMul",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run71 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::FusedMatMul"
-  ]
+  ],
+  "generated_checksum": "8b87b3e7811ca958d45e3fd405079c7901a8e65961675e3d03c5d6f0521e9392"
 }
