@@ -9,7 +9,7 @@ Overview:
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1801 / 1802, 99.9% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
-| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 884 / 4182, 21.1% | n/a |
+| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 1446 / 4182, 34.6% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -1967,7 +1967,7 @@ Coverage 123 / 125 ONNX files (98.4%).
 
 Test directory: `emx-ort-test-artifacts-org/artifacts/onnxruntime`
 
-Coverage 884 / 4182 ONNX files (21.1%).
+Coverage 1446 / 4182 ONNX files (34.6%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -4531,568 +4531,568 @@ Coverage 884 / 4182 ONNX files (21.1%).
 | test/contrib_ops/murmur_hash3_test/ZeroSeedUIntResult_run0/model.onnx |  | Data/Data | ❌ | Unsupported op MurmurHash3 |
 | test/contrib_ops/murmur_hash3_test/ZeroSeed_run0/model.onnx |  | Data/Data | ❌ | Unsupported op MurmurHash3 |
 | test/contrib_ops/ngram_repeat_block_op_test/NGramSize_3_run0/model.onnx |  | Data/Data | ❌ | Unsupported op NGramRepeatBlock |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run1/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run10/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run11/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run12/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run13/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run14/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run15/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run16/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run17/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run18/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run19/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run2/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run20/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run21/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run22/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run23/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run24/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run25/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run26/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run27/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run28/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run29/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run3/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run30/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run31/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run32/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run33/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run34/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run35/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run36/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run37/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run38/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run39/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run4/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run40/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run41/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run42/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run43/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run44/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run45/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run46/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run47/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run48/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run49/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run5/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run50/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run51/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run52/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run53/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run54/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run55/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run56/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run57/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run58/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run59/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run6/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run60/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run61/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run62/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run63/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run64/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run65/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run66/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run67/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run68/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run69/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run7/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run70/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run71/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run72/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run73/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run74/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run75/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run76/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run77/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run78/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run79/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run8/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run80/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run81/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run82/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run83/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run84/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run85/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run86/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run87/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run88/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run89/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run9/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run90/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run91/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run92/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run0/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run1/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run10/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run11/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run12/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run13/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run14/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run15/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run16/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run17/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run18/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run19/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run2/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run20/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run21/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run22/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run23/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run24/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run25/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run26/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run27/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run28/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run29/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run3/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run30/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run31/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run32/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run33/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run34/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run35/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run36/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run37/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run38/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run39/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run4/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run40/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run41/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run42/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run43/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run44/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run45/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run46/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run47/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run48/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run49/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run5/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run50/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run51/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run52/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run53/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run54/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run55/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run56/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run57/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run58/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run59/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run6/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run60/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run61/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run62/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run63/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run64/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run65/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run66/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run67/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run68/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run69/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run7/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run70/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run71/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run72/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run73/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run74/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run75/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run76/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run77/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run78/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run79/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run8/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run80/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run81/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run82/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run83/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run84/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run85/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run86/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run87/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run88/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run89/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run9/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run90/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run91/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run92/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run1/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run10/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run11/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run12/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run13/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run14/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run15/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run16/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run17/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run18/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run19/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run2/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run20/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run21/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run22/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run23/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run24/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run25/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run26/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run27/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run28/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run29/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run3/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run30/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run31/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run32/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run33/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run34/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run35/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run36/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run37/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run38/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run39/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run4/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run40/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run41/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run42/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run43/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run44/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run45/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run46/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run47/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run48/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run49/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run5/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run50/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run51/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run52/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run53/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run54/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run55/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run56/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run57/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run58/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run59/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run6/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run60/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run61/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run62/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run63/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run64/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run65/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run66/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run67/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run68/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run69/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run7/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run70/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run71/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run72/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run73/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run74/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run75/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run76/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run77/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run78/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run79/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run8/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run80/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run81/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run82/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run83/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run84/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run85/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run86/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run87/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run88/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run89/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run9/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run90/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run91/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run92/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run0/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run1/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run10/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run11/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run12/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run13/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run14/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run15/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run16/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run17/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run18/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run19/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run2/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run20/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run21/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run22/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run23/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run24/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run25/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run26/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run27/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run28/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run29/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run3/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run30/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run31/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run32/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run33/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run34/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run35/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run36/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run37/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run38/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run39/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run4/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run40/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run41/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run42/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run43/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run44/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run45/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run46/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run47/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run48/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run49/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run5/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run50/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run51/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run52/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run53/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run54/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run55/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run56/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run57/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run58/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run59/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run6/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run60/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run61/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run62/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run63/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run64/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run65/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run66/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run67/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run68/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run69/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run7/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run70/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run71/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run72/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run73/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run74/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run75/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run76/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run77/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run78/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run79/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run8/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run80/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run81/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run82/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run83/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run84/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run85/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run86/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run87/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run88/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run89/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run9/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run90/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run91/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run92/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run1/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run10/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run11/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run12/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run13/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run14/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run15/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run16/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run17/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run18/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run19/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run2/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run20/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run21/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run22/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run23/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run24/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run25/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run26/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run27/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run28/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run29/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run3/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run30/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run31/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run32/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run33/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run34/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run35/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run36/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run37/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run38/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run39/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run4/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run40/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run41/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run42/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run43/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run44/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run45/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run46/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run47/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run48/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run49/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run5/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run50/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run51/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run52/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run53/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run54/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run55/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run56/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run57/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run58/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run59/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run6/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run60/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run61/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run62/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run63/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run64/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run65/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run66/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run67/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run68/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run69/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run7/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run70/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run71/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run72/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run73/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run74/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run75/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run76/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run77/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run78/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run79/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run8/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run80/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run81/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run82/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run83/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run84/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run85/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run86/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run87/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run88/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run89/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run9/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run90/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run91/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run92/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run0/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run1/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run10/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run11/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run12/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run13/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run14/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run15/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run16/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run17/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run18/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run19/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run2/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run20/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run21/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run22/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run23/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run24/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run25/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run26/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run27/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run28/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run29/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run3/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run30/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run31/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run32/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run33/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run34/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run35/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run36/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run37/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run38/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run39/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run4/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run40/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run41/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run42/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run43/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run44/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run45/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run46/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run47/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run48/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run49/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run5/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run50/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run51/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run52/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run53/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run54/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run55/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run56/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run57/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run58/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run59/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run6/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run60/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run61/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run62/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run63/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run64/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run65/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run66/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run67/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run68/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run69/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run7/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run70/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run71/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run72/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run73/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run74/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run75/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run76/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run77/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run78/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run79/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run8/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run80/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run81/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run82/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run83/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run84/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run85/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run86/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run87/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run88/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run89/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run9/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run90/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run91/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run92/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPoolDilations_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPoolDilations_run0/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPoolStrides_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
-| test/contrib_ops/nhwc_maxpool_op_test/MaxPoolStrides_run0/model.onnx |  | Data/Data | ❌ | Unsupported op NhwcMaxPool |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run1/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run10/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run11/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run12/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run13/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run14/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run15/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run16/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run17/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run18/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run19/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run2/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run20/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run21/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run22/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run23/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run24/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run25/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run26/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run27/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run28/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run29/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run3/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run30/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run31/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run32/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run33/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run34/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run35/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run36/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run37/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run38/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run39/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run4/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run40/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run41/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run42/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run43/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run44/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run45/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run46/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run47/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run48/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run49/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run5/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run50/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run51/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run52/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run53/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run54/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run55/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run56/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run57/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run58/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run59/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run6/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run60/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run61/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run62/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run63/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run64/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run65/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run66/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run67/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run68/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run69/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run7/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run70/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run71/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run72/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run73/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run74/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run75/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run76/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run77/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run78/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run79/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run8/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run80/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run81/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run82/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run83/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run84/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run85/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run86/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run87/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run88/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run89/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run9/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run90/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run91/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run92/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run1/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run10/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run11/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run12/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run13/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run14/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run15/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run16/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run17/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run18/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run19/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run2/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run20/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run21/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run22/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run23/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run24/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run25/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run26/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run27/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run28/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run29/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run3/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run30/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run31/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run32/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run33/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run34/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run35/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run36/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run37/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run38/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run39/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run4/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run40/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run41/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run42/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run43/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run44/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run45/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run46/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run47/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run48/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run49/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run5/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run50/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run51/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run52/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run53/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run54/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run55/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run56/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run57/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run58/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run59/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run6/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run60/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run61/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run62/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run63/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run64/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run65/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run66/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run67/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run68/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run69/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run7/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run70/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run71/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run72/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run73/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run74/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run75/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run76/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run77/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run78/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run79/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run8/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run80/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run81/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run82/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run83/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run84/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run85/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run86/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run87/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run88/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run89/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run9/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run90/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run91/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_run92/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run1/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run10/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run11/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run12/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run13/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run14/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run15/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run16/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run17/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run18/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run19/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run2/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run20/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run21/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run22/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run23/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run24/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run25/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run26/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run27/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run28/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run29/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run3/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run30/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run31/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run32/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run33/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run34/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run35/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run36/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run37/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run38/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run39/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run4/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run40/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run41/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run42/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run43/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run44/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run45/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run46/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run47/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run48/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run49/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run5/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run50/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run51/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run52/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run53/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run54/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run55/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run56/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run57/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run58/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run59/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run6/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run60/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run61/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run62/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run63/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run64/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run65/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run66/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run67/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run68/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run69/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run7/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run70/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run71/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run72/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run73/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run74/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run75/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run76/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run77/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run78/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run79/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run8/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run80/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run81/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run82/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run83/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run84/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run85/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run86/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run87/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run88/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run89/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run9/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run90/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run91/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_S8_run92/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run1/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run10/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run11/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run12/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run13/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run14/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run15/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run16/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run17/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run18/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run19/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run2/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run20/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run21/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run22/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run23/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run24/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run25/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run26/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run27/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run28/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run29/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run3/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run30/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run31/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run32/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run33/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run34/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run35/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run36/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run37/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run38/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run39/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run4/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run40/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run41/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run42/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run43/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run44/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run45/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run46/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run47/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run48/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run49/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run5/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run50/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run51/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run52/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run53/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run54/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run55/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run56/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run57/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run58/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run59/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run6/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run60/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run61/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run62/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run63/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run64/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run65/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run66/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run67/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run68/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run69/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run7/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run70/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run71/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run72/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run73/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run74/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run75/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run76/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run77/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run78/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run79/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run8/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run80/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run81/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run82/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run83/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run84/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run85/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run86/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run87/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run88/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run89/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run9/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run90/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run91/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool2D_run92/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run1/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run10/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run11/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run12/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run13/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run14/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run15/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run16/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run17/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run18/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run19/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run2/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run20/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run21/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run22/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run23/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run24/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run25/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run26/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run27/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run28/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run29/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run3/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run30/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run31/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run32/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run33/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run34/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run35/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run36/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run37/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run38/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run39/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run4/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run40/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run41/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run42/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run43/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run44/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run45/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run46/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run47/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run48/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run49/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run5/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run50/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run51/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run52/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run53/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run54/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run55/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run56/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run57/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run58/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run59/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run6/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run60/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run61/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run62/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run63/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run64/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run65/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run66/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run67/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run68/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run69/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run7/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run70/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run71/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run72/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run73/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run74/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run75/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run76/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run77/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run78/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run79/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run8/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run80/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run81/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run82/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run83/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run84/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run85/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run86/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run87/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run88/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run89/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run9/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run90/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run91/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_S8_run92/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run1/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run10/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run11/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run12/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run13/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run14/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run15/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run16/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run17/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run18/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run19/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run2/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run20/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run21/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run22/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run23/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run24/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run25/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run26/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run27/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run28/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run29/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run3/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run30/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run31/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run32/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run33/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run34/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run35/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run36/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run37/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run38/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run39/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run4/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run40/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run41/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run42/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run43/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run44/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run45/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run46/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run47/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run48/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run49/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run5/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run50/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run51/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run52/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run53/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run54/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run55/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run56/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run57/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run58/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run59/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run6/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run60/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run61/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run62/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run63/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run64/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run65/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run66/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run67/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run68/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run69/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run7/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run70/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run71/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run72/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run73/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run74/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run75/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run76/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run77/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run78/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run79/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run8/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run80/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run81/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run82/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run83/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run84/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run85/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run86/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run87/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run88/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run89/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run9/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run90/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run91/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPool3D_run92/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPoolDilations_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPoolDilations_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPoolStrides_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/nhwc_maxpool_op_test/MaxPoolStrides_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch1_Float16_run0/model.onnx |  | Data/Data | ❌ | Unsupported op QEmbedLayerNormalization |
 | test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch1_Float16_run1/model.onnx |  | Data/Data | ❌ | Unsupported op QEmbedLayerNormalization |
 | test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch1_run0/model.onnx |  | Data/Data | ❌ | Unsupported op QEmbedLayerNormalization |
