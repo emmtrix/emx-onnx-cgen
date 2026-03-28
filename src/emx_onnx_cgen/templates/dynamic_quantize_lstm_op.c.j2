@@ -42,38 +42,64 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     {{ c_type }} gate_o = {{ zero_literal }};
                     {{ c_type }} gate_f = {{ zero_literal }};
                     {{ c_type }} gate_c = {{ zero_literal }};
+                    {% if per_column_w %}
                     for (int i = 0; i < {{ input_size }}; ++i) {
                         {{ c_type }} x_val = {{ input_x }}[t][b][i];
-                        {% if per_column_w %}
                         gate_i += x_val * (({{ c_type }}){{ input_w }}[dir][i][h] - ({{ c_type }}){{ w_zero_point }}[dir][h]) * {{ w_scale }}[dir][h];
                         gate_o += x_val * (({{ c_type }}){{ input_w }}[dir][i][{{ hidden_size }} + h] - ({{ c_type }}){{ w_zero_point }}[dir][{{ hidden_size }} + h]) * {{ w_scale }}[dir][{{ hidden_size }} + h];
                         gate_f += x_val * (({{ c_type }}){{ input_w }}[dir][i][{{ hidden_size }} * 2 + h] - ({{ c_type }}){{ w_zero_point }}[dir][{{ hidden_size }} * 2 + h]) * {{ w_scale }}[dir][{{ hidden_size }} * 2 + h];
                         gate_c += x_val * (({{ c_type }}){{ input_w }}[dir][i][{{ hidden_size }} * 3 + h] - ({{ c_type }}){{ w_zero_point }}[dir][{{ hidden_size }} * 3 + h]) * {{ w_scale }}[dir][{{ hidden_size }} * 3 + h];
-                        {% else %}
-                        {{ c_type }} w_s = {{ w_scale }}[dir];
-                        {{ c_type }} w_zp = ({{ c_type }}){{ w_zero_point }}[dir];
-                        gate_i += x_val * (({{ c_type }}){{ input_w }}[dir][i][h] - w_zp) * w_s;
-                        gate_o += x_val * (({{ c_type }}){{ input_w }}[dir][i][{{ hidden_size }} + h] - w_zp) * w_s;
-                        gate_f += x_val * (({{ c_type }}){{ input_w }}[dir][i][{{ hidden_size }} * 2 + h] - w_zp) * w_s;
-                        gate_c += x_val * (({{ c_type }}){{ input_w }}[dir][i][{{ hidden_size }} * 3 + h] - w_zp) * w_s;
-                        {% endif %}
                     }
+                    {% else %}
+                    {
+                        {{ c_type }} acc_i = {{ zero_literal }};
+                        {{ c_type }} acc_o = {{ zero_literal }};
+                        {{ c_type }} acc_f = {{ zero_literal }};
+                        {{ c_type }} acc_c = {{ zero_literal }};
+                        {{ c_type }} w_zp = ({{ c_type }}){{ w_zero_point }}[dir];
+                        for (int i = 0; i < {{ input_size }}; ++i) {
+                            {{ c_type }} x_val = {{ input_x }}[t][b][i];
+                            acc_i += x_val * (({{ c_type }}){{ input_w }}[dir][i][h] - w_zp);
+                            acc_o += x_val * (({{ c_type }}){{ input_w }}[dir][i][{{ hidden_size }} + h] - w_zp);
+                            acc_f += x_val * (({{ c_type }}){{ input_w }}[dir][i][{{ hidden_size }} * 2 + h] - w_zp);
+                            acc_c += x_val * (({{ c_type }}){{ input_w }}[dir][i][{{ hidden_size }} * 3 + h] - w_zp);
+                        }
+                        {{ c_type }} w_s = {{ w_scale }}[dir];
+                        gate_i += acc_i * w_s;
+                        gate_o += acc_o * w_s;
+                        gate_f += acc_f * w_s;
+                        gate_c += acc_c * w_s;
+                    }
+                    {% endif %}
+                    {% if per_column_r %}
                     for (int i = 0; i < {{ hidden_size }}; ++i) {
                         {{ c_type }} h_val = H_prev[b][i];
-                        {% if per_column_r %}
                         gate_i += h_val * (({{ c_type }}){{ input_r }}[dir][i][h] - ({{ c_type }}){{ r_zero_point }}[dir][h]) * {{ r_scale }}[dir][h];
                         gate_o += h_val * (({{ c_type }}){{ input_r }}[dir][i][{{ hidden_size }} + h] - ({{ c_type }}){{ r_zero_point }}[dir][{{ hidden_size }} + h]) * {{ r_scale }}[dir][{{ hidden_size }} + h];
                         gate_f += h_val * (({{ c_type }}){{ input_r }}[dir][i][{{ hidden_size }} * 2 + h] - ({{ c_type }}){{ r_zero_point }}[dir][{{ hidden_size }} * 2 + h]) * {{ r_scale }}[dir][{{ hidden_size }} * 2 + h];
                         gate_c += h_val * (({{ c_type }}){{ input_r }}[dir][i][{{ hidden_size }} * 3 + h] - ({{ c_type }}){{ r_zero_point }}[dir][{{ hidden_size }} * 3 + h]) * {{ r_scale }}[dir][{{ hidden_size }} * 3 + h];
-                        {% else %}
-                        {{ c_type }} r_s = {{ r_scale }}[dir];
-                        {{ c_type }} r_zp = ({{ c_type }}){{ r_zero_point }}[dir];
-                        gate_i += h_val * (({{ c_type }}){{ input_r }}[dir][i][h] - r_zp) * r_s;
-                        gate_o += h_val * (({{ c_type }}){{ input_r }}[dir][i][{{ hidden_size }} + h] - r_zp) * r_s;
-                        gate_f += h_val * (({{ c_type }}){{ input_r }}[dir][i][{{ hidden_size }} * 2 + h] - r_zp) * r_s;
-                        gate_c += h_val * (({{ c_type }}){{ input_r }}[dir][i][{{ hidden_size }} * 3 + h] - r_zp) * r_s;
-                        {% endif %}
                     }
+                    {% else %}
+                    {
+                        {{ c_type }} acc_i = {{ zero_literal }};
+                        {{ c_type }} acc_o = {{ zero_literal }};
+                        {{ c_type }} acc_f = {{ zero_literal }};
+                        {{ c_type }} acc_c = {{ zero_literal }};
+                        {{ c_type }} r_zp = ({{ c_type }}){{ r_zero_point }}[dir];
+                        for (int i = 0; i < {{ hidden_size }}; ++i) {
+                            {{ c_type }} h_val = H_prev[b][i];
+                            acc_i += h_val * (({{ c_type }}){{ input_r }}[dir][i][h] - r_zp);
+                            acc_o += h_val * (({{ c_type }}){{ input_r }}[dir][i][{{ hidden_size }} + h] - r_zp);
+                            acc_f += h_val * (({{ c_type }}){{ input_r }}[dir][i][{{ hidden_size }} * 2 + h] - r_zp);
+                            acc_c += h_val * (({{ c_type }}){{ input_r }}[dir][i][{{ hidden_size }} * 3 + h] - r_zp);
+                        }
+                        {{ c_type }} r_s = {{ r_scale }}[dir];
+                        gate_i += acc_i * r_s;
+                        gate_o += acc_o * r_s;
+                        gate_f += acc_f * r_s;
+                        gate_c += acc_c * r_s;
+                    }
+                    {% endif %}
                     {% if input_b %}
                     gate_i += {{ input_b }}[dir][h] + {{ input_b }}[dir][{{ hidden_size }} * 4 + h];
                     gate_o += {{ input_b }}[dir][{{ hidden_size }} + h] + {{ input_b }}[dir][{{ hidden_size }} * 5 + h];

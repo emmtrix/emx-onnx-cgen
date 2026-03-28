@@ -9,6 +9,7 @@ from ..errors import UnsupportedOpError
 from ..ir.model import Graph, Node
 from .common import node_dtype, optional_name, value_dtype, value_shape
 from .lstm import (
+    ACTIVATION_KIND_BY_NAME,
     LstmSpec,
     _resolve_activations,
     _validate_direction,
@@ -19,6 +20,27 @@ from .registry import register_lowering
 
 if TYPE_CHECKING:
     from ..ir.ops import DynamicQuantizeLstmOp
+
+_ACTIVATION_NAME_LOWER = {name.lower(): name for name in ACTIVATION_KIND_BY_NAME}
+
+
+def _normalize_contrib_activations(attrs: dict[str, object]) -> dict[str, object]:
+    """Normalize lowercase activation names from contrib ops to Title Case."""
+    activations = attrs.get("activations")
+    if activations is None:
+        return attrs
+    normalized: list[str] = []
+    for name in activations:
+        if isinstance(name, bytes):
+            name = name.decode("utf-8")
+        if isinstance(name, str):
+            canonical = _ACTIVATION_NAME_LOWER.get(name.lower())
+            if canonical is not None:
+                name = canonical
+        normalized.append(name)
+    result = dict(attrs)
+    result["activations"] = normalized
+    return result
 
 
 @dataclass(frozen=True)
@@ -198,7 +220,7 @@ def resolve_dynamic_quantize_lstm_spec(
             )
 
     activation_kinds, activation_alphas, activation_betas = _resolve_activations(
-        direction, num_directions, node.attrs
+        direction, num_directions, _normalize_contrib_activations(node.attrs)
     )
     sequence_lens_dtype = (
         value_dtype(graph, input_sequence_lens, node)
