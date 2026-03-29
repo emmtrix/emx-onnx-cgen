@@ -20,7 +20,7 @@ from .codegen.c_emitter import (
     ModelHeader,
     NodeInfo,
 )
-from .errors import ShapeInferenceError, UnsupportedOpError
+from .errors import ShapeInferenceError, UnsupportedOpError, unsupported_op_message
 from .invariants import (
     check_graph_integrity,
     check_inferred_shapes,
@@ -840,7 +840,9 @@ class Compiler:
         for node_index, node in enumerate(ctx.nodes):
             lowering = registry.get(node.op_type)
             if lowering is None:
-                raise UnsupportedOpError(f"Unsupported op {node.op_type}")
+                raise UnsupportedOpError(
+                    unsupported_op_message(node.op_type, node.domain)
+                )
             try:
                 ops.append(lowering(ctx, node))
             except (ShapeInferenceError, UnsupportedOpError) as exc:

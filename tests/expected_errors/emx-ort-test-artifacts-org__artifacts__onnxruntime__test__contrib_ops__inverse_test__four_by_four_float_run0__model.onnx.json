@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op Inverse",
+  "error": "Unsupported op com.microsoft.Inverse",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/inverse_test/four_by_four_float_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [

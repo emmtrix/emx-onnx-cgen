@@ -74,6 +74,7 @@ from ..ir.ops import (
     LpPoolOp,
     LrnOp,
     MsAttentionOp,
+    QAttentionOp,
     RnnOp,
     LstmOp,
     MatMulOp,
@@ -1039,6 +1040,9 @@ class CEmitter:
                 "dynamic_quantize_linear": self._env.get_template(
                     "dynamic_quantize_linear_op.c.j2"
                 ),
+                "dynamic_quantize_matmul": self._env.get_template(
+                    "dynamic_quantize_matmul_op.c.j2"
+                ),
                 "qlinear_add": self._env.get_template("qlinear_add_op.c.j2"),
                 "qlinear_concat": self._env.get_template("qlinear_concat_op.c.j2"),
                 "qlinear_mul": self._env.get_template("qlinear_mul_op.c.j2"),
@@ -1049,6 +1053,9 @@ class CEmitter:
                 "qlinear_softmax": self._env.get_template("qlinear_softmax_op.c.j2"),
                 "qlinear_conv": self._env.get_template("qlinear_conv_op.c.j2"),
                 "matmul_integer": self._env.get_template("matmul_integer_op.c.j2"),
+                "matmul_integer_to_float": self._env.get_template(
+                    "matmul_integer_to_float_op.c.j2"
+                ),
                 "matmul_nbits": self._env.get_template("matmul_nbits_op.c.j2"),
                 "matmul_bnb4": self._env.get_template("matmul_bnb4_op.c.j2"),
                 "matmul": self._env.get_template("matmul_op.c.j2"),
@@ -1058,6 +1065,7 @@ class CEmitter:
                 "qgemm": self._env.get_template("qgemm_op.c.j2"),
                 "attention": self._env.get_template("attention_op.c.j2"),
                 "ms_attention": self._env.get_template("ms_attention_op.c.j2"),
+                "qattention": self._env.get_template("qattention_op.c.j2"),
                 "rotary_embedding": self._env.get_template("rotary_embedding_op.c.j2"),
                 "conv": self._env.get_template("conv_op.c.j2"),
                 "conv_integer": self._env.get_template("conv_integer_op.c.j2"),
@@ -1081,6 +1089,9 @@ class CEmitter:
                 "gru": self._env.get_template("gru_op.c.j2"),
                 "rnn": self._env.get_template("rnn_op.c.j2"),
                 "lstm": self._env.get_template("lstm_op.c.j2"),
+                "dynamic_quantize_lstm": self._env.get_template(
+                    "dynamic_quantize_lstm_op.c.j2"
+                ),
                 "adam": self._env.get_template("adam_op.c.j2"),
                 "adagrad": self._env.get_template("adagrad_op.c.j2"),
                 "momentum": self._env.get_template("momentum_op.c.j2"),
@@ -1175,8 +1186,10 @@ class CEmitter:
                 "string_normalizer": self._env.get_template(
                     "string_normalizer_op.c.j2"
                 ),
+                "murmur_hash3": self._env.get_template("murmur_hash3_op.c.j2"),
                 "label_encoder": self._env.get_template("label_encoder_op.c.j2"),
                 "string_split": self._env.get_template("string_split_op.c.j2"),
+                "tokenizer": self._env.get_template("tokenizer_op.c.j2"),
                 "tree_ensemble": self._env.get_template("tree_ensemble_op.c.j2"),
                 "tree_ensemble_classifier": self._env.get_template(
                     "tree_ensemble_classifier_op.c.j2"
@@ -2053,6 +2066,7 @@ class CEmitter:
             "#include <ctype.h>",
             "#include <string.h>",
             "#include <strings.h>",
+            "#include <regex.h>",
         )
         return [include for include in ordered_includes if include in includes]
 
@@ -2174,6 +2188,7 @@ class CEmitter:
             | GemmOp
             | AttentionOp
             | MsAttentionOp
+            | QAttentionOp
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp

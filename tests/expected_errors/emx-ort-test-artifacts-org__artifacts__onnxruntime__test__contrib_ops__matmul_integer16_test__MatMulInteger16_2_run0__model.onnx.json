@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op MatMulInteger16",
+  "error": "Unsupported op com.microsoft.MatMulInteger16",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/matmul_integer16_test/MatMulInteger16_2_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [

@@ -1,0 +1,46 @@
+static uint32_t {{ op_name }}_hash(const uint8_t *key, uint32_t len, uint32_t seed) {
+    const uint32_t c1 = 0xcc9e2d51u;
+    const uint32_t c2 = 0x1b873593u;
+    uint32_t h1 = seed;
+    uint32_t nblocks = len >> 2u;
+    for (uint32_t i = 0u; i < nblocks; ++i) {
+        const uint8_t *p = key + i * 4u;
+        uint32_t k1 = (uint32_t)p[0] | ((uint32_t)p[1] << 8u) |
+                      ((uint32_t)p[2] << 16u) | ((uint32_t)p[3] << 24u);
+        k1 *= c1; k1 = (k1 << 15u) | (k1 >> 17u); k1 *= c2;
+        h1 ^= k1; h1 = (h1 << 13u) | (h1 >> 19u); h1 = h1 * 5u + 0xe6546b64u;
+    }
+    const uint8_t *tail = key + nblocks * 4u;
+    uint32_t k1 = 0u;
+    switch (len & 3u) {
+        case 3: k1 ^= (uint32_t)tail[2] << 16u; /* FALLTHROUGH */
+        case 2: k1 ^= (uint32_t)tail[1] << 8u;  /* FALLTHROUGH */
+        case 1: k1 ^= (uint32_t)tail[0];
+                k1 *= c1; k1 = (k1 << 15u) | (k1 >> 17u); k1 *= c2; h1 ^= k1;
+    }
+    h1 ^= len;
+    h1 ^= h1 >> 16u; h1 *= 0x85ebca6bu; h1 ^= h1 >> 13u;
+    h1 *= 0xc2b2ae35u; h1 ^= h1 >> 16u;
+    return h1;
+}
+
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% if is_string %}
+    const char (*input_flat)[EMX_STRING_MAX_LEN] =
+        (const char (*)[EMX_STRING_MAX_LEN]){{ input_param }};
+    {{ output_c_type }} *output_flat = ({{ output_c_type }} *){{ output_param }};
+    for (idx_t i = 0; i < {{ elem_count }}; ++i) {
+        uint32_t h = {{ op_name }}_hash(
+            (const uint8_t *)input_flat[i], (uint32_t)strlen(input_flat[i]), {{ seed }}u);
+        output_flat[i] = ({{ output_c_type }})h;
+    }
+{% else %}
+    const {{ input_c_type }} *input_flat = (const {{ input_c_type }} *){{ input_param }};
+    {{ output_c_type }} *output_flat = ({{ output_c_type }} *){{ output_param }};
+    for (idx_t i = 0; i < {{ elem_count }}; ++i) {
+        uint32_t h = {{ op_name }}_hash(
+            (const uint8_t *)&input_flat[i], (uint32_t)sizeof({{ input_c_type }}), {{ seed }}u);
+        output_flat[i] = ({{ output_c_type }})h;
+    }
+{% endif %}
+}

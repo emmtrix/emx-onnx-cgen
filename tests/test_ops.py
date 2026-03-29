@@ -4664,9 +4664,7 @@ def _make_ms_attention_model(
     node_inputs = ["input", "weight", "bias"]
     if mask_shape is not None:
         inputs_info.append(
-            helper.make_tensor_value_info(
-                "mask_index", TensorProto.INT32, mask_shape
-            )
+            helper.make_tensor_value_info("mask_index", TensorProto.INT32, mask_shape)
         )
         node_inputs.append("mask_index")
     output = helper.make_tensor_value_info(
@@ -4713,9 +4711,7 @@ def test_ms_attention_unidirectional_testbench_compare() -> None:
 
 
 def test_ms_attention_2d_mask_testbench_compare() -> None:
-    model = _make_ms_attention_model(
-        batch=1, mask_shape=[1, 2]
-    )
+    model = _make_ms_attention_model(batch=1, mask_shape=[1, 2])
     _run_testbench_compare(model)
 
 
@@ -5066,6 +5062,157 @@ def test_regex_full_match_matches_onnxruntime() -> None:
     output_payload = payload.get("outputs", {}).get("out")
     if output_payload is None:
         raise AssertionError("Missing output out in testbench data")
+    output_data = decode_testbench_array(output_payload["data"], ort_output.dtype)
+    output_data = output_data.reshape(ort_output.shape)
+    np.testing.assert_array_equal(output_data, ort_output)
+
+
+def _make_murmur_hash3_model(
+    *,
+    input_shape: list[int],
+    input_elem_type: int,
+    output_elem_type: int,
+    seed: int = 0,
+    positive: int = 0,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("in0", input_elem_type, input_shape)
+    output_info = helper.make_tensor_value_info("out", output_elem_type, input_shape)
+    node = helper.make_node(
+        "MurmurHash3",
+        inputs=["in0"],
+        outputs=["out"],
+        domain="com.microsoft",
+        seed=seed,
+        positive=positive,
+    )
+    graph = helper.make_graph(
+        [node],
+        "murmur_hash3_graph",
+        [input_info],
+        [output_info],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[
+            helper.make_operatorsetid("", 13),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+    return model
+
+
+def test_murmur_hash3_lowering_int32() -> None:
+    model = _make_murmur_hash3_model(
+        input_shape=[2],
+        input_elem_type=TensorProto.INT32,
+        output_elem_type=TensorProto.INT32,
+        seed=0,
+        positive=0,
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+    lowering = get_lowering("MurmurHash3")
+    from shared.scalar_types import ScalarType
+
+    op = lowering(graph, graph.nodes[0])
+    assert op.input0 == "in0"
+    assert op.output == "out"
+    assert op.seed == 0
+    assert op.input_dtype == ScalarType.I32
+    assert op.output_dtype == ScalarType.I32
+
+
+def test_murmur_hash3_lowering_rejects_unsupported_dtype() -> None:
+    model = _make_murmur_hash3_model(
+        input_shape=[1],
+        input_elem_type=TensorProto.INT8,
+        output_elem_type=TensorProto.INT32,
+        seed=0,
+        positive=0,
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+    lowering = get_lowering("MurmurHash3")
+    with pytest.raises(UnsupportedOpError):
+        lowering(graph, graph.nodes[0])
+
+
+def test_murmur_hash3_codegen_emits_hash_function() -> None:
+    model = _make_murmur_hash3_model(
+        input_shape=[4],
+        input_elem_type=TensorProto.INT32,
+        output_elem_type=TensorProto.INT32,
+        seed=0,
+        positive=0,
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "0xcc9e2d51" in generated
+    assert "0x1b873593" in generated
+
+
+def test_murmur_hash3_int32_matches_onnxruntime() -> None:
+    model = _make_murmur_hash3_model(
+        input_shape=[3],
+        input_elem_type=TensorProto.INT32,
+        output_elem_type=TensorProto.UINT32,
+        seed=0,
+        positive=1,
+    )
+    inputs = {"in0": np.array([3, 4, 5], dtype=np.int32)}
+    session = ort.InferenceSession(
+        model.SerializeToString(), providers=["CPUExecutionProvider"]
+    )
+    ort_output = session.run(None, inputs)[0]
+    payload = _compile_and_run_testbench(model, testbench_inputs=inputs)
+    output_payload = payload.get("outputs", {}).get("out")
+    assert output_payload is not None, "Missing output 'out'"
+    output_data = decode_testbench_array(output_payload["data"], ort_output.dtype)
+    output_data = output_data.reshape(ort_output.shape)
+    np.testing.assert_array_equal(output_data, ort_output)
+
+
+def test_murmur_hash3_string_matches_onnxruntime() -> None:
+    model = _make_murmur_hash3_model(
+        input_shape=[2],
+        input_elem_type=TensorProto.STRING,
+        output_elem_type=TensorProto.UINT32,
+        seed=0,
+        positive=1,
+    )
+    ort_inputs = np.array(["foo", "bar"], dtype=object)
+    session = ort.InferenceSession(
+        model.SerializeToString(), providers=["CPUExecutionProvider"]
+    )
+    ort_output = session.run(None, {"in0": ort_inputs})[0]
+    payload = _compile_and_run_testbench(
+        model,
+        testbench_inputs={"in0": _encode_string_testbench_input(ort_inputs)},
+    )
+    output_payload = payload.get("outputs", {}).get("out")
+    assert output_payload is not None, "Missing output 'out'"
+    output_data = decode_testbench_array(output_payload["data"], ort_output.dtype)
+    output_data = output_data.reshape(ort_output.shape)
+    np.testing.assert_array_equal(output_data, ort_output)
+
+
+def test_murmur_hash3_nonzero_seed_matches_onnxruntime() -> None:
+    model = _make_murmur_hash3_model(
+        input_shape=[2],
+        input_elem_type=TensorProto.INT32,
+        output_elem_type=TensorProto.INT32,
+        seed=42,
+        positive=0,
+    )
+    inputs = {"in0": np.array([3, 4], dtype=np.int32)}
+    session = ort.InferenceSession(
+        model.SerializeToString(), providers=["CPUExecutionProvider"]
+    )
+    ort_output = session.run(None, inputs)[0]
+    payload = _compile_and_run_testbench(model, testbench_inputs=inputs)
+    output_payload = payload.get("outputs", {}).get("out")
+    assert output_payload is not None, "Missing output 'out'"
     output_data = decode_testbench_array(output_payload["data"], ort_output.dtype)
     output_data = output_data.reshape(ort_output.shape)
     np.testing.assert_array_equal(output_data, ort_output)
@@ -8349,3 +8496,157 @@ def test_fused_matmul_batched_trans_batch_a_testbench() -> None:
     )
     output_data = output_data.reshape(expected.shape)
     np.testing.assert_allclose(output_data, expected, rtol=1e-4, atol=1e-5)
+
+
+# ---------------------------------------------------------------------------
+# DynamicQuantizeMatMul tests
+# ---------------------------------------------------------------------------
+
+
+def _make_dynamic_quantize_matmul_model(
+    m: int = 4,
+    k: int = 8,
+    n: int = 6,
+    b_dtype: int = TensorProto.UINT8,
+    b_scale_per_column: bool = False,
+    with_b_zero: bool = False,
+    b_zero_per_column: bool = False,
+    with_bias: bool = False,
+) -> onnx.ModelProto:
+    """Build a com.microsoft::DynamicQuantizeMatMul model."""
+    rng = np.random.default_rng(42)
+    a_info = helper.make_tensor_value_info("A", TensorProto.FLOAT, [m, k])
+    output = helper.make_tensor_value_info("Y", TensorProto.FLOAT, [m, n])
+
+    b_scale_shape = [n] if b_scale_per_column else [1]
+    b_scale_vals = rng.uniform(0.005, 0.02, size=b_scale_shape).astype(np.float32)
+    b_scale_tensor = helper.make_tensor(
+        "b_scale", TensorProto.FLOAT, dims=b_scale_shape, vals=b_scale_vals.tolist()
+    )
+
+    b_vals = rng.integers(0, 128, size=(k, n), dtype=np.uint8)
+    b_np_dtype = np.uint8 if b_dtype == TensorProto.UINT8 else np.int8
+    if b_np_dtype == np.int8:
+        b_vals = (b_vals - 64).astype(np.int8)
+    b_tensor = helper.make_tensor(
+        "B", b_dtype, dims=[k, n], vals=b_vals.flatten().tolist()
+    )
+
+    inputs = ["A", "B", "b_scale"]
+
+    # b_zero_point
+    b_zero_tensor = None
+    if with_b_zero:
+        b_zero_shape = [n] if b_zero_per_column else [1]
+        b_zero_val = 10
+        b_zero_vals = [b_zero_val] * (n if b_zero_per_column else 1)
+        b_zero_np = np.array(b_zero_vals, dtype=b_np_dtype)
+        b_zero_tensor = helper.make_tensor(
+            "b_zero", b_dtype, dims=b_zero_shape, vals=b_zero_np.tolist()
+        )
+        inputs.append("b_zero")
+    else:
+        inputs.append("")
+
+    # bias
+    bias_tensor = None
+    if with_bias:
+        bias_vals = rng.uniform(-1.0, 1.0, size=n).astype(np.float32)
+        bias_tensor = helper.make_tensor(
+            "bias", TensorProto.FLOAT, dims=[n], vals=bias_vals.tolist()
+        )
+        inputs.append("bias")
+    else:
+        inputs.append("")
+
+    node = helper.make_node(
+        "DynamicQuantizeMatMul",
+        inputs=inputs,
+        outputs=["Y"],
+        domain="com.microsoft",
+    )
+    initializers = [b_tensor, b_scale_tensor]
+    if b_zero_tensor is not None:
+        initializers.append(b_zero_tensor)
+    if bias_tensor is not None:
+        initializers.append(bias_tensor)
+
+    graph = helper.make_graph(
+        [node], "dynamic_quantize_matmul_graph", [a_info], [output],
+        initializer=initializers,
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[
+            helper.make_operatorsetid("", 18),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+    return model
+
+
+def test_dynamic_quantize_matmul_uint8_compiles() -> None:
+    model = _make_dynamic_quantize_matmul_model()
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_dynamic_quantize_matmul_int8_compiles() -> None:
+    model = _make_dynamic_quantize_matmul_model(b_dtype=TensorProto.INT8)
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_dynamic_quantize_matmul_per_column_scale_compiles() -> None:
+    model = _make_dynamic_quantize_matmul_model(b_scale_per_column=True)
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_dynamic_quantize_matmul_with_b_zero_point_compiles() -> None:
+    model = _make_dynamic_quantize_matmul_model(with_b_zero=True)
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_dynamic_quantize_matmul_with_bias_compiles() -> None:
+    model = _make_dynamic_quantize_matmul_model(with_bias=True)
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_dynamic_quantize_matmul_per_column_b_zero_compiles() -> None:
+    model = _make_dynamic_quantize_matmul_model(
+        b_scale_per_column=True, with_b_zero=True, b_zero_per_column=True
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_dynamic_quantize_matmul_uint8_testbench() -> None:
+    model = _make_dynamic_quantize_matmul_model()
+    _run_testbench_compare(model)
+
+
+def test_dynamic_quantize_matmul_int8_testbench() -> None:
+    model = _make_dynamic_quantize_matmul_model(b_dtype=TensorProto.INT8)
+    _run_testbench_compare(model)
+
+
+def test_dynamic_quantize_matmul_per_column_scale_testbench() -> None:
+    model = _make_dynamic_quantize_matmul_model(b_scale_per_column=True)
+    _run_testbench_compare(model)
+
+
+def test_dynamic_quantize_matmul_with_b_zero_and_bias_testbench() -> None:
+    model = _make_dynamic_quantize_matmul_model(with_b_zero=True, with_bias=True)
+    _run_testbench_compare(model)
+
+
+def test_dynamic_quantize_matmul_per_column_b_zero_testbench() -> None:
+    model = _make_dynamic_quantize_matmul_model(
+        b_scale_per_column=True, with_b_zero=True, b_zero_per_column=True
+    )
+    _run_testbench_compare(model)
