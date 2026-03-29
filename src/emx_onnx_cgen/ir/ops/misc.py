@@ -665,12 +665,17 @@ class QLinearConcatOp(RenderableOpBase):
     input_shapes: tuple[tuple[int, ...], ...]
     output_shape: tuple[int, ...]
     dtype: ScalarType
+    input_dtypes: tuple[ScalarType, ...]
     output_scale_dtype: ScalarType
     input_scale_dtypes: tuple[ScalarType, ...]
     output_scale_shape: tuple[int, ...]
     output_zero_shape: tuple[int, ...]
     input_scale_shapes: tuple[tuple[int, ...], ...]
     input_zero_shapes: tuple[tuple[int, ...], ...]
+    output_zero_dtype_match: bool
+    input_zero_dtype_matches: tuple[bool, ...]
+    input_zero_dtypes: tuple[ScalarType, ...]
+    output_zero_dtype: ScalarType
 
     def required_includes(self, ctx: OpContext) -> set[str]:
         includes: set[str] = {"#include <math.h>"}
@@ -713,7 +718,7 @@ class QLinearConcatOp(RenderableOpBase):
             ),
             (
                 params["output_zero_point"],
-                self.dtype.c_type,
+                self.output_zero_dtype.c_type,
                 emitter.param_array_suffix(self.output_zero_shape),
                 True,
             ),
@@ -723,7 +728,7 @@ class QLinearConcatOp(RenderableOpBase):
             param_decls_list.append(
                 (
                     params[f"input_{i}"],
-                    self.dtype.c_type,
+                    self.input_dtypes[i].c_type,
                     emitter.param_array_suffix(self.input_shapes[i]),
                     True,
                 )
@@ -743,7 +748,7 @@ class QLinearConcatOp(RenderableOpBase):
             param_decls_list.append(
                 (
                     params[f"input_zero_{i}"],
-                    self.dtype.c_type,
+                    self.input_zero_dtypes[i].c_type,
                     emitter.param_array_suffix(self.input_zero_shapes[i]),
                     True,
                 )
@@ -769,11 +774,27 @@ class QLinearConcatOp(RenderableOpBase):
         input_scale_exprs = tuple(
             f"{params[f'input_scale_{i}']}[{scale_index}]" for i in range(n)
         )
+        # When a zero-point's dtype mismatches the input dtype, use 0 (ORT behaviour).
         input_zero_exprs = tuple(
-            f"{params[f'input_zero_{i}']}[{scale_index}]" for i in range(n)
+            f"{params[f'input_zero_{i}']}[{scale_index}]"
+            if self.input_zero_dtype_matches[i]
+            else "0"
+            for i in range(n)
+        )
+        unused_zero_params = tuple(
+            params[f"input_zero_{i}"]
+            for i in range(n)
+            if not self.input_zero_dtype_matches[i]
         )
         y_scale_expr = f"{params['output_scale']}[{scale_index}]"
-        y_zero_expr = f"{params['output_zero_point']}[{scale_index}]"
+        y_zero_expr = (
+            f"{params['output_zero_point']}[{scale_index}]"
+            if self.output_zero_dtype_match
+            else "0"
+        )
+        unused_y_zero_param = (
+            () if self.output_zero_dtype_match else (params["output_zero_point"],)
+        )
         output_name = params["output"]
 
         rendered = (
@@ -790,6 +811,7 @@ class QLinearConcatOp(RenderableOpBase):
                 y_zero_expr=y_zero_expr,
                 input_scale_exprs=input_scale_exprs,
                 input_zero_exprs=input_zero_exprs,
+                unused_zero_params=unused_zero_params + unused_y_zero_param,
                 axis_sizes=axis_sizes,
                 input_count=n,
                 outer=outer,

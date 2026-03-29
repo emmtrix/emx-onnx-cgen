@@ -1,5 +1,6 @@
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-    const {{ compute_type }} y_scale_val = ({{ compute_type }}){{ y_scale_expr }};
+{% for p in unused_zero_params %}    (void){{ p }};
+{% endfor %}    const {{ compute_type }} y_scale_val = ({{ compute_type }}){{ y_scale_expr }};
     const {{ compute_type }} y_zero_val = ({{ compute_type }}){{ y_zero_expr }};
     const void *x_ptrs[] = { {% for n in input_names %}{{ n }}{% if not loop.last %}, {% endif %}{% endfor %} };
     const {{ compute_type }} x_scales[] = { {% for e in input_scale_exprs %}({{ compute_type }})({{ e }}){% if not loop.last %}, {% endif %}{% endfor %} };

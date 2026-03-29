@@ -26,9 +26,9 @@ def _ensure_scalar(
 
 
 def _ensure_scale_dtype(dtype: ScalarType, label: str) -> None:
-    if not dtype.is_float:
+    if not (dtype.is_float or dtype.is_integer):
         raise UnsupportedOpError(
-            f"QLinearConcat {label} must be float16/float/double"
+            f"QLinearConcat {label} must be a numeric type"
         )
 
 
@@ -60,25 +60,17 @@ def lower_qlinear_concat(graph: Graph, node: Node) -> QLinearConcatOp:
                 f"got {dtype} for input {i}"
             )
 
-    if len(set(input_dtypes)) != 1:
-        raise UnsupportedOpError(
-            f"QLinearConcat all inputs must have the same dtype, "
-            f"got {input_dtypes}"
-        )
-    input_dtype = input_dtypes[0]
-
+    # Determine output dtype; fall back to the most common input dtype when unknown.
+    dominant_input_dtype = max(
+        set(input_dtypes), key=lambda d: input_dtypes.count(d)
+    )
     try:
         output_dtype = _value_dtype(graph, node.outputs[0], node)
     except ShapeInferenceError:
-        output_dtype = input_dtype
+        output_dtype = dominant_input_dtype
     if output_dtype not in _SUPPORTED_DTYPES:
         raise UnsupportedOpError(
             f"QLinearConcat supports uint8/int8 output only, got {output_dtype}"
-        )
-    if output_dtype != input_dtype:
-        raise UnsupportedOpError(
-            f"QLinearConcat output dtype must match input dtype, "
-            f"got output {output_dtype} vs input {input_dtype}"
         )
 
     output_scale_dtype = _value_dtype(graph, output_scale_name, node)
@@ -91,17 +83,16 @@ def lower_qlinear_concat(graph: Graph, node: Node) -> QLinearConcatOp:
         _ensure_scale_dtype(dtype, f"x_scale{i}")
 
     output_zero_dtype = _value_dtype(graph, output_zero_name, node)
-    if output_zero_dtype != output_dtype:
-        raise UnsupportedOpError(
-            "QLinearConcat y_zero_point dtype must match output dtype"
-        )
+    output_zero_dtype_match = output_zero_dtype == output_dtype
 
-    for i in range(n):
-        zero_dtype = _value_dtype(graph, input_zero_names[i], node)
-        if zero_dtype != input_dtype:
-            raise UnsupportedOpError(
-                f"QLinearConcat x_zero_point{i} dtype must match input dtype"
-            )
+    # When the zero-point dtype doesn't match the input/output dtype, treat it as 0
+    # (mirrors ORT behaviour for type-mismatched zero-points).
+    input_zero_dtypes = tuple(
+        _value_dtype(graph, input_zero_names[i], node) for i in range(n)
+    )
+    input_zero_dtype_matches = tuple(
+        input_zero_dtypes[i] == input_dtypes[i] for i in range(n)
+    )
 
     ranks = {len(shape) for shape in input_shapes}
     if len(ranks) != 1:
@@ -152,10 +143,15 @@ def lower_qlinear_concat(graph: Graph, node: Node) -> QLinearConcatOp:
         input_shapes=input_shapes,
         output_shape=output_shape,
         dtype=output_dtype,
+        input_dtypes=input_dtypes,
         output_scale_dtype=output_scale_dtype,
         input_scale_dtypes=input_scale_dtypes,
         output_scale_shape=output_scale_shape,
         output_zero_shape=output_zero_shape,
         input_scale_shapes=input_scale_shapes,
         input_zero_shapes=input_zero_shapes,
+        output_zero_dtype_match=output_zero_dtype_match,
+        output_zero_dtype=output_zero_dtype,
+        input_zero_dtype_matches=input_zero_dtype_matches,
+        input_zero_dtypes=input_zero_dtypes,
     )
