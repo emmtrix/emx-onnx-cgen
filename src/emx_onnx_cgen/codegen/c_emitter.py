@@ -1050,6 +1050,9 @@ class CEmitter:
                 "qlinear_avg_pool": self._env.get_template(
                     "qlinear_average_pool_op.c.j2"
                 ),
+                "qlinear_global_avg_pool": self._env.get_template(
+                    "qlinear_global_average_pool_op.c.j2"
+                ),
                 "qlinear_softmax": self._env.get_template("qlinear_softmax_op.c.j2"),
                 "qlinear_conv": self._env.get_template("qlinear_conv_op.c.j2"),
                 "matmul_integer": self._env.get_template("matmul_integer_op.c.j2"),

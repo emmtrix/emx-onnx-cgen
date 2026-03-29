@@ -10,12 +10,7 @@ Aggregates non-success verification outcomes.
 | MatMulNBits g_idx (input 4) is not supported | 238 |  |
 | AveragePool has unsupported attributes | 72 |  |
 | Out of tolerance | 72 | 7, 17 |
-| Unsupported op com.microsoft.MatMulIntegerToFloat | 48 |  |
-| Unsupported op com.microsoft.DynamicQuantizeMatMul | 39 |  |
-| Unsupported op com.microsoft.QLinearConcat | 36 |  |
-| Unsupported op com.microsoft.QLinearGlobalAveragePool | 36 |  |
 | Unsupported op com.microsoft.MultiHeadAttention | 28 |  |
-| Unsupported op com.microsoft.Tokenizer | 28 |  |
 | Unsupported op com.microsoft.SkipLayerNormalization | 17 |  |
 | LayerNormalization scale rank must match normalized rank | 15 | 7, 17 |
 | RotaryEmbedding inputs must share the same dtype | 12 |  |
@@ -142,45 +137,6 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/crop_op_test/Crop_Scale_run0/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.Crop |
 | test/contrib_ops/decoder_masked_multihead_attention_op_test/cpu_cross_attn_fp32_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DecoderMaskedMultiHeadAttention |
 | test/contrib_ops/decoder_masked_multihead_attention_op_test/cpu_self_attn_fp32_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DecoderMaskedMultiHeadAttention |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run10/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run11/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run12/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run13/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run14/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run15/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run4/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run5/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run6/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run7/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run8/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run9/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run10/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run11/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run12/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run13/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run14/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run15/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run4/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run5/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run6/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run7/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run8/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run9/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_test_with_empty_input_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/WithConstantBInputs_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/WithConstantBInputs_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/WithConstantBInputs_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/WithConstantBInputs_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/WithConstantBInputs_run4/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
-| test/contrib_ops/dynamic_quantize_matmul_test/WithConstantBInputs_run5/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeMatMul |
 | test/contrib_ops/dynamic_slice_op_test/dynamic_slice_ends_out_of_bounds_run0/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
 | test/contrib_ops/dynamic_slice_op_test/dynamic_slice_full_axes_run0/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
 | test/contrib_ops/dynamic_slice_op_test/dynamic_slice_full_axes_run1/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
@@ -663,54 +619,6 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/matmul_integer16_test/MatMulInteger16_2_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulInteger16 |
 | test/contrib_ops/matmul_integer16_test/MatMulInteger16_3_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulInteger16 |
 | test/contrib_ops/matmul_integer16_test/MatMulInteger16_Empty_input_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulInteger16 |
-| test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_HasBias_test_S8S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_HasBias_test_S8S8_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_HasBias_test_S8S8_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_HasBias_test_S8S8_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_HasBias_test_U8S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_HasBias_test_U8S8_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_HasBias_test_U8S8_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_HasBias_test_U8S8_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_HasBias_test_U8X8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_HasBias_test_U8X8_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_HasBias_test_U8X8_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_HasBias_test_U8X8_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_NoBias_test_S8S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_NoBias_test_S8S8_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_NoBias_test_S8S8_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_NoBias_test_S8S8_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_NoBias_test_U8S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_NoBias_test_U8S8_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_NoBias_test_U8S8_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_NoBias_test_U8S8_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_NoBias_test_U8U8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_NoBias_test_U8U8_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_NoBias_test_U8U8_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_NoBias_test_U8U8_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_HasBias_test_S8S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_HasBias_test_S8S8_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_HasBias_test_S8S8_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_HasBias_test_S8S8_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_HasBias_test_U8S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_HasBias_test_U8S8_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_HasBias_test_U8S8_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_HasBias_test_U8S8_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_HasBias_test_U8U8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_HasBias_test_U8U8_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_HasBias_test_U8U8_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_HasBias_test_U8U8_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_NoBias_test_S8S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_NoBias_test_S8S8_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_NoBias_test_S8S8_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_NoBias_test_S8S8_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_NoBias_test_U8S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_NoBias_test_U8S8_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_NoBias_test_U8S8_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_NoBias_test_U8S8_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_NoBias_test_U8U8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_NoBias_test_U8U8_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_NoBias_test_U8U8_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
-| test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_NoBias_test_U8U8_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MatMulIntegerToFloat |
 | test/contrib_ops/maxpool_mask_test/MaxPoolWithMask_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MaxpoolWithMask |
 | test/contrib_ops/moe_test/MoECpuTest_BasicSwiGLU_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MoE |
 | test/contrib_ops/multihead_attention_op_test/CrossAttentionWithPast_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MultiHeadAttention |
@@ -755,78 +663,6 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch_Distill_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QEmbedLayerNormalization |
 | test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormLargeBatchSmallHiddenSize_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QEmbedLayerNormalization |
 | test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormLargeBatchSmallHiddenSize_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QEmbedLayerNormalization |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_MixedConstDynamic_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_MixedConstDynamic_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_MixedConstDynamic_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_MixedConstDynamic_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_MixedConstDynamic_run4/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_MixedConstDynamic_run5/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_MixedConstDynamic_run6/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_MixedConstDynamic_run7/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_WrongScaleType_0_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_WrongScaleType_0_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_WrongScaleType_1_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_WrongScaleType_1_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_WrongTensorType_0_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_WrongTensorType_0_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_WrongTensorType_1_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_WrongTensorType_1_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_WrongZeroPointType_0_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_WrongZeroPointType_0_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_WrongZeroPointType_1_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_WrongZeroPointType_1_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/Input3_ConstConstConst_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/Input3_ConstConstConst_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/Input3_DynamicDynamicDynamic_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/Input3_DynamicDynamicDynamic_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/Input3_MixedConstDynamic_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/Input3_MixedConstDynamic_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/Input3_MixedConstDynamic_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/Input3_MixedConstDynamic_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/Input3_MixedConstDynamic_run4/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/Input3_MixedConstDynamic_run5/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/Input3_MixedConstDynamic_run6/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/Input3_MixedConstDynamic_run7/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/InputOne_Const_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/InputOne_Const_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/InputOne_Dynamic_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_concat_test/InputOne_Dynamic_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearConcat |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x32x32x1_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x32x32x1_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x7x7x255_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x7x7x255_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x7x7x256_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x7x7x256_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x8x8x255_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x8x8x255_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x8x8x256_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x8x8x256_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x7x7x255_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x7x7x255_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x7x7x256_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x7x7x256_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x8x8x255_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x8x8x255_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x8x8x256_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x8x8x256_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x1x32x32_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x1x32x32_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x255x7x7_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x255x7x7_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x255x8x8_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x255x8x8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x256x7x7_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x256x7x7_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x256x8x8_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x256x8x8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x255x7x7_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x255x7x7_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x255x8x8_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x255x8x8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x256x7x7_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x256x7x7_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x256x8x8_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x256x8x8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
 | test/contrib_ops/qlinear_lookup_table_test/QLinearLeakyRelu_Int8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearLeakyRelu |
 | test/contrib_ops/qlinear_lookup_table_test/QLinearLeakyRelu_UInt8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearLeakyRelu |
 | test/contrib_ops/qlinear_lookup_table_test/QLinearSigmoid_Int8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearSigmoid |
@@ -921,56 +757,6 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/qlinear_where_test/QLinearWhereVectorAll_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearWhere |
 | test/contrib_ops/qlinear_where_test/QLinearWhereVectorX_VectorY_MatrixCondition_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearWhere |
 | test/contrib_ops/qlinear_where_test/QLinearWhereVectorX_VectorY_MatrixCondition_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearWhere |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run10/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run11/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run12/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run13/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run14/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run15/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run16/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run17/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run18/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run19/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run20/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run21/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run22/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run23/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run4/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run5/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run6/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run7/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run8/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run9/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SharedPrepackedWeights_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SharedPrepackedWeights_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run10/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run11/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run12/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run13/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run14/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run15/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run16/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run17/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run18/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run19/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run20/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run21/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run22/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run23/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run4/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run5/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run6/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run7/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run8/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run9/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
 | test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_CustomRotaryDim_SmallData_Phi_Packed_Batching_run0/model.onnx |  | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
 | test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_CustomRotaryDim_SmallData_Phi_Packed_Batching_run1/model.onnx |  | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
 | test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_CustomRotaryDim_SmallData_Phi_run0/model.onnx |  | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
@@ -1009,34 +795,6 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/tensor_op_test/MeanVarianceNormalizationCPUTest_Version1_TO_8_run1/model.onnx | 7 | Data/Data | ❌ | Out of tolerance (max ULP 21399263) |
 | test/contrib_ops/tensor_op_test/MeanVarianceNormalizationCPUTest_Version1_TO_8_run2/model.onnx | 7 | Data/Data | ❌ | Out of tolerance (max ULP 15806857) |
 | test/contrib_ops/tensor_op_test/NormalDim_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.UnfoldTensor |
-| test/contrib_ops/tokenizer_test/TokenizerCharLevel_CyrillicCharsWithMarkersC_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/TokenizerCharLevel_EmptyOutputC_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/TokenizerCharLevel_EmptyOutputNC_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/TokenizerCharLevel_LatinCharsNoMarkersC_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/TokenizerCharLevel_LatinCharsNoMarkersNC_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/TokenizerCharLevel_LatinCharsWithMarkersC_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/TokenizerCharLevel_LatinCharsWithMarkersNC_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/TokenizerCharLevel_MixedCharsWithMarkersC_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/TokenizerExpression_Grouping_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/TokenizerExpression_RegChar_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/TokenizerExpression_RegDot_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/TokenizerExpression_RegEx_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/TokenizerExpression_RegRep_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/TokenizerWithSeparators_MixCharCommonPrefixC_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/TokenizerWithSeparators_MixCharsNoMarkersSeparatorsOverlapLongFirstC_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/TokenizerWithSeparators_MixCharsNoMarkersSeparatorsOverlapLongFirstRepeatedShortC_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/TokenizerWithSeparators_MixCharsNoMarkersSeparatorsOverlapShortFirstC_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/TokenizerWithSeparators_MixCharsNoMarkersSeparatorsOverlapingMatchC_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/TokenizerWithSeparators_MixCharsWithMarkersC_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/TokenizerWithSeparators_MixCharsWithMarkersCompleteMatchEmptyOutputC_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/TokenizerWithSeparators_MixCharsWithMarkersEmptyInputEmptyOutputC_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/TokenizerWithSeparators_MixCharsWithMarkersEmptyInputEmptyOutputNC_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/TokenizerWithSeparators_MixCharsWithMarkersEndMatchAtLeast4CharsC_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/TokenizerWithSeparators_MixCharsWithMarkersEndMatchC_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/TokenizerWithSeparators_MixCharsWithMarkersStartMatchC_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/Tokenizer_EmptyInput_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/Tokenizer_EmptyInput_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
-| test/contrib_ops/tokenizer_test/Tokenizer_EmptyInput_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Tokenizer |
 | test/contrib_ops/unique_op_test/Unique_AllUniqueElements_run0/model.onnx |  | Data/Data | ❌ | Unique must have 1 input and 4 outputs |
 | test/contrib_ops/unique_op_test/Unique_Complicated_Example_run0/model.onnx |  | Data/Data | ❌ | Unique must have 1 input and 4 outputs |
 | test/contrib_ops/unique_op_test/Unique_Example_SingleElement_run0/model.onnx |  | Data/Data | ❌ | Unique must have 1 input and 4 outputs |
