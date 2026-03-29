@@ -8,7 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1801 / 1802, 99.9% | 1.20.1 |
-| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 3224 / 4182, 77.1% | n/a |
+| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 3274 / 4182, 78.3% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -1832,7 +1832,7 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 
 Test directory: `emx-ort-test-artifacts-org/artifacts/onnxruntime`
 
-Coverage 3224 / 4182 ONNX files (77.1%).
+Coverage 3274 / 4182 ONNX files (78.3%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -5858,56 +5858,56 @@ Coverage 3224 / 4182 ONNX files (77.1%).
 | test/contrib_ops/quantize_attention_op_test/QAttentionUnidirectional_U8U8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
 | test/contrib_ops/quantize_attention_op_test/SharedPrepackedWeights_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
 | test/contrib_ops/quantize_attention_op_test/SharedPrepackedWeights_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run10/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run11/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run12/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run13/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run14/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run15/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run16/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run17/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run18/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run19/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run20/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run21/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run22/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run23/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run4/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run5/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run6/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run7/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run8/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run9/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SharedPrepackedWeights_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SharedPrepackedWeights_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run10/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run11/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run12/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run13/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run14/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run15/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run16/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run17/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run18/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run19/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run20/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run21/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run22/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run23/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run4/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run5/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run6/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run7/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run8/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
-| test/contrib_ops/quantize_lstm_op_test/SmallSize_run9/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run0/model.onnx (--atol-eps 6) |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run1/model.onnx (--atol-eps 3) |  | Data/Data | ✅ | OK (max ULP 16) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run10/model.onnx (--atol-eps 6) |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run11/model.onnx (--atol-eps 3) |  | Data/Data | ✅ | OK (max ULP 49) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run12/model.onnx (--atol-eps 4) |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run13/model.onnx (--atol-eps 2) |  | Data/Data | ✅ | OK (max ULP 90) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run14/model.onnx (--atol-eps 4) |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run15/model.onnx (--atol-eps 2) |  | Data/Data | ✅ | OK (max ULP 90) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run16/model.onnx (--atol-eps 3) |  | Data/Data | ✅ | OK (max ULP 65) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run17/model.onnx (--atol-eps 4) |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run18/model.onnx (--atol-eps 3) |  | Data/Data | ✅ | OK (max ULP 65) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run19/model.onnx (--atol-eps 4) |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run2/model.onnx (--atol-eps 6) |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run20/model.onnx (--atol-eps 2) |  | Data/Data | ✅ | OK (max ULP 38) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run21/model.onnx (--atol-eps 3) |  | Data/Data | ✅ | OK (max ULP 50) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run22/model.onnx (--atol-eps 2) |  | Data/Data | ✅ | OK (max ULP 38) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run23/model.onnx (--atol-eps 3) |  | Data/Data | ✅ | OK (max ULP 50) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run3/model.onnx (--atol-eps 3) |  | Data/Data | ✅ | OK (max ULP 16) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run4/model.onnx (--atol-eps 2) |  | Data/Data | ✅ | OK (max ULP 14) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run5/model.onnx (--atol-eps 3) |  | Data/Data | ✅ | OK (max ULP 49) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run6/model.onnx (--atol-eps 2) |  | Data/Data | ✅ | OK (max ULP 14) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run7/model.onnx (--atol-eps 3) |  | Data/Data | ✅ | OK (max ULP 49) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run8/model.onnx (--atol-eps 6) |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run9/model.onnx (--atol-eps 3) |  | Data/Data | ✅ | OK (max ULP 49) |
+| test/contrib_ops/quantize_lstm_op_test/SharedPrepackedWeights_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/SharedPrepackedWeights_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/SmallSize_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/SmallSize_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/SmallSize_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/SmallSize_run11/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/SmallSize_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/SmallSize_run13/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/SmallSize_run14/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/SmallSize_run15/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/SmallSize_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/SmallSize_run17/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/SmallSize_run18/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/SmallSize_run19/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/SmallSize_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/SmallSize_run20/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/SmallSize_run21/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/SmallSize_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/SmallSize_run23/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/SmallSize_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/SmallSize_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/SmallSize_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/SmallSize_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/SmallSize_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/SmallSize_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/SmallSize_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quantize_ops_test/DequantizeLinearOpTest_BroadcastTensorOfOne_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quantize_ops_test/DequantizeLinear_0_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quantize_ops_test/DequantizeLinear_1_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |

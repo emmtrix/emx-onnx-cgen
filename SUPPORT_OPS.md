@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 215 / 256
+Supported operators: 216 / 256
 
 | Operator | Supported |
 | --- | --- |
@@ -222,7 +222,7 @@ Supported operators: 215 / 256
 | com.microsoft::CropAndResize | ❌ |
 | com.microsoft::DecoderMaskedMultiHeadAttention | ❌ |
 | com.microsoft::DequantizeLinear | ✅ |
-| com.microsoft::DynamicQuantizeLSTM | ❌ |
+| com.microsoft::DynamicQuantizeLSTM | ✅ |
 | com.microsoft::DynamicQuantizeMatMul | ❌ |
 | com.microsoft::DynamicTimeWarping | ❌ |
 | com.microsoft::EmbedLayerNormalization | ❌ |
