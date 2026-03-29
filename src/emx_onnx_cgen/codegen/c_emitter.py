@@ -64,6 +64,7 @@ from ..ir.ops import (
     GroupNormalizationOp,
     HammingWindowOp,
     HannWindowOp,
+    ImageScalerOp,
     IfOptionalSequenceConstOp,
     HardmaxOp,
     IdentityOp,
@@ -1188,6 +1189,7 @@ class CEmitter:
                 "blackman_window": self._env.get_template("blackman_window_op.c.j2"),
                 "hamming_window": self._env.get_template("hamming_window_op.c.j2"),
                 "hann_window": self._env.get_template("hann_window_op.c.j2"),
+                "image_scaler": self._env.get_template("image_scaler_op.c.j2"),
                 "mel_weight_matrix": self._env.get_template(
                     "mel_weight_matrix_op.c.j2"
                 ),
@@ -2263,6 +2265,7 @@ class CEmitter:
             | BlackmanWindowOp
             | HammingWindowOp
             | HannWindowOp
+            | ImageScalerOp
             | OneHotOp
             | SplitOp
             | SequenceAtOp

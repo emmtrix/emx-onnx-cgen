@@ -8193,3 +8193,67 @@ class MurmurHash3Op(RenderableOpBase):
 
     def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
         return self.output_dtype
+
+
+@dataclass(frozen=True)
+class ImageScalerOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
+    input0: str
+    output: str
+    shape: tuple[int, ...]
+    channels: int
+    scale: float
+    bias: tuple[float, ...]
+    dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        c_type = emitter.ctx_dtype(self.output).c_type
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        shape = CEmitterCompat.codegen_shape(self.shape)
+        loop_vars = CEmitterCompat.loop_vars(shape)
+        input_suffix = emitter.param_array_suffix(shape)
+        output_suffix = emitter.param_array_suffix(shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        scale_literal = emitter.format_floating(self.scale, self.dtype)
+        bias_literals = [emitter.format_floating(b, self.dtype) for b in self.bias]
+        rendered = (
+            state.templates["image_scaler"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                output=params["output"],
+                c_type=c_type,
+                channels=self.channels,
+                scale_literal=scale_literal,
+                bias_literals=bias_literals,
+                shape=shape,
+                loop_vars=loop_vars,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.shape
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ((self.input0, self.shape),)

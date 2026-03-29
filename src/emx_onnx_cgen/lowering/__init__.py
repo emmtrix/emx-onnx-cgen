@@ -56,6 +56,7 @@ _LOWERING_MODULES = [
     "hardmax",
     "hamming_window",
     "hann_window",
+    "image_scaler",
     "identity",
     "if_op",
     "instance_normalization",
