@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op MatMulIntegerToFloat",
+  "error": "Unsupported op com.microsoft.MatMulIntegerToFloat",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_HasBias_test_S8S8_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [

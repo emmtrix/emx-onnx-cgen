@@ -74,6 +74,7 @@ from ..ir.ops import (
     LpPoolOp,
     LrnOp,
     MsAttentionOp,
+    QAttentionOp,
     RnnOp,
     LstmOp,
     MatMulOp,
@@ -1057,6 +1058,7 @@ class CEmitter:
                 "qgemm": self._env.get_template("qgemm_op.c.j2"),
                 "attention": self._env.get_template("attention_op.c.j2"),
                 "ms_attention": self._env.get_template("ms_attention_op.c.j2"),
+                "qattention": self._env.get_template("qattention_op.c.j2"),
                 "rotary_embedding": self._env.get_template("rotary_embedding_op.c.j2"),
                 "conv": self._env.get_template("conv_op.c.j2"),
                 "conv_integer": self._env.get_template("conv_integer_op.c.j2"),
@@ -1080,6 +1082,9 @@ class CEmitter:
                 "gru": self._env.get_template("gru_op.c.j2"),
                 "rnn": self._env.get_template("rnn_op.c.j2"),
                 "lstm": self._env.get_template("lstm_op.c.j2"),
+                "dynamic_quantize_lstm": self._env.get_template(
+                    "dynamic_quantize_lstm_op.c.j2"
+                ),
                 "adam": self._env.get_template("adam_op.c.j2"),
                 "adagrad": self._env.get_template("adagrad_op.c.j2"),
                 "momentum": self._env.get_template("momentum_op.c.j2"),
@@ -1174,6 +1179,7 @@ class CEmitter:
                 "string_normalizer": self._env.get_template(
                     "string_normalizer_op.c.j2"
                 ),
+                "murmur_hash3": self._env.get_template("murmur_hash3_op.c.j2"),
                 "label_encoder": self._env.get_template("label_encoder_op.c.j2"),
                 "string_split": self._env.get_template("string_split_op.c.j2"),
                 "tokenizer": self._env.get_template("tokenizer_op.c.j2"),
@@ -2175,6 +2181,7 @@ class CEmitter:
             | GemmOp
             | AttentionOp
             | MsAttentionOp
+            | QAttentionOp
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp

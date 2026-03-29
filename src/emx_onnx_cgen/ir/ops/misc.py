@@ -7942,3 +7942,79 @@ class SequenceEmptyOp(RenderableOpBase):
                 elem_type.dtype,
             ),
         )
+
+
+_MURMUR_HASH3_SUPPORTED_DTYPES: frozenset[ScalarType] = frozenset(
+    {ScalarType.I32, ScalarType.I64, ScalarType.F32, ScalarType.F64, ScalarType.STRING}
+)
+
+
+@dataclass(frozen=True)
+class MurmurHash3Op(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
+    input0: str
+    output: str
+    seed: int
+    input_dtype: ScalarType
+    output_dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        includes: set[str] = {"#include <stdint.h>"}
+        if self.input_dtype == ScalarType.STRING:
+            includes.add("#include <string.h>")
+        return includes
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        input_shape = emitter.ctx_shape(self.input0)
+        output_shape = emitter.ctx_shape(self.output)
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        if self.input_dtype == ScalarType.STRING:
+            input_suffix = emitter.param_array_suffix(
+                input_shape, emitter.dim_names_for(self.input0), dtype=ScalarType.STRING
+            )
+        else:
+            input_suffix = emitter.param_array_suffix(
+                input_shape, emitter.dim_names_for(self.input0)
+            )
+        output_suffix = emitter.param_array_suffix(
+            output_shape, emitter.dim_names_for(self.output)
+        )
+        input_c_type = (
+            "char"
+            if self.input_dtype == ScalarType.STRING
+            else self.input_dtype.c_type
+        )
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], input_c_type, input_suffix, True),
+                (params["output"], self.output_dtype.c_type, output_suffix, False),
+            ]
+        )
+        elem_count = CEmitterCompat.element_count_expr(output_shape)
+        rendered = (
+            state.templates["murmur_hash3"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                elem_count=elem_count,
+                input_param=params["input0"],
+                output_param=params["output"],
+                input_c_type=input_c_type,
+                output_c_type=self.output_dtype.c_type,
+                seed=self.seed,
+                is_string=self.input_dtype == ScalarType.STRING,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
+        return self.output_dtype

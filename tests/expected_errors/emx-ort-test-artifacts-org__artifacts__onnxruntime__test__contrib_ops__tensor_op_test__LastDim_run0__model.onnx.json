@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op UnfoldTensor",
+  "error": "Unsupported op com.microsoft.UnfoldTensor",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/tensor_op_test/LastDim_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [

@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op MurmurHash3",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/murmur_hash3_test/StringKeyIntResult_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::MurmurHash3"
-  ]
+  ],
+  "generated_checksum": "0cd6b43636dbc5c5df195708cd45b96d9586c4498b8ca44a52c8c09c0f96c783"
 }
