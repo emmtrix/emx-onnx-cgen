@@ -109,6 +109,7 @@ _LOWERING_MODULES = [
     "scatter_nd",
     "shape",
     "size",
+    "skip_layer_normalization",
     "slice",
     "softmax",
     "softmax_cross_entropy_loss",

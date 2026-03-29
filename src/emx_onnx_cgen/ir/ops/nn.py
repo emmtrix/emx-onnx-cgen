@@ -5116,6 +5116,187 @@ class LayerNormalizationOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class SkipLayerNormalizationOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "skip", "gamma", "beta", "bias")
+    __io_outputs__ = ("output", "skip_input_bias_add_output")
+    input0: str
+    skip: str
+    gamma: str
+    beta: str | None
+    bias: str | None
+    output: str
+    skip_input_bias_add_output: str | None
+    shape: tuple[int, ...]
+    skip_shape: tuple[int, ...]
+    gamma_shape: tuple[int, ...]
+    beta_shape: tuple[int, ...] | None
+    bias_shape: tuple[int, ...] | None
+    hidden_size: int
+    outer: int
+    epsilon: float
+    dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.output)
+        c_type = output_dtype.c_type
+        acc_dtype = emitter.accumulation_dtype(self.dtype)
+        acc_type = acc_dtype.c_type
+        acc_zero_literal = emitter.format_literal(acc_dtype, 0)
+        acc_one_literal = emitter.format_literal(acc_dtype, 1)
+        acc_epsilon_literal = emitter.format_floating(self.epsilon, acc_dtype)
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("skip", self.skip),
+                ("gamma", self.gamma),
+                ("beta", self.beta),
+                ("bias", self.bias),
+                ("output", self.output),
+                ("skip_input_bias_add_output", self.skip_input_bias_add_output),
+            ]
+        )
+        shape = CEmitterCompat.codegen_shape(self.shape)
+        loop_vars = CEmitterCompat.loop_vars(shape)
+        # Normalization is always along the last dimension
+        prefix_loop_vars = loop_vars[:-1]
+        norm_loop_var = loop_vars[-1]
+
+        # skip index vars: right-align skip_shape with shape, use "0" for broadcast dims
+        skip_rank = len(self.skip_shape)
+        input_rank = len(self.shape)
+        skip_offset = input_rank - skip_rank
+        skip_index_vars = [
+            "0" if self.skip_shape[i - skip_offset] == 1 else loop_vars[i]
+            for i in range(skip_offset, input_rank)
+        ]
+
+        # gamma/beta/bias are always 1D [hidden_size] along the last dim
+        gamma_index_var = norm_loop_var
+        beta_index_var = norm_loop_var
+        bias_index_var = norm_loop_var
+
+        input_suffix = emitter.param_array_suffix(shape)
+        output_suffix = emitter.param_array_suffix(shape)
+        skip_suffix = emitter.param_array_suffix(
+            CEmitterCompat.codegen_shape(self.skip_shape)
+        )
+        gamma_suffix = emitter.param_array_suffix(
+            CEmitterCompat.codegen_shape(self.gamma_shape)
+        )
+        beta_suffix = (
+            emitter.param_array_suffix(
+                CEmitterCompat.codegen_shape(self.beta_shape)
+            )
+            if self.beta_shape is not None
+            else ""
+        )
+        bias_suffix = (
+            emitter.param_array_suffix(
+                CEmitterCompat.codegen_shape(self.bias_shape)
+            )
+            if self.bias_shape is not None
+            else ""
+        )
+        skip_input_bias_add_suffix = output_suffix
+
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["skip"], c_type, skip_suffix, True),
+                (params["gamma"], c_type, gamma_suffix, True),
+                (
+                    (params["beta"], c_type, beta_suffix, True)
+                    if params["beta"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (params["bias"], c_type, bias_suffix, True)
+                    if params["bias"]
+                    else (None, "", "", True)
+                ),
+                (params["output"], c_type, output_suffix, False),
+                (
+                    (
+                        params["skip_input_bias_add_output"],
+                        c_type,
+                        skip_input_bias_add_suffix,
+                        False,
+                    )
+                    if params["skip_input_bias_add_output"]
+                    else (None, "", "", False)
+                ),
+            ]
+        )
+        rendered = (
+            state.templates["skip_layer_norm"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                skip=params["skip"],
+                gamma=params["gamma"],
+                beta=params["beta"],
+                bias=params["bias"],
+                output=params["output"],
+                skip_input_bias_add_output=params["skip_input_bias_add_output"],
+                params=param_decls,
+                c_type=c_type,
+                prefix_shape=shape[:-1],
+                norm_dim=shape[-1],
+                prefix_loop_vars=prefix_loop_vars,
+                norm_loop_var=norm_loop_var,
+                skip_index_vars=skip_index_vars,
+                gamma_index_var=gamma_index_var,
+                beta_index_var=beta_index_var,
+                bias_index_var=bias_index_var,
+                hidden_size=self.hidden_size,
+                acc_type=acc_type,
+                acc_zero_literal=acc_zero_literal,
+                acc_one_literal=acc_one_literal,
+                acc_epsilon_literal=acc_epsilon_literal,
+                acc_dtype=acc_dtype,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.shape
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        inputs: list[tuple[str, tuple[int, ...]]] = [
+            (self.input0, self.shape),
+            (self.skip, self.skip_shape),
+            (self.gamma, self.gamma_shape),
+        ]
+        if self.beta is not None and self.beta_shape is not None:
+            inputs.append((self.beta, self.beta_shape))
+        if self.bias is not None and self.bias_shape is not None:
+            inputs.append((self.bias, self.bias_shape))
+        return tuple(inputs)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        outputs: list[tuple[str, tuple[int, ...], ScalarType]] = [
+            (self.output, self.shape, self.dtype)
+        ]
+        if self.skip_input_bias_add_output is not None:
+            outputs.append(
+                (self.skip_input_bias_add_output, self.shape, self.dtype)
+            )
+        return tuple(outputs)
+
+
+@dataclass(frozen=True)
 class MeanVarianceNormalizationOp(RenderableOpBase):
     __io_inputs__ = ("input0",)
     __io_outputs__ = ("output",)

@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 214 / 256
+Supported operators: 215 / 256
 
 | Operator | Supported |
 | --- | --- |
@@ -258,7 +258,7 @@ Supported operators: 214 / 256
 | com.microsoft::QuantizeLinear | ✅ |
 | com.microsoft::RotaryEmbedding | ❌ |
 | com.microsoft::SampleOp | ❌ |
-| com.microsoft::SkipLayerNormalization | ❌ |
+| com.microsoft::SkipLayerNormalization | ✅ |
 | com.microsoft::SparseToDenseMatMul | ❌ |
 | com.microsoft::Tokenizer | ❌ |
 | com.microsoft::Trilu | ✅ |
