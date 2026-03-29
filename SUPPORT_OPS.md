@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 216 / 256
+Supported operators: 220 / 256
 
 | Operator | Supported |
 | --- | --- |
@@ -223,7 +223,7 @@ Supported operators: 216 / 256
 | com.microsoft::DecoderMaskedMultiHeadAttention | ❌ |
 | com.microsoft::DequantizeLinear | ✅ |
 | com.microsoft::DynamicQuantizeLSTM | ✅ |
-| com.microsoft::DynamicQuantizeMatMul | ❌ |
+| com.microsoft::DynamicQuantizeMatMul | ✅ |
 | com.microsoft::DynamicTimeWarping | ❌ |
 | com.microsoft::EmbedLayerNormalization | ❌ |
 | com.microsoft::ExpandDims | ❌ |
@@ -235,7 +235,7 @@ Supported operators: 216 / 256
 | com.microsoft::Inverse | ❌ |
 | com.microsoft::MatMulBnb4 | ✅ |
 | com.microsoft::MatMulInteger16 | ❌ |
-| com.microsoft::MatMulIntegerToFloat | ❌ |
+| com.microsoft::MatMulIntegerToFloat | ✅ |
 | com.microsoft::MatMulNBits | ✅ |
 | com.microsoft::MaxpoolWithMask | ❌ |
 | com.microsoft::MoE | ❌ |
@@ -260,7 +260,7 @@ Supported operators: 216 / 256
 | com.microsoft::SampleOp | ❌ |
 | com.microsoft::SkipLayerNormalization | ❌ |
 | com.microsoft::SparseToDenseMatMul | ❌ |
-| com.microsoft::Tokenizer | ❌ |
+| com.microsoft::Tokenizer | ✅ |
 | com.microsoft::Trilu | ✅ |
 | com.microsoft::UnfoldTensor | ❌ |
 | com.microsoft::Unique | ❌ |

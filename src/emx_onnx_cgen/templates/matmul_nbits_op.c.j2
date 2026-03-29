@@ -17,19 +17,35 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% if has_zero_points %}
 {% if zero_points_packed %}
 {% if bits == 8 %}
+{% if zero_points_has_block_axis %}
             {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}int zp = (int)(unsigned char){{ zero_points }}[{{ n_var }}][block_idx];
 {% else %}
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}int zp = (int)(unsigned char){{ zero_points }}[{{ n_var }}];
+{% endif %}
+{% else %}
+{% if zero_points_has_block_axis %}
             {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}idx_t zp_byte_idx = block_idx * {{ bits }} / 8;
             {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}idx_t zp_bit_shift = (block_idx * {{ bits }}) % 8;
             {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}int zp = ((int)(unsigned char){{ zero_points }}[{{ n_var }}][zp_byte_idx] >> zp_bit_shift) & {{ bit_mask }};
+{% else %}
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}int zp = ((int)(unsigned char){{ zero_points }}[{{ n_var }}] >> 0) & {{ bit_mask }};
+{% endif %}
 {% endif %}
 {% else %}
+{% if zero_points_has_block_axis %}
             {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}{{ acc_type }} zp = ({{ acc_type }}){{ zero_points }}[{{ n_var }}][block_idx];
+{% else %}
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}{{ acc_type }} zp = ({{ acc_type }}){{ zero_points }}[{{ n_var }}];
+{% endif %}
 {% endif %}
 {% else %}
             {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}int zp = {{ default_zero_point }};
 {% endif %}
+{% if scales_has_block_axis %}
             {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}{{ acc_type }} dequant = (({{ acc_type }})quant_val - ({{ acc_type }})zp) * ({{ acc_type }}){{ scales }}[{{ n_var }}][block_idx];
+{% else %}
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}{{ acc_type }} dequant = (({{ acc_type }})quant_val - ({{ acc_type }})zp) * ({{ acc_type }}){{ scales }}[{{ n_var }}];
+{% endif %}
             {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}acc += ({{ acc_type }}){{ input0_index_expr }} * dequant;
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}}
 {% if has_bias %}
