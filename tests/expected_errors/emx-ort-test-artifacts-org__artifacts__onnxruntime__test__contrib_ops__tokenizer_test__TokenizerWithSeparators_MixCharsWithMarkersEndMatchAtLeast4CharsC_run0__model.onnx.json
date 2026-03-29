@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.Tokenizer",
+  "error": "OK (no numeric comparisons)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/tokenizer_test/TokenizerWithSeparators_MixCharsWithMarkersEndMatchAtLeast4CharsC_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::Tokenizer"
-  ]
+  ],
+  "generated_checksum": "e63d53ba2f85e3d79217c32061a8db1ec380ea4d121161c801eb7c3d2524227e"
 }
