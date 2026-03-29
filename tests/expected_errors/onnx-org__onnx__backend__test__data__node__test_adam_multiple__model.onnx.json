@@ -5,5 +5,5 @@
   "operators": [
     "ai.onnx.preview.training::Adam"
   ],
-  "generated_checksum": "316277fbf4ac4bf417914ce67bda513e6a50de5ee6a5a292b0778e13cc4d0d29"
+  "generated_checksum": "22b24e8ef1e873352b2449bec4c3e1b7965a02638e76661234958029f3f66e0e"
 }
