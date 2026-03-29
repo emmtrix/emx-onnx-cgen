@@ -8,6 +8,7 @@ from shared.scalar_types import ScalarType
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 from ..ir.ops import MatMulNBitsOp
+from .common import _find_initializer
 from .common import value_dtype as _value_dtype
 from .common import value_shape as _value_shape
 from .registry import register_lowering
@@ -80,6 +81,42 @@ def _optional_input(node: Node, index: int) -> str | None:
     return None
 
 
+def _validate_canonical_g_idx(
+    graph: Graph,
+    *,
+    g_idx: str,
+    block_size: int,
+    n_blocks_per_col: int,
+) -> None:
+    initializer = _find_initializer(graph, g_idx)
+    if initializer is None:
+        raise UnsupportedOpError(
+            "MatMulNBits g_idx (input 4) must be a constant initializer"
+        )
+    if initializer.type.dtype not in {ScalarType.I32, ScalarType.I64}:
+        raise UnsupportedOpError(
+            "MatMulNBits g_idx (input 4) must be int32 or int64, "
+            f"got {initializer.type.dtype.onnx_name}"
+        )
+
+    values = initializer.data.reshape(-1)
+    expected_len = n_blocks_per_col * block_size
+    if len(values) != expected_len:
+        raise UnsupportedOpError(
+            "MatMulNBits g_idx (input 4) must have length "
+            f"{expected_len}, got {len(values)}"
+        )
+
+    for index, value in enumerate(values):
+        expected_group = index // block_size
+        if int(value) != expected_group:
+            raise UnsupportedOpError(
+                "MatMulNBits only supports canonical g_idx where each block index "
+                f"is repeated {block_size} times; got g_idx[{index}]={int(value)} "
+                f"but expected {expected_group}"
+            )
+
+
 @register_lowering("MatMulNBits")
 def lower_matmul_nbits(graph: Graph, node: Node) -> MatMulNBitsOp:
     if len(node.inputs) < 3 or len(node.outputs) != 1:
@@ -122,7 +159,12 @@ def lower_matmul_nbits(graph: Graph, node: Node) -> MatMulNBitsOp:
     bias = _optional_input(node, 5)
 
     if g_idx is not None:
-        raise UnsupportedOpError("MatMulNBits g_idx (input 4) is not supported")
+        _validate_canonical_g_idx(
+            graph,
+            g_idx=g_idx,
+            block_size=block_size,
+            n_blocks_per_col=spec.n_blocks_per_col,
+        )
 
     zero_points_dtype: ScalarType | None = None
     zero_points_packed = False

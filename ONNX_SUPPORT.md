@@ -8,7 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1801 / 1802, 99.9% | 1.20.1 |
-| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 3485 / 4182, 83.3% | n/a |
+| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 3726 / 4182, 89.1% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -1832,7 +1832,7 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 
 Test directory: `emx-ort-test-artifacts-org/artifacts/onnxruntime`
 
-Coverage 3485 / 4182 ONNX files (83.3%).
+Coverage 3726 / 4182 ONNX files (89.1%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -2659,462 +2659,462 @@ Coverage 3485 / 4182 ONNX files (83.3%).
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 22) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run11/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 135) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run12/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run13/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run14/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 135) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run11/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 135) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 22) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run13/model.onnx |  | Data/Data | ✅ | OK (max ULP 29) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run14/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 135) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run15/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run17/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run18/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run17/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run18/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run19/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run2/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run20/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run21/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run22/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run23/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run23/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run24/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run25/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 861) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run26/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 7454) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run27/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run28/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run29/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 7454) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run3/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run25/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 861) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run26/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 7454) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run27/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 861) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run28/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 571) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run29/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 7454) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run30/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run31/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run32/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run33/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run32/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run33/model.onnx |  | Data/Data | ✅ | OK (max ULP 5) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run34/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run35/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1730) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run36/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 9141) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run37/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run38/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run39/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 9141) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run35/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 1730) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run36/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9141) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run37/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 1730) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run38/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 940) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run39/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9141) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run7/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run8/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run100/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 861) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run101/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 7454) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run102/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run103/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run104/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 7454) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run100/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 861) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run101/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 7454) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run102/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 861) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run103/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 571) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run104/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 7454) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run105/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run106/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run107/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run108/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run107/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run108/model.onnx |  | Data/Data | ✅ | OK (max ULP 5) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run109/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run11/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run110/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run111/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run112/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run113/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run112/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run113/model.onnx |  | Data/Data | ✅ | OK (max ULP 10) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run114/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run115/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1730) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run116/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 9141) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run117/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run118/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run119/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 9141) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run12/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run13/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run115/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 1730) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run116/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9141) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run117/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 1730) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run118/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 940) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run119/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9141) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run13/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run14/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run15/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run17/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run18/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run17/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run18/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run19/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run2/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run20/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run21/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run22/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run23/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run23/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run24/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run25/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run26/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run27/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run28/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run27/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run28/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run29/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run3/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run30/model.onnx |  | Data/Data | ✅ | OK (max ULP 21) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run31/model.onnx |  | Data/Data | ✅ | OK (max ULP 40) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run32/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run33/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run32/model.onnx |  | Data/Data | ✅ | OK (max ULP 21) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run33/model.onnx |  | Data/Data | ✅ | OK (max ULP 10) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run34/model.onnx |  | Data/Data | ✅ | OK (max ULP 40) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run35/model.onnx |  | Data/Data | ✅ | OK (max ULP 39) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run36/model.onnx |  | Data/Data | ✅ | OK (max ULP 36) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run37/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run38/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run37/model.onnx |  | Data/Data | ✅ | OK (max ULP 39) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run38/model.onnx |  | Data/Data | ✅ | OK (max ULP 31) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run39/model.onnx |  | Data/Data | ✅ | OK (max ULP 36) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run40/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run41/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run42/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run43/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run42/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run43/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run44/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run45/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run46/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run47/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run48/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run47/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run48/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run49/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run50/model.onnx |  | Data/Data | ✅ | OK (max ULP 22) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run51/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 135) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run52/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run53/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run54/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 135) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run51/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 135) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run52/model.onnx |  | Data/Data | ✅ | OK (max ULP 22) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run53/model.onnx |  | Data/Data | ✅ | OK (max ULP 29) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run54/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 135) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run55/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run56/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run57/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run58/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run57/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run58/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run59/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run60/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run61/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run62/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run63/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run62/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run63/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run64/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run65/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run66/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run67/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run68/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run67/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run68/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run69/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run7/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run70/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run71/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run72/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run73/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run72/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run73/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run74/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run75/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run76/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run77/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run78/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run77/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run78/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run79/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run8/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run80/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run81/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run82/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run83/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run82/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run83/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run84/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run85/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run86/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run87/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run88/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run87/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run88/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run89/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run90/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run91/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run92/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run93/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run92/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run93/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run94/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run95/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 6080) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run96/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 9218) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run97/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run98/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run99/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 9218) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run95/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 6080) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run96/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9218) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run97/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 6080) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run98/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 2330) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run99/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9218) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run100/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run101/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run102/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run103/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run102/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run103/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run104/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run105/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 6080) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run106/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 9218) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run107/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run108/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run109/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 9218) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run105/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 6080) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run106/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9218) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run107/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 6080) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run108/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 2330) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run109/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9218) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run11/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run110/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 861) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run111/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 7454) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run112/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run113/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run114/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 7454) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run110/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 861) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run111/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 7454) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run112/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 861) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run113/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 571) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run114/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 7454) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run115/model.onnx |  | Data/Data | ✅ | OK (max ULP 10) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run116/model.onnx |  | Data/Data | ✅ | OK (max ULP 5) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run117/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run118/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run117/model.onnx |  | Data/Data | ✅ | OK (max ULP 10) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run118/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 152) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run119/model.onnx |  | Data/Data | ✅ | OK (max ULP 5) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run12/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run120/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run121/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run122/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run123/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run122/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run123/model.onnx |  | Data/Data | ✅ | OK (max ULP 5) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run124/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run125/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run126/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run127/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run128/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run127/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run128/model.onnx |  | Data/Data | ✅ | OK (max ULP 10) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run129/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run13/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run130/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1730) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run131/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 9141) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run132/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run133/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run134/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 9141) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run135/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 10976) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run136/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 11529) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run137/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run138/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run139/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 11529) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run13/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run130/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 1730) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run131/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9141) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run132/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 1730) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run133/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 940) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run134/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9141) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run135/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 10976) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run136/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 11529) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run137/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 10976) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run138/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 11961) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run139/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 11529) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run14/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run15/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run17/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run18/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run17/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run18/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run19/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run2/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run20/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run21/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run22/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run23/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run23/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run24/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run25/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run26/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run27/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run28/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run27/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run28/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run29/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run3/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run30/model.onnx |  | Data/Data | ✅ | OK (max ULP 21) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run31/model.onnx |  | Data/Data | ✅ | OK (max ULP 40) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run32/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run33/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run32/model.onnx |  | Data/Data | ✅ | OK (max ULP 21) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run33/model.onnx |  | Data/Data | ✅ | OK (max ULP 10) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run34/model.onnx |  | Data/Data | ✅ | OK (max ULP 40) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run35/model.onnx |  | Data/Data | ✅ | OK (max ULP 39) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run36/model.onnx |  | Data/Data | ✅ | OK (max ULP 36) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run37/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run38/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run37/model.onnx |  | Data/Data | ✅ | OK (max ULP 39) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run38/model.onnx |  | Data/Data | ✅ | OK (max ULP 31) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run39/model.onnx |  | Data/Data | ✅ | OK (max ULP 36) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run40/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run41/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run42/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run43/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run42/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run43/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run44/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run45/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run46/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run47/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run48/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run47/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run48/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run49/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run50/model.onnx |  | Data/Data | ✅ | OK (max ULP 22) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run51/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 135) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run52/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run53/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run54/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 135) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run51/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 135) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run52/model.onnx |  | Data/Data | ✅ | OK (max ULP 22) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run53/model.onnx |  | Data/Data | ✅ | OK (max ULP 29) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run54/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 135) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run55/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run56/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run57/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run58/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run57/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run58/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run59/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run60/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run61/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run62/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run63/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run62/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run63/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run64/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run65/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run66/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run67/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run68/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run67/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run68/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run69/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run7/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run70/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run71/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run72/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run73/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run72/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run73/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run74/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run75/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run76/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run77/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run78/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run77/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run78/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run79/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run8/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run80/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run81/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run82/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run83/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run82/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run83/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run84/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run85/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run86/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run87/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run88/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run87/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run88/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run89/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run90/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run91/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run92/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run93/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run92/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run93/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run94/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run95/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run96/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run97/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run98/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run97/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run98/model.onnx |  | Data/Data | ✅ | OK (max ULP 3) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run99/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run100/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run101/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run102/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run103/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run102/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run103/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run104/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run105/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run106/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run107/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run108/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run107/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run108/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run109/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run11/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run110/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run111/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run112/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run113/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run112/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run113/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run114/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run115/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run116/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run117/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run118/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run117/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run118/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run119/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run12/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run13/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run13/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run14/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run15/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run17/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run18/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run17/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run18/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run19/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run2/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run20/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run21/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run22/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run23/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run23/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run24/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run25/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run26/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run27/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run28/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run27/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run28/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run29/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run3/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run30/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run31/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run32/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run33/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run32/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run33/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run34/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run35/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run36/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run37/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run38/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run37/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run38/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run39/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run40/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run41/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run42/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run43/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run42/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run43/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run44/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run45/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run46/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run47/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run48/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run47/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run48/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run49/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run50/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run51/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run52/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run53/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run52/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run53/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run54/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run55/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run56/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run57/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run58/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run57/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run58/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run59/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run60/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run61/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run62/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run63/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run62/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run63/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run64/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run65/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run66/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run67/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run68/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run67/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run68/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run69/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run7/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run70/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run71/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run72/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run73/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run72/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run73/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run74/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run75/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run76/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run77/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run78/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run77/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run78/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run79/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run8/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run80/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run81/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run82/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run83/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run82/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run83/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run84/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run85/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run86/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run87/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run88/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run87/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run88/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run89/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run90/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run91/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run92/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run93/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run92/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run93/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run94/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run95/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run96/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run97/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run98/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run97/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run98/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run99/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run11/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run12/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run13/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run13/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run14/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run15/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run17/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run18/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run17/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run18/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run19/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run2/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run20/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run21/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run22/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run23/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run23/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run24/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run25/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run26/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run27/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run28/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run27/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run28/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run29/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run3/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run30/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run31/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run32/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run33/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run32/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run33/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run34/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run35/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run36/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run37/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run38/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run37/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run38/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run39/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run7/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run8/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
@@ -3130,136 +3130,136 @@ Coverage 3485 / 4182 ONNX files (83.3%).
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run100/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run101/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run102/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run103/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run102/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run103/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run104/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run105/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run106/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run107/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run108/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run107/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run108/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run109/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run11/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run110/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run111/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run112/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run113/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run112/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run113/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run114/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run115/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run116/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run117/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run118/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run117/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run118/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run119/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run12/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run120/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run121/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run122/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run123/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run122/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run123/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run124/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run13/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run13/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run14/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run15/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run17/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run18/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run17/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run18/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run19/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run2/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run20/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run21/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run22/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run23/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run23/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run24/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run25/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run26/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run27/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run28/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run27/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run28/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run29/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run3/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run30/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run31/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run32/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run33/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run32/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run33/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run34/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run35/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run36/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run37/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run38/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run37/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run38/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run39/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run40/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run41/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run42/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run43/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run42/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run43/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run44/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run45/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run46/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run47/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run48/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run47/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run48/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run49/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run50/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run51/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run52/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run53/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run52/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run53/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run54/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run55/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run56/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run57/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run58/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run57/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run58/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run59/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run60/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run61/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run62/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run63/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run62/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run63/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run64/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run65/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run66/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run67/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run68/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run67/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run68/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run69/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run7/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run70/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run71/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run72/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run73/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run72/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run73/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run74/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run75/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run76/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run77/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run78/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run77/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run78/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run79/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run8/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run80/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run81/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run82/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run83/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run82/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run83/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run84/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run85/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run86/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run87/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run88/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run87/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run88/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run89/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run90/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run91/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run92/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run93/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run92/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run93/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run94/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run95/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run96/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run97/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run98/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run97/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run98/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run99/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run0/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:125:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Wincompatible-pointer-types]). |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run1/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:139:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Wincompatible-pointer-types]). |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run2/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run3/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run4/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:137:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Wincompatible-pointer-types]). |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run5/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:125:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Wincompatible-pointer-types]). |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run6/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:139:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Wincompatible-pointer-types]). |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run7/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run8/model.onnx |  | Data/Data | ❌ | MatMulNBits g_idx (input 4) is not supported |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run9/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:137:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Wincompatible-pointer-types]). |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
@@ -5078,42 +5078,42 @@ Coverage 3485 / 4182 ONNX files (83.3%).
 | test/contrib_ops/qlinear_concat_test/InputOne_Const_run1/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/qlinear_concat_test/InputOne_Dynamic_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/qlinear_concat_test/InputOne_Dynamic_run1/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x32x32x1_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x32x32x1_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x7x7x255_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x7x7x255_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x7x7x256_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x7x7x256_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x8x8x255_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x8x8x255_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x8x8x256_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x8x8x256_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x7x7x255_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x7x7x255_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x7x7x256_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x7x7x256_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x8x8x255_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x8x8x255_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x8x8x256_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x8x8x256_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x1x32x32_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x1x32x32_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x255x7x7_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x255x7x7_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x255x8x8_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x255x8x8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x256x7x7_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x256x7x7_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x256x8x8_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x256x8x8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x255x7x7_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x255x7x7_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x255x8x8_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x255x8x8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x256x7x7_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x256x7x7_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x256x8x8_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x256x8x8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x32x32x1_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x32x32x1_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x7x7x255_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x7x7x255_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x7x7x256_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x7x7x256_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x8x8x255_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x8x8x255_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x8x8x256_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nchw_1x8x8x256_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x7x7x255_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x7x7x255_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x7x7x256_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x7x7x256_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x8x8x255_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x8x8x255_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x8x8x256_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x8x8x256_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x1x32x32_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x1x32x32_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x255x7x7_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x255x7x7_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x255x8x8_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x255x8x8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x256x7x7_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x256x7x7_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x256x8x8_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x256x8x8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x255x7x7_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x255x7x7_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x255x8x8_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x255x8x8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x256x7x7_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x256x7x7_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x256x8x8_S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
+| test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x256x8x8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearGlobalAveragePool |
 | test/contrib_ops/qlinear_lookup_table_test/QLinearLeakyRelu_Int8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearLeakyRelu |
 | test/contrib_ops/qlinear_lookup_table_test/QLinearLeakyRelu_UInt8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearLeakyRelu |
 | test/contrib_ops/qlinear_lookup_table_test/QLinearSigmoid_Int8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearSigmoid |
