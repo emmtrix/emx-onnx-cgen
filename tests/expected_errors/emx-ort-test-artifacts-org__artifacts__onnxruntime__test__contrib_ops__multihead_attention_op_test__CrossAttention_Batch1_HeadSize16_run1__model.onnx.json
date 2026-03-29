@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.MultiHeadAttention",
+  "error": "OK (max ULP 2)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch1_HeadSize16_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::MultiHeadAttention"
-  ]
+  ],
+  "generated_checksum": "1da23b2e972c11127b448e8ad9fe12269c26982318285d85f6d25efdd5cd5b5a"
 }

@@ -9,5 +9,5 @@
   "operators": [
     "com.microsoft::DynamicQuantizeLSTM"
   ],
-  "generated_checksum": "f005e1d97f81e2d4c049afcd3019e216cf56195d5eaa50b60e163510260d3c90"
+  "generated_checksum": "c9d9879ab93a0a1452e557c5f7f8cc975658bafd428f6b8237d11ea2ca386447"
 }
