@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 221 / 256
+Supported operators: 222 / 256
 
 | Operator | Supported |
 | --- | --- |
@@ -249,7 +249,7 @@ Supported operators: 221 / 256
 | com.microsoft::QLinearAdd | ✅ |
 | com.microsoft::QLinearAveragePool | ✅ |
 | com.microsoft::QLinearConcat | ✅ |
-| com.microsoft::QLinearGlobalAveragePool | ❌ |
+| com.microsoft::QLinearGlobalAveragePool | ✅ |
 | com.microsoft::QLinearLeakyRelu | ❌ |
 | com.microsoft::QLinearMul | ✅ |
 | com.microsoft::QLinearSigmoid | ❌ |
