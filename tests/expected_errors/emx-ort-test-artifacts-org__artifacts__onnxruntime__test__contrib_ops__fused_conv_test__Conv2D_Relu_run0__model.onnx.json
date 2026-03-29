@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op FusedConv",
+  "error": "Unsupported op com.microsoft.FusedConv",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/fused_conv_test/Conv2D_Relu_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [

@@ -3,11 +3,20 @@
 # The onnx-org/ directory is a read-only reference submodule (upstream ONNX
 # library source). It pins protobuf==4.25.1 in its own minimum/release-build
 # requirement files. Those files are never installed by this project; the
-# project's own constraint is protobuf>=5.29.6 (pyproject.toml and
-# requirements-ci.txt).
+# project's own constraint is
+#   protobuf>=5.29.6,!=6.30.*,!=6.31.*,!=6.32.*,!=6.33.0,...,!=6.33.4
+# (pyproject.toml and requirements-ci.txt), which avoids all affected ranges.
 #
 # The two GHSAs below are therefore allowed exclusively because their only
 # remaining occurrence in this repository is inside those reference submodules.
+#
+# GHSA-8qvm-5x2c-j2w7 / CVE-2025-4565 — protobuf-python Denial of Service
+#   Affected: < 4.25.8 | >= 5.26.0rc1, < 5.29.5 | >= 6.30.0rc1, < 6.31.1
+#   Patched:  4.25.8 / 5.29.5 / 6.31.1
+#
+# GHSA-7gcm-g887-7qv7 / CVE-2026-0994 — protobuf JSON recursion depth bypass
+#   Affected: < 5.29.6 | >= 6.30.0rc1, <= 6.33.4
+#   Patched:  5.29.6 / 6.33.5
 allow-ghsas:
-  - GHSA-8qvm-5x2c-j2w7  # CVE-2025-4565 — protobuf DoS (< 4.25.8), submodule-only
-  - GHSA-7gcm-g887-7qv7  # CVE-2026-0994 — JSON recursion bypass (< 5.29.6), submodule-only
+  - GHSA-8qvm-5x2c-j2w7  # CVE-2025-4565 — protobuf DoS (submodule-only)
+  - GHSA-7gcm-g887-7qv7  # CVE-2026-0994 — JSON recursion bypass (submodule-only)

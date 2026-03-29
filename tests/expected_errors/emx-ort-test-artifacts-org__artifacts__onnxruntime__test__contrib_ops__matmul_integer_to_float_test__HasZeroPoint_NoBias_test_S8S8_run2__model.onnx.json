@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op MatMulIntegerToFloat",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_NoBias_test_S8S8_run2 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::MatMulIntegerToFloat"
-  ]
+  ],
+  "generated_checksum": "bbef32e9cf7b82a5bf957325136e368a74bb3db84988c5bce8621a0c1bf3497b"
 }

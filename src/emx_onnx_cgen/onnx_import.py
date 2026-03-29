@@ -1657,6 +1657,7 @@ def import_onnx(model: onnx.ModelProto, *, _prepared: bool = False) -> Graph:
                 inputs=tuple(node.input),
                 outputs=tuple(node.output),
                 attrs=_node_attrs(node),
+                domain=node.domain or None,
             )
         )
     initializers = tuple(base_initializers + constant_initializers)
