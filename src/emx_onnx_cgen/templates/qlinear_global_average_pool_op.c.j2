@@ -1,0 +1,108 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const {{ compute_type }} scale = (({{ compute_type }}){{ input_scale_expr }}) / ((({{ compute_type }}){{ output_scale_expr }}) * ({{ compute_type }})({{ in_d * in_h * in_w }}));
+    const int32_t input_zero = (int32_t){{ input_zero_expr }};
+    const int32_t output_zero = (int32_t){{ output_zero_expr }};
+{% if spatial_rank == 3 %}
+{% if channels_last %}
+    for (idx_t n = 0; n < {{ batch }}; ++n) {
+        for (idx_t c = 0; c < {{ channels }}; ++c) {
+            int32_t acc = 0;
+            for (idx_t id = 0; id < {{ in_d }}; ++id) {
+                for (idx_t ih = 0; ih < {{ in_h }}; ++ih) {
+                    for (idx_t iw = 0; iw < {{ in_w }}; ++iw) {
+                        acc += ((int32_t){{ input0 }}[n][id][ih][iw][c]) - input_zero;
+                    }
+                }
+            }
+            {{ compute_type }} val = (({{ compute_type }})acc) * scale;
+            int32_t result = (int32_t){{ scalar_fn(SF.NEARBYINT, compute_dtype) }}(val) + output_zero;
+            result = result < ({{ min_literal }}) ? ({{ min_literal }}) : result;
+            result = result > ({{ max_literal }}) ? ({{ max_literal }}) : result;
+            {{ output }}[n][0][0][0][c] = ({{ output_c_type }})result;
+        }
+    }
+{% else %}
+    for (idx_t n = 0; n < {{ batch }}; ++n) {
+        for (idx_t c = 0; c < {{ channels }}; ++c) {
+            int32_t acc = 0;
+            for (idx_t id = 0; id < {{ in_d }}; ++id) {
+                for (idx_t ih = 0; ih < {{ in_h }}; ++ih) {
+                    for (idx_t iw = 0; iw < {{ in_w }}; ++iw) {
+                        acc += ((int32_t){{ input0 }}[n][c][id][ih][iw]) - input_zero;
+                    }
+                }
+            }
+            {{ compute_type }} val = (({{ compute_type }})acc) * scale;
+            int32_t result = (int32_t){{ scalar_fn(SF.NEARBYINT, compute_dtype) }}(val) + output_zero;
+            result = result < ({{ min_literal }}) ? ({{ min_literal }}) : result;
+            result = result > ({{ max_literal }}) ? ({{ max_literal }}) : result;
+            {{ output }}[n][c][0][0][0] = ({{ output_c_type }})result;
+        }
+    }
+{% endif %}
+{% elif spatial_rank == 1 %}
+{% if channels_last %}
+    for (idx_t n = 0; n < {{ batch }}; ++n) {
+        for (idx_t c = 0; c < {{ channels }}; ++c) {
+            int32_t acc = 0;
+            for (idx_t iw = 0; iw < {{ in_w }}; ++iw) {
+                acc += ((int32_t){{ input0 }}[n][iw][c]) - input_zero;
+            }
+            {{ compute_type }} val = (({{ compute_type }})acc) * scale;
+            int32_t result = (int32_t){{ scalar_fn(SF.NEARBYINT, compute_dtype) }}(val) + output_zero;
+            result = result < ({{ min_literal }}) ? ({{ min_literal }}) : result;
+            result = result > ({{ max_literal }}) ? ({{ max_literal }}) : result;
+            {{ output }}[n][0][c] = ({{ output_c_type }})result;
+        }
+    }
+{% else %}
+    for (idx_t n = 0; n < {{ batch }}; ++n) {
+        for (idx_t c = 0; c < {{ channels }}; ++c) {
+            int32_t acc = 0;
+            for (idx_t iw = 0; iw < {{ in_w }}; ++iw) {
+                acc += ((int32_t){{ input0 }}[n][c][iw]) - input_zero;
+            }
+            {{ compute_type }} val = (({{ compute_type }})acc) * scale;
+            int32_t result = (int32_t){{ scalar_fn(SF.NEARBYINT, compute_dtype) }}(val) + output_zero;
+            result = result < ({{ min_literal }}) ? ({{ min_literal }}) : result;
+            result = result > ({{ max_literal }}) ? ({{ max_literal }}) : result;
+            {{ output }}[n][c][0] = ({{ output_c_type }})result;
+        }
+    }
+{% endif %}
+{% else %}
+{% if channels_last %}
+    for (idx_t n = 0; n < {{ batch }}; ++n) {
+        for (idx_t c = 0; c < {{ channels }}; ++c) {
+            int32_t acc = 0;
+            for (idx_t ih = 0; ih < {{ in_h }}; ++ih) {
+                for (idx_t iw = 0; iw < {{ in_w }}; ++iw) {
+                    acc += ((int32_t){{ input0 }}[n][ih][iw][c]) - input_zero;
+                }
+            }
+            {{ compute_type }} val = (({{ compute_type }})acc) * scale;
+            int32_t result = (int32_t){{ scalar_fn(SF.NEARBYINT, compute_dtype) }}(val) + output_zero;
+            result = result < ({{ min_literal }}) ? ({{ min_literal }}) : result;
+            result = result > ({{ max_literal }}) ? ({{ max_literal }}) : result;
+            {{ output }}[n][0][0][c] = ({{ output_c_type }})result;
+        }
+    }
+{% else %}
+    for (idx_t n = 0; n < {{ batch }}; ++n) {
+        for (idx_t c = 0; c < {{ channels }}; ++c) {
+            int32_t acc = 0;
+            for (idx_t ih = 0; ih < {{ in_h }}; ++ih) {
+                for (idx_t iw = 0; iw < {{ in_w }}; ++iw) {
+                    acc += ((int32_t){{ input0 }}[n][c][ih][iw]) - input_zero;
+                }
+            }
+            {{ compute_type }} val = (({{ compute_type }})acc) * scale;
+            int32_t result = (int32_t){{ scalar_fn(SF.NEARBYINT, compute_dtype) }}(val) + output_zero;
+            result = result < ({{ min_literal }}) ? ({{ min_literal }}) : result;
+            result = result > ({{ max_literal }}) ? ({{ max_literal }}) : result;
+            {{ output }}[n][c][0][0] = ({{ output_c_type }})result;
+        }
+    }
+{% endif %}
+{% endif %}
+}

@@ -4348,6 +4348,144 @@ class QLinearAveragePoolOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class QLinearGlobalAveragePoolOp(RenderableOpBase):
+    __io_inputs__ = (
+        "input0",
+        "input_scale",
+        "input_zero_point",
+        "output_scale",
+        "output_zero_point",
+    )
+    __io_outputs__ = ("output",)
+    input0: str
+    input_scale: str
+    input_zero_point: str
+    output_scale: str
+    output_zero_point: str
+    output: str
+    batch: int
+    channels: int
+    spatial_rank: int
+    in_spatial: tuple[int, ...]
+    channels_last: bool
+    input_dtype: ScalarType
+    dtype: ScalarType
+    input_scale_dtype: ScalarType
+    output_scale_dtype: ScalarType
+    input_scale_shape: tuple[int, ...]
+    output_scale_shape: tuple[int, ...]
+    input_zero_shape: tuple[int, ...]
+    output_zero_shape: tuple[int, ...]
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("input_scale", self.input_scale),
+                ("input_zero_point", self.input_zero_point),
+                ("output_scale", self.output_scale),
+                ("output_zero_point", self.output_zero_point),
+                ("output", self.output),
+            ]
+        )
+        out_spatial = tuple(1 for _ in self.in_spatial)
+        if self.channels_last:
+            input_shape = (self.batch, *self.in_spatial, self.channels)
+            output_shape = (self.batch, *out_spatial, self.channels)
+        else:
+            input_shape = (self.batch, self.channels, *self.in_spatial)
+            output_shape = (self.batch, self.channels, *out_spatial)
+        input_suffix = emitter.param_array_suffix(input_shape)
+        output_suffix = emitter.param_array_suffix(output_shape)
+        input_scale_suffix = emitter.param_array_suffix(self.input_scale_shape)
+        output_scale_suffix = emitter.param_array_suffix(self.output_scale_shape)
+        input_zero_suffix = emitter.param_array_suffix(self.input_zero_shape)
+        output_zero_suffix = emitter.param_array_suffix(self.output_zero_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], self.input_dtype.c_type, input_suffix, True),
+                (
+                    params["input_scale"],
+                    self.input_scale_dtype.c_type,
+                    input_scale_suffix,
+                    True,
+                ),
+                (
+                    params["input_zero_point"],
+                    self.input_dtype.c_type,
+                    input_zero_suffix,
+                    True,
+                ),
+                (
+                    params["output_scale"],
+                    self.output_scale_dtype.c_type,
+                    output_scale_suffix,
+                    True,
+                ),
+                (
+                    params["output_zero_point"],
+                    self.dtype.c_type,
+                    output_zero_suffix,
+                    True,
+                ),
+                (params["output"], self.dtype.c_type, output_suffix, False),
+            ]
+        )
+        compute_dtype = (
+            ScalarType.F64
+            if ScalarType.F64 in {self.input_scale_dtype, self.output_scale_dtype}
+            else ScalarType.F32
+        )
+        compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
+        in_d = self.in_spatial[0] if self.spatial_rank == 3 else 1
+        in_h = self.in_spatial[-2] if self.spatial_rank >= 2 else 1
+        in_w = self.in_spatial[-1]
+        rendered = (
+            state.templates["qlinear_global_avg_pool"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                input_scale=params["input_scale"],
+                input_zero_point=params["input_zero_point"],
+                output_scale=params["output_scale"],
+                output_zero_point=params["output_zero_point"],
+                output=params["output"],
+                params=param_decls,
+                compute_type=compute_type,
+                compute_dtype=compute_dtype,
+                dtype=self.dtype,
+                min_literal=self.dtype.min_literal,
+                max_literal=self.dtype.max_literal,
+                input_scale_expr=f"{params['input_scale']}[0]",
+                input_zero_expr=f"{params['input_zero_point']}[0]",
+                output_scale_expr=f"{params['output_scale']}[0]",
+                output_zero_expr=f"{params['output_zero_point']}[0]",
+                spatial_rank=self.spatial_rank,
+                channels_last=self.channels_last,
+                batch=self.batch,
+                channels=self.channels,
+                in_d=in_d,
+                in_h=in_h,
+                in_w=in_w,
+                dim_args=emitter.dim_args_str(),
+                output_c_type=self.dtype.c_type,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        out_spatial = tuple(1 for _ in self.in_spatial)
+        if self.channels_last:
+            return (self.batch, *out_spatial, self.channels)
+        return (self.batch, self.channels, *out_spatial)
+
+
+@dataclass(frozen=True)
 class LpPoolOp(RenderableOpBase):
     __io_inputs__ = ("input0",)
     __io_outputs__ = ("output",)

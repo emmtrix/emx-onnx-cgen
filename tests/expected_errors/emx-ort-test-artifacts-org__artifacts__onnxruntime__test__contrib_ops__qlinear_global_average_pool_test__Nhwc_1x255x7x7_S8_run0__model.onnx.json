@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.QLinearGlobalAveragePool",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/qlinear_global_average_pool_test/Nhwc_1x255x7x7_S8_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::QLinearGlobalAveragePool"
-  ]
+  ],
+  "generated_checksum": "c7447a6bfd45c7f79902e0854700034e48d5696b3de4bf2a0cb610f0198acc5b"
 }
