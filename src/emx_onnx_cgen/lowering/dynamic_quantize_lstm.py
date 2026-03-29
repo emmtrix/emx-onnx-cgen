@@ -59,16 +59,13 @@ class DynamicQuantizeLstmSpec:
 
 
 def resolve_dynamic_quantize_lstm_spec(
-    graph: Graph, node: Node,
+    graph: Graph,
+    node: Node,
 ) -> DynamicQuantizeLstmSpec:
     if len(node.inputs) != 12:
-        raise UnsupportedOpError(
-            "DynamicQuantizeLSTM expects exactly 12 inputs"
-        )
+        raise UnsupportedOpError("DynamicQuantizeLSTM expects exactly 12 inputs")
     if len(node.outputs) < 1 or len(node.outputs) > 3:
-        raise UnsupportedOpError(
-            "DynamicQuantizeLSTM expects between 1 and 3 outputs"
-        )
+        raise UnsupportedOpError("DynamicQuantizeLSTM expects between 1 and 3 outputs")
     input_x = node.inputs[0]
     input_w = node.inputs[1]
     input_r = node.inputs[2]
@@ -86,16 +83,12 @@ def resolve_dynamic_quantize_lstm_spec(
     output_y_h = optional_name(node.outputs, 1)
     output_y_c = optional_name(node.outputs, 2)
     if output_y is None and output_y_h is None and output_y_c is None:
-        raise UnsupportedOpError(
-            "DynamicQuantizeLSTM expects at least one output"
-        )
+        raise UnsupportedOpError("DynamicQuantizeLSTM expects at least one output")
 
     # X, B, initial_h, initial_c, P, and outputs are float
     float_names = [input_x]
     float_names.extend(
-        name
-        for name in (input_b, input_initial_h, input_initial_c, input_p)
-        if name
+        name for name in (input_b, input_initial_h, input_initial_c, input_p) if name
     )
     float_names.extend(name for name in (output_y, output_y_h, output_y_c) if name)
     op_dtype = node_dtype(graph, node, *float_names)
@@ -207,17 +200,13 @@ def resolve_dynamic_quantize_lstm_spec(
 
     input_forget = int(node.attrs.get("input_forget", 0))
     if input_forget not in {0, 1}:
-        raise UnsupportedOpError(
-            "DynamicQuantizeLSTM input_forget must be 0 or 1"
-        )
+        raise UnsupportedOpError("DynamicQuantizeLSTM input_forget must be 0 or 1")
 
     clip = node.attrs.get("clip")
     if clip is not None:
         clip = float(clip)
         if clip < 0:
-            raise UnsupportedOpError(
-                "DynamicQuantizeLSTM clip must be non-negative"
-            )
+            raise UnsupportedOpError("DynamicQuantizeLSTM clip must be non-negative")
 
     activation_kinds, activation_alphas, activation_betas = _resolve_activations(
         direction, num_directions, _normalize_contrib_activations(node.attrs)
@@ -307,7 +296,8 @@ def resolve_dynamic_quantize_lstm_spec(
 
 @register_lowering("DynamicQuantizeLSTM")
 def lower_dynamic_quantize_lstm(
-    graph: Graph, node: Node,
+    graph: Graph,
+    node: Node,
 ) -> DynamicQuantizeLstmOp:
     from ..ir.ops import DynamicQuantizeLstmOp
 
