@@ -164,6 +164,7 @@ static void testbench_fill_random_input(float in0[2][3]) {
     }
 }
 
+
 static void testbench_print_json(
 float out[2][3]) {
     printf("{\n  \"outputs\": {\n");

@@ -8,7 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1796 / 1802, 99.7% | 1.20.1 |
-| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 3892 / 4182, 93.1% | n/a |
+| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 2850 / 4182, 68.1% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -1832,7 +1832,7 @@ Coverage 1796 / 1802 ONNX files (99.7%).
 
 Test directory: `emx-ort-test-artifacts-org/artifacts/onnxruntime`
 
-Coverage 3892 / 4182 ONNX files (93.1%).
+Coverage 2850 / 4182 ONNX files (68.1%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -2486,1048 +2486,1048 @@ Coverage 3892 / 4182 ONNX files (93.1%).
 | test/contrib_ops/math/matmul_sparse_test/TestCsr_run1/model.onnx |  | Data/Data | ❌ | Unsupported value type 'sparse_tensor_type' for 'A'. Hint: export the model with tensor inputs/outputs. |
 | test/contrib_ops/math/matmul_sparse_test/TestCsr_run2/model.onnx |  | Data/Data | ❌ | Unsupported value type 'sparse_tensor_type' for 'A'. Hint: export the model with tensor inputs/outputs. |
 | test/contrib_ops/math/matmul_sparse_test/TestCsr_run3/model.onnx |  | Data/Data | ❌ | Unsupported value type 'sparse_tensor_type' for 'A'. Hint: export the model with tensor inputs/outputs. |
-| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Asymmetric_128x128_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Asymmetric_128x256_BlkLen128_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Asymmetric_256x256_BlkLen64_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Asymmetric_256x256_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Asymmetric_Batch32_256x256_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Symmetric_128x128_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Symmetric_128x256_BlkLen128_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Symmetric_256x256_BlkLen64_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Symmetric_256x256_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Symmetric_Batch32_128x128_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run11/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run13/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run14/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run15/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run17/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run18/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run19/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run20/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run21/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run23/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run24/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run25/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run26/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run27/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run28/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run29/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run30/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run31/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run32/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run33/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run34/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run35/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run36/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run37/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run38/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run39/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run40/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run41/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run42/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run43/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run44/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run45/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run46/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run47/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run48/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run49/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run50/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run51/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run52/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run53/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run54/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run55/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run56/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run57/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run58/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run59/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run60/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run61/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run62/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run63/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run64/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run65/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run66/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run67/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run68/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run69/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run70/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run71/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run72/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run73/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run74/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run75/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run76/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run77/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run78/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run79/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run11/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run13/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run14/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run15/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run17/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run18/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run19/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run20/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run21/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run23/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run24/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run25/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run26/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run27/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run28/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run29/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run30/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run31/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run32/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run33/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run34/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run35/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run36/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run37/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run38/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run39/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run40/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run41/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run42/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run43/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run44/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run45/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run46/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run47/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run48/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run49/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run50/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run51/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run52/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run53/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run54/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run55/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run56/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run57/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run58/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run59/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run60/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run61/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run62/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run63/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run64/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run65/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run66/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run67/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run68/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run69/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run70/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run71/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run72/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run73/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run74/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run75/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run76/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run77/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run78/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run79/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 22) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run11/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 135) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 22) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run13/model.onnx |  | Data/Data | ✅ | OK (max ULP 29) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run14/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 135) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run15/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run17/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run18/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run19/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run20/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run21/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run23/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run24/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run25/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 861) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run26/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 7454) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run27/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 861) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run28/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 571) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run29/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 7454) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run30/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run31/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run32/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run33/model.onnx |  | Data/Data | ✅ | OK (max ULP 5) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run34/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run35/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 1730) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run36/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9141) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run37/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 1730) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run38/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 940) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run39/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9141) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run100/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 861) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run101/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 7454) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run102/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 861) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run103/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 571) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run104/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 7454) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run105/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run106/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run107/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run108/model.onnx |  | Data/Data | ✅ | OK (max ULP 5) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run109/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run11/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run110/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run111/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run112/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run113/model.onnx |  | Data/Data | ✅ | OK (max ULP 10) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run114/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run115/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 1730) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run116/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9141) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run117/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 1730) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run118/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 940) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run119/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9141) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run13/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run14/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run15/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run17/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run18/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run19/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run20/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run21/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run23/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run24/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run25/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run26/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run27/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run28/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run29/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run30/model.onnx |  | Data/Data | ✅ | OK (max ULP 21) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run31/model.onnx |  | Data/Data | ✅ | OK (max ULP 40) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run32/model.onnx |  | Data/Data | ✅ | OK (max ULP 21) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run33/model.onnx |  | Data/Data | ✅ | OK (max ULP 10) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run34/model.onnx |  | Data/Data | ✅ | OK (max ULP 40) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run35/model.onnx |  | Data/Data | ✅ | OK (max ULP 39) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run36/model.onnx |  | Data/Data | ✅ | OK (max ULP 36) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run37/model.onnx |  | Data/Data | ✅ | OK (max ULP 39) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run38/model.onnx |  | Data/Data | ✅ | OK (max ULP 31) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run39/model.onnx |  | Data/Data | ✅ | OK (max ULP 36) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run40/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run41/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run42/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run43/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run44/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run45/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run46/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run47/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run48/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run49/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run50/model.onnx |  | Data/Data | ✅ | OK (max ULP 22) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run51/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 135) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run52/model.onnx |  | Data/Data | ✅ | OK (max ULP 22) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run53/model.onnx |  | Data/Data | ✅ | OK (max ULP 29) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run54/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 135) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run55/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run56/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run57/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run58/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run59/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run60/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run61/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run62/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run63/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run64/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run65/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run66/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run67/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run68/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run69/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run70/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run71/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run72/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run73/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run74/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run75/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run76/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run77/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run78/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run79/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run80/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run81/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run82/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run83/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run84/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run85/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run86/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run87/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run88/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run89/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run90/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run91/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run92/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run93/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run94/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run95/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 6080) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run96/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9218) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run97/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 6080) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run98/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 2330) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run99/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9218) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run100/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run101/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run102/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run103/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run104/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run105/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 6080) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run106/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9218) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run107/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 6080) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run108/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 2330) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run109/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9218) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run11/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run110/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 861) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run111/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 7454) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run112/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 861) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run113/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 571) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run114/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 7454) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run115/model.onnx |  | Data/Data | ✅ | OK (max ULP 10) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run116/model.onnx |  | Data/Data | ✅ | OK (max ULP 5) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run117/model.onnx |  | Data/Data | ✅ | OK (max ULP 10) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run118/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 152) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run119/model.onnx |  | Data/Data | ✅ | OK (max ULP 5) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run120/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run121/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run122/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run123/model.onnx |  | Data/Data | ✅ | OK (max ULP 5) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run124/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run125/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run126/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run127/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run128/model.onnx |  | Data/Data | ✅ | OK (max ULP 10) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run129/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run13/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run130/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 1730) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run131/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9141) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run132/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 1730) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run133/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 940) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run134/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9141) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run135/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 10976) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run136/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 11529) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run137/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 10976) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run138/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 11961) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run139/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 11529) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run14/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run15/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run17/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run18/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run19/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run20/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run21/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run23/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run24/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run25/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run26/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run27/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run28/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run29/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run30/model.onnx |  | Data/Data | ✅ | OK (max ULP 21) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run31/model.onnx |  | Data/Data | ✅ | OK (max ULP 40) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run32/model.onnx |  | Data/Data | ✅ | OK (max ULP 21) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run33/model.onnx |  | Data/Data | ✅ | OK (max ULP 10) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run34/model.onnx |  | Data/Data | ✅ | OK (max ULP 40) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run35/model.onnx |  | Data/Data | ✅ | OK (max ULP 39) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run36/model.onnx |  | Data/Data | ✅ | OK (max ULP 36) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run37/model.onnx |  | Data/Data | ✅ | OK (max ULP 39) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run38/model.onnx |  | Data/Data | ✅ | OK (max ULP 31) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run39/model.onnx |  | Data/Data | ✅ | OK (max ULP 36) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run40/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run41/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run42/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run43/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run44/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run45/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run46/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run47/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run48/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run49/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run50/model.onnx |  | Data/Data | ✅ | OK (max ULP 22) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run51/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 135) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run52/model.onnx |  | Data/Data | ✅ | OK (max ULP 22) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run53/model.onnx |  | Data/Data | ✅ | OK (max ULP 29) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run54/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 135) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run55/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run56/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run57/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run58/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run59/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run60/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run61/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run62/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run63/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run64/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run65/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run66/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run67/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run68/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run69/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run70/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run71/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run72/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run73/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run74/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run75/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run76/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run77/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run78/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run79/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run80/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run81/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run82/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run83/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run84/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run85/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run86/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run87/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run88/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run89/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run90/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run91/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run92/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run93/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run94/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run95/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run96/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run97/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run98/model.onnx |  | Data/Data | ✅ | OK (max ULP 3) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run99/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run100/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run101/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run102/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run103/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run104/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run105/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run106/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run107/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run108/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run109/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run11/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run110/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run111/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run112/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run113/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run114/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run115/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run116/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run117/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run118/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run119/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run13/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run14/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run15/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run17/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run18/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run19/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run20/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run21/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run23/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run24/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run25/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run26/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run27/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run28/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run29/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run30/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run31/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run32/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run33/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run34/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run35/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run36/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run37/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run38/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run39/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run40/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run41/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run42/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run43/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run44/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run45/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run46/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run47/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run48/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run49/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run50/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run51/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run52/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run53/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run54/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run55/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run56/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run57/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run58/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run59/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run60/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run61/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run62/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run63/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run64/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run65/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run66/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run67/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run68/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run69/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run70/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run71/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run72/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run73/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run74/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run75/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run76/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run77/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run78/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run79/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run80/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run81/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run82/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run83/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run84/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run85/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run86/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run87/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run88/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run89/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run90/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run91/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run92/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run93/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run94/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run95/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run96/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run97/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run98/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run99/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run11/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run13/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run14/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run15/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run17/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run18/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run19/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run20/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run21/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run23/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run24/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run25/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run26/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run27/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run28/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run29/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run30/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run31/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run32/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run33/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run34/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run35/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run36/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run37/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run38/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run39/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run100/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run101/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run102/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run103/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run104/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run105/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run106/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run107/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run108/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run109/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run11/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run110/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run111/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run112/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run113/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run114/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run115/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run116/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run117/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run118/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run119/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run120/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run121/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run122/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run123/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run124/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run13/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run14/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run15/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run17/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run18/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run19/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run20/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run21/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run23/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run24/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run25/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run26/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run27/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run28/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run29/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run30/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run31/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run32/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run33/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run34/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run35/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run36/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run37/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run38/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run39/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run40/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run41/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run42/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run43/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run44/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run45/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run46/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run47/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run48/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run49/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run50/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run51/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run52/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run53/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run54/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run55/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run56/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run57/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run58/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run59/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run60/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run61/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run62/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run63/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run64/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run65/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run66/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run67/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run68/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run69/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run70/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run71/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run72/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run73/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run74/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run75/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run76/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run77/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run78/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run79/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run80/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run81/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run82/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run83/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run84/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run85/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run86/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run87/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run88/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run89/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run90/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run91/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run92/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run93/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run94/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run95/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run96/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run97/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run98/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run99/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run100/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run101/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run102/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run103/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run104/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run105/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run106/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run107/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run108/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run109/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run11/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run110/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run111/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run112/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run113/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run114/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run115/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run116/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run117/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run118/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run119/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run120/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run121/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run122/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run123/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run124/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run125/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run126/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run127/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run128/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run129/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run13/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run130/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run131/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run14/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run15/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run17/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run18/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run19/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run20/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run21/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run23/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run24/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run25/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run26/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run27/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run28/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run29/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run30/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run31/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run32/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run33/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run34/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run35/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run36/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run37/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run38/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run39/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run40/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run41/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run42/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run43/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run44/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run45/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run46/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run47/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run48/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run49/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run50/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run51/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run52/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run53/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run54/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run55/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run56/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run57/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run58/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run59/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run60/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run61/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run62/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run63/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run64/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run65/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run66/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run67/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run68/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run69/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run70/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run71/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run72/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run73/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run74/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run75/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run76/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run77/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run78/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run79/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run80/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run81/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run82/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run83/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run84/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run85/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run86/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run87/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run88/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run89/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run90/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run91/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run92/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run93/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run94/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run95/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run96/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run97/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run98/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run99/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run100/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run101/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run102/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run103/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run104/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run105/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run106/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run107/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run108/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run109/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run11/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run110/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run111/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run112/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run113/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run114/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run115/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run116/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run117/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run118/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run119/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run120/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run121/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run122/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run123/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run124/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run125/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run126/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run127/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run128/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run129/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run13/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run130/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run131/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run132/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run133/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run134/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run135/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run14/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run15/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run17/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run18/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run19/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run20/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run21/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run23/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run24/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run25/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run26/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run27/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run28/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run29/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run30/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run31/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run32/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run33/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run34/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run35/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run36/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run37/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run38/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run39/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run40/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run41/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run42/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run43/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run44/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run45/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run46/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run47/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run48/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run49/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run50/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run51/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run52/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run53/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run54/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run55/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run56/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run57/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run58/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run59/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run60/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run61/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run62/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run63/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run64/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run65/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run66/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run67/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run68/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run69/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run70/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run71/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run72/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run73/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run74/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run75/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run76/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run77/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run78/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run79/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run80/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run81/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run82/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run83/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run84/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run85/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run86/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run87/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run88/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run89/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run90/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run91/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run92/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run93/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run94/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run95/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run96/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run97/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run98/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run99/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Asymmetric_128x128_run0/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2669:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Asymmetric_128x256_BlkLen128_run0/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2669:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Asymmetric_256x256_BlkLen64_run0/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:6253:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Asymmetric_256x256_run0/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:8301:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Asymmetric_Batch32_256x256_run0/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:8301:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Symmetric_128x128_run0/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2274:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Symmetric_128x256_BlkLen128_run0/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2274:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Symmetric_256x256_BlkLen64_run0/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5474:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Symmetric_256x256_run0/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:7522:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Symmetric_Batch32_128x128_run0/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2274:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run0/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:106:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run1/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:120:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run10/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:369:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run11/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:476:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run12/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:450:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run13/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:557:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run14/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:465:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run15/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:572:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run16/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:450:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run17/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:557:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run18/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:465:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run19/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:572:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run2/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:118:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run20/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2402:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run21/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3277:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run22/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2449:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run23/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3324:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run24/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:106:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run25/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:120:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run26/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:118:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run27/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run28/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:114:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run29/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:131:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run3/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run30/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:126:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run31/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:143:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run32/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:106:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run33/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:120:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run34/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:118:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run35/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run36/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:114:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run37/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:131:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run38/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:126:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run39/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:143:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run4/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:114:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run40/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:354:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run41/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:461:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run42/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:369:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run43/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:476:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run44/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:450:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run45/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:557:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run46/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:465:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run47/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:572:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run48/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:450:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run49/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:557:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run5/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:131:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run50/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:465:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run51/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:572:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run52/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2402:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run53/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3277:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run54/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2449:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run55/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3324:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run56/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:106:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run57/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:120:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run58/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:118:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run59/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run6/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:126:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run60/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:114:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run61/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:131:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run62/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:126:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run63/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:143:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run64/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:354:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run65/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:461:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run66/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:369:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run67/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:476:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run68/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:450:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run69/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:557:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run7/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:143:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run70/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:465:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run71/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:572:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run72/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:450:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run73/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:557:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run74/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:465:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run75/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:572:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run76/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2402:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run77/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3277:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run78/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2449:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run79/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3324:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run8/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:354:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run9/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:461:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run0/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:106:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run1/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:120:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run10/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:369:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run11/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:476:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run12/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:450:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run13/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:557:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run14/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:465:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run15/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:572:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run16/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:450:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run17/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:557:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run18/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:465:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run19/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:572:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run2/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:118:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run20/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2402:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run21/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3277:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run22/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2449:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run23/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3324:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run24/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:106:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run25/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:120:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run26/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:118:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run27/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run28/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:114:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run29/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:131:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run3/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run30/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:126:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run31/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:143:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run32/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:106:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run33/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:120:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run34/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:118:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run35/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run36/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:114:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run37/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:131:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run38/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:126:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run39/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:143:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run4/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:114:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run40/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:354:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run41/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:461:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run42/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:369:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run43/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:476:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run44/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:450:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run45/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:557:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run46/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:465:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run47/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:572:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run48/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:450:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run49/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:557:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run5/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:131:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run50/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:465:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run51/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:572:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run52/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2402:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run53/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3277:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run54/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2449:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run55/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3324:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run56/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:106:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run57/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:120:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run58/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:118:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run59/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run6/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:126:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run60/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:114:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run61/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:131:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run62/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:126:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run63/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:143:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run64/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:354:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run65/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:461:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run66/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:369:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run67/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:476:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run68/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:450:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run69/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:557:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run7/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:143:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run70/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:465:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run71/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:572:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run72/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:450:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run73/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:557:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run74/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:465:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run75/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:572:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run76/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2402:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run77/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3277:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run78/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2449:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run79/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3324:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run8/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:354:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run9/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:461:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run0/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:107:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run1/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run10/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3555:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run11/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:5582:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run12/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3722:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run13/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3769:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run14/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:7022:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run15/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:107:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run16/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run17/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:120:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run18/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run19/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run2/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:120:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run20/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:115:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run21/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run22/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:128:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run23/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:140:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run24/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run25/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:963:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run26/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:1838:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run27/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:1102:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run28/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:1149:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run29/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:1838:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run3/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run30/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4995:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run31/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run32/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5018:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run33/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5065:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run34/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run35/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:3555:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run36/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:5582:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run37/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:3722:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run38/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:3769:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run39/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:7022:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run4/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run5/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4995:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run6/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run7/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5018:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run8/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5065:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run9/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run0/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:107:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run1/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run10/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:355:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run100/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:963:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run101/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:1838:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run102/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:1102:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run103/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:1149:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run104/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:1838:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run105/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4995:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run106/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run107/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5018:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run108/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5065:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run109/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run11/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:462:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run110/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4419:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run111/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5294:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run112/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4446:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run113/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4493:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run114/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5294:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run115/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:3555:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run116/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:5582:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run117/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:3722:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run118/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:3769:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run119/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:7022:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run12/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:368:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run13/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:383:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run14/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:462:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run15/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:451:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run16/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:558:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run17/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:466:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run18/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:481:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run19/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:558:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run2/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:120:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run20/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:579:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run21/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:686:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run22/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:606:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run23/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:621:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run24/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:686:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run25/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2403:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run26/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3278:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run27/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2416:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run28/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2463:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run29/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3278:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run3/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run30/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2979:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run31/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4718:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run32/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3118:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run33/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3165:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run34/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run35/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:963:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run36/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1838:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run37/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1102:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run38/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1149:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run39/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1838:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run4/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run40/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4995:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run41/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run42/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5018:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run43/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5065:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run44/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run45/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4419:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run46/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5294:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run47/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4446:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run48/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4493:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run49/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5294:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run5/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:115:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run50/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3555:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run51/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:5582:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run52/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3722:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run53/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3769:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run54/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:7022:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run55/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:107:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run56/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run57/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:120:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run58/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run59/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run6/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run60/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:115:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run61/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run62/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:128:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run63/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:140:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run64/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run65/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:107:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run66/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run67/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:120:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run68/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run69/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run7/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:128:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run70/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:115:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run71/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run72/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:128:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run73/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:140:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run74/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run75/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:355:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run76/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:462:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run77/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:368:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run78/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:383:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run79/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:462:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run8/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:140:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run80/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:451:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run81/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:558:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run82/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:466:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run83/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:481:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run84/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:558:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run85/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:579:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run86/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:686:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run87/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:606:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run88/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:621:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run89/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:686:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run9/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run90/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2403:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run91/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3278:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run92/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2416:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run93/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2463:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run94/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3278:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run95/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:2979:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run96/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:4718:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run97/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:3118:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run98/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:3165:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run99/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run0/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:107:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run1/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run10/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:355:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run100/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2403:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run101/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3278:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run102/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2416:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run103/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2463:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run104/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3278:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run105/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:2979:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run106/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:4718:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run107/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:3118:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run108/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:3165:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run109/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run11/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:462:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run110/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:963:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run111/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:1838:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run112/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:1102:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run113/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:1149:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run114/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:1838:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run115/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:6723:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run116/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:7598:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run117/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:6758:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run118/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:6805:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run119/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:7598:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run12/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:368:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run120/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4995:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run121/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run122/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5018:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run123/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5065:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run124/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run125/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4419:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run126/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5294:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run127/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4446:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run128/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4493:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run129/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5294:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run13/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:383:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run130/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:3555:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run131/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:5582:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run132/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:3722:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run133/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:3769:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run134/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:7022:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run135/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:97:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run136/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:107:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run137/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:365:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run138/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:1144:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run139/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:107:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run14/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:462:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run15/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:451:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run16/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:558:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run17/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:466:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run18/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:481:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run19/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:558:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run2/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:120:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run20/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:579:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run21/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:686:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run22/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:606:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run23/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:621:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run24/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:686:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run25/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2403:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run26/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3278:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run27/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2416:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run28/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2463:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run29/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3278:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run3/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run30/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2979:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run31/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4718:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run32/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3118:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run33/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3165:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run34/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run35/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:963:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run36/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1838:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run37/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1102:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run38/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1149:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run39/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1838:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run4/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run40/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4995:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run41/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run42/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5018:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run43/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5065:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run44/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run45/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4419:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run46/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5294:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run47/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4446:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run48/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4493:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run49/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5294:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run5/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:115:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run50/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3555:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run51/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:5582:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run52/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3722:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run53/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3769:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run54/model.onnx (--max-ulp 12000) |  | Data/Data | ❌ | Failed to build testbench (model.c:7022:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run55/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:107:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run56/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run57/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:120:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run58/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run59/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run6/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run60/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:115:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run61/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run62/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:128:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run63/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:140:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run64/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run65/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:107:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run66/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run67/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:120:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run68/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run69/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run7/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:128:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run70/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:115:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run71/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run72/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:128:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run73/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:140:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run74/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run75/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:355:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run76/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:462:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run77/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:368:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run78/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:383:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run79/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:462:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run8/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:140:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run80/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:451:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run81/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:558:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run82/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:466:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run83/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:481:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run84/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:558:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run85/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:579:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run86/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:686:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run87/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:606:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run88/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:621:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run89/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:686:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run9/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run90/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:675:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run91/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:878:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run92/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:690:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run93/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:709:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run94/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:878:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run95/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2787:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run96/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3182:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run97/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2814:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run98/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2841:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run99/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3182:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run0/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:107:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run1/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run10/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:355:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run100/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:963:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run101/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1838:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run102/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1102:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run103/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1149:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run104/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1838:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run105/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4995:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run106/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run107/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5018:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run108/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5065:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run109/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run11/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:462:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run110/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4419:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run111/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5294:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run112/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4446:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run113/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4493:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run114/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5294:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run115/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3555:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run116/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5582:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run117/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3722:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run118/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3769:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run119/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3565:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run12/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:368:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run13/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:383:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run14/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:462:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run15/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:451:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run16/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:558:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run17/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:466:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run18/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:481:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run19/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:558:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run2/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:120:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run20/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:579:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run21/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:686:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run22/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:606:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run23/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:621:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run24/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:686:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run25/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2403:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run26/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3278:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run27/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2416:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run28/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2463:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run29/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3278:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run3/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run30/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2979:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run31/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4718:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run32/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3118:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run33/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3165:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run34/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2989:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run35/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:963:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run36/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1838:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run37/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1102:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run38/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1149:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run39/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1838:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run4/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run40/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4995:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run41/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run42/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5018:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run43/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5065:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run44/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run45/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4419:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run46/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5294:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run47/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4446:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run48/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4493:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run49/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5294:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run5/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:115:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run50/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3555:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run51/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5582:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run52/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3722:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run53/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3769:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run54/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3565:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run55/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:107:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run56/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run57/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:120:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run58/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run59/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run6/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run60/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:115:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run61/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run62/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:128:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run63/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:140:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run64/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run65/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:107:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run66/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run67/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:120:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run68/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run69/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run7/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:128:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run70/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:115:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run71/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run72/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:128:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run73/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:140:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run74/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run75/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:355:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run76/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:462:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run77/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:368:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run78/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:383:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run79/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:462:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run8/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:140:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run80/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:451:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run81/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:558:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run82/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:466:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run83/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:481:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run84/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:558:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run85/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:579:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run86/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:686:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run87/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:606:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run88/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:621:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run89/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:686:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run9/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run90/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2403:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run91/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3278:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run92/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2416:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run93/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2463:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run94/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3278:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run95/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2979:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run96/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4718:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run97/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3118:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run98/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3165:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run99/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2989:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run0/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:107:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run1/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run10/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4995:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run11/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run12/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5018:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run13/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5065:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run14/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run15/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3555:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run16/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5582:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run17/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3722:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run18/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3769:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run19/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3565:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run2/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:120:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run20/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:579:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run21/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:686:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run22/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:606:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run23/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:621:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run24/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:686:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run25/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:963:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run26/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1838:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run27/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1102:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run28/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1149:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run29/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1838:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run3/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run30/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4419:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run31/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5294:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run32/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4446:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run33/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4493:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run34/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5294:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run35/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3555:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run36/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5582:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run37/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3722:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run38/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3769:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run39/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3565:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run4/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run5/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:963:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run6/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1838:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run7/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1102:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run8/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1149:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy1_run9/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1838:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run0/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:435:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run1/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:771:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run2/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1955:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run3/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:963:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run4/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:435:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run5/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1955:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run6/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:963:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run7/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3811:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run8/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1974:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run0/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:107:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run1/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run10/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:355:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run100/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:963:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run101/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1838:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run102/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1102:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run103/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1149:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run104/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1838:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run105/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:6723:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run106/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:7598:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run107/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:6758:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run108/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:6805:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run109/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:7598:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run11/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:462:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run110/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4995:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run111/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run112/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5018:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run113/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5065:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run114/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run115/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4419:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run116/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5294:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run117/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4446:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run118/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4493:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run119/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5294:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run12/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:368:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run120/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3555:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run121/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5582:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run122/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3722:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run123/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3769:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run124/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3565:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run13/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:383:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run14/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:462:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run15/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:451:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run16/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:558:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run17/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:466:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run18/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:481:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run19/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:558:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run2/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:120:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run20/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:579:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run21/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:686:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run22/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:606:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run23/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:621:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run24/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:686:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run25/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2403:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run26/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3278:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run27/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2416:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run28/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2463:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run29/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3278:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run3/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run30/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2979:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run31/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4718:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run32/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3118:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run33/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3165:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run34/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2989:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run35/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:963:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run36/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1838:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run37/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1102:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run38/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1149:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run39/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1838:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run4/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run40/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4995:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run41/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run42/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5018:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run43/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5065:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run44/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5870:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run45/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4419:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run46/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5294:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run47/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4446:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run48/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4493:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run49/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5294:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run5/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:115:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run50/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3555:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run51/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5582:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run52/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3722:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run53/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3769:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run54/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3565:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run55/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:107:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run56/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run57/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:120:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run58/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run59/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run6/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run60/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:115:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run61/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run62/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:128:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run63/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:140:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run64/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run65/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:107:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run66/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run67/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:120:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run68/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run69/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:121:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run7/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:128:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run70/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:115:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run71/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run72/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:128:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run73/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:140:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run74/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run75/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:355:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run76/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:462:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run77/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:368:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run78/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:383:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run79/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:462:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run8/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:140:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run80/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:451:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run81/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:558:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run82/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:466:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run83/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:481:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run84/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:558:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run85/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:579:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run86/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:686:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run87/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:606:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run88/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:621:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run89/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:686:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run9/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:132:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run90/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2403:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run91/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3278:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run92/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2416:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run93/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2463:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run94/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3278:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run95/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2979:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run96/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4718:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run97/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3118:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run98/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3165:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_run99/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2989:21: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run0/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:125:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Wincompatible-pointer-types]). |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run1/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:137:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Wincompatible-pointer-types]). |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run2/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:138:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Wincompatible-pointer-types]). |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run3/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:151:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Wincompatible-pointer-types]). |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run4/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:137:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Wincompatible-pointer-types]). |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run5/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:125:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Wincompatible-pointer-types]). |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run6/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:137:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Wincompatible-pointer-types]). |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run7/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:138:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Wincompatible-pointer-types]). |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run8/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:151:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Wincompatible-pointer-types]). |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run9/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:137:31: error: passing argument 3 of ‘node0_node1’ from incompatible pointer type [-Wincompatible-pointer-types]). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run0/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:105:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run1/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:119:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run10/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:399:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run100/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2976:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run101/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5867:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run102/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3023:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run103/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5914:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run104/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:960:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run105/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1835:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run106/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1007:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run107/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1882:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run108/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:10176:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run109/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:11051:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run11/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:506:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run110/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:10223:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run111/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:11098:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run112/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:6720:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run113/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:7595:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run114/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:6767:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run115/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:7642:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run116/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:6720:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run117/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:7595:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run118/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:6767:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run119/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:7642:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run12/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:148:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run120/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3552:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run121/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3562:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run122/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3599:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run123/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3609:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run124/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:94:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run125/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:104:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run126/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:746:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run127/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:756:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run128/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3936:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run129/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4203:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run13/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:171:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run130/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3955:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run131/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4222:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run14/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:160:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run15/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:183:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run16/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:148:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run17/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:171:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run18/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:160:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run19/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:183:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run2/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:117:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run20/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:180:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run21/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:203:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run22/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:192:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run23/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:215:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run24/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:832:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run25/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:939:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run26/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:847:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run27/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:954:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run28/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3424:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run29/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4203:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run3/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:131:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run30/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3467:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run31/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4246:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run32/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2688:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run33/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3563:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run34/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2735:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run35/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3610:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run36/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2976:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run37/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5867:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run38/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3023:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run39/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5914:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run4/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:114:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run40/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:960:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run41/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1835:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run42/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1007:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run43/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1882:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run44/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:960:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run45/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1835:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run46/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1007:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run47/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1882:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run48/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4696:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run49/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4907:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run5/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:131:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run50/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4712:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run51/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4923:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run52/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4696:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run53/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4907:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run54/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4712:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run55/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4923:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run56/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:6720:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run57/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:7595:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run58/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:6767:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run59/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:7642:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run6/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:126:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run60/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:6720:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run61/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:7595:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run62/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:6767:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run63/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:7642:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run64/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3552:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run65/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3562:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run66/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3599:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run67/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3609:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run68/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:105:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run69/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:119:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run7/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:143:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run70/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:117:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run71/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:131:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run72/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:114:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run73/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:131:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run74/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:126:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run75/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:143:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run76/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:105:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run77/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:119:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run78/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:117:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run79/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:131:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run8/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:384:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run80/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:114:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run81/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:131:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run82/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:126:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run83/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:143:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run84/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:384:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run85/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:491:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run86/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:399:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run87/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:506:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run88/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:512:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run89/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:619:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run9/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:491:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run90/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:527:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run91/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:634:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run92/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:832:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run93/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:939:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run94/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:847:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run95/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:954:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run96/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2688:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run97/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3563:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run98/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2735:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run99/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3610:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run0/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:105:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run1/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:119:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run10/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:126:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run100/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2688:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run101/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3563:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run102/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2735:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run103/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3610:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run104/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2976:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run105/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5867:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run106/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3023:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run107/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5914:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run108/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:960:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run109/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1835:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run11/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:143:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run110/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1007:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run111/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1882:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run112/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:10176:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run113/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:11051:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run114/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:10223:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run115/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:11098:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run116/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:6720:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run117/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:7595:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run118/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:6767:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run119/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:7642:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run12/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:384:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run120/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:6720:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run121/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:7595:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run122/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:6767:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run123/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:7642:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run124/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3552:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run125/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3562:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run126/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3599:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run127/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3609:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run128/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:94:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run129/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:104:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run13/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:491:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run130/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:746:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run131/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:756:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run132/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3936:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run133/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4203:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run134/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3955:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run135/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4222:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run14/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:399:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run15/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:506:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run16/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:148:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run17/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:171:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run18/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:160:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run19/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:183:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run2/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:117:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run20/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:148:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run21/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:171:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run22/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:160:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run23/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:183:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run24/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:180:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run25/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:203:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run26/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:192:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run27/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:215:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run28/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:832:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run29/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:939:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run3/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:131:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run30/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:847:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run31/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:954:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run32/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3424:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run33/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4203:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run34/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3467:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run35/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4246:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run36/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2688:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run37/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3563:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run38/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2735:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run39/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3610:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run4/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:168:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run40/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:2976:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run41/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5867:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run42/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3023:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run43/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:5914:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run44/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:960:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run45/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1835:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run46/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1007:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run47/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1882:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run48/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:960:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run49/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1835:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run5/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:203:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run50/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1007:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run51/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:1882:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run52/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4696:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run53/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4907:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run54/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4712:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run55/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4923:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run56/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4696:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run57/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4907:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run58/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4712:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run59/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:4923:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run6/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:180:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run60/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:6720:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run61/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:7595:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run62/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:6767:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run63/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:7642:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run64/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:6720:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run65/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:7595:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run66/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:6767:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run67/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:7642:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run68/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3552:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run69/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3562:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run7/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:215:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run70/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3599:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run71/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:3609:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run72/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:105:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run73/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:119:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run74/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:117:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run75/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:131:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run76/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:114:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run77/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:131:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run78/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:126:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run79/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:143:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run8/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:114:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run80/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:105:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run81/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:119:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run82/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:117:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run83/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:131:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run84/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:114:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run85/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:131:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run86/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:126:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run87/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:143:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run88/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:384:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run89/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:491:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run9/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:131:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run90/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:399:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run91/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:506:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run92/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:512:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run93/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:619:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run94/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:527:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run95/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:634:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run96/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:832:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run97/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:939:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run98/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:847:17: error: pointer value used where a floating-point was expected). |
+| test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel4_run99/model.onnx |  | Data/Data | ❌ | Failed to build testbench (model.c:954:17: error: pointer value used where a floating-point was expected). |
 | test/contrib_ops/matmul_bnb4_test/Float32_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_bnb4_test/Float32_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_bnb4_test/Float32_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |

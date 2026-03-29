@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 225 / 256
+Supported operators: 224 / 256
 
 | Operator | Supported |
 | --- | --- |
@@ -236,7 +236,7 @@ Supported operators: 225 / 256
 | com.microsoft::MatMulBnb4 | ✅ |
 | com.microsoft::MatMulInteger16 | ❌ |
 | com.microsoft::MatMulIntegerToFloat | ✅ |
-| com.microsoft::MatMulNBits | ✅ |
+| com.microsoft::MatMulNBits | ❌ |
 | com.microsoft::MaxpoolWithMask | ❌ |
 | com.microsoft::MoE | ❌ |
 | com.microsoft::MultiHeadAttention | ✅ |

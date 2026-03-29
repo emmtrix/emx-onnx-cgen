@@ -1,9 +1,9 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "Failed to build testbench (model.c:137:31: error: passing argument 3 of \u2018node0_node1\u2019 from incompatible pointer type [-Wincompatible-pointer-types]).",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::MatMulNBits"
   ],
-  "generated_checksum": "5eadf88f8e6c4f15a27019851ccadb822a4f59765788038c5e27e78c2c920c78"
+  "generated_checksum": "38efe78475d5636a7500ebdd2a1617eb8f69bb630ee5269d6b93705b495fa03c"
 }

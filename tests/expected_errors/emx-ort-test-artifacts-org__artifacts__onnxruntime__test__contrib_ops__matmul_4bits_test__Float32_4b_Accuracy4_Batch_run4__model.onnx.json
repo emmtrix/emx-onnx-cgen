@@ -1,9 +1,9 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "Failed to build testbench (model.c:435:21: error: pointer value used where a floating-point was expected).",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy4_Batch_run4 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::MatMulNBits"
   ],
-  "generated_checksum": "86ff13e5f1fff3a9744977e8b2ce43863e2a8969fbacb905f1ecdc3ad0ecc5c9"
+  "generated_checksum": "e5a1148cefc03beaf0dcb1a4b415984b28c091cf014ac5d7d4a0306068c0e40c"
 }
