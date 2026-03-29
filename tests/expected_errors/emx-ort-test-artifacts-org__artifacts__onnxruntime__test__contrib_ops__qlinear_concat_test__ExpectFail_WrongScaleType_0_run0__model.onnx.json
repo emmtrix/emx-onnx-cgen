@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.QLinearConcat",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/qlinear_concat_test/ExpectFail_WrongScaleType_0_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::QLinearConcat"
-  ]
+  ],
+  "generated_checksum": "1b8640ca1a4b700a5b841c3ec0c2727b1f22cf92074a8599105ee8be7dd3274b"
 }

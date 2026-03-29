@@ -3251,6 +3251,65 @@ def _make_qlinearsoftmax_model() -> onnx.ModelProto:
     return model
 
 
+def _make_qlinearconcat_model(
+    dtype: int = TensorProto.UINT8,
+    n_inputs: int = 2,
+    axis: int = 1,
+) -> onnx.ModelProto:
+    # Build shapes: first input is base shape, others vary only on axis dim
+    base_shape = [2, 3, 4]
+    axis_dim_others = 1  # axis-dimension size for inputs 1..n
+    shapes = [base_shape] + [
+        [base_shape[d] if d != axis else axis_dim_others for d in range(3)]
+        for _ in range(n_inputs - 1)
+    ]
+    out_shape = list(base_shape)
+    out_shape[axis] = sum(s[axis] for s in shapes)
+
+    input_infos = [
+        helper.make_tensor_value_info(f"X{i}", dtype, shapes[i])
+        for i in range(n_inputs)
+    ]
+    output_info = helper.make_tensor_value_info("Y", dtype, out_shape)
+    y_scale = helper.make_tensor("y_scale", TensorProto.FLOAT, dims=[], vals=[0.25])
+    y_zp = helper.make_tensor("y_zp", dtype, dims=[], vals=[5])
+    input_scales = [
+        helper.make_tensor(f"x_scale{i}", TensorProto.FLOAT, dims=[], vals=[0.5])
+        for i in range(n_inputs)
+    ]
+    input_zps = [
+        helper.make_tensor(f"x_zp{i}", dtype, dims=[], vals=[10])
+        for i in range(n_inputs)
+    ]
+    node_inputs = ["y_scale", "y_zp"]
+    for i in range(n_inputs):
+        node_inputs += [f"X{i}", f"x_scale{i}", f"x_zp{i}"]
+    node = helper.make_node(
+        "QLinearConcat",
+        inputs=node_inputs,
+        outputs=["Y"],
+        domain="com.microsoft",
+        axis=axis,
+    )
+    graph = helper.make_graph(
+        [node],
+        "qlinearconcat_graph",
+        input_infos,
+        [output_info],
+        initializer=[y_scale, y_zp, *input_scales, *input_zps],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[
+            helper.make_operatorsetid("", 15),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+    return model
+
+
 def _make_matmulinteger_model() -> onnx.ModelProto:
     input_info = helper.make_tensor_value_info("in0", TensorProto.UINT8, [2, 3])
     weight_values = np.arange(12, dtype=np.uint8).reshape(3, 4)
@@ -7692,6 +7751,46 @@ def test_qlinearadd_codegen_smoke() -> None:
     model = _make_qlinearadd_model()
     generated = Compiler(CompilerOptions()).compile(model)
     assert "OpType: QLinearAdd" in generated
+
+
+def test_lower_qlinearconcat() -> None:
+    model = _make_qlinearconcat_model(n_inputs=2, axis=1)
+    graph = import_onnx(model)
+    op = get_lowering("QLinearConcat")(graph, graph.nodes[0])
+    assert op.dtype == ScalarType.U8
+    assert op.axis == 1
+    assert len(op.inputs) == 2
+    assert op.output_shape == (2, 4, 4)  # axis=1: 3+1=4
+
+
+def test_lower_qlinearconcat_int8() -> None:
+    model = _make_qlinearconcat_model(dtype=TensorProto.INT8, n_inputs=3, axis=2)
+    graph = import_onnx(model)
+    op = get_lowering("QLinearConcat")(graph, graph.nodes[0])
+    assert op.dtype == ScalarType.I8
+    assert op.axis == 2
+    assert len(op.inputs) == 3
+
+
+def test_qlinearconcat_codegen_smoke() -> None:
+    model = _make_qlinearconcat_model(n_inputs=2, axis=1)
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "OpType: QLinearConcat" in generated
+
+
+def test_qlinearconcat_op_matches_onnxruntime() -> None:
+    model = _make_qlinearconcat_model(n_inputs=2, axis=1)
+    _run_testbench_compare(model)
+
+
+def test_qlinearconcat_3inputs_op_matches_onnxruntime() -> None:
+    model = _make_qlinearconcat_model(n_inputs=3, axis=1)
+    _run_testbench_compare(model)
+
+
+def test_qlinearconcat_int8_op_matches_onnxruntime() -> None:
+    model = _make_qlinearconcat_model(dtype=TensorProto.INT8, n_inputs=2, axis=2)
+    _run_testbench_compare(model)
 
 
 def test_qlinearsoftmax_op_matches_onnxruntime() -> None:
