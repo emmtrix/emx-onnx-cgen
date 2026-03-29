@@ -74,10 +74,12 @@ def _resolve_average_pool_spec(
     input_name: str,
     output_name: str,
     require_output_shape: bool = True,
+    channels_last: bool = False,
 ) -> _AveragePoolSpec:
     supported_attrs = {
         "auto_pad",
         "ceil_mode",
+        "channels_last",
         "count_include_pad",
         "dilations",
         "kernel_shape",
@@ -125,6 +127,13 @@ def _resolve_average_pool_spec(
     )
     if len(pads) != 2 * spatial_rank:
         raise UnsupportedOpError("AveragePool pads rank mismatch")
+    if channels_last:
+        batch = input_shape[0]
+        channels = input_shape[-1]
+        in_spatial = input_shape[1:-1]
+    else:
+        batch, channels = input_shape[:2]
+        in_spatial = input_shape[2:]
     if auto_pad in ("", "NOTSET"):
         pad_begin = pads[:spatial_rank]
         pad_end = pads[spatial_rank:]
@@ -135,7 +144,7 @@ def _resolve_average_pool_spec(
         pad_begin = []
         pad_end = []
         for dim, stride, dilation, kernel in zip(
-            input_shape[2:], strides, dilations, kernel_shape
+            in_spatial, strides, dilations, kernel_shape
         ):
             effective_kernel = dilation * (kernel - 1) + 1
             out_dim = math.ceil(dim / stride)
@@ -150,8 +159,6 @@ def _resolve_average_pool_spec(
         pad_end = tuple(pad_end)
     else:
         raise UnsupportedOpError("AveragePool has unsupported auto_pad mode")
-    batch, channels = input_shape[:2]
-    in_spatial = input_shape[2:]
     out_spatial = []
     for dim, stride, dilation, kernel, pad_start, pad_finish in zip(
         in_spatial, strides, dilations, kernel_shape, pad_begin, pad_end
@@ -167,7 +174,10 @@ def _resolve_average_pool_spec(
         if out_dim < 0:
             raise ShapeInferenceError("AveragePool output shape must be non-negative")
         out_spatial.append(out_dim)
-    expected_output_shape = (batch, channels, *out_spatial)
+    if channels_last:
+        expected_output_shape = (batch, *out_spatial, channels)
+    else:
+        expected_output_shape = (batch, channels, *out_spatial)
     try:
         output_shape = _value_shape(graph, output_name, node)
     except ShapeInferenceError:
@@ -399,25 +409,41 @@ def lower_qlinear_average_pool(graph: Graph, node: Node) -> QLinearAveragePoolOp
     _ensure_scalar_shape(input_zero_shape, "x_zero_point")
     _ensure_scalar_shape(output_zero_shape, "y_zero_point")
 
+    channels_last = bool(int(node.attrs.get("channels_last", 0)))
+
     spec = _resolve_average_pool_spec(
         graph,
         node,
         input_name=input_name,
         output_name=output_name,
         require_output_shape=False,
+        channels_last=channels_last,
     )
     if isinstance(graph, GraphContext):
-        if spec.spatial_rank == 3:
-            graph.set_shape(
-                output_name,
-                (spec.batch, spec.channels, spec.out_d, spec.out_h, spec.out_w),
-            )
-        elif spec.spatial_rank == 1:
-            graph.set_shape(output_name, (spec.batch, spec.channels, spec.out_w))
+        if channels_last:
+            if spec.spatial_rank == 3:
+                graph.set_shape(
+                    output_name,
+                    (spec.batch, spec.out_d, spec.out_h, spec.out_w, spec.channels),
+                )
+            elif spec.spatial_rank == 1:
+                graph.set_shape(output_name, (spec.batch, spec.out_w, spec.channels))
+            else:
+                graph.set_shape(
+                    output_name, (spec.batch, spec.out_h, spec.out_w, spec.channels)
+                )
         else:
-            graph.set_shape(
-                output_name, (spec.batch, spec.channels, spec.out_h, spec.out_w)
-            )
+            if spec.spatial_rank == 3:
+                graph.set_shape(
+                    output_name,
+                    (spec.batch, spec.channels, spec.out_d, spec.out_h, spec.out_w),
+                )
+            elif spec.spatial_rank == 1:
+                graph.set_shape(output_name, (spec.batch, spec.channels, spec.out_w))
+            else:
+                graph.set_shape(
+                    output_name, (spec.batch, spec.channels, spec.out_h, spec.out_w)
+                )
         graph.set_dtype(output_name, output_dtype)
     return QLinearAveragePoolOp(
         input0=input_name,
@@ -459,6 +485,7 @@ def lower_qlinear_average_pool(graph: Graph, node: Node) -> QLinearAveragePoolOp
         output_scale_shape=output_scale_shape,
         input_zero_shape=input_zero_shape,
         output_zero_shape=output_zero_shape,
+        channels_last=channels_last,
     )
 
 

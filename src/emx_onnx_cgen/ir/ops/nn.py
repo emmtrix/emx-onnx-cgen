@@ -4504,6 +4504,10 @@ class QLinearAveragePoolOp(RenderableOpBase):
     stride_d: int = 1
     pad_front: int = 0
     pad_back: int = 0
+    channels_last: bool = False
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
@@ -4519,24 +4523,44 @@ class QLinearAveragePoolOp(RenderableOpBase):
                 ("output", self.output),
             ]
         )
-        input_shape = (
-            (self.batch, self.channels, self.in_d, self.in_h, self.in_w)
-            if self.spatial_rank == 3
-            else (
-                (self.batch, self.channels, self.in_w)
-                if self.spatial_rank == 1
-                else (self.batch, self.channels, self.in_h, self.in_w)
+        if self.channels_last:
+            input_shape = (
+                (self.batch, self.in_d, self.in_h, self.in_w, self.channels)
+                if self.spatial_rank == 3
+                else (
+                    (self.batch, self.in_w, self.channels)
+                    if self.spatial_rank == 1
+                    else (self.batch, self.in_h, self.in_w, self.channels)
+                )
             )
-        )
-        output_shape = (
-            (self.batch, self.channels, self.out_d, self.out_h, self.out_w)
-            if self.spatial_rank == 3
-            else (
-                (self.batch, self.channels, self.out_w)
-                if self.spatial_rank == 1
-                else (self.batch, self.channels, self.out_h, self.out_w)
+            output_shape = (
+                (self.batch, self.out_d, self.out_h, self.out_w, self.channels)
+                if self.spatial_rank == 3
+                else (
+                    (self.batch, self.out_w, self.channels)
+                    if self.spatial_rank == 1
+                    else (self.batch, self.out_h, self.out_w, self.channels)
+                )
             )
-        )
+        else:
+            input_shape = (
+                (self.batch, self.channels, self.in_d, self.in_h, self.in_w)
+                if self.spatial_rank == 3
+                else (
+                    (self.batch, self.channels, self.in_w)
+                    if self.spatial_rank == 1
+                    else (self.batch, self.channels, self.in_h, self.in_w)
+                )
+            )
+            output_shape = (
+                (self.batch, self.channels, self.out_d, self.out_h, self.out_w)
+                if self.spatial_rank == 3
+                else (
+                    (self.batch, self.channels, self.out_w)
+                    if self.spatial_rank == 1
+                    else (self.batch, self.channels, self.out_h, self.out_w)
+                )
+            )
         input_suffix = emitter.param_array_suffix(input_shape)
         output_suffix = emitter.param_array_suffix(output_shape)
         input_scale_suffix = emitter.param_array_suffix(self.input_scale_shape)
@@ -4623,6 +4647,7 @@ class QLinearAveragePoolOp(RenderableOpBase):
                 pad_top=self.pad_top,
                 pad_left=self.pad_left,
                 count_include_pad=self.count_include_pad,
+                channels_last=self.channels_last,
                 dim_args=emitter.dim_args_str(),
                 output_c_type=self.dtype.c_type,
             )
@@ -4631,6 +4656,12 @@ class QLinearAveragePoolOp(RenderableOpBase):
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        if self.channels_last:
+            if self.spatial_rank == 3:
+                return (self.batch, self.out_d, self.out_h, self.out_w, self.channels)
+            if self.spatial_rank == 1:
+                return (self.batch, self.out_w, self.channels)
+            return (self.batch, self.out_h, self.out_w, self.channels)
         if self.spatial_rank == 3:
             return (self.batch, self.channels, self.out_d, self.out_h, self.out_w)
         if self.spatial_rank == 1:
