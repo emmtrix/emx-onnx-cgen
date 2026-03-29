@@ -39,6 +39,7 @@ class Node:
     inputs: tuple[str, ...]
     outputs: tuple[str, ...]
     attrs: Mapping[str, object]
+    domain: str | None = None
 
 
 @dataclass(frozen=True)
