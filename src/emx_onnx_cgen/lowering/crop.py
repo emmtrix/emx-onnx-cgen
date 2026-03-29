@@ -31,7 +31,8 @@ def lower_crop(graph: Graph, node: Node) -> SliceOp:
     border = [int(v) for v in border_raw]
     if len(border) != 4:
         raise UnsupportedOpError("Crop border attribute must have exactly 4 values")
-    top, bottom, left, right = border[0], border[1], border[2], border[3]
+    # ONNX Crop border order is [leftBorder, topBorder, rightBorder, bottomBorder]
+    left, top, right, bottom = border[0], border[1], border[2], border[3]
     scale_raw = node.attrs.get("scale", [])
     scale = [int(v) for v in scale_raw]
     if scale:
