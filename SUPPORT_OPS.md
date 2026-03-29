@@ -240,7 +240,7 @@ Supported operators: 215 / 256
 | com.microsoft::MaxpoolWithMask | ❌ |
 | com.microsoft::MoE | ❌ |
 | com.microsoft::MultiHeadAttention | ❌ |
-| com.microsoft::MurmurHash3 | ❌ |
+| com.microsoft::MurmurHash3 | ✅ |
 | com.microsoft::NGramRepeatBlock | ❌ |
 | com.microsoft::NhwcMaxPool | ✅ |
 | com.microsoft::QAttention | ❌ |

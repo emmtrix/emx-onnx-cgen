@@ -73,6 +73,7 @@ _LOWERING_MODULES = [
     "maxunpool",
     "mean_variance_normalization",
     "mel_weight_matrix",
+    "murmur_hash3",
     "negative_log_likelihood_loss",
     "non_max_suppression",
     "nonzero",

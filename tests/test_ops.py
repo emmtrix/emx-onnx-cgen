@@ -5008,6 +5008,157 @@ def test_regex_full_match_matches_onnxruntime() -> None:
     np.testing.assert_array_equal(output_data, ort_output)
 
 
+def _make_murmur_hash3_model(
+    *,
+    input_shape: list[int],
+    input_elem_type: int,
+    output_elem_type: int,
+    seed: int = 0,
+    positive: int = 0,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("in0", input_elem_type, input_shape)
+    output_info = helper.make_tensor_value_info("out", output_elem_type, input_shape)
+    node = helper.make_node(
+        "MurmurHash3",
+        inputs=["in0"],
+        outputs=["out"],
+        domain="com.microsoft",
+        seed=seed,
+        positive=positive,
+    )
+    graph = helper.make_graph(
+        [node],
+        "murmur_hash3_graph",
+        [input_info],
+        [output_info],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[
+            helper.make_operatorsetid("", 13),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+    return model
+
+
+def test_murmur_hash3_lowering_int32() -> None:
+    model = _make_murmur_hash3_model(
+        input_shape=[2],
+        input_elem_type=TensorProto.INT32,
+        output_elem_type=TensorProto.INT32,
+        seed=0,
+        positive=0,
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+    lowering = get_lowering("MurmurHash3")
+    from shared.scalar_types import ScalarType
+
+    op = lowering(graph, graph.nodes[0])
+    assert op.input0 == "in0"
+    assert op.output == "out"
+    assert op.seed == 0
+    assert op.input_dtype == ScalarType.I32
+    assert op.output_dtype == ScalarType.I32
+
+
+def test_murmur_hash3_lowering_rejects_unsupported_dtype() -> None:
+    model = _make_murmur_hash3_model(
+        input_shape=[1],
+        input_elem_type=TensorProto.INT8,
+        output_elem_type=TensorProto.INT32,
+        seed=0,
+        positive=0,
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+    lowering = get_lowering("MurmurHash3")
+    with pytest.raises(UnsupportedOpError):
+        lowering(graph, graph.nodes[0])
+
+
+def test_murmur_hash3_codegen_emits_hash_function() -> None:
+    model = _make_murmur_hash3_model(
+        input_shape=[4],
+        input_elem_type=TensorProto.INT32,
+        output_elem_type=TensorProto.INT32,
+        seed=0,
+        positive=0,
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "0xcc9e2d51" in generated
+    assert "0x1b873593" in generated
+
+
+def test_murmur_hash3_int32_matches_onnxruntime() -> None:
+    model = _make_murmur_hash3_model(
+        input_shape=[3],
+        input_elem_type=TensorProto.INT32,
+        output_elem_type=TensorProto.UINT32,
+        seed=0,
+        positive=1,
+    )
+    inputs = {"in0": np.array([3, 4, 5], dtype=np.int32)}
+    session = ort.InferenceSession(
+        model.SerializeToString(), providers=["CPUExecutionProvider"]
+    )
+    ort_output = session.run(None, inputs)[0]
+    payload = _compile_and_run_testbench(model, testbench_inputs=inputs)
+    output_payload = payload.get("outputs", {}).get("out")
+    assert output_payload is not None, "Missing output 'out'"
+    output_data = decode_testbench_array(output_payload["data"], ort_output.dtype)
+    output_data = output_data.reshape(ort_output.shape)
+    np.testing.assert_array_equal(output_data, ort_output)
+
+
+def test_murmur_hash3_string_matches_onnxruntime() -> None:
+    model = _make_murmur_hash3_model(
+        input_shape=[2],
+        input_elem_type=TensorProto.STRING,
+        output_elem_type=TensorProto.UINT32,
+        seed=0,
+        positive=1,
+    )
+    ort_inputs = np.array(["foo", "bar"], dtype=object)
+    session = ort.InferenceSession(
+        model.SerializeToString(), providers=["CPUExecutionProvider"]
+    )
+    ort_output = session.run(None, {"in0": ort_inputs})[0]
+    payload = _compile_and_run_testbench(
+        model,
+        testbench_inputs={"in0": _encode_string_testbench_input(ort_inputs)},
+    )
+    output_payload = payload.get("outputs", {}).get("out")
+    assert output_payload is not None, "Missing output 'out'"
+    output_data = decode_testbench_array(output_payload["data"], ort_output.dtype)
+    output_data = output_data.reshape(ort_output.shape)
+    np.testing.assert_array_equal(output_data, ort_output)
+
+
+def test_murmur_hash3_nonzero_seed_matches_onnxruntime() -> None:
+    model = _make_murmur_hash3_model(
+        input_shape=[2],
+        input_elem_type=TensorProto.INT32,
+        output_elem_type=TensorProto.INT32,
+        seed=42,
+        positive=0,
+    )
+    inputs = {"in0": np.array([3, 4], dtype=np.int32)}
+    session = ort.InferenceSession(
+        model.SerializeToString(), providers=["CPUExecutionProvider"]
+    )
+    ort_output = session.run(None, inputs)[0]
+    payload = _compile_and_run_testbench(model, testbench_inputs=inputs)
+    output_payload = payload.get("outputs", {}).get("out")
+    assert output_payload is not None, "Missing output 'out'"
+    output_data = decode_testbench_array(output_payload["data"], ort_output.dtype)
+    output_data = output_data.reshape(ort_output.shape)
+    np.testing.assert_array_equal(output_data, ort_output)
+
+
 def test_tfidf_vectorizer_testbench_match() -> None:
     model = _make_tfidf_vectorizer_model(
         input_shape=[4],
