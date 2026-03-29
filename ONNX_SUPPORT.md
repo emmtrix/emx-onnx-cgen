@@ -8,7 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1801 / 1802, 99.9% | 1.20.1 |
-| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 3224 / 4182, 77.1% | n/a |
+| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 3248 / 4182, 77.7% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -1832,7 +1832,7 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 
 Test directory: `emx-ort-test-artifacts-org/artifacts/onnxruntime`
 
-Coverage 3224 / 4182 ONNX files (77.1%).
+Coverage 3248 / 4182 ONNX files (77.7%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -5834,30 +5834,30 @@ Coverage 3224 / 4182 ONNX files (77.1%).
 | test/contrib_ops/quant_gemm_test/Scalar_run97/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/Scalar_run98/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quant_gemm_test/Scalar_run99/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/quantize_attention_op_test/QAttentionBatch1_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
-| test/contrib_ops/quantize_attention_op_test/QAttentionBatch1_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
-| test/contrib_ops/quantize_attention_op_test/QAttentionBatch2_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
-| test/contrib_ops/quantize_attention_op_test/QAttentionBatch2_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
-| test/contrib_ops/quantize_attention_op_test/QAttentionMaskExceedSequence_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
-| test/contrib_ops/quantize_attention_op_test/QAttentionMaskExceedSequence_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
-| test/contrib_ops/quantize_attention_op_test/QAttentionMaskPartialSequence_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
-| test/contrib_ops/quantize_attention_op_test/QAttentionMaskPartialSequence_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
-| test/contrib_ops/quantize_attention_op_test/QAttentionNoMaskIndex_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
-| test/contrib_ops/quantize_attention_op_test/QAttentionNoMaskIndex_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
-| test/contrib_ops/quantize_attention_op_test/QAttentionPastState_u8s8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
-| test/contrib_ops/quantize_attention_op_test/QAttentionPastState_u8s8_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
-| test/contrib_ops/quantize_attention_op_test/QAttentionPastState_u8s8_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
-| test/contrib_ops/quantize_attention_op_test/QAttentionPastState_u8s8_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
-| test/contrib_ops/quantize_attention_op_test/QAttentionPastState_u8u8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
-| test/contrib_ops/quantize_attention_op_test/QAttentionPastState_u8u8_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
-| test/contrib_ops/quantize_attention_op_test/QAttentionPastState_u8u8_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
-| test/contrib_ops/quantize_attention_op_test/QAttentionPastState_u8u8_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
-| test/contrib_ops/quantize_attention_op_test/QAttentionPrunedModel_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
-| test/contrib_ops/quantize_attention_op_test/QAttentionPrunedModel_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
-| test/contrib_ops/quantize_attention_op_test/QAttentionUnidirectional_U8S8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
-| test/contrib_ops/quantize_attention_op_test/QAttentionUnidirectional_U8U8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
-| test/contrib_ops/quantize_attention_op_test/SharedPrepackedWeights_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
-| test/contrib_ops/quantize_attention_op_test/SharedPrepackedWeights_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QAttention |
+| test/contrib_ops/quantize_attention_op_test/QAttentionBatch1_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 3) |
+| test/contrib_ops/quantize_attention_op_test/QAttentionBatch1_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 3) |
+| test/contrib_ops/quantize_attention_op_test/QAttentionBatch2_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 3) |
+| test/contrib_ops/quantize_attention_op_test/QAttentionBatch2_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 3) |
+| test/contrib_ops/quantize_attention_op_test/QAttentionMaskExceedSequence_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 3) |
+| test/contrib_ops/quantize_attention_op_test/QAttentionMaskExceedSequence_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 3) |
+| test/contrib_ops/quantize_attention_op_test/QAttentionMaskPartialSequence_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 3) |
+| test/contrib_ops/quantize_attention_op_test/QAttentionMaskPartialSequence_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 3) |
+| test/contrib_ops/quantize_attention_op_test/QAttentionNoMaskIndex_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 3) |
+| test/contrib_ops/quantize_attention_op_test/QAttentionNoMaskIndex_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 3) |
+| test/contrib_ops/quantize_attention_op_test/QAttentionPastState_u8s8_run0/model.onnx (--max-ulp 3000) |  | Data/Data | ✅ | OK (max ULP 633) |
+| test/contrib_ops/quantize_attention_op_test/QAttentionPastState_u8s8_run1/model.onnx (--max-ulp 3000) |  | Data/Data | ✅ | OK (max ULP 633) |
+| test/contrib_ops/quantize_attention_op_test/QAttentionPastState_u8s8_run2/model.onnx (--max-ulp 3000) |  | Data/Data | ✅ | OK (max ULP 2569) |
+| test/contrib_ops/quantize_attention_op_test/QAttentionPastState_u8s8_run3/model.onnx (--max-ulp 3000) |  | Data/Data | ✅ | OK (max ULP 2569) |
+| test/contrib_ops/quantize_attention_op_test/QAttentionPastState_u8u8_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 67) |
+| test/contrib_ops/quantize_attention_op_test/QAttentionPastState_u8u8_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 67) |
+| test/contrib_ops/quantize_attention_op_test/QAttentionPastState_u8u8_run2/model.onnx (--max-ulp 3000) |  | Data/Data | ✅ | OK (max ULP 1220) |
+| test/contrib_ops/quantize_attention_op_test/QAttentionPastState_u8u8_run3/model.onnx (--max-ulp 3000) |  | Data/Data | ✅ | OK (max ULP 1220) |
+| test/contrib_ops/quantize_attention_op_test/QAttentionPrunedModel_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 4) |
+| test/contrib_ops/quantize_attention_op_test/QAttentionPrunedModel_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 4) |
+| test/contrib_ops/quantize_attention_op_test/QAttentionUnidirectional_U8S8_run0/model.onnx (--max-ulp 3000) |  | Data/Data | ✅ | OK (max ULP 1522) |
+| test/contrib_ops/quantize_attention_op_test/QAttentionUnidirectional_U8U8_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_attention_op_test/SharedPrepackedWeights_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 3) |
+| test/contrib_ops/quantize_attention_op_test/SharedPrepackedWeights_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 3) |
 | test/contrib_ops/quantize_lstm_op_test/LargeSize_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
 | test/contrib_ops/quantize_lstm_op_test/LargeSize_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
 | test/contrib_ops/quantize_lstm_op_test/LargeSize_run10/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicQuantizeLSTM |
