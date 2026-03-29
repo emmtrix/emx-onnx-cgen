@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op MaxpoolWithMask",
+  "error": "Unsupported op com.microsoft.MaxpoolWithMask",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/maxpool_mask_test/MaxPoolWithMask_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [

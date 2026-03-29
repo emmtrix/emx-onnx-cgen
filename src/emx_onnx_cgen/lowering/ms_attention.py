@@ -141,13 +141,9 @@ def resolve_ms_attention_spec(
                 "Attention past first dimension must be 2 (key, value)"
             )
         if past_shape[1] != batch or past_shape[2] != num_heads:
-            raise ShapeInferenceError(
-                "Attention past batch/heads must match"
-            )
+            raise ShapeInferenceError("Attention past batch/heads must match")
         if past_shape[4] != qk_head_size:
-            raise ShapeInferenceError(
-                "Attention past head size must match"
-            )
+            raise ShapeInferenceError("Attention past head size must match")
         past_seq = past_shape[3]
 
     total_seq = seq_len + past_seq
@@ -178,9 +174,7 @@ def resolve_ms_attention_spec(
         mask_rank = len(mask_shape)
         mask_dtype = _value_dtype(graph, mask_name, node)
         if mask_dtype != ScalarType.I32:
-            raise UnsupportedOpError(
-                "Attention mask_index must be int32"
-            )
+            raise UnsupportedOpError("Attention mask_index must be int32")
         if mask_rank == 1:
             if mask_shape[0] == batch:
                 mask_type = MASK_1D_END
@@ -207,9 +201,7 @@ def resolve_ms_attention_spec(
                 )
             mask_type = MASK_3D
         else:
-            raise UnsupportedOpError(
-                "Attention mask_index must be 1D/2D/3D"
-            )
+            raise UnsupportedOpError("Attention mask_index must be 1D/2D/3D")
 
     extra_name = _optional_name(node.inputs, 5)
     has_extra_add_qk = extra_name is not None
@@ -222,9 +214,7 @@ def resolve_ms_attention_spec(
                 f"got {extra_shape}"
             )
 
-    scale = float(
-        node.attrs.get("scale", 1.0 / math.sqrt(qk_head_size))
-    )
+    scale = float(node.attrs.get("scale", 1.0 / math.sqrt(qk_head_size)))
     unidirectional = bool(int(node.attrs.get("unidirectional", 0)))
     mask_filter_value = float(node.attrs.get("mask_filter_value", -10000.0))
 

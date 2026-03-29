@@ -1,0 +1,235 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    {% for dir in range(num_directions) %}
+    {
+        const int dir = {{ dir }};
+        const int reverse = {% if direction == "reverse" %}1{% elif direction == "bidirectional" and dir == 1 %}1{% else %}0{% endif %};
+        {% set act_f = activation_functions[dir * 3] %}
+        {% set act_g = activation_functions[dir * 3 + 1] %}
+        {% set act_h = activation_functions[dir * 3 + 2] %}
+        {{ c_type }} H_prev[{{ batch_size }}][{{ hidden_size }}];
+        {{ c_type }} C_prev[{{ batch_size }}][{{ hidden_size }}];
+        for (int b = 0; b < {{ batch_size }}; ++b) {
+            for (int h = 0; h < {{ hidden_size }}; ++h) {
+                {% if input_initial_h %}
+                H_prev[b][h] = {{ input_initial_h }}[dir][b][h];
+                {% else %}
+                H_prev[b][h] = {{ zero_literal }};
+                {% endif %}
+                {% if input_initial_c %}
+                C_prev[b][h] = {{ input_initial_c }}[dir][b][h];
+                {% else %}
+                C_prev[b][h] = {{ zero_literal }};
+                {% endif %}
+            }
+        }
+        {% if input_sequence_lens %}
+        int emx_seq_limits[{{ batch_size }}];
+        for (int b = 0; b < {{ batch_size }}; ++b) {
+            emx_seq_limits[b] = (int){{ input_sequence_lens }}[b];
+            if (emx_seq_limits[b] < 0) {
+                emx_seq_limits[b] = 0;
+            }
+            if (emx_seq_limits[b] > {{ seq_length }}) {
+                emx_seq_limits[b] = {{ seq_length }};
+            }
+        }
+        {% endif %}
+        for (int step = 0; step < {{ seq_length }}; ++step) {
+            int t = reverse ? ({{ seq_length }} - 1 - step) : step;
+            float emx_x_min = {{ input_x }}[t][0][0];
+            float emx_x_max = emx_x_min;
+            for (int b = 0; b < {{ batch_size }}; ++b) {
+                for (int i = 0; i < {{ input_size }}; ++i) {
+                    float emx_v = (float){{ input_x }}[t][b][i];
+                    if (emx_v < emx_x_min) { emx_x_min = emx_v; }
+                    if (emx_v > emx_x_max) { emx_x_max = emx_v; }
+                }
+            }
+            if (emx_x_min > 0.0f) { emx_x_min = 0.0f; }
+            if (emx_x_max < 0.0f) { emx_x_max = 0.0f; }
+            float emx_x_scale = (emx_x_max > emx_x_min) ? ((emx_x_max - emx_x_min) / 255.0f) : 1.0f;
+            int emx_x_zp = (int)(roundf(-emx_x_min / emx_x_scale));
+            if (emx_x_zp < 0) { emx_x_zp = 0; }
+            if (emx_x_zp > 255) { emx_x_zp = 255; }
+            uint8_t emx_x_q[{{ batch_size }}][{{ input_size }}];
+            for (int b = 0; b < {{ batch_size }}; ++b) {
+                for (int i = 0; i < {{ input_size }}; ++i) {
+                    float emx_q = roundf((float){{ input_x }}[t][b][i] / emx_x_scale) + (float)emx_x_zp;
+                    if (emx_q < 0.0f) { emx_q = 0.0f; }
+                    if (emx_q > 255.0f) { emx_q = 255.0f; }
+                    emx_x_q[b][i] = (uint8_t)emx_q;
+                }
+            }
+            float emx_h_min = H_prev[0][0];
+            float emx_h_max = emx_h_min;
+            for (int b = 0; b < {{ batch_size }}; ++b) {
+                for (int i = 0; i < {{ hidden_size }}; ++i) {
+                    float emx_v = H_prev[b][i];
+                    if (emx_v < emx_h_min) { emx_h_min = emx_v; }
+                    if (emx_v > emx_h_max) { emx_h_max = emx_v; }
+                }
+            }
+            if (emx_h_min > 0.0f) { emx_h_min = 0.0f; }
+            if (emx_h_max < 0.0f) { emx_h_max = 0.0f; }
+            float emx_h_scale = (emx_h_max > emx_h_min) ? ((emx_h_max - emx_h_min) / 255.0f) : 1.0f;
+            int emx_h_zp = (int)(roundf(-emx_h_min / emx_h_scale));
+            if (emx_h_zp < 0) { emx_h_zp = 0; }
+            if (emx_h_zp > 255) { emx_h_zp = 255; }
+            uint8_t emx_h_q[{{ batch_size }}][{{ hidden_size }}];
+            for (int b = 0; b < {{ batch_size }}; ++b) {
+                for (int i = 0; i < {{ hidden_size }}; ++i) {
+                    float emx_q = roundf(H_prev[b][i] / emx_h_scale) + (float)emx_h_zp;
+                    if (emx_q < 0.0f) { emx_q = 0.0f; }
+                    if (emx_q > 255.0f) { emx_q = 255.0f; }
+                    emx_h_q[b][i] = (uint8_t)emx_q;
+                }
+            }
+            for (int b = 0; b < {{ batch_size }}; ++b) {
+                {% if input_sequence_lens %}
+                if (step >= emx_seq_limits[b]) {
+                    {% if output_y %}
+                    for (int h = 0; h < {{ hidden_size }}; ++h) {
+                        {{ output_y }}[step][dir][b][h] = {{ zero_literal }};
+                    }
+                    {% endif %}
+                    continue;
+                }
+                {% endif %}
+                {{ c_type }} H_next[{{ hidden_size }}];
+                {{ c_type }} C_next[{{ hidden_size }}];
+                for (int h = 0; h < {{ hidden_size }}; ++h) {
+                    {{ c_type }} gate_i = {{ zero_literal }};
+                    {{ c_type }} gate_o = {{ zero_literal }};
+                    {{ c_type }} gate_f = {{ zero_literal }};
+                    {{ c_type }} gate_c = {{ zero_literal }};
+                    {% if per_column_w %}
+                    {
+                        int32_t emx_w_acc_i = 0, emx_w_acc_o = 0, emx_w_acc_f = 0, emx_w_acc_c = 0;
+                        for (int i = 0; i < {{ input_size }}; ++i) {
+                            int32_t emx_xd = (int32_t)emx_x_q[b][i] - emx_x_zp;
+                            emx_w_acc_i += emx_xd * ((int32_t){{ input_w }}[dir][i][h] - (int32_t){{ w_zero_point }}[dir][h]);
+                            emx_w_acc_o += emx_xd * ((int32_t){{ input_w }}[dir][i][{{ hidden_size }} + h] - (int32_t){{ w_zero_point }}[dir][{{ hidden_size }} + h]);
+                            emx_w_acc_f += emx_xd * ((int32_t){{ input_w }}[dir][i][{{ hidden_size }} * 2 + h] - (int32_t){{ w_zero_point }}[dir][{{ hidden_size }} * 2 + h]);
+                            emx_w_acc_c += emx_xd * ((int32_t){{ input_w }}[dir][i][{{ hidden_size }} * 3 + h] - (int32_t){{ w_zero_point }}[dir][{{ hidden_size }} * 3 + h]);
+                        }
+                        gate_i = ({{ c_type }})emx_w_acc_i * emx_x_scale * {{ w_scale }}[dir][h];
+                        gate_o = ({{ c_type }})emx_w_acc_o * emx_x_scale * {{ w_scale }}[dir][{{ hidden_size }} + h];
+                        gate_f = ({{ c_type }})emx_w_acc_f * emx_x_scale * {{ w_scale }}[dir][{{ hidden_size }} * 2 + h];
+                        gate_c = ({{ c_type }})emx_w_acc_c * emx_x_scale * {{ w_scale }}[dir][{{ hidden_size }} * 3 + h];
+                    }
+                    {% else %}
+                    {
+                        int32_t emx_w_acc_i = 0, emx_w_acc_o = 0, emx_w_acc_f = 0, emx_w_acc_c = 0;
+                        int32_t emx_w_zp = (int32_t){{ w_zero_point }}[dir];
+                        for (int i = 0; i < {{ input_size }}; ++i) {
+                            int32_t emx_xd = (int32_t)emx_x_q[b][i] - emx_x_zp;
+                            emx_w_acc_i += emx_xd * ((int32_t){{ input_w }}[dir][i][h] - emx_w_zp);
+                            emx_w_acc_o += emx_xd * ((int32_t){{ input_w }}[dir][i][{{ hidden_size }} + h] - emx_w_zp);
+                            emx_w_acc_f += emx_xd * ((int32_t){{ input_w }}[dir][i][{{ hidden_size }} * 2 + h] - emx_w_zp);
+                            emx_w_acc_c += emx_xd * ((int32_t){{ input_w }}[dir][i][{{ hidden_size }} * 3 + h] - emx_w_zp);
+                        }
+                        {{ c_type }} emx_w_scale = emx_x_scale * {{ w_scale }}[dir];
+                        gate_i = ({{ c_type }})emx_w_acc_i * emx_w_scale;
+                        gate_o = ({{ c_type }})emx_w_acc_o * emx_w_scale;
+                        gate_f = ({{ c_type }})emx_w_acc_f * emx_w_scale;
+                        gate_c = ({{ c_type }})emx_w_acc_c * emx_w_scale;
+                    }
+                    {% endif %}
+                    {% if per_column_r %}
+                    {
+                        int32_t emx_r_acc_i = 0, emx_r_acc_o = 0, emx_r_acc_f = 0, emx_r_acc_c = 0;
+                        for (int i = 0; i < {{ hidden_size }}; ++i) {
+                            int32_t emx_hd = (int32_t)emx_h_q[b][i] - emx_h_zp;
+                            emx_r_acc_i += emx_hd * ((int32_t){{ input_r }}[dir][i][h] - (int32_t){{ r_zero_point }}[dir][h]);
+                            emx_r_acc_o += emx_hd * ((int32_t){{ input_r }}[dir][i][{{ hidden_size }} + h] - (int32_t){{ r_zero_point }}[dir][{{ hidden_size }} + h]);
+                            emx_r_acc_f += emx_hd * ((int32_t){{ input_r }}[dir][i][{{ hidden_size }} * 2 + h] - (int32_t){{ r_zero_point }}[dir][{{ hidden_size }} * 2 + h]);
+                            emx_r_acc_c += emx_hd * ((int32_t){{ input_r }}[dir][i][{{ hidden_size }} * 3 + h] - (int32_t){{ r_zero_point }}[dir][{{ hidden_size }} * 3 + h]);
+                        }
+                        gate_i += ({{ c_type }})emx_r_acc_i * emx_h_scale * {{ r_scale }}[dir][h];
+                        gate_o += ({{ c_type }})emx_r_acc_o * emx_h_scale * {{ r_scale }}[dir][{{ hidden_size }} + h];
+                        gate_f += ({{ c_type }})emx_r_acc_f * emx_h_scale * {{ r_scale }}[dir][{{ hidden_size }} * 2 + h];
+                        gate_c += ({{ c_type }})emx_r_acc_c * emx_h_scale * {{ r_scale }}[dir][{{ hidden_size }} * 3 + h];
+                    }
+                    {% else %}
+                    {
+                        int32_t emx_r_acc_i = 0, emx_r_acc_o = 0, emx_r_acc_f = 0, emx_r_acc_c = 0;
+                        int32_t emx_r_zp = (int32_t){{ r_zero_point }}[dir];
+                        for (int i = 0; i < {{ hidden_size }}; ++i) {
+                            int32_t emx_hd = (int32_t)emx_h_q[b][i] - emx_h_zp;
+                            emx_r_acc_i += emx_hd * ((int32_t){{ input_r }}[dir][i][h] - emx_r_zp);
+                            emx_r_acc_o += emx_hd * ((int32_t){{ input_r }}[dir][i][{{ hidden_size }} + h] - emx_r_zp);
+                            emx_r_acc_f += emx_hd * ((int32_t){{ input_r }}[dir][i][{{ hidden_size }} * 2 + h] - emx_r_zp);
+                            emx_r_acc_c += emx_hd * ((int32_t){{ input_r }}[dir][i][{{ hidden_size }} * 3 + h] - emx_r_zp);
+                        }
+                        {{ c_type }} emx_r_scale = emx_h_scale * {{ r_scale }}[dir];
+                        gate_i += ({{ c_type }})emx_r_acc_i * emx_r_scale;
+                        gate_o += ({{ c_type }})emx_r_acc_o * emx_r_scale;
+                        gate_f += ({{ c_type }})emx_r_acc_f * emx_r_scale;
+                        gate_c += ({{ c_type }})emx_r_acc_c * emx_r_scale;
+                    }
+                    {% endif %}
+                    {% if input_b %}
+                    gate_i += {{ input_b }}[dir][h] + {{ input_b }}[dir][{{ hidden_size }} * 4 + h];
+                    gate_o += {{ input_b }}[dir][{{ hidden_size }} + h] + {{ input_b }}[dir][{{ hidden_size }} * 5 + h];
+                    gate_f += {{ input_b }}[dir][{{ hidden_size }} * 2 + h] + {{ input_b }}[dir][{{ hidden_size }} * 6 + h];
+                    gate_c += {{ input_b }}[dir][{{ hidden_size }} * 3 + h] + {{ input_b }}[dir][{{ hidden_size }} * 7 + h];
+                    {% endif %}
+                    {% if use_clip %}
+                    if (gate_i > {{ clip_literal }}) { gate_i = {{ clip_literal }}; }
+                    else if (gate_i < -{{ clip_literal }}) { gate_i = -{{ clip_literal }}; }
+                    if (gate_o > {{ clip_literal }}) { gate_o = {{ clip_literal }}; }
+                    else if (gate_o < -{{ clip_literal }}) { gate_o = -{{ clip_literal }}; }
+                    if (gate_f > {{ clip_literal }}) { gate_f = {{ clip_literal }}; }
+                    else if (gate_f < -{{ clip_literal }}) { gate_f = -{{ clip_literal }}; }
+                    if (gate_c > {{ clip_literal }}) { gate_c = {{ clip_literal }}; }
+                    else if (gate_c < -{{ clip_literal }}) { gate_c = -{{ clip_literal }}; }
+                    {% endif %}
+                    {% if input_p %}
+                    {{ c_type }} i_gate = {{ act_f }}(gate_i + {{ input_p }}[dir][h] * C_prev[b][h]);
+                    {% else %}
+                    {{ c_type }} i_gate = {{ act_f }}(gate_i);
+                    {% endif %}
+                    {% if input_forget %}
+                    {{ c_type }} f_gate = ({{ c_type }}){{ one_literal }} - i_gate;
+                    {% elif input_p %}
+                    {{ c_type }} f_gate = {{ act_f }}(gate_f + {{ input_p }}[dir][{{ hidden_size }} * 2 + h] * C_prev[b][h]);
+                    {% else %}
+                    {{ c_type }} f_gate = {{ act_f }}(gate_f);
+                    {% endif %}
+                    {{ c_type }} c_gate = {{ act_g }}(gate_c);
+                    {{ c_type }} c_new = f_gate * C_prev[b][h] + i_gate * c_gate;
+                    {% if input_p %}
+                    {{ c_type }} o_gate = {{ act_f }}(gate_o + {{ input_p }}[dir][{{ hidden_size }} + h] * c_new);
+                    {% else %}
+                    {{ c_type }} o_gate = {{ act_f }}(gate_o);
+                    {% endif %}
+                    {{ c_type }} h_new = o_gate * {{ act_h }}(c_new);
+                    C_next[h] = c_new;
+                    H_next[h] = h_new;
+                    {% if output_y %}
+                    {{ output_y }}[step][dir][b][h] = h_new;
+                    {% endif %}
+                }
+                for (int h = 0; h < {{ hidden_size }}; ++h) {
+                    C_prev[b][h] = C_next[h];
+                    H_prev[b][h] = H_next[h];
+                }
+            }
+        }
+        {% if output_y_h %}
+        for (int b = 0; b < {{ batch_size }}; ++b) {
+            for (int h = 0; h < {{ hidden_size }}; ++h) {
+                {{ output_y_h }}[dir][b][h] = H_prev[b][h];
+            }
+        }
+        {% endif %}
+        {% if output_y_c %}
+        for (int b = 0; b < {{ batch_size }}; ++b) {
+            for (int h = 0; h < {{ hidden_size }}; ++h) {
+                {{ output_y_c }}[dir][b][h] = C_prev[b][h];
+            }
+        }
+        {% endif %}
+    }
+    {% endfor %}
+}
