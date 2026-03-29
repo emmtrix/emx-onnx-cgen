@@ -32,23 +32,23 @@ def lower_crop(graph: Graph, node: Node) -> SliceOp:
     if len(border) != 4:
         raise UnsupportedOpError("Crop border attribute must have exactly 4 values")
     top, bottom, left, right = border[0], border[1], border[2], border[3]
+    scale_raw = node.attrs.get("scale", [])
+    scale = [int(v) for v in scale_raw]
+    if scale:
+        if len(scale) != 2:
+            raise UnsupportedOpError(
+                "Crop scale attribute must have exactly 2 values"
+            )
+        out_H = scale[0]
+        out_W = scale[1]
+    else:
+        out_H = H - top - bottom
+        out_W = W - left - right
+    if out_H <= 0 or out_W <= 0:
+        raise ShapeInferenceError("Crop produces empty spatial dimensions")
     starts = (0, 0, top, left)
     steps = (1, 1, 1, 1)
     if isinstance(graph, GraphContext):
-        scale_raw = node.attrs.get("scale", [])
-        scale = [int(v) for v in scale_raw]
-        if scale:
-            if len(scale) != 2:
-                raise UnsupportedOpError(
-                    "Crop scale attribute must have exactly 2 values"
-                )
-            out_H = scale[0]
-            out_W = scale[1]
-        else:
-            out_H = H - top - bottom
-            out_W = W - left - right
-        if out_H <= 0 or out_W <= 0:
-            raise ShapeInferenceError("Crop produces empty spatial dimensions")
         graph.set_shape(node.outputs[0], (N, C, out_H, out_W))
     return SliceOp(
         input0=node.inputs[0],
