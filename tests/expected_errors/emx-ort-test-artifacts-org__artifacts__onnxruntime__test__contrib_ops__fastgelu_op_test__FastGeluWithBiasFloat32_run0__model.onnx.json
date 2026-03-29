@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.FastGelu",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/fastgelu_op_test/FastGeluWithBiasFloat32_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::FastGelu"
-  ]
+  ],
+  "generated_checksum": "bb76a7b99ded708fdb7a203b75e6dce68c0373b3ec3e31bf7b9b07e5c6a72a29"
 }

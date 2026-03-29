@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported op ai.onnx.Affine",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/element_wise_ops_test/Affine_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "Affine"
   ],
-  "opset_version": 7
+  "opset_version": 7,
+  "generated_checksum": "afc21c61884264b2f73a1c16ee8104db0cd47a69264c863e77094e868d579c74"
 }

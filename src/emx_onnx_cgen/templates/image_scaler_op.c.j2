@@ -1,0 +1,11 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    static const {{ c_type }} bias[{{ channels }}] = { {{ bias_literals | join(', ') }} };
+    const {{ c_type }} scale_value = {{ scale_literal }};
+{% for dim in shape %}
+    for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+{% endfor %}
+        {{ output }}[{{ loop_vars | join('][') }}] = {{ input0 }}[{{ loop_vars | join('][') }}] * scale_value + bias[{{ loop_vars[1] }}];
+{% for _ in shape %}
+    }
+{% endfor %}
+}
