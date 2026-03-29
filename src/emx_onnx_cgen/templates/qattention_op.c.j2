@@ -1,0 +1,218 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const {{ c_type }} scale = {{ scale_literal }};
+    const int32_t input_zero = (int32_t){{ input_zero_point }}[0];
+    {% if not weight_scale_per_column %}
+    const {{ c_type }} dequant_scale = {{ input_scale }}[0] * {{ weight_scale }}[0];
+    const int32_t weight_zero = (int32_t){{ weight_zero_point }}[0];
+    {% endif %}
+    {% if mask_type != 0 %}
+    const {{ c_type }} mask_filter_value = {{ mask_filter_literal }};
+    {% endif %}
+    for (int b = 0; b < {{ batch }}; ++b) {
+        for (int h = 0; h < {{ num_heads }}; ++h) {
+            for (int qi = 0; qi < {{ seq_len }}; ++qi) {
+                {{ c_type }} q[{{ qk_head_size }}];
+                for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                    int col = h * {{ qk_head_size }} + d;
+                    {% if weight_scale_per_column %}
+                    {{ c_type }} ws = {{ input_scale }}[0] * {{ weight_scale }}[col];
+                    int32_t wz = (int32_t){{ weight_zero_point }}[col];
+                    {% endif %}
+                    int64_t acc = 0;
+                    for (int j = 0; j < {{ input_hidden_size }}; ++j) {
+                        acc += (int64_t)((int32_t){{ input }}[b][qi][j] - input_zero) * (int64_t)((int32_t){{ weight }}[j][col] - {% if weight_scale_per_column %}wz{% else %}weight_zero{% endif %});
+                    }
+                    q[d] = {% if weight_scale_per_column %}ws{% else %}dequant_scale{% endif %} * ({{ c_type }})acc + {{ bias }}[col];
+                }
+                {{ c_type }} scores[{{ total_seq }}];
+                {{ c_type }} max_score = {{ min_literal }};
+                for (int ki = 0; ki < {{ total_seq }}; ++ki) {
+                    {{ c_type }} score = {{ zero_literal }};
+                    {% if past %}
+                    if (ki < {{ past_seq }}) {
+                        for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                            score += q[d] * {{ past }}[0][b][h][ki][d];
+                        }
+                    } else {
+                        int k_idx = ki - {{ past_seq }};
+                        for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                            int k_col = {{ q_hidden_size }} + h * {{ qk_head_size }} + d;
+                            {% if weight_scale_per_column %}
+                            {{ c_type }} ws = {{ input_scale }}[0] * {{ weight_scale }}[k_col];
+                            int32_t wz = (int32_t){{ weight_zero_point }}[k_col];
+                            {% endif %}
+                            int64_t k_acc = 0;
+                            for (int j = 0; j < {{ input_hidden_size }}; ++j) {
+                                k_acc += (int64_t)((int32_t){{ input }}[b][k_idx][j] - input_zero) * (int64_t)((int32_t){{ weight }}[j][k_col] - {% if weight_scale_per_column %}wz{% else %}weight_zero{% endif %});
+                            }
+                            score += q[d] * ({% if weight_scale_per_column %}ws{% else %}dequant_scale{% endif %} * ({{ c_type }})k_acc + {{ bias }}[k_col]);
+                        }
+                    }
+                    {% else %}
+                    for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                        int k_col = {{ q_hidden_size }} + h * {{ qk_head_size }} + d;
+                        {% if weight_scale_per_column %}
+                        {{ c_type }} ws = {{ input_scale }}[0] * {{ weight_scale }}[k_col];
+                        int32_t wz = (int32_t){{ weight_zero_point }}[k_col];
+                        {% endif %}
+                        int64_t k_acc = 0;
+                        for (int j = 0; j < {{ input_hidden_size }}; ++j) {
+                            k_acc += (int64_t)((int32_t){{ input }}[b][ki][j] - input_zero) * (int64_t)((int32_t){{ weight }}[j][k_col] - {% if weight_scale_per_column %}wz{% else %}weight_zero{% endif %});
+                        }
+                        score += q[d] * ({% if weight_scale_per_column %}ws{% else %}dequant_scale{% endif %} * ({{ c_type }})k_acc + {{ bias }}[k_col]);
+                    }
+                    {% endif %}
+                    score *= scale;
+                    {% if mask_type == 1 %}
+                    if (ki >= {{ mask_index }}[b]) {
+                        score += mask_filter_value;
+                    }
+                    {% elif mask_type == 2 %}
+                    {
+                        int mask_end = {{ mask_index }}[b];
+                        int mask_start = {{ mask_index }}[{{ batch }} + b];
+                        if (ki < mask_start || ki >= mask_end) {
+                            score += mask_filter_value;
+                        }
+                    }
+                    {% elif mask_type == 3 %}
+                    if (ki < {{ mask_shape[1] }}) {
+                        if ({{ mask_index }}[b][ki] == 0) {
+                            score += mask_filter_value;
+                        }
+                    }
+                    {% elif mask_type == 4 %}
+                    if (ki < {{ mask_shape[2] }}) {
+                        if ({{ mask_index }}[b][qi][ki] == 0) {
+                            score += mask_filter_value;
+                        }
+                    }
+                    {% endif %}
+                    {% if unidirectional %}
+                    if (ki > qi + {{ past_seq }}) {
+                        score = {{ min_literal }};
+                    }
+                    {% endif %}
+                    scores[ki] = score;
+                    max_score = {{ scalar_fn(SF.MAXIMUM, dtype) }}(max_score, score);
+                }
+                {{ c_type }} sum = {{ zero_literal }};
+                for (int ki = 0; ki < {{ total_seq }}; ++ki) {
+                    {{ c_type }} w = {{ zero_literal }};
+                    if (max_score != {{ min_literal }}) {
+                        w = {{ scalar_fn(SF.EXP, dtype) }}(scores[ki] - max_score);
+                    }
+                    scores[ki] = w;
+                    sum += w;
+                }
+                {{ c_type }} inv_sum = sum == {{ zero_literal }} ? {{ zero_literal }} : ({{ c_type }})1 / sum;
+                for (int vd = 0; vd < {{ v_head_size }}; ++vd) {
+                    {{ c_type }} acc = {{ zero_literal }};
+                    for (int ki = 0; ki < {{ total_seq }}; ++ki) {
+                        {{ c_type }} attn_weight = scores[ki] * inv_sum;
+                        {% if past %}
+                        if (ki < {{ past_seq }}) {
+                            acc += attn_weight * {{ past }}[1][b][h][ki][vd];
+                        } else {
+                            int v_idx = ki - {{ past_seq }};
+                            int v_col = {{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + vd;
+                            {% if weight_scale_per_column %}
+                            {{ c_type }} ws = {{ input_scale }}[0] * {{ weight_scale }}[v_col];
+                            int32_t wz = (int32_t){{ weight_zero_point }}[v_col];
+                            {% endif %}
+                            int64_t v_acc = 0;
+                            for (int j = 0; j < {{ input_hidden_size }}; ++j) {
+                                v_acc += (int64_t)((int32_t){{ input }}[b][v_idx][j] - input_zero) * (int64_t)((int32_t){{ weight }}[j][v_col] - {% if weight_scale_per_column %}wz{% else %}weight_zero{% endif %});
+                            }
+                            acc += attn_weight * ({% if weight_scale_per_column %}ws{% else %}dequant_scale{% endif %} * ({{ c_type }})v_acc + {{ bias }}[v_col]);
+                        }
+                        {% else %}
+                        {
+                            int v_col = {{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + vd;
+                            {% if weight_scale_per_column %}
+                            {{ c_type }} ws = {{ input_scale }}[0] * {{ weight_scale }}[v_col];
+                            int32_t wz = (int32_t){{ weight_zero_point }}[v_col];
+                            {% endif %}
+                            int64_t v_acc = 0;
+                            for (int j = 0; j < {{ input_hidden_size }}; ++j) {
+                                v_acc += (int64_t)((int32_t){{ input }}[b][ki][j] - input_zero) * (int64_t)((int32_t){{ weight }}[j][v_col] - {% if weight_scale_per_column %}wz{% else %}weight_zero{% endif %});
+                            }
+                            acc += attn_weight * ({% if weight_scale_per_column %}ws{% else %}dequant_scale{% endif %} * ({{ c_type }})v_acc + {{ bias }}[v_col]);
+                        }
+                        {% endif %}
+                    }
+                    {{ output }}[b][qi][h * {{ v_head_size }} + vd] = acc;
+                }
+            }
+        }
+    }
+    {% if present %}
+    for (int b = 0; b < {{ batch }}; ++b) {
+        for (int h = 0; h < {{ num_heads }}; ++h) {
+            for (int ki = 0; ki < {{ total_seq }}; ++ki) {
+                {% if past %}
+                if (ki < {{ past_seq }}) {
+                    for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                        {{ present }}[0][b][h][ki][d] = {{ past }}[0][b][h][ki][d];
+                    }
+                    for (int d = 0; d < {{ v_head_size }}; ++d) {
+                        {{ present }}[1][b][h][ki][d] = {{ past }}[1][b][h][ki][d];
+                    }
+                } else {
+                    int s_idx = ki - {{ past_seq }};
+                    for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                        int k_col = {{ q_hidden_size }} + h * {{ qk_head_size }} + d;
+                        {% if weight_scale_per_column %}
+                        {{ c_type }} ws = {{ input_scale }}[0] * {{ weight_scale }}[k_col];
+                        int32_t wz = (int32_t){{ weight_zero_point }}[k_col];
+                        {% endif %}
+                        int64_t k_acc = 0;
+                        for (int j = 0; j < {{ input_hidden_size }}; ++j) {
+                            k_acc += (int64_t)((int32_t){{ input }}[b][s_idx][j] - input_zero) * (int64_t)((int32_t){{ weight }}[j][k_col] - {% if weight_scale_per_column %}wz{% else %}weight_zero{% endif %});
+                        }
+                        {{ present }}[0][b][h][ki][d] = {% if weight_scale_per_column %}ws{% else %}dequant_scale{% endif %} * ({{ c_type }})k_acc + {{ bias }}[k_col];
+                    }
+                    for (int d = 0; d < {{ v_head_size }}; ++d) {
+                        int v_col = {{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + d;
+                        {% if weight_scale_per_column %}
+                        {{ c_type }} ws = {{ input_scale }}[0] * {{ weight_scale }}[v_col];
+                        int32_t wz = (int32_t){{ weight_zero_point }}[v_col];
+                        {% endif %}
+                        int64_t v_acc = 0;
+                        for (int j = 0; j < {{ input_hidden_size }}; ++j) {
+                            v_acc += (int64_t)((int32_t){{ input }}[b][s_idx][j] - input_zero) * (int64_t)((int32_t){{ weight }}[j][v_col] - {% if weight_scale_per_column %}wz{% else %}weight_zero{% endif %});
+                        }
+                        {{ present }}[1][b][h][ki][d] = {% if weight_scale_per_column %}ws{% else %}dequant_scale{% endif %} * ({{ c_type }})v_acc + {{ bias }}[v_col];
+                    }
+                }
+                {% else %}
+                for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                    int k_col = {{ q_hidden_size }} + h * {{ qk_head_size }} + d;
+                    {% if weight_scale_per_column %}
+                    {{ c_type }} ws = {{ input_scale }}[0] * {{ weight_scale }}[k_col];
+                    int32_t wz = (int32_t){{ weight_zero_point }}[k_col];
+                    {% endif %}
+                    int64_t k_acc = 0;
+                    for (int j = 0; j < {{ input_hidden_size }}; ++j) {
+                        k_acc += (int64_t)((int32_t){{ input }}[b][ki][j] - input_zero) * (int64_t)((int32_t){{ weight }}[j][k_col] - {% if weight_scale_per_column %}wz{% else %}weight_zero{% endif %});
+                    }
+                    {{ present }}[0][b][h][ki][d] = {% if weight_scale_per_column %}ws{% else %}dequant_scale{% endif %} * ({{ c_type }})k_acc + {{ bias }}[k_col];
+                }
+                for (int d = 0; d < {{ v_head_size }}; ++d) {
+                    int v_col = {{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + d;
+                    {% if weight_scale_per_column %}
+                    {{ c_type }} ws = {{ input_scale }}[0] * {{ weight_scale }}[v_col];
+                    int32_t wz = (int32_t){{ weight_zero_point }}[v_col];
+                    {% endif %}
+                    int64_t v_acc = 0;
+                    for (int j = 0; j < {{ input_hidden_size }}; ++j) {
+                        v_acc += (int64_t)((int32_t){{ input }}[b][ki][j] - input_zero) * (int64_t)((int32_t){{ weight }}[j][v_col] - {% if weight_scale_per_column %}wz{% else %}weight_zero{% endif %});
+                    }
+                    {{ present }}[1][b][h][ki][d] = {% if weight_scale_per_column %}ws{% else %}dequant_scale{% endif %} * ({{ c_type }})v_acc + {{ bias }}[v_col];
+                }
+                {% endif %}
+            }
+        }
+    }
+    {% endif %}
+}

@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op QAttention",
+  "error": "OK (max ULP 3)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/quantize_attention_op_test/QAttentionBatch1_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::QAttention"
-  ]
+  ],
+  "generated_checksum": "641bfeb00865711bcdea441110d90cf6d7824d363ca1969a6ef96e78982bbca3"
 }
