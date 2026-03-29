@@ -1960,6 +1960,167 @@ class QGemmOp(GemmLikeOpBase):
 
 
 @dataclass(frozen=True)
+class MatMulIntegerToFloatOp(GemmLikeOpBase):
+    """Quantized matmul with float output (com.microsoft contrib op).
+
+    Computes ``Y = a_scale * b_scale * (dequantize(A) @ dequantize(B)) [+ bias]``.
+    B may use per-column quantization.  Zero points are optional (default 0).
+    Output is always float32.
+    """
+
+    __io_inputs__ = (
+        "input_a",
+        "input_b",
+        "a_scale",
+        "b_scale",
+        "a_zero_point",
+        "b_zero_point",
+        "bias",
+    )
+
+    input_a: str
+    input_b: str
+    a_scale: str
+    b_scale: str
+    a_zero_point: str | None
+    b_zero_point: str | None
+    bias: str | None
+    output: str
+    input_a_dtype: ScalarType
+    input_b_dtype: ScalarType
+    dtype: ScalarType  # always F32
+    a_scale_dtype: ScalarType
+    b_scale_dtype: ScalarType
+    bias_dtype: ScalarType | None
+    a_scale_shape: tuple[int, ...]
+    b_scale_shape: tuple[int, ...]
+    a_zero_shape: tuple[int, ...] | None
+    b_zero_shape: tuple[int, ...] | None
+    bias_shape: tuple[int, ...] | None
+    b_scale_per_column: bool
+    m: int
+    n: int
+    k: int
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def infer_types(self, ctx: OpContext) -> None:
+        try:
+            output_dtype = ctx.dtype(self.output)
+        except ShapeInferenceError:
+            ctx.set_dtype(self.output, self.dtype)
+            output_dtype = self.dtype
+        if output_dtype != self.dtype:
+            raise UnsupportedOpError(
+                "MatMulIntegerToFloat output dtype mismatch, "
+                f"expected {self.dtype.onnx_name}, got {output_dtype.onnx_name}"
+            )
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        output_shape = (self.m, self.n)
+        try:
+            expected = ctx.shape(self.output)
+        except ShapeInferenceError:
+            expected = None
+        if expected is not None and expected != output_shape:
+            raise ShapeInferenceError(
+                f"MatMulIntegerToFloat output shape must be {output_shape}, "
+                f"got {expected}"
+            )
+        ctx.set_shape(self.output, output_shape)
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        params = emitter.shared_param_map(
+            [
+                ("input_a", self.input_a),
+                ("input_b", self.input_b),
+                ("a_scale", self.a_scale),
+                ("b_scale", self.b_scale),
+                ("a_zero_point", self.a_zero_point),
+                ("b_zero_point", self.b_zero_point),
+                ("bias", self.bias),
+                ("output", self.output),
+            ]
+        )
+
+        input_a_suffix = emitter.param_array_suffix((self.m, self.k))
+        input_b_suffix = emitter.param_array_suffix((self.k, self.n))
+        output_suffix = emitter.param_array_suffix((self.m, self.n))
+        a_scale_suffix = emitter.param_array_suffix(self.a_scale_shape)
+        b_scale_suffix = emitter.param_array_suffix(self.b_scale_shape)
+        a_zero_suffix = emitter.param_array_suffix(self.a_zero_shape or ())
+        b_zero_suffix = emitter.param_array_suffix(self.b_zero_shape or ())
+        bias_suffix = emitter.param_array_suffix(self.bias_shape or ())
+
+        output_dtype = emitter.ctx_dtype(self.output)
+        output_c_type = output_dtype.c_type
+        a_c_type = self.input_a_dtype.c_type
+        b_c_type = self.input_b_dtype.c_type
+
+        param_entries: list[tuple[str | None, str, str, bool]] = [
+            (params["input_a"], a_c_type, input_a_suffix, True),
+            (params["input_b"], b_c_type, input_b_suffix, True),
+            (params["a_scale"], self.a_scale_dtype.c_type, a_scale_suffix, True),
+            (params["b_scale"], self.b_scale_dtype.c_type, b_scale_suffix, True),
+        ]
+        if params["a_zero_point"]:
+            param_entries.append(
+                (params["a_zero_point"], a_c_type, a_zero_suffix, True)
+            )
+        else:
+            param_entries.append((None, "", "", True))
+        if params["b_zero_point"]:
+            param_entries.append(
+                (params["b_zero_point"], b_c_type, b_zero_suffix, True)
+            )
+        else:
+            param_entries.append((None, "", "", True))
+        if params["bias"]:
+            assert self.bias_dtype is not None
+            param_entries.append(
+                (params["bias"], self.bias_dtype.c_type, bias_suffix, True)
+            )
+        else:
+            param_entries.append((None, "", "", True))
+        param_entries.append((params["output"], output_c_type, output_suffix, False))
+        param_decls = emitter.build_param_decls(param_entries)
+
+        rendered = (
+            state.templates["matmul_integer_to_float"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input_a=params["input_a"],
+                input_b=params["input_b"],
+                a_scale=params["a_scale"],
+                b_scale=params["b_scale"],
+                a_zero_point=params["a_zero_point"],
+                b_zero_point=params["b_zero_point"],
+                bias=params["bias"],
+                output=params["output"],
+                params=param_decls,
+                a_c_type=a_c_type,
+                b_c_type=b_c_type,
+                output_c_type=output_c_type,
+                m=self.m,
+                n=self.n,
+                k=self.k,
+                b_scale_per_column=self.b_scale_per_column,
+                dim_args=emitter.dim_args_str(),
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return (self.m, self.n)
+
+
+@dataclass(frozen=True)
 class AttentionOp(RenderableOpBase):
     __io_inputs__ = (
         "input_q",

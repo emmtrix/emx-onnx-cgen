@@ -1,0 +1,36 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    for (idx_t i = 0; i < {{ m }}; ++i) {
+        for (idx_t j = 0; j < {{ n }}; ++j) {
+            const float a_scale_val = (float){{ a_scale }}[0];
+{% if b_scale_per_column %}
+            const float b_scale_val = (float){{ b_scale }}[j];
+{% else %}
+            const float b_scale_val = (float){{ b_scale }}[0];
+{% endif %}
+{% if b_zero_point %}
+{% if b_scale_per_column %}
+            const int32_t b_zero = (int32_t){{ b_zero_point }}[j];
+{% else %}
+            const int32_t b_zero = (int32_t){{ b_zero_point }}[0];
+{% endif %}
+{% else %}
+            const int32_t b_zero = 0;
+{% endif %}
+{% if a_zero_point %}
+            const int32_t a_zero = (int32_t){{ a_zero_point }}[0];
+{% else %}
+            const int32_t a_zero = 0;
+{% endif %}
+            float acc = 0.0f;
+            for (idx_t k = 0; k < {{ k }}; ++k) {
+                const float a_dq = a_scale_val * (float)((int32_t){{ input_a }}[i][k] - a_zero);
+                const float b_dq = b_scale_val * (float)((int32_t){{ input_b }}[k][j] - b_zero);
+                acc += a_dq * b_dq;
+            }
+{% if bias %}
+            acc += (float){{ bias }}[j];
+{% endif %}
+            {{ output }}[i][j] = ({{ output_c_type }})acc;
+        }
+    }
+}
