@@ -4009,6 +4009,72 @@ def _make_rms_normalization_model(
     )
 
 
+def _make_skip_layer_normalization_model(
+    *,
+    input_shape: list[int],
+    skip_shape: list[int],
+    with_beta: bool = True,
+    with_bias: bool = False,
+    with_skip_output: bool = False,
+    epsilon: float = 1e-12,
+) -> onnx.ModelProto:
+    hidden_size = input_shape[-1]
+    input_info = helper.make_tensor_value_info("input", TensorProto.FLOAT, input_shape)
+    skip_info = helper.make_tensor_value_info("skip", TensorProto.FLOAT, skip_shape)
+    gamma_info = helper.make_tensor_value_info(
+        "gamma", TensorProto.FLOAT, [hidden_size]
+    )
+    inputs_info = [input_info, skip_info, gamma_info]
+    node_inputs = ["input", "skip", "gamma"]
+    if with_beta:
+        beta_info = helper.make_tensor_value_info(
+            "beta", TensorProto.FLOAT, [hidden_size]
+        )
+        inputs_info.append(beta_info)
+        node_inputs.append("beta")
+    else:
+        node_inputs.append("")
+    if with_bias:
+        bias_info = helper.make_tensor_value_info(
+            "bias", TensorProto.FLOAT, [hidden_size]
+        )
+        inputs_info.append(bias_info)
+        node_inputs.append("bias")
+    output = helper.make_tensor_value_info("output", TensorProto.FLOAT, input_shape)
+    node_outputs = ["output"]
+    if with_skip_output:
+        node_outputs.extend(["", "", "skip_add_output"])
+    outputs_info = [output]
+    if with_skip_output:
+        skip_add_out = helper.make_tensor_value_info(
+            "skip_add_output", TensorProto.FLOAT, input_shape
+        )
+        outputs_info.append(skip_add_out)
+    node = helper.make_node(
+        "SkipLayerNormalization",
+        inputs=node_inputs,
+        outputs=node_outputs,
+        domain="com.microsoft",
+        epsilon=epsilon,
+    )
+    graph = helper.make_graph(
+        [node],
+        "skip_layer_norm_graph",
+        inputs_info,
+        outputs_info,
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[
+            helper.make_operatorsetid("", 17),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+    return model
+
+
 def _maxpool_output_shape(
     input_shape: list[int],
     kernel_shape: list[int],
@@ -8344,6 +8410,66 @@ def test_rms_normalization_run_matches_numpy() -> None:
     expected = data / np.sqrt(mean_square + 1e-5)
     expected = expected * scale.reshape(1, 1, 4)
     np.testing.assert_allclose(outputs["out"], expected, rtol=1e-5, atol=1e-6)
+
+
+def test_skip_layer_normalization_op_matches_onnxruntime() -> None:
+    model = _make_skip_layer_normalization_model(
+        input_shape=[2, 3, 4], skip_shape=[2, 3, 4]
+    )
+    _run_testbench_compare(model)
+
+
+def test_skip_layer_normalization_no_beta_op_matches_onnxruntime() -> None:
+    model = _make_skip_layer_normalization_model(
+        input_shape=[2, 3, 4], skip_shape=[2, 3, 4], with_beta=False
+    )
+    _run_testbench_compare(model)
+
+
+def test_skip_layer_normalization_with_bias_op_matches_onnxruntime() -> None:
+    model = _make_skip_layer_normalization_model(
+        input_shape=[2, 3, 4], skip_shape=[2, 3, 4], with_bias=True
+    )
+    _run_testbench_compare(model)
+
+
+def test_skip_layer_normalization_with_skip_output_op_matches_onnxruntime() -> None:
+    model = _make_skip_layer_normalization_model(
+        input_shape=[2, 3, 4], skip_shape=[2, 3, 4], with_bias=True, with_skip_output=True
+    )
+    _run_testbench_compare(model)
+
+
+def test_skip_layer_normalization_broadcast_skip_op_matches_onnxruntime() -> None:
+    model = _make_skip_layer_normalization_model(
+        input_shape=[2, 3, 4], skip_shape=[1, 3, 4]
+    )
+    _run_testbench_compare(model)
+
+
+def test_skip_layer_normalization_run_matches_numpy() -> None:
+    model = _make_skip_layer_normalization_model(
+        input_shape=[2, 3, 4], skip_shape=[2, 3, 4]
+    )
+    rng = np.random.default_rng(0)
+    data = rng.normal(size=(2, 3, 4)).astype(np.float32)
+    skip = rng.normal(size=(2, 3, 4)).astype(np.float32)
+    gamma = rng.normal(size=(4,)).astype(np.float32)
+    beta = rng.normal(size=(4,)).astype(np.float32)
+    payload = _compile_and_run_testbench(
+        model,
+        testbench_inputs={"input": data, "skip": skip, "gamma": gamma, "beta": beta},
+    )
+    output_data = decode_testbench_array(
+        payload["outputs"]["output"]["data"], np.float32
+    ).reshape(2, 3, 4)
+    x = data.astype(np.float64) + skip.astype(np.float64)
+    mean = np.mean(x, axis=-1, keepdims=True)
+    var = np.mean((x - mean) ** 2, axis=-1, keepdims=True)
+    expected = ((x - mean) / np.sqrt(var + 1e-12)) * gamma + beta
+    np.testing.assert_allclose(
+        output_data, expected.astype(np.float32), rtol=1e-4, atol=1e-5
+    )
 
 
 def test_softmax_uses_legacy_axis_semantics_before_opset13() -> None:

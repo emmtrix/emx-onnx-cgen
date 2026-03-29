@@ -12,17 +12,21 @@ from .registry import register_lowering
 def _ensure_broadcastable(
     name: str,
     shape: tuple[int, ...],
-    normalized_shape: tuple[int, ...],
+    input_shape: tuple[int, ...],
 ) -> None:
-    if len(shape) != len(normalized_shape):
+    """Verify that *shape* is broadcastable to *input_shape* (right-aligned)."""
+    if len(shape) > len(input_shape):
         raise ShapeInferenceError(
-            f"LayerNormalization {name} rank must match normalized rank"
+            f"LayerNormalization {name} rank {len(shape)} exceeds "
+            f"input rank {len(input_shape)}"
         )
-    for dim, expected in zip(shape, normalized_shape):
+    offset = len(input_shape) - len(shape)
+    for i, dim in enumerate(shape):
+        expected = input_shape[offset + i]
         if dim not in {1, expected}:
             raise ShapeInferenceError(
                 f"LayerNormalization {name} shape {shape} must be broadcastable "
-                f"to {normalized_shape}"
+                f"to input shape {input_shape}"
             )
 
 
@@ -43,12 +47,12 @@ def lower_layer_normalization(graph: Graph, node: Node) -> LayerNormalizationOp:
     axis = normalize_axis(int(node.attrs.get("axis", -1)), input_shape, node)
     normalized_shape = input_shape[axis:]
     scale_shape = value_shape(graph, node.inputs[1], node)
-    _ensure_broadcastable("scale", scale_shape, normalized_shape)
+    _ensure_broadcastable("scale", scale_shape, input_shape)
     bias_input = node.inputs[2] if len(node.inputs) > 2 and node.inputs[2] else None
     bias_shape = None
     if bias_input is not None:
         bias_shape = value_shape(graph, bias_input, node)
-        _ensure_broadcastable("bias", bias_shape, normalized_shape)
+        _ensure_broadcastable("bias", bias_shape, input_shape)
     epsilon = float(node.attrs.get("epsilon", 1e-5))
     stash_type = int(node.attrs.get("stash_type", 1))
     if stash_type != 1:

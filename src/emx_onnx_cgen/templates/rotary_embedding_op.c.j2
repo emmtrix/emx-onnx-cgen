@@ -13,7 +13,11 @@ for (idx_t b = 0; b < {{ batch }}; ++b) {
                 idx_t idx2 = d + {{ rotary_dim_half }};
 {% endif %}
 {% if has_position_ids %}
+{% if position_ids_broadcast %}
+                idx_t pos = (idx_t){{ position_ids }}[0] + s;
+{% else %}
                 idx_t pos = (idx_t){{ position_ids }}[b][s];
+{% endif %}
                 {{ c_type }} cos_val = {{ cos_cache }}[pos][d];
                 {{ c_type }} sin_val = {{ sin_cache }}[pos][d];
 {% else %}
@@ -44,7 +48,11 @@ for (idx_t b = 0; b < {{ batch }}; ++b) {
                 idx_t idx2 = d + {{ rotary_dim_half }};
 {% endif %}
 {% if has_position_ids %}
+{% if position_ids_broadcast %}
+                idx_t pos = (idx_t){{ position_ids }}[0] + s;
+{% else %}
                 idx_t pos = (idx_t){{ position_ids }}[b][s];
+{% endif %}
                 {{ c_type }} cos_val = {{ cos_cache }}[pos][d];
                 {{ c_type }} sin_val = {{ sin_cache }}[pos][d];
 {% else %}
