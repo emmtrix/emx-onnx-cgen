@@ -47,9 +47,7 @@ class QAttentionSpec:
     weight_scale_per_column: bool
 
 
-def resolve_qattention_spec(
-    graph: Graph, node: Node
-) -> QAttentionSpec:
+def resolve_qattention_spec(graph: Graph, node: Node) -> QAttentionSpec:
     """Resolve and validate com.microsoft::QAttention parameters."""
     if len(node.inputs) < 8 or len(node.outputs) < 1:
         raise UnsupportedOpError("Unsupported op QAttention")
@@ -75,13 +73,11 @@ def resolve_qattention_spec(
     weight_dtype = _value_dtype(graph, node.inputs[1], node)
     if input_dtype not in {ScalarType.U8, ScalarType.I8}:
         raise UnsupportedOpError(
-            "QAttention input must be uint8 or int8, "
-            f"got {input_dtype.onnx_name}"
+            f"QAttention input must be uint8 or int8, got {input_dtype.onnx_name}"
         )
     if weight_dtype not in {ScalarType.U8, ScalarType.I8}:
         raise UnsupportedOpError(
-            "QAttention weight must be uint8 or int8, "
-            f"got {weight_dtype.onnx_name}"
+            f"QAttention weight must be uint8 or int8, got {weight_dtype.onnx_name}"
         )
 
     bias_dtype = _value_dtype(graph, node.inputs[2], node)
@@ -168,13 +164,9 @@ def resolve_qattention_spec(
                 "QAttention past first dimension must be 2 (key, value)"
             )
         if past_shape[1] != batch or past_shape[2] != num_heads:
-            raise ShapeInferenceError(
-                "QAttention past batch/heads must match"
-            )
+            raise ShapeInferenceError("QAttention past batch/heads must match")
         if past_shape[4] != qk_head_size:
-            raise ShapeInferenceError(
-                "QAttention past head size must match"
-            )
+            raise ShapeInferenceError("QAttention past head size must match")
         past_seq = past_shape[3]
 
     total_seq = seq_len + past_seq
@@ -190,9 +182,7 @@ def resolve_qattention_spec(
         mask_rank = len(mask_shape)
         mask_dtype = _value_dtype(graph, mask_name, node)
         if mask_dtype != ScalarType.I32:
-            raise UnsupportedOpError(
-                "QAttention mask_index must be int32"
-            )
+            raise UnsupportedOpError("QAttention mask_index must be int32")
         if mask_rank == 1:
             if mask_shape[0] == batch:
                 mask_type = MASK_1D_END
@@ -219,9 +209,7 @@ def resolve_qattention_spec(
                 )
             mask_type = MASK_3D
         else:
-            raise UnsupportedOpError(
-                "QAttention mask_index must be 1D/2D/3D"
-            )
+            raise UnsupportedOpError("QAttention mask_index must be 1D/2D/3D")
 
     scale = float(node.attrs.get("scale", 1.0 / math.sqrt(qk_head_size)))
     unidirectional = bool(int(node.attrs.get("unidirectional", 0)))

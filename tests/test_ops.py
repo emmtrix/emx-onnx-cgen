@@ -7817,9 +7817,13 @@ def _make_qlinear_global_average_pool_model(
 ) -> onnx.ModelProto:
     input_info = helper.make_tensor_value_info("X", dtype, input_shape)
     output_info = helper.make_tensor_value_info("Y", dtype, output_shape)
-    x_scale_t = helper.make_tensor("x_scale", TensorProto.FLOAT, dims=[], vals=[x_scale])
+    x_scale_t = helper.make_tensor(
+        "x_scale", TensorProto.FLOAT, dims=[], vals=[x_scale]
+    )
     x_zero_t = helper.make_tensor("x_zero_point", dtype, dims=[], vals=[x_zero])
-    y_scale_t = helper.make_tensor("y_scale", TensorProto.FLOAT, dims=[], vals=[y_scale])
+    y_scale_t = helper.make_tensor(
+        "y_scale", TensorProto.FLOAT, dims=[], vals=[y_scale]
+    )
     y_zero_t = helper.make_tensor("y_zero_point", dtype, dims=[], vals=[y_zero])
     node = helper.make_node(
         "QLinearGlobalAveragePool",
@@ -8649,7 +8653,10 @@ def _make_dynamic_quantize_matmul_model(
         initializers.append(bias_tensor)
 
     graph = helper.make_graph(
-        [node], "dynamic_quantize_matmul_graph", [a_info], [output],
+        [node],
+        "dynamic_quantize_matmul_graph",
+        [a_info],
+        [output],
         initializer=initializers,
     )
     model = helper.make_model(
@@ -8678,12 +8685,12 @@ def _make_matmul_nbits_model(
 
     n_blocks_per_col = math.ceil(k / block_size)
     blob_size = block_size * bits // 8
-    b_values = np.arange(
-        n * n_blocks_per_col * blob_size, dtype=np.uint8
-    ).reshape(n, n_blocks_per_col, blob_size)
-    scales = np.linspace(
-        0.25, 1.0, num=n * n_blocks_per_col, dtype=np.float32
-    ).reshape(n, n_blocks_per_col)
+    b_values = np.arange(n * n_blocks_per_col * blob_size, dtype=np.uint8).reshape(
+        n, n_blocks_per_col, blob_size
+    )
+    scales = np.linspace(0.25, 1.0, num=n * n_blocks_per_col, dtype=np.float32).reshape(
+        n, n_blocks_per_col
+    )
     if g_idx_values is None:
         g_idx_values = np.repeat(
             np.arange(n_blocks_per_col, dtype=np.int32), block_size

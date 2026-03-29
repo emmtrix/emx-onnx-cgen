@@ -94,9 +94,7 @@ def lower_tokenizer(graph: Graph, node: Node) -> TokenizerOp:
 
     mincharnum = int(node.attrs.get("mincharnum", 1))
     if mincharnum < 1:
-        raise UnsupportedOpError(
-            f"Tokenizer mincharnum must be >= 1, got {mincharnum}"
-        )
+        raise UnsupportedOpError(f"Tokenizer mincharnum must be >= 1, got {mincharnum}")
 
     pad_value_raw = node.attrs.get("pad_value", "0xdeadbeaf")
     pad_value = _decode_string(pad_value_raw, attr_name="pad_value")
