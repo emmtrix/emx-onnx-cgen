@@ -8397,3 +8397,157 @@ def test_fused_matmul_batched_trans_batch_a_testbench() -> None:
     )
     output_data = output_data.reshape(expected.shape)
     np.testing.assert_allclose(output_data, expected, rtol=1e-4, atol=1e-5)
+
+
+# ---------------------------------------------------------------------------
+# DynamicQuantizeMatMul tests
+# ---------------------------------------------------------------------------
+
+
+def _make_dynamic_quantize_matmul_model(
+    m: int = 4,
+    k: int = 8,
+    n: int = 6,
+    b_dtype: int = TensorProto.UINT8,
+    b_scale_per_column: bool = False,
+    with_b_zero: bool = False,
+    b_zero_per_column: bool = False,
+    with_bias: bool = False,
+) -> onnx.ModelProto:
+    """Build a com.microsoft::DynamicQuantizeMatMul model."""
+    rng = np.random.default_rng(42)
+    a_info = helper.make_tensor_value_info("A", TensorProto.FLOAT, [m, k])
+    output = helper.make_tensor_value_info("Y", TensorProto.FLOAT, [m, n])
+
+    b_scale_shape = [n] if b_scale_per_column else [1]
+    b_scale_vals = rng.uniform(0.005, 0.02, size=b_scale_shape).astype(np.float32)
+    b_scale_tensor = helper.make_tensor(
+        "b_scale", TensorProto.FLOAT, dims=b_scale_shape, vals=b_scale_vals.tolist()
+    )
+
+    b_vals = rng.integers(0, 128, size=(k, n), dtype=np.uint8)
+    b_np_dtype = np.uint8 if b_dtype == TensorProto.UINT8 else np.int8
+    if b_np_dtype == np.int8:
+        b_vals = (b_vals - 64).astype(np.int8)
+    b_tensor = helper.make_tensor(
+        "B", b_dtype, dims=[k, n], vals=b_vals.flatten().tolist()
+    )
+
+    inputs = ["A", "B", "b_scale"]
+
+    # b_zero_point
+    b_zero_tensor = None
+    if with_b_zero:
+        b_zero_shape = [n] if b_zero_per_column else [1]
+        b_zero_val = 10
+        b_zero_vals = [b_zero_val] * (n if b_zero_per_column else 1)
+        b_zero_np = np.array(b_zero_vals, dtype=b_np_dtype)
+        b_zero_tensor = helper.make_tensor(
+            "b_zero", b_dtype, dims=b_zero_shape, vals=b_zero_np.tolist()
+        )
+        inputs.append("b_zero")
+    else:
+        inputs.append("")
+
+    # bias
+    bias_tensor = None
+    if with_bias:
+        bias_vals = rng.uniform(-1.0, 1.0, size=n).astype(np.float32)
+        bias_tensor = helper.make_tensor(
+            "bias", TensorProto.FLOAT, dims=[n], vals=bias_vals.tolist()
+        )
+        inputs.append("bias")
+    else:
+        inputs.append("")
+
+    node = helper.make_node(
+        "DynamicQuantizeMatMul",
+        inputs=inputs,
+        outputs=["Y"],
+        domain="com.microsoft",
+    )
+    initializers = [b_tensor, b_scale_tensor]
+    if b_zero_tensor is not None:
+        initializers.append(b_zero_tensor)
+    if bias_tensor is not None:
+        initializers.append(bias_tensor)
+
+    graph = helper.make_graph(
+        [node], "dynamic_quantize_matmul_graph", [a_info], [output],
+        initializer=initializers,
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[
+            helper.make_operatorsetid("", 18),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+    return model
+
+
+def test_dynamic_quantize_matmul_uint8_compiles() -> None:
+    model = _make_dynamic_quantize_matmul_model()
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_dynamic_quantize_matmul_int8_compiles() -> None:
+    model = _make_dynamic_quantize_matmul_model(b_dtype=TensorProto.INT8)
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_dynamic_quantize_matmul_per_column_scale_compiles() -> None:
+    model = _make_dynamic_quantize_matmul_model(b_scale_per_column=True)
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_dynamic_quantize_matmul_with_b_zero_point_compiles() -> None:
+    model = _make_dynamic_quantize_matmul_model(with_b_zero=True)
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_dynamic_quantize_matmul_with_bias_compiles() -> None:
+    model = _make_dynamic_quantize_matmul_model(with_bias=True)
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_dynamic_quantize_matmul_per_column_b_zero_compiles() -> None:
+    model = _make_dynamic_quantize_matmul_model(
+        b_scale_per_column=True, with_b_zero=True, b_zero_per_column=True
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_dynamic_quantize_matmul_uint8_testbench() -> None:
+    model = _make_dynamic_quantize_matmul_model()
+    _run_testbench_compare(model)
+
+
+def test_dynamic_quantize_matmul_int8_testbench() -> None:
+    model = _make_dynamic_quantize_matmul_model(b_dtype=TensorProto.INT8)
+    _run_testbench_compare(model)
+
+
+def test_dynamic_quantize_matmul_per_column_scale_testbench() -> None:
+    model = _make_dynamic_quantize_matmul_model(b_scale_per_column=True)
+    _run_testbench_compare(model)
+
+
+def test_dynamic_quantize_matmul_with_b_zero_and_bias_testbench() -> None:
+    model = _make_dynamic_quantize_matmul_model(with_b_zero=True, with_bias=True)
+    _run_testbench_compare(model)
+
+
+def test_dynamic_quantize_matmul_per_column_b_zero_testbench() -> None:
+    model = _make_dynamic_quantize_matmul_model(
+        b_scale_per_column=True, with_b_zero=True, b_zero_per_column=True
+    )
+    _run_testbench_compare(model)

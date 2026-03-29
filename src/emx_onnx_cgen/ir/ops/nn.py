@@ -1960,6 +1960,168 @@ class QGemmOp(GemmLikeOpBase):
 
 
 @dataclass(frozen=True)
+class DynamicQuantizeMatMulOp(GemmLikeOpBase):
+    """Dynamic-quantize matmul (com.microsoft contrib op).
+
+    Dynamically quantizes ``A`` to uint8, then computes
+    ``Y = a_scale * b_scale * (A_q - a_zero) @ (B - b_zero) + bias``.
+    Both ``b_zero_point`` and ``bias`` are optional.  ``b_scale`` may be
+    scalar or per-column (shape ``[N]``).
+    """
+
+    __io_inputs__ = (
+        "input_a",
+        "input_b",
+        "b_scale",
+        "b_zero_point",
+        "bias",
+    )
+
+    input_a: str
+    input_b: str
+    b_scale: str
+    b_zero_point: str | None
+    bias: str | None
+    output: str
+    input_b_dtype: ScalarType
+    b_scale_dtype: ScalarType
+    b_scale_shape: tuple[int, ...]
+    b_zero_shape: tuple[int, ...] | None
+    bias_shape: tuple[int, ...] | None
+    b_scale_per_column: bool
+    b_zero_per_column: bool
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def infer_types(self, ctx: OpContext) -> None:
+        ctx.set_dtype(self.output, ScalarType.F32)
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        input_a_shape = ctx.shape(self.input_a)
+        input_b_shape = ctx.shape(self.input_b)
+        if len(input_a_shape) != 2 or len(input_b_shape) != 2:
+            raise UnsupportedOpError(
+                f"DynamicQuantizeMatMul supports 2D inputs only, "
+                f"got {input_a_shape} x {input_b_shape}"
+            )
+        m, k_left = input_a_shape
+        k_right, n = input_b_shape
+        if k_left != k_right:
+            raise ShapeInferenceError(
+                f"DynamicQuantizeMatMul inner dimensions must match, "
+                f"got {k_left} and {k_right}"
+            )
+        output_shape = (m, n)
+        try:
+            expected = ctx.shape(self.output)
+        except ShapeInferenceError:
+            expected = None
+        if expected is not None and expected != output_shape:
+            raise ShapeInferenceError(
+                f"DynamicQuantizeMatMul output shape must be {output_shape}, "
+                f"got {expected}"
+            )
+        ctx.set_shape(self.output, output_shape)
+        ctx.set_derived(self, "m", m)
+        ctx.set_derived(self, "n", n)
+        ctx.set_derived(self, "k", k_left)
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        params = emitter.shared_param_map(
+            [
+                ("input_a", self.input_a),
+                ("input_b", self.input_b),
+                ("b_scale", self.b_scale),
+                ("b_zero_point", self.b_zero_point),
+                ("bias", self.bias),
+                ("output", self.output),
+            ]
+        )
+
+        m = int(emitter.derived(self, "m"))
+        n = int(emitter.derived(self, "n"))
+        k = int(emitter.derived(self, "k"))
+
+        input_a_shape = (m, k)
+        input_b_shape = (k, n)
+        output_shape = (m, n)
+        input_a_suffix = emitter.param_array_suffix(input_a_shape)
+        input_b_suffix = emitter.param_array_suffix(input_b_shape)
+        output_suffix = emitter.param_array_suffix(output_shape)
+        b_scale_suffix = emitter.param_array_suffix(self.b_scale_shape)
+        output_c_type = ScalarType.F32.c_type
+        # Use float32 compute type to match ORT's internal precision.
+        compute_dtype = ScalarType.F32
+        compute_type = ScalarType.F32.c_type
+
+        param_entries: list[tuple[str | None, str, str, bool]] = [
+            (params["input_a"], ScalarType.F32.c_type, input_a_suffix, True),
+            (params["input_b"], self.input_b_dtype.c_type, input_b_suffix, True),
+            (params["b_scale"], self.b_scale_dtype.c_type, b_scale_suffix, True),
+        ]
+        if params["b_zero_point"]:
+            assert self.b_zero_shape is not None
+            b_zero_suffix = emitter.param_array_suffix(self.b_zero_shape)
+            param_entries.append(
+                (
+                    params["b_zero_point"],
+                    self.input_b_dtype.c_type,
+                    b_zero_suffix,
+                    True,
+                )
+            )
+        else:
+            param_entries.append((None, "", "", True))
+        if params["bias"]:
+            assert self.bias_shape is not None
+            bias_suffix = emitter.param_array_suffix(self.bias_shape)
+            param_entries.append(
+                (params["bias"], ScalarType.F32.c_type, bias_suffix, True)
+            )
+        else:
+            param_entries.append((None, "", "", True))
+        param_entries.append((params["output"], output_c_type, output_suffix, False))
+        param_decls = emitter.build_param_decls(param_entries)
+
+        rendered = (
+            state.templates["dynamic_quantize_matmul"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input_a=params["input_a"],
+                input_b=params["input_b"],
+                b_scale=params["b_scale"],
+                b_zero_point=params["b_zero_point"],
+                bias=params["bias"],
+                output=params["output"],
+                params=param_decls,
+                output_c_type=output_c_type,
+                m=m,
+                n=n,
+                k=k,
+                has_b_zero=self.b_zero_point is not None,
+                has_bias=self.bias is not None,
+                b_scale_per_column=self.b_scale_per_column,
+                b_zero_per_column=self.b_zero_per_column,
+                compute_dtype=compute_dtype,
+                compute_type=compute_type,
+                dim_args=emitter.dim_args_str(),
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        m = int(emitter.derived(self, "m"))
+        n = int(emitter.derived(self, "n"))
+        return (m, n)
+
+
+@dataclass(frozen=True)
 class MatMulIntegerToFloatOp(GemmLikeOpBase):
     """Quantized matmul with float output (com.microsoft contrib op).
 
