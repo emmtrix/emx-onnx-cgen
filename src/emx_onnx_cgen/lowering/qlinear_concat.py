@@ -60,14 +60,11 @@ def lower_qlinear_concat(graph: Graph, node: Node) -> QLinearConcatOp:
                 f"got {dtype} for input {i}"
             )
 
-    # Determine output dtype; fall back to the most common input dtype when unknown.
-    dominant_input_dtype = max(
-        set(input_dtypes), key=lambda d: input_dtypes.count(d)
-    )
+    # Determine output dtype; fall back to the first input dtype when unknown.
     try:
         output_dtype = _value_dtype(graph, node.outputs[0], node)
     except ShapeInferenceError:
-        output_dtype = dominant_input_dtype
+        output_dtype = input_dtypes[0]
     if output_dtype not in _SUPPORTED_DTYPES:
         raise UnsupportedOpError(
             f"QLinearConcat supports uint8/int8 output only, got {output_dtype}"
