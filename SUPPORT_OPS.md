@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 215 / 256
+Supported operators: 223 / 256
 
 | Operator | Supported |
 | --- | --- |
@@ -222,8 +222,8 @@ Supported operators: 215 / 256
 | com.microsoft::CropAndResize | ❌ |
 | com.microsoft::DecoderMaskedMultiHeadAttention | ❌ |
 | com.microsoft::DequantizeLinear | ✅ |
-| com.microsoft::DynamicQuantizeLSTM | ❌ |
-| com.microsoft::DynamicQuantizeMatMul | ❌ |
+| com.microsoft::DynamicQuantizeLSTM | ✅ |
+| com.microsoft::DynamicQuantizeMatMul | ✅ |
 | com.microsoft::DynamicTimeWarping | ❌ |
 | com.microsoft::EmbedLayerNormalization | ❌ |
 | com.microsoft::ExpandDims | ❌ |
@@ -235,21 +235,21 @@ Supported operators: 215 / 256
 | com.microsoft::Inverse | ❌ |
 | com.microsoft::MatMulBnb4 | ✅ |
 | com.microsoft::MatMulInteger16 | ❌ |
-| com.microsoft::MatMulIntegerToFloat | ❌ |
+| com.microsoft::MatMulIntegerToFloat | ✅ |
 | com.microsoft::MatMulNBits | ✅ |
 | com.microsoft::MaxpoolWithMask | ❌ |
 | com.microsoft::MoE | ❌ |
 | com.microsoft::MultiHeadAttention | ✅ |
-| com.microsoft::MurmurHash3 | ❌ |
+| com.microsoft::MurmurHash3 | ✅ |
 | com.microsoft::NGramRepeatBlock | ❌ |
 | com.microsoft::NhwcMaxPool | ✅ |
-| com.microsoft::QAttention | ❌ |
+| com.microsoft::QAttention | ✅ |
 | com.microsoft::QEmbedLayerNormalization | ❌ |
 | com.microsoft::QGemm | ✅ |
 | com.microsoft::QLinearAdd | ✅ |
 | com.microsoft::QLinearAveragePool | ✅ |
-| com.microsoft::QLinearConcat | ❌ |
-| com.microsoft::QLinearGlobalAveragePool | ❌ |
+| com.microsoft::QLinearConcat | ✅ |
+| com.microsoft::QLinearGlobalAveragePool | ✅ |
 | com.microsoft::QLinearLeakyRelu | ❌ |
 | com.microsoft::QLinearMul | ✅ |
 | com.microsoft::QLinearSigmoid | ❌ |
@@ -260,7 +260,7 @@ Supported operators: 215 / 256
 | com.microsoft::SampleOp | ❌ |
 | com.microsoft::SkipLayerNormalization | ❌ |
 | com.microsoft::SparseToDenseMatMul | ❌ |
-| com.microsoft::Tokenizer | ❌ |
+| com.microsoft::Tokenizer | ✅ |
 | com.microsoft::Trilu | ✅ |
 | com.microsoft::UnfoldTensor | ❌ |
 | com.microsoft::Unique | ❌ |

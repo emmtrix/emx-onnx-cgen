@@ -82,13 +82,9 @@ def resolve_multihead_attention_spec(
     key_rank = len(key_shape)
     value_rank = len(value_shape)
     if key_rank not in (3, 4):
-        raise ShapeInferenceError(
-            "MultiHeadAttention key must be 3D or 4D"
-        )
+        raise ShapeInferenceError("MultiHeadAttention key must be 3D or 4D")
     if value_rank not in (3, 4):
-        raise ShapeInferenceError(
-            "MultiHeadAttention value must be 3D or 4D"
-        )
+        raise ShapeInferenceError("MultiHeadAttention value must be 3D or 4D")
     if key_rank != value_rank:
         raise ShapeInferenceError(
             "MultiHeadAttention key and value must have the same rank"
@@ -105,9 +101,7 @@ def resolve_multihead_attention_spec(
                 "MultiHeadAttention key batch dimension must match query"
             )
         if value_shape[0] != batch or value_shape[1] != kv_seq:
-            raise ShapeInferenceError(
-                "MultiHeadAttention value shape must match key"
-            )
+            raise ShapeInferenceError("MultiHeadAttention value shape must match key")
     else:
         # 4D: [batch, num_heads, kv_seq, head_size]
         if key_shape[0] != batch or key_shape[1] != num_heads:
@@ -162,9 +156,7 @@ def resolve_multihead_attention_spec(
     k_head_size = k_hidden_size // num_heads
     v_head_size = v_hidden_size // num_heads
     if qk_head_size != k_head_size:
-        raise ShapeInferenceError(
-            "MultiHeadAttention Q/K head sizes must match"
-        )
+        raise ShapeInferenceError("MultiHeadAttention Q/K head sizes must match")
     if not kv_3d and key_shape[3] != qk_head_size:
         raise ShapeInferenceError(
             "MultiHeadAttention 4D key head_size must equal q_hidden / num_heads"
@@ -175,9 +167,7 @@ def resolve_multihead_attention_spec(
     if has_bias:
         bias_shape = _value_shape(graph, bias_name, node)
         if len(bias_shape) != 1:
-            raise ShapeInferenceError(
-                "MultiHeadAttention bias must be 1D"
-            )
+            raise ShapeInferenceError("MultiHeadAttention bias must be 1D")
         expected_bias = q_hidden_size + k_hidden_size + v_hidden_size
         if bias_shape[0] != expected_bias:
             raise ShapeInferenceError(

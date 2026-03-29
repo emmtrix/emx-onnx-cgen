@@ -2728,9 +2728,7 @@ class MsAttentionOp(RenderableOpBase):
             else None
         )
         extra_suffix = (
-            emitter.param_array_suffix(extra_shape)
-            if extra_shape is not None
-            else ""
+            emitter.param_array_suffix(extra_shape) if extra_shape is not None else ""
         )
         present_shape = (
             (2, self.batch, self.num_heads, self.total_seq, self.qk_head_size)
