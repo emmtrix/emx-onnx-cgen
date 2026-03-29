@@ -8471,7 +8471,9 @@ class QLinearUnaryOp(RenderableOpBase):
                 params=param_decls,
                 input0=params_map["input0"],
                 x_scale=params_map["x_scale"],
-                x_zero_point=params_map["x_zero_point"] if self.x_zero_point is not None else None,
+                x_zero_point=params_map["x_zero_point"]
+                if self.x_zero_point is not None
+                else None,
                 has_x_zero_point=self.x_zero_point is not None,
                 y_scale=params_map["y_scale"],
                 y_zero_point=params_map["y_zero_point"],

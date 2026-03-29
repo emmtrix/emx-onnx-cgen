@@ -65,8 +65,7 @@ def lower_expand_dims(graph: Graph, node: Node) -> ReshapeOp:
     axis_dtype = value_dtype(graph, node.inputs[1], node)
     if axis_dtype not in {ScalarType.I64, ScalarType.I32}:
         raise UnsupportedOpError(
-            "ExpandDims axis input must be int64 or int32, "
-            f"got {axis_dtype.onnx_name}"
+            f"ExpandDims axis input must be int64 or int32, got {axis_dtype.onnx_name}"
         )
     output_rank = len(input_shape) + 1
     axis = _resolve_axis(graph, node)
@@ -90,8 +89,7 @@ def lower_expand_dims(graph: Graph, node: Node) -> ReshapeOp:
         # Axis is a dynamic input; infer from the known output shape.
         if len(output_shape) != output_rank:
             raise ShapeInferenceError(
-                f"ExpandDims output rank must be {output_rank}, "
-                f"got {len(output_shape)}"
+                f"ExpandDims output rank must be {output_rank}, got {len(output_shape)}"
             )
         for dim in output_shape:
             if dim < 0:

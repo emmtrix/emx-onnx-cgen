@@ -37,9 +37,7 @@ def lower_crop(graph: Graph, node: Node) -> SliceOp:
     scale = [int(v) for v in scale_raw]
     if scale:
         if len(scale) != 2:
-            raise UnsupportedOpError(
-                "Crop scale attribute must have exactly 2 values"
-            )
+            raise UnsupportedOpError("Crop scale attribute must have exactly 2 values")
         out_H = scale[0]
         out_W = scale[1]
     else:

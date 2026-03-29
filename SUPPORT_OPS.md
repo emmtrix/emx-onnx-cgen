@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 224 / 256
+Supported operators: 234 / 256
 
 | Operator | Supported |
 | --- | --- |
@@ -13,7 +13,7 @@ Supported operators: 224 / 256
 | Acos | ✅ |
 | Acosh | ✅ |
 | Add | ✅ |
-| Affine | ❌ |
+| Affine | ✅ |
 | AffineGrid | ✅ |
 | And | ✅ |
 | ArgMax | ✅ |
@@ -49,7 +49,7 @@ Supported operators: 224 / 256
 | ConvTranspose | ✅ |
 | Cos | ✅ |
 | Cosh | ✅ |
-| Crop | ❌ |
+| Crop | ✅ |
 | CumSum | ✅ |
 | DFT | ✅ |
 | DeformConv | ✅ |
@@ -59,7 +59,7 @@ Supported operators: 224 / 256
 | Div | ✅ |
 | Dropout | ✅ |
 | DynamicQuantizeLinear | ✅ |
-| DynamicSlice | ❌ |
+| DynamicSlice | ✅ |
 | Einsum | ✅ |
 | Elu | ✅ |
 | Equal | ✅ |
@@ -89,7 +89,7 @@ Supported operators: 224 / 256
 | Identity | ✅ |
 | If | ✅ |
 | ImageDecoder | ✅ |
-| ImageScaler | ❌ |
+| ImageScaler | ✅ |
 | InstanceNormalization | ✅ |
 | IsInf | ✅ |
 | IsNaN | ✅ |
@@ -155,7 +155,7 @@ Supported operators: 224 / 256
 | RotaryEmbedding | ✅ |
 | Round | ✅ |
 | STFT | ✅ |
-| Scale | ❌ |
+| Scale | ✅ |
 | Scan | ✅ |
 | Scatter | ✅ |
 | ScatterElements | ✅ |
@@ -215,7 +215,7 @@ Supported operators: 224 / 256
 | ai.onnx.preview.training::Momentum | ✅ |
 | com.microsoft::Attention | ✅ |
 | com.microsoft::AttnLSTM | ❌ |
-| com.microsoft::BiasGelu | ❌ |
+| com.microsoft::BiasGelu | ✅ |
 | com.microsoft::BifurcationDetector | ❌ |
 | com.microsoft::CDist | ❌ |
 | com.microsoft::ConvTransposeWithDynamicPads | ❌ |
@@ -226,8 +226,8 @@ Supported operators: 224 / 256
 | com.microsoft::DynamicQuantizeMatMul | ✅ |
 | com.microsoft::DynamicTimeWarping | ❌ |
 | com.microsoft::EmbedLayerNormalization | ❌ |
-| com.microsoft::ExpandDims | ❌ |
-| com.microsoft::FastGelu | ❌ |
+| com.microsoft::ExpandDims | ✅ |
+| com.microsoft::FastGelu | ✅ |
 | com.microsoft::FusedConv | ❌ |
 | com.microsoft::FusedMatMul | ✅ |
 | com.microsoft::GatherBlockQuantized | ✅ |
@@ -250,9 +250,9 @@ Supported operators: 224 / 256
 | com.microsoft::QLinearAveragePool | ✅ |
 | com.microsoft::QLinearConcat | ✅ |
 | com.microsoft::QLinearGlobalAveragePool | ✅ |
-| com.microsoft::QLinearLeakyRelu | ❌ |
+| com.microsoft::QLinearLeakyRelu | ✅ |
 | com.microsoft::QLinearMul | ✅ |
-| com.microsoft::QLinearSigmoid | ❌ |
+| com.microsoft::QLinearSigmoid | ✅ |
 | com.microsoft::QLinearSoftmax | ✅ |
 | com.microsoft::QLinearWhere | ❌ |
 | com.microsoft::QuantizeLinear | ✅ |
