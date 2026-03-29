@@ -1002,8 +1002,9 @@ class MatMulNBitsOp(RenderableOpBase):
         b_shape = (self.n, self.n_blocks_per_col, self.blob_size)
         b_suffix = emitter.param_array_suffix(b_shape)
 
-        scales_shape = (self.n, self.n_blocks_per_col)
+        scales_shape = emitter.ctx_shape(self.scales)
         scales_suffix = emitter.param_array_suffix(scales_shape)
+        scales_has_block_axis = len(scales_shape) > 1
 
         acc_dtype = emitter.accumulation_dtype(self.output_dtype)
         acc_zero_literal = emitter.format_literal(acc_dtype, 0)
@@ -1017,9 +1018,11 @@ class MatMulNBitsOp(RenderableOpBase):
         ]
 
         zp_suffix = ""
+        zero_points_has_block_axis = False
         if params["zero_points"]:
             zp_shape_raw = emitter.ctx_shape(self.zero_points)  # type: ignore[arg-type]
             zp_suffix = emitter.param_array_suffix(zp_shape_raw)
+            zero_points_has_block_axis = len(zp_shape_raw) > 1
             zp_c_type = (
                 self.zero_points_dtype.c_type if self.zero_points_dtype else "uint8_t"
             )
@@ -1071,7 +1074,9 @@ class MatMulNBitsOp(RenderableOpBase):
                 block_size=self.block_size,
                 bit_mask=bit_mask,
                 default_zero_point=default_zero_point,
+                scales_has_block_axis=scales_has_block_axis,
                 has_zero_points=params["zero_points"] is not None,
+                zero_points_has_block_axis=zero_points_has_block_axis,
                 zero_points_packed=self.zero_points_packed,
                 has_bias=params["bias"] is not None,
                 b_c_type=b_c_type,
@@ -1089,7 +1094,7 @@ class MatMulNBitsOp(RenderableOpBase):
         inputs: list[tuple[str, tuple[int, ...]]] = [
             (self.input0, emitter.ctx_shape(self.input0)),
             (self.input1, (self.n, self.n_blocks_per_col, self.blob_size)),
-            (self.scales, (self.n, self.n_blocks_per_col)),
+            (self.scales, emitter.ctx_shape(self.scales)),
         ]
         if self.zero_points is not None:
             inputs.append((self.zero_points, emitter.ctx_shape(self.zero_points)))
