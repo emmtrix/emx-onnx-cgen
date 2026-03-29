@@ -2516,6 +2516,229 @@ class MsAttentionOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class QAttentionOp(RenderableOpBase):
+    """com.microsoft::QAttention contrib operator.
+
+    Quantized self-attention that dequantizes integer input and weight,
+    projects via a combined QKV weight matrix, splits into Q/K/V heads,
+    optionally concatenates past key/value state, computes scaled
+    dot-product attention with optional masking, and writes output plus
+    optional present state.
+    """
+
+    __io_inputs__ = (
+        "input",
+        "weight",
+        "bias",
+        "input_scale",
+        "weight_scale",
+        "mask_index",
+        "input_zero_point",
+        "weight_zero_point",
+        "past",
+    )
+    __io_outputs__ = ("output", "present")
+    input: str
+    weight: str
+    bias: str
+    input_scale: str
+    weight_scale: str
+    mask_index: str | None
+    input_zero_point: str
+    weight_zero_point: str
+    past: str | None
+    output: str
+    present: str | None
+    batch: int
+    seq_len: int
+    num_heads: int
+    qk_head_size: int
+    v_head_size: int
+    q_hidden_size: int
+    k_hidden_size: int
+    v_hidden_size: int
+    input_hidden_size: int
+    past_seq: int
+    total_seq: int
+    scale: float
+    unidirectional: bool
+    mask_filter_value: float
+    mask_type: int  # 0=NONE, 1=1D_END, 2=1D_END_START, 3=2D, 4=3D
+    mask_shape: tuple[int, ...] | None
+    input_dtype: ScalarType
+    weight_dtype: ScalarType
+    dtype: ScalarType
+    weight_scale_per_column: bool
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.output)
+        c_type = output_dtype.c_type
+        zero_literal = output_dtype.zero_literal
+        min_literal = output_dtype.min_literal
+        params = emitter.shared_param_map(
+            [
+                ("input", self.input),
+                ("weight", self.weight),
+                ("bias", self.bias),
+                ("input_scale", self.input_scale),
+                ("weight_scale", self.weight_scale),
+                ("mask_index", self.mask_index),
+                ("input_zero_point", self.input_zero_point),
+                ("weight_zero_point", self.weight_zero_point),
+                ("past", self.past),
+                ("output", self.output),
+                ("present", self.present),
+            ]
+        )
+        input_shape = (self.batch, self.seq_len, self.input_hidden_size)
+        total_qkv = self.q_hidden_size + self.k_hidden_size + self.v_hidden_size
+        weight_shape = (self.input_hidden_size, total_qkv)
+        bias_shape = (total_qkv,)
+        input_scale_shape = (1,)
+        input_zp_shape = (1,)
+        weight_scale_shape = (total_qkv,) if self.weight_scale_per_column else (1,)
+        weight_zp_shape = (total_qkv,) if self.weight_scale_per_column else (1,)
+        output_shape = (self.batch, self.seq_len, self.v_hidden_size)
+        input_suffix = emitter.param_array_suffix(input_shape)
+        weight_suffix = emitter.param_array_suffix(weight_shape)
+        bias_suffix = emitter.param_array_suffix(bias_shape)
+        input_scale_suffix = emitter.param_array_suffix(input_scale_shape)
+        input_zp_suffix = emitter.param_array_suffix(input_zp_shape)
+        weight_scale_suffix = emitter.param_array_suffix(weight_scale_shape)
+        weight_zp_suffix = emitter.param_array_suffix(weight_zp_shape)
+        output_suffix = emitter.param_array_suffix(output_shape)
+        mask_suffix = (
+            emitter.param_array_suffix(self.mask_shape)
+            if self.mask_index is not None
+            else ""
+        )
+        past_shape = (
+            (2, self.batch, self.num_heads, self.past_seq, self.qk_head_size)
+            if self.past is not None
+            else None
+        )
+        past_suffix = (
+            emitter.param_array_suffix(past_shape) if past_shape is not None else ""
+        )
+        present_shape = (
+            (2, self.batch, self.num_heads, self.total_seq, self.qk_head_size)
+            if self.present is not None
+            else None
+        )
+        present_suffix = (
+            emitter.param_array_suffix(present_shape)
+            if present_shape is not None
+            else ""
+        )
+        float_c_type = self.dtype.c_type
+        input_c_type = self.input_dtype.c_type
+        weight_c_type = self.weight_dtype.c_type
+        mask_c_type = ScalarType.I32.c_type
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input"], input_c_type, input_suffix, True),
+                (params["weight"], weight_c_type, weight_suffix, True),
+                (params["bias"], float_c_type, bias_suffix, True),
+                (params["input_scale"], float_c_type, input_scale_suffix, True),
+                (params["weight_scale"], float_c_type, weight_scale_suffix, True),
+                (
+                    (params["mask_index"], mask_c_type, mask_suffix, True)
+                    if params["mask_index"]
+                    else (None, "", "", True)
+                ),
+                (params["input_zero_point"], input_c_type, input_zp_suffix, True),
+                (params["weight_zero_point"], weight_c_type, weight_zp_suffix, True),
+                (
+                    (params["past"], float_c_type, past_suffix, True)
+                    if params["past"]
+                    else (None, "", "", True)
+                ),
+                (params["output"], float_c_type, output_suffix, False),
+                (
+                    (params["present"], float_c_type, present_suffix, False)
+                    if params["present"]
+                    else (None, "", "", False)
+                ),
+            ]
+        )
+        rendered = (
+            state.templates["qattention"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input=params["input"],
+                weight=params["weight"],
+                bias=params["bias"],
+                input_scale=params["input_scale"],
+                weight_scale=params["weight_scale"],
+                mask_index=params["mask_index"],
+                input_zero_point=params["input_zero_point"],
+                weight_zero_point=params["weight_zero_point"],
+                past=params["past"],
+                output=params["output"],
+                present=params["present"],
+                params=param_decls,
+                c_type=c_type,
+                zero_literal=zero_literal,
+                min_literal=min_literal,
+                mask_filter_literal=emitter.format_floating(
+                    self.mask_filter_value, self.dtype
+                ),
+                scale_literal=emitter.format_floating(self.scale, self.dtype),
+                dtype=self.dtype,
+                batch=self.batch,
+                seq_len=self.seq_len,
+                num_heads=self.num_heads,
+                qk_head_size=self.qk_head_size,
+                v_head_size=self.v_head_size,
+                q_hidden_size=self.q_hidden_size,
+                k_hidden_size=self.k_hidden_size,
+                v_hidden_size=self.v_hidden_size,
+                input_hidden_size=self.input_hidden_size,
+                past_seq=self.past_seq,
+                total_seq=self.total_seq,
+                unidirectional=int(self.unidirectional),
+                mask_type=self.mask_type,
+                mask_shape=self.mask_shape,
+                weight_scale_per_column=self.weight_scale_per_column,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return (self.batch, self.seq_len, self.v_hidden_size)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        outputs: list[tuple[str, tuple[int, ...], ScalarType]] = [
+            (self.output, self.computed_output_shape(emitter), self.dtype)
+        ]
+        if self.present is not None:
+            outputs.append(
+                (
+                    self.present,
+                    (
+                        2,
+                        self.batch,
+                        self.num_heads,
+                        self.total_seq,
+                        self.qk_head_size,
+                    ),
+                    self.dtype,
+                )
+            )
+        return tuple(outputs)
+
+
+@dataclass(frozen=True)
 class RotaryEmbeddingOp(RenderableOpBase):
     __io_inputs__ = ("input0", "cos_cache", "sin_cache", "position_ids")
     __io_outputs__ = ("output",)
