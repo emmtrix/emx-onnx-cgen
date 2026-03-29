@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.SkipLayerNormalization",
+  "error": "OK (max ULP 24)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch2_Bias_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::SkipLayerNormalization"
-  ]
+  ],
+  "generated_checksum": "4d4c47d5c65be5d6d03d0efa8274dcff6e2c49af88b15c2f6d63d139bd3ad3f6"
 }

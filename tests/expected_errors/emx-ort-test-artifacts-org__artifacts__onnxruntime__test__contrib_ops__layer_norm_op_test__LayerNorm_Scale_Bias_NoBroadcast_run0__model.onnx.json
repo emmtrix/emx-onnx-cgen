@@ -1,9 +1,10 @@
 {
-  "error": "LayerNormalization scale rank must match normalized rank",
+  "error": "OK (max ULP 30)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_NoBroadcast_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "LayerNormalization"
   ],
-  "opset_version": 7
+  "opset_version": 7,
+  "generated_checksum": "b18ed246b2e962dacc35e15a4a7360fdaacb448004d6f002d20a095bda0869de"
 }

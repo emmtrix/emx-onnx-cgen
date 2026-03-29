@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 223 / 256
+Supported operators: 225 / 256
 
 | Operator | Supported |
 | --- | --- |
@@ -256,9 +256,9 @@ Supported operators: 223 / 256
 | com.microsoft::QLinearSoftmax | ✅ |
 | com.microsoft::QLinearWhere | ❌ |
 | com.microsoft::QuantizeLinear | ✅ |
-| com.microsoft::RotaryEmbedding | ❌ |
+| com.microsoft::RotaryEmbedding | ✅ |
 | com.microsoft::SampleOp | ❌ |
-| com.microsoft::SkipLayerNormalization | ❌ |
+| com.microsoft::SkipLayerNormalization | ✅ |
 | com.microsoft::SparseToDenseMatMul | ❌ |
 | com.microsoft::Tokenizer | ✅ |
 | com.microsoft::Trilu | ✅ |

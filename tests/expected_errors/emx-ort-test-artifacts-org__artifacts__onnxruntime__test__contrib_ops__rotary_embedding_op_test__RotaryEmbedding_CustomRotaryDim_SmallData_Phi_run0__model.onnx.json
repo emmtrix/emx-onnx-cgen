@@ -1,8 +1,9 @@
 {
-  "error": "RotaryEmbedding inputs must share the same dtype",
+  "error": "Out of tolerance (max ULP 6754)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_CustomRotaryDim_SmallData_Phi_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::RotaryEmbedding"
-  ]
+  ],
+  "generated_checksum": "203b5052d50f34698a6427f14fd2ffee7cb838e5ad1223c180b526d074e5e27f"
 }

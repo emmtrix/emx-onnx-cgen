@@ -1,0 +1,42 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% for dim in prefix_shape %}
+for (idx_t {{ prefix_loop_vars[loop.index0] }} = 0; {{ prefix_loop_vars[loop.index0] }} < {{ dim }}; ++{{ prefix_loop_vars[loop.index0] }}) {
+{% endfor %}
+    {{ acc_type }} sum = {{ acc_zero_literal }};
+    for (idx_t {{ norm_loop_var }} = 0; {{ norm_loop_var }} < {{ norm_dim }}; ++{{ norm_loop_var }}) {
+        {{ acc_type }} val = ({{ acc_type }}){{ input0 }}{% for var in prefix_loop_vars %}[{{ var }}]{% endfor %}[{{ norm_loop_var }}] + ({{ acc_type }}){{ skip }}{% for var in skip_index_vars %}[{{ var }}]{% endfor %};
+{% if bias %}
+        val += ({{ acc_type }}){{ bias }}[{{ bias_index_var }}];
+{% endif %}
+        sum += val;
+    }
+    {{ acc_type }} mean = sum / {{ hidden_size }};
+    {{ acc_type }} var = {{ acc_zero_literal }};
+    for (idx_t {{ norm_loop_var }} = 0; {{ norm_loop_var }} < {{ norm_dim }}; ++{{ norm_loop_var }}) {
+        {{ acc_type }} val = ({{ acc_type }}){{ input0 }}{% for var in prefix_loop_vars %}[{{ var }}]{% endfor %}[{{ norm_loop_var }}] + ({{ acc_type }}){{ skip }}{% for var in skip_index_vars %}[{{ var }}]{% endfor %};
+{% if bias %}
+        val += ({{ acc_type }}){{ bias }}[{{ bias_index_var }}];
+{% endif %}
+        {{ acc_type }} diff = val - mean;
+        var += diff * diff;
+    }
+    var = var / {{ hidden_size }};
+    {{ acc_type }} inv_std = {{ acc_one_literal }} / {{ scalar_fn(SF.SQRT, acc_dtype) }}(var + {{ acc_epsilon_literal }});
+    for (idx_t {{ norm_loop_var }} = 0; {{ norm_loop_var }} < {{ norm_dim }}; ++{{ norm_loop_var }}) {
+        {{ acc_type }} val = ({{ acc_type }}){{ input0 }}{% for var in prefix_loop_vars %}[{{ var }}]{% endfor %}[{{ norm_loop_var }}] + ({{ acc_type }}){{ skip }}{% for var in skip_index_vars %}[{{ var }}]{% endfor %};
+{% if bias %}
+        val += ({{ acc_type }}){{ bias }}[{{ bias_index_var }}];
+{% endif %}
+{% if skip_input_bias_add_output %}
+        {{ skip_input_bias_add_output }}{% for var in prefix_loop_vars %}[{{ var }}]{% endfor %}[{{ norm_loop_var }}] = val;
+{% endif %}
+        {{ acc_type }} normed = (val - mean) * inv_std * ({{ acc_type }}){{ gamma }}[{{ gamma_index_var }}];
+{% if beta %}
+        normed += ({{ acc_type }}){{ beta }}[{{ beta_index_var }}];
+{% endif %}
+        {{ output }}{% for var in prefix_loop_vars %}[{{ var }}]{% endfor %}[{{ norm_loop_var }}] = normed;
+    }
+{% for _ in prefix_shape %}
+}
+{% endfor %}
+}

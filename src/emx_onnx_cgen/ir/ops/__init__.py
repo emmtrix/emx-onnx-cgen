@@ -140,6 +140,7 @@ from .nn import (
     RMSNormalizationOp,
     RoiAlignOp,
     RotaryEmbeddingOp,
+    SkipLayerNormalizationOp,
     SoftmaxCrossEntropyLossOp,
     SoftmaxOp,
 )
@@ -260,6 +261,7 @@ __all__ = [
     "RMSNormalizationOp",
     "RoiAlignOp",
     "RotaryEmbeddingOp",
+    "SkipLayerNormalizationOp",
     "ScatterElementsOp",
     "ScatterOp",
     "ScatterNDOp",
