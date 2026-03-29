@@ -345,9 +345,7 @@ def _make_ms_attention_model() -> onnx.ModelProto:
     weight_info = helper.make_tensor_value_info(
         "weight", TensorProto.FLOAT, [input_hidden, total_qkv]
     )
-    bias_info = helper.make_tensor_value_info(
-        "bias", TensorProto.FLOAT, [total_qkv]
-    )
+    bias_info = helper.make_tensor_value_info("bias", TensorProto.FLOAT, [total_qkv])
     output = helper.make_tensor_value_info(
         "output", TensorProto.FLOAT, [batch, seq_len, hidden]
     )

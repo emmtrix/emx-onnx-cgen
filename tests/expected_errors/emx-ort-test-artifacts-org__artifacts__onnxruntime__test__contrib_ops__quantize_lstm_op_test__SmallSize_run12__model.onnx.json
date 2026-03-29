@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.DynamicQuantizeLSTM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/quantize_lstm_op_test/SmallSize_run12 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::DynamicQuantizeLSTM"
-  ]
+  ],
+  "generated_checksum": "53d7a400b3a0383646543d869afd5a545dc86816a7039c7060b88a8e76455828"
 }

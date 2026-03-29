@@ -10,7 +10,6 @@ Aggregates non-success verification outcomes.
 | MatMulNBits g_idx (input 4) is not supported | 238 |  |
 | AveragePool has unsupported attributes | 72 |  |
 | Out of tolerance | 72 | 7, 17 |
-| Unsupported op com.microsoft.DynamicQuantizeLSTM | 50 |  |
 | Unsupported op com.microsoft.MatMulIntegerToFloat | 48 |  |
 | Unsupported op com.microsoft.DynamicQuantizeMatMul | 39 |  |
 | Unsupported op com.microsoft.QLinearConcat | 36 |  |
