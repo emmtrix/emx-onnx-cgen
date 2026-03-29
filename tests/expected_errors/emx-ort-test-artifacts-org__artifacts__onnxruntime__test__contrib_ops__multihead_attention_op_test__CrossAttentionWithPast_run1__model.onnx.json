@@ -1,8 +1,12 @@
 {
-  "error": "Unsupported op com.microsoft.MultiHeadAttention",
-  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/multihead_attention_op_test/CrossAttentionWithPast_run1 model.onnx --test-data-dir test_data_set_0",
-  "verification_mode": "Data/Data",
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/multihead_attention_op_test/CrossAttentionWithPast_run1 model.onnx --test-data-dir test_data_set_0 --test-data-inputs-only",
+  "extra_cli_args": [
+    "--test-data-inputs-only"
+  ],
+  "verification_mode": "Data/ORT",
   "operators": [
     "com.microsoft::MultiHeadAttention"
-  ]
+  ],
+  "generated_checksum": "e9bda3af11ddd272a102cadbcdd2803c0a3851cbbb6a0bd4bfbe4f3a6702dba6"
 }

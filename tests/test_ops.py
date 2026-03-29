@@ -4721,6 +4721,158 @@ def test_ms_attention_qkv_sizes_testbench_compare() -> None:
     _run_testbench_compare(model)
 
 
+def _make_multihead_attention_model(
+    *,
+    batch: int = 1,
+    q_seq: int = 2,
+    kv_seq: int = 3,
+    num_heads: int = 2,
+    qk_head_size: int = 4,
+    v_head_size: int = 4,
+    has_bias: bool = True,
+    has_key_padding_mask: bool = False,
+    past_seq: int = 0,
+    has_present: bool = False,
+    unidirectional: int = 0,
+) -> onnx.ModelProto:
+    """Build a com.microsoft::MultiHeadAttention model with separate Q/K/V inputs."""
+    q_hidden = num_heads * qk_head_size
+    k_hidden = num_heads * qk_head_size
+    v_hidden = num_heads * v_head_size
+    total_seq = kv_seq + past_seq
+
+    inputs_info = [
+        helper.make_tensor_value_info(
+            "query", TensorProto.FLOAT, [batch, q_seq, q_hidden]
+        ),
+        helper.make_tensor_value_info(
+            "key", TensorProto.FLOAT, [batch, kv_seq, k_hidden]
+        ),
+        helper.make_tensor_value_info(
+            "value", TensorProto.FLOAT, [batch, kv_seq, v_hidden]
+        ),
+    ]
+    node_inputs = ["query", "key", "value"]
+    if has_bias:
+        inputs_info.append(
+            helper.make_tensor_value_info(
+                "bias", TensorProto.FLOAT, [q_hidden + k_hidden + v_hidden]
+            )
+        )
+        node_inputs.append("bias")
+    else:
+        node_inputs.append("")
+    if has_key_padding_mask:
+        inputs_info.append(
+            helper.make_tensor_value_info(
+                "key_padding_mask", TensorProto.INT32, [batch, kv_seq]
+            )
+        )
+        node_inputs.extend(["key_padding_mask"])
+    else:
+        node_inputs.append("")
+    node_inputs.append("")  # attention_bias
+    if past_seq > 0:
+        inputs_info.append(
+            helper.make_tensor_value_info(
+                "past_key",
+                TensorProto.FLOAT,
+                [batch, num_heads, past_seq, qk_head_size],
+            )
+        )
+        inputs_info.append(
+            helper.make_tensor_value_info(
+                "past_value",
+                TensorProto.FLOAT,
+                [batch, num_heads, past_seq, v_head_size],
+            )
+        )
+        node_inputs.extend(["past_key", "past_value"])
+    else:
+        node_inputs.extend(["", ""])
+
+    output = helper.make_tensor_value_info(
+        "output", TensorProto.FLOAT, [batch, q_seq, v_hidden]
+    )
+    node_outputs = ["output"]
+    outputs = [output]
+    if has_present:
+        present_key = helper.make_tensor_value_info(
+            "present_key",
+            TensorProto.FLOAT,
+            [batch, num_heads, total_seq, qk_head_size],
+        )
+        present_value = helper.make_tensor_value_info(
+            "present_value",
+            TensorProto.FLOAT,
+            [batch, num_heads, total_seq, v_head_size],
+        )
+        node_outputs.extend(["present_key", "present_value"])
+        outputs.extend([present_key, present_value])
+
+    attrs: dict[str, object] = {"num_heads": num_heads}
+    if unidirectional:
+        attrs["unidirectional"] = unidirectional
+    node = helper.make_node(
+        "MultiHeadAttention",
+        inputs=node_inputs,
+        outputs=node_outputs,
+        domain="com.microsoft",
+        **attrs,
+    )
+    graph = helper.make_graph(
+        [node],
+        "multihead_attention_graph",
+        inputs_info,
+        outputs,
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[
+            helper.make_operatorsetid("", 13),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+    return model
+
+
+def test_multihead_attention_basic_testbench_compare() -> None:
+    model = _make_multihead_attention_model()
+    _run_testbench_compare(model)
+
+
+def test_multihead_attention_no_bias_testbench_compare() -> None:
+    model = _make_multihead_attention_model(has_bias=False)
+    _run_testbench_compare(model)
+
+
+def test_multihead_attention_cross_attention_testbench_compare() -> None:
+    model = _make_multihead_attention_model(q_seq=2, kv_seq=5)
+    _run_testbench_compare(model)
+
+
+def test_multihead_attention_diff_head_sizes_testbench_compare() -> None:
+    model = _make_multihead_attention_model(qk_head_size=4, v_head_size=2)
+    _run_testbench_compare(model)
+
+
+def test_multihead_attention_unidirectional_testbench_compare() -> None:
+    model = _make_multihead_attention_model(unidirectional=1)
+    _run_testbench_compare(model)
+
+
+def test_multihead_attention_with_present_testbench_compare() -> None:
+    model = _make_multihead_attention_model(has_present=True)
+    _run_testbench_compare(model)
+
+
+def test_multihead_attention_with_past_and_present_testbench_compare() -> None:
+    model = _make_multihead_attention_model(past_seq=2, has_present=True)
+    _run_testbench_compare(model)
+
+
 def _run_ort_compare_or_skip(
     model: onnx.ModelProto, *, skip_substrings: tuple[str, ...]
 ) -> None:

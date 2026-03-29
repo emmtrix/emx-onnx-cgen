@@ -1002,9 +1002,8 @@ class MatMulNBitsOp(RenderableOpBase):
         b_shape = (self.n, self.n_blocks_per_col, self.blob_size)
         b_suffix = emitter.param_array_suffix(b_shape)
 
-        scales_shape = emitter.ctx_shape(self.scales)
+        scales_shape = (self.n, self.n_blocks_per_col)
         scales_suffix = emitter.param_array_suffix(scales_shape)
-        scales_has_block_axis = len(scales_shape) > 1
 
         acc_dtype = emitter.accumulation_dtype(self.output_dtype)
         acc_zero_literal = emitter.format_literal(acc_dtype, 0)
@@ -1018,11 +1017,9 @@ class MatMulNBitsOp(RenderableOpBase):
         ]
 
         zp_suffix = ""
-        zero_points_has_block_axis = False
         if params["zero_points"]:
             zp_shape_raw = emitter.ctx_shape(self.zero_points)  # type: ignore[arg-type]
             zp_suffix = emitter.param_array_suffix(zp_shape_raw)
-            zero_points_has_block_axis = len(zp_shape_raw) > 1
             zp_c_type = (
                 self.zero_points_dtype.c_type if self.zero_points_dtype else "uint8_t"
             )
@@ -1074,9 +1071,7 @@ class MatMulNBitsOp(RenderableOpBase):
                 block_size=self.block_size,
                 bit_mask=bit_mask,
                 default_zero_point=default_zero_point,
-                scales_has_block_axis=scales_has_block_axis,
                 has_zero_points=params["zero_points"] is not None,
-                zero_points_has_block_axis=zero_points_has_block_axis,
                 zero_points_packed=self.zero_points_packed,
                 has_bias=params["bias"] is not None,
                 b_c_type=b_c_type,
@@ -1094,7 +1089,7 @@ class MatMulNBitsOp(RenderableOpBase):
         inputs: list[tuple[str, tuple[int, ...]]] = [
             (self.input0, emitter.ctx_shape(self.input0)),
             (self.input1, (self.n, self.n_blocks_per_col, self.blob_size)),
-            (self.scales, emitter.ctx_shape(self.scales)),
+            (self.scales, (self.n, self.n_blocks_per_col)),
         ]
         if self.zero_points is not None:
             inputs.append((self.zero_points, emitter.ctx_shape(self.zero_points)))
@@ -2835,6 +2830,294 @@ class MsAttentionOp(RenderableOpBase):
                         self.total_seq,
                         self.qk_head_size,
                     ),
+                    self.dtype,
+                )
+            )
+        return tuple(outputs)
+
+
+@dataclass(frozen=True)
+class MultiHeadAttentionOp(RenderableOpBase):
+    """com.microsoft::MultiHeadAttention contrib operator.
+
+    Computes multi-head attention given separate query, key, and value inputs
+    (already projected), an optional additive bias, optional key padding mask,
+    optional attention bias, optional past key/value cache, and writes the
+    attention output plus optional present key/value cache.
+    """
+
+    __io_inputs__ = (
+        "query",
+        "key",
+        "value",
+        "bias",
+        "key_padding_mask",
+        "attention_bias",
+        "past_key",
+        "past_value",
+    )
+    __io_outputs__ = ("output", "present_key", "present_value")
+    query: str
+    key: str
+    value: str
+    bias: str | None
+    key_padding_mask: str | None
+    attention_bias: str | None
+    past_key: str | None
+    past_value: str | None
+    output: str
+    present_key: str | None
+    present_value: str | None
+    batch: int
+    q_seq: int
+    num_heads: int
+    qk_head_size: int
+    v_head_size: int
+    q_hidden_size: int
+    k_hidden_size: int
+    v_hidden_size: int
+    kv_3d: bool
+    kv_seq: int
+    past_seq: int
+    total_seq: int
+    scale: float
+    unidirectional: bool
+    mask_filter_value: float
+    dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.output)
+        c_type = output_dtype.c_type
+        zero_literal = output_dtype.zero_literal
+        min_literal = output_dtype.min_literal
+        params = emitter.shared_param_map(
+            [
+                ("query", self.query),
+                ("key", self.key),
+                ("value", self.value),
+                ("bias", self.bias),
+                ("key_padding_mask", self.key_padding_mask),
+                ("attention_bias", self.attention_bias),
+                ("past_key", self.past_key),
+                ("past_value", self.past_value),
+                ("output", self.output),
+                ("present_key", self.present_key),
+                ("present_value", self.present_value),
+            ]
+        )
+        query_shape = (self.batch, self.q_seq, self.q_hidden_size)
+        output_shape = (self.batch, self.q_seq, self.v_hidden_size)
+        query_suffix = emitter.param_array_suffix(query_shape)
+        output_suffix = emitter.param_array_suffix(output_shape)
+
+        if self.kv_3d:
+            key_shape: tuple[int, ...] = (self.batch, self.kv_seq, self.k_hidden_size)
+            value_shape: tuple[int, ...] = (
+                self.batch,
+                self.kv_seq,
+                self.v_hidden_size,
+            )
+        else:
+            key_shape = (
+                self.batch,
+                self.num_heads,
+                self.kv_seq,
+                self.qk_head_size,
+            )
+            value_shape = (
+                self.batch,
+                self.num_heads,
+                self.kv_seq,
+                self.v_head_size,
+            )
+        key_suffix = emitter.param_array_suffix(key_shape)
+        value_suffix = emitter.param_array_suffix(value_shape)
+
+        bias_shape = (
+            (self.q_hidden_size + self.k_hidden_size + self.v_hidden_size,)
+            if self.bias is not None
+            else None
+        )
+        bias_suffix = (
+            emitter.param_array_suffix(bias_shape) if bias_shape is not None else ""
+        )
+        mask_shape = (
+            (self.batch, self.kv_seq) if self.key_padding_mask is not None else None
+        )
+        mask_suffix = (
+            emitter.param_array_suffix(mask_shape) if mask_shape is not None else ""
+        )
+        attn_bias_shape = (
+            (self.batch, self.num_heads, self.q_seq, self.total_seq)
+            if self.attention_bias is not None
+            else None
+        )
+        attn_bias_suffix = (
+            emitter.param_array_suffix(attn_bias_shape)
+            if attn_bias_shape is not None
+            else ""
+        )
+        past_key_shape = (
+            (self.batch, self.num_heads, self.past_seq, self.qk_head_size)
+            if self.past_key is not None
+            else None
+        )
+        past_key_suffix = (
+            emitter.param_array_suffix(past_key_shape)
+            if past_key_shape is not None
+            else ""
+        )
+        past_value_shape = (
+            (self.batch, self.num_heads, self.past_seq, self.v_head_size)
+            if self.past_value is not None
+            else None
+        )
+        past_value_suffix = (
+            emitter.param_array_suffix(past_value_shape)
+            if past_value_shape is not None
+            else ""
+        )
+        present_key_shape = (
+            (self.batch, self.num_heads, self.total_seq, self.qk_head_size)
+            if self.present_key is not None
+            else None
+        )
+        present_key_suffix = (
+            emitter.param_array_suffix(present_key_shape)
+            if present_key_shape is not None
+            else ""
+        )
+        present_value_shape = (
+            (self.batch, self.num_heads, self.total_seq, self.v_head_size)
+            if self.present_value is not None
+            else None
+        )
+        present_value_suffix = (
+            emitter.param_array_suffix(present_value_shape)
+            if present_value_shape is not None
+            else ""
+        )
+        mask_c_type = ScalarType.I32.c_type
+        param_decls = emitter.build_param_decls(
+            [
+                (params["query"], c_type, query_suffix, True),
+                (params["key"], c_type, key_suffix, True),
+                (params["value"], c_type, value_suffix, True),
+                (
+                    (params["bias"], c_type, bias_suffix, True)
+                    if params["bias"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (params["key_padding_mask"], mask_c_type, mask_suffix, True)
+                    if params["key_padding_mask"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (params["attention_bias"], c_type, attn_bias_suffix, True)
+                    if params["attention_bias"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (params["past_key"], c_type, past_key_suffix, True)
+                    if params["past_key"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (params["past_value"], c_type, past_value_suffix, True)
+                    if params["past_value"]
+                    else (None, "", "", True)
+                ),
+                (params["output"], c_type, output_suffix, False),
+                (
+                    (params["present_key"], c_type, present_key_suffix, False)
+                    if params["present_key"]
+                    else (None, "", "", False)
+                ),
+                (
+                    (params["present_value"], c_type, present_value_suffix, False)
+                    if params["present_value"]
+                    else (None, "", "", False)
+                ),
+            ]
+        )
+        rendered = (
+            state.templates["multihead_attention"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                query=params["query"],
+                key=params["key"],
+                value=params["value"],
+                bias=params["bias"],
+                key_padding_mask=params["key_padding_mask"],
+                attention_bias=params["attention_bias"],
+                past_key=params["past_key"],
+                past_value=params["past_value"],
+                output=params["output"],
+                present_key=params["present_key"],
+                present_value=params["present_value"],
+                params=param_decls,
+                c_type=c_type,
+                zero_literal=zero_literal,
+                min_literal=min_literal,
+                mask_filter_literal=emitter.format_floating(
+                    self.mask_filter_value, self.dtype
+                ),
+                scale_literal=emitter.format_floating(self.scale, self.dtype),
+                dtype=self.dtype,
+                batch=self.batch,
+                q_seq=self.q_seq,
+                num_heads=self.num_heads,
+                qk_head_size=self.qk_head_size,
+                v_head_size=self.v_head_size,
+                q_hidden_size=self.q_hidden_size,
+                k_hidden_size=self.k_hidden_size,
+                v_hidden_size=self.v_hidden_size,
+                kv_3d=self.kv_3d,
+                kv_seq=self.kv_seq,
+                past_seq=self.past_seq,
+                total_seq=self.total_seq,
+                has_bias=self.bias is not None,
+                has_past=self.past_key is not None,
+                has_present_key=self.present_key is not None,
+                has_present_value=self.present_value is not None,
+                has_key_padding_mask=self.key_padding_mask is not None,
+                has_attention_bias=self.attention_bias is not None,
+                unidirectional=int(self.unidirectional),
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return (self.batch, self.q_seq, self.v_hidden_size)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        outputs: list[tuple[str, tuple[int, ...], ScalarType]] = [
+            (self.output, self.computed_output_shape(emitter), self.dtype)
+        ]
+        if self.present_key is not None:
+            outputs.append(
+                (
+                    self.present_key,
+                    (self.batch, self.num_heads, self.total_seq, self.qk_head_size),
+                    self.dtype,
+                )
+            )
+        if self.present_value is not None:
+            outputs.append(
+                (
+                    self.present_value,
+                    (self.batch, self.num_heads, self.total_seq, self.v_head_size),
                     self.dtype,
                 )
             )
