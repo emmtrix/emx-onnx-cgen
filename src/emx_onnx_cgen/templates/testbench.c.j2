@@ -210,6 +210,25 @@ static void testbench_fill_random_input({% if not variable_inputs and not dim_ar
 {% endfor %}
 }
 
+{% if outputs | selectattr('is_string') | list %}
+static void emx_json_print_string(const char *s) {
+    putchar('"');
+    while (*s != '\0') {
+        unsigned char c = (unsigned char)*s++;
+        if (c < 0x20u) {
+            printf("\\u%04X", (unsigned int)c);
+        } else if (c == '"') {
+            printf("\\\"");
+        } else if (c == '\\') {
+            printf("\\\\");
+        } else {
+            putchar((int)c);
+        }
+    }
+    putchar('"');
+}
+{% endif %}
+
 static void testbench_print_json(
 {% for output in outputs %}
     {{ output.c_type }} {{ output.name }}{{ output.array_suffix }}{% if output.is_sequence %}, idx_t {{ output.count_name }}{% for dim in output.sequence_dim_arrays %}, idx_t {{ dim.name }}[EMX_SEQUENCE_MAX_LEN]{% endfor %}{% endif %}{% if not loop.last %},
@@ -259,7 +278,7 @@ for (idx_t {{ output.loop_vars[depth] }} = 0; {{ output.loop_vars[depth] }} < {{
 {% endif %}
 {% endfor %}
 {% if output.is_string %}
-printf("\"%s\"", {{ output.name }}{{ output.array_index_expr }});
+emx_json_print_string({{ output.name }}{{ output.array_index_expr }});
 {% else %}
 printf("{{ output.print_format }}", {{ output.print_cast }}{{ output.name }}{{ output.array_index_expr }}{{ output.print_suffix }});
 {% endif %}

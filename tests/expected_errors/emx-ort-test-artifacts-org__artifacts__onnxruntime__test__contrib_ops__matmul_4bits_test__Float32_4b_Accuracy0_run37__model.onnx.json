@@ -1,8 +1,9 @@
 {
-  "error": "MatMulNBits g_idx (input 4) is not supported",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run37 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::MatMulNBits"
-  ]
+  ],
+  "generated_checksum": "e039b93d149dc66c3d785b49a8ff27d142da51d95cbad9a370a95649b99ec02c"
 }

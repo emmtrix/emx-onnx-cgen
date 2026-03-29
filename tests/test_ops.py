@@ -39,6 +39,7 @@ from emx_onnx_cgen.lowering.roi_align import lower_roi_align
 from emx_onnx_cgen.lowering.conv_integer import lower_conv_integer
 from emx_onnx_cgen.lowering.concat_from_sequence import lower_concat_from_sequence
 from emx_onnx_cgen.lowering.matmul_integer import lower_matmul_integer
+from emx_onnx_cgen.lowering.matmul_nbits import lower_matmul_nbits
 from emx_onnx_cgen.lowering.one_hot import lower_onehot
 from emx_onnx_cgen.lowering.depth_space import (
     lower_depth_to_space,
@@ -3251,6 +3252,65 @@ def _make_qlinearsoftmax_model() -> onnx.ModelProto:
     return model
 
 
+def _make_qlinearconcat_model(
+    dtype: int = TensorProto.UINT8,
+    n_inputs: int = 2,
+    axis: int = 1,
+) -> onnx.ModelProto:
+    # Build shapes: first input is base shape, others vary only on axis dim
+    base_shape = [2, 3, 4]
+    axis_dim_others = 1  # axis-dimension size for inputs 1..n
+    shapes = [base_shape] + [
+        [base_shape[d] if d != axis else axis_dim_others for d in range(3)]
+        for _ in range(n_inputs - 1)
+    ]
+    out_shape = list(base_shape)
+    out_shape[axis] = sum(s[axis] for s in shapes)
+
+    input_infos = [
+        helper.make_tensor_value_info(f"X{i}", dtype, shapes[i])
+        for i in range(n_inputs)
+    ]
+    output_info = helper.make_tensor_value_info("Y", dtype, out_shape)
+    y_scale = helper.make_tensor("y_scale", TensorProto.FLOAT, dims=[], vals=[0.25])
+    y_zp = helper.make_tensor("y_zp", dtype, dims=[], vals=[5])
+    input_scales = [
+        helper.make_tensor(f"x_scale{i}", TensorProto.FLOAT, dims=[], vals=[0.5])
+        for i in range(n_inputs)
+    ]
+    input_zps = [
+        helper.make_tensor(f"x_zp{i}", dtype, dims=[], vals=[10])
+        for i in range(n_inputs)
+    ]
+    node_inputs = ["y_scale", "y_zp"]
+    for i in range(n_inputs):
+        node_inputs += [f"X{i}", f"x_scale{i}", f"x_zp{i}"]
+    node = helper.make_node(
+        "QLinearConcat",
+        inputs=node_inputs,
+        outputs=["Y"],
+        domain="com.microsoft",
+        axis=axis,
+    )
+    graph = helper.make_graph(
+        [node],
+        "qlinearconcat_graph",
+        input_infos,
+        [output_info],
+        initializer=[y_scale, y_zp, *input_scales, *input_zps],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[
+            helper.make_operatorsetid("", 15),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+    return model
+
+
 def _make_matmulinteger_model() -> onnx.ModelProto:
     input_info = helper.make_tensor_value_info("in0", TensorProto.UINT8, [2, 3])
     weight_values = np.arange(12, dtype=np.uint8).reshape(3, 4)
@@ -4605,9 +4665,7 @@ def _make_ms_attention_model(
     node_inputs = ["input", "weight", "bias"]
     if mask_shape is not None:
         inputs_info.append(
-            helper.make_tensor_value_info(
-                "mask_index", TensorProto.INT32, mask_shape
-            )
+            helper.make_tensor_value_info("mask_index", TensorProto.INT32, mask_shape)
         )
         node_inputs.append("mask_index")
     output = helper.make_tensor_value_info(
@@ -4654,9 +4712,7 @@ def test_ms_attention_unidirectional_testbench_compare() -> None:
 
 
 def test_ms_attention_2d_mask_testbench_compare() -> None:
-    model = _make_ms_attention_model(
-        batch=1, mask_shape=[1, 2]
-    )
+    model = _make_ms_attention_model(batch=1, mask_shape=[1, 2])
     _run_testbench_compare(model)
 
 
@@ -5159,6 +5215,157 @@ def test_regex_full_match_matches_onnxruntime() -> None:
     output_payload = payload.get("outputs", {}).get("out")
     if output_payload is None:
         raise AssertionError("Missing output out in testbench data")
+    output_data = decode_testbench_array(output_payload["data"], ort_output.dtype)
+    output_data = output_data.reshape(ort_output.shape)
+    np.testing.assert_array_equal(output_data, ort_output)
+
+
+def _make_murmur_hash3_model(
+    *,
+    input_shape: list[int],
+    input_elem_type: int,
+    output_elem_type: int,
+    seed: int = 0,
+    positive: int = 0,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("in0", input_elem_type, input_shape)
+    output_info = helper.make_tensor_value_info("out", output_elem_type, input_shape)
+    node = helper.make_node(
+        "MurmurHash3",
+        inputs=["in0"],
+        outputs=["out"],
+        domain="com.microsoft",
+        seed=seed,
+        positive=positive,
+    )
+    graph = helper.make_graph(
+        [node],
+        "murmur_hash3_graph",
+        [input_info],
+        [output_info],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[
+            helper.make_operatorsetid("", 13),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+    return model
+
+
+def test_murmur_hash3_lowering_int32() -> None:
+    model = _make_murmur_hash3_model(
+        input_shape=[2],
+        input_elem_type=TensorProto.INT32,
+        output_elem_type=TensorProto.INT32,
+        seed=0,
+        positive=0,
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+    lowering = get_lowering("MurmurHash3")
+    from shared.scalar_types import ScalarType
+
+    op = lowering(graph, graph.nodes[0])
+    assert op.input0 == "in0"
+    assert op.output == "out"
+    assert op.seed == 0
+    assert op.input_dtype == ScalarType.I32
+    assert op.output_dtype == ScalarType.I32
+
+
+def test_murmur_hash3_lowering_rejects_unsupported_dtype() -> None:
+    model = _make_murmur_hash3_model(
+        input_shape=[1],
+        input_elem_type=TensorProto.INT8,
+        output_elem_type=TensorProto.INT32,
+        seed=0,
+        positive=0,
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+    lowering = get_lowering("MurmurHash3")
+    with pytest.raises(UnsupportedOpError):
+        lowering(graph, graph.nodes[0])
+
+
+def test_murmur_hash3_codegen_emits_hash_function() -> None:
+    model = _make_murmur_hash3_model(
+        input_shape=[4],
+        input_elem_type=TensorProto.INT32,
+        output_elem_type=TensorProto.INT32,
+        seed=0,
+        positive=0,
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "0xcc9e2d51" in generated
+    assert "0x1b873593" in generated
+
+
+def test_murmur_hash3_int32_matches_onnxruntime() -> None:
+    model = _make_murmur_hash3_model(
+        input_shape=[3],
+        input_elem_type=TensorProto.INT32,
+        output_elem_type=TensorProto.UINT32,
+        seed=0,
+        positive=1,
+    )
+    inputs = {"in0": np.array([3, 4, 5], dtype=np.int32)}
+    session = ort.InferenceSession(
+        model.SerializeToString(), providers=["CPUExecutionProvider"]
+    )
+    ort_output = session.run(None, inputs)[0]
+    payload = _compile_and_run_testbench(model, testbench_inputs=inputs)
+    output_payload = payload.get("outputs", {}).get("out")
+    assert output_payload is not None, "Missing output 'out'"
+    output_data = decode_testbench_array(output_payload["data"], ort_output.dtype)
+    output_data = output_data.reshape(ort_output.shape)
+    np.testing.assert_array_equal(output_data, ort_output)
+
+
+def test_murmur_hash3_string_matches_onnxruntime() -> None:
+    model = _make_murmur_hash3_model(
+        input_shape=[2],
+        input_elem_type=TensorProto.STRING,
+        output_elem_type=TensorProto.UINT32,
+        seed=0,
+        positive=1,
+    )
+    ort_inputs = np.array(["foo", "bar"], dtype=object)
+    session = ort.InferenceSession(
+        model.SerializeToString(), providers=["CPUExecutionProvider"]
+    )
+    ort_output = session.run(None, {"in0": ort_inputs})[0]
+    payload = _compile_and_run_testbench(
+        model,
+        testbench_inputs={"in0": _encode_string_testbench_input(ort_inputs)},
+    )
+    output_payload = payload.get("outputs", {}).get("out")
+    assert output_payload is not None, "Missing output 'out'"
+    output_data = decode_testbench_array(output_payload["data"], ort_output.dtype)
+    output_data = output_data.reshape(ort_output.shape)
+    np.testing.assert_array_equal(output_data, ort_output)
+
+
+def test_murmur_hash3_nonzero_seed_matches_onnxruntime() -> None:
+    model = _make_murmur_hash3_model(
+        input_shape=[2],
+        input_elem_type=TensorProto.INT32,
+        output_elem_type=TensorProto.INT32,
+        seed=42,
+        positive=0,
+    )
+    inputs = {"in0": np.array([3, 4], dtype=np.int32)}
+    session = ort.InferenceSession(
+        model.SerializeToString(), providers=["CPUExecutionProvider"]
+    )
+    ort_output = session.run(None, inputs)[0]
+    payload = _compile_and_run_testbench(model, testbench_inputs=inputs)
+    output_payload = payload.get("outputs", {}).get("out")
+    assert output_payload is not None, "Missing output 'out'"
     output_data = decode_testbench_array(output_payload["data"], ort_output.dtype)
     output_data = output_data.reshape(ort_output.shape)
     np.testing.assert_array_equal(output_data, ort_output)
@@ -7699,6 +7906,46 @@ def test_qlinearadd_codegen_smoke() -> None:
     assert "OpType: QLinearAdd" in generated
 
 
+def test_lower_qlinearconcat() -> None:
+    model = _make_qlinearconcat_model(n_inputs=2, axis=1)
+    graph = import_onnx(model)
+    op = get_lowering("QLinearConcat")(graph, graph.nodes[0])
+    assert op.dtype == ScalarType.U8
+    assert op.axis == 1
+    assert len(op.inputs) == 2
+    assert op.output_shape == (2, 4, 4)  # axis=1: 3+1=4
+
+
+def test_lower_qlinearconcat_int8() -> None:
+    model = _make_qlinearconcat_model(dtype=TensorProto.INT8, n_inputs=3, axis=2)
+    graph = import_onnx(model)
+    op = get_lowering("QLinearConcat")(graph, graph.nodes[0])
+    assert op.dtype == ScalarType.I8
+    assert op.axis == 2
+    assert len(op.inputs) == 3
+
+
+def test_qlinearconcat_codegen_smoke() -> None:
+    model = _make_qlinearconcat_model(n_inputs=2, axis=1)
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "OpType: QLinearConcat" in generated
+
+
+def test_qlinearconcat_op_matches_onnxruntime() -> None:
+    model = _make_qlinearconcat_model(n_inputs=2, axis=1)
+    _run_testbench_compare(model)
+
+
+def test_qlinearconcat_3inputs_op_matches_onnxruntime() -> None:
+    model = _make_qlinearconcat_model(n_inputs=3, axis=1)
+    _run_testbench_compare(model)
+
+
+def test_qlinearconcat_int8_op_matches_onnxruntime() -> None:
+    model = _make_qlinearconcat_model(dtype=TensorProto.INT8, n_inputs=2, axis=2)
+    _run_testbench_compare(model)
+
+
 def test_qlinearsoftmax_op_matches_onnxruntime() -> None:
     model = _make_qlinearsoftmax_model()
     _run_testbench_compare(model)
@@ -7706,6 +7953,82 @@ def test_qlinearsoftmax_op_matches_onnxruntime() -> None:
 
 def test_qlinearconv_op_matches_onnxruntime() -> None:
     model = _make_qlinearconv_model(per_channel_weights=True, include_bias=False)
+    _run_testbench_compare(model)
+
+
+def _make_qlinear_global_average_pool_model(
+    *,
+    input_shape: list[int],
+    output_shape: list[int],
+    dtype: int,
+    channels_last: int,
+    x_scale: float = 1.0,
+    x_zero: int = 0,
+    y_scale: float = 1.0,
+    y_zero: int = 0,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("X", dtype, input_shape)
+    output_info = helper.make_tensor_value_info("Y", dtype, output_shape)
+    x_scale_t = helper.make_tensor("x_scale", TensorProto.FLOAT, dims=[], vals=[x_scale])
+    x_zero_t = helper.make_tensor("x_zero_point", dtype, dims=[], vals=[x_zero])
+    y_scale_t = helper.make_tensor("y_scale", TensorProto.FLOAT, dims=[], vals=[y_scale])
+    y_zero_t = helper.make_tensor("y_zero_point", dtype, dims=[], vals=[y_zero])
+    node = helper.make_node(
+        "QLinearGlobalAveragePool",
+        inputs=["X", "x_scale", "x_zero_point", "y_scale", "y_zero_point"],
+        outputs=["Y"],
+        domain="com.microsoft",
+        channels_last=channels_last,
+    )
+    graph = helper.make_graph(
+        [node],
+        "qlinear_global_avg_pool_graph",
+        [input_info],
+        [output_info],
+        initializer=[x_scale_t, x_zero_t, y_scale_t, y_zero_t],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[
+            helper.make_operatorsetid("", 15),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+    return model
+
+
+@pytest.mark.parametrize(
+    "channels_last, input_shape, output_shape, dtype, x_scale, x_zero, y_scale, y_zero",
+    [
+        (0, [1, 4, 3, 3], [1, 4, 1, 1], TensorProto.UINT8, 0.5, 5, 1.0, 10),
+        (1, [1, 3, 3, 4], [1, 1, 1, 4], TensorProto.UINT8, 0.5, 5, 1.0, 10),
+        (0, [2, 3, 5, 5], [2, 3, 1, 1], TensorProto.INT8, 1.0, -1, 2.0, 1),
+        (1, [2, 5, 5, 3], [2, 1, 1, 3], TensorProto.INT8, 1.0, -1, 2.0, 1),
+    ],
+    ids=["nchw_uint8", "nhwc_uint8", "nchw_int8", "nhwc_int8"],
+)
+def test_qlinear_global_average_pool_matches_onnxruntime(
+    channels_last: int,
+    input_shape: list[int],
+    output_shape: list[int],
+    dtype: int,
+    x_scale: float,
+    x_zero: int,
+    y_scale: float,
+    y_zero: int,
+) -> None:
+    model = _make_qlinear_global_average_pool_model(
+        input_shape=input_shape,
+        output_shape=output_shape,
+        dtype=dtype,
+        channels_last=channels_last,
+        x_scale=x_scale,
+        x_zero=x_zero,
+        y_scale=y_scale,
+        y_zero=y_zero,
+    )
     _run_testbench_compare(model)
 
 
@@ -8402,3 +8725,245 @@ def test_fused_matmul_batched_trans_batch_a_testbench() -> None:
     )
     output_data = output_data.reshape(expected.shape)
     np.testing.assert_allclose(output_data, expected, rtol=1e-4, atol=1e-5)
+
+
+# ---------------------------------------------------------------------------
+# DynamicQuantizeMatMul tests
+# ---------------------------------------------------------------------------
+
+
+def _make_dynamic_quantize_matmul_model(
+    m: int = 4,
+    k: int = 8,
+    n: int = 6,
+    b_dtype: int = TensorProto.UINT8,
+    b_scale_per_column: bool = False,
+    with_b_zero: bool = False,
+    b_zero_per_column: bool = False,
+    with_bias: bool = False,
+) -> onnx.ModelProto:
+    """Build a com.microsoft::DynamicQuantizeMatMul model."""
+    rng = np.random.default_rng(42)
+    a_info = helper.make_tensor_value_info("A", TensorProto.FLOAT, [m, k])
+    output = helper.make_tensor_value_info("Y", TensorProto.FLOAT, [m, n])
+
+    b_scale_shape = [n] if b_scale_per_column else [1]
+    b_scale_vals = rng.uniform(0.005, 0.02, size=b_scale_shape).astype(np.float32)
+    b_scale_tensor = helper.make_tensor(
+        "b_scale", TensorProto.FLOAT, dims=b_scale_shape, vals=b_scale_vals.tolist()
+    )
+
+    b_vals = rng.integers(0, 128, size=(k, n), dtype=np.uint8)
+    b_np_dtype = np.uint8 if b_dtype == TensorProto.UINT8 else np.int8
+    if b_np_dtype == np.int8:
+        b_vals = (b_vals - 64).astype(np.int8)
+    b_tensor = helper.make_tensor(
+        "B", b_dtype, dims=[k, n], vals=b_vals.flatten().tolist()
+    )
+
+    inputs = ["A", "B", "b_scale"]
+
+    # b_zero_point
+    b_zero_tensor = None
+    if with_b_zero:
+        b_zero_shape = [n] if b_zero_per_column else [1]
+        b_zero_val = 10
+        b_zero_vals = [b_zero_val] * (n if b_zero_per_column else 1)
+        b_zero_np = np.array(b_zero_vals, dtype=b_np_dtype)
+        b_zero_tensor = helper.make_tensor(
+            "b_zero", b_dtype, dims=b_zero_shape, vals=b_zero_np.tolist()
+        )
+        inputs.append("b_zero")
+    else:
+        inputs.append("")
+
+    # bias
+    bias_tensor = None
+    if with_bias:
+        bias_vals = rng.uniform(-1.0, 1.0, size=n).astype(np.float32)
+        bias_tensor = helper.make_tensor(
+            "bias", TensorProto.FLOAT, dims=[n], vals=bias_vals.tolist()
+        )
+        inputs.append("bias")
+    else:
+        inputs.append("")
+
+    node = helper.make_node(
+        "DynamicQuantizeMatMul",
+        inputs=inputs,
+        outputs=["Y"],
+        domain="com.microsoft",
+    )
+    initializers = [b_tensor, b_scale_tensor]
+    if b_zero_tensor is not None:
+        initializers.append(b_zero_tensor)
+    if bias_tensor is not None:
+        initializers.append(bias_tensor)
+
+    graph = helper.make_graph(
+        [node], "dynamic_quantize_matmul_graph", [a_info], [output],
+        initializer=initializers,
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[
+            helper.make_operatorsetid("", 18),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+    return model
+
+
+def _make_matmul_nbits_model(
+    *,
+    m: int = 2,
+    k: int = 17,
+    n: int = 3,
+    bits: int = 4,
+    block_size: int = 8,
+    g_idx_values: np.ndarray | None = None,
+) -> onnx.ModelProto:
+    a_info = helper.make_tensor_value_info("A", TensorProto.FLOAT, [m, k])
+    output = helper.make_tensor_value_info("Y", TensorProto.FLOAT, [m, n])
+
+    n_blocks_per_col = math.ceil(k / block_size)
+    blob_size = block_size * bits // 8
+    b_values = np.arange(
+        n * n_blocks_per_col * blob_size, dtype=np.uint8
+    ).reshape(n, n_blocks_per_col, blob_size)
+    scales = np.linspace(
+        0.25, 1.0, num=n * n_blocks_per_col, dtype=np.float32
+    ).reshape(n, n_blocks_per_col)
+    if g_idx_values is None:
+        g_idx_values = np.repeat(
+            np.arange(n_blocks_per_col, dtype=np.int32), block_size
+        )
+    g_idx_values = np.asarray(g_idx_values, dtype=np.int32)
+
+    node = helper.make_node(
+        "MatMulNBits",
+        inputs=["A", "B", "scales", "", "g_idx", ""],
+        outputs=["Y"],
+        domain="com.microsoft",
+        K=k,
+        N=n,
+        bits=bits,
+        block_size=block_size,
+    )
+    graph = helper.make_graph(
+        [node],
+        "matmul_nbits_graph",
+        [a_info],
+        [output],
+        initializer=[
+            numpy_helper.from_array(b_values, name="B"),
+            numpy_helper.from_array(scales, name="scales"),
+            numpy_helper.from_array(g_idx_values, name="g_idx"),
+        ],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[
+            helper.make_operatorsetid("", 18),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+    return model
+
+
+def test_dynamic_quantize_matmul_uint8_compiles() -> None:
+    model = _make_dynamic_quantize_matmul_model()
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_dynamic_quantize_matmul_int8_compiles() -> None:
+    model = _make_dynamic_quantize_matmul_model(b_dtype=TensorProto.INT8)
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_dynamic_quantize_matmul_per_column_scale_compiles() -> None:
+    model = _make_dynamic_quantize_matmul_model(b_scale_per_column=True)
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_dynamic_quantize_matmul_with_b_zero_point_compiles() -> None:
+    model = _make_dynamic_quantize_matmul_model(with_b_zero=True)
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_dynamic_quantize_matmul_with_bias_compiles() -> None:
+    model = _make_dynamic_quantize_matmul_model(with_bias=True)
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_dynamic_quantize_matmul_per_column_b_zero_compiles() -> None:
+    model = _make_dynamic_quantize_matmul_model(
+        b_scale_per_column=True, with_b_zero=True, b_zero_per_column=True
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_dynamic_quantize_matmul_uint8_testbench() -> None:
+    model = _make_dynamic_quantize_matmul_model()
+    _run_testbench_compare(model)
+
+
+def test_dynamic_quantize_matmul_int8_testbench() -> None:
+    model = _make_dynamic_quantize_matmul_model(b_dtype=TensorProto.INT8)
+    _run_testbench_compare(model)
+
+
+def test_dynamic_quantize_matmul_per_column_scale_testbench() -> None:
+    model = _make_dynamic_quantize_matmul_model(b_scale_per_column=True)
+    _run_testbench_compare(model)
+
+
+def test_dynamic_quantize_matmul_with_b_zero_and_bias_testbench() -> None:
+    model = _make_dynamic_quantize_matmul_model(with_b_zero=True, with_bias=True)
+    _run_testbench_compare(model)
+
+
+def test_dynamic_quantize_matmul_per_column_b_zero_testbench() -> None:
+    model = _make_dynamic_quantize_matmul_model(
+        b_scale_per_column=True, with_b_zero=True, b_zero_per_column=True
+    )
+    _run_testbench_compare(model)
+
+
+def test_lower_matmul_nbits_accepts_canonical_g_idx() -> None:
+    model = _make_matmul_nbits_model()
+    graph = import_onnx(model)
+    op = lower_matmul_nbits(graph, graph.nodes[0])
+    assert op.input0 == "A"
+    assert op.input1 == "B"
+    assert op.scales == "scales"
+    assert op.output == "Y"
+    assert op.n_blocks_per_col == 3
+    assert op.output_shape == (2, 3)
+    assert op.zero_points is None
+    assert op.bias is None
+
+
+def test_lower_matmul_nbits_rejects_noncanonical_g_idx() -> None:
+    g_idx_values = np.repeat(np.arange(3, dtype=np.int32), 8)
+    g_idx_values[3] = 1
+    model = _make_matmul_nbits_model(g_idx_values=g_idx_values)
+    graph = import_onnx(model)
+    with pytest.raises(UnsupportedOpError, match="only supports canonical g_idx"):
+        lower_matmul_nbits(graph, graph.nodes[0])
+
+
+def test_matmul_nbits_with_canonical_g_idx_compiles() -> None:
+    model = _make_matmul_nbits_model()
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated

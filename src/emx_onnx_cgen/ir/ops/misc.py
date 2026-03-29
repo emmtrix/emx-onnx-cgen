@@ -646,6 +646,189 @@ class ConcatOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class QLinearConcatOp(RenderableOpBase):
+    __io_inputs__ = (
+        "output_scale",
+        "output_zero_point",
+        "inputs",
+        "input_scales",
+        "input_zero_points",
+    )
+    __io_outputs__ = ("output",)
+    output_scale: str
+    output_zero_point: str
+    inputs: tuple[str, ...]
+    input_scales: tuple[str, ...]
+    input_zero_points: tuple[str, ...]
+    output: str
+    axis: int
+    input_shapes: tuple[tuple[int, ...], ...]
+    output_shape: tuple[int, ...]
+    dtype: ScalarType
+    input_dtypes: tuple[ScalarType, ...]
+    output_scale_dtype: ScalarType
+    input_scale_dtypes: tuple[ScalarType, ...]
+    output_scale_shape: tuple[int, ...]
+    output_zero_shape: tuple[int, ...]
+    input_scale_shapes: tuple[tuple[int, ...], ...]
+    input_zero_shapes: tuple[tuple[int, ...], ...]
+    output_zero_dtype_match: bool
+    input_zero_dtype_matches: tuple[bool, ...]
+    input_zero_dtypes: tuple[ScalarType, ...]
+    output_zero_dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        includes: set[str] = {"#include <math.h>"}
+        if ctx.dtype(self.output).is_integer:
+            includes.add("#include <limits.h>")
+        return includes
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+
+        n = len(self.inputs)
+
+        param_map_entries = [
+            ("output_scale", self.output_scale),
+            ("output_zero_point", self.output_zero_point),
+        ]
+        for i in range(n):
+            param_map_entries.append((f"input_{i}", self.inputs[i]))
+        for i in range(n):
+            param_map_entries.append((f"input_scale_{i}", self.input_scales[i]))
+        for i in range(n):
+            param_map_entries.append((f"input_zero_{i}", self.input_zero_points[i]))
+        param_map_entries.append(("output", self.output))
+        params = emitter.shared_param_map(param_map_entries)
+
+        output_shape = self.output_shape
+        axis = self.axis
+        outer = CEmitterCompat.element_count(output_shape[:axis] or (1,))
+        inner = CEmitterCompat.element_count(output_shape[axis + 1 :] or (1,))
+        axis_sizes = tuple(shape[axis] for shape in self.input_shapes)
+
+        param_decls_list = [
+            (
+                params["output_scale"],
+                self.output_scale_dtype.c_type,
+                emitter.param_array_suffix(self.output_scale_shape),
+                True,
+            ),
+            (
+                params["output_zero_point"],
+                self.output_zero_dtype.c_type,
+                emitter.param_array_suffix(self.output_zero_shape),
+                True,
+            ),
+        ]
+        # All data inputs first (matching __io_inputs__ order)
+        for i in range(n):
+            param_decls_list.append(
+                (
+                    params[f"input_{i}"],
+                    self.input_dtypes[i].c_type,
+                    emitter.param_array_suffix(self.input_shapes[i]),
+                    True,
+                )
+            )
+        # All input scales
+        for i in range(n):
+            param_decls_list.append(
+                (
+                    params[f"input_scale_{i}"],
+                    self.input_scale_dtypes[i].c_type,
+                    emitter.param_array_suffix(self.input_scale_shapes[i]),
+                    True,
+                )
+            )
+        # All input zero points
+        for i in range(n):
+            param_decls_list.append(
+                (
+                    params[f"input_zero_{i}"],
+                    self.input_zero_dtypes[i].c_type,
+                    emitter.param_array_suffix(self.input_zero_shapes[i]),
+                    True,
+                )
+            )
+        param_decls_list.append(
+            (
+                params["output"],
+                self.dtype.c_type,
+                emitter.param_array_suffix(output_shape),
+                False,
+            )
+        )
+        param_decls = emitter.build_param_decls(param_decls_list)
+
+        all_scale_dtypes = set(self.input_scale_dtypes) | {self.output_scale_dtype}
+        compute_dtype = (
+            ScalarType.F64 if ScalarType.F64 in all_scale_dtypes else ScalarType.F32
+        )
+        compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
+
+        scale_index = "0"
+        input_names = tuple(params[f"input_{i}"] for i in range(n))
+        input_scale_exprs = tuple(
+            f"{params[f'input_scale_{i}']}[{scale_index}]" for i in range(n)
+        )
+        # When a zero-point's dtype mismatches the input dtype, use 0 (ORT behaviour).
+        input_zero_exprs = tuple(
+            f"{params[f'input_zero_{i}']}[{scale_index}]"
+            if self.input_zero_dtype_matches[i]
+            else "0"
+            for i in range(n)
+        )
+        unused_zero_params = tuple(
+            params[f"input_zero_{i}"]
+            for i in range(n)
+            if not self.input_zero_dtype_matches[i]
+        )
+        y_scale_expr = f"{params['output_scale']}[{scale_index}]"
+        y_zero_expr = (
+            f"{params['output_zero_point']}[{scale_index}]"
+            if self.output_zero_dtype_match
+            else "0"
+        )
+        unused_y_zero_param = (
+            () if self.output_zero_dtype_match else (params["output_zero_point"],)
+        )
+        output_name = params["output"]
+
+        rendered = (
+            state.templates["qlinear_concat"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input_names=input_names,
+                output_name=output_name,
+                params=param_decls,
+                compute_type=compute_type,
+                output_c_type=self.dtype.c_type,
+                y_scale_expr=y_scale_expr,
+                y_zero_expr=y_zero_expr,
+                input_scale_exprs=input_scale_exprs,
+                input_zero_exprs=input_zero_exprs,
+                unused_zero_params=unused_zero_params + unused_y_zero_param,
+                axis_sizes=axis_sizes,
+                input_count=n,
+                outer=outer,
+                inner=inner,
+                compute_dtype=compute_dtype,
+                min_literal=self.dtype.min_literal,
+                max_literal=self.dtype.max_literal,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.output_shape
+
+
+@dataclass(frozen=True)
 class CompressOp(RenderableOpBase):
     __io_inputs__ = ("data", "condition")
     __io_outputs__ = ("output",)
@@ -6227,6 +6410,121 @@ class RegexFullMatchOp(RenderableOpBase):
         return ScalarType.BOOL
 
 
+_TOKENIZER_REGEX_META = re.compile(r'[.+*?|()\[\]{}^$\\]')
+
+
+def _tokenizer_has_regex_meta(s: str) -> bool:
+    return bool(_TOKENIZER_REGEX_META.search(s))
+
+
+@dataclass(frozen=True)
+class TokenizerOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
+    input0: str
+    output: str
+    mark: int
+    mincharnum: int
+    pad_value: str
+    separators: tuple[str, ...]
+    tokenexp: str
+
+    @property
+    def _uses_regex(self) -> bool:
+        if self.tokenexp:
+            return True
+        non_empty = [s for s in self.separators if s]
+        return bool(non_empty) and any(_tokenizer_has_regex_meta(s) for s in non_empty)
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        includes: set[str] = {"#include <string.h>"}
+        if self._uses_regex:
+            includes.add("#include <regex.h>")
+        return includes
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        input_shape = emitter.ctx_shape(self.input0)
+        output_shape = emitter.ctx_shape(self.output)
+        input_suffix = emitter.param_array_suffix(
+            input_shape, emitter.dim_names_for(self.input0), dtype=ScalarType.STRING
+        )
+        output_suffix = emitter.param_array_suffix(
+            output_shape, emitter.dim_names_for(self.output), dtype=ScalarType.STRING
+        )
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], "char", input_suffix, True),
+                (params["output"], "char", output_suffix, False),
+            ]
+        )
+
+        non_empty_seps = [s for s in self.separators if s]
+
+        if self.tokenexp:
+            mode = "tokenexp"
+            patterns: list[str] = [self.tokenexp]
+        elif non_empty_seps:
+            if any(_tokenizer_has_regex_meta(s) for s in non_empty_seps):
+                mode = "sep_regex"
+            else:
+                mode = "sep_literal"
+            patterns = non_empty_seps
+        else:
+            mode = "char_level"
+            patterns = []
+
+        max_tokens = output_shape[-1] if output_shape else 0
+        buf_size = max(max_tokens + 32, 64)
+
+        pattern_literals = [
+            emitter.format_c_string_literal(p) for p in patterns
+        ]
+        sep_lens = (
+            [len(p.encode("utf-8")) for p in patterns]
+            if mode == "sep_literal"
+            else []
+        )
+
+        rendered = (
+            state.templates["tokenizer"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                output=params["output"],
+                input_count=CEmitterCompat.element_count_expr(input_shape),
+                max_tokens=max_tokens,
+                mode=mode,
+                patterns=pattern_literals,
+                sep_lens=sep_lens,
+                mark=self.mark,
+                mincharnum=self.mincharnum,
+                pad_value_literal=emitter.format_c_string_literal(self.pad_value),
+                buf_size=buf_size,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
+        return ScalarType.STRING
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> "tuple[tuple[str, tuple[int, ...], ScalarType], ...]":
+        return (
+            (self.output, emitter.ctx_shape(self.output), ScalarType.STRING),
+        )
+
+
 @dataclass(frozen=True)
 class TreeEnsembleClassifierOp(RenderableOpBase):
     __io_inputs__ = ("input0",)
@@ -7827,3 +8125,79 @@ class SequenceEmptyOp(RenderableOpBase):
                 elem_type.dtype,
             ),
         )
+
+
+_MURMUR_HASH3_SUPPORTED_DTYPES: frozenset[ScalarType] = frozenset(
+    {ScalarType.I32, ScalarType.I64, ScalarType.F32, ScalarType.F64, ScalarType.STRING}
+)
+
+
+@dataclass(frozen=True)
+class MurmurHash3Op(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
+    input0: str
+    output: str
+    seed: int
+    input_dtype: ScalarType
+    output_dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        includes: set[str] = {"#include <stdint.h>"}
+        if self.input_dtype == ScalarType.STRING:
+            includes.add("#include <string.h>")
+        return includes
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        input_shape = emitter.ctx_shape(self.input0)
+        output_shape = emitter.ctx_shape(self.output)
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        if self.input_dtype == ScalarType.STRING:
+            input_suffix = emitter.param_array_suffix(
+                input_shape, emitter.dim_names_for(self.input0), dtype=ScalarType.STRING
+            )
+        else:
+            input_suffix = emitter.param_array_suffix(
+                input_shape, emitter.dim_names_for(self.input0)
+            )
+        output_suffix = emitter.param_array_suffix(
+            output_shape, emitter.dim_names_for(self.output)
+        )
+        input_c_type = (
+            "char"
+            if self.input_dtype == ScalarType.STRING
+            else self.input_dtype.c_type
+        )
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], input_c_type, input_suffix, True),
+                (params["output"], self.output_dtype.c_type, output_suffix, False),
+            ]
+        )
+        elem_count = CEmitterCompat.element_count_expr(output_shape)
+        rendered = (
+            state.templates["murmur_hash3"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                elem_count=elem_count,
+                input_param=params["input0"],
+                output_param=params["output"],
+                input_c_type=input_c_type,
+                output_c_type=self.output_dtype.c_type,
+                seed=self.seed,
+                is_string=self.input_dtype == ScalarType.STRING,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
+        return self.output_dtype
