@@ -589,14 +589,13 @@ def lower_qlinear_global_average_pool(
         expected_output_shape = (batch, channels, *out_spatial)
     try:
         output_shape = _value_shape(graph, output_name, node)
-        if output_shape != expected_output_shape:
-            raise ShapeInferenceError(
-                "QLinearGlobalAveragePool output shape must be "
-                f"{expected_output_shape}, got {output_shape}"
-            )
-    except ShapeInferenceError as exc:
-        if "output shape must be" in str(exc):
-            raise
+    except ShapeInferenceError:
+        output_shape = None
+    if output_shape is not None and output_shape != expected_output_shape:
+        raise ShapeInferenceError(
+            "QLinearGlobalAveragePool output shape must be "
+            f"{expected_output_shape}, got {output_shape}"
+        )
     if isinstance(graph, GraphContext):
         graph.set_shape(output_name, expected_output_shape)
         graph.set_dtype(output_name, output_dtype)
