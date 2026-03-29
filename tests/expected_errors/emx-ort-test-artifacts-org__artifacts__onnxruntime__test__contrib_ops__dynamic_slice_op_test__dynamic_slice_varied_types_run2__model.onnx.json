@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported op ai.onnx.DynamicSlice",
+  "error": "Failed to build testbench (model.c:174:13: error: incompatible implicit declaration of built-in function \u2018memcpy\u2019 [-Werror=builtin-declaration-mismatch]).",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/dynamic_slice_op_test/dynamic_slice_varied_types_run2 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "DynamicSlice"
   ],
-  "opset_version": 1
+  "opset_version": 1,
+  "generated_checksum": "47464834c604836b4db8537af0b55fb3f414dda0e6b9e69661b4ea522d9579c2"
 }

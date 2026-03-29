@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.ExpandDims",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/expand_dims_test/MaxAxis_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::ExpandDims"
-  ]
+  ],
+  "generated_checksum": "a5d0369e1a09c827413ca6e4baf7accbda02e1ca60532e10dd38773c418f65eb"
 }
