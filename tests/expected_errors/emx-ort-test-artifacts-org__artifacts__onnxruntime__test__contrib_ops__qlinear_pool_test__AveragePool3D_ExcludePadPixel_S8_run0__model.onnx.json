@@ -1,8 +1,9 @@
 {
-  "error": "AveragePool has unsupported attributes",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/qlinear_pool_test/AveragePool3D_ExcludePadPixel_S8_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::QLinearAveragePool"
-  ]
+  ],
+  "generated_checksum": "da1a2d1167ccf75218fcb1ba4f0364b6fc8aba6c5dd7d04548f73cd6d9ba8421"
 }
