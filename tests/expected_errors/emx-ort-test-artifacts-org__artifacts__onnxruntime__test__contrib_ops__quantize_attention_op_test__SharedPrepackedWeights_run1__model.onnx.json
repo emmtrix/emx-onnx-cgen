@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.QAttention",
+  "error": "OK (max ULP 3)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/quantize_attention_op_test/SharedPrepackedWeights_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::QAttention"
-  ]
+  ],
+  "generated_checksum": "f462af3217d0873f1bb6c9e115a2b63c9663e59dfcda72ebe0f04adafeb3c73d"
 }

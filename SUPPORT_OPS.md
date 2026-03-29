@@ -243,7 +243,7 @@ Supported operators: 216 / 256
 | com.microsoft::MurmurHash3 | ✅ |
 | com.microsoft::NGramRepeatBlock | ❌ |
 | com.microsoft::NhwcMaxPool | ✅ |
-| com.microsoft::QAttention | ❌ |
+| com.microsoft::QAttention | ✅ |
 | com.microsoft::QEmbedLayerNormalization | ❌ |
 | com.microsoft::QGemm | ✅ |
 | com.microsoft::QLinearAdd | ✅ |
