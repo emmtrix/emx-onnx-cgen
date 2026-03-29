@@ -35,8 +35,7 @@ def lower_skip_layer_normalization(
 ) -> SkipLayerNormalizationOp:
     if len(node.inputs) < 3:
         raise UnsupportedOpError(
-            "SkipLayerNormalization requires at least 3 inputs "
-            "(input, skip, gamma)"
+            "SkipLayerNormalization requires at least 3 inputs (input, skip, gamma)"
         )
     if len(node.outputs) < 1:
         raise UnsupportedOpError("SkipLayerNormalization requires at least 1 output")
@@ -81,8 +80,7 @@ def lower_skip_layer_normalization(
     gamma_shape = value_shape(graph, gamma_name, node)
     if gamma_shape != (hidden_size,):
         raise ShapeInferenceError(
-            f"SkipLayerNormalization gamma shape {gamma_shape} must be "
-            f"({hidden_size},)"
+            f"SkipLayerNormalization gamma shape {gamma_shape} must be ({hidden_size},)"
         )
 
     beta_shape: tuple[int, ...] | None = None

@@ -6173,16 +6173,12 @@ class SkipLayerNormalizationOp(RenderableOpBase):
             CEmitterCompat.codegen_shape(self.gamma_shape)
         )
         beta_suffix = (
-            emitter.param_array_suffix(
-                CEmitterCompat.codegen_shape(self.beta_shape)
-            )
+            emitter.param_array_suffix(CEmitterCompat.codegen_shape(self.beta_shape))
             if self.beta_shape is not None
             else ""
         )
         bias_suffix = (
-            emitter.param_array_suffix(
-                CEmitterCompat.codegen_shape(self.bias_shape)
-            )
+            emitter.param_array_suffix(CEmitterCompat.codegen_shape(self.bias_shape))
             if self.bias_shape is not None
             else ""
         )
@@ -6273,9 +6269,7 @@ class SkipLayerNormalizationOp(RenderableOpBase):
             (self.output, self.shape, self.dtype)
         ]
         if self.skip_input_bias_add_output is not None:
-            outputs.append(
-                (self.skip_input_bias_add_output, self.shape, self.dtype)
-            )
+            outputs.append((self.skip_input_bias_add_output, self.shape, self.dtype))
         return tuple(outputs)
 
 

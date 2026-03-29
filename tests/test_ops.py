@@ -8435,7 +8435,10 @@ def test_skip_layer_normalization_with_bias_op_matches_onnxruntime() -> None:
 
 def test_skip_layer_normalization_with_skip_output_op_matches_onnxruntime() -> None:
     model = _make_skip_layer_normalization_model(
-        input_shape=[2, 3, 4], skip_shape=[2, 3, 4], with_bias=True, with_skip_output=True
+        input_shape=[2, 3, 4],
+        skip_shape=[2, 3, 4],
+        with_bias=True,
+        with_skip_output=True,
     )
     _run_testbench_compare(model)
 

@@ -7,8 +7,8 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1801 / 1802, 99.9% | 1.20.1 |
-| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 3790 / 4182, 90.6% | n/a |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1796 / 1802, 99.7% | 1.20.1 |
+| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 3820 / 4182, 91.3% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1801 / 1802 ONNX files (99.9%).
+Coverage 1796 / 1802 ONNX files (99.7%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1360,11 +1360,11 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 | node/test_roialign_aligned_false/model.onnx (--runtime onnx-reference --test-data-inputs-only) | 22 | Data/ONNXRef | ✅ | OK (max ULP 10) |
 | node/test_roialign_aligned_true/model.onnx (--runtime onnx-reference --test-data-inputs-only) | 22 | Data/ONNXRef | ✅ | OK (max ULP 11) |
 | node/test_roialign_mode_max/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 36) |
-| node/test_rotary_embedding/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_rotary_embedding_3d_input/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_rotary_embedding/model.onnx | 23 | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
+| node/test_rotary_embedding_3d_input/model.onnx | 23 | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
 | node/test_rotary_embedding_3d_input_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_rotary_embedding_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_rotary_embedding_interleaved/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_rotary_embedding_interleaved/model.onnx | 23 | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
 | node/test_rotary_embedding_interleaved_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_rotary_embedding_no_position_ids/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_rotary_embedding_no_position_ids_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
@@ -1372,9 +1372,9 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 | node/test_rotary_embedding_no_position_ids_interleaved_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_rotary_embedding_no_position_ids_rotary_dim/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_rotary_embedding_no_position_ids_rotary_dim_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_rotary_embedding_with_interleaved_rotary_dim/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_rotary_embedding_with_interleaved_rotary_dim/model.onnx | 23 | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
 | node/test_rotary_embedding_with_interleaved_rotary_dim_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_rotary_embedding_with_rotary_dim/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_rotary_embedding_with_rotary_dim/model.onnx | 23 | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
 | node/test_rotary_embedding_with_rotary_dim_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_round/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_scan9_sum/model.onnx | 9 | Data/Data | ✅ | OK (max ULP 0) |
@@ -1832,7 +1832,7 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 
 Test directory: `emx-ort-test-artifacts-org/artifacts/onnxruntime`
 
-Coverage 3790 / 4182 ONNX files (90.6%).
+Coverage 3820 / 4182 ONNX files (91.3%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -2452,31 +2452,31 @@ Coverage 3790 / 4182 ONNX files (90.6%).
 | test/contrib_ops/layer_norm_op_test/LayerNorm_NormSize1_NoBias_run0/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_NormSize1_Valid_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_NormSize1_WithBiasScale_run0/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_4D_OuterInnerBroadcast_Axis3_run0/model.onnx | 17 | Data/Data | ❌ | LayerNormalization scale rank must match normalized rank |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_4D_OuterInnerBroadcast_run0/model.onnx | 17 | Data/Data | ❌ | LayerNormalization scale rank must match normalized rank |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_4D_OuterInnerBroadcast_Axis3_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 1613) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_4D_OuterInnerBroadcast_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 1613) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Axis2_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 336) |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Broadcast_Dim0_Fp16_run0/model.onnx | 7 | Data/Data | ❌ | LayerNormalization scale rank must match normalized rank |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Broadcast_Dim0_run0/model.onnx | 7 | Data/Data | ❌ | LayerNormalization scale rank must match normalized rank |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Broadcast_Dim1_Fp16_run0/model.onnx | 7 | Data/Data | ❌ | LayerNormalization scale rank must match normalized rank |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Broadcast_Dim1_run0/model.onnx | 7 | Data/Data | ❌ | LayerNormalization scale rank must match normalized rank |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Broadcast_Fp16_run0/model.onnx | 7 | Data/Data | ❌ | LayerNormalization scale rank must match normalized rank |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Broadcast_Fp16_run1/model.onnx | 7 | Data/Data | ❌ | LayerNormalization scale rank must match normalized rank |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Broadcast_Dim0_Fp16_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Broadcast_Dim0_run0/model.onnx | 7 | Data/Data | ❌ | Out of tolerance (max ULP 286) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Broadcast_Dim1_Fp16_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Broadcast_Dim1_run0/model.onnx | 7 | Data/Data | ❌ | Out of tolerance (max ULP 286) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Broadcast_Fp16_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Broadcast_Fp16_run1/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Float16InputScaleBiasOutput_Initializers_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Float16InputScaleBiasOutput_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Float16InputScaleBiasOutput_run1/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_NoBroadcast_Fp16_run0/model.onnx | 7 | Data/Data | ❌ | LayerNormalization scale rank must match normalized rank |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_NoBroadcast_run0/model.onnx | 7 | Data/Data | ❌ | LayerNormalization scale rank must match normalized rank |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_NoBroadcast_Fp16_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_NoBroadcast_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 30) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_PerLastDim_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 336) |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Scalar_Axis2_run0/model.onnx | 17 | Data/Data | ❌ | LayerNormalization scale rank must match normalized rank |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Scalar_run0/model.onnx | 17 | Data/Data | ❌ | LayerNormalization scale rank must match normalized rank |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Scalar_Axis2_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 252) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Scalar_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 252) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_run0/model.onnx | 7 | Data/Data | ❌ | Out of tolerance (max ULP 10874) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Broadcast_Inner_Mixed_run0/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 21) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Float16InputScaleOutput_Initializers_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Float16InputScaleOutput_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Scalar_NoBias_Axis2_run0/model.onnx | 17 | Data/Data | ❌ | LayerNormalization scale rank must match normalized rank |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Scalar_NoBias_run0/model.onnx | 17 | Data/Data | ❌ | LayerNormalization scale rank must match normalized rank |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Scalar_NoBias_Axis2_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 252) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Scalar_NoBias_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 252) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 3) |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_ValidScaleBias_Broadcast_run0/model.onnx | 7 | Data/Data | ❌ | LayerNormalization scale rank must match normalized rank |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_ValidScaleBias_Broadcast_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 80) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_run0/model.onnx | 7 | Data/Data | ❌ | Out of tolerance (max ULP 299) |
 | test/contrib_ops/math/matmul_sparse_test/TestCoo_run0/model.onnx |  | Data/Data | ❌ | Unsupported value type 'sparse_tensor_type' for 'A'. Hint: export the model with tensor inputs/outputs. |
 | test/contrib_ops/math/matmul_sparse_test/TestCoo_run1/model.onnx |  | Data/Data | ❌ | Unsupported value type 'sparse_tensor_type' for 'A'. Hint: export the model with tensor inputs/outputs. |
@@ -5925,36 +5925,36 @@ Coverage 3790 / 4182 ONNX files (90.6%).
 | test/contrib_ops/quantize_ops_test/QuantizeLinear_per_tensor_float_int8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quantize_ops_test/QuantizeLinear_per_tensor_float_uint16_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quantize_ops_test/QuantizeLinear_per_tensor_float_uint8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_CustomRotaryDim_SmallData_Phi_Packed_Batching_run0/model.onnx |  | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
-| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_CustomRotaryDim_SmallData_Phi_Packed_Batching_run1/model.onnx |  | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
-| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_CustomRotaryDim_SmallData_Phi_run0/model.onnx |  | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
-| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_CustomRotaryDim_SmallData_Phi_run1/model.onnx |  | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
-| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_Interleaved_LargeData_LlamaMSFT_run0/model.onnx |  | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
-| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_Interleaved_LargeData_LlamaMSFT_run1/model.onnx |  | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
-| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_Interleaved_SmallData_LlamaMSFT_run0/model.onnx |  | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
-| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_Interleaved_SmallData_LlamaMSFT_run1/model.onnx |  | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
-| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_NotInterleaved_LargeData_LlamaMSFT_run0/model.onnx |  | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
-| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_NotInterleaved_LargeData_LlamaMSFT_run1/model.onnx |  | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
-| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_NotInterleaved_SmallData_LlamaMSFT_run0/model.onnx |  | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
-| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_NotInterleaved_SmallData_LlamaMSFT_run1/model.onnx |  | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
+| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_CustomRotaryDim_SmallData_Phi_Packed_Batching_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 6754) |
+| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_CustomRotaryDim_SmallData_Phi_Packed_Batching_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_CustomRotaryDim_SmallData_Phi_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 6754) |
+| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_CustomRotaryDim_SmallData_Phi_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_Interleaved_LargeData_LlamaMSFT_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 177823) |
+| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_Interleaved_LargeData_LlamaMSFT_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_Interleaved_SmallData_LlamaMSFT_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 6391) |
+| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_Interleaved_SmallData_LlamaMSFT_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_NotInterleaved_LargeData_LlamaMSFT_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 52786) |
+| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_NotInterleaved_LargeData_LlamaMSFT_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_NotInterleaved_SmallData_LlamaMSFT_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 26739) |
+| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_NotInterleaved_SmallData_LlamaMSFT_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/sample_op_test/SampleOpFloat_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.SampleOp |
-| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch1_NoBeta_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.SkipLayerNormalization |
-| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch1_NoBeta_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.SkipLayerNormalization |
-| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch1_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.SkipLayerNormalization |
-| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch1_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.SkipLayerNormalization |
-| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch2_Bias_ProducingOptionalOutput_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.SkipLayerNormalization |
-| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch2_Bias_ProducingOptionalOutput_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.SkipLayerNormalization |
-| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch2_Bias_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.SkipLayerNormalization |
-| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch2_Bias_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.SkipLayerNormalization |
-| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch2_Skip_Broadcast_Batch_Size_1_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.SkipLayerNormalization |
-| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch2_Skip_Broadcast_No_Batch_Size_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.SkipLayerNormalization |
-| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch2_TokenCount_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.SkipLayerNormalization |
-| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch2_TokenCount_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.SkipLayerNormalization |
-| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch2_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.SkipLayerNormalization |
-| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch2_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.SkipLayerNormalization |
-| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormNullInput_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.SkipLayerNormalization |
-| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormNullInput_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.SkipLayerNormalization |
-| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormPrePack_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.SkipLayerNormalization |
+| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch1_NoBeta_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch1_NoBeta_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch1_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch1_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch2_Bias_ProducingOptionalOutput_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 24) |
+| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch2_Bias_ProducingOptionalOutput_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 24) |
+| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch2_Bias_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 24) |
+| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch2_Bias_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 24) |
+| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch2_Skip_Broadcast_Batch_Size_1_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch2_Skip_Broadcast_No_Batch_Size_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch2_TokenCount_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch2_TokenCount_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch2_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch2_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormNullInput_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormNullInput_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/skiplayernorm_op_test/SkipLayerNormPrePack_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/tensor_op_test/CropBorderAndScale_run0/model.onnx | 7 | Data/Data | ❌ | Unsupported op ai.onnx.Crop |
 | test/contrib_ops/tensor_op_test/CropBorderOnly_run0/model.onnx | 7 | Data/Data | ❌ | Unsupported op ai.onnx.Crop |
 | test/contrib_ops/tensor_op_test/ImageScalerTest_run0/model.onnx | 7 | Data/Data | ❌ | Unsupported op ai.onnx.ImageScaler |
