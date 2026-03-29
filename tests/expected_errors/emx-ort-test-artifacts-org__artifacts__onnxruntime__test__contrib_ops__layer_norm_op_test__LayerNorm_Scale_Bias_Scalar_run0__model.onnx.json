@@ -1,9 +1,10 @@
 {
-  "error": "LayerNormalization scale rank must match normalized rank",
+  "error": "Out of tolerance (max ULP 252)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Scalar_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "LayerNormalization"
   ],
-  "opset_version": 17
+  "opset_version": 17,
+  "generated_checksum": "b704c91a8977b415135dd98be71e664475d97e4586f4d2f39733eef565ff4afe"
 }

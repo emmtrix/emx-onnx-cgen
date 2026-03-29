@@ -1,8 +1,9 @@
 {
-  "error": "RotaryEmbedding inputs must share the same dtype",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_CustomRotaryDim_SmallData_Phi_Packed_Batching_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::RotaryEmbedding"
-  ]
+  ],
+  "generated_checksum": "c3513e74add9609341b5f85c3a1b243c474d4c48084e4476bf9a57a36cf81a90"
 }

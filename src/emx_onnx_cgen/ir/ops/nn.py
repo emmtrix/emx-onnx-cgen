@@ -3082,6 +3082,8 @@ class RotaryEmbeddingOp(RenderableOpBase):
     batch: int
     input_rank: int
     interleaved: bool
+    # True when position_ids has shape (1,) and is broadcast to all positions.
+    position_ids_broadcast: bool
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
@@ -3155,6 +3157,7 @@ class RotaryEmbeddingOp(RenderableOpBase):
                 input_rank=self.input_rank,
                 interleaved=int(self.interleaved),
                 has_position_ids=int(self.position_ids is not None),
+                position_ids_broadcast=int(self.position_ids_broadcast),
             )
             .rstrip()
         )
@@ -5518,16 +5521,26 @@ class LayerNormalizationOp(RenderableOpBase):
         loop_vars = CEmitterCompat.loop_vars(shape)
         prefix_loop_vars = loop_vars[: self.axis]
         norm_loop_vars = loop_vars[self.axis :]
-        scale_index_vars = [
-            "0" if dim == 1 else var
-            for dim, var in zip(self.scale_shape, norm_loop_vars)
-        ]
+        all_loop_vars = [*prefix_loop_vars, *norm_loop_vars]
+        input_rank = len(self.shape)
+
+        def _broadcast_index_vars(
+            tensor_shape: tuple[int, ...],
+        ) -> list[str]:
+            if not tensor_shape:
+                # Scalar: C array is declared as [1]; access the single element.
+                return ["0"]
+            rank = len(tensor_shape)
+            offset = input_rank - rank
+            return [
+                "0" if tensor_shape[i] == 1 else all_loop_vars[offset + i]
+                for i in range(rank)
+            ]
+
+        scale_index_vars = _broadcast_index_vars(self.scale_shape)
         bias_index_vars = None
         if self.bias_shape is not None and self.bias is not None:
-            bias_index_vars = [
-                "0" if dim == 1 else var
-                for dim, var in zip(self.bias_shape, norm_loop_vars)
-            ]
+            bias_index_vars = _broadcast_index_vars(self.bias_shape)
         mean_index_vars = [
             *prefix_loop_vars,
             *("0" for _ in norm_loop_vars),

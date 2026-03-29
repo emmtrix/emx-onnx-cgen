@@ -23,7 +23,7 @@ class RotaryEmbeddingSpec:
 
 
 def _resolve_rotary_spec(
-    graph: Graph, node: Node, dtype: ScalarType
+    graph: Graph, node: Node, dtype: ScalarType, cos_half_dim: int | None = None
 ) -> RotaryEmbeddingSpec:
     if not dtype.is_float:
         raise UnsupportedOpError("Unsupported op RotaryEmbedding")
@@ -35,19 +35,33 @@ def _resolve_rotary_spec(
         raise ShapeInferenceError("RotaryEmbedding expects 3D or 4D input")
     if input_rank == 3:
         num_heads_attr = node.attrs.get("num_heads")
-        if num_heads_attr is None:
+        batch, seq_len, hidden_size = input_shape
+        if num_heads_attr is not None:
+            num_heads = int(num_heads_attr)
+            if num_heads <= 0:
+                raise ShapeInferenceError("RotaryEmbedding num_heads must be > 0")
+            if hidden_size % num_heads != 0:
+                raise ShapeInferenceError(
+                    "RotaryEmbedding hidden size must be divisible by num_heads"
+                )
+            head_size = hidden_size // num_heads
+        elif cos_half_dim is not None:
+            # Infer num_heads from the cos/sin cache: each head is fully rotated,
+            # so head_size = rotary_dim = 2 * cos_half_dim.
+            rotary_embedding_dim = int(node.attrs.get("rotary_embedding_dim", 0))
+            if rotary_embedding_dim == 0:
+                head_size = 2 * cos_half_dim
+            else:
+                head_size = rotary_embedding_dim
+            if hidden_size % head_size != 0:
+                raise ShapeInferenceError(
+                    "RotaryEmbedding hidden size must be divisible by inferred head_size"
+                )
+            num_heads = hidden_size // head_size
+        else:
             raise UnsupportedOpError(
                 "RotaryEmbedding num_heads attribute is required for 3D inputs"
             )
-        num_heads = int(num_heads_attr)
-        if num_heads <= 0:
-            raise ShapeInferenceError("RotaryEmbedding num_heads must be > 0")
-        batch, seq_len, hidden_size = input_shape
-        if hidden_size % num_heads != 0:
-            raise ShapeInferenceError(
-                "RotaryEmbedding hidden size must be divisible by num_heads"
-            )
-        head_size = hidden_size // num_heads
     else:
         batch, num_heads, seq_len, head_size = input_shape
         num_heads_attr = node.attrs.get("num_heads")
@@ -81,31 +95,51 @@ def _resolve_rotary_spec(
 @register_lowering("RotaryEmbedding")
 def lower_rotary_embedding(graph: Graph, node: Node) -> RotaryEmbeddingOp:
     input_name = node.inputs[0]
-    cos_name = node.inputs[1]
-    sin_name = node.inputs[2]
-    position_ids = optional_name(node.inputs, 3)
+    # The operator signature is: input, [position_ids], cos_cache, sin_cache.
+    # When position_ids is present (4 inputs), it sits at index 1 and
+    # cos/sin are at indices 2 and 3.  When absent (3 inputs) cos/sin
+    # are at indices 1 and 2.
+    if len(node.inputs) >= 4 and node.inputs[1]:
+        position_ids = node.inputs[1]
+        cos_name = node.inputs[2]
+        sin_name = node.inputs[3]
+    else:
+        position_ids = None
+        cos_name = node.inputs[1]
+        sin_name = node.inputs[2]
     dtype = value_dtype(graph, input_name, node)
     cos_dtype = value_dtype(graph, cos_name, node)
     sin_dtype = value_dtype(graph, sin_name, node)
     if cos_dtype != dtype or sin_dtype != dtype:
         raise ShapeInferenceError("RotaryEmbedding inputs must share the same dtype")
-    spec = _resolve_rotary_spec(graph, node, dtype)
+    # Pre-fetch cos_shape so _resolve_rotary_spec can infer num_heads for 3D inputs
+    # that omit the num_heads attribute.
+    cos_shape = value_shape(graph, cos_name, node)
+    cos_half_dim = cos_shape[-1] if len(cos_shape) >= 1 else None
+    spec = _resolve_rotary_spec(graph, node, dtype, cos_half_dim=cos_half_dim)
     input_shape = value_shape(graph, input_name, node)
     output_shape = value_shape(graph, node.outputs[0], node)
     if output_shape != input_shape:
         raise ShapeInferenceError("RotaryEmbedding output shape must match input shape")
-    cos_shape = value_shape(graph, cos_name, node)
     sin_shape = value_shape(graph, sin_name, node)
     if cos_shape != sin_shape:
         raise ShapeInferenceError("RotaryEmbedding cos/sin cache shapes must match")
     position_shape = None
     position_dtype = None
+    position_ids_broadcast = False
     if position_ids is not None:
         position_shape = value_shape(graph, position_ids, node)
-        if position_shape != (spec.batch, spec.seq_len):
+        # Accept either (batch, seq_len) or (1,) — the latter broadcasts to all positions.
+        valid_shapes = {
+            (spec.batch, spec.seq_len),
+            (1,),
+        }
+        if position_shape not in valid_shapes:
             raise ShapeInferenceError(
-                "RotaryEmbedding position_ids must match [batch, seq_len]"
+                "RotaryEmbedding position_ids shape must be [batch, seq_len] or [1], "
+                f"got {position_shape}"
             )
+        position_ids_broadcast = position_shape == (1,)
         position_dtype = value_dtype(graph, position_ids, node)
         if not position_dtype.is_integer:
             raise ShapeInferenceError(
@@ -154,4 +188,5 @@ def lower_rotary_embedding(graph: Graph, node: Node) -> RotaryEmbeddingOp:
         batch=spec.batch,
         input_rank=spec.input_rank,
         interleaved=interleaved,
+        position_ids_broadcast=position_ids_broadcast,
     )
