@@ -1,0 +1,11 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% for dim in shape %}
+    for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+{% endfor %}
+        {{ c_type }} x_val = {{ input0 }}{% for v in loop_vars %}[{{ v }}]{% endfor %}{% if has_bias %} + {{ bias }}[{{ loop_vars[-1] }}]{% endif %};
+        {{ c_type }} tanh_arg = {{ c1_literal }} * (x_val + {{ c2_literal }} * x_val * x_val * x_val);
+        {{ output }}{% for v in loop_vars %}[{{ v }}]{% endfor %} = x_val * {{ half_literal }} * ({{ one_literal }} + {{ tanh_fn }}(tanh_arg));
+{% for _ in shape %}
+    }
+{% endfor %}
+}

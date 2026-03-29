@@ -64,6 +64,8 @@ from ..ir.ops import (
     GroupNormalizationOp,
     HammingWindowOp,
     HannWindowOp,
+    FastGeluOp,
+    BiasGeluOp,
     ImageScalerOp,
     IfOptionalSequenceConstOp,
     HardmaxOp,
@@ -91,6 +93,7 @@ from ..ir.ops import (
     QLinearMulOp,
     QLinearMatMulOp,
     QLinearSoftmaxOp,
+    QLinearUnaryOp,
     LoopSequenceInsertOp,
     LoopSequenceMapOp,
     RangeOp,
@@ -1190,6 +1193,9 @@ class CEmitter:
                 "hamming_window": self._env.get_template("hamming_window_op.c.j2"),
                 "hann_window": self._env.get_template("hann_window_op.c.j2"),
                 "image_scaler": self._env.get_template("image_scaler_op.c.j2"),
+                "fast_gelu": self._env.get_template("fast_gelu_op.c.j2"),
+                "bias_gelu": self._env.get_template("bias_gelu_op.c.j2"),
+                "qlinear_unary": self._env.get_template("qlinear_unary_op.c.j2"),
                 "mel_weight_matrix": self._env.get_template(
                     "mel_weight_matrix_op.c.j2"
                 ),
@@ -2266,6 +2272,9 @@ class CEmitter:
             | HammingWindowOp
             | HannWindowOp
             | ImageScalerOp
+            | FastGeluOp
+            | BiasGeluOp
+            | QLinearUnaryOp
             | OneHotOp
             | SplitOp
             | SequenceAtOp

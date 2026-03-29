@@ -1,0 +1,23 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const float x_scale_val = (float){{ x_scale }}[0];
+    const float y_scale_val = (float){{ y_scale }}[0];
+    const int32_t x_zero_val = {% if has_x_zero_point %}(int32_t){{ x_zero_point }}[0]{% else %}0{% endif %};
+    const float y_zero_val = (float){{ y_zero_point }}[0];
+{% for dim in shape %}
+    for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+{% endfor %}
+        float dequant = ((float)((int32_t){{ input0 }}{% for v in loop_vars %}[{{ v }}]{% endfor %} - x_zero_val)) * x_scale_val;
+{% if op_kind == "sigmoid" %}
+        float result = 1.0f / (1.0f + expf(-dequant));
+{% elif op_kind == "leaky_relu" %}
+        float result = dequant >= 0.0f ? dequant : {{ alpha_literal }} * dequant;
+{% endif %}
+        float requant = result / y_scale_val + y_zero_val;
+        int32_t rounded = (int32_t)nearbyintf(requant);
+        if (rounded < {{ qmin }}) rounded = {{ qmin }};
+        if (rounded > {{ qmax }}) rounded = {{ qmax }};
+        {{ output }}{% for v in loop_vars %}[{{ v }}]{% endfor %} = ({{ q_c_type }})rounded;
+{% for _ in shape %}
+    }
+{% endfor %}
+}

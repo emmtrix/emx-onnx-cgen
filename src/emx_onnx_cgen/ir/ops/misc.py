@@ -8290,12 +8290,14 @@ class FastGeluOp(RenderableOpBase):
         output_suffix = emitter.param_array_suffix(shape)
         param_decls_list = [
             (params["input0"], c_type, input_suffix, True),
-            (params["output"], c_type, output_suffix, False),
         ]
         if self.bias is not None:
             param_decls_list.append(
                 (params["bias"], c_type, emitter.param_array_suffix(bias_shape), True)
             )
+        param_decls_list.append(
+            (params["output"], c_type, output_suffix, False),
+        )
         param_decls = emitter.build_param_decls(param_decls_list)
         c1_literal = emitter.format_floating(0.7978845608028654, self.dtype)
         c2_literal = emitter.format_floating(0.044715, self.dtype)
