@@ -37,14 +37,10 @@ def _ensure_scalar_input(
 
 
 @register_lowering("MatMulIntegerToFloat")
-def lower_matmul_integer_to_float(
-    graph: Graph, node: Node
-) -> MatMulIntegerToFloatOp:
+def lower_matmul_integer_to_float(graph: Graph, node: Node) -> MatMulIntegerToFloatOp:
     # Inputs: A, B, a_scale, b_scale, [a_zero_point, b_zero_point, bias]
     if len(node.inputs) != 7 or len(node.outputs) != 1:
-        raise UnsupportedOpError(
-            "MatMulIntegerToFloat must have 7 inputs and 1 output"
-        )
+        raise UnsupportedOpError("MatMulIntegerToFloat must have 7 inputs and 1 output")
 
     input_a_name = node.inputs[0]
     input_b_name = node.inputs[1]

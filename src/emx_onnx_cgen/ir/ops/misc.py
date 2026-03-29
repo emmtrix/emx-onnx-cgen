@@ -6410,7 +6410,7 @@ class RegexFullMatchOp(RenderableOpBase):
         return ScalarType.BOOL
 
 
-_TOKENIZER_REGEX_META = re.compile(r'[.+*?|()\[\]{}^$\\]')
+_TOKENIZER_REGEX_META = re.compile(r"[.+*?|()\[\]{}^$\\]")
 
 
 def _tokenizer_has_regex_meta(s: str) -> bool:
@@ -6483,13 +6483,9 @@ class TokenizerOp(RenderableOpBase):
         max_tokens = output_shape[-1] if output_shape else 0
         buf_size = max(max_tokens + 32, 64)
 
-        pattern_literals = [
-            emitter.format_c_string_literal(p) for p in patterns
-        ]
+        pattern_literals = [emitter.format_c_string_literal(p) for p in patterns]
         sep_lens = (
-            [len(p.encode("utf-8")) for p in patterns]
-            if mode == "sep_literal"
-            else []
+            [len(p.encode("utf-8")) for p in patterns] if mode == "sep_literal" else []
         )
 
         rendered = (
@@ -6520,9 +6516,7 @@ class TokenizerOp(RenderableOpBase):
     def c_op_outputs(
         self, emitter: "Emitter"
     ) -> "tuple[tuple[str, tuple[int, ...], ScalarType], ...]":
-        return (
-            (self.output, emitter.ctx_shape(self.output), ScalarType.STRING),
-        )
+        return ((self.output, emitter.ctx_shape(self.output), ScalarType.STRING),)
 
 
 @dataclass(frozen=True)
@@ -8170,9 +8164,7 @@ class MurmurHash3Op(RenderableOpBase):
             output_shape, emitter.dim_names_for(self.output)
         )
         input_c_type = (
-            "char"
-            if self.input_dtype == ScalarType.STRING
-            else self.input_dtype.c_type
+            "char" if self.input_dtype == ScalarType.STRING else self.input_dtype.c_type
         )
         param_decls = emitter.build_param_decls(
             [
