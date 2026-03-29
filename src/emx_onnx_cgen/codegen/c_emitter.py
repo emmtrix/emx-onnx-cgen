@@ -1176,6 +1176,7 @@ class CEmitter:
                 "string_normalizer": self._env.get_template(
                     "string_normalizer_op.c.j2"
                 ),
+                "murmur_hash3": self._env.get_template("murmur_hash3_op.c.j2"),
                 "label_encoder": self._env.get_template("label_encoder_op.c.j2"),
                 "string_split": self._env.get_template("string_split_op.c.j2"),
                 "tree_ensemble": self._env.get_template("tree_ensemble_op.c.j2"),

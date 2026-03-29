@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op QLinearGlobalAveragePool",
+  "error": "Unsupported op com.microsoft.QLinearGlobalAveragePool",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x7x7x256_S8_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
