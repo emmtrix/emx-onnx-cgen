@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 from shared.scalar_types import ScalarType
 
-from ..ir.ops import AveragePoolOp, QLinearAveragePoolOp
+from ..ir.ops import AveragePoolOp, QLinearAveragePoolOp, QLinearGlobalAveragePoolOp
 from ..ir.context import GraphContext
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
@@ -505,4 +505,119 @@ def lower_global_average_pool(graph: Graph, node: Node) -> AveragePoolOp:
         pad_right=spec.pad_right,
         count_include_pad=spec.count_include_pad,
         dtype=op_dtype,
+    )
+
+
+@register_lowering("QLinearGlobalAveragePool")
+def lower_qlinear_global_average_pool(
+    graph: Graph, node: Node
+) -> QLinearGlobalAveragePoolOp:
+    if len(node.inputs) != 5 or len(node.outputs) != 1:
+        raise UnsupportedOpError(
+            "QLinearGlobalAveragePool must have 5 inputs and 1 output"
+        )
+    input_name = node.inputs[0]
+    input_scale_name = node.inputs[1]
+    input_zero_name = node.inputs[2]
+    output_scale_name = node.inputs[3]
+    output_zero_name = node.inputs[4]
+    output_name = node.outputs[0]
+
+    channels_last = bool(int(node.attrs.get("channels_last", 0)))
+
+    input_dtype = _value_dtype(graph, input_name, node)
+    try:
+        output_dtype = _value_dtype(graph, output_name, node)
+    except ShapeInferenceError:
+        output_dtype = input_dtype
+    if input_dtype not in {ScalarType.U8, ScalarType.I8}:
+        raise UnsupportedOpError(
+            "QLinearGlobalAveragePool supports uint8/int8 inputs only"
+        )
+    if output_dtype not in {ScalarType.U8, ScalarType.I8}:
+        raise UnsupportedOpError(
+            "QLinearGlobalAveragePool supports uint8/int8 outputs only"
+        )
+
+    input_scale_dtype = _value_dtype(graph, input_scale_name, node)
+    output_scale_dtype = _value_dtype(graph, output_scale_name, node)
+    _ensure_scale_dtype(input_scale_dtype, "x_scale")
+    _ensure_scale_dtype(output_scale_dtype, "y_scale")
+
+    input_zero_dtype = _value_dtype(graph, input_zero_name, node)
+    output_zero_dtype = _value_dtype(graph, output_zero_name, node)
+    if input_zero_dtype != input_dtype:
+        raise UnsupportedOpError(
+            "QLinearGlobalAveragePool x_zero_point dtype must match input dtype"
+        )
+    if output_zero_dtype != output_dtype:
+        raise UnsupportedOpError(
+            "QLinearGlobalAveragePool y_zero_point dtype must match output dtype"
+        )
+
+    input_scale_shape = _value_shape(graph, input_scale_name, node)
+    output_scale_shape = _value_shape(graph, output_scale_name, node)
+    input_zero_shape = _value_shape(graph, input_zero_name, node)
+    output_zero_shape = _value_shape(graph, output_zero_name, node)
+    _ensure_scalar_shape(input_scale_shape, "x_scale")
+    _ensure_scalar_shape(output_scale_shape, "y_scale")
+    _ensure_scalar_shape(input_zero_shape, "x_zero_point")
+    _ensure_scalar_shape(output_zero_shape, "y_zero_point")
+
+    input_shape = _value_shape(graph, input_name, node)
+    if len(input_shape) < 3:
+        raise UnsupportedOpError(
+            "QLinearGlobalAveragePool expects inputs with spatial dims"
+        )
+    spatial_rank = len(input_shape) - 2
+    if spatial_rank not in {1, 2, 3}:
+        raise UnsupportedOpError(
+            "QLinearGlobalAveragePool supports 1D/2D/3D inputs only"
+        )
+    batch = input_shape[0]
+    if channels_last:
+        channels = input_shape[-1]
+        in_spatial = input_shape[1:-1]
+    else:
+        channels = input_shape[1]
+        in_spatial = input_shape[2:]
+
+    out_spatial = tuple(1 for _ in in_spatial)
+    if channels_last:
+        expected_output_shape = (batch, *out_spatial, channels)
+    else:
+        expected_output_shape = (batch, channels, *out_spatial)
+    try:
+        output_shape = _value_shape(graph, output_name, node)
+        if output_shape != expected_output_shape:
+            raise ShapeInferenceError(
+                "QLinearGlobalAveragePool output shape must be "
+                f"{expected_output_shape}, got {output_shape}"
+            )
+    except ShapeInferenceError as exc:
+        if "output shape must be" in str(exc):
+            raise
+    if isinstance(graph, GraphContext):
+        graph.set_shape(output_name, expected_output_shape)
+        graph.set_dtype(output_name, output_dtype)
+    return QLinearGlobalAveragePoolOp(
+        input0=input_name,
+        input_scale=input_scale_name,
+        input_zero_point=input_zero_name,
+        output_scale=output_scale_name,
+        output_zero_point=output_zero_name,
+        output=output_name,
+        batch=batch,
+        channels=channels,
+        spatial_rank=spatial_rank,
+        in_spatial=in_spatial,
+        channels_last=channels_last,
+        input_dtype=input_dtype,
+        dtype=output_dtype,
+        input_scale_dtype=input_scale_dtype,
+        output_scale_dtype=output_scale_dtype,
+        input_scale_shape=input_scale_shape,
+        output_scale_shape=output_scale_shape,
+        input_zero_shape=input_zero_shape,
+        output_zero_shape=output_zero_shape,
     )

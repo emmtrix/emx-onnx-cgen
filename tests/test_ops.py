@@ -7557,6 +7557,82 @@ def test_qlinearconv_op_matches_onnxruntime() -> None:
     _run_testbench_compare(model)
 
 
+def _make_qlinear_global_average_pool_model(
+    *,
+    input_shape: list[int],
+    output_shape: list[int],
+    dtype: int,
+    channels_last: int,
+    x_scale: float = 1.0,
+    x_zero: int = 0,
+    y_scale: float = 1.0,
+    y_zero: int = 0,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("X", dtype, input_shape)
+    output_info = helper.make_tensor_value_info("Y", dtype, output_shape)
+    x_scale_t = helper.make_tensor("x_scale", TensorProto.FLOAT, dims=[], vals=[x_scale])
+    x_zero_t = helper.make_tensor("x_zero_point", dtype, dims=[], vals=[x_zero])
+    y_scale_t = helper.make_tensor("y_scale", TensorProto.FLOAT, dims=[], vals=[y_scale])
+    y_zero_t = helper.make_tensor("y_zero_point", dtype, dims=[], vals=[y_zero])
+    node = helper.make_node(
+        "QLinearGlobalAveragePool",
+        inputs=["X", "x_scale", "x_zero_point", "y_scale", "y_zero_point"],
+        outputs=["Y"],
+        domain="com.microsoft",
+        channels_last=channels_last,
+    )
+    graph = helper.make_graph(
+        [node],
+        "qlinear_global_avg_pool_graph",
+        [input_info],
+        [output_info],
+        initializer=[x_scale_t, x_zero_t, y_scale_t, y_zero_t],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[
+            helper.make_operatorsetid("", 15),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+    return model
+
+
+@pytest.mark.parametrize(
+    "channels_last, input_shape, output_shape, dtype, x_scale, x_zero, y_scale, y_zero",
+    [
+        (0, [1, 4, 3, 3], [1, 4, 1, 1], TensorProto.UINT8, 0.5, 5, 1.0, 10),
+        (1, [1, 3, 3, 4], [1, 1, 1, 4], TensorProto.UINT8, 0.5, 5, 1.0, 10),
+        (0, [2, 3, 5, 5], [2, 3, 1, 1], TensorProto.INT8, 1.0, -1, 2.0, 1),
+        (1, [2, 5, 5, 3], [2, 1, 1, 3], TensorProto.INT8, 1.0, -1, 2.0, 1),
+    ],
+    ids=["nchw_uint8", "nhwc_uint8", "nchw_int8", "nhwc_int8"],
+)
+def test_qlinear_global_average_pool_matches_onnxruntime(
+    channels_last: int,
+    input_shape: list[int],
+    output_shape: list[int],
+    dtype: int,
+    x_scale: float,
+    x_zero: int,
+    y_scale: float,
+    y_zero: int,
+) -> None:
+    model = _make_qlinear_global_average_pool_model(
+        input_shape=input_shape,
+        output_shape=output_shape,
+        dtype=dtype,
+        channels_last=channels_last,
+        x_scale=x_scale,
+        x_zero=x_zero,
+        y_scale=y_scale,
+        y_zero=y_zero,
+    )
+    _run_testbench_compare(model)
+
+
 def test_conv_transpose_op_matches_onnxruntime() -> None:
     model = _make_conv_transpose_model()
     _run_ort_compare(model)
