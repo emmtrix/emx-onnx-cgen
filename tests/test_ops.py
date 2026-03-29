@@ -39,6 +39,7 @@ from emx_onnx_cgen.lowering.roi_align import lower_roi_align
 from emx_onnx_cgen.lowering.conv_integer import lower_conv_integer
 from emx_onnx_cgen.lowering.concat_from_sequence import lower_concat_from_sequence
 from emx_onnx_cgen.lowering.matmul_integer import lower_matmul_integer
+from emx_onnx_cgen.lowering.matmul_nbits import lower_matmul_nbits
 from emx_onnx_cgen.lowering.one_hot import lower_onehot
 from emx_onnx_cgen.lowering.depth_space import (
     lower_depth_to_space,
@@ -8587,6 +8588,65 @@ def _make_dynamic_quantize_matmul_model(
     return model
 
 
+def _make_matmul_nbits_model(
+    *,
+    m: int = 2,
+    k: int = 17,
+    n: int = 3,
+    bits: int = 4,
+    block_size: int = 8,
+    g_idx_values: np.ndarray | None = None,
+) -> onnx.ModelProto:
+    a_info = helper.make_tensor_value_info("A", TensorProto.FLOAT, [m, k])
+    output = helper.make_tensor_value_info("Y", TensorProto.FLOAT, [m, n])
+
+    n_blocks_per_col = math.ceil(k / block_size)
+    blob_size = block_size * bits // 8
+    b_values = np.arange(
+        n * n_blocks_per_col * blob_size, dtype=np.uint8
+    ).reshape(n, n_blocks_per_col, blob_size)
+    scales = np.linspace(
+        0.25, 1.0, num=n * n_blocks_per_col, dtype=np.float32
+    ).reshape(n, n_blocks_per_col)
+    if g_idx_values is None:
+        g_idx_values = np.repeat(
+            np.arange(n_blocks_per_col, dtype=np.int32), block_size
+        )
+    g_idx_values = np.asarray(g_idx_values, dtype=np.int32)
+
+    node = helper.make_node(
+        "MatMulNBits",
+        inputs=["A", "B", "scales", "", "g_idx", ""],
+        outputs=["Y"],
+        domain="com.microsoft",
+        K=k,
+        N=n,
+        bits=bits,
+        block_size=block_size,
+    )
+    graph = helper.make_graph(
+        [node],
+        "matmul_nbits_graph",
+        [a_info],
+        [output],
+        initializer=[
+            numpy_helper.from_array(b_values, name="B"),
+            numpy_helper.from_array(scales, name="scales"),
+            numpy_helper.from_array(g_idx_values, name="g_idx"),
+        ],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[
+            helper.make_operatorsetid("", 18),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+    return model
+
+
 def test_dynamic_quantize_matmul_uint8_compiles() -> None:
     model = _make_dynamic_quantize_matmul_model()
     generated = Compiler(CompilerOptions()).compile(model)
@@ -8650,3 +8710,32 @@ def test_dynamic_quantize_matmul_per_column_b_zero_testbench() -> None:
         b_scale_per_column=True, with_b_zero=True, b_zero_per_column=True
     )
     _run_testbench_compare(model)
+
+
+def test_lower_matmul_nbits_accepts_canonical_g_idx() -> None:
+    model = _make_matmul_nbits_model()
+    graph = import_onnx(model)
+    op = lower_matmul_nbits(graph, graph.nodes[0])
+    assert op.input0 == "A"
+    assert op.input1 == "B"
+    assert op.scales == "scales"
+    assert op.output == "Y"
+    assert op.n_blocks_per_col == 3
+    assert op.output_shape == (2, 3)
+    assert op.zero_points is None
+    assert op.bias is None
+
+
+def test_lower_matmul_nbits_rejects_noncanonical_g_idx() -> None:
+    g_idx_values = np.repeat(np.arange(3, dtype=np.int32), 8)
+    g_idx_values[3] = 1
+    model = _make_matmul_nbits_model(g_idx_values=g_idx_values)
+    graph = import_onnx(model)
+    with pytest.raises(UnsupportedOpError, match="only supports canonical g_idx"):
+        lower_matmul_nbits(graph, graph.nodes[0])
+
+
+def test_matmul_nbits_with_canonical_g_idx_compiles() -> None:
+    model = _make_matmul_nbits_model()
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
