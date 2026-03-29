@@ -58,17 +58,17 @@ jobs:
         run: |
           UPDATE_REFS=1 pytest -q tests/test_official_onnx_files_docs.py::test_official_onnx_file_support_doc
 
-      - name: Commit markdown reference updates (phase 1)
+      - name: Commit phase 1 updates
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
         run: |
-          if git status --porcelain -- ONNX_SUPPORT.md ONNX_ERRORS.md SUPPORT_OPS.md | grep -q .; then
+          if git status --porcelain | grep -q .; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add ONNX_SUPPORT.md ONNX_ERRORS.md SUPPORT_OPS.md
-            git commit -m "tests: refresh ONNX support markdown docs"
+            git add -A
+            git commit -m "tests: commit phase 1 updates"
             git push origin "HEAD:${GITHUB_HEAD_REF}"
           else
-            echo "No markdown reference updates."
+            echo "No phase 1 updates."
           fi
 
       - name: Run tests (update refs for PRs)

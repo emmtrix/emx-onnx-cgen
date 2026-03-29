@@ -14,9 +14,7 @@ from .registry import register_lowering
 _SUPPORTED_DTYPES = {ScalarType.U8, ScalarType.I8}
 
 
-def _ensure_scalar(
-    graph: Graph, name: str, node: Node, label: str
-) -> tuple[int, ...]:
+def _ensure_scalar(graph: Graph, name: str, node: Node, label: str) -> tuple[int, ...]:
     shape = _value_shape(graph, name, node)
     if shape not in {(), (1,)}:
         raise UnsupportedOpError(
@@ -27,9 +25,7 @@ def _ensure_scalar(
 
 def _ensure_scale_dtype(dtype: ScalarType, label: str) -> None:
     if not (dtype.is_float or dtype.is_integer):
-        raise UnsupportedOpError(
-            f"QLinearConcat {label} must be a numeric type"
-        )
+        raise UnsupportedOpError(f"QLinearConcat {label} must be a numeric type")
 
 
 @register_lowering("QLinearConcat")

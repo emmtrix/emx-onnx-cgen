@@ -12,9 +12,7 @@ from .registry import register_lowering
 
 
 @register_lowering("DynamicQuantizeMatMul")
-def lower_dynamic_quantize_matmul(
-    graph: Graph, node: Node
-) -> DynamicQuantizeMatMulOp:
+def lower_dynamic_quantize_matmul(graph: Graph, node: Node) -> DynamicQuantizeMatMulOp:
     if len(node.inputs) != 5 or len(node.outputs) != 1:
         raise UnsupportedOpError(
             "DynamicQuantizeMatMul must have 5 inputs and 1 output"
@@ -99,8 +97,7 @@ def lower_dynamic_quantize_matmul(
         bias_shape = _value_shape(graph, bias_name, node)
         if len(bias_shape) != 1 or bias_shape[0] != n:
             raise UnsupportedOpError(
-                f"DynamicQuantizeMatMul bias must have shape [{n}], "
-                f"got {bias_shape}"
+                f"DynamicQuantizeMatMul bias must have shape [{n}], got {bias_shape}"
             )
 
     lowered = DynamicQuantizeMatMulOp(
