@@ -954,8 +954,11 @@ class MatMulNBitsOp(RenderableOpBase):
     output_dtype: ScalarType
     b_dtype: ScalarType
     scales_dtype: ScalarType
+    scales_shape: tuple[int, ...]
+    scales_has_block_axis: bool
     zero_points_dtype: ScalarType | None
     zero_points_packed: bool
+    zero_points_has_block_axis: bool
     bias_dtype: ScalarType | None
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
@@ -1002,8 +1005,7 @@ class MatMulNBitsOp(RenderableOpBase):
         b_shape = (self.n, self.n_blocks_per_col, self.blob_size)
         b_suffix = emitter.param_array_suffix(b_shape)
 
-        scales_shape = (self.n, self.n_blocks_per_col)
-        scales_suffix = emitter.param_array_suffix(scales_shape)
+        scales_suffix = emitter.param_array_suffix(self.scales_shape)
 
         acc_dtype = emitter.accumulation_dtype(self.output_dtype)
         acc_zero_literal = emitter.format_literal(acc_dtype, 0)
@@ -1073,6 +1075,8 @@ class MatMulNBitsOp(RenderableOpBase):
                 default_zero_point=default_zero_point,
                 has_zero_points=params["zero_points"] is not None,
                 zero_points_packed=self.zero_points_packed,
+                zero_points_has_block_axis=self.zero_points_has_block_axis,
+                scales_has_block_axis=self.scales_has_block_axis,
                 has_bias=params["bias"] is not None,
                 b_c_type=b_c_type,
             )
@@ -1089,7 +1093,7 @@ class MatMulNBitsOp(RenderableOpBase):
         inputs: list[tuple[str, tuple[int, ...]]] = [
             (self.input0, emitter.ctx_shape(self.input0)),
             (self.input1, (self.n, self.n_blocks_per_col, self.blob_size)),
-            (self.scales, (self.n, self.n_blocks_per_col)),
+            (self.scales, self.scales_shape),
         ]
         if self.zero_points is not None:
             inputs.append((self.zero_points, emitter.ctx_shape(self.zero_points)))
