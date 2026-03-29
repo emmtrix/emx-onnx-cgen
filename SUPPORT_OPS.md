@@ -222,7 +222,7 @@ Supported operators: 215 / 256
 | com.microsoft::CropAndResize | ❌ |
 | com.microsoft::DecoderMaskedMultiHeadAttention | ❌ |
 | com.microsoft::DequantizeLinear | ✅ |
-| com.microsoft::DynamicQuantizeLSTM | ❌ |
+| com.microsoft::DynamicQuantizeLSTM | ✅ |
 | com.microsoft::DynamicQuantizeMatMul | ❌ |
 | com.microsoft::DynamicTimeWarping | ❌ |
 | com.microsoft::EmbedLayerNormalization | ❌ |

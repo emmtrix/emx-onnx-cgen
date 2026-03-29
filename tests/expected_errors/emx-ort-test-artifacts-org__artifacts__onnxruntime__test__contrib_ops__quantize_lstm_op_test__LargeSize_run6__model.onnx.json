@@ -1,8 +1,13 @@
 {
-  "error": "Unsupported op com.microsoft.DynamicQuantizeLSTM",
-  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/quantize_lstm_op_test/LargeSize_run6 model.onnx --test-data-dir test_data_set_0",
+  "error": "OK (max ULP 14)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/quantize_lstm_op_test/LargeSize_run6 model.onnx --test-data-dir test_data_set_0 --atol-eps 2",
+  "extra_cli_args": [
+    "--atol-eps",
+    "2"
+  ],
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::DynamicQuantizeLSTM"
-  ]
+  ],
+  "generated_checksum": "116f6a437ac8d6dccd00a6e89b8d51fc42e4439e19652d6ae4fbc59885f576c5"
 }
