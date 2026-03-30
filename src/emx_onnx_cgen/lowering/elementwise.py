@@ -482,6 +482,45 @@ def lower_isinf(graph: Graph, node: Node) -> UnaryOp:
     )
 
 
+@register_lowering("Affine")
+def lower_affine(graph: Graph, node: Node) -> UnaryOp:
+    if len(node.inputs) != 1 or len(node.outputs) != 1:
+        raise UnsupportedOpError("Affine must have 1 input and 1 output")
+    dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
+    if not dtype.is_float:
+        raise UnsupportedOpError("Affine only supports floating-point inputs")
+    try:
+        alpha = float(node.attrs.get("alpha", 1.0))
+        beta = float(node.attrs.get("beta", 0.0))
+    except (TypeError, ValueError) as exc:
+        raise UnsupportedOpError("Affine alpha/beta must be numeric") from exc
+    return UnaryOp(
+        input0=node.inputs[0],
+        output=node.outputs[0],
+        function=ScalarFunction.AFFINE,
+        params=(alpha, beta),
+    )
+
+
+@register_lowering("Scale")
+def lower_scale(graph: Graph, node: Node) -> UnaryOp:
+    if len(node.inputs) != 1 or len(node.outputs) != 1:
+        raise UnsupportedOpError("Scale must have 1 input and 1 output")
+    dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
+    if not dtype.is_float:
+        raise UnsupportedOpError("Scale only supports floating-point inputs")
+    try:
+        scale = float(node.attrs.get("scale", 1.0))
+    except (TypeError, ValueError) as exc:
+        raise UnsupportedOpError("Scale scale must be numeric") from exc
+    return UnaryOp(
+        input0=node.inputs[0],
+        output=node.outputs[0],
+        function=ScalarFunction.AFFINE,
+        params=(scale, 0.0),
+    )
+
+
 @register_lowering("IsNaN")
 def lower_isnan(graph: Graph, node: Node) -> UnaryOp:
     if len(node.inputs) != 1 or len(node.outputs) != 1:

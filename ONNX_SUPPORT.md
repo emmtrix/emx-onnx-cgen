@@ -8,7 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1796 / 1802, 99.7% | 1.20.1 |
-| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 2850 / 4182, 68.1% | n/a |
+| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 2897 / 4182, 69.3% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -1832,7 +1832,7 @@ Coverage 1796 / 1802 ONNX files (99.7%).
 
 Test directory: `emx-ort-test-artifacts-org/artifacts/onnxruntime`
 
-Coverage 2850 / 4182 ONNX files (68.1%).
+Coverage 2897 / 4182 ONNX files (69.3%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1923,8 +1923,8 @@ Coverage 2850 / 4182 ONNX files (68.1%).
 | test/contrib_ops/crop_and_resize_op_test/CropAndResize_1222_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CropAndResize |
 | test/contrib_ops/crop_and_resize_op_test/CropAndResize_2122_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CropAndResize |
 | test/contrib_ops/crop_and_resize_op_test/CropAndResize_2122_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CropAndResize |
-| test/contrib_ops/crop_op_test/Crop_Border_run0/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.Crop |
-| test/contrib_ops/crop_op_test/Crop_Scale_run0/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.Crop |
+| test/contrib_ops/crop_op_test/Crop_Border_run0/model.onnx | 1 | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/crop_op_test/Crop_Scale_run0/model.onnx | 1 | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/decoder_masked_multihead_attention_op_test/cpu_cross_attn_fp32_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DecoderMaskedMultiHeadAttention |
 | test/contrib_ops/decoder_masked_multihead_attention_op_test/cpu_self_attn_fp32_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DecoderMaskedMultiHeadAttention |
 | test/contrib_ops/dynamic_quantize_matmul_test/Int8_run0/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 165) |
@@ -1966,29 +1966,29 @@ Coverage 2850 / 4182 ONNX files (68.1%).
 | test/contrib_ops/dynamic_quantize_matmul_test/WithConstantBInputs_run3/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 1475) |
 | test/contrib_ops/dynamic_quantize_matmul_test/WithConstantBInputs_run4/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 1345) |
 | test/contrib_ops/dynamic_quantize_matmul_test/WithConstantBInputs_run5/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 265) |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_ends_out_of_bounds_run0/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_full_axes_run0/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_full_axes_run1/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_varied_types_run0/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_varied_types_run1/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_varied_types_run2/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_varied_types_run3/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_varied_types_run4/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_with_axes_run0/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_with_axes_run1/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_with_negative_axes_run0/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_with_negative_axes_run1/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
+| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_ends_out_of_bounds_run0/model.onnx | 1 | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_full_axes_run0/model.onnx | 1 | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_full_axes_run1/model.onnx | 1 | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_varied_types_run0/model.onnx | 1 | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_varied_types_run1/model.onnx | 1 | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_varied_types_run2/model.onnx | 1 | Data/Data | ✅ | OK (no numeric comparisons) |
+| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_varied_types_run3/model.onnx | 1 | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_varied_types_run4/model.onnx | 1 | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_with_axes_run0/model.onnx | 1 | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_with_axes_run1/model.onnx | 1 | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_with_negative_axes_run0/model.onnx | 1 | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_with_negative_axes_run1/model.onnx | 1 | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/dynamic_time_warping_op_test/simple_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicTimeWarping |
-| test/contrib_ops/element_wise_ops_test/AffineDefaultAttributes_run0/model.onnx | 7 | Data/Data | ❌ | Unsupported op ai.onnx.Affine |
-| test/contrib_ops/element_wise_ops_test/Affine_run0/model.onnx | 7 | Data/Data | ❌ | Unsupported op ai.onnx.Affine |
-| test/contrib_ops/element_wise_ops_test/Float_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.BiasGelu |
-| test/contrib_ops/element_wise_ops_test/Float_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.BiasGelu |
-| test/contrib_ops/element_wise_ops_test/Float_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.BiasGelu |
-| test/contrib_ops/element_wise_ops_test/Float_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.BiasGelu |
-| test/contrib_ops/element_wise_ops_test/Float_run4/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.BiasGelu |
-| test/contrib_ops/element_wise_ops_test/Float_run5/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.BiasGelu |
-| test/contrib_ops/element_wise_ops_test/Scale_Default_run0/model.onnx | 7 | Data/Data | ❌ | Unsupported op ai.onnx.Scale |
-| test/contrib_ops/element_wise_ops_test/Scale_run0/model.onnx | 7 | Data/Data | ❌ | Unsupported op ai.onnx.Scale |
+| test/contrib_ops/element_wise_ops_test/AffineDefaultAttributes_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/element_wise_ops_test/Affine_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/element_wise_ops_test/Float_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/element_wise_ops_test/Float_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/element_wise_ops_test/Float_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/element_wise_ops_test/Float_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/element_wise_ops_test/Float_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/element_wise_ops_test/Float_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/element_wise_ops_test/Scale_Default_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/element_wise_ops_test/Scale_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/embed_layer_norm_op_test/EmbedLayerNormBatch1_EmbeddingSum_NoMaskIndex_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.EmbedLayerNormalization |
 | test/contrib_ops/embed_layer_norm_op_test/EmbedLayerNormBatch1_EmbeddingSum_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.EmbedLayerNormalization |
 | test/contrib_ops/embed_layer_norm_op_test/EmbedLayerNormBatch1_PositionIdsDiffOrder_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.EmbedLayerNormalization |
@@ -1999,20 +1999,20 @@ Coverage 2850 / 4182 ONNX files (68.1%).
 | test/contrib_ops/embed_layer_norm_op_test/EmbedLayerNormBatch3_PositionIds_BroadCast_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.EmbedLayerNormalization |
 | test/contrib_ops/embed_layer_norm_op_test/EmbedLayerNormBatch_Distill_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.EmbedLayerNormalization |
 | test/contrib_ops/embed_layer_norm_op_test/EmbedLayerNormLargeBatchSmallHiddenSize_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.EmbedLayerNormalization |
-| test/contrib_ops/expand_dims_test/Basic_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.ExpandDims |
-| test/contrib_ops/expand_dims_test/Basic_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.ExpandDims |
-| test/contrib_ops/expand_dims_test/Basic_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.ExpandDims |
-| test/contrib_ops/expand_dims_test/MaxAxis_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.ExpandDims |
-| test/contrib_ops/expand_dims_test/MaxAxis_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.ExpandDims |
-| test/contrib_ops/expand_dims_test/MinAxis_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.ExpandDims |
-| test/contrib_ops/expand_dims_test/MinAxis_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.ExpandDims |
-| test/contrib_ops/expand_dims_test/NegativeAxisOutOfRange_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.ExpandDims |
-| test/contrib_ops/expand_dims_test/NegativeAxisOutOfRange_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.ExpandDims |
-| test/contrib_ops/expand_dims_test/PositiveAxisOutOfRange_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.ExpandDims |
-| test/contrib_ops/expand_dims_test/PositiveAxisOutOfRange_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.ExpandDims |
-| test/contrib_ops/fastgelu_op_test/FastGeluWithBiasFloat32_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.FastGelu |
-| test/contrib_ops/fastgelu_op_test/FastGeluWithNullInput_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.FastGelu |
-| test/contrib_ops/fastgelu_op_test/FastGeluWithoutBiasFloat32_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.FastGelu |
+| test/contrib_ops/expand_dims_test/Basic_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/expand_dims_test/Basic_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/expand_dims_test/Basic_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/expand_dims_test/MaxAxis_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/expand_dims_test/MaxAxis_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/expand_dims_test/MinAxis_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/expand_dims_test/MinAxis_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/expand_dims_test/NegativeAxisOutOfRange_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/expand_dims_test/NegativeAxisOutOfRange_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/expand_dims_test/PositiveAxisOutOfRange_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/expand_dims_test/PositiveAxisOutOfRange_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fastgelu_op_test/FastGeluWithBiasFloat32_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fastgelu_op_test/FastGeluWithNullInput_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fastgelu_op_test/FastGeluWithoutBiasFloat32_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/fused_conv_test/Conv2D_Bias_Relu_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.FusedConv |
 | test/contrib_ops/fused_conv_test/Conv2D_HardSigmoid_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.FusedConv |
 | test/contrib_ops/fused_conv_test/Conv2D_Relu_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.FusedConv |
@@ -5114,12 +5114,12 @@ Coverage 2850 / 4182 ONNX files (68.1%).
 | test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x256x7x7_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x256x8x8_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/qlinear_global_average_pool_test/Nhwc_3x256x8x8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_lookup_table_test/QLinearLeakyRelu_Int8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearLeakyRelu |
-| test/contrib_ops/qlinear_lookup_table_test/QLinearLeakyRelu_UInt8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearLeakyRelu |
-| test/contrib_ops/qlinear_lookup_table_test/QLinearSigmoid_Int8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearSigmoid |
-| test/contrib_ops/qlinear_lookup_table_test/QLinearSigmoid_UInt8_0_Y_ZP_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearSigmoid |
-| test/contrib_ops/qlinear_lookup_table_test/QLinearSigmoid_UInt8_0_Y_ZP_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearSigmoid |
-| test/contrib_ops/qlinear_lookup_table_test/QLinearSigmoid_UInt8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearSigmoid |
+| test/contrib_ops/qlinear_lookup_table_test/QLinearLeakyRelu_Int8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/qlinear_lookup_table_test/QLinearLeakyRelu_UInt8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/qlinear_lookup_table_test/QLinearSigmoid_Int8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/qlinear_lookup_table_test/QLinearSigmoid_UInt8_0_Y_ZP_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/qlinear_lookup_table_test/QLinearSigmoid_UInt8_0_Y_ZP_run1/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/qlinear_lookup_table_test/QLinearSigmoid_UInt8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/qlinear_lookup_table_test/QLinearSoftmax_Int8_v12_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/qlinear_lookup_table_test/QLinearSoftmax_Int8_v12_run1/model.onnx |  | Data/Data | ❌ | QLinearSoftmax axis -2 is out of bounds for shape () |
 | test/contrib_ops/qlinear_lookup_table_test/QLinearSoftmax_Int8_v13_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max abs diff 1) |
@@ -5955,9 +5955,9 @@ Coverage 2850 / 4182 ONNX files (68.1%).
 | test/contrib_ops/skiplayernorm_op_test/SkipLayerNormNullInput_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/skiplayernorm_op_test/SkipLayerNormNullInput_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/skiplayernorm_op_test/SkipLayerNormPrePack_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/tensor_op_test/CropBorderAndScale_run0/model.onnx | 7 | Data/Data | ❌ | Unsupported op ai.onnx.Crop |
-| test/contrib_ops/tensor_op_test/CropBorderOnly_run0/model.onnx | 7 | Data/Data | ❌ | Unsupported op ai.onnx.Crop |
-| test/contrib_ops/tensor_op_test/ImageScalerTest_run0/model.onnx | 7 | Data/Data | ❌ | Unsupported op ai.onnx.ImageScaler |
+| test/contrib_ops/tensor_op_test/CropBorderAndScale_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/tensor_op_test/CropBorderOnly_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/tensor_op_test/ImageScalerTest_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/tensor_op_test/LastDim_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.UnfoldTensor |
 | test/contrib_ops/tensor_op_test/MeanVarianceNormalizationCPUTest_Version1_TO_8_run0/model.onnx | 7 | Data/Data | ❌ | Out of tolerance (max ULP 7137119) |
 | test/contrib_ops/tensor_op_test/MeanVarianceNormalizationCPUTest_Version1_TO_8_run1/model.onnx | 7 | Data/Data | ❌ | Out of tolerance (max ULP 21399263) |

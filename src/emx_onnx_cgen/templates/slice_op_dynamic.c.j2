@@ -78,7 +78,11 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% for dim in output_shape %}
     for (idx_t {{ output_loop_vars[loop.index0] }} = 0; {{ output_loop_vars[loop.index0] }} < slice_limits[{{ loop.index0 }}]; ++{{ output_loop_vars[loop.index0] }}) {
 {% endfor %}
+{% if is_string %}
+        memcpy({{ output }}{% for var in output_loop_vars %}[{{ var }}]{% endfor %}, {{ input0 }}{% for var in output_loop_vars %}[start_indices[{{ loop.index0 }}] + ({{ var }} * step_values[{{ loop.index0 }}])]{% endfor %}, EMX_STRING_MAX_LEN);
+{% else %}
         {{ output }}{% for var in output_loop_vars %}[{{ var }}]{% endfor %} = {{ input0 }}{% for var in output_loop_vars %}[start_indices[{{ loop.index0 }}] + ({{ var }} * step_values[{{ loop.index0 }}])]{% endfor %};
+{% endif %}
 {% for _ in output_shape %}
     }
 {% endfor %}

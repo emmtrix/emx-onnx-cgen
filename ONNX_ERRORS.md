@@ -35,14 +35,12 @@ Aggregates non-success verification outcomes.
 | Failed to build testbench (model.c:557:17: error: pointer value used where a floating-point was expected). | 12 |  |
 | Failed to build testbench (model.c:5582:21: error: pointer value used where a floating-point was expected). | 12 |  |
 | Failed to build testbench (model.c:572:17: error: pointer value used where a floating-point was expected). | 12 |  |
-| Unsupported op ai.onnx.DynamicSlice | 12 | 1 |
 | Unsupported op com.microsoft.QEmbedLayerNormalization | 12 |  |
 | Failed to build testbench (model.c:1102:21: error: pointer value used where a floating-point was expected). | 11 |  |
 | Failed to build testbench (model.c:1149:21: error: pointer value used where a floating-point was expected). | 11 |  |
 | Failed to build testbench (model.c:4995:21: error: pointer value used where a floating-point was expected). | 11 |  |
 | Failed to build testbench (model.c:5018:21: error: pointer value used where a floating-point was expected). | 11 |  |
 | Failed to build testbench (model.c:5065:21: error: pointer value used where a floating-point was expected). | 11 |  |
-| Unsupported op com.microsoft.ExpandDims | 11 |  |
 | Testbench execution failed: exit code 1 | 10 |  |
 | Unsupported op com.microsoft.CropAndResize | 10 |  |
 | Unsupported op com.microsoft.EmbedLayerNormalization | 10 |  |
@@ -96,7 +94,6 @@ Aggregates non-success verification outcomes.
 | Failed to build testbench (model.c:7022:21: error: pointer value used where a floating-point was expected). | 6 |  |
 | Failed to build testbench (model.c:960:17: error: pointer value used where a floating-point was expected). | 6 |  |
 | Unsupported op com.microsoft.AttnLSTM | 6 |  |
-| Unsupported op com.microsoft.BiasGelu | 6 |  |
 | Unsupported op com.microsoft.WordConvEmbedding | 6 |  |
 | RotaryEmbedding inputs must share the same dtype | 5 | 23 |
 | Unsupported op com.microsoft.Inverse | 5 |  |
@@ -138,10 +135,8 @@ Aggregates non-success verification outcomes.
 | GatherBlockQuantized scales shape (2, 3, 1) does not match expected (2, 3, 2) (data_shape=(2, 3, 4), quantize_axis=2, block_size=16, packed=True) | 4 |  |
 | QLinearSoftmax axis -2 is out of bounds for shape () | 4 |  |
 | Unique must have 1 input and 4 outputs | 4 |  |
-| Unsupported op ai.onnx.Crop | 4 | 1, 7 |
 | Unsupported op com.microsoft.FusedConv | 4 |  |
 | Unsupported op com.microsoft.MatMulInteger16 | 4 |  |
-| Unsupported op com.microsoft.QLinearSigmoid | 4 |  |
 | Failed to build testbench (model.c:180:17: error: pointer value used where a floating-point was expected). | 3 |  |
 | Failed to build testbench (model.c:203:17: error: pointer value used where a floating-point was expected). | 3 |  |
 | Failed to build testbench (model.c:215:17: error: pointer value used where a floating-point was expected). | 3 |  |
@@ -149,7 +144,6 @@ Aggregates non-success verification outcomes.
 | FusedMatMul batch dimensions are not broadcastable: (1, 3) vs (3, 2) | 3 |  |
 | Output shape mismatch for Y (actual_shape=(3, 2, 3, 2), actual_size=36, expected_shape=(3, 2, 3, 1), expected_size=18, output=Y) | 3 |  |
 | Unsupported op com.microsoft.CDist | 3 |  |
-| Unsupported op com.microsoft.FastGelu | 3 |  |
 | Failed to build testbench (model.c:10176:17: error: pointer value used where a floating-point was expected). | 2 |  |
 | Failed to build testbench (model.c:10223:17: error: pointer value used where a floating-point was expected). | 2 |  |
 | Failed to build testbench (model.c:104:17: error: pointer value used where a floating-point was expected). | 2 |  |
@@ -193,11 +187,8 @@ Aggregates non-success verification outcomes.
 | GatherBlockQuantized supports bits in [4, 8], got 7 | 2 |  |
 | Output shape mismatch for output (actual_shape=(1, 3, 8), actual_size=24, expected_shape=(1, 3, 4), expected_size=12, output=output) | 2 |  |
 | Output shape mismatch for output (actual_shape=(2, 1, 4), actual_size=8, expected_shape=(1, 3, 4), expected_size=12, output=output) | 2 |  |
-| Unsupported op ai.onnx.Affine | 2 | 7 |
-| Unsupported op ai.onnx.Scale | 2 | 7 |
 | Unsupported op com.microsoft.BifurcationDetector | 2 |  |
 | Unsupported op com.microsoft.DecoderMaskedMultiHeadAttention | 2 |  |
-| Unsupported op com.microsoft.QLinearLeakyRelu | 2 |  |
 | Unsupported op com.microsoft.UnfoldTensor | 2 |  |
 | Failed to build testbench (model.c:1144:21: error: pointer value used where a floating-point was expected). | 1 |  |
 | Failed to build testbench (model.c:168:17: error: pointer value used where a floating-point was expected). | 1 |  |
@@ -229,7 +220,6 @@ Aggregates non-success verification outcomes.
 | MurmurHash3 does not support input dtype int8; supported: int32, int64, float, double, string | 1 |  |
 | Output shape mismatch for Y (actual_shape=(3, 2, 4), actual_size=24, expected_shape=(1, 2, 4), expected_size=8, output=Y) | 1 |  |
 | Output shape mismatch for Y (actual_shape=(3, 3, 2, 2), actual_size=36, expected_shape=(3, 2, 3, 1), expected_size=18, output=Y) | 1 |  |
-| Unsupported op ai.onnx.ImageScaler | 1 | 7 |
 | Unsupported op com.microsoft.ConvTransposeWithDynamicPads | 1 |  |
 | Unsupported op com.microsoft.DynamicTimeWarping | 1 |  |
 | Unsupported op com.microsoft.MaxpoolWithMask | 1 |  |
@@ -241,13 +231,7 @@ Aggregates non-success verification outcomes.
 
 | Error message | Opset | Count |
 | --- | --- | --- |
-| Unsupported op ai.onnx.DynamicSlice | 1 | 12 |
-| Unsupported op ai.onnx.Crop | 1 | 2 |
 | Out of tolerance | 7 | 7 |
-| Unsupported op ai.onnx.Affine | 7 | 2 |
-| Unsupported op ai.onnx.Crop | 7 | 2 |
-| Unsupported op ai.onnx.Scale | 7 | 2 |
-| Unsupported op ai.onnx.ImageScaler | 7 | 1 |
 | Out of tolerance | 17 | 13 |
 | RotaryEmbedding inputs must share the same dtype | 23 | 5 |
 
@@ -288,33 +272,9 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/crop_and_resize_op_test/CropAndResize_1222_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CropAndResize |
 | test/contrib_ops/crop_and_resize_op_test/CropAndResize_2122_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CropAndResize |
 | test/contrib_ops/crop_and_resize_op_test/CropAndResize_2122_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CropAndResize |
-| test/contrib_ops/crop_op_test/Crop_Border_run0/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.Crop |
-| test/contrib_ops/crop_op_test/Crop_Scale_run0/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.Crop |
 | test/contrib_ops/decoder_masked_multihead_attention_op_test/cpu_cross_attn_fp32_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DecoderMaskedMultiHeadAttention |
 | test/contrib_ops/decoder_masked_multihead_attention_op_test/cpu_self_attn_fp32_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DecoderMaskedMultiHeadAttention |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_ends_out_of_bounds_run0/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_full_axes_run0/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_full_axes_run1/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_varied_types_run0/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_varied_types_run1/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_varied_types_run2/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_varied_types_run3/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_varied_types_run4/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_with_axes_run0/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_with_axes_run1/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_with_negative_axes_run0/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_with_negative_axes_run1/model.onnx | 1 | Data/Data | ❌ | Unsupported op ai.onnx.DynamicSlice |
 | test/contrib_ops/dynamic_time_warping_op_test/simple_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicTimeWarping |
-| test/contrib_ops/element_wise_ops_test/AffineDefaultAttributes_run0/model.onnx | 7 | Data/Data | ❌ | Unsupported op ai.onnx.Affine |
-| test/contrib_ops/element_wise_ops_test/Affine_run0/model.onnx | 7 | Data/Data | ❌ | Unsupported op ai.onnx.Affine |
-| test/contrib_ops/element_wise_ops_test/Float_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.BiasGelu |
-| test/contrib_ops/element_wise_ops_test/Float_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.BiasGelu |
-| test/contrib_ops/element_wise_ops_test/Float_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.BiasGelu |
-| test/contrib_ops/element_wise_ops_test/Float_run3/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.BiasGelu |
-| test/contrib_ops/element_wise_ops_test/Float_run4/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.BiasGelu |
-| test/contrib_ops/element_wise_ops_test/Float_run5/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.BiasGelu |
-| test/contrib_ops/element_wise_ops_test/Scale_Default_run0/model.onnx | 7 | Data/Data | ❌ | Unsupported op ai.onnx.Scale |
-| test/contrib_ops/element_wise_ops_test/Scale_run0/model.onnx | 7 | Data/Data | ❌ | Unsupported op ai.onnx.Scale |
 | test/contrib_ops/embed_layer_norm_op_test/EmbedLayerNormBatch1_EmbeddingSum_NoMaskIndex_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.EmbedLayerNormalization |
 | test/contrib_ops/embed_layer_norm_op_test/EmbedLayerNormBatch1_EmbeddingSum_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.EmbedLayerNormalization |
 | test/contrib_ops/embed_layer_norm_op_test/EmbedLayerNormBatch1_PositionIdsDiffOrder_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.EmbedLayerNormalization |
@@ -325,20 +285,6 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/embed_layer_norm_op_test/EmbedLayerNormBatch3_PositionIds_BroadCast_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.EmbedLayerNormalization |
 | test/contrib_ops/embed_layer_norm_op_test/EmbedLayerNormBatch_Distill_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.EmbedLayerNormalization |
 | test/contrib_ops/embed_layer_norm_op_test/EmbedLayerNormLargeBatchSmallHiddenSize_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.EmbedLayerNormalization |
-| test/contrib_ops/expand_dims_test/Basic_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.ExpandDims |
-| test/contrib_ops/expand_dims_test/Basic_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.ExpandDims |
-| test/contrib_ops/expand_dims_test/Basic_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.ExpandDims |
-| test/contrib_ops/expand_dims_test/MaxAxis_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.ExpandDims |
-| test/contrib_ops/expand_dims_test/MaxAxis_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.ExpandDims |
-| test/contrib_ops/expand_dims_test/MinAxis_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.ExpandDims |
-| test/contrib_ops/expand_dims_test/MinAxis_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.ExpandDims |
-| test/contrib_ops/expand_dims_test/NegativeAxisOutOfRange_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.ExpandDims |
-| test/contrib_ops/expand_dims_test/NegativeAxisOutOfRange_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.ExpandDims |
-| test/contrib_ops/expand_dims_test/PositiveAxisOutOfRange_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.ExpandDims |
-| test/contrib_ops/expand_dims_test/PositiveAxisOutOfRange_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.ExpandDims |
-| test/contrib_ops/fastgelu_op_test/FastGeluWithBiasFloat32_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.FastGelu |
-| test/contrib_ops/fastgelu_op_test/FastGeluWithNullInput_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.FastGelu |
-| test/contrib_ops/fastgelu_op_test/FastGeluWithoutBiasFloat32_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.FastGelu |
 | test/contrib_ops/fused_conv_test/Conv2D_Bias_Relu_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.FusedConv |
 | test/contrib_ops/fused_conv_test/Conv2D_HardSigmoid_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.FusedConv |
 | test/contrib_ops/fused_conv_test/Conv2D_Relu_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.FusedConv |
@@ -1548,12 +1494,6 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch_Distill_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QEmbedLayerNormalization |
 | test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormLargeBatchSmallHiddenSize_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QEmbedLayerNormalization |
 | test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormLargeBatchSmallHiddenSize_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QEmbedLayerNormalization |
-| test/contrib_ops/qlinear_lookup_table_test/QLinearLeakyRelu_Int8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearLeakyRelu |
-| test/contrib_ops/qlinear_lookup_table_test/QLinearLeakyRelu_UInt8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearLeakyRelu |
-| test/contrib_ops/qlinear_lookup_table_test/QLinearSigmoid_Int8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearSigmoid |
-| test/contrib_ops/qlinear_lookup_table_test/QLinearSigmoid_UInt8_0_Y_ZP_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearSigmoid |
-| test/contrib_ops/qlinear_lookup_table_test/QLinearSigmoid_UInt8_0_Y_ZP_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearSigmoid |
-| test/contrib_ops/qlinear_lookup_table_test/QLinearSigmoid_UInt8_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QLinearSigmoid |
 | test/contrib_ops/qlinear_lookup_table_test/QLinearSoftmax_Int8_v12_run1/model.onnx |  | Data/Data | ❌ | QLinearSoftmax axis -2 is out of bounds for shape () |
 | test/contrib_ops/qlinear_lookup_table_test/QLinearSoftmax_Int8_v13_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max abs diff 1) |
 | test/contrib_ops/qlinear_lookup_table_test/QLinearSoftmax_Int8_v13_run1/model.onnx |  | Data/Data | ❌ | QLinearSoftmax axis -2 is out of bounds for shape () |
@@ -1577,9 +1517,6 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_NotInterleaved_LargeData_LlamaMSFT_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 52786) |
 | test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_NotInterleaved_SmallData_LlamaMSFT_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 26739) |
 | test/contrib_ops/sample_op_test/SampleOpFloat_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.SampleOp |
-| test/contrib_ops/tensor_op_test/CropBorderAndScale_run0/model.onnx | 7 | Data/Data | ❌ | Unsupported op ai.onnx.Crop |
-| test/contrib_ops/tensor_op_test/CropBorderOnly_run0/model.onnx | 7 | Data/Data | ❌ | Unsupported op ai.onnx.Crop |
-| test/contrib_ops/tensor_op_test/ImageScalerTest_run0/model.onnx | 7 | Data/Data | ❌ | Unsupported op ai.onnx.ImageScaler |
 | test/contrib_ops/tensor_op_test/LastDim_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.UnfoldTensor |
 | test/contrib_ops/tensor_op_test/MeanVarianceNormalizationCPUTest_Version1_TO_8_run0/model.onnx | 7 | Data/Data | ❌ | Out of tolerance (max ULP 7137119) |
 | test/contrib_ops/tensor_op_test/MeanVarianceNormalizationCPUTest_Version1_TO_8_run1/model.onnx | 7 | Data/Data | ❌ | Out of tolerance (max ULP 21399263) |

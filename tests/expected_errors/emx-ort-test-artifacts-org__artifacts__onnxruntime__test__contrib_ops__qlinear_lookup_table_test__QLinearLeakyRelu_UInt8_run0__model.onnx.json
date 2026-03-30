@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.QLinearLeakyRelu",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/qlinear_lookup_table_test/QLinearLeakyRelu_UInt8_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::QLinearLeakyRelu"
-  ]
+  ],
+  "generated_checksum": "19d2f295fd5253a85be7ecc6a9fd8e22b32a876c6659d3b89ed9146addfa7764"
 }
