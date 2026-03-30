@@ -1112,8 +1112,14 @@ class GatherBlockQuantizedOp(RenderableOpBase):
         compute_type = "double" if output_dtype == ScalarType.F64 else "float"
         bit_mask = (1 << self.bits) - 1
         # Unsigned quantized data uses midpoint zero to center values.
+        # For packed data (UINT8 storing sub-byte nibbles), the quantization
+        # bit-width is self.bits.  For all other (unpacked) types the
+        # effective bit-width is determined by the data type itself so that
+        # ORT's default zero-point matches (e.g. UINT4 → 8 regardless of the
+        # bits attribute).
+        effective_bits = self.bits if self.packed else data_dtype.bits
         if not data_dtype.is_signed:
-            default_zero_point = 1 << (self.bits - 1)
+            default_zero_point = 1 << (effective_bits - 1)
         else:
             default_zero_point = 0
 
@@ -1162,7 +1168,7 @@ class GatherBlockQuantizedOp(RenderableOpBase):
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def required_includes(self, ctx: "OpContext") -> set[str]:
-        return {"#include <stdlib.h>"}
+        return set()
 
     def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
         return emitter.ctx_shape(self.output)
