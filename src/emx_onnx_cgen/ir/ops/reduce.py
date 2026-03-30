@@ -133,6 +133,231 @@ class DetOp(ReduceOpBase):
 
 
 @dataclass(frozen=True)
+class InverseOp(ReduceOpBase):
+    input0: str
+    output: str
+
+    def infer_types(self, ctx: OpContext) -> None:
+        ctx.dtype(self.input0)
+        ctx.dtype(self.output)
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        input_shape = ctx.shape(self.input0)
+        if len(input_shape) < 2:
+            raise CodegenError(
+                f"Inverse expects rank >= 2 input, got shape {input_shape}"
+            )
+        if input_shape[-1] != input_shape[-2]:
+            raise CodegenError(
+                f"Inverse expects square matrices, got shape {input_shape}"
+            )
+        ctx.set_shape(self.output, input_shape)
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        input_shape_raw = emitter.ctx_shape(self.input0)
+        output_shape_raw = emitter.ctx_shape(self.output)
+        input_dtype = emitter.ctx_dtype(self.input0)
+        output_dtype = emitter.ctx_dtype(self.output)
+        if input_dtype != output_dtype:
+            raise CodegenError(
+                f"Inverse expects matching input/output dtypes, got {input_dtype.onnx_name} and {output_dtype.onnx_name}"
+            )
+        matrix_dim = input_shape_raw[-1]
+        if matrix_dim < 0:
+            raise CodegenError("Inverse requires a static matrix dimension")
+        batch_shape = input_shape_raw[:-2]
+        batch_shape_codegen = CEmitterCompat.codegen_shape(batch_shape)
+        batch_loop_vars = CEmitterCompat.loop_vars(batch_shape_codegen)
+        input_batch_index_expr = (
+            "".join(f"[{var}]" for var in batch_loop_vars) if batch_shape else ""
+        )
+        batch_index_expr = (
+            "".join(f"[{var}]" for var in batch_loop_vars) if batch_shape else ""
+        )
+        # Use float32 for f16/bf16/f64 to match ORT's implementation behavior.
+        compute_type = (
+            "float"
+            if input_dtype in {ScalarType.F16, ScalarType.BF16, ScalarType.F64}
+            else input_dtype.c_type
+        )
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        input_suffix = emitter.param_array_suffix(input_shape_raw)
+        output_suffix = emitter.param_array_suffix(output_shape_raw)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], input_dtype.c_type, input_suffix, True),
+                (params["output"], output_dtype.c_type, output_suffix, False),
+            ]
+        )
+        rendered = (
+            state.templates["inverse"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                params=param_decls,
+                dim_args=dim_args,
+                input0=params["input0"],
+                output=params["output"],
+                c_type=input_dtype.c_type,
+                compute_type=compute_type,
+                matrix_dim=matrix_dim,
+                batch_shape=batch_shape_codegen,
+                batch_loop_vars=batch_loop_vars,
+                input_batch_index_expr=input_batch_index_expr,
+                batch_index_expr=batch_index_expr,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+
+@dataclass(frozen=True)
+class CDistOp(ReduceOpBase):
+    """Pairwise distance computation between two sets of vectors (com.microsoft::CDist)."""
+
+    __io_inputs__ = ("input_a", "input_b")
+
+    input_a: str
+    input_b: str
+    output: str
+    metric: str  # "euclidean" or "sqeuclidean"
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        if self.metric == "euclidean":
+            return {"#include <math.h>"}
+        return set()
+
+    def infer_types(self, ctx: OpContext) -> None:
+        ctx.dtype(self.input_a)
+        ctx.dtype(self.input_b)
+        ctx.dtype(self.output)
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        shape_a = ctx.shape(self.input_a)  # [M, K]
+        shape_b = ctx.shape(self.input_b)  # [N, K]
+        ctx.set_shape(self.output, (shape_a[0], shape_b[0]))  # [M, N]
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        shape_a = emitter.ctx_shape(self.input_a)  # [M, K]
+        shape_b = emitter.ctx_shape(self.input_b)  # [N, K]
+        output_shape = emitter.ctx_shape(self.output)  # [M, N]
+        dtype_a = emitter.ctx_dtype(self.input_a)
+        dtype_b = emitter.ctx_dtype(self.input_b)
+        output_dtype = emitter.ctx_dtype(self.output)
+        if shape_a[1] < 0 or shape_b[0] < 0 or shape_b[1] < 0 or shape_a[0] < 0:
+            raise CodegenError(
+                "CDist requires static shapes; export with static shapes"
+            )
+        compute_type = dtype_a.c_type
+        sqrt_fn = "sqrtf" if dtype_a == ScalarType.F32 else "sqrt"
+        params = emitter.shared_param_map(
+            [
+                ("input_a", self.input_a),
+                ("input_b", self.input_b),
+                ("output", self.output),
+            ]
+        )
+        suffix_a = emitter.param_array_suffix(shape_a)
+        suffix_b = emitter.param_array_suffix(shape_b)
+        suffix_out = emitter.param_array_suffix(output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input_a"], dtype_a.c_type, suffix_a, True),
+                (params["input_b"], dtype_b.c_type, suffix_b, True),
+                (params["output"], output_dtype.c_type, suffix_out, False),
+            ]
+        )
+        rendered = (
+            state.templates["cdist"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                params=param_decls,
+                dim_args=dim_args,
+                input_a=params["input_a"],
+                input_b=params["input_b"],
+                output=params["output"],
+                c_type=dtype_a.c_type,
+                compute_type=compute_type,
+                M=shape_a[0],
+                N=shape_b[0],
+                K=shape_a[1],
+                metric=self.metric,
+                sqrt_fn=sqrt_fn,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+
+@dataclass(frozen=True)
+class DynamicTimeWarpingOp(ReduceOpBase):
+    """com.microsoft::DynamicTimeWarping — DTW path computation."""
+
+    __io_inputs__ = ("input0",)
+
+    input0: str
+    output: str
+    rows: int  # M
+    cols: int  # N
+    path_len: int  # declared output path length
+
+    def infer_types(self, ctx: OpContext) -> None:
+        ctx.dtype(self.input0)
+        ctx.set_dtype(self.output, ScalarType.I32)
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        ctx.set_shape(self.output, (2, self.path_len))
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        input_shape = emitter.ctx_shape(self.input0)
+        output_shape = emitter.ctx_shape(self.output)
+        input_dtype = emitter.ctx_dtype(self.input0)
+        output_dtype = emitter.ctx_dtype(self.output)
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        input_suffix = emitter.param_array_suffix(input_shape)
+        output_suffix = emitter.param_array_suffix(output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], input_dtype.c_type, input_suffix, True),
+                (params["output"], output_dtype.c_type, output_suffix, False),
+            ]
+        )
+        rendered = (
+            state.templates["dynamic_time_warping"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input=params["input0"],
+                output=params["output"],
+                cost_type=input_dtype.c_type,
+                M=self.rows,
+                N=self.cols,
+                max_path_len=self.rows + self.cols - 1,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+
+@dataclass(frozen=True)
 class ArgReduceOp(ReduceOpBase):
     input0: str
     output: str

@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.Inverse",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/inverse_test/four_by_four_float_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::Inverse"
-  ]
+  ],
+  "generated_checksum": "162cd1910a89884bb32513d78eba165f6b61eb3d99773a1cf6b365288a092914"
 }

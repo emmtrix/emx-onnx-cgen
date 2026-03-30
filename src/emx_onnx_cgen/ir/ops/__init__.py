@@ -6,6 +6,7 @@ from .elementwise import (
     QLinearAddOp,
     PowOp,
     QLinearMulOp,
+    QLinearWhereOp,
     UnaryOp,
     VariadicOp,
     WhereOp,
@@ -81,6 +82,7 @@ from .misc import (
     TensorScatterOp,
     TfIdfVectorizerOp,
     MurmurHash3Op,
+    NGramRepeatBlockOp,
     StringConcatOp,
     StringNormalizerOp,
     StringSplitOp,
@@ -148,7 +150,15 @@ from .nn import (
     SoftmaxCrossEntropyLossOp,
     SoftmaxOp,
 )
-from .reduce import ArgReduceOp, DetOp, ReduceOp, TopKOp
+from .reduce import (
+    ArgReduceOp,
+    CDistOp,
+    DetOp,
+    DynamicTimeWarpingOp,
+    InverseOp,
+    ReduceOp,
+    TopKOp,
+)
 
 __all__ = [
     "AdamOp",
@@ -156,7 +166,10 @@ __all__ = [
     "AffineGridOp",
     "ArrayFeatureExtractorOp",
     "ArgReduceOp",
+    "CDistOp",
     "DetOp",
+    "DynamicTimeWarpingOp",
+    "InverseOp",
     "AttentionOp",
     "AveragePoolOp",
     "BatchNormOp",
@@ -251,6 +264,7 @@ __all__ = [
     "QLinearMulOp",
     "QLinearMatMulOp",
     "QLinearSoftmaxOp",
+    "QLinearWhereOp",
     "LoopRangeOp",
     "LoopSequenceMapOp",
     "LoopSequenceInsertOp",
@@ -284,6 +298,7 @@ __all__ = [
     "TensorScatterOp",
     "TfIdfVectorizerOp",
     "MurmurHash3Op",
+    "NGramRepeatBlockOp",
     "StringConcatOp",
     "StringNormalizerOp",
     "StringSplitOp",
