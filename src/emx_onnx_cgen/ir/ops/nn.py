@@ -924,7 +924,9 @@ class MatMulInteger16Op(MatMulLikeOpBase):
     """INT16 × INT16 → INT32 matrix multiplication (com.microsoft contrib op).
 
     Computes ``Y = A @ B`` where A and B are INT16 tensors and Y is INT32.
-    No zero-point inputs — the operator does not support them.
+    Unlike :class:`MatMulIntegerOp` (INT8 variant), this operator does not
+    accept zero-point inputs; the accumulation is simply
+    ``sum_k((int32_t)A[..., k] * (int32_t)B[k, ...])``.
     """
 
     __io_inputs__ = ("input0", "input1")
