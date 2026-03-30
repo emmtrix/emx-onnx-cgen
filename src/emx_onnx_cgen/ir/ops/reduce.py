@@ -258,13 +258,8 @@ class CDistOp(ReduceOpBase):
             raise CodegenError(
                 "CDist requires static shapes; export with static shapes"
             )
-        # ORT computes CDist in float32 even for float64 inputs, matching InverseOp behavior.
-        compute_type = (
-            "float"
-            if dtype_a in {ScalarType.F64}
-            else dtype_a.c_type
-        )
-        sqrt_fn = "sqrtf" if compute_type == "float" else "sqrt"
+        compute_type = dtype_a.c_type
+        sqrt_fn = "sqrtf" if dtype_a == ScalarType.F32 else "sqrt"
         params = emitter.shared_param_map(
             [("input_a", self.input_a), ("input_b", self.input_b), ("output", self.output)]
         )
