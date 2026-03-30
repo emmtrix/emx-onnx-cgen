@@ -261,7 +261,11 @@ class CDistOp(ReduceOpBase):
         compute_type = dtype_a.c_type
         sqrt_fn = "sqrtf" if dtype_a == ScalarType.F32 else "sqrt"
         params = emitter.shared_param_map(
-            [("input_a", self.input_a), ("input_b", self.input_b), ("output", self.output)]
+            [
+                ("input_a", self.input_a),
+                ("input_b", self.input_b),
+                ("output", self.output),
+            ]
         )
         suffix_a = emitter.param_array_suffix(shape_a)
         suffix_b = emitter.param_array_suffix(shape_b)

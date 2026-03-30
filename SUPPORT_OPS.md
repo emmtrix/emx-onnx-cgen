@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 237 / 256
+Supported operators: 240 / 256
 
 | Operator | Supported |
 | --- | --- |
@@ -224,7 +224,7 @@ Supported operators: 237 / 256
 | com.microsoft::DequantizeLinear | ✅ |
 | com.microsoft::DynamicQuantizeLSTM | ✅ |
 | com.microsoft::DynamicQuantizeMatMul | ✅ |
-| com.microsoft::DynamicTimeWarping | ❌ |
+| com.microsoft::DynamicTimeWarping | ✅ |
 | com.microsoft::EmbedLayerNormalization | ❌ |
 | com.microsoft::ExpandDims | ✅ |
 | com.microsoft::FastGelu | ✅ |
@@ -241,7 +241,7 @@ Supported operators: 237 / 256
 | com.microsoft::MoE | ❌ |
 | com.microsoft::MultiHeadAttention | ✅ |
 | com.microsoft::MurmurHash3 | ✅ |
-| com.microsoft::NGramRepeatBlock | ❌ |
+| com.microsoft::NGramRepeatBlock | ✅ |
 | com.microsoft::NhwcMaxPool | ✅ |
 | com.microsoft::QAttention | ✅ |
 | com.microsoft::QEmbedLayerNormalization | ❌ |
@@ -254,7 +254,7 @@ Supported operators: 237 / 256
 | com.microsoft::QLinearMul | ✅ |
 | com.microsoft::QLinearSigmoid | ✅ |
 | com.microsoft::QLinearSoftmax | ✅ |
-| com.microsoft::QLinearWhere | ❌ |
+| com.microsoft::QLinearWhere | ✅ |
 | com.microsoft::QuantizeLinear | ✅ |
 | com.microsoft::RotaryEmbedding | ✅ |
 | com.microsoft::SampleOp | ❌ |

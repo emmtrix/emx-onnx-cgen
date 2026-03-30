@@ -150,7 +150,15 @@ from .nn import (
     SoftmaxCrossEntropyLossOp,
     SoftmaxOp,
 )
-from .reduce import ArgReduceOp, CDistOp, DetOp, DynamicTimeWarpingOp, InverseOp, ReduceOp, TopKOp
+from .reduce import (
+    ArgReduceOp,
+    CDistOp,
+    DetOp,
+    DynamicTimeWarpingOp,
+    InverseOp,
+    ReduceOp,
+    TopKOp,
+)
 
 __all__ = [
     "AdamOp",

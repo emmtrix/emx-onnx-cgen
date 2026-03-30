@@ -61,7 +61,9 @@ def lower_ngram_repeat_block(graph: Graph, node: Node) -> NGramRepeatBlockOp:
 
     ngram_size_attr = node.attrs.get("ngram_size")
     if ngram_size_attr is None:
-        raise UnsupportedOpError("NGramRepeatBlock: missing required attribute ngram_size")
+        raise UnsupportedOpError(
+            "NGramRepeatBlock: missing required attribute ngram_size"
+        )
     ngram_size = int(ngram_size_attr)
     if ngram_size < 1:
         raise UnsupportedOpError(

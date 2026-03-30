@@ -53,7 +53,11 @@ def lower_qlinear_where(graph: Graph, node: Node) -> QLinearWhereOp:
             f"QLinearWhere: output dtype must match X/Y, got {output_dtype.onnx_name}"
         )
 
-    for scale_name, label in [(x_scale_name, "x_scale"), (y_scale_name, "y_scale"), (z_scale_name, "z_scale")]:
+    for scale_name, label in [
+        (x_scale_name, "x_scale"),
+        (y_scale_name, "y_scale"),
+        (z_scale_name, "z_scale"),
+    ]:
         scale_dtype = _value_dtype(graph, scale_name, node)
         if not scale_dtype.is_float:
             raise UnsupportedOpError(f"QLinearWhere: {label} must be float")
@@ -61,7 +65,11 @@ def lower_qlinear_where(graph: Graph, node: Node) -> QLinearWhereOp:
         if scale_shape not in {(), (1,)}:
             raise UnsupportedOpError(f"QLinearWhere: {label} must be scalar")
 
-    for zero_name, label in [(x_zero_name, "x_zero_point"), (y_zero_name, "y_zero_point"), (z_zero_name, "z_zero_point")]:
+    for zero_name, label in [
+        (x_zero_name, "x_zero_point"),
+        (y_zero_name, "y_zero_point"),
+        (z_zero_name, "z_zero_point"),
+    ]:
         zero_shape = _value_shape(graph, zero_name, node)
         if zero_shape not in {(), (1,)}:
             raise UnsupportedOpError(f"QLinearWhere: {label} must be scalar")
