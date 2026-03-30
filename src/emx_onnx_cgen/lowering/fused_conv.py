@@ -27,13 +27,19 @@ def lower_fused_conv(graph: Graph, node: Node) -> FusedConvOp:
 
     activation_raw = node.attrs.get("activation", b"")
     if isinstance(activation_raw, bytes):
-        activation = activation_raw.decode("utf-8", errors="ignore")
+        activation = activation_raw.decode("utf-8")
+    elif isinstance(activation_raw, str):
+        activation = activation_raw
     else:
-        activation = str(activation_raw)
+        raise UnsupportedOpError(
+            f"FusedConv 'activation' attribute must be a string, "
+            f"got {type(activation_raw).__name__}"
+        )
 
+    node_label = f" (node '{node.name}')" if node.name else ""
     if activation not in _SUPPORTED_ACTIVATIONS:
         raise UnsupportedOpError(
-            f"FusedConv activation '{activation}' is not supported; "
+            f"FusedConv activation '{activation}' is not supported{node_label}; "
             f"supported: {sorted(_SUPPORTED_ACTIVATIONS)}"
         )
 
