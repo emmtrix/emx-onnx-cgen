@@ -1,0 +1,57 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{{ cost_type }} dp[{{ M }}][{{ N }}];
+dp[0][0] = ({{ cost_type }}){{ input }}[0][0];
+for (idx_t i0 = 1; i0 < {{ M }}; ++i0) {
+    dp[i0][0] = ({{ cost_type }}){{ input }}[i0][0] + dp[i0 - 1][0];
+}
+for (idx_t j0 = 1; j0 < {{ N }}; ++j0) {
+    dp[0][j0] = ({{ cost_type }}){{ input }}[0][j0] + dp[0][j0 - 1];
+}
+for (idx_t i0 = 1; i0 < {{ M }}; ++i0) {
+    for (idx_t j0 = 1; j0 < {{ N }}; ++j0) {
+        {{ cost_type }} a0 = dp[i0 - 1][j0 - 1];
+        {{ cost_type }} b0 = dp[i0 - 1][j0];
+        {{ cost_type }} c0 = dp[i0][j0 - 1];
+        {{ cost_type }} best0 = a0 < b0 ? a0 : b0;
+        best0 = best0 < c0 ? best0 : c0;
+        dp[i0][j0] = ({{ cost_type }}){{ input }}[i0][j0] + best0;
+    }
+}
+int32_t path_i[{{ max_path_len }}];
+int32_t path_j[{{ max_path_len }}];
+idx_t path_len = 0;
+{
+    idx_t i0 = {{ M }} - 1;
+    idx_t j0 = {{ N }} - 1;
+    path_i[path_len] = (int32_t)i0;
+    path_j[path_len] = (int32_t)j0;
+    ++path_len;
+    while (i0 > 0 || j0 > 0) {
+        if (i0 == 0) {
+            --j0;
+        } else if (j0 == 0) {
+            --i0;
+        } else {
+            {{ cost_type }} a0 = dp[i0 - 1][j0 - 1];
+            {{ cost_type }} b0 = dp[i0 - 1][j0];
+            {{ cost_type }} c0 = dp[i0][j0 - 1];
+            {{ cost_type }} best0 = a0 < b0 ? a0 : b0;
+            best0 = best0 < c0 ? best0 : c0;
+            if (best0 == c0) {
+                --j0;
+            } else if (best0 == a0) {
+                --i0; --j0;
+            } else {
+                --i0;
+            }
+        }
+        path_i[path_len] = (int32_t)i0;
+        path_j[path_len] = (int32_t)j0;
+        ++path_len;
+    }
+}
+for (idx_t k0 = 0; k0 < path_len; ++k0) {
+    {{ output }}[0][k0] = path_i[path_len - 1 - k0];
+    {{ output }}[1][k0] = path_j[path_len - 1 - k0];
+}
+}

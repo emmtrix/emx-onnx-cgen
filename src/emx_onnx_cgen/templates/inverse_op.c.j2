@@ -1,0 +1,57 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% for dim in batch_shape %}
+for (idx_t {{ batch_loop_vars[loop.index0] }} = 0; {{ batch_loop_vars[loop.index0] }} < {{ dim }}; ++{{ batch_loop_vars[loop.index0] }}) {
+{% endfor %}
+{{ compute_type }} aug[{{ matrix_dim }}][{{ matrix_dim * 2 }}];
+for (idx_t r0 = 0; r0 < {{ matrix_dim }}; ++r0) {
+    for (idx_t c0 = 0; c0 < {{ matrix_dim }}; ++c0) {
+        aug[r0][c0] = ({{ compute_type }}){{ input0 }}{{ input_batch_index_expr }}[r0][c0];
+        aug[r0][c0 + {{ matrix_dim }}] = (r0 == c0) ? ({{ compute_type }})1 : ({{ compute_type }})0;
+    }
+}
+for (idx_t p0 = 0; p0 < {{ matrix_dim }}; ++p0) {
+    idx_t pivot_row = p0;
+    {{ compute_type }} max_abs = aug[p0][p0] < ({{ compute_type }})0 ? -aug[p0][p0] : aug[p0][p0];
+    for (idx_t r0 = p0 + 1; r0 < {{ matrix_dim }}; ++r0) {
+        {{ compute_type }} abs_value = aug[r0][p0] < ({{ compute_type }})0 ? -aug[r0][p0] : aug[r0][p0];
+        if (abs_value > max_abs) {
+            max_abs = abs_value;
+            pivot_row = r0;
+        }
+    }
+    if (pivot_row != p0) {
+        for (idx_t c0 = 0; c0 < {{ matrix_dim * 2 }}; ++c0) {
+            {{ compute_type }} tmp = aug[p0][c0];
+            aug[p0][c0] = aug[pivot_row][c0];
+            aug[pivot_row][c0] = tmp;
+        }
+    }
+    {{ compute_type }} pivot = aug[p0][p0];
+    if (pivot == ({{ compute_type }})0) {
+        break;
+    }
+    for (idx_t c0 = 0; c0 < {{ matrix_dim * 2 }}; ++c0) {
+        aug[p0][c0] /= pivot;
+    }
+    for (idx_t r0 = 0; r0 < {{ matrix_dim }}; ++r0) {
+        if (r0 == p0) {
+            continue;
+        }
+        {{ compute_type }} factor = aug[r0][p0];
+        if (factor == ({{ compute_type }})0) {
+            continue;
+        }
+        for (idx_t c0 = 0; c0 < {{ matrix_dim * 2 }}; ++c0) {
+            aug[r0][c0] -= factor * aug[p0][c0];
+        }
+    }
+}
+for (idx_t r0 = 0; r0 < {{ matrix_dim }}; ++r0) {
+    for (idx_t c0 = 0; c0 < {{ matrix_dim }}; ++c0) {
+        {{ output }}{{ batch_index_expr }}[r0][c0] = ({{ c_type }})aug[r0][c0 + {{ matrix_dim }}];
+    }
+}
+{% for _ in batch_shape %}
+}
+{% endfor %}
+}

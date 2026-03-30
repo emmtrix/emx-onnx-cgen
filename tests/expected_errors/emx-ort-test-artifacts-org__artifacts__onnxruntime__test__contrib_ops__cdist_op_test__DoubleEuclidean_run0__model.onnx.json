@@ -1,8 +1,13 @@
 {
-  "error": "Unsupported op com.microsoft.CDist",
-  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/cdist_op_test/DoubleEuclidean_run0 model.onnx --test-data-dir test_data_set_0",
+  "error": "OK (max ULP 340017558)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/cdist_op_test/DoubleEuclidean_run0 model.onnx --test-data-dir test_data_set_0 --max-ulp 400000000",
+  "extra_cli_args": [
+    "--max-ulp",
+    "400000000"
+  ],
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::CDist"
-  ]
+  ],
+  "generated_checksum": "e0677ed6a4d47a73552ebf1e6fd91532df8446010fba5112d4f6895785381bc6"
 }

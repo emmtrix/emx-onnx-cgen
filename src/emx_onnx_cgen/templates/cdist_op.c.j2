@@ -1,0 +1,16 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+for (idx_t i0 = 0; i0 < {{ M }}; ++i0) {
+    for (idx_t j0 = 0; j0 < {{ N }}; ++j0) {
+        {{ compute_type }} acc = ({{ compute_type }})0;
+        for (idx_t k0 = 0; k0 < {{ K }}; ++k0) {
+            {{ compute_type }} diff = ({{ compute_type }}){{ input_a }}[i0][k0] - ({{ compute_type }}){{ input_b }}[j0][k0];
+            acc += diff * diff;
+        }
+{% if metric == "euclidean" %}
+        {{ output }}[i0][j0] = ({{ c_type }}){{ sqrt_fn }}(acc);
+{% else %}
+        {{ output }}[i0][j0] = ({{ c_type }})acc;
+{% endif %}
+    }
+}
+}

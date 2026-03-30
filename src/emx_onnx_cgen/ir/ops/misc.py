@@ -8512,3 +8512,74 @@ class QLinearUnaryOp(RenderableOpBase):
             result.append((self.x_zero_point, ()))
         result += [(self.x_scale, ()), (self.y_scale, ()), (self.y_zero_point, ())]
         return tuple(result)
+
+
+@dataclass(frozen=True)
+class NGramRepeatBlockOp(RenderableOpBase):
+    """com.microsoft::NGramRepeatBlock — blocks token scores that would create repeated n-grams."""
+
+    __io_inputs__ = ("input_ids", "scores")
+    __io_outputs__ = ("output",)
+
+    input_ids: str
+    scores: str
+    output: str
+    ngram_size: int
+    batch_size: int
+    seq_len: int
+    vocab_size: int
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def infer_types(self, ctx: OpContext) -> None:
+        ctx.dtype(self.scores)
+        ctx.dtype(self.output)
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        ctx.set_shape(self.output, (self.batch_size, self.vocab_size))
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        input_ids_shape = emitter.ctx_shape(self.input_ids)
+        scores_shape = emitter.ctx_shape(self.scores)
+        output_shape = emitter.ctx_shape(self.output)
+        input_ids_dtype = emitter.ctx_dtype(self.input_ids)
+        scores_dtype = emitter.ctx_dtype(self.scores)
+        params = emitter.shared_param_map(
+            [
+                ("input_ids", self.input_ids),
+                ("scores", self.scores),
+                ("output", self.output),
+            ]
+        )
+        input_ids_suffix = emitter.param_array_suffix(input_ids_shape)
+        scores_suffix = emitter.param_array_suffix(scores_shape)
+        output_suffix = emitter.param_array_suffix(output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input_ids"], input_ids_dtype.c_type, input_ids_suffix, True),
+                (params["scores"], scores_dtype.c_type, scores_suffix, True),
+                (params["output"], scores_dtype.c_type, output_suffix, False),
+            ]
+        )
+        rendered = (
+            state.templates["ngram_repeat_block"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input_ids=params["input_ids"],
+                scores=params["scores"],
+                output=params["output"],
+                batch_size=self.batch_size,
+                seq_len=self.seq_len,
+                vocab_size=self.vocab_size,
+                ngram_size=self.ngram_size,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)

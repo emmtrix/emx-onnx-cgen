@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.DynamicTimeWarping",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/dynamic_time_warping_op_test/simple_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::DynamicTimeWarping"
-  ]
+  ],
+  "generated_checksum": "98d4296c7ff92876f3cc0ffad3e9f42b1f49fa0c1c23ae3ea63f79ea63caea54"
 }

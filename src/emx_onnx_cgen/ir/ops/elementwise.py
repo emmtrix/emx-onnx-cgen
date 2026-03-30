@@ -1286,3 +1286,131 @@ class QLinearAddOp(RenderableOpBase):
 
     def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
         return self.output_shape
+
+
+@dataclass(frozen=True)
+class QLinearWhereOp(RenderableOpBase):
+    """com.microsoft::QLinearWhere — quantized conditional select with dequantize/requantize."""
+
+    __io_inputs__ = (
+        "condition",
+        "input_x",
+        "x_scale",
+        "x_zero_point",
+        "input_y",
+        "y_scale",
+        "y_zero_point",
+        "z_scale",
+        "z_zero_point",
+    )
+    __io_outputs__ = ("output",)
+
+    condition: str
+    input_x: str
+    x_scale: str
+    x_zero_point: str
+    input_y: str
+    y_scale: str
+    y_zero_point: str
+    z_scale: str
+    z_zero_point: str
+    output: str
+    condition_shape: tuple[int, ...]
+    x_shape: tuple[int, ...]
+    y_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>", "#include <stdbool.h>"}
+
+    def infer_types(self, ctx: OpContext) -> None:
+        ctx.dtype(self.input_x)
+        ctx.dtype(self.output)
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        ctx.set_shape(self.output, self.output_shape)
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        params = emitter.shared_param_map(
+            [
+                ("condition", self.condition),
+                ("input_x", self.input_x),
+                ("x_scale", self.x_scale),
+                ("x_zero_point", self.x_zero_point),
+                ("input_y", self.input_y),
+                ("y_scale", self.y_scale),
+                ("y_zero_point", self.y_zero_point),
+                ("z_scale", self.z_scale),
+                ("z_zero_point", self.z_zero_point),
+                ("output", self.output),
+            ]
+        )
+        output_shape = CEmitterCompat.codegen_shape(self.output_shape)
+        output_loop_vars = CEmitterCompat.loop_vars(self.output_shape)
+        output_index_expr = params["output"] + "".join(
+            f"[{v}]" for v in output_loop_vars
+        )
+        condition_index_expr = CEmitterCompat.broadcast_index_expr(
+            params["condition"],
+            self.condition_shape,
+            self.output_shape,
+            output_loop_vars,
+        )
+        x_index_expr = CEmitterCompat.broadcast_index_expr(
+            params["input_x"], self.x_shape, self.output_shape, output_loop_vars
+        )
+        y_index_expr = CEmitterCompat.broadcast_index_expr(
+            params["input_y"], self.y_shape, self.output_shape, output_loop_vars
+        )
+        scale_index = "0"
+        condition_suffix = emitter.param_array_suffix(self.condition_shape)
+        x_suffix = emitter.param_array_suffix(self.x_shape)
+        y_suffix = emitter.param_array_suffix(self.y_shape)
+        scalar_suffix = emitter.param_array_suffix(())
+        output_suffix = emitter.param_array_suffix(self.output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["condition"], "bool", condition_suffix, True),
+                (params["input_x"], self.dtype.c_type, x_suffix, True),
+                (params["x_scale"], "float", scalar_suffix, True),
+                (params["x_zero_point"], self.dtype.c_type, scalar_suffix, True),
+                (params["input_y"], self.dtype.c_type, y_suffix, True),
+                (params["y_scale"], "float", scalar_suffix, True),
+                (params["y_zero_point"], self.dtype.c_type, scalar_suffix, True),
+                (params["z_scale"], "float", scalar_suffix, True),
+                (params["z_zero_point"], self.dtype.c_type, scalar_suffix, True),
+                (params["output"], self.dtype.c_type, output_suffix, False),
+            ]
+        )
+        rendered = (
+            state.templates["qlinear_where"]
+            .render(
+                op_name=op_name,
+                dim_args=emitter.dim_args_str(),
+                params=param_decls,
+                x_scale_expr=f"{params['x_scale']}[{scale_index}]",
+                x_zero_expr=f"{params['x_zero_point']}[{scale_index}]",
+                y_scale_expr=f"{params['y_scale']}[{scale_index}]",
+                y_zero_expr=f"{params['y_zero_point']}[{scale_index}]",
+                z_scale_expr=f"{params['z_scale']}[{scale_index}]",
+                z_zero_expr=f"{params['z_zero_point']}[{scale_index}]",
+                condition_index_expr=condition_index_expr,
+                x_index_expr=x_index_expr,
+                y_index_expr=y_index_expr,
+                output_index_expr=output_index_expr,
+                output_loop_vars=output_loop_vars,
+                output_loop_bounds=output_shape,
+                output_c_type=self.dtype.c_type,
+                min_literal=self.dtype.min_literal,
+                max_literal=self.dtype.max_literal,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.output_shape
