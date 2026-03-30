@@ -26,6 +26,7 @@ _LOWERING_MODULES = [
     "constant_of_shape",
     "conv",
     "conv_integer",
+    "fused_conv",
     "conv_transpose",
     "deform_conv",
     "cdist",

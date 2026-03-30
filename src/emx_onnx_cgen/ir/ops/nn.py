@@ -3583,6 +3583,154 @@ class ConvOp(ConvLikeOpBase):
 
 
 @dataclass(frozen=True)
+class FusedConvOp(ConvLikeOpBase):
+    """com.microsoft::FusedConv — Conv with optional Z residual and fused activation."""
+
+    __io_inputs__ = ("input0", "weights", "bias", "z_input")
+
+    input0: str
+    weights: str
+    bias: str | None
+    z_input: str | None
+    output: str
+    batch: int
+    in_channels: int
+    out_channels: int
+    spatial_rank: int
+    in_spatial: tuple[int, ...]
+    out_spatial: tuple[int, ...]
+    kernel_shape: tuple[int, ...]
+    strides: tuple[int, ...]
+    pads: tuple[int, ...]
+    dilations: tuple[int, ...]
+    group: int
+    dtype: ScalarType
+    activation: str
+    activation_params: tuple[float, ...]
+
+    @property
+    def out_h(self) -> int:
+        if self.spatial_rank < 1:
+            raise ValueError("FusedConv output height is undefined for spatial_rank < 1")
+        return self.out_spatial[0]
+
+    @property
+    def out_w(self) -> int:
+        if self.spatial_rank < 2:
+            raise ValueError("FusedConv output width is undefined for spatial_rank < 2")
+        return self.out_spatial[1]
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        c_type = emitter.ctx_dtype(self.output).c_type
+        zero_literal = emitter.ctx_dtype(self.output).zero_literal
+        params_map = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("weights", self.weights),
+                ("bias", self.bias),
+                ("z_input", self.z_input),
+                ("output", self.output),
+            ]
+        )
+        acc_dtype = emitter.accumulation_dtype(self.dtype)
+        acc_type = acc_dtype.c_type
+        acc_zero_literal = emitter.format_literal(acc_dtype, 0)
+        one_literal = emitter.format_literal(acc_dtype, 1)
+        input_shape = (self.batch, self.in_channels, *self.in_spatial)
+        weight_shape = (
+            self.out_channels,
+            self.in_channels // self.group,
+            *self.kernel_shape,
+        )
+        output_shape = (self.batch, self.out_channels, *self.out_spatial)
+        input_dim_names = emitter.dim_names_for(self.input0)
+        output_dim_names = emitter.dim_names_for(self.output)
+        input_shape_expr = CEmitterCompat.shape_dim_exprs(input_shape, input_dim_names)
+        output_shape_expr = CEmitterCompat.shape_dim_exprs(
+            output_shape, output_dim_names
+        )
+        out_indices = tuple(f"od{dim}" for dim in range(self.spatial_rank))
+        kernel_indices = tuple(f"kd{dim}" for dim in range(self.spatial_rank))
+        in_indices = tuple(f"id{dim}" for dim in range(self.spatial_rank))
+        pad_begin = self.pads[: self.spatial_rank]
+        group_in_channels = self.in_channels // self.group
+        group_out_channels = self.out_channels // self.group
+        input_suffix = emitter.param_array_suffix(input_shape, input_dim_names)
+        weight_suffix = emitter.param_array_suffix(weight_shape)
+        bias_suffix = emitter.param_array_suffix((self.out_channels,))
+        output_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
+        param_entries = [
+            (params_map["input0"], c_type, input_suffix, True),
+            (params_map["weights"], c_type, weight_suffix, True),
+            (
+                (params_map["bias"], c_type, bias_suffix, True)
+                if params_map["bias"]
+                else (None, "", "", True)
+            ),
+            (
+                (params_map["z_input"], c_type, output_suffix, True)
+                if params_map["z_input"]
+                else (None, "", "", True)
+            ),
+            (params_map["output"], c_type, output_suffix, False),
+        ]
+        param_decls = emitter.build_param_decls(param_entries)
+        alpha_literal = emitter.format_literal(
+            acc_dtype, self.activation_params[0] if self.activation_params else 0.0
+        )
+        beta_literal = emitter.format_literal(
+            acc_dtype,
+            self.activation_params[1] if len(self.activation_params) > 1 else 0.0,
+        )
+        rendered = (
+            state.templates["fused_conv"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params_map["input0"],
+                weights=params_map["weights"],
+                bias=params_map["bias"],
+                z_input=params_map["z_input"],
+                output=params_map["output"],
+                params=param_decls,
+                c_type=c_type,
+                acc_type=acc_type,
+                acc_zero_literal=acc_zero_literal,
+                zero_literal=zero_literal,
+                one_literal=one_literal,
+                alpha_literal=alpha_literal,
+                beta_literal=beta_literal,
+                input_suffix=input_suffix,
+                weight_suffix=weight_suffix,
+                bias_suffix=bias_suffix,
+                output_suffix=output_suffix,
+                batch=input_shape_expr[0],
+                in_channels=self.in_channels,
+                out_channels=self.out_channels,
+                spatial_rank=self.spatial_rank,
+                in_spatial=input_shape_expr[2:],
+                out_spatial=output_shape_expr[2:],
+                kernel_shape=self.kernel_shape,
+                strides=self.strides,
+                pads_begin=pad_begin,
+                dilations=self.dilations,
+                group=self.group,
+                group_in_channels=group_in_channels,
+                group_out_channels=group_out_channels,
+                out_indices=out_indices,
+                kernel_indices=kernel_indices,
+                in_indices=in_indices,
+                activation=self.activation,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+
+@dataclass(frozen=True)
 class ConvIntegerOp(ConvLikeOpBase):
     __io_inputs__ = ("input0", "weights", "x_zero_point", "w_zero_point")
     input0: str

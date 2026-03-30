@@ -43,6 +43,7 @@ from ..ir.ops import (
     ConstantOfShapeOp,
     Col2ImOp,
     ConvOp,
+    FusedConvOp,
     ConvIntegerOp,
     ConvTransposeOp,
     DeformConvOp,
@@ -1084,6 +1085,7 @@ class CEmitter:
                 "qattention": self._env.get_template("qattention_op.c.j2"),
                 "rotary_embedding": self._env.get_template("rotary_embedding_op.c.j2"),
                 "conv": self._env.get_template("conv_op.c.j2"),
+                "fused_conv": self._env.get_template("fused_conv_op.c.j2"),
                 "conv_integer": self._env.get_template("conv_integer_op.c.j2"),
                 "col2im": self._env.get_template("col2im_op.c.j2"),
                 "conv_transpose": self._env.get_template("conv_transpose_op.c.j2"),
@@ -2225,6 +2227,7 @@ class CEmitter:
             | MultiHeadAttentionOp
             | QAttentionOp
             | ConvOp
+            | FusedConvOp
             | ConvIntegerOp
             | ConvTransposeOp
             | Col2ImOp
