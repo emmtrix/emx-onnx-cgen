@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.BiasGelu",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/element_wise_ops_test/Float_run2 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::BiasGelu"
-  ]
+  ],
+  "generated_checksum": "ca0de301493b6e619ac8f14522b440438ce4175de5b2cf60f5a7f0b6fbfba681"
 }

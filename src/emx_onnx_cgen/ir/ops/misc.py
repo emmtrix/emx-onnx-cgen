@@ -2896,6 +2896,11 @@ class SliceOp(RenderableOpBase):
                 dtypes.add(ctx.dtype(name))
         return dtypes
 
+    def required_includes(self, ctx: "OpContext") -> set[str]:
+        if ctx.dtype(self.output) == ScalarType.STRING:
+            return {"#include <string.h>"}
+        return set()
+
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -2927,8 +2932,12 @@ class SliceOp(RenderableOpBase):
                         input_indices.append(f"{start} + {loop_var}")
                 else:
                     input_indices.append(f"{start} + {step} * {loop_var}")
-            input_suffix = emitter.param_array_suffix(input_shape_raw)
-            output_suffix = emitter.param_array_suffix(output_shape_raw)
+            input_suffix = emitter.param_array_suffix(
+                input_shape_raw, dtype=output_dtype
+            )
+            output_suffix = emitter.param_array_suffix(
+                output_shape_raw, dtype=output_dtype
+            )
             param_decls = emitter.build_param_decls(
                 [
                     (name_params["input0"], c_type, input_suffix, True),
@@ -2949,12 +2958,13 @@ class SliceOp(RenderableOpBase):
                     output_shape=output_shape,
                     loop_vars=loop_vars,
                     input_indices=input_indices,
+                    is_string=output_dtype == ScalarType.STRING,
                 )
                 .rstrip()
             )
             return emitter.with_node_comment(model, ctx.op_index, rendered)
-        input_suffix = emitter.param_array_suffix(input_shape_raw)
-        output_suffix = emitter.param_array_suffix(output_shape_raw)
+        input_suffix = emitter.param_array_suffix(input_shape_raw, dtype=output_dtype)
+        output_suffix = emitter.param_array_suffix(output_shape_raw, dtype=output_dtype)
         params = emitter.build_param_decls(
             [
                 (name_params["input0"], c_type, input_suffix, True),
@@ -3024,6 +3034,7 @@ class SliceOp(RenderableOpBase):
                 starts_len=(
                     emitter.ctx_shape(self.starts_input)[0] if self.starts_input else 0
                 ),
+                is_string=output_dtype == ScalarType.STRING,
             )
             .rstrip()
         )
@@ -8193,3 +8204,311 @@ class MurmurHash3Op(RenderableOpBase):
 
     def computed_output_dtype(self, emitter: "Emitter") -> "ScalarType":
         return self.output_dtype
+
+
+@dataclass(frozen=True)
+class ImageScalerOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
+    input0: str
+    output: str
+    shape: tuple[int, ...]
+    channels: int
+    scale: float
+    bias: tuple[float, ...]
+    dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        c_type = emitter.ctx_dtype(self.output).c_type
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        shape = CEmitterCompat.codegen_shape(self.shape)
+        loop_vars = CEmitterCompat.loop_vars(shape)
+        input_suffix = emitter.param_array_suffix(shape)
+        output_suffix = emitter.param_array_suffix(shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        scale_literal = emitter.format_floating(self.scale, self.dtype)
+        bias_literals = [emitter.format_floating(b, self.dtype) for b in self.bias]
+        rendered = (
+            state.templates["image_scaler"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                output=params["output"],
+                c_type=c_type,
+                channels=self.channels,
+                scale_literal=scale_literal,
+                bias_literals=bias_literals,
+                shape=shape,
+                loop_vars=loop_vars,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.shape
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ((self.input0, self.shape),)
+
+
+@dataclass(frozen=True)
+class FastGeluOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "bias")
+    __io_outputs__ = ("output",)
+    input0: str
+    bias: str | None
+    output: str
+    shape: tuple[int, ...]
+    last_dim: int
+    dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        c_type = emitter.ctx_dtype(self.output).c_type
+        io = [("input0", self.input0), ("output", self.output)]
+        if self.bias is not None:
+            io.append(("bias", self.bias))
+        params = emitter.shared_param_map(io)
+        shape = CEmitterCompat.codegen_shape(self.shape)
+        loop_vars = CEmitterCompat.loop_vars(shape)
+        bias_shape = CEmitterCompat.codegen_shape((self.last_dim,))
+        input_suffix = emitter.param_array_suffix(shape)
+        output_suffix = emitter.param_array_suffix(shape)
+        param_decls_list = [
+            (params["input0"], c_type, input_suffix, True),
+        ]
+        if self.bias is not None:
+            param_decls_list.append(
+                (params["bias"], c_type, emitter.param_array_suffix(bias_shape), True)
+            )
+        param_decls_list.append(
+            (params["output"], c_type, output_suffix, False),
+        )
+        param_decls = emitter.build_param_decls(param_decls_list)
+        c1_literal = emitter.format_floating(0.7978845608028654, self.dtype)
+        c2_literal = emitter.format_floating(0.044715, self.dtype)
+        half_literal = emitter.format_floating(0.5, self.dtype)
+        one_literal = emitter.format_floating(1.0, self.dtype)
+        tanh_fn = "tanhf" if self.dtype == ScalarType.F32 else "tanh"
+        rendered = (
+            state.templates["fast_gelu"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                output=params["output"],
+                bias=params["bias"] if self.bias is not None else None,
+                has_bias=self.bias is not None,
+                c_type=c_type,
+                shape=shape,
+                loop_vars=loop_vars,
+                c1_literal=c1_literal,
+                c2_literal=c2_literal,
+                half_literal=half_literal,
+                one_literal=one_literal,
+                tanh_fn=tanh_fn,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.shape
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        result = [(self.input0, self.shape)]
+        if self.bias is not None:
+            result.append((self.bias, (self.last_dim,)))
+        return tuple(result)
+
+
+@dataclass(frozen=True)
+class BiasGeluOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "bias")
+    __io_outputs__ = ("output",)
+    input0: str
+    bias: str
+    output: str
+    shape: tuple[int, ...]
+    last_dim: int
+    dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        c_type = emitter.ctx_dtype(self.output).c_type
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("bias", self.bias), ("output", self.output)]
+        )
+        shape = CEmitterCompat.codegen_shape(self.shape)
+        loop_vars = CEmitterCompat.loop_vars(shape)
+        bias_shape = CEmitterCompat.codegen_shape((self.last_dim,))
+        input_suffix = emitter.param_array_suffix(shape)
+        output_suffix = emitter.param_array_suffix(shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["bias"], c_type, emitter.param_array_suffix(bias_shape), True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        inv_sqrt2_literal = emitter.format_floating(0.7071067811865475, self.dtype)
+        half_literal = emitter.format_floating(0.5, self.dtype)
+        one_literal = emitter.format_floating(1.0, self.dtype)
+        erf_fn = "erff" if self.dtype == ScalarType.F32 else "erf"
+        rendered = (
+            state.templates["bias_gelu"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                bias=params["bias"],
+                output=params["output"],
+                c_type=c_type,
+                shape=shape,
+                loop_vars=loop_vars,
+                inv_sqrt2_literal=inv_sqrt2_literal,
+                half_literal=half_literal,
+                one_literal=one_literal,
+                erf_fn=erf_fn,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.shape
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ((self.input0, self.shape), (self.bias, (self.last_dim,)))
+
+
+@dataclass(frozen=True)
+class QLinearUnaryOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "x_scale", "x_zero_point", "y_scale", "y_zero_point")
+    __io_outputs__ = ("output",)
+    input0: str
+    x_scale: str
+    x_zero_point: str | None
+    y_scale: str
+    y_zero_point: str
+    output: str
+    shape: tuple[int, ...]
+    op_kind: str  # "sigmoid" or "leaky_relu"
+    alpha: float  # for leaky_relu
+    dtype: ScalarType  # input/output quantized dtype
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        q_c_type = emitter.ctx_dtype(self.output).c_type
+        io = [
+            ("input0", self.input0),
+            ("x_scale", self.x_scale),
+            ("y_scale", self.y_scale),
+            ("y_zero_point", self.y_zero_point),
+            ("output", self.output),
+        ]
+        if self.x_zero_point is not None:
+            io.append(("x_zero_point", self.x_zero_point))
+        params_map = emitter.shared_param_map(io)
+        shape = CEmitterCompat.codegen_shape(self.shape)
+        loop_vars = CEmitterCompat.loop_vars(shape)
+        scalar_suffix = emitter.param_array_suffix(CEmitterCompat.codegen_shape(()))
+        arr_suffix = emitter.param_array_suffix(shape)
+        param_decls_list = [
+            (params_map["input0"], q_c_type, arr_suffix, True),
+            (params_map["x_scale"], "float", scalar_suffix, True),
+        ]
+        if self.x_zero_point is not None:
+            param_decls_list.append(
+                (params_map["x_zero_point"], q_c_type, scalar_suffix, True)
+            )
+        param_decls_list += [
+            (params_map["y_scale"], "float", scalar_suffix, True),
+            (params_map["y_zero_point"], q_c_type, scalar_suffix, True),
+            (params_map["output"], q_c_type, arr_suffix, False),
+        ]
+        param_decls = emitter.build_param_decls(param_decls_list)
+        qmin = 0 if self.dtype == ScalarType.U8 else -128
+        qmax = 255 if self.dtype == ScalarType.U8 else 127
+        alpha_literal = emitter.format_floating(self.alpha, ScalarType.F32)
+        rendered = (
+            state.templates["qlinear_unary"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params_map["input0"],
+                x_scale=params_map["x_scale"],
+                x_zero_point=params_map["x_zero_point"]
+                if self.x_zero_point is not None
+                else None,
+                has_x_zero_point=self.x_zero_point is not None,
+                y_scale=params_map["y_scale"],
+                y_zero_point=params_map["y_zero_point"],
+                output=params_map["output"],
+                q_c_type=q_c_type,
+                shape=shape,
+                loop_vars=loop_vars,
+                op_kind=self.op_kind,
+                alpha_literal=alpha_literal,
+                qmin=qmin,
+                qmax=qmax,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.shape
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        result = [(self.input0, self.shape)]
+        if self.x_zero_point is not None:
+            result.append((self.x_zero_point, ()))
+        result += [(self.x_scale, ()), (self.y_scale, ()), (self.y_zero_point, ())]
+        return tuple(result)

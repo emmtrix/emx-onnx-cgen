@@ -383,3 +383,8 @@ def lower_slice(graph: Graph, node: Node) -> SliceOp:
         axes_input=inputs.axes_input,
         steps_input=inputs.steps_input,
     )
+
+
+@register_lowering("DynamicSlice")
+def lower_dynamic_slice(graph: Graph, node: Node) -> SliceOp:
+    return lower_slice(graph, node)

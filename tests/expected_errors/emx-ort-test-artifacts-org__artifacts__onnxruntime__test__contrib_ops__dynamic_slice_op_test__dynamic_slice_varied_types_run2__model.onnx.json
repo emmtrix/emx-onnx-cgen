@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported op ai.onnx.DynamicSlice",
+  "error": "OK (no numeric comparisons)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/dynamic_slice_op_test/dynamic_slice_varied_types_run2 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "DynamicSlice"
   ],
-  "opset_version": 1
+  "opset_version": 1,
+  "generated_checksum": "bca7cbf817d8ab694b87d9d6e44b0d7106a1eb8ff911475f61320cc6cb44c945"
 }

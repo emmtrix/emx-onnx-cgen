@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported op ai.onnx.Crop",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/tensor_op_test/CropBorderOnly_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "Crop"
   ],
-  "opset_version": 7
+  "opset_version": 7,
+  "generated_checksum": "d4f216dc715b6beb389920ea08ab687d72b8a5bf53e23ef88510e49eaca36713"
 }

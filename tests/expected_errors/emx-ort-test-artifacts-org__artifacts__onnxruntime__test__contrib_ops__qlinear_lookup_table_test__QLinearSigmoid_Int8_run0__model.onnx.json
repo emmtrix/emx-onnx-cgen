@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.QLinearSigmoid",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/qlinear_lookup_table_test/QLinearSigmoid_Int8_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::QLinearSigmoid"
-  ]
+  ],
+  "generated_checksum": "7c492dbf0a641b83eb6605c846fe00a106e33ec17c0a1893645d6451c0b7c840"
 }
