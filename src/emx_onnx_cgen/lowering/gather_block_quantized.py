@@ -68,9 +68,7 @@ def lower_gather_block_quantized(graph: Graph, node: Node) -> GatherBlockQuantiz
     quantize_axis = int(node.attrs.get("quantize_axis", 0))
 
     if bits <= 0:
-        raise UnsupportedOpError(
-            f"GatherBlockQuantized bits must be > 0, got {bits}"
-        )
+        raise UnsupportedOpError(f"GatherBlockQuantized bits must be > 0, got {bits}")
     if block_size <= 0:
         raise UnsupportedOpError(
             f"GatherBlockQuantized block_size must be > 0, got {block_size}"
@@ -89,7 +87,9 @@ def lower_gather_block_quantized(graph: Graph, node: Node) -> GatherBlockQuantiz
             f"GatherBlockQuantized unsupported data dtype {data_dtype.onnx_name}"
         )
     if indices_dtype not in _VALID_INDEX_DTYPES:
-        raise UnsupportedOpError("GatherBlockQuantized indices must be INT16, INT32 or INT64")
+        raise UnsupportedOpError(
+            "GatherBlockQuantized indices must be INT16, INT32 or INT64"
+        )
     if not scales_dtype.is_float:
         raise UnsupportedOpError("GatherBlockQuantized scales must be float")
     if output_dtype != scales_dtype:
