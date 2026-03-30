@@ -76,6 +76,7 @@ _LOWERING_MODULES = [
     "matmul",
     "matmul_bnb4",
     "matmul_integer",
+    "matmul_integer16",
     "matmul_integer_to_float",
     "matmul_nbits",
     "maxpool",

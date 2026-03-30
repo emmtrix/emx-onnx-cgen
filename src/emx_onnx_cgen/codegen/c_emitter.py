@@ -1067,6 +1067,9 @@ class CEmitter:
                 "qlinear_softmax": self._env.get_template("qlinear_softmax_op.c.j2"),
                 "qlinear_conv": self._env.get_template("qlinear_conv_op.c.j2"),
                 "matmul_integer": self._env.get_template("matmul_integer_op.c.j2"),
+                "matmul_integer16": self._env.get_template(
+                    "matmul_integer16_op.c.j2"
+                ),
                 "matmul_integer_to_float": self._env.get_template(
                     "matmul_integer_to_float_op.c.j2"
                 ),

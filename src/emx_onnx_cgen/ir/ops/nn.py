@@ -920,6 +920,112 @@ class MatMulIntegerOp(MatMulLikeOpBase):
 
 
 @dataclass(frozen=True)
+class MatMulInteger16Op(MatMulLikeOpBase):
+    """INT16 × INT16 → INT32 matrix multiplication (com.microsoft contrib op).
+
+    Computes ``Y = A @ B`` where A and B are INT16 tensors and Y is INT32.
+    No zero-point inputs — the operator does not support them.
+    """
+
+    __io_inputs__ = ("input0", "input1")
+    input0: str
+    input1: str
+    output: str
+    input0_shape: tuple[int, ...]
+    input1_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    batch_shape: tuple[int, ...]
+    input0_batch_shape: tuple[int, ...]
+    input1_batch_shape: tuple[int, ...]
+    m: int
+    n: int
+    k: int
+    left_vector: bool
+    right_vector: bool
+    dtype: ScalarType
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("input1", self.input1),
+                ("output", self.output),
+            ]
+        )
+        output_shape = CEmitterCompat.codegen_shape(self.output_shape)
+        output_loop_vars = CEmitterCompat.loop_vars(output_shape)
+        output_index_expr = f"{params['output']}" + "".join(
+            f"[{var}]" for var in output_loop_vars
+        )
+        batch_rank = len(self.batch_shape)
+        batch_vars = output_loop_vars[:batch_rank]
+        if self.left_vector and self.right_vector:
+            row_var = None
+            col_var = None
+        elif self.left_vector:
+            row_var = None
+            col_var = output_loop_vars[-1]
+        elif self.right_vector:
+            row_var = output_loop_vars[-1]
+            col_var = None
+        else:
+            row_var = output_loop_vars[-2]
+            col_var = output_loop_vars[-1]
+        input0_index_expr, input1_index_expr = CEmitterCompat.matmul_index_exprs(
+            batch_vars,
+            row_var,
+            col_var,
+            batch_rank,
+            input0=params["input0"],
+            input1=params["input1"],
+            left_vector=self.left_vector,
+            right_vector=self.right_vector,
+            input0_shape=self.input0_shape,
+            input1_shape=self.input1_shape,
+            input0_batch_shape=self.input0_batch_shape,
+            input1_batch_shape=self.input1_batch_shape,
+        )
+        input0_suffix = emitter.param_array_suffix(self.input0_shape)
+        input1_suffix = emitter.param_array_suffix(self.input1_shape)
+        output_suffix = emitter.param_array_suffix(self.output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], ScalarType.I16.c_type, input0_suffix, True),
+                (params["input1"], ScalarType.I16.c_type, input1_suffix, True),
+                (params["output"], self.dtype.c_type, output_suffix, False),
+            ]
+        )
+        rendered = (
+            state.templates["matmul_integer16"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                input1=params["input1"],
+                output=params["output"],
+                params=param_decls,
+                output_c_type=self.dtype.c_type,
+                output_loop_vars=output_loop_vars,
+                output_loop_bounds=output_shape,
+                output_index_expr=output_index_expr,
+                input0_index_expr=input0_index_expr,
+                input1_index_expr=input1_index_expr,
+                k=self.k,
+                dim_args=dim_args,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.output_shape
+
+
+@dataclass(frozen=True)
 class MatMulNBitsOp(RenderableOpBase):
     """N-bit block-quantized matrix multiplication (com.microsoft contrib op).
 
