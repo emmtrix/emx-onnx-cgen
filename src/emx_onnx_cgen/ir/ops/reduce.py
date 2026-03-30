@@ -297,6 +297,63 @@ class CDistOp(ReduceOpBase):
 
 
 @dataclass(frozen=True)
+class DynamicTimeWarpingOp(ReduceOpBase):
+    """com.microsoft::DynamicTimeWarping — DTW path computation."""
+
+    __io_inputs__ = ("input0",)
+
+    input0: str
+    output: str
+    rows: int  # M
+    cols: int  # N
+    path_len: int  # declared output path length
+
+    def infer_types(self, ctx: OpContext) -> None:
+        ctx.dtype(self.input0)
+        ctx.set_dtype(self.output, ScalarType.I32)
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        ctx.set_shape(self.output, (2, self.path_len))
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        input_shape = emitter.ctx_shape(self.input0)
+        output_shape = emitter.ctx_shape(self.output)
+        input_dtype = emitter.ctx_dtype(self.input0)
+        output_dtype = emitter.ctx_dtype(self.output)
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        input_suffix = emitter.param_array_suffix(input_shape)
+        output_suffix = emitter.param_array_suffix(output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], input_dtype.c_type, input_suffix, True),
+                (params["output"], output_dtype.c_type, output_suffix, False),
+            ]
+        )
+        rendered = (
+            state.templates["dynamic_time_warping"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input=params["input0"],
+                output=params["output"],
+                cost_type=input_dtype.c_type,
+                M=self.rows,
+                N=self.cols,
+                max_path_len=self.rows + self.cols - 1,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+
+@dataclass(frozen=True)
 class ArgReduceOp(ReduceOpBase):
     input0: str
     output: str

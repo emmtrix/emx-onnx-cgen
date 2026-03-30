@@ -30,6 +30,7 @@ _LOWERING_MODULES = [
     "deform_conv",
     "cdist",
     "det",
+    "dynamic_time_warping",
     "inverse",
     "cumsum",
     "depth_space",

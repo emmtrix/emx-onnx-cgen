@@ -51,6 +51,7 @@ from ..ir.ops import (
     DFTOp,
     DepthToSpaceOp,
     DequantizeLinearOp,
+    DynamicTimeWarpingOp,
     EinsumOp,
     ExpandOp,
     EyeLikeOp,
@@ -1164,6 +1165,7 @@ class CEmitter:
                 "arg_reduce": self._env.get_template("arg_reduce_op.c.j2"),
                 "cdist": self._env.get_template("cdist_op.c.j2"),
                 "det": self._env.get_template("det_op.c.j2"),
+                "dynamic_time_warping": self._env.get_template("dynamic_time_warping_op.c.j2"),
                 "inverse": self._env.get_template("inverse_op.c.j2"),
                 "ngram_repeat_block": self._env.get_template("ngram_repeat_block_op.c.j2"),
                 "array_feature_extractor": self._env.get_template(
@@ -2265,6 +2267,7 @@ class CEmitter:
             | AffineGridOp
             | ReduceOp
             | DetOp
+            | DynamicTimeWarpingOp
             | ArgReduceOp
             | TopKOp
             | ConstantOfShapeOp
