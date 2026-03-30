@@ -1,9 +1,9 @@
 {
-  "error": "Output shape mismatch for Y (actual_shape=(3, 3, 2, 2), actual_size=36, expected_shape=(3, 2, 3, 1), expected_size=18, output=Y)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run35 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::FusedMatMul"
   ],
-  "generated_checksum": "b624fde68fffb091b44b8c163846ecda8872d4cf20ba9ca1edac5ddf867bdb79"
+  "generated_checksum": "7101a2be9536a98f87f6c549a62b37e0894bb217911f9cac6e3e555f9abe7068"
 }

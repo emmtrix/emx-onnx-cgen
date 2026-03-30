@@ -13,16 +13,21 @@ def _apply_transpositions(
     trans: bool,
     trans_batch: bool,
 ) -> tuple[int, ...]:
-    """Return the effective shape after batch and matrix transpositions."""
+    """Return the effective shape after batch and matrix transpositions.
+
+    ``trans_batch`` applies a cyclic left rotation to all dims except the last
+    (the K dimension): ``[d0, d1, ..., d_{n-2}, k] -> [d1, ..., d_{n-2}, d0, k]``.
+    This moves the first dimension to the position just before K, making it the
+    effective matrix-row dimension.  ``trans`` then swaps the last two dims.
+    """
     if len(shape) < 2:
         return shape
-    batch = shape[:-2]
-    mat = shape[-2:]
-    if trans_batch and len(batch) > 1:
-        batch = tuple(reversed(batch))
+    if trans_batch:
+        # Cyclic left rotation of all dims except the last (k).
+        shape = shape[1:-1] + (shape[0],) + (shape[-1],)
     if trans:
-        mat = (mat[1], mat[0])
-    return batch + mat
+        shape = shape[:-2] + (shape[-1], shape[-2])
+    return shape
 
 
 def _broadcast_batch_shape(

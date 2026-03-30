@@ -8752,8 +8752,9 @@ def test_fused_matmul_batched_trans_a_compiles() -> None:
 
 
 def test_fused_matmul_batched_trans_batch_a_compiles() -> None:
+    # A(4,3,2,5) with transBatchA: cyclic -> (3,2,4,5) x B(3,2,5,6) -> (3,2,4,6)
     model = _make_fused_matmul_model(
-        input_a_shape=[2, 3, 4, 5],
+        input_a_shape=[4, 3, 2, 5],
         input_b_shape=[3, 2, 5, 6],
         output_shape=[3, 2, 4, 6],
         attrs={"transBatchA": 1},
@@ -8840,17 +8841,19 @@ def test_fused_matmul_batched_broadcast_testbench() -> None:
 
 
 def test_fused_matmul_batched_trans_batch_a_testbench() -> None:
+    # A(4,3,2,5) with transBatchA: cyclic -> (3,2,4,5) x B(3,2,5,6) -> (3,2,4,6)
     model = _make_fused_matmul_model(
-        input_a_shape=[2, 3, 4, 5],
+        input_a_shape=[4, 3, 2, 5],
         input_b_shape=[3, 2, 5, 6],
         output_shape=[3, 2, 4, 6],
         attrs={"transBatchA": 1},
     )
     rng = np.random.default_rng(42)
-    a = rng.standard_normal((2, 3, 4, 5)).astype(np.float32)
+    a = rng.standard_normal((4, 3, 2, 5)).astype(np.float32)
     b = rng.standard_normal((3, 2, 5, 6)).astype(np.float32)
-    # transBatchA reverses batch dims: A_eff = A.transpose(1, 0, 2, 3)
-    a_eff = a.transpose(1, 0, 2, 3)
+    # transBatchA applies cyclic rotation of all dims except last:
+    # A_eff = A.transpose(1, 2, 0, 3)  i.e. (4,3,2,5) -> (3,2,4,5)
+    a_eff = a.transpose(1, 2, 0, 3)
     expected = np.matmul(a_eff, b)
     payload = _compile_and_run_testbench(model, testbench_inputs={"in0": a, "in1": b})
     output_data = decode_testbench_array(

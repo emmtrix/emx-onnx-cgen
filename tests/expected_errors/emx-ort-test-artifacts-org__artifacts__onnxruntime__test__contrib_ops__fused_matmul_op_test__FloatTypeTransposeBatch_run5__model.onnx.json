@@ -1,8 +1,9 @@
 {
-  "error": "FusedMatMul inner dimensions must match after transposition, got effective shapes (1, 2, 3) and (3, 1, 4) (original: (1, 2, 3) and (3, 1, 4))",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run5 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::FusedMatMul"
-  ]
+  ],
+  "generated_checksum": "c67fac7bc4be20e9cdf08e604932bcf2edf29c1cc3edac43458d94249fe49e46"
 }
