@@ -6789,6 +6789,208 @@ class EmbedLayerNormOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class QEmbedLayerNormOp(RenderableOpBase):
+    __io_inputs__ = (
+        "input_ids",
+        "segment_ids",
+        "word_embedding_data",
+        "position_embedding_data",
+        "segment_embedding_data",
+        "gamma",
+        "beta",
+        "mask",
+    )
+    __io_outputs__ = ("output", "mask_index")
+
+    input_ids: str
+    segment_ids: str | None
+    word_embedding_data: str
+    position_embedding_data: str
+    segment_embedding_data: str | None
+    gamma: str
+    beta: str
+    mask: str | None
+    output: str
+    mask_index: str | None
+
+    batch: int
+    seq: int
+    hidden_size: int
+    vocab_size: int
+    max_pos: int
+
+    word_scale: float
+    word_zp: int
+    pos_scale: float
+    pos_zp: int
+    seg_scale: float
+    seg_zp: int
+    gamma_scale: float
+    gamma_zp: int
+    beta_scale: float
+    beta_zp: int
+
+    ids_dtype: ScalarType
+    data_dtype: ScalarType  # INT8 or UINT8 for embedding data
+    epsilon: float
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def extra_model_dtypes(self, ctx: OpContext) -> set["ScalarType"]:
+        return {self.ids_dtype, self.data_dtype, ScalarType.I32}
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        ids_c_type = self.ids_dtype.c_type
+        mask_c_type = ScalarType.I32.c_type
+        data_c_type = self.data_dtype.c_type
+        params = emitter.shared_param_map(
+            [
+                ("input_ids", self.input_ids),
+                ("segment_ids", self.segment_ids),
+                ("word_embedding_data", self.word_embedding_data),
+                ("position_embedding_data", self.position_embedding_data),
+                ("segment_embedding_data", self.segment_embedding_data),
+                ("gamma", self.gamma),
+                ("beta", self.beta),
+                ("mask", self.mask),
+                ("output", self.output),
+                ("mask_index", self.mask_index),
+            ]
+        )
+        ids_suffix = emitter.param_array_suffix((self.batch, self.seq))
+        word_emb_suffix = emitter.param_array_suffix(
+            (self.vocab_size, self.hidden_size)
+        )
+        pos_emb_suffix = emitter.param_array_suffix((self.max_pos, self.hidden_size))
+        seg_emb_suffix = emitter.param_array_suffix((2, self.hidden_size))
+        gamma_suffix = emitter.param_array_suffix((self.hidden_size,))
+        beta_suffix = emitter.param_array_suffix((self.hidden_size,))
+        mask_suffix = emitter.param_array_suffix((self.batch, self.seq))
+        output_suffix = emitter.param_array_suffix(
+            (self.batch, self.seq, self.hidden_size)
+        )
+        mask_index_suffix = emitter.param_array_suffix((self.batch,))
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input_ids"], ids_c_type, ids_suffix, True),
+                (
+                    (params["segment_ids"], ids_c_type, ids_suffix, True)
+                    if params["segment_ids"]
+                    else (None, "", "", True)
+                ),
+                (params["word_embedding_data"], data_c_type, word_emb_suffix, True),
+                (params["position_embedding_data"], data_c_type, pos_emb_suffix, True),
+                (
+                    (
+                        params["segment_embedding_data"],
+                        data_c_type,
+                        seg_emb_suffix,
+                        True,
+                    )
+                    if params["segment_embedding_data"]
+                    else (None, "", "", True)
+                ),
+                (params["gamma"], data_c_type, gamma_suffix, True),
+                (params["beta"], data_c_type, beta_suffix, True),
+                (
+                    (params["mask"], mask_c_type, mask_suffix, True)
+                    if params["mask"]
+                    else (None, "", "", True)
+                ),
+                (params["output"], "float", output_suffix, False),
+                (
+                    (params["mask_index"], mask_c_type, mask_index_suffix, False)
+                    if params["mask_index"]
+                    else (None, "", "", False)
+                ),
+            ]
+        )
+        float_dtype = ScalarType.F32
+        acc_dtype = emitter.accumulation_dtype(float_dtype)
+        rendered = (
+            state.templates["qembed_layer_norm"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                params=param_decls,
+                input_ids=params["input_ids"],
+                segment_ids=params["segment_ids"],
+                word_embedding_data=params["word_embedding_data"],
+                position_embedding_data=params["position_embedding_data"],
+                segment_embedding_data=params["segment_embedding_data"],
+                gamma=params["gamma"],
+                beta=params["beta"],
+                mask=params["mask"],
+                output=params["output"],
+                mask_index=params["mask_index"],
+                batch=self.batch,
+                seq=self.seq,
+                hidden_size=self.hidden_size,
+                acc_type=acc_dtype.c_type,
+                acc_zero_literal=emitter.format_literal(acc_dtype, 0),
+                acc_one_literal=emitter.format_literal(acc_dtype, 1),
+                acc_epsilon_literal=emitter.format_floating(self.epsilon, acc_dtype),
+                acc_dtype=acc_dtype,
+                word_scale=emitter.format_double(self.word_scale),
+                word_zp=self.word_zp,
+                pos_scale=emitter.format_double(self.pos_scale),
+                pos_zp=self.pos_zp,
+                seg_scale=emitter.format_double(self.seg_scale),
+                seg_zp=self.seg_zp,
+                gamma_scale=emitter.format_double(self.gamma_scale),
+                gamma_zp=self.gamma_zp,
+                beta_scale=emitter.format_double(self.beta_scale),
+                beta_zp=self.beta_zp,
+                has_segment_embedding=self.segment_embedding_data is not None,
+                has_mask=self.mask is not None,
+                has_mask_index=self.mask_index is not None,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        inputs: list[tuple[str, tuple[int, ...]]] = [
+            (self.input_ids, (self.batch, self.seq)),
+        ]
+        if self.segment_ids is not None:
+            inputs.append((self.segment_ids, (self.batch, self.seq)))
+        inputs.extend(
+            [
+                (self.word_embedding_data, (self.vocab_size, self.hidden_size)),
+                (self.position_embedding_data, (self.max_pos, self.hidden_size)),
+            ]
+        )
+        if self.segment_embedding_data is not None:
+            inputs.append((self.segment_embedding_data, (2, self.hidden_size)))
+        inputs.extend(
+            [
+                (self.gamma, (self.hidden_size,)),
+                (self.beta, (self.hidden_size,)),
+            ]
+        )
+        if self.mask is not None:
+            inputs.append((self.mask, (self.batch, self.seq)))
+        return tuple(inputs)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        outputs: list[tuple[str, tuple[int, ...], ScalarType]] = [
+            (self.output, (self.batch, self.seq, self.hidden_size), ScalarType.F32),
+        ]
+        if self.mask_index is not None:
+            outputs.append((self.mask_index, (self.batch,), ScalarType.I32))
+        return tuple(outputs)
+
+
+@dataclass(frozen=True)
 class MeanVarianceNormalizationOp(RenderableOpBase):
     __io_inputs__ = ("input0",)
     __io_outputs__ = ("output",)

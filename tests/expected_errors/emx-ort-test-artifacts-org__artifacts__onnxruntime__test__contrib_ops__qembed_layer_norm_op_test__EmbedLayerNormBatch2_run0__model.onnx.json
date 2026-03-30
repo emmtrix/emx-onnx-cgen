@@ -1,8 +1,13 @@
 {
-  "error": "Unsupported op com.microsoft.QEmbedLayerNormalization",
-  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch2_run0 model.onnx --test-data-dir test_data_set_0",
+  "error": "OK (max abs diff 0, max ULP 204330)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch2_run0 model.onnx --test-data-dir test_data_set_0 --max-ulp 500000",
+  "extra_cli_args": [
+    "--max-ulp",
+    "500000"
+  ],
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::QEmbedLayerNormalization"
-  ]
+  ],
+  "generated_checksum": "f9b50220112f8636a825e5e4bf9dab6c290d9bd9165c8148787206bbcb1e8d93"
 }

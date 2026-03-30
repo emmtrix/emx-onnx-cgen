@@ -19,7 +19,6 @@ def lower_crop_and_resize(graph: Graph, node: Node) -> CropAndResizeOp:
 
     x_shape = value_shape(graph, x_name, node)
     rois_shape = value_shape(graph, rois_name, node)
-    box_ind_shape = value_shape(graph, box_ind_name, node)
     output_shape = value_shape(graph, output_name, node)
 
     if len(x_shape) != 4:

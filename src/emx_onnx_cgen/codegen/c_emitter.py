@@ -112,6 +112,7 @@ from ..ir.ops import (
     ResizeOp,
     RMSNormalizationOp,
     CropAndResizeOp,
+    QEmbedLayerNormOp,
     RoiAlignOp,
     ShapeOp,
     SizeOp,
@@ -1138,6 +1139,9 @@ class CEmitter:
                 "maxunpool": self._env.get_template("maxunpool_op.c.j2"),
                 "roi_align": self._env.get_template("roi_align_op.c.j2"),
                 "crop_and_resize": self._env.get_template("crop_and_resize_op.c.j2"),
+                "qembed_layer_norm": self._env.get_template(
+                    "qembed_layer_norm_op.c.j2"
+                ),
                 "concat": self._env.get_template("concat_op.c.j2"),
                 "concat_from_sequence": self._env.get_template(
                     "concat_from_sequence_op.c.j2"
@@ -2264,6 +2268,7 @@ class CEmitter:
             | MaxPoolOp
             | RoiAlignOp
             | CropAndResizeOp
+            | QEmbedLayerNormOp
             | ConcatOp
             | ConcatFromSequenceOp
             | CompressOp

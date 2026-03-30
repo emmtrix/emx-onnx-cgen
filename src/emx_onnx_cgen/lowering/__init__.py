@@ -125,6 +125,7 @@ _LOWERING_MODULES = [
     "rotary_embedding",
     "roi_align",
     "crop_and_resize",
+    "qembed_layer_norm",
     "scatter",
     "scatter_elements",
     "scatter_nd",
