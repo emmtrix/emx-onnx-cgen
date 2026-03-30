@@ -7,9 +7,10 @@ Aggregates non-success verification outcomes.
 
 | Error message | Count | Opset versions |
 | --- | --- | --- |
-| Out of tolerance | 42 | 7, 17 |
+| Out of tolerance | 36 | 7, 17 |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 8 |  |
 | GridSample mode '*' is not supported | 7 |  |
+| Testbench execution failed: exit code 1 | 6 |  |
 | Unsupported op com.microsoft.AttnLSTM | 6 |  |
 | Unsupported op com.microsoft.WordConvEmbedding | 6 |  |
 | QLinearSoftmax axis -2 is out of bounds for shape () | 4 |  |
@@ -48,12 +49,12 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/crop_and_resize_op_test/CropAndResize_1133_run2/model.onnx |  | Data/Data | ❌ | CropAndResize method 'nearest' is not supported |
 | test/contrib_ops/decoder_masked_multihead_attention_op_test/cpu_cross_attn_fp32_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DecoderMaskedMultiHeadAttention |
 | test/contrib_ops/decoder_masked_multihead_attention_op_test/cpu_self_attn_fp32_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DecoderMaskedMultiHeadAttention |
-| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1237846280) |
-| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run1/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1237846280) |
-| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run2/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1086325821) |
-| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run3/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1086325821) |
-| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run4/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1642078241) |
-| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run5/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1642078241) |
+| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run0/model.onnx |  | Data/Data | ❌ | Testbench execution failed: exit code 1 |
+| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run1/model.onnx |  | Data/Data | ❌ | Testbench execution failed: exit code 1 |
+| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run2/model.onnx |  | Data/Data | ❌ | Testbench execution failed: exit code 1 |
+| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run3/model.onnx |  | Data/Data | ❌ | Testbench execution failed: exit code 1 |
+| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run4/model.onnx |  | Data/Data | ❌ | Testbench execution failed: exit code 1 |
+| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run5/model.onnx |  | Data/Data | ❌ | Testbench execution failed: exit code 1 |
 | test/contrib_ops/gather_block_quantized_op_test/UnsupportedUInt8DataType_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1073741825) |
 | test/contrib_ops/gather_block_quantized_op_test/UnsupportedUInt8DataType_run1/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1073741825) |
 | test/contrib_ops/gather_block_quantized_op_test/UnsupportedUInt8DataType_run2/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1073741825) |
