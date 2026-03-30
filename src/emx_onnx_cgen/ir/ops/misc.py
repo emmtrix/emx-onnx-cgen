@@ -8595,3 +8595,355 @@ class NGramRepeatBlockOp(RenderableOpBase):
             .rstrip()
         )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+
+@dataclass(frozen=True)
+class SampleOp(RenderableOpBase):
+    """com.microsoft::SampleOp — identity copy of input to output."""
+
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
+
+    input0: str
+    output: str
+    shape: tuple[int, ...]
+    dtype: ScalarType
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        c_type = emitter.ctx_dtype(self.output).c_type
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        shape = CEmitterCompat.codegen_shape(self.shape)
+        loop_vars = CEmitterCompat.loop_vars(shape)
+        input_suffix = emitter.param_array_suffix(shape)
+        output_suffix = emitter.param_array_suffix(shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        rendered = (
+            state.templates["sample_op"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                output=params["output"],
+                shape=shape,
+                loop_vars=loop_vars,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.shape
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ((self.input0, self.shape),)
+
+
+@dataclass(frozen=True)
+class UnfoldTensorOp(RenderableOpBase):
+    """com.microsoft::UnfoldTensor — sliding-window unfold along a dimension."""
+
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
+
+    input0: str
+    output: str
+    input_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    dim: int
+    size: int
+    step: int
+    dtype: ScalarType
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        c_type = emitter.ctx_dtype(self.output).c_type
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        in_shape = CEmitterCompat.codegen_shape(self.input_shape)
+        out_shape = CEmitterCompat.codegen_shape(self.output_shape)
+        input_suffix = emitter.param_array_suffix(in_shape)
+        output_suffix = emitter.param_array_suffix(out_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        ndim_out = len(self.output_shape)
+        ndim_in = len(self.input_shape)
+        out_vars = [f"od{i}" for i in range(ndim_out)]
+        # Compute input subscript: dims 0..dim-1 → od[d],
+        # dim → od[dim]*step + od[ndim_in] (last out dim is window pos k),
+        # dims dim+1..ndim_in-1 → od[d]
+        in_subscript_parts = []
+        for d in range(ndim_in):
+            if d < self.dim:
+                in_subscript_parts.append(f"[{out_vars[d]}]")
+            elif d == self.dim:
+                in_subscript_parts.append(
+                    f"[{out_vars[self.dim]} * {self.step} + {out_vars[ndim_in]}]"
+                )
+            else:
+                in_subscript_parts.append(f"[{out_vars[d]}]")
+        in_subscript = "".join(in_subscript_parts)
+        out_subscript = "".join(f"[{v}]" for v in out_vars)
+        rendered = (
+            state.templates["unfold_tensor_op"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                output=params["output"],
+                out_shape=out_shape,
+                out_vars=out_vars,
+                ndim_out=ndim_out,
+                in_subscript=in_subscript,
+                out_subscript=out_subscript,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.output_shape
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ((self.input0, self.input_shape),)
+
+
+@dataclass(frozen=True)
+class MaxpoolWithMaskOp(RenderableOpBase):
+    """com.microsoft::MaxpoolWithMask — MaxPool considering only unmasked positions."""
+
+    __io_inputs__ = ("input0", "mask")
+    __io_outputs__ = ("output",)
+
+    input0: str
+    mask: str
+    output: str
+    batch: int
+    channels: int
+    in_h: int
+    in_w: int
+    out_h: int
+    out_w: int
+    kernel_shape: tuple[int, int]
+    strides: tuple[int, int]
+    pads: tuple[int, int, int, int]
+    dilations: tuple[int, int]
+    dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        c_type = emitter.ctx_dtype(self.output).c_type
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("mask", self.mask),
+                ("output", self.output),
+            ]
+        )
+        input_shape = CEmitterCompat.codegen_shape(
+            (self.batch, self.channels, self.in_h, self.in_w)
+        )
+        output_shape = CEmitterCompat.codegen_shape(
+            (self.batch, self.channels, self.out_h, self.out_w)
+        )
+        input_suffix = emitter.param_array_suffix(input_shape)
+        mask_suffix = emitter.param_array_suffix(input_shape)
+        output_suffix = emitter.param_array_suffix(output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["mask"], "int32_t", mask_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        min_literal = self.dtype.min_literal
+        rendered = (
+            state.templates["maxpool_with_mask_op"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                mask=params["mask"],
+                output=params["output"],
+                c_type=c_type,
+                min_literal=min_literal,
+                batch=self.batch,
+                channels=self.channels,
+                in_h=self.in_h,
+                in_w=self.in_w,
+                out_h=self.out_h,
+                out_w=self.out_w,
+                kernel_h=self.kernel_shape[0],
+                kernel_w=self.kernel_shape[1],
+                stride_h=self.strides[0],
+                stride_w=self.strides[1],
+                dilation_h=self.dilations[0],
+                dilation_w=self.dilations[1],
+                pad_h=self.pads[0],
+                pad_w=self.pads[1],
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return (self.batch, self.channels, self.out_h, self.out_w)
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        in_shape = (self.batch, self.channels, self.in_h, self.in_w)
+        return ((self.input0, in_shape), (self.mask, in_shape))
+
+
+@dataclass(frozen=True)
+class ConvTransposeWithDynamicPadsOp(RenderableOpBase):
+    """com.microsoft::ConvTransposeWithDynamicPads — ConvTranspose with pads as tensor input."""
+
+    __io_inputs__ = ("input0", "weights", "pads_tensor")
+    __io_outputs__ = ("output",)
+
+    input0: str
+    weights: str
+    pads_tensor: str
+    output: str
+    batch: int
+    in_channels: int
+    out_channels: int
+    spatial_rank: int
+    in_spatial: tuple[int, ...]
+    out_spatial: tuple[int, ...]
+    kernel_shape: tuple[int, ...]
+    strides: tuple[int, ...]
+    dilations: tuple[int, ...]
+    output_padding: tuple[int, ...]
+    group: int
+    dtype: ScalarType
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        c_type = emitter.ctx_dtype(self.output).c_type
+        zero_literal = emitter.ctx_dtype(self.output).zero_literal
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("weights", self.weights),
+                ("pads_tensor", self.pads_tensor),
+                ("output", self.output),
+            ]
+        )
+        input_shape = (self.batch, self.in_channels, *self.in_spatial)
+        weight_shape = (
+            self.in_channels,
+            self.out_channels // self.group,
+            *self.kernel_shape,
+        )
+        pads_shape = (2 * self.spatial_rank,)
+        output_shape = (self.batch, self.out_channels, *self.out_spatial)
+        in_indices = tuple(f"id{d}" for d in range(self.spatial_rank))
+        kernel_indices = tuple(f"kd{d}" for d in range(self.spatial_rank))
+        out_indices = tuple(f"od{d}" for d in range(self.spatial_rank))
+        group_in_channels = self.in_channels // self.group
+        group_out_channels = self.out_channels // self.group
+        input_suffix = emitter.param_array_suffix(
+            CEmitterCompat.codegen_shape(input_shape)
+        )
+        weight_suffix = emitter.param_array_suffix(
+            CEmitterCompat.codegen_shape(weight_shape)
+        )
+        pads_suffix = emitter.param_array_suffix(
+            CEmitterCompat.codegen_shape(pads_shape)
+        )
+        output_suffix = emitter.param_array_suffix(
+            CEmitterCompat.codegen_shape(output_shape)
+        )
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["weights"], c_type, weight_suffix, True),
+                (params["pads_tensor"], "int64_t", pads_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        rendered = (
+            state.templates["conv_transpose_with_dynamic_pads_op"]
+            .render(
+                op_name=op_name,
+                params=param_decls,
+                input0=params["input0"],
+                weights=params["weights"],
+                pads_tensor=params["pads_tensor"],
+                output=params["output"],
+                c_type=c_type,
+                zero_literal=zero_literal,
+                batch=self.batch,
+                in_channels=self.in_channels,
+                out_channels=self.out_channels,
+                spatial_rank=self.spatial_rank,
+                in_spatial=self.in_spatial,
+                out_spatial=self.out_spatial,
+                kernel_shape=self.kernel_shape,
+                strides=self.strides,
+                dilations=self.dilations,
+                group=self.group,
+                group_in_channels=group_in_channels,
+                group_out_channels=group_out_channels,
+                in_indices=in_indices,
+                kernel_indices=kernel_indices,
+                out_indices=out_indices,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return (self.batch, self.out_channels, *self.out_spatial)
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        input_shape = (self.batch, self.in_channels, *self.in_spatial)
+        weight_shape = (
+            self.in_channels,
+            self.out_channels // self.group,
+            *self.kernel_shape,
+        )
+        pads_shape = (2 * self.spatial_rank,)
+        return (
+            (self.input0, input_shape),
+            (self.weights, weight_shape),
+            (self.pads_tensor, pads_shape),
+        )

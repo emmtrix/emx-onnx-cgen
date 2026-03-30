@@ -1,9 +1,10 @@
 {
-  "error": "RotaryEmbedding inputs must share the same dtype",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_rotary_dim model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "RotaryEmbedding"
   ],
-  "opset_version": 23
+  "opset_version": 23,
+  "generated_checksum": "4839c4bf4438347776e6f5833b979b6121c046c4acb6739dfa89690a5edc6a9f"
 }

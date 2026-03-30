@@ -1,0 +1,9 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% for dim in shape %}
+    for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+{% endfor %}
+        {{ output }}[{{ loop_vars | join('][') }}] = {{ input0 }}[{{ loop_vars | join('][') }}];
+{% for _ in shape %}
+    }
+{% endfor %}
+}

@@ -94,6 +94,10 @@ from .misc import (
     TransposeOp,
     TriluOp,
     UniqueOp,
+    SampleOp,
+    UnfoldTensorOp,
+    MaxpoolWithMaskOp,
+    ConvTransposeWithDynamicPadsOp,
 )
 from .nn import (
     AdamOp,
@@ -324,4 +328,8 @@ __all__ = [
     "UnaryOp",
     "VariadicOp",
     "WhereOp",
+    "SampleOp",
+    "UnfoldTensorOp",
+    "MaxpoolWithMaskOp",
+    "ConvTransposeWithDynamicPadsOp",
 ]

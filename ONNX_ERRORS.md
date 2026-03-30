@@ -16,7 +16,6 @@ Aggregates non-success verification outcomes.
 | Testbench execution failed: exit code 1 | 6 |  |
 | Unsupported op com.microsoft.AttnLSTM | 6 |  |
 | Unsupported op com.microsoft.WordConvEmbedding | 6 |  |
-| RotaryEmbedding inputs must share the same dtype | 5 | 23 |
 | GatherBlockQuantized axis 3 is out of range for rank 3 | 4 |  |
 | GatherBlockQuantized scales shape (2, 2, 1) does not match expected (2, 3, 1) (data_shape=(2, 3, 4), quantize_axis=2, block_size=16, packed=False) | 4 |  |
 | QLinearSoftmax axis -2 is out of bounds for shape () | 4 |  |
@@ -31,13 +30,9 @@ Aggregates non-success verification outcomes.
 | GatherBlockQuantized supports bits in [4, 8], got 7 | 2 |  |
 | Unsupported op com.microsoft.BifurcationDetector | 2 |  |
 | Unsupported op com.microsoft.DecoderMaskedMultiHeadAttention | 2 |  |
-| Unsupported op com.microsoft.UnfoldTensor | 2 |  |
 | CropAndResize method '*' is not supported | 1 |  |
 | MurmurHash3 does not support input dtype int8; supported: int32, int64, float, double, string | 1 |  |
-| Unsupported op com.microsoft.ConvTransposeWithDynamicPads | 1 |  |
-| Unsupported op com.microsoft.MaxpoolWithMask | 1 |  |
 | Unsupported op com.microsoft.MoE | 1 |  |
-| Unsupported op com.microsoft.SampleOp | 1 |  |
 
 ## Error frequency by opset
 
@@ -45,7 +40,6 @@ Aggregates non-success verification outcomes.
 | --- | --- | --- |
 | Out of tolerance | 7 | 7 |
 | Out of tolerance | 17 | 13 |
-| RotaryEmbedding inputs must share the same dtype | 23 | 5 |
 
 ## Failing ONNX files
 
@@ -54,11 +48,6 @@ Lists every ONNX file with a non-success verification outcome.
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
 | node/test_adam_multiple/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 62311) |
-| node/test_rotary_embedding/model.onnx | 23 | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
-| node/test_rotary_embedding_3d_input/model.onnx | 23 | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
-| node/test_rotary_embedding_interleaved/model.onnx | 23 | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
-| node/test_rotary_embedding_with_interleaved_rotary_dim/model.onnx | 23 | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
-| node/test_rotary_embedding_with_rotary_dim/model.onnx | 23 | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
 | test/contrib_ops/attention_lstm_op_test/BidirectionLstmWithBahdanauAM2BatchShortenSeqLen_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.AttnLSTM |
 | test/contrib_ops/attention_lstm_op_test/BidirectionLstmWithBahdanauAMShortenSeqLength_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.AttnLSTM |
 | test/contrib_ops/attention_lstm_op_test/ForwardLstmWithBahdanauAMShortenSeqLength_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.AttnLSTM |
@@ -70,7 +59,6 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/attention_op_test/Attention_Mask2D_Fp32_B2_S32_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 980293) |
 | test/contrib_ops/bifurcation_detector_op_test/Test1_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.BifurcationDetector |
 | test/contrib_ops/bifurcation_detector_op_test/Test2_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.BifurcationDetector |
-| test/contrib_ops/conv_transpose_with_dynamic_pads_test/ConvTransposeWithDynamicPads_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.ConvTransposeWithDynamicPads |
 | test/contrib_ops/crop_and_resize_op_test/CropAndResize_1133_run2/model.onnx |  | Data/Data | ❌ | CropAndResize method 'nearest' is not supported |
 | test/contrib_ops/decoder_masked_multihead_attention_op_test/cpu_cross_attn_fp32_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DecoderMaskedMultiHeadAttention |
 | test/contrib_ops/decoder_masked_multihead_attention_op_test/cpu_self_attn_fp32_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DecoderMaskedMultiHeadAttention |
@@ -152,7 +140,6 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/math/matmul_sparse_test/TestCsr_run1/model.onnx |  | Data/Data | ❌ | Unsupported value type 'sparse_tensor_type' for 'A'. Hint: export the model with tensor inputs/outputs. |
 | test/contrib_ops/math/matmul_sparse_test/TestCsr_run2/model.onnx |  | Data/Data | ❌ | Unsupported value type 'sparse_tensor_type' for 'A'. Hint: export the model with tensor inputs/outputs. |
 | test/contrib_ops/math/matmul_sparse_test/TestCsr_run3/model.onnx |  | Data/Data | ❌ | Unsupported value type 'sparse_tensor_type' for 'A'. Hint: export the model with tensor inputs/outputs. |
-| test/contrib_ops/maxpool_mask_test/MaxPoolWithMask_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MaxpoolWithMask |
 | test/contrib_ops/moe_test/MoECpuTest_BasicSwiGLU_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MoE |
 | test/contrib_ops/murmur_hash3_test/UnsupportedInputType_run0/model.onnx |  | Data/Data | ❌ | MurmurHash3 does not support input dtype int8; supported: int32, int64, float, double, string |
 | test/contrib_ops/qlinear_lookup_table_test/QLinearSoftmax_Int8_v12_run1/model.onnx |  | Data/Data | ❌ | QLinearSoftmax axis -2 is out of bounds for shape () |
@@ -167,12 +154,9 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_Interleaved_SmallData_LlamaMSFT_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 6391) |
 | test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_NotInterleaved_LargeData_LlamaMSFT_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 52786) |
 | test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_NotInterleaved_SmallData_LlamaMSFT_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 26739) |
-| test/contrib_ops/sample_op_test/SampleOpFloat_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.SampleOp |
-| test/contrib_ops/tensor_op_test/LastDim_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.UnfoldTensor |
 | test/contrib_ops/tensor_op_test/MeanVarianceNormalizationCPUTest_Version1_TO_8_run0/model.onnx | 7 | Data/Data | ❌ | Out of tolerance (max ULP 7137119) |
 | test/contrib_ops/tensor_op_test/MeanVarianceNormalizationCPUTest_Version1_TO_8_run1/model.onnx | 7 | Data/Data | ❌ | Out of tolerance (max ULP 21399263) |
 | test/contrib_ops/tensor_op_test/MeanVarianceNormalizationCPUTest_Version1_TO_8_run2/model.onnx | 7 | Data/Data | ❌ | Out of tolerance (max ULP 15806857) |
-| test/contrib_ops/tensor_op_test/NormalDim_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.UnfoldTensor |
 | test/contrib_ops/unique_op_test/Unique_AllUniqueElements_run0/model.onnx |  | Data/Data | ❌ | Unique must have 1 input and 4 outputs |
 | test/contrib_ops/unique_op_test/Unique_Complicated_Example_run0/model.onnx |  | Data/Data | ❌ | Unique must have 1 input and 4 outputs |
 | test/contrib_ops/unique_op_test/Unique_Example_SingleElement_run0/model.onnx |  | Data/Data | ❌ | Unique must have 1 input and 4 outputs |

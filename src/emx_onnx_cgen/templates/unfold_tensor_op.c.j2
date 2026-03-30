@@ -1,0 +1,9 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% for d in range(ndim_out) %}
+    for (idx_t {{ out_vars[d] }} = 0; {{ out_vars[d] }} < {{ out_shape[d] }}; ++{{ out_vars[d] }}) {
+{% endfor %}
+        {{ output }}{{ out_subscript }} = {{ input0 }}{{ in_subscript }};
+{% for d in range(ndim_out) %}
+    }
+{% endfor %}
+}
