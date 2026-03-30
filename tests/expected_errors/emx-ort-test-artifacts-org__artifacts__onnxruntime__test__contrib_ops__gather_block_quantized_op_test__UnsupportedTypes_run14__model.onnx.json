@@ -1,8 +1,9 @@
 {
-  "error": "GatherBlockQuantized indices must be int32 or int64",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run14 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::GatherBlockQuantized"
-  ]
+  ],
+  "generated_checksum": "b4e8be26948bc4fcd1e66dc325cc05c53d4c87ef289ee5e94467a8272dc6e515"
 }

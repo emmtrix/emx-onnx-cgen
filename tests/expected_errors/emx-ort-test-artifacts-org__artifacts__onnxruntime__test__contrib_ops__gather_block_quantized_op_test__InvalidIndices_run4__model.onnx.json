@@ -1,9 +1,9 @@
 {
-  "error": "Testbench execution failed: exit code 1",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run4 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::GatherBlockQuantized"
   ],
-  "generated_checksum": "fd943b3ceabba34e19f16a4bda86030561de00812e301b5c5872aed0822035e9"
+  "generated_checksum": "a56d88cb03289114ddddcd10803c148b45986cd336d06bb22182802bc2a6cf9c"
 }

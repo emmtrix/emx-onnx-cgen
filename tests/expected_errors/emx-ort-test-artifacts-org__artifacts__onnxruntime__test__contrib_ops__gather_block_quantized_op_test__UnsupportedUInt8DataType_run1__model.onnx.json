@@ -1,8 +1,9 @@
 {
-  "error": "GatherBlockQuantized gather_axis must be 0 for uint8 packed data (bits=4), got gather_axis=1",
+  "error": "Out of tolerance (max ULP 1073741825)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gather_block_quantized_op_test/UnsupportedUInt8DataType_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::GatherBlockQuantized"
-  ]
+  ],
+  "generated_checksum": "7efb0bd8d25eacb6611aa314c5be518ea4ae76a2ccbe032b18c74849fabf7ff3"
 }

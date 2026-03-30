@@ -1,8 +1,9 @@
 {
-  "error": "GatherBlockQuantized axis -1 is out of range for rank 3",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run5 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::GatherBlockQuantized"
-  ]
+  ],
+  "generated_checksum": "7aaf9d61df1cc1838eae2fbec0ae44436405bdb3e379b89460364d358a9a07ed"
 }

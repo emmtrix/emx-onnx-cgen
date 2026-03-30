@@ -1,8 +1,9 @@
 {
-  "error": "GatherBlockQuantized scales shape (2, 2, 1) does not match expected (2, 3, 1) (data_shape=(2, 3, 4), quantize_axis=2, block_size=16, packed=False)",
+  "error": "Out of tolerance (max ULP 1086325821)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run2 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::GatherBlockQuantized"
-  ]
+  ],
+  "generated_checksum": "2ceaeba560cac2f07ed3f40fe5a007e777c4b2faf63f6ce42df3b05eda969587"
 }
