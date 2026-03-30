@@ -9065,6 +9065,7 @@ class RoiAlignOp(RenderableOpBase):
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
 
+@dataclass(frozen=True)
 class CropAndResizeOp(RenderableOpBase):
     __io_inputs__ = ("x", "rois", "box_ind")
     __io_outputs__ = ("output",)

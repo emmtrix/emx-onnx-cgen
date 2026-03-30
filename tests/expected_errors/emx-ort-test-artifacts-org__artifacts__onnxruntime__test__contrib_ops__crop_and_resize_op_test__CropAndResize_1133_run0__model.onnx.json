@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.CropAndResize",
+  "error": "OK (max ULP 1)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/crop_and_resize_op_test/CropAndResize_1133_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::CropAndResize"
-  ]
+  ],
+  "generated_checksum": "d7c2e647adc029aa1a2122f68dab86200e872ac406a9d1a25b549362cccd1fc9"
 }

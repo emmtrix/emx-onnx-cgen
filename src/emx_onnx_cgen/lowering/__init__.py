@@ -124,6 +124,7 @@ _LOWERING_MODULES = [
     "rms_normalization",
     "rotary_embedding",
     "roi_align",
+    "crop_and_resize",
     "scatter",
     "scatter_elements",
     "scatter_nd",

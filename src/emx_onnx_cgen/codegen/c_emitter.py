@@ -111,6 +111,7 @@ from ..ir.ops import (
     ReshapeOp,
     ResizeOp,
     RMSNormalizationOp,
+    CropAndResizeOp,
     RoiAlignOp,
     ShapeOp,
     SizeOp,
@@ -1136,6 +1137,7 @@ class CEmitter:
                 "nhwc_maxpool": self._env.get_template("nhwc_maxpool_op.c.j2"),
                 "maxunpool": self._env.get_template("maxunpool_op.c.j2"),
                 "roi_align": self._env.get_template("roi_align_op.c.j2"),
+                "crop_and_resize": self._env.get_template("crop_and_resize_op.c.j2"),
                 "concat": self._env.get_template("concat_op.c.j2"),
                 "concat_from_sequence": self._env.get_template(
                     "concat_from_sequence_op.c.j2"
@@ -2261,6 +2263,7 @@ class CEmitter:
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | RoiAlignOp
+            | CropAndResizeOp
             | ConcatOp
             | ConcatFromSequenceOp
             | CompressOp

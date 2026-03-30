@@ -9,7 +9,7 @@ from .common import value_shape
 from .registry import register_lowering
 
 
-@register_lowering("CropAndResize", domain="com.microsoft", version=1)
+@register_lowering("CropAndResize")
 def lower_crop_and_resize(graph: Graph, node: Node) -> CropAndResizeOp:
     if len(node.inputs) != 4 or len(node.outputs) != 1:
         raise UnsupportedOpError("CropAndResize expects 4 inputs and 1 output")
