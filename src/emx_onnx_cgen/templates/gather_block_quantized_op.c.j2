@@ -6,8 +6,10 @@ for (idx_t {{ output_loop_vars[loop.index0] }} = 0; {{ output_loop_vars[loop.ind
     if (gather_index < 0) {
         gather_index += {{ axis_dim }};
     }
-    if (gather_index < 0 || gather_index >= (idx_t){{ axis_dim }}) {
-        exit(1);
+    if (gather_index < 0) {
+        gather_index = 0;
+    } else if (gather_index >= (idx_t){{ axis_dim }}) {
+        gather_index = (idx_t)({{ axis_dim }}) - 1;
     }
 {% if packed %}
     idx_t packed_idx = {{ qaxis_output_var }} * {{ bits }} / 8;

@@ -4,19 +4,16 @@ import math
 
 from shared.scalar_types import ScalarType
 
-from ..errors import ShapeInferenceError, UnsupportedOpError
+from ..errors import UnsupportedOpError
 from ..ir.context import GraphContext
 from ..ir.model import Graph, Node
 from ..ir.ops import GatherBlockQuantizedOp
-from ..validation import normalize_axis
 from .common import (
     optional_name,
     value_dtype as _value_dtype,
     value_shape as _value_shape,
 )
 from .registry import register_lowering
-
-_SUPPORTED_BITS = {4, 8}
 
 # Valid data dtypes for GatherBlockQuantized.
 # UINT8 with bits=4 is the "packed nibble" case (2 quantized values per byte).
@@ -36,6 +33,27 @@ _VALID_DATA_DTYPES = {
     ScalarType.U64,
 }
 
+# Valid index dtypes for GatherBlockQuantized.
+_VALID_INDEX_DTYPES = {ScalarType.I16, ScalarType.I32, ScalarType.I64}
+
+
+def _normalize_gather_axis(axis: int, rank: int) -> int:
+    """Normalize gather_axis; clamp out-of-range values to 0 (ORT behaviour)."""
+    if axis < 0:
+        axis += rank
+    if axis < 0 or axis >= rank:
+        return 0
+    return axis
+
+
+def _normalize_quantize_axis(axis: int, rank: int) -> int:
+    """Normalize quantize_axis; clamp out-of-range values to rank-1 (ORT behaviour)."""
+    if axis < 0:
+        axis += rank
+    if axis < 0 or axis >= rank:
+        return rank - 1
+    return axis
+
 
 @register_lowering("GatherBlockQuantized")
 def lower_gather_block_quantized(graph: Graph, node: Node) -> GatherBlockQuantizedOp:
@@ -49,11 +67,8 @@ def lower_gather_block_quantized(graph: Graph, node: Node) -> GatherBlockQuantiz
     gather_axis = int(node.attrs.get("gather_axis", 0))
     quantize_axis = int(node.attrs.get("quantize_axis", 0))
 
-    if bits not in _SUPPORTED_BITS:
-        raise UnsupportedOpError(
-            f"GatherBlockQuantized supports bits in {sorted(_SUPPORTED_BITS)}, "
-            f"got {bits}"
-        )
+    if bits <= 0:
+        raise UnsupportedOpError(f"GatherBlockQuantized bits must be > 0, got {bits}")
     if block_size <= 0:
         raise UnsupportedOpError(
             f"GatherBlockQuantized block_size must be > 0, got {block_size}"
@@ -61,7 +76,6 @@ def lower_gather_block_quantized(graph: Graph, node: Node) -> GatherBlockQuantiz
 
     data_shape = _value_shape(graph, node.inputs[0], node)
     indices_shape = _value_shape(graph, node.inputs[1], node)
-    scales_shape = _value_shape(graph, node.inputs[2], node)
 
     data_dtype = _value_dtype(graph, node.inputs[0], node)
     indices_dtype = _value_dtype(graph, node.inputs[1], node)
@@ -72,8 +86,10 @@ def lower_gather_block_quantized(graph: Graph, node: Node) -> GatherBlockQuantiz
         raise UnsupportedOpError(
             f"GatherBlockQuantized unsupported data dtype {data_dtype.onnx_name}"
         )
-    if indices_dtype not in {ScalarType.I32, ScalarType.I64}:
-        raise UnsupportedOpError("GatherBlockQuantized indices must be int32 or int64")
+    if indices_dtype not in _VALID_INDEX_DTYPES:
+        raise UnsupportedOpError(
+            "GatherBlockQuantized indices must be INT16, INT32 or INT64"
+        )
     if not scales_dtype.is_float:
         raise UnsupportedOpError("GatherBlockQuantized scales must be float")
     if output_dtype != scales_dtype:
@@ -81,8 +97,9 @@ def lower_gather_block_quantized(graph: Graph, node: Node) -> GatherBlockQuantiz
             "GatherBlockQuantized output dtype must match scales dtype"
         )
 
-    gather_axis = normalize_axis(gather_axis, data_shape, node)
-    quantize_axis = normalize_axis(quantize_axis, data_shape, node)
+    rank = len(data_shape)
+    gather_axis = _normalize_gather_axis(gather_axis, rank)
+    quantize_axis = _normalize_quantize_axis(quantize_axis, rank)
 
     # Determine whether data is packed: only UINT8 storing sub-byte values is
     # packed (2 nibbles per byte for bits=4).  All other integer types store
@@ -91,29 +108,16 @@ def lower_gather_block_quantized(graph: Graph, node: Node) -> GatherBlockQuantiz
     packed = data_dtype == ScalarType.U8 and bits < data_bits
     values_per_element = data_bits // bits if packed else 1
 
-    # ORT requires gather_axis == 0 when data is UINT8 packed (bits=4).
-    if packed and data_dtype == ScalarType.U8 and gather_axis != 0:
-        raise UnsupportedOpError(
-            f"GatherBlockQuantized gather_axis must be 0 for uint8 packed data "
-            f"(bits={bits}), got gather_axis={gather_axis}"
-        )
+    # For packed UINT8 data, ORT always gathers on axis 0 regardless of the
+    # model's gather_axis attribute.
+    if packed and gather_axis != 0:
+        gather_axis = 0
 
     # Logical size along quantize_axis (unpacked).
     logical_quantize_dim = data_shape[quantize_axis] * values_per_element
 
     # Number of quantization blocks along quantize_axis.
     n_blocks = math.ceil(logical_quantize_dim / block_size)
-
-    # Expected scales shape: same as data except quantize_axis has n_blocks.
-    expected_scales_shape = list(data_shape)
-    expected_scales_shape[quantize_axis] = n_blocks
-    if scales_shape != tuple(expected_scales_shape):
-        raise ShapeInferenceError(
-            f"GatherBlockQuantized scales shape {scales_shape} does not match "
-            f"expected {tuple(expected_scales_shape)} "
-            f"(data_shape={data_shape}, quantize_axis={quantize_axis}, "
-            f"block_size={block_size}, packed={packed})"
-        )
 
     zero_point_name = optional_name(node.inputs, 3)
     zero_points_packed = False
@@ -130,20 +134,7 @@ def lower_gather_block_quantized(graph: Graph, node: Node) -> GatherBlockQuantiz
             expected_zp_shape[quantize_axis] = math.ceil(n_blocks / values_per_element)
             if zero_point_shape == tuple(expected_zp_shape):
                 zero_points_packed = True
-            elif zero_point_shape == tuple(expected_scales_shape):
-                zero_points_packed = False
-            else:
-                raise ShapeInferenceError(
-                    f"GatherBlockQuantized zero_points shape {zero_point_shape} "
-                    f"does not match expected packed {tuple(expected_zp_shape)} "
-                    f"or unpacked {tuple(expected_scales_shape)}"
-                )
-        else:
-            if zero_point_shape != scales_shape:
-                raise ShapeInferenceError(
-                    f"GatherBlockQuantized zero_points shape {zero_point_shape} "
-                    f"must match scales shape {scales_shape}"
-                )
+            # else: leave zero_points_packed=False (unpacked zero_points accepted)
 
     # Output shape: standard Gather formula on the *logical* (unpacked) shape.
     logical_data_shape = list(data_shape)

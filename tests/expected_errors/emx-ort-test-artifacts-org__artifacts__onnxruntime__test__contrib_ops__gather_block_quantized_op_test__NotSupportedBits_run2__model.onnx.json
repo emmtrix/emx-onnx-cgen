@@ -1,8 +1,9 @@
 {
-  "error": "GatherBlockQuantized supports bits in [4, 8], got 2",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run2 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::GatherBlockQuantized"
-  ]
+  ],
+  "generated_checksum": "b11e6ef082b70f9d5f30f37e19c480534c753c4c72b2074475147b50458c8de0"
 }
