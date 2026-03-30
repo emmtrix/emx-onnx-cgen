@@ -7,8 +7,8 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1796 / 1802, 99.7% | 1.20.1 |
-| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4058 / 4182, 97.0% | n/a |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1801 / 1802, 99.9% | 1.20.1 |
+| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4063 / 4182, 97.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1796 / 1802 ONNX files (99.7%).
+Coverage 1801 / 1802 ONNX files (99.9%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1360,11 +1360,11 @@ Coverage 1796 / 1802 ONNX files (99.7%).
 | node/test_roialign_aligned_false/model.onnx (--runtime onnx-reference --test-data-inputs-only) | 22 | Data/ONNXRef | ✅ | OK (max ULP 10) |
 | node/test_roialign_aligned_true/model.onnx (--runtime onnx-reference --test-data-inputs-only) | 22 | Data/ONNXRef | ✅ | OK (max ULP 11) |
 | node/test_roialign_mode_max/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 36) |
-| node/test_rotary_embedding/model.onnx | 23 | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
-| node/test_rotary_embedding_3d_input/model.onnx | 23 | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
+| node/test_rotary_embedding/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_rotary_embedding_3d_input/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_rotary_embedding_3d_input_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_rotary_embedding_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_rotary_embedding_interleaved/model.onnx | 23 | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
+| node/test_rotary_embedding_interleaved/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_rotary_embedding_interleaved_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_rotary_embedding_no_position_ids/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_rotary_embedding_no_position_ids_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
@@ -1372,9 +1372,9 @@ Coverage 1796 / 1802 ONNX files (99.7%).
 | node/test_rotary_embedding_no_position_ids_interleaved_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_rotary_embedding_no_position_ids_rotary_dim/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_rotary_embedding_no_position_ids_rotary_dim_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_rotary_embedding_with_interleaved_rotary_dim/model.onnx | 23 | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
+| node/test_rotary_embedding_with_interleaved_rotary_dim/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_rotary_embedding_with_interleaved_rotary_dim_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_rotary_embedding_with_rotary_dim/model.onnx | 23 | Data/Data | ❌ | RotaryEmbedding inputs must share the same dtype |
+| node/test_rotary_embedding_with_rotary_dim/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_rotary_embedding_with_rotary_dim_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_round/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_scan9_sum/model.onnx | 9 | Data/Data | ✅ | OK (max ULP 0) |
@@ -1832,7 +1832,7 @@ Coverage 1796 / 1802 ONNX files (99.7%).
 
 Test directory: `emx-ort-test-artifacts-org/artifacts/onnxruntime`
 
-Coverage 4058 / 4182 ONNX files (97.0%).
+Coverage 4063 / 4182 ONNX files (97.2%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1912,7 +1912,7 @@ Coverage 4058 / 4182 ONNX files (97.0%).
 | test/contrib_ops/cdist_op_test/DoubleEuclidean_run0/model.onnx (--max-ulp 400000000) |  | Data/Data | ✅ | OK (max ULP 340017558) |
 | test/contrib_ops/cdist_op_test/Euclidean_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/cdist_op_test/Sqeuclidean_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
-| test/contrib_ops/conv_transpose_with_dynamic_pads_test/ConvTransposeWithDynamicPads_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.ConvTransposeWithDynamicPads |
+| test/contrib_ops/conv_transpose_with_dynamic_pads_test/ConvTransposeWithDynamicPads_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/crop_and_resize_op_test/CropAndResize_1122_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/crop_and_resize_op_test/CropAndResize_1122_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/crop_and_resize_op_test/CropAndResize_1122_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
@@ -4348,7 +4348,7 @@ Coverage 4058 / 4182 ONNX files (97.0%).
 | test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_NoBias_test_U8U8_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_NoBias_test_U8U8_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_NoBias_test_U8U8_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/maxpool_mask_test/MaxPoolWithMask_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MaxpoolWithMask |
+| test/contrib_ops/maxpool_mask_test/MaxPoolWithMask_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/moe_test/MoECpuTest_BasicSwiGLU_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.MoE |
 | test/contrib_ops/multihead_attention_op_test/CrossAttentionWithPast_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
 | test/contrib_ops/multihead_attention_op_test/CrossAttentionWithPast_run1/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
@@ -5937,7 +5937,7 @@ Coverage 4058 / 4182 ONNX files (97.0%).
 | test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_NotInterleaved_LargeData_LlamaMSFT_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_NotInterleaved_SmallData_LlamaMSFT_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 26739) |
 | test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_NotInterleaved_SmallData_LlamaMSFT_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/sample_op_test/SampleOpFloat_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.SampleOp |
+| test/contrib_ops/sample_op_test/SampleOpFloat_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch1_NoBeta_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch1_NoBeta_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch1_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
@@ -5958,12 +5958,12 @@ Coverage 4058 / 4182 ONNX files (97.0%).
 | test/contrib_ops/tensor_op_test/CropBorderAndScale_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/tensor_op_test/CropBorderOnly_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/tensor_op_test/ImageScalerTest_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/tensor_op_test/LastDim_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.UnfoldTensor |
+| test/contrib_ops/tensor_op_test/LastDim_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/tensor_op_test/MeanVarianceNormalizationCPUTest_Version1_TO_8_run0/model.onnx | 7 | Data/Data | ❌ | Out of tolerance (max ULP 7137119) |
 | test/contrib_ops/tensor_op_test/MeanVarianceNormalizationCPUTest_Version1_TO_8_run1/model.onnx | 7 | Data/Data | ❌ | Out of tolerance (max ULP 21399263) |
 | test/contrib_ops/tensor_op_test/MeanVarianceNormalizationCPUTest_Version1_TO_8_run2/model.onnx | 7 | Data/Data | ❌ | Out of tolerance (max ULP 15806857) |
 | test/contrib_ops/tensor_op_test/MeanVarianceNormalizationCPUTest_Version1_TO_8_run3/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/tensor_op_test/NormalDim_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.UnfoldTensor |
+| test/contrib_ops/tensor_op_test/NormalDim_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/tokenizer_test/TokenizerCharLevel_CyrillicCharsWithMarkersC_run0/model.onnx |  | Data/Data | ✅ | OK (no numeric comparisons) |
 | test/contrib_ops/tokenizer_test/TokenizerCharLevel_EmptyOutputC_run0/model.onnx |  | Data/Data | ✅ | OK (no numeric comparisons) |
 | test/contrib_ops/tokenizer_test/TokenizerCharLevel_EmptyOutputNC_run0/model.onnx |  | Data/Data | ✅ | OK (no numeric comparisons) |
