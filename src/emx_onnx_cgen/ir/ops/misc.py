@@ -1152,6 +1152,9 @@ class GatherBlockQuantizedOp(RenderableOpBase):
         )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
+    def required_includes(self, ctx: "OpContext") -> set[str]:
+        return {"#include <stdlib.h>"}
+
     def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
         return emitter.ctx_shape(self.output)
 
