@@ -144,8 +144,6 @@ Aggregates non-success verification outcomes.
 | FusedMatMul batch dimensions are not broadcastable: (1, 3) vs (3, 2) | 3 |  |
 | Output shape mismatch for Y (actual_shape=(3, 2, 3, 2), actual_size=36, expected_shape=(3, 2, 3, 1), expected_size=18, output=Y) | 3 |  |
 | Unsupported op com.microsoft.CDist | 3 |  |
-| ExpandDims output rank must be 1, got 0 | 2 |  |
-| ExpandDims output rank must be 3, got 2 | 2 |  |
 | Failed to build testbench (model.c:10176:17: error: pointer value used where a floating-point was expected). | 2 |  |
 | Failed to build testbench (model.c:10223:17: error: pointer value used where a floating-point was expected). | 2 |  |
 | Failed to build testbench (model.c:104:17: error: pointer value used where a floating-point was expected). | 2 |  |
@@ -194,7 +192,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op com.microsoft.UnfoldTensor | 2 |  |
 | Failed to build testbench (model.c:1144:21: error: pointer value used where a floating-point was expected). | 1 |  |
 | Failed to build testbench (model.c:168:17: error: pointer value used where a floating-point was expected). | 1 |  |
-| Failed to build testbench (model.c:174:13: error: incompatible implicit declaration of built-in function ‘memcpy’ [-Werror=builtin-declaration-mismatch]). | 1 | 1 |
 | Failed to build testbench (model.c:1974:21: error: pointer value used where a floating-point was expected). | 1 |  |
 | Failed to build testbench (model.c:2787:21: error: pointer value used where a floating-point was expected). | 1 |  |
 | Failed to build testbench (model.c:2814:21: error: pointer value used where a floating-point was expected). | 1 |  |
@@ -234,7 +231,6 @@ Aggregates non-success verification outcomes.
 
 | Error message | Opset | Count |
 | --- | --- | --- |
-| Failed to build testbench (model.c:174:13: error: incompatible implicit declaration of built-in function ‘memcpy’ [-Werror=builtin-declaration-mismatch]). | 1 | 1 |
 | Out of tolerance | 7 | 7 |
 | Out of tolerance | 17 | 13 |
 | RotaryEmbedding inputs must share the same dtype | 23 | 5 |
@@ -278,7 +274,6 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/crop_and_resize_op_test/CropAndResize_2122_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CropAndResize |
 | test/contrib_ops/decoder_masked_multihead_attention_op_test/cpu_cross_attn_fp32_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DecoderMaskedMultiHeadAttention |
 | test/contrib_ops/decoder_masked_multihead_attention_op_test/cpu_self_attn_fp32_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DecoderMaskedMultiHeadAttention |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_varied_types_run2/model.onnx | 1 | Data/Data | ❌ | Failed to build testbench (model.c:174:13: error: incompatible implicit declaration of built-in function ‘memcpy’ [-Werror=builtin-declaration-mismatch]). |
 | test/contrib_ops/dynamic_time_warping_op_test/simple_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.DynamicTimeWarping |
 | test/contrib_ops/embed_layer_norm_op_test/EmbedLayerNormBatch1_EmbeddingSum_NoMaskIndex_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.EmbedLayerNormalization |
 | test/contrib_ops/embed_layer_norm_op_test/EmbedLayerNormBatch1_EmbeddingSum_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.EmbedLayerNormalization |
@@ -290,10 +285,6 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/embed_layer_norm_op_test/EmbedLayerNormBatch3_PositionIds_BroadCast_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.EmbedLayerNormalization |
 | test/contrib_ops/embed_layer_norm_op_test/EmbedLayerNormBatch_Distill_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.EmbedLayerNormalization |
 | test/contrib_ops/embed_layer_norm_op_test/EmbedLayerNormLargeBatchSmallHiddenSize_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.EmbedLayerNormalization |
-| test/contrib_ops/expand_dims_test/NegativeAxisOutOfRange_run0/model.onnx |  | Data/Data | ❌ | ExpandDims output rank must be 3, got 2 |
-| test/contrib_ops/expand_dims_test/NegativeAxisOutOfRange_run1/model.onnx |  | Data/Data | ❌ | ExpandDims output rank must be 1, got 0 |
-| test/contrib_ops/expand_dims_test/PositiveAxisOutOfRange_run0/model.onnx |  | Data/Data | ❌ | ExpandDims output rank must be 3, got 2 |
-| test/contrib_ops/expand_dims_test/PositiveAxisOutOfRange_run1/model.onnx |  | Data/Data | ❌ | ExpandDims output rank must be 1, got 0 |
 | test/contrib_ops/fused_conv_test/Conv2D_Bias_Relu_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.FusedConv |
 | test/contrib_ops/fused_conv_test/Conv2D_HardSigmoid_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.FusedConv |
 | test/contrib_ops/fused_conv_test/Conv2D_Relu_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.FusedConv |

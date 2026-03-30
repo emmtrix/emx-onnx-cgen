@@ -8,7 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1796 / 1802, 99.7% | 1.20.1 |
-| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 2892 / 4182, 69.2% | n/a |
+| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 2897 / 4182, 69.3% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -1832,7 +1832,7 @@ Coverage 1796 / 1802 ONNX files (99.7%).
 
 Test directory: `emx-ort-test-artifacts-org/artifacts/onnxruntime`
 
-Coverage 2892 / 4182 ONNX files (69.2%).
+Coverage 2897 / 4182 ONNX files (69.3%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1971,7 +1971,7 @@ Coverage 2892 / 4182 ONNX files (69.2%).
 | test/contrib_ops/dynamic_slice_op_test/dynamic_slice_full_axes_run1/model.onnx | 1 | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/dynamic_slice_op_test/dynamic_slice_varied_types_run0/model.onnx | 1 | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/dynamic_slice_op_test/dynamic_slice_varied_types_run1/model.onnx | 1 | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_varied_types_run2/model.onnx | 1 | Data/Data | ❌ | Failed to build testbench (model.c:174:13: error: incompatible implicit declaration of built-in function ‘memcpy’ [-Werror=builtin-declaration-mismatch]). |
+| test/contrib_ops/dynamic_slice_op_test/dynamic_slice_varied_types_run2/model.onnx | 1 | Data/Data | ✅ | OK (no numeric comparisons) |
 | test/contrib_ops/dynamic_slice_op_test/dynamic_slice_varied_types_run3/model.onnx | 1 | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/dynamic_slice_op_test/dynamic_slice_varied_types_run4/model.onnx | 1 | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/dynamic_slice_op_test/dynamic_slice_with_axes_run0/model.onnx | 1 | Data/Data | ✅ | OK (max abs diff 0) |
@@ -2006,10 +2006,10 @@ Coverage 2892 / 4182 ONNX files (69.2%).
 | test/contrib_ops/expand_dims_test/MaxAxis_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/expand_dims_test/MinAxis_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/expand_dims_test/MinAxis_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/expand_dims_test/NegativeAxisOutOfRange_run0/model.onnx |  | Data/Data | ❌ | ExpandDims output rank must be 3, got 2 |
-| test/contrib_ops/expand_dims_test/NegativeAxisOutOfRange_run1/model.onnx |  | Data/Data | ❌ | ExpandDims output rank must be 1, got 0 |
-| test/contrib_ops/expand_dims_test/PositiveAxisOutOfRange_run0/model.onnx |  | Data/Data | ❌ | ExpandDims output rank must be 3, got 2 |
-| test/contrib_ops/expand_dims_test/PositiveAxisOutOfRange_run1/model.onnx |  | Data/Data | ❌ | ExpandDims output rank must be 1, got 0 |
+| test/contrib_ops/expand_dims_test/NegativeAxisOutOfRange_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/expand_dims_test/NegativeAxisOutOfRange_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/expand_dims_test/PositiveAxisOutOfRange_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/expand_dims_test/PositiveAxisOutOfRange_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/fastgelu_op_test/FastGeluWithBiasFloat32_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/fastgelu_op_test/FastGeluWithNullInput_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/fastgelu_op_test/FastGeluWithoutBiasFloat32_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
