@@ -6,12 +6,15 @@ for (idx_t {{ output_loop_vars[loop.index0] }} = 0; {{ output_loop_vars[loop.ind
     if (gather_index < 0) {
         gather_index += {{ axis_dim }};
     }
+    if (gather_index < 0 || gather_index >= (idx_t){{ axis_dim }}) {
+        exit(1);
+    }
 {% if packed %}
     idx_t packed_idx = {{ qaxis_output_var }} * {{ bits }} / 8;
     idx_t bit_shift = ({{ qaxis_output_var }} * {{ bits }}) % 8;
     int quant_val = ((int)(unsigned char){{ data }}{% for idx in data_index_parts %}[{% if idx == data_index_parts[quantize_axis] %}packed_idx{% else %}{{ idx }}{% endif %}]{% endfor %} >> bit_shift) & {{ bit_mask }};
 {% else %}
-    {{ compute_type }} quant_val = ({{ compute_type }}){{ data }}{% for idx in data_index_parts %}[{{ idx }}]{% endfor %};
+    {{ compute_type }} quant_val = ({{ compute_type }})({{ data_signed_c_type }}){{ data }}{% for idx in data_index_parts %}[{{ idx }}]{% endfor %};
 {% endif %}
     idx_t block_idx = {{ qaxis_output_var }} / {{ block_size }};
 {% if has_zero_points %}
@@ -20,7 +23,7 @@ for (idx_t {{ output_loop_vars[loop.index0] }} = 0; {{ output_loop_vars[loop.ind
     idx_t zp_bit_shift = (block_idx * {{ bits }}) % 8;
     int zp = ((int)(unsigned char){{ zero_points }}{% for idx in data_index_parts %}[{% if idx == data_index_parts[quantize_axis] %}zp_byte_idx{% else %}{{ idx }}{% endif %}]{% endfor %} >> zp_bit_shift) & {{ bit_mask }};
 {% else %}
-    {{ compute_type }} zp = ({{ compute_type }}){{ zero_points }}{% for idx in data_index_parts %}[{% if idx == data_index_parts[quantize_axis] %}block_idx{% else %}{{ idx }}{% endif %}]{% endfor %};
+    {{ compute_type }} zp = ({{ compute_type }})({{ data_signed_c_type }}){{ zero_points }}{% for idx in data_index_parts %}[{% if idx == data_index_parts[quantize_axis] %}block_idx{% else %}{{ idx }}{% endif %}]{% endfor %};
 {% endif %}
 {% else %}
     int zp = {{ default_zero_point }};
