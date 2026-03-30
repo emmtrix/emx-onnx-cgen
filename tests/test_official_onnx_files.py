@@ -213,6 +213,26 @@ MODEL_EXTRA_VERIFY_ARGS = {
             "WithConstantBInputs_run5",
         )
     },
+    **{
+        f"emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/qembed_layer_norm_op_test/{d}/model.onnx": (
+            "--max-ulp",
+            "500000",
+        )
+        for d in (
+            "EmbedLayerNormBatch1_run0",
+            "EmbedLayerNormBatch1_run1",
+            "EmbedLayerNormBatch1_Float16_run0",
+            "EmbedLayerNormBatch1_Float16_run1",
+            "EmbedLayerNormBatch2_run0",
+            "EmbedLayerNormBatch2_run1",
+            "EmbedLayerNormBatch2_NoMask_run0",
+            "EmbedLayerNormBatch2_NoMask_run1",
+            "EmbedLayerNormBatch_Distill_run0",
+            "EmbedLayerNormBatch_Distill_run1",
+            "EmbedLayerNormLargeBatchSmallHiddenSize_run0",
+            "EmbedLayerNormLargeBatchSmallHiddenSize_run1",
+        )
+    },
 }
 
 

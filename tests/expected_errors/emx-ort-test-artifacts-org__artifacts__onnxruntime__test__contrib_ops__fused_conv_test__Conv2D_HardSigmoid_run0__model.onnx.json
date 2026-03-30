@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.FusedConv",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/fused_conv_test/Conv2D_HardSigmoid_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::FusedConv"
-  ]
+  ],
+  "generated_checksum": "90b1e9011ee92a1355f06a945c63dc6d2027572f4cde71bf530756d4c7984fb2"
 }

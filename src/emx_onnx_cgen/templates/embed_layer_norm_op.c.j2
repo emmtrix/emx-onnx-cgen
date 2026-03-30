@@ -1,0 +1,52 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% if has_mask_index %}
+for (idx_t b = 0; b < {{ batch }}; ++b) {
+    int32_t cnt = 0;
+{% if has_mask %}
+    for (idx_t s = 0; s < {{ seq }}; ++s) {
+        if ({{ mask }}[b][s] != 0) ++cnt;
+    }
+{% endif %}
+    {{ mask_index }}[b] = cnt;
+}
+{% endif %}
+for (idx_t b = 0; b < {{ batch }}; ++b) {
+for (idx_t s = 0; s < {{ seq }}; ++s) {
+    idx_t word_id = (idx_t){{ input_ids }}[b][s];
+    idx_t pos = {% if has_position_ids %}(idx_t){{ position_ids }}[{% if pos_broadcast %}0{% else %}b{% endif %}][s]{% else %}s{% endif %};
+    {{ acc_type }} sum = {{ acc_zero_literal }};
+    for (idx_t h = 0; h < {{ hidden_size }}; ++h) {
+        {{ acc_type }} val = ({{ acc_type }}){{ word_embedding }}[word_id][h] + ({{ acc_type }}){{ position_embedding }}[pos][h];
+{% if has_segment_embedding %}
+        idx_t seg_id = (idx_t){{ segment_ids }}[b][s];
+        val += ({{ acc_type }}){{ segment_embedding }}[seg_id][h];
+{% endif %}
+        sum += val;
+    }
+    {{ acc_type }} mean = sum / {{ hidden_size }};
+    {{ acc_type }} var = {{ acc_zero_literal }};
+    for (idx_t h = 0; h < {{ hidden_size }}; ++h) {
+        {{ acc_type }} val = ({{ acc_type }}){{ word_embedding }}[word_id][h] + ({{ acc_type }}){{ position_embedding }}[pos][h];
+{% if has_segment_embedding %}
+        idx_t seg_id = (idx_t){{ segment_ids }}[b][s];
+        val += ({{ acc_type }}){{ segment_embedding }}[seg_id][h];
+{% endif %}
+        {{ acc_type }} diff = val - mean;
+        var += diff * diff;
+    }
+    var = var / {{ hidden_size }};
+    {{ acc_type }} inv_std = {{ acc_one_literal }} / {{ scalar_fn(SF.SQRT, acc_dtype) }}(var + {{ acc_epsilon_literal }});
+    for (idx_t h = 0; h < {{ hidden_size }}; ++h) {
+        {{ acc_type }} val = ({{ acc_type }}){{ word_embedding }}[word_id][h] + ({{ acc_type }}){{ position_embedding }}[pos][h];
+{% if has_segment_embedding %}
+        idx_t seg_id = (idx_t){{ segment_ids }}[b][s];
+        val += ({{ acc_type }}){{ segment_embedding }}[seg_id][h];
+{% endif %}
+{% if has_embedding_sum %}
+        {{ embedding_sum }}[b][s][h] = ({{ c_type }})val;
+{% endif %}
+        {{ output }}[b][s][h] = ({{ c_type }})((val - mean) * inv_std * ({{ acc_type }}){{ gamma }}[h] + ({{ acc_type }}){{ beta }}[h]);
+    }
+}
+}
+}
