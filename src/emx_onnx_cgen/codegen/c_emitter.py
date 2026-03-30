@@ -2050,6 +2050,9 @@ class CEmitter:
         includes: set[str] = {"#include <stdint.h>"}
         if emit_testbench:
             includes.add("#include <stdio.h>")
+            # testbench uses memcpy() to copy string tensor inputs
+            if ScalarType.STRING in {*model.input_dtypes, *model.output_dtypes}:
+                includes.add("#include <string.h>")
         if needs_weight_loader:
             includes.add("#include <stdio.h>")
         if extra_includes:

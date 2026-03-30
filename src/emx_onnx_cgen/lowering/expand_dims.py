@@ -32,13 +32,12 @@ def _resolve_axis(graph: Graph, node: Node) -> int | None:
     return int(np.array(axes_initializer.data).reshape(-1)[0])
 
 
-def _normalize_axis(axis: int, output_rank: int, node: Node) -> int:
+def _normalize_axis(axis: int, output_rank: int) -> int | None:
+    """Normalize the axis, returning None if it is out of range (ORT no-op)."""
     if axis < 0:
         axis += output_rank
     if axis < 0 or axis >= output_rank:
-        raise ShapeInferenceError(
-            f"{node.op_type} axis {axis} is out of range for output rank {output_rank}"
-        )
+        return None
     return axis
 
 
@@ -70,47 +69,56 @@ def lower_expand_dims(graph: Graph, node: Node) -> ReshapeOp:
     output_rank = len(input_shape) + 1
     axis = _resolve_axis(graph, node)
     if axis is not None:
-        normalized_axis = _normalize_axis(axis, output_rank, node)
-        expected_shape: list[int] = []
-        input_index = 0
-        for i in range(output_rank):
-            if i == normalized_axis:
-                expected_shape.append(1)
-            else:
-                expected_shape.append(input_shape[input_index])
-                input_index += 1
-        if output_shape and tuple(expected_shape) != output_shape:
-            raise ShapeInferenceError(
-                f"ExpandDims output shape must be {tuple(expected_shape)}, "
-                f"got {output_shape}"
-            )
-        output_shape = tuple(expected_shape)
+        normalized_axis = _normalize_axis(axis, output_rank)
+        if normalized_axis is None:
+            # Out-of-range axis: ORT returns the input unchanged (identity).
+            output_shape = input_shape
+        else:
+            expected_shape: list[int] = []
+            input_index = 0
+            for i in range(output_rank):
+                if i == normalized_axis:
+                    expected_shape.append(1)
+                else:
+                    expected_shape.append(input_shape[input_index])
+                    input_index += 1
+            if output_shape and tuple(expected_shape) != output_shape:
+                raise ShapeInferenceError(
+                    f"ExpandDims output shape must be {tuple(expected_shape)}, "
+                    f"got {output_shape}"
+                )
+            output_shape = tuple(expected_shape)
     else:
         # Axis is a dynamic input; infer from the known output shape.
-        if len(output_shape) != output_rank:
+        # If the declared output shape matches the input shape (out-of-range axis
+        # behavior from ORT), treat this as an identity op.
+        if output_shape == input_shape:
+            pass
+        elif len(output_shape) != output_rank:
             raise ShapeInferenceError(
                 f"ExpandDims output rank must be {output_rank}, got {len(output_shape)}"
             )
-        for dim in output_shape:
-            if dim < 0:
-                raise ShapeInferenceError(
-                    f"{node.op_type} does not support dynamic dims in output"
-                )
-        inserted = 0
-        input_index = 0
-        for dim in output_shape:
-            if input_index < len(input_shape) and dim == input_shape[input_index]:
-                input_index += 1
-            else:
-                if dim != 1:
+        else:
+            for dim in output_shape:
+                if dim < 0:
                     raise ShapeInferenceError(
-                        "ExpandDims output shape must insert exactly one 1-dim"
+                        f"{node.op_type} does not support dynamic dims in output"
                     )
-                inserted += 1
-        if inserted != 1 or input_index != len(input_shape):
-            raise ShapeInferenceError(
-                "ExpandDims output shape must insert exactly one 1-dim into the input shape"
-            )
+            inserted = 0
+            input_index = 0
+            for dim in output_shape:
+                if input_index < len(input_shape) and dim == input_shape[input_index]:
+                    input_index += 1
+                else:
+                    if dim != 1:
+                        raise ShapeInferenceError(
+                            "ExpandDims output shape must insert exactly one 1-dim"
+                        )
+                    inserted += 1
+            if inserted != 1 or input_index != len(input_shape):
+                raise ShapeInferenceError(
+                    "ExpandDims output shape must insert exactly one 1-dim into the input shape"
+                )
     if isinstance(graph, GraphContext):
         graph.set_shape(node.outputs[0], output_shape)
     return ReshapeOp(

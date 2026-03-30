@@ -2,7 +2,11 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% for dim in output_shape %}
 for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}
+{% if is_string %}
+memcpy({{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %}, {{ input0 }}{% for idx in input_indices %}[{{ idx }}]{% endfor %}, EMX_STRING_MAX_LEN);
+{% else %}
 {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {{ input0 }}{% for idx in input_indices %}[{{ idx }}]{% endfor %};
+{% endif %}
 {% for _ in output_shape %}
 }
 {% endfor %}

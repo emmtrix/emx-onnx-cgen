@@ -2896,6 +2896,11 @@ class SliceOp(RenderableOpBase):
                 dtypes.add(ctx.dtype(name))
         return dtypes
 
+    def required_includes(self, ctx: "OpContext") -> set[str]:
+        if ctx.dtype(self.output) == ScalarType.STRING:
+            return {"#include <string.h>"}
+        return set()
+
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -2927,8 +2932,12 @@ class SliceOp(RenderableOpBase):
                         input_indices.append(f"{start} + {loop_var}")
                 else:
                     input_indices.append(f"{start} + {step} * {loop_var}")
-            input_suffix = emitter.param_array_suffix(input_shape_raw)
-            output_suffix = emitter.param_array_suffix(output_shape_raw)
+            input_suffix = emitter.param_array_suffix(
+                input_shape_raw, dtype=output_dtype
+            )
+            output_suffix = emitter.param_array_suffix(
+                output_shape_raw, dtype=output_dtype
+            )
             param_decls = emitter.build_param_decls(
                 [
                     (name_params["input0"], c_type, input_suffix, True),
@@ -2949,12 +2958,13 @@ class SliceOp(RenderableOpBase):
                     output_shape=output_shape,
                     loop_vars=loop_vars,
                     input_indices=input_indices,
+                    is_string=output_dtype == ScalarType.STRING,
                 )
                 .rstrip()
             )
             return emitter.with_node_comment(model, ctx.op_index, rendered)
-        input_suffix = emitter.param_array_suffix(input_shape_raw)
-        output_suffix = emitter.param_array_suffix(output_shape_raw)
+        input_suffix = emitter.param_array_suffix(input_shape_raw, dtype=output_dtype)
+        output_suffix = emitter.param_array_suffix(output_shape_raw, dtype=output_dtype)
         params = emitter.build_param_decls(
             [
                 (name_params["input0"], c_type, input_suffix, True),
@@ -3024,6 +3034,7 @@ class SliceOp(RenderableOpBase):
                 starts_len=(
                     emitter.ctx_shape(self.starts_input)[0] if self.starts_input else 0
                 ),
+                is_string=output_dtype == ScalarType.STRING,
             )
             .rstrip()
         )
