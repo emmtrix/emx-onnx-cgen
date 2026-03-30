@@ -43,6 +43,7 @@ _LOWERING_MODULES = [
     "dft",
     "einsum",
     "elementwise",
+    "embed_layer_norm",
     "expand",
     "fast_gelu",
     "expand_dims",

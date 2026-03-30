@@ -6565,6 +6565,230 @@ class SkipLayerNormalizationOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class EmbedLayerNormOp(RenderableOpBase):
+    __io_inputs__ = (
+        "input_ids",
+        "segment_ids",
+        "word_embedding",
+        "position_embedding",
+        "segment_embedding",
+        "gamma",
+        "beta",
+        "mask",
+        "position_ids",
+    )
+    __io_outputs__ = ("output", "mask_index", "embedding_sum")
+
+    input_ids: str
+    segment_ids: str | None
+    word_embedding: str
+    position_embedding: str
+    segment_embedding: str | None
+    gamma: str
+    beta: str
+    mask: str | None
+    position_ids: str | None
+    output: str
+    mask_index: str | None
+    embedding_sum: str | None
+
+    batch: int
+    seq: int
+    hidden_size: int
+    vocab_size: int
+    max_pos: int
+    pos_ids_batch: int  # 1 if position_ids is broadcast over batch, else batch
+
+    dtype: ScalarType  # float dtype for embeddings and output
+    ids_dtype: ScalarType  # int dtype for input_ids / segment_ids / position_ids
+
+    epsilon: float
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def extra_model_dtypes(self, ctx: OpContext) -> set["ScalarType"]:
+        dtypes: set[ScalarType] = {self.ids_dtype}
+        dtypes.add(ScalarType.I32)
+        return dtypes
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.output)
+        c_type = output_dtype.c_type
+        ids_c_type = self.ids_dtype.c_type
+        mask_c_type = ScalarType.I32.c_type
+        mask_index_c_type = ScalarType.I32.c_type
+        acc_dtype = emitter.accumulation_dtype(self.dtype)
+        acc_type = acc_dtype.c_type
+        acc_zero_literal = emitter.format_literal(acc_dtype, 0)
+        acc_one_literal = emitter.format_literal(acc_dtype, 1)
+        acc_epsilon_literal = emitter.format_floating(self.epsilon, acc_dtype)
+        params = emitter.shared_param_map(
+            [
+                ("input_ids", self.input_ids),
+                ("segment_ids", self.segment_ids),
+                ("word_embedding", self.word_embedding),
+                ("position_embedding", self.position_embedding),
+                ("segment_embedding", self.segment_embedding),
+                ("gamma", self.gamma),
+                ("beta", self.beta),
+                ("mask", self.mask),
+                ("position_ids", self.position_ids),
+                ("output", self.output),
+                ("mask_index", self.mask_index),
+                ("embedding_sum", self.embedding_sum),
+            ]
+        )
+        ids_suffix = emitter.param_array_suffix((self.batch, self.seq))
+        seg_ids_suffix = emitter.param_array_suffix((self.batch, self.seq))
+        word_emb_suffix = emitter.param_array_suffix(
+            (self.vocab_size, self.hidden_size)
+        )
+        pos_emb_suffix = emitter.param_array_suffix((self.max_pos, self.hidden_size))
+        seg_emb_suffix = emitter.param_array_suffix((2, self.hidden_size))
+        gamma_suffix = emitter.param_array_suffix((self.hidden_size,))
+        beta_suffix = emitter.param_array_suffix((self.hidden_size,))
+        mask_suffix = emitter.param_array_suffix((self.batch, self.seq))
+        pos_ids_suffix = emitter.param_array_suffix((self.pos_ids_batch, self.seq))
+        output_suffix = emitter.param_array_suffix(
+            (self.batch, self.seq, self.hidden_size)
+        )
+        mask_index_suffix = emitter.param_array_suffix((self.batch,))
+        emb_sum_suffix = emitter.param_array_suffix(
+            (self.batch, self.seq, self.hidden_size)
+        )
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input_ids"], ids_c_type, ids_suffix, True),
+                (
+                    (params["segment_ids"], ids_c_type, seg_ids_suffix, True)
+                    if params["segment_ids"]
+                    else (None, "", "", True)
+                ),
+                (params["word_embedding"], c_type, word_emb_suffix, True),
+                (params["position_embedding"], c_type, pos_emb_suffix, True),
+                (
+                    (params["segment_embedding"], c_type, seg_emb_suffix, True)
+                    if params["segment_embedding"]
+                    else (None, "", "", True)
+                ),
+                (params["gamma"], c_type, gamma_suffix, True),
+                (params["beta"], c_type, beta_suffix, True),
+                (
+                    (params["mask"], mask_c_type, mask_suffix, True)
+                    if params["mask"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (params["position_ids"], ids_c_type, pos_ids_suffix, True)
+                    if params["position_ids"]
+                    else (None, "", "", True)
+                ),
+                (params["output"], c_type, output_suffix, False),
+                (
+                    (params["mask_index"], mask_index_c_type, mask_index_suffix, False)
+                    if params["mask_index"]
+                    else (None, "", "", False)
+                ),
+                (
+                    (params["embedding_sum"], c_type, emb_sum_suffix, False)
+                    if params["embedding_sum"]
+                    else (None, "", "", False)
+                ),
+            ]
+        )
+        rendered = (
+            state.templates["embed_layer_norm"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input_ids=params["input_ids"],
+                segment_ids=params["segment_ids"],
+                word_embedding=params["word_embedding"],
+                position_embedding=params["position_embedding"],
+                segment_embedding=params["segment_embedding"],
+                gamma=params["gamma"],
+                beta=params["beta"],
+                mask=params["mask"],
+                position_ids=params["position_ids"],
+                output=params["output"],
+                mask_index=params["mask_index"],
+                embedding_sum=params["embedding_sum"],
+                params=param_decls,
+                c_type=c_type,
+                batch=self.batch,
+                seq=self.seq,
+                hidden_size=self.hidden_size,
+                acc_type=acc_type,
+                acc_zero_literal=acc_zero_literal,
+                acc_one_literal=acc_one_literal,
+                acc_epsilon_literal=acc_epsilon_literal,
+                acc_dtype=acc_dtype,
+                has_segment_embedding=self.segment_embedding is not None,
+                has_mask=self.mask is not None,
+                has_mask_index=self.mask_index is not None,
+                has_embedding_sum=self.embedding_sum is not None,
+                has_position_ids=self.position_ids is not None,
+                pos_broadcast=self.pos_ids_batch == 1,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return (self.batch, self.seq, self.hidden_size)
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        inputs: list[tuple[str, tuple[int, ...]]] = [
+            (self.input_ids, (self.batch, self.seq)),
+        ]
+        if self.segment_ids is not None:
+            inputs.append((self.segment_ids, (self.batch, self.seq)))
+        inputs.extend(
+            [
+                (self.word_embedding, (self.vocab_size, self.hidden_size)),
+                (self.position_embedding, (self.max_pos, self.hidden_size)),
+            ]
+        )
+        if self.segment_embedding is not None:
+            inputs.append((self.segment_embedding, (2, self.hidden_size)))
+        inputs.extend(
+            [
+                (self.gamma, (self.hidden_size,)),
+                (self.beta, (self.hidden_size,)),
+            ]
+        )
+        if self.mask is not None:
+            inputs.append((self.mask, (self.batch, self.seq)))
+        if self.position_ids is not None:
+            inputs.append((self.position_ids, (self.pos_ids_batch, self.seq)))
+        return tuple(inputs)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        outputs: list[tuple[str, tuple[int, ...], ScalarType]] = [
+            (self.output, (self.batch, self.seq, self.hidden_size), self.dtype),
+        ]
+        if self.mask_index is not None:
+            outputs.append((self.mask_index, (self.batch,), ScalarType.I32))
+        if self.embedding_sum is not None:
+            outputs.append(
+                (
+                    self.embedding_sum,
+                    (self.batch, self.seq, self.hidden_size),
+                    self.dtype,
+                )
+            )
+        return tuple(outputs)
+
+
+@dataclass(frozen=True)
 class MeanVarianceNormalizationOp(RenderableOpBase):
     __io_inputs__ = ("input0",)
     __io_outputs__ = ("output",)

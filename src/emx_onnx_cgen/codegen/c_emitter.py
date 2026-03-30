@@ -114,6 +114,7 @@ from ..ir.ops import (
     RoiAlignOp,
     ShapeOp,
     SizeOp,
+    EmbedLayerNormOp,
     SkipLayerNormalizationOp,
     SliceOp,
     SoftmaxCrossEntropyLossOp,
@@ -1104,6 +1105,9 @@ class CEmitter:
                 "layer_norm": self._env.get_template("layer_normalization_op.c.j2"),
                 "skip_layer_norm": self._env.get_template(
                     "skip_layer_normalization_op.c.j2"
+                ),
+                "embed_layer_norm": self._env.get_template(
+                    "embed_layer_norm_op.c.j2"
                 ),
                 "mean_variance_norm": self._env.get_template(
                     "mean_variance_normalization_op.c.j2"
@@ -2243,6 +2247,7 @@ class CEmitter:
             | GroupNormalizationOp
             | LayerNormalizationOp
             | SkipLayerNormalizationOp
+            | EmbedLayerNormOp
             | MeanVarianceNormalizationOp
             | RMSNormalizationOp
             | LrnOp
