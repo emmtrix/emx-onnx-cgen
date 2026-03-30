@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.MatMulInteger16",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/matmul_integer16_test/MatMulInteger16_1_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::MatMulInteger16"
-  ]
+  ],
+  "generated_checksum": "80ea47bbdd29da1538f06b8749b5dcf5e5b3b149c09adbc054edbc3427d45067"
 }

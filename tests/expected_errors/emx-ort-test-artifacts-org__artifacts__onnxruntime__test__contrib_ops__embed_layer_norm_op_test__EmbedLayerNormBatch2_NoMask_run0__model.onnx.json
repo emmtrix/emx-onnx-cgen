@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.EmbedLayerNormalization",
+  "error": "OK (max abs diff 0, max ULP 9)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/embed_layer_norm_op_test/EmbedLayerNormBatch2_NoMask_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::EmbedLayerNormalization"
-  ]
+  ],
+  "generated_checksum": "f242452979d5a275d94d6823169c382f895ad2c394299c1f33f4f56919dd51d4"
 }

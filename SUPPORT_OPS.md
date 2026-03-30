@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 240 / 256
+Supported operators: 245 / 256
 
 | Operator | Supported |
 | --- | --- |
@@ -219,22 +219,22 @@ Supported operators: 240 / 256
 | com.microsoft::BifurcationDetector | ❌ |
 | com.microsoft::CDist | ✅ |
 | com.microsoft::ConvTransposeWithDynamicPads | ❌ |
-| com.microsoft::CropAndResize | ❌ |
+| com.microsoft::CropAndResize | ✅ |
 | com.microsoft::DecoderMaskedMultiHeadAttention | ❌ |
 | com.microsoft::DequantizeLinear | ✅ |
 | com.microsoft::DynamicQuantizeLSTM | ✅ |
 | com.microsoft::DynamicQuantizeMatMul | ✅ |
 | com.microsoft::DynamicTimeWarping | ✅ |
-| com.microsoft::EmbedLayerNormalization | ❌ |
+| com.microsoft::EmbedLayerNormalization | ✅ |
 | com.microsoft::ExpandDims | ✅ |
 | com.microsoft::FastGelu | ✅ |
-| com.microsoft::FusedConv | ❌ |
+| com.microsoft::FusedConv | ✅ |
 | com.microsoft::FusedMatMul | ✅ |
 | com.microsoft::GatherBlockQuantized | ✅ |
 | com.microsoft::GridSample | ✅ |
 | com.microsoft::Inverse | ✅ |
 | com.microsoft::MatMulBnb4 | ✅ |
-| com.microsoft::MatMulInteger16 | ❌ |
+| com.microsoft::MatMulInteger16 | ✅ |
 | com.microsoft::MatMulIntegerToFloat | ✅ |
 | com.microsoft::MatMulNBits | ✅ |
 | com.microsoft::MaxpoolWithMask | ❌ |
@@ -244,7 +244,7 @@ Supported operators: 240 / 256
 | com.microsoft::NGramRepeatBlock | ✅ |
 | com.microsoft::NhwcMaxPool | ✅ |
 | com.microsoft::QAttention | ✅ |
-| com.microsoft::QEmbedLayerNormalization | ❌ |
+| com.microsoft::QEmbedLayerNormalization | ✅ |
 | com.microsoft::QGemm | ✅ |
 | com.microsoft::QLinearAdd | ✅ |
 | com.microsoft::QLinearAveragePool | ✅ |

@@ -920,6 +920,114 @@ class MatMulIntegerOp(MatMulLikeOpBase):
 
 
 @dataclass(frozen=True)
+class MatMulInteger16Op(MatMulLikeOpBase):
+    """INT16 × INT16 → INT32 matrix multiplication (com.microsoft contrib op).
+
+    Computes ``Y = A @ B`` where A and B are INT16 tensors and Y is INT32.
+    Unlike :class:`MatMulIntegerOp` (INT8 variant), this operator does not
+    accept zero-point inputs; the accumulation is simply
+    ``sum_k((int32_t)A[..., k] * (int32_t)B[k, ...])``.
+    """
+
+    __io_inputs__ = ("input0", "input1")
+    input0: str
+    input1: str
+    output: str
+    input0_shape: tuple[int, ...]
+    input1_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    batch_shape: tuple[int, ...]
+    input0_batch_shape: tuple[int, ...]
+    input1_batch_shape: tuple[int, ...]
+    m: int
+    n: int
+    k: int
+    left_vector: bool
+    right_vector: bool
+    dtype: ScalarType
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("input1", self.input1),
+                ("output", self.output),
+            ]
+        )
+        output_shape = CEmitterCompat.codegen_shape(self.output_shape)
+        output_loop_vars = CEmitterCompat.loop_vars(output_shape)
+        output_index_expr = f"{params['output']}" + "".join(
+            f"[{var}]" for var in output_loop_vars
+        )
+        batch_rank = len(self.batch_shape)
+        batch_vars = output_loop_vars[:batch_rank]
+        if self.left_vector and self.right_vector:
+            row_var = None
+            col_var = None
+        elif self.left_vector:
+            row_var = None
+            col_var = output_loop_vars[-1]
+        elif self.right_vector:
+            row_var = output_loop_vars[-1]
+            col_var = None
+        else:
+            row_var = output_loop_vars[-2]
+            col_var = output_loop_vars[-1]
+        input0_index_expr, input1_index_expr = CEmitterCompat.matmul_index_exprs(
+            batch_vars,
+            row_var,
+            col_var,
+            batch_rank,
+            input0=params["input0"],
+            input1=params["input1"],
+            left_vector=self.left_vector,
+            right_vector=self.right_vector,
+            input0_shape=self.input0_shape,
+            input1_shape=self.input1_shape,
+            input0_batch_shape=self.input0_batch_shape,
+            input1_batch_shape=self.input1_batch_shape,
+        )
+        input0_suffix = emitter.param_array_suffix(self.input0_shape)
+        input1_suffix = emitter.param_array_suffix(self.input1_shape)
+        output_suffix = emitter.param_array_suffix(self.output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], ScalarType.I16.c_type, input0_suffix, True),
+                (params["input1"], ScalarType.I16.c_type, input1_suffix, True),
+                (params["output"], self.dtype.c_type, output_suffix, False),
+            ]
+        )
+        rendered = (
+            state.templates["matmul_integer16"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                input1=params["input1"],
+                output=params["output"],
+                params=param_decls,
+                output_c_type=self.dtype.c_type,
+                output_loop_vars=output_loop_vars,
+                output_loop_bounds=output_shape,
+                output_index_expr=output_index_expr,
+                input0_index_expr=input0_index_expr,
+                input1_index_expr=input1_index_expr,
+                k=self.k,
+                dim_args=dim_args,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.output_shape
+
+
+@dataclass(frozen=True)
 class MatMulNBitsOp(RenderableOpBase):
     """N-bit block-quantized matrix multiplication (com.microsoft contrib op).
 
@@ -3576,6 +3684,156 @@ class ConvOp(ConvLikeOpBase):
                 out_indices=out_indices,
                 kernel_indices=kernel_indices,
                 in_indices=in_indices,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+
+@dataclass(frozen=True)
+class FusedConvOp(ConvLikeOpBase):
+    """com.microsoft::FusedConv — Conv with optional Z residual and fused activation."""
+
+    __io_inputs__ = ("input0", "weights", "bias", "z_input")
+
+    input0: str
+    weights: str
+    bias: str | None
+    z_input: str | None
+    output: str
+    batch: int
+    in_channels: int
+    out_channels: int
+    spatial_rank: int
+    in_spatial: tuple[int, ...]
+    out_spatial: tuple[int, ...]
+    kernel_shape: tuple[int, ...]
+    strides: tuple[int, ...]
+    pads: tuple[int, ...]
+    dilations: tuple[int, ...]
+    group: int
+    dtype: ScalarType
+    activation: str
+    activation_params: tuple[float, ...]
+
+    @property
+    def out_h(self) -> int:
+        if self.spatial_rank < 1:
+            raise ValueError(
+                "FusedConv output height is undefined for spatial_rank < 1"
+            )
+        return self.out_spatial[0]
+
+    @property
+    def out_w(self) -> int:
+        if self.spatial_rank < 2:
+            raise ValueError("FusedConv output width is undefined for spatial_rank < 2")
+        return self.out_spatial[1]
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        c_type = emitter.ctx_dtype(self.output).c_type
+        zero_literal = emitter.ctx_dtype(self.output).zero_literal
+        params_map = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("weights", self.weights),
+                ("bias", self.bias),
+                ("z_input", self.z_input),
+                ("output", self.output),
+            ]
+        )
+        acc_dtype = emitter.accumulation_dtype(self.dtype)
+        acc_type = acc_dtype.c_type
+        acc_zero_literal = emitter.format_literal(acc_dtype, 0)
+        one_literal = emitter.format_literal(acc_dtype, 1)
+        input_shape = (self.batch, self.in_channels, *self.in_spatial)
+        weight_shape = (
+            self.out_channels,
+            self.in_channels // self.group,
+            *self.kernel_shape,
+        )
+        output_shape = (self.batch, self.out_channels, *self.out_spatial)
+        input_dim_names = emitter.dim_names_for(self.input0)
+        output_dim_names = emitter.dim_names_for(self.output)
+        input_shape_expr = CEmitterCompat.shape_dim_exprs(input_shape, input_dim_names)
+        output_shape_expr = CEmitterCompat.shape_dim_exprs(
+            output_shape, output_dim_names
+        )
+        out_indices = tuple(f"od{dim}" for dim in range(self.spatial_rank))
+        kernel_indices = tuple(f"kd{dim}" for dim in range(self.spatial_rank))
+        in_indices = tuple(f"id{dim}" for dim in range(self.spatial_rank))
+        pad_begin = self.pads[: self.spatial_rank]
+        group_in_channels = self.in_channels // self.group
+        group_out_channels = self.out_channels // self.group
+        input_suffix = emitter.param_array_suffix(input_shape, input_dim_names)
+        weight_suffix = emitter.param_array_suffix(weight_shape)
+        bias_suffix = emitter.param_array_suffix((self.out_channels,))
+        output_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
+        param_entries = [
+            (params_map["input0"], c_type, input_suffix, True),
+            (params_map["weights"], c_type, weight_suffix, True),
+            (
+                (params_map["bias"], c_type, bias_suffix, True)
+                if params_map["bias"]
+                else (None, "", "", True)
+            ),
+            (
+                (params_map["z_input"], c_type, output_suffix, True)
+                if params_map["z_input"]
+                else (None, "", "", True)
+            ),
+            (params_map["output"], c_type, output_suffix, False),
+        ]
+        param_decls = emitter.build_param_decls(param_entries)
+        alpha_literal = emitter.format_literal(
+            acc_dtype, self.activation_params[0] if self.activation_params else 0.0
+        )
+        beta_literal = emitter.format_literal(
+            acc_dtype,
+            self.activation_params[1] if len(self.activation_params) > 1 else 0.0,
+        )
+        rendered = (
+            state.templates["fused_conv"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params_map["input0"],
+                weights=params_map["weights"],
+                bias=params_map["bias"],
+                z_input=params_map["z_input"],
+                output=params_map["output"],
+                params=param_decls,
+                c_type=c_type,
+                acc_type=acc_type,
+                acc_zero_literal=acc_zero_literal,
+                zero_literal=zero_literal,
+                one_literal=one_literal,
+                alpha_literal=alpha_literal,
+                beta_literal=beta_literal,
+                input_suffix=input_suffix,
+                weight_suffix=weight_suffix,
+                bias_suffix=bias_suffix,
+                output_suffix=output_suffix,
+                batch=input_shape_expr[0],
+                in_channels=self.in_channels,
+                out_channels=self.out_channels,
+                spatial_rank=self.spatial_rank,
+                in_spatial=input_shape_expr[2:],
+                out_spatial=output_shape_expr[2:],
+                kernel_shape=self.kernel_shape,
+                strides=self.strides,
+                pads_begin=pad_begin,
+                dilations=self.dilations,
+                group=self.group,
+                group_in_channels=group_in_channels,
+                group_out_channels=group_out_channels,
+                out_indices=out_indices,
+                kernel_indices=kernel_indices,
+                in_indices=in_indices,
+                activation=self.activation,
             )
             .rstrip()
         )
@@ -6309,6 +6567,432 @@ class SkipLayerNormalizationOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class EmbedLayerNormOp(RenderableOpBase):
+    __io_inputs__ = (
+        "input_ids",
+        "segment_ids",
+        "word_embedding",
+        "position_embedding",
+        "segment_embedding",
+        "gamma",
+        "beta",
+        "mask",
+        "position_ids",
+    )
+    __io_outputs__ = ("output", "mask_index", "embedding_sum")
+
+    input_ids: str
+    segment_ids: str | None
+    word_embedding: str
+    position_embedding: str
+    segment_embedding: str | None
+    gamma: str
+    beta: str
+    mask: str | None
+    position_ids: str | None
+    output: str
+    mask_index: str | None
+    embedding_sum: str | None
+
+    batch: int
+    seq: int
+    hidden_size: int
+    vocab_size: int
+    max_pos: int
+    pos_ids_batch: int  # 1 if position_ids is broadcast over batch, else batch
+
+    dtype: ScalarType  # float dtype for embeddings and output
+    ids_dtype: ScalarType  # int dtype for input_ids / segment_ids / position_ids
+
+    epsilon: float
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def extra_model_dtypes(self, ctx: OpContext) -> set["ScalarType"]:
+        dtypes: set[ScalarType] = {self.ids_dtype}
+        dtypes.add(ScalarType.I32)
+        return dtypes
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.output)
+        c_type = output_dtype.c_type
+        ids_c_type = self.ids_dtype.c_type
+        mask_c_type = ScalarType.I32.c_type
+        mask_index_c_type = ScalarType.I32.c_type
+        acc_dtype = emitter.accumulation_dtype(self.dtype)
+        acc_type = acc_dtype.c_type
+        acc_zero_literal = emitter.format_literal(acc_dtype, 0)
+        acc_one_literal = emitter.format_literal(acc_dtype, 1)
+        acc_epsilon_literal = emitter.format_floating(self.epsilon, acc_dtype)
+        params = emitter.shared_param_map(
+            [
+                ("input_ids", self.input_ids),
+                ("segment_ids", self.segment_ids),
+                ("word_embedding", self.word_embedding),
+                ("position_embedding", self.position_embedding),
+                ("segment_embedding", self.segment_embedding),
+                ("gamma", self.gamma),
+                ("beta", self.beta),
+                ("mask", self.mask),
+                ("position_ids", self.position_ids),
+                ("output", self.output),
+                ("mask_index", self.mask_index),
+                ("embedding_sum", self.embedding_sum),
+            ]
+        )
+        ids_suffix = emitter.param_array_suffix((self.batch, self.seq))
+        seg_ids_suffix = emitter.param_array_suffix((self.batch, self.seq))
+        word_emb_suffix = emitter.param_array_suffix(
+            (self.vocab_size, self.hidden_size)
+        )
+        pos_emb_suffix = emitter.param_array_suffix((self.max_pos, self.hidden_size))
+        seg_emb_suffix = emitter.param_array_suffix((2, self.hidden_size))
+        gamma_suffix = emitter.param_array_suffix((self.hidden_size,))
+        beta_suffix = emitter.param_array_suffix((self.hidden_size,))
+        mask_suffix = emitter.param_array_suffix((self.batch, self.seq))
+        pos_ids_suffix = emitter.param_array_suffix((self.pos_ids_batch, self.seq))
+        output_suffix = emitter.param_array_suffix(
+            (self.batch, self.seq, self.hidden_size)
+        )
+        mask_index_suffix = emitter.param_array_suffix((self.batch,))
+        emb_sum_suffix = emitter.param_array_suffix(
+            (self.batch, self.seq, self.hidden_size)
+        )
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input_ids"], ids_c_type, ids_suffix, True),
+                (
+                    (params["segment_ids"], ids_c_type, seg_ids_suffix, True)
+                    if params["segment_ids"]
+                    else (None, "", "", True)
+                ),
+                (params["word_embedding"], c_type, word_emb_suffix, True),
+                (params["position_embedding"], c_type, pos_emb_suffix, True),
+                (
+                    (params["segment_embedding"], c_type, seg_emb_suffix, True)
+                    if params["segment_embedding"]
+                    else (None, "", "", True)
+                ),
+                (params["gamma"], c_type, gamma_suffix, True),
+                (params["beta"], c_type, beta_suffix, True),
+                (
+                    (params["mask"], mask_c_type, mask_suffix, True)
+                    if params["mask"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (params["position_ids"], ids_c_type, pos_ids_suffix, True)
+                    if params["position_ids"]
+                    else (None, "", "", True)
+                ),
+                (params["output"], c_type, output_suffix, False),
+                (
+                    (params["mask_index"], mask_index_c_type, mask_index_suffix, False)
+                    if params["mask_index"]
+                    else (None, "", "", False)
+                ),
+                (
+                    (params["embedding_sum"], c_type, emb_sum_suffix, False)
+                    if params["embedding_sum"]
+                    else (None, "", "", False)
+                ),
+            ]
+        )
+        rendered = (
+            state.templates["embed_layer_norm"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input_ids=params["input_ids"],
+                segment_ids=params["segment_ids"],
+                word_embedding=params["word_embedding"],
+                position_embedding=params["position_embedding"],
+                segment_embedding=params["segment_embedding"],
+                gamma=params["gamma"],
+                beta=params["beta"],
+                mask=params["mask"],
+                position_ids=params["position_ids"],
+                output=params["output"],
+                mask_index=params["mask_index"],
+                embedding_sum=params["embedding_sum"],
+                params=param_decls,
+                c_type=c_type,
+                batch=self.batch,
+                seq=self.seq,
+                hidden_size=self.hidden_size,
+                acc_type=acc_type,
+                acc_zero_literal=acc_zero_literal,
+                acc_one_literal=acc_one_literal,
+                acc_epsilon_literal=acc_epsilon_literal,
+                acc_dtype=acc_dtype,
+                has_segment_embedding=self.segment_embedding is not None,
+                has_mask=self.mask is not None,
+                has_mask_index=self.mask_index is not None,
+                has_embedding_sum=self.embedding_sum is not None,
+                has_position_ids=self.position_ids is not None,
+                pos_broadcast=self.pos_ids_batch == 1,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return (self.batch, self.seq, self.hidden_size)
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        inputs: list[tuple[str, tuple[int, ...]]] = [
+            (self.input_ids, (self.batch, self.seq)),
+        ]
+        if self.segment_ids is not None:
+            inputs.append((self.segment_ids, (self.batch, self.seq)))
+        inputs.extend(
+            [
+                (self.word_embedding, (self.vocab_size, self.hidden_size)),
+                (self.position_embedding, (self.max_pos, self.hidden_size)),
+            ]
+        )
+        if self.segment_embedding is not None:
+            inputs.append((self.segment_embedding, (2, self.hidden_size)))
+        inputs.extend(
+            [
+                (self.gamma, (self.hidden_size,)),
+                (self.beta, (self.hidden_size,)),
+            ]
+        )
+        if self.mask is not None:
+            inputs.append((self.mask, (self.batch, self.seq)))
+        if self.position_ids is not None:
+            inputs.append((self.position_ids, (self.pos_ids_batch, self.seq)))
+        return tuple(inputs)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        outputs: list[tuple[str, tuple[int, ...], ScalarType]] = [
+            (self.output, (self.batch, self.seq, self.hidden_size), self.dtype),
+        ]
+        if self.mask_index is not None:
+            outputs.append((self.mask_index, (self.batch,), ScalarType.I32))
+        if self.embedding_sum is not None:
+            outputs.append(
+                (
+                    self.embedding_sum,
+                    (self.batch, self.seq, self.hidden_size),
+                    self.dtype,
+                )
+            )
+        return tuple(outputs)
+
+
+@dataclass(frozen=True)
+class QEmbedLayerNormOp(RenderableOpBase):
+    __io_inputs__ = (
+        "input_ids",
+        "segment_ids",
+        "word_embedding_data",
+        "position_embedding_data",
+        "segment_embedding_data",
+        "gamma",
+        "beta",
+        "mask",
+    )
+    __io_outputs__ = ("output", "mask_index")
+
+    input_ids: str
+    segment_ids: str | None
+    word_embedding_data: str
+    position_embedding_data: str
+    segment_embedding_data: str | None
+    gamma: str
+    beta: str
+    mask: str | None
+    output: str
+    mask_index: str | None
+
+    batch: int
+    seq: int
+    hidden_size: int
+    vocab_size: int
+    max_pos: int
+
+    word_scale: float
+    word_zp: int
+    pos_scale: float
+    pos_zp: int
+    seg_scale: float
+    seg_zp: int
+    gamma_scale: float
+    gamma_zp: int
+    beta_scale: float
+    beta_zp: int
+
+    ids_dtype: ScalarType
+    data_dtype: ScalarType  # INT8 or UINT8 for embedding data
+    epsilon: float
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def extra_model_dtypes(self, ctx: OpContext) -> set["ScalarType"]:
+        return {self.ids_dtype, self.data_dtype, ScalarType.I32}
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        ids_c_type = self.ids_dtype.c_type
+        mask_c_type = ScalarType.I32.c_type
+        data_c_type = self.data_dtype.c_type
+        params = emitter.shared_param_map(
+            [
+                ("input_ids", self.input_ids),
+                ("segment_ids", self.segment_ids),
+                ("word_embedding_data", self.word_embedding_data),
+                ("position_embedding_data", self.position_embedding_data),
+                ("segment_embedding_data", self.segment_embedding_data),
+                ("gamma", self.gamma),
+                ("beta", self.beta),
+                ("mask", self.mask),
+                ("output", self.output),
+                ("mask_index", self.mask_index),
+            ]
+        )
+        ids_suffix = emitter.param_array_suffix((self.batch, self.seq))
+        word_emb_suffix = emitter.param_array_suffix(
+            (self.vocab_size, self.hidden_size)
+        )
+        pos_emb_suffix = emitter.param_array_suffix((self.max_pos, self.hidden_size))
+        seg_emb_suffix = emitter.param_array_suffix((2, self.hidden_size))
+        gamma_suffix = emitter.param_array_suffix((self.hidden_size,))
+        beta_suffix = emitter.param_array_suffix((self.hidden_size,))
+        mask_suffix = emitter.param_array_suffix((self.batch, self.seq))
+        output_suffix = emitter.param_array_suffix(
+            (self.batch, self.seq, self.hidden_size)
+        )
+        mask_index_suffix = emitter.param_array_suffix((self.batch,))
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input_ids"], ids_c_type, ids_suffix, True),
+                (
+                    (params["segment_ids"], ids_c_type, ids_suffix, True)
+                    if params["segment_ids"]
+                    else (None, "", "", True)
+                ),
+                (params["word_embedding_data"], data_c_type, word_emb_suffix, True),
+                (params["position_embedding_data"], data_c_type, pos_emb_suffix, True),
+                (
+                    (
+                        params["segment_embedding_data"],
+                        data_c_type,
+                        seg_emb_suffix,
+                        True,
+                    )
+                    if params["segment_embedding_data"]
+                    else (None, "", "", True)
+                ),
+                (params["gamma"], data_c_type, gamma_suffix, True),
+                (params["beta"], data_c_type, beta_suffix, True),
+                (
+                    (params["mask"], mask_c_type, mask_suffix, True)
+                    if params["mask"]
+                    else (None, "", "", True)
+                ),
+                (params["output"], "float", output_suffix, False),
+                (
+                    (params["mask_index"], mask_c_type, mask_index_suffix, False)
+                    if params["mask_index"]
+                    else (None, "", "", False)
+                ),
+            ]
+        )
+        float_dtype = ScalarType.F32
+        acc_dtype = emitter.accumulation_dtype(float_dtype)
+        rendered = (
+            state.templates["qembed_layer_norm"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                params=param_decls,
+                input_ids=params["input_ids"],
+                segment_ids=params["segment_ids"],
+                word_embedding_data=params["word_embedding_data"],
+                position_embedding_data=params["position_embedding_data"],
+                segment_embedding_data=params["segment_embedding_data"],
+                gamma=params["gamma"],
+                beta=params["beta"],
+                mask=params["mask"],
+                output=params["output"],
+                mask_index=params["mask_index"],
+                batch=self.batch,
+                seq=self.seq,
+                hidden_size=self.hidden_size,
+                acc_type=acc_dtype.c_type,
+                acc_zero_literal=emitter.format_literal(acc_dtype, 0),
+                acc_one_literal=emitter.format_literal(acc_dtype, 1),
+                acc_epsilon_literal=emitter.format_floating(self.epsilon, acc_dtype),
+                acc_dtype=acc_dtype,
+                word_scale=emitter.format_double(self.word_scale),
+                word_zp=self.word_zp,
+                pos_scale=emitter.format_double(self.pos_scale),
+                pos_zp=self.pos_zp,
+                seg_scale=emitter.format_double(self.seg_scale),
+                seg_zp=self.seg_zp,
+                gamma_scale=emitter.format_double(self.gamma_scale),
+                gamma_zp=self.gamma_zp,
+                beta_scale=emitter.format_double(self.beta_scale),
+                beta_zp=self.beta_zp,
+                has_segment_embedding=self.segment_embedding_data is not None,
+                has_mask=self.mask is not None,
+                has_mask_index=self.mask_index is not None,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        inputs: list[tuple[str, tuple[int, ...]]] = [
+            (self.input_ids, (self.batch, self.seq)),
+        ]
+        if self.segment_ids is not None:
+            inputs.append((self.segment_ids, (self.batch, self.seq)))
+        inputs.extend(
+            [
+                (self.word_embedding_data, (self.vocab_size, self.hidden_size)),
+                (self.position_embedding_data, (self.max_pos, self.hidden_size)),
+            ]
+        )
+        if self.segment_embedding_data is not None:
+            inputs.append((self.segment_embedding_data, (2, self.hidden_size)))
+        inputs.extend(
+            [
+                (self.gamma, (self.hidden_size,)),
+                (self.beta, (self.hidden_size,)),
+            ]
+        )
+        if self.mask is not None:
+            inputs.append((self.mask, (self.batch, self.seq)))
+        return tuple(inputs)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        outputs: list[tuple[str, tuple[int, ...], ScalarType]] = [
+            (self.output, (self.batch, self.seq, self.hidden_size), ScalarType.F32),
+        ]
+        if self.mask_index is not None:
+            outputs.append((self.mask_index, (self.batch,), ScalarType.I32))
+        return tuple(outputs)
+
+
+@dataclass(frozen=True)
 class MeanVarianceNormalizationOp(RenderableOpBase):
     __io_inputs__ = ("input0",)
     __io_outputs__ = ("output",)
@@ -8579,6 +9263,95 @@ class RoiAlignOp(RenderableOpBase):
                 spatial_scale=emitter.format_double(self.spatial_scale),
                 mode=self.mode,
                 coordinate_transformation_mode=self.coordinate_transformation_mode,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+
+@dataclass(frozen=True)
+class CropAndResizeOp(RenderableOpBase):
+    __io_inputs__ = ("x", "rois", "box_ind")
+    __io_outputs__ = ("output",)
+    x: str
+    rois: str
+    box_ind: str
+    output: str
+    num_rois: int
+    channels: int
+    input_height: int
+    input_width: int
+    output_height: int
+    output_width: int
+    extrapolation_value: float
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.output)
+        c_type = output_dtype.c_type
+        params = emitter.shared_param_map(
+            [
+                ("x", self.x),
+                ("rois", self.rois),
+                ("box_ind", self.box_ind),
+                ("output", self.output),
+            ]
+        )
+        x_shape = emitter.ctx_shape(self.x)
+        rois_shape = emitter.ctx_shape(self.rois)
+        box_ind_shape = emitter.ctx_shape(self.box_ind)
+        output_shape = emitter.ctx_shape(self.output)
+        param_decls = emitter.build_param_decls(
+            [
+                (
+                    params["x"],
+                    c_type,
+                    emitter.param_array_suffix(x_shape),
+                    True,
+                ),
+                (
+                    params["rois"],
+                    c_type,
+                    emitter.param_array_suffix(rois_shape),
+                    True,
+                ),
+                (
+                    params["box_ind"],
+                    ScalarType.I32.c_type,
+                    emitter.param_array_suffix(box_ind_shape),
+                    True,
+                ),
+                (
+                    params["output"],
+                    c_type,
+                    emitter.param_array_suffix(output_shape),
+                    False,
+                ),
+            ]
+        )
+        rendered = (
+            state.templates["crop_and_resize"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                params=param_decls,
+                x=params["x"],
+                rois=params["rois"],
+                box_ind=params["box_ind"],
+                output=params["output"],
+                c_type=c_type,
+                num_rois=self.num_rois,
+                channels=self.channels,
+                input_height=self.input_height,
+                input_width=self.input_width,
+                output_height=self.output_height,
+                output_width=self.output_width,
+                extrapolation_value=emitter.format_double(self.extrapolation_value),
             )
             .rstrip()
         )

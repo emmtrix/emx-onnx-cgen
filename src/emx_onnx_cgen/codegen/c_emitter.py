@@ -43,6 +43,7 @@ from ..ir.ops import (
     ConstantOfShapeOp,
     Col2ImOp,
     ConvOp,
+    FusedConvOp,
     ConvIntegerOp,
     ConvTransposeOp,
     DeformConvOp,
@@ -110,9 +111,12 @@ from ..ir.ops import (
     ReshapeOp,
     ResizeOp,
     RMSNormalizationOp,
+    CropAndResizeOp,
+    QEmbedLayerNormOp,
     RoiAlignOp,
     ShapeOp,
     SizeOp,
+    EmbedLayerNormOp,
     SkipLayerNormalizationOp,
     SliceOp,
     SoftmaxCrossEntropyLossOp,
@@ -1066,6 +1070,7 @@ class CEmitter:
                 "qlinear_softmax": self._env.get_template("qlinear_softmax_op.c.j2"),
                 "qlinear_conv": self._env.get_template("qlinear_conv_op.c.j2"),
                 "matmul_integer": self._env.get_template("matmul_integer_op.c.j2"),
+                "matmul_integer16": self._env.get_template("matmul_integer16_op.c.j2"),
                 "matmul_integer_to_float": self._env.get_template(
                     "matmul_integer_to_float_op.c.j2"
                 ),
@@ -1084,6 +1089,7 @@ class CEmitter:
                 "qattention": self._env.get_template("qattention_op.c.j2"),
                 "rotary_embedding": self._env.get_template("rotary_embedding_op.c.j2"),
                 "conv": self._env.get_template("conv_op.c.j2"),
+                "fused_conv": self._env.get_template("fused_conv_op.c.j2"),
                 "conv_integer": self._env.get_template("conv_integer_op.c.j2"),
                 "col2im": self._env.get_template("col2im_op.c.j2"),
                 "conv_transpose": self._env.get_template("conv_transpose_op.c.j2"),
@@ -1100,6 +1106,7 @@ class CEmitter:
                 "skip_layer_norm": self._env.get_template(
                     "skip_layer_normalization_op.c.j2"
                 ),
+                "embed_layer_norm": self._env.get_template("embed_layer_norm_op.c.j2"),
                 "mean_variance_norm": self._env.get_template(
                     "mean_variance_normalization_op.c.j2"
                 ),
@@ -1127,6 +1134,10 @@ class CEmitter:
                 "nhwc_maxpool": self._env.get_template("nhwc_maxpool_op.c.j2"),
                 "maxunpool": self._env.get_template("maxunpool_op.c.j2"),
                 "roi_align": self._env.get_template("roi_align_op.c.j2"),
+                "crop_and_resize": self._env.get_template("crop_and_resize_op.c.j2"),
+                "qembed_layer_norm": self._env.get_template(
+                    "qembed_layer_norm_op.c.j2"
+                ),
                 "concat": self._env.get_template("concat_op.c.j2"),
                 "concat_from_sequence": self._env.get_template(
                     "concat_from_sequence_op.c.j2"
@@ -2225,6 +2236,7 @@ class CEmitter:
             | MultiHeadAttentionOp
             | QAttentionOp
             | ConvOp
+            | FusedConvOp
             | ConvIntegerOp
             | ConvTransposeOp
             | Col2ImOp
@@ -2237,6 +2249,7 @@ class CEmitter:
             | GroupNormalizationOp
             | LayerNormalizationOp
             | SkipLayerNormalizationOp
+            | EmbedLayerNormOp
             | MeanVarianceNormalizationOp
             | RMSNormalizationOp
             | LrnOp
@@ -2250,6 +2263,8 @@ class CEmitter:
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | RoiAlignOp
+            | CropAndResizeOp
+            | QEmbedLayerNormOp
             | ConcatOp
             | ConcatFromSequenceOp
             | CompressOp

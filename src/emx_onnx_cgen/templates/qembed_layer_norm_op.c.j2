@@ -1,0 +1,53 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% if has_mask_index %}
+for (idx_t b = 0; b < {{ batch }}; ++b) {
+    int32_t cnt = 0;
+{% if has_mask %}
+    for (idx_t s = 0; s < {{ seq }}; ++s) {
+        if ({{ mask }}[b][s] != 0) ++cnt;
+    }
+{% endif %}
+    {{ mask_index }}[b] = cnt;
+}
+{% endif %}
+for (idx_t b = 0; b < {{ batch }}; ++b) {
+for (idx_t s = 0; s < {{ seq }}; ++s) {
+    idx_t word_id = (idx_t){{ input_ids }}[b][s];
+    {{ acc_type }} sum = {{ acc_zero_literal }};
+    for (idx_t h = 0; h < {{ hidden_size }}; ++h) {
+        {{ acc_type }} val = ({{ acc_type }})((int32_t){{ word_embedding_data }}[word_id][h] - {{ word_zp }}) * ({{ acc_type }})({{ word_scale }})
+                           + ({{ acc_type }})((int32_t){{ position_embedding_data }}[s][h] - {{ pos_zp }}) * ({{ acc_type }})({{ pos_scale }});
+{% if has_segment_embedding %}
+        idx_t seg_id = (idx_t){{ segment_ids }}[b][s];
+        val += ({{ acc_type }})((int32_t){{ segment_embedding_data }}[seg_id][h] - {{ seg_zp }}) * ({{ acc_type }})({{ seg_scale }});
+{% endif %}
+        sum += val;
+    }
+    {{ acc_type }} mean = sum / {{ hidden_size }};
+    {{ acc_type }} var = {{ acc_zero_literal }};
+    for (idx_t h = 0; h < {{ hidden_size }}; ++h) {
+        {{ acc_type }} val = ({{ acc_type }})((int32_t){{ word_embedding_data }}[word_id][h] - {{ word_zp }}) * ({{ acc_type }})({{ word_scale }})
+                           + ({{ acc_type }})((int32_t){{ position_embedding_data }}[s][h] - {{ pos_zp }}) * ({{ acc_type }})({{ pos_scale }});
+{% if has_segment_embedding %}
+        idx_t seg_id = (idx_t){{ segment_ids }}[b][s];
+        val += ({{ acc_type }})((int32_t){{ segment_embedding_data }}[seg_id][h] - {{ seg_zp }}) * ({{ acc_type }})({{ seg_scale }});
+{% endif %}
+        {{ acc_type }} diff = val - mean;
+        var += diff * diff;
+    }
+    var = var / {{ hidden_size }};
+    {{ acc_type }} inv_std = {{ acc_one_literal }} / {{ scalar_fn(SF.SQRT, acc_dtype) }}(var + {{ acc_epsilon_literal }});
+    for (idx_t h = 0; h < {{ hidden_size }}; ++h) {
+        {{ acc_type }} val = ({{ acc_type }})((int32_t){{ word_embedding_data }}[word_id][h] - {{ word_zp }}) * ({{ acc_type }})({{ word_scale }})
+                           + ({{ acc_type }})((int32_t){{ position_embedding_data }}[s][h] - {{ pos_zp }}) * ({{ acc_type }})({{ pos_scale }});
+{% if has_segment_embedding %}
+        idx_t seg_id = (idx_t){{ segment_ids }}[b][s];
+        val += ({{ acc_type }})((int32_t){{ segment_embedding_data }}[seg_id][h] - {{ seg_zp }}) * ({{ acc_type }})({{ seg_scale }});
+{% endif %}
+        {{ acc_type }} g = ({{ acc_type }})((int32_t){{ gamma }}[h] - {{ gamma_zp }}) * ({{ acc_type }})({{ gamma_scale }});
+        {{ acc_type }} bb = ({{ acc_type }})((int32_t){{ beta }}[h] - {{ beta_zp }}) * ({{ acc_type }})({{ beta_scale }});
+        {{ output }}[b][s][h] = (float)((val - mean) * inv_std * g + bb);
+    }
+}
+}
+}
