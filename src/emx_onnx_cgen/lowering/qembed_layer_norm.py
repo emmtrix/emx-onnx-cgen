@@ -16,28 +16,26 @@ def _read_scalar_float(graph: Graph, name: str) -> float:
     for init in graph.initializers:
         if init.name == name:
             return float(init.data.flatten()[0])
-    raise UnsupportedOpError(f"QEmbedLayerNormalization: {name!r} must be a constant initializer")
+    raise UnsupportedOpError(
+        f"QEmbedLayerNormalization: {name!r} must be a constant initializer"
+    )
 
 
 def _read_scalar_int(graph: Graph, name: str) -> int:
     for init in graph.initializers:
         if init.name == name:
             return int(init.data.flatten()[0])
-    raise UnsupportedOpError(f"QEmbedLayerNormalization: {name!r} must be a constant initializer")
+    raise UnsupportedOpError(
+        f"QEmbedLayerNormalization: {name!r} must be a constant initializer"
+    )
 
 
 @register_lowering("QEmbedLayerNormalization")
-def lower_qembed_layer_normalization(
-    graph: Graph, node: Node
-) -> QEmbedLayerNormOp:
+def lower_qembed_layer_normalization(graph: Graph, node: Node) -> QEmbedLayerNormOp:
     if len(node.inputs) < 13:
-        raise UnsupportedOpError(
-            "QEmbedLayerNormalization requires at least 13 inputs"
-        )
+        raise UnsupportedOpError("QEmbedLayerNormalization requires at least 13 inputs")
     if len(node.outputs) < 1:
-        raise UnsupportedOpError(
-            "QEmbedLayerNormalization requires at least 1 output"
-        )
+        raise UnsupportedOpError("QEmbedLayerNormalization requires at least 1 output")
 
     input_ids_name = node.inputs[0]
     segment_ids_name = optional_name(node.inputs, 1)

@@ -11,9 +11,7 @@ _SUPPORTED_IDS_DTYPES = {ScalarType.I32, ScalarType.I64}
 
 
 @register_lowering("EmbedLayerNormalization")
-def lower_embed_layer_normalization(
-    graph: Graph, node: Node
-) -> EmbedLayerNormOp:
+def lower_embed_layer_normalization(graph: Graph, node: Node) -> EmbedLayerNormOp:
     if len(node.inputs) < 7:
         raise UnsupportedOpError(
             "EmbedLayerNormalization requires at least 7 inputs "
@@ -21,9 +19,7 @@ def lower_embed_layer_normalization(
             "segment_embedding, gamma, beta)"
         )
     if len(node.outputs) < 1:
-        raise UnsupportedOpError(
-            "EmbedLayerNormalization requires at least 1 output"
-        )
+        raise UnsupportedOpError("EmbedLayerNormalization requires at least 1 output")
 
     input_ids_name = node.inputs[0]
     segment_ids_name = optional_name(node.inputs, 1)

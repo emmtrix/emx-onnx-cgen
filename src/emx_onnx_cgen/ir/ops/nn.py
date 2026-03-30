@@ -3719,7 +3719,9 @@ class FusedConvOp(ConvLikeOpBase):
     @property
     def out_h(self) -> int:
         if self.spatial_rank < 1:
-            raise ValueError("FusedConv output height is undefined for spatial_rank < 1")
+            raise ValueError(
+                "FusedConv output height is undefined for spatial_rank < 1"
+            )
         return self.out_spatial[0]
 
     @property

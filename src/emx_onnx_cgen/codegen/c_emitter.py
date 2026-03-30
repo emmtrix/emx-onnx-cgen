@@ -1070,9 +1070,7 @@ class CEmitter:
                 "qlinear_softmax": self._env.get_template("qlinear_softmax_op.c.j2"),
                 "qlinear_conv": self._env.get_template("qlinear_conv_op.c.j2"),
                 "matmul_integer": self._env.get_template("matmul_integer_op.c.j2"),
-                "matmul_integer16": self._env.get_template(
-                    "matmul_integer16_op.c.j2"
-                ),
+                "matmul_integer16": self._env.get_template("matmul_integer16_op.c.j2"),
                 "matmul_integer_to_float": self._env.get_template(
                     "matmul_integer_to_float_op.c.j2"
                 ),
@@ -1108,9 +1106,7 @@ class CEmitter:
                 "skip_layer_norm": self._env.get_template(
                     "skip_layer_normalization_op.c.j2"
                 ),
-                "embed_layer_norm": self._env.get_template(
-                    "embed_layer_norm_op.c.j2"
-                ),
+                "embed_layer_norm": self._env.get_template("embed_layer_norm_op.c.j2"),
                 "mean_variance_norm": self._env.get_template(
                     "mean_variance_normalization_op.c.j2"
                 ),

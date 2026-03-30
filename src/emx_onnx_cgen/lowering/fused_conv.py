@@ -93,7 +93,5 @@ class _ConvAttrView:
         self.op_type = node.op_type
         self.name = node.name
         self.attrs = {
-            k: v
-            for k, v in node.attrs.items()
-            if k not in _ACTIVATION_ATTR_KEYS
+            k: v for k, v in node.attrs.items() if k not in _ACTIVATION_ATTR_KEYS
         }
