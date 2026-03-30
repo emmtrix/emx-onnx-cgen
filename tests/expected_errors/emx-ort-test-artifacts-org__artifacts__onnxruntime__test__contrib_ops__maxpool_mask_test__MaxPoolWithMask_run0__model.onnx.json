@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.MaxpoolWithMask",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/maxpool_mask_test/MaxPoolWithMask_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::MaxpoolWithMask"
-  ]
+  ],
+  "generated_checksum": "625db5cfc9e09e22467ecd0992119f4b50383ac2c29576c087f7a7f86231eef8"
 }

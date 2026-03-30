@@ -134,6 +134,10 @@ from ..ir.ops import (
     UnaryOp,
     WhereOp,
     NGramRepeatBlockOp,
+    SampleOp,
+    UnfoldTensorOp,
+    MaxpoolWithMaskOp,
+    ConvTransposeWithDynamicPadsOp,
 )
 from shared.scalar_functions import (
     ScalarFunction,
@@ -1182,6 +1186,14 @@ class CEmitter:
                 "inverse": self._env.get_template("inverse_op.c.j2"),
                 "ngram_repeat_block": self._env.get_template(
                     "ngram_repeat_block_op.c.j2"
+                ),
+                "sample_op": self._env.get_template("sample_op.c.j2"),
+                "unfold_tensor_op": self._env.get_template("unfold_tensor_op.c.j2"),
+                "maxpool_with_mask_op": self._env.get_template(
+                    "maxpool_with_mask_op.c.j2"
+                ),
+                "conv_transpose_with_dynamic_pads_op": self._env.get_template(
+                    "conv_transpose_with_dynamic_pads_op.c.j2"
                 ),
                 "array_feature_extractor": self._env.get_template(
                     "array_feature_extractor_op.c.j2"
@@ -2315,6 +2327,10 @@ class CEmitter:
             | SequenceLengthOp
             | QLinearWhereOp
             | NGramRepeatBlockOp
+            | SampleOp
+            | UnfoldTensorOp
+            | MaxpoolWithMaskOp
+            | ConvTransposeWithDynamicPadsOp
         ],
         temp_buffers: tuple[TempBuffer, ...],
         *,

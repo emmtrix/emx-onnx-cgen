@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.UnfoldTensor",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/tensor_op_test/NormalDim_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::UnfoldTensor"
-  ]
+  ],
+  "generated_checksum": "7daef6c65ec6603217e5ea6e3b754cf0d39b0094d3a04af5062dd597026f489e"
 }

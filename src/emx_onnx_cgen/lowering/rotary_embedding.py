@@ -95,18 +95,28 @@ def _resolve_rotary_spec(
 @register_lowering("RotaryEmbedding")
 def lower_rotary_embedding(graph: Graph, node: Node) -> RotaryEmbeddingOp:
     input_name = node.inputs[0]
-    # The operator signature is: input, [position_ids], cos_cache, sin_cache.
-    # When position_ids is present (4 inputs), it sits at index 1 and
-    # cos/sin are at indices 2 and 3.  When absent (3 inputs) cos/sin
-    # are at indices 1 and 2.
-    if len(node.inputs) >= 4 and node.inputs[1]:
-        position_ids = node.inputs[1]
-        cos_name = node.inputs[2]
-        sin_name = node.inputs[3]
-    else:
-        position_ids = None
+    # Detect domain to determine input ordering.
+    # ONNX standard (domain="" or None): [input, cos_cache, sin_cache, position_ids]
+    # com.microsoft: [input, position_ids, cos_cache, sin_cache]
+    domain = node.domain or ""
+    if domain == "":
+        # ONNX standard ordering
+        if len(node.inputs) >= 4 and node.inputs[3]:
+            position_ids = node.inputs[3]
+        else:
+            position_ids = None
         cos_name = node.inputs[1]
         sin_name = node.inputs[2]
+    else:
+        # com.microsoft ordering: position_ids before cos/sin
+        if len(node.inputs) >= 4 and node.inputs[1]:
+            position_ids = node.inputs[1]
+            cos_name = node.inputs[2]
+            sin_name = node.inputs[3]
+        else:
+            position_ids = None
+            cos_name = node.inputs[1]
+            sin_name = node.inputs[2]
     dtype = value_dtype(graph, input_name, node)
     cos_dtype = value_dtype(graph, cos_name, node)
     sin_dtype = value_dtype(graph, sin_name, node)

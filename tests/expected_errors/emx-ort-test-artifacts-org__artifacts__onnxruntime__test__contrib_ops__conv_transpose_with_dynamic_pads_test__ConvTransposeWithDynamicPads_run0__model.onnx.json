@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.ConvTransposeWithDynamicPads",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/conv_transpose_with_dynamic_pads_test/ConvTransposeWithDynamicPads_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::ConvTransposeWithDynamicPads"
-  ]
+  ],
+  "generated_checksum": "2bd1889203997d3e46c032818a601a2e4505a85450eff84792a73926df055be3"
 }
