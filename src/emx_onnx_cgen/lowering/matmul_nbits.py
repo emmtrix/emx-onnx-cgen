@@ -143,6 +143,8 @@ def lower_matmul_nbits(graph: Graph, node: Node) -> MatMulNBitsOp:
     output_dtype = _value_dtype(graph, node.outputs[0], node)
     b_dtype = _value_dtype(graph, node.inputs[1], node)
     scales_dtype = _value_dtype(graph, node.inputs[2], node)
+    scales_shape = _value_shape(graph, node.inputs[2], node)
+    scales_has_block_axis = len(scales_shape) >= 2
 
     if not input0_dtype.is_float:
         raise UnsupportedOpError(
@@ -168,8 +170,11 @@ def lower_matmul_nbits(graph: Graph, node: Node) -> MatMulNBitsOp:
 
     zero_points_dtype: ScalarType | None = None
     zero_points_packed = False
+    zero_points_has_block_axis = False
     if zero_points is not None:
         zero_points_dtype = _value_dtype(graph, zero_points, node)
+        zp_shape = _value_shape(graph, zero_points, node)
+        zero_points_has_block_axis = len(zp_shape) >= 2
         if zero_points_dtype in {ScalarType.U8, ScalarType.I8}:
             zero_points_packed = True
         elif not zero_points_dtype.is_float:
@@ -204,7 +209,10 @@ def lower_matmul_nbits(graph: Graph, node: Node) -> MatMulNBitsOp:
         output_dtype=output_dtype,
         b_dtype=b_dtype,
         scales_dtype=scales_dtype,
+        scales_shape=scales_shape,
+        scales_has_block_axis=scales_has_block_axis,
         zero_points_dtype=zero_points_dtype,
         zero_points_packed=zero_points_packed,
+        zero_points_has_block_axis=zero_points_has_block_axis,
         bias_dtype=bias_dtype,
     )
