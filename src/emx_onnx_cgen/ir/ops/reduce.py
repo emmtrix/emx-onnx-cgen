@@ -133,6 +133,91 @@ class DetOp(ReduceOpBase):
 
 
 @dataclass(frozen=True)
+class InverseOp(ReduceOpBase):
+    input0: str
+    output: str
+
+    def infer_types(self, ctx: OpContext) -> None:
+        ctx.dtype(self.input0)
+        ctx.dtype(self.output)
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        input_shape = ctx.shape(self.input0)
+        if len(input_shape) < 2:
+            raise CodegenError(
+                f"Inverse expects rank >= 2 input, got shape {input_shape}"
+            )
+        if input_shape[-1] != input_shape[-2]:
+            raise CodegenError(
+                f"Inverse expects square matrices, got shape {input_shape}"
+            )
+        ctx.set_shape(self.output, input_shape)
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        input_shape_raw = emitter.ctx_shape(self.input0)
+        output_shape_raw = emitter.ctx_shape(self.output)
+        input_dtype = emitter.ctx_dtype(self.input0)
+        output_dtype = emitter.ctx_dtype(self.output)
+        if input_dtype != output_dtype:
+            raise CodegenError(
+                f"Inverse expects matching input/output dtypes, got {input_dtype.onnx_name} and {output_dtype.onnx_name}"
+            )
+        matrix_dim = input_shape_raw[-1]
+        if matrix_dim < 0:
+            raise CodegenError("Inverse requires a static matrix dimension")
+        batch_shape = input_shape_raw[:-2]
+        batch_shape_codegen = CEmitterCompat.codegen_shape(batch_shape)
+        batch_loop_vars = CEmitterCompat.loop_vars(batch_shape_codegen)
+        input_batch_index_expr = (
+            "".join(f"[{var}]" for var in batch_loop_vars) if batch_shape else ""
+        )
+        batch_index_expr = (
+            "".join(f"[{var}]" for var in batch_loop_vars) if batch_shape else ""
+        )
+        # Use float32 for f16/bf16/f64 to match ORT's implementation behavior.
+        compute_type = (
+            "float"
+            if input_dtype in {ScalarType.F16, ScalarType.BF16, ScalarType.F64}
+            else input_dtype.c_type
+        )
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        input_suffix = emitter.param_array_suffix(input_shape_raw)
+        output_suffix = emitter.param_array_suffix(output_shape_raw)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], input_dtype.c_type, input_suffix, True),
+                (params["output"], output_dtype.c_type, output_suffix, False),
+            ]
+        )
+        rendered = (
+            state.templates["inverse"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                params=param_decls,
+                dim_args=dim_args,
+                input0=params["input0"],
+                output=params["output"],
+                c_type=input_dtype.c_type,
+                compute_type=compute_type,
+                matrix_dim=matrix_dim,
+                batch_shape=batch_shape_codegen,
+                batch_loop_vars=batch_loop_vars,
+                input_batch_index_expr=input_batch_index_expr,
+                batch_index_expr=batch_index_expr,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+
+@dataclass(frozen=True)
 class ArgReduceOp(ReduceOpBase):
     input0: str
     output: str

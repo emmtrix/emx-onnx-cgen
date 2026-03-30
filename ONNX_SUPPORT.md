@@ -8,7 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1796 / 1802, 99.7% | 1.20.1 |
-| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 3939 / 4182, 94.2% | n/a |
+| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 3944 / 4182, 94.3% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -1832,7 +1832,7 @@ Coverage 1796 / 1802 ONNX files (99.7%).
 
 Test directory: `emx-ort-test-artifacts-org/artifacts/onnxruntime`
 
-Coverage 3939 / 4182 ONNX files (94.2%).
+Coverage 3944 / 4182 ONNX files (94.3%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -2439,11 +2439,11 @@ Coverage 3939 / 4182 ONNX files (94.2%).
 | test/contrib_ops/gridsample_test/gridsample_paddingmode_border_run0/model.onnx |  | Data/Data | ❌ | GridSample mode 'bilinear' is not supported |
 | test/contrib_ops/gridsample_test/gridsample_paddingmode_reflection_run0/model.onnx |  | Data/Data | ❌ | GridSample mode 'bilinear' is not supported |
 | test/contrib_ops/gridsample_test/gridsample_paddingmode_zeros_run0/model.onnx |  | Data/Data | ❌ | GridSample mode 'bilinear' is not supported |
-| test/contrib_ops/inverse_test/four_by_four_batches_float_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Inverse |
-| test/contrib_ops/inverse_test/four_by_four_float_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Inverse |
-| test/contrib_ops/inverse_test/two_by_two_double_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Inverse |
-| test/contrib_ops/inverse_test/two_by_two_float16_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Inverse |
-| test/contrib_ops/inverse_test/two_by_two_float_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Inverse |
+| test/contrib_ops/inverse_test/four_by_four_batches_float_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/inverse_test/four_by_four_float_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/inverse_test/two_by_two_double_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/inverse_test/two_by_two_float16_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/inverse_test/two_by_two_float_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/layer_norm_op_test/BERTLayerNorm_NoBias_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 2272) |
 | test/contrib_ops/layer_norm_op_test/BERTLayerNorm_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 5632) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm17_double_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 160715044774) |

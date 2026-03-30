@@ -20,7 +20,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op com.microsoft.AttnLSTM | 6 |  |
 | Unsupported op com.microsoft.WordConvEmbedding | 6 |  |
 | RotaryEmbedding inputs must share the same dtype | 5 | 23 |
-| Unsupported op com.microsoft.Inverse | 5 |  |
 | FusedMatMul batch dimensions are not broadcastable: (2,) vs (4,) | 4 |  |
 | GatherBlockQuantized axis 3 is out of range for rank 3 | 4 |  |
 | GatherBlockQuantized scales shape (2, 2, 1) does not match expected (2, 3, 1) (data_shape=(2, 3, 4), quantize_axis=2, block_size=16, packed=False) | 4 |  |
@@ -243,11 +242,6 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/gridsample_test/gridsample_paddingmode_border_run0/model.onnx |  | Data/Data | ❌ | GridSample mode 'bilinear' is not supported |
 | test/contrib_ops/gridsample_test/gridsample_paddingmode_reflection_run0/model.onnx |  | Data/Data | ❌ | GridSample mode 'bilinear' is not supported |
 | test/contrib_ops/gridsample_test/gridsample_paddingmode_zeros_run0/model.onnx |  | Data/Data | ❌ | GridSample mode 'bilinear' is not supported |
-| test/contrib_ops/inverse_test/four_by_four_batches_float_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Inverse |
-| test/contrib_ops/inverse_test/four_by_four_float_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Inverse |
-| test/contrib_ops/inverse_test/two_by_two_double_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Inverse |
-| test/contrib_ops/inverse_test/two_by_two_float16_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Inverse |
-| test/contrib_ops/inverse_test/two_by_two_float_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.Inverse |
 | test/contrib_ops/layer_norm_op_test/BERTLayerNorm_NoBias_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 2272) |
 | test/contrib_ops/layer_norm_op_test/BERTLayerNorm_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 5632) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm17_double_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 160715044774) |

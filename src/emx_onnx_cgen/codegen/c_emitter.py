@@ -1160,6 +1160,7 @@ class CEmitter:
                 "reduce_dynamic": self._env.get_template("reduce_op_dynamic.c.j2"),
                 "arg_reduce": self._env.get_template("arg_reduce_op.c.j2"),
                 "det": self._env.get_template("det_op.c.j2"),
+                "inverse": self._env.get_template("inverse_op.c.j2"),
                 "array_feature_extractor": self._env.get_template(
                     "array_feature_extractor_op.c.j2"
                 ),

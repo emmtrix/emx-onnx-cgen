@@ -29,6 +29,7 @@ _LOWERING_MODULES = [
     "conv_transpose",
     "deform_conv",
     "det",
+    "inverse",
     "cumsum",
     "depth_space",
     "dequantize_linear",
