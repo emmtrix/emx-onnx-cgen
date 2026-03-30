@@ -1111,7 +1111,7 @@ class GatherBlockQuantizedOp(RenderableOpBase):
 
         compute_type = "double" if output_dtype == ScalarType.F64 else "float"
         bit_mask = (1 << self.bits) - 1
-        # Unsigned quantized data uses midpoint zero to centre values.
+        # Unsigned quantized data uses midpoint zero to center values.
         # For packed data (UINT8 storing sub-byte nibbles), the quantization
         # bit-width is self.bits.  For all other (unpacked) types the
         # effective bit-width is determined by the data type itself so that
