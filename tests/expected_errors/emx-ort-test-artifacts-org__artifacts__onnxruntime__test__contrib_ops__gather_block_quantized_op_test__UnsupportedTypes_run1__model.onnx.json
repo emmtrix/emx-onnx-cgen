@@ -1,8 +1,9 @@
 {
-  "error": "GatherBlockQuantized unsupported data dtype int8; supported: int4, uint4, uint8",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::GatherBlockQuantized"
-  ]
+  ],
+  "generated_checksum": "95c8b389aefa577125c7aeadc1f7f46fc7bba04429061ffdb86323e62dea16c6"
 }

@@ -4408,6 +4408,10 @@ class CEmitter:
         max_value = 2**bits - 1
         if value == max_value:
             return max_macro
+        if bits == 64:
+            return f"{int(value)}ULL"
+        if bits == 32 and int(value) > 2147483647:
+            return f"{int(value)}U"
         return str(int(value))
 
     @staticmethod

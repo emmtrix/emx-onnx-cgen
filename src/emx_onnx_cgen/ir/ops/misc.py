@@ -1117,6 +1117,14 @@ class GatherBlockQuantizedOp(RenderableOpBase):
         else:
             default_zero_point = 0
 
+        # UINT32/UINT64 values are stored as two's-complement bit patterns of
+        # signed integers.  A direct (float)uint32_val cast loses precision for
+        # large values (e.g. 4294967292 rounds to 4294967296.0f instead of
+        # keeping the -4 semantics).  Reinterpret to the signed counterpart
+        # before converting to the compute type.
+        _signed_reinterpret = {ScalarType.U32: "int32_t", ScalarType.U64: "int64_t"}
+        data_signed_c_type = _signed_reinterpret.get(data_dtype, data_dtype.c_type)
+
         rendered = (
             state.templates["gather_block_quantized"]
             .render(
@@ -1147,6 +1155,7 @@ class GatherBlockQuantizedOp(RenderableOpBase):
                 default_zero_point=default_zero_point,
                 has_zero_points=params["zero_points"] is not None,
                 zero_points_packed=self.zero_points_packed,
+                data_signed_c_type=data_signed_c_type,
             )
             .rstrip()
         )
