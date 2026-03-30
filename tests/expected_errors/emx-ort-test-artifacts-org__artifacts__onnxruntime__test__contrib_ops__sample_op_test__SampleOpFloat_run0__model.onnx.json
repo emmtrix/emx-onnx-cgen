@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.SampleOp",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/sample_op_test/SampleOpFloat_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::SampleOp"
-  ]
+  ],
+  "generated_checksum": "4e11abb5d9c7146b1c9bfe9828e64ab1dfffe6487168fd33d39d83ba36a01c43"
 }
