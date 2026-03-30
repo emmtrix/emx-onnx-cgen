@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 245 / 256
+Supported operators: 249 / 256
 
 | Operator | Supported |
 | --- | --- |
@@ -218,7 +218,7 @@ Supported operators: 245 / 256
 | com.microsoft::BiasGelu | ✅ |
 | com.microsoft::BifurcationDetector | ❌ |
 | com.microsoft::CDist | ✅ |
-| com.microsoft::ConvTransposeWithDynamicPads | ❌ |
+| com.microsoft::ConvTransposeWithDynamicPads | ✅ |
 | com.microsoft::CropAndResize | ✅ |
 | com.microsoft::DecoderMaskedMultiHeadAttention | ❌ |
 | com.microsoft::DequantizeLinear | ✅ |
@@ -237,7 +237,7 @@ Supported operators: 245 / 256
 | com.microsoft::MatMulInteger16 | ✅ |
 | com.microsoft::MatMulIntegerToFloat | ✅ |
 | com.microsoft::MatMulNBits | ✅ |
-| com.microsoft::MaxpoolWithMask | ❌ |
+| com.microsoft::MaxpoolWithMask | ✅ |
 | com.microsoft::MoE | ❌ |
 | com.microsoft::MultiHeadAttention | ✅ |
 | com.microsoft::MurmurHash3 | ✅ |
@@ -257,11 +257,11 @@ Supported operators: 245 / 256
 | com.microsoft::QLinearWhere | ✅ |
 | com.microsoft::QuantizeLinear | ✅ |
 | com.microsoft::RotaryEmbedding | ✅ |
-| com.microsoft::SampleOp | ❌ |
+| com.microsoft::SampleOp | ✅ |
 | com.microsoft::SkipLayerNormalization | ✅ |
 | com.microsoft::SparseToDenseMatMul | ❌ |
 | com.microsoft::Tokenizer | ✅ |
 | com.microsoft::Trilu | ✅ |
-| com.microsoft::UnfoldTensor | ❌ |
+| com.microsoft::UnfoldTensor | ✅ |
 | com.microsoft::Unique | ❌ |
 | com.microsoft::WordConvEmbedding | ❌ |

@@ -70,12 +70,8 @@ def lower_conv_transpose_with_dynamic_pads(
 
     out_channels = weight_out_channels * group
 
-    strides = tuple(
-        int(v) for v in node.attrs.get("strides", (1,) * spatial_rank)
-    )
-    dilations = tuple(
-        int(v) for v in node.attrs.get("dilations", (1,) * spatial_rank)
-    )
+    strides = tuple(int(v) for v in node.attrs.get("strides", (1,) * spatial_rank))
+    dilations = tuple(int(v) for v in node.attrs.get("dilations", (1,) * spatial_rank))
     output_padding = tuple(
         int(v) for v in node.attrs.get("output_padding", (0,) * spatial_rank)
     )
@@ -91,9 +87,7 @@ def lower_conv_transpose_with_dynamic_pads(
     # Read output shape from graph (since pads are dynamic we trust the declared shape)
     output_shape = _value_shape(graph, node.outputs[0], node)
     if len(output_shape) != spatial_rank + 2:
-        raise ShapeInferenceError(
-            "ConvTransposeWithDynamicPads output rank mismatch"
-        )
+        raise ShapeInferenceError("ConvTransposeWithDynamicPads output rank mismatch")
     if output_shape[0] != batch or output_shape[1] != out_channels:
         raise ShapeInferenceError(
             "ConvTransposeWithDynamicPads output batch/channels mismatch"
