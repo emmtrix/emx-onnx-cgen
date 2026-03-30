@@ -1,8 +1,9 @@
 {
-  "error": "GatherBlockQuantized scales shape (2, 3, 1) does not match expected (2, 3, 2) (data_shape=(2, 3, 4), quantize_axis=2, block_size=16, packed=True)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run6 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::GatherBlockQuantized"
-  ]
+  ],
+  "generated_checksum": "3e8d5dd4731b9b9ece061ad97a85c9242fb48704e2dfbcd83c771f3a8b53226a"
 }

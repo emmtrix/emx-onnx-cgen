@@ -18,7 +18,12 @@ from .registry import register_lowering
 
 _SUPPORTED_BITS = {4, 8}
 
-_QUANTIZED_DTYPES = {
+# Valid data dtypes for GatherBlockQuantized.
+# UINT8 with bits=4 is the "packed nibble" case (2 quantized values per byte).
+# INT4/UINT4 store values in 4-bit types directly (unpacked).
+# All wider integer types (INT8, INT16, INT32, INT64, etc.) store one
+# quantized value per element and are never packed.
+_VALID_DATA_DTYPES = {
     ScalarType.U4,
     ScalarType.I4,
     ScalarType.U8,
@@ -27,6 +32,8 @@ _QUANTIZED_DTYPES = {
     ScalarType.I16,
     ScalarType.I32,
     ScalarType.U32,
+    ScalarType.I64,
+    ScalarType.U64,
 }
 
 
@@ -61,10 +68,9 @@ def lower_gather_block_quantized(graph: Graph, node: Node) -> GatherBlockQuantiz
     scales_dtype = _value_dtype(graph, node.inputs[2], node)
     output_dtype = _value_dtype(graph, node.outputs[0], node)
 
-    if data_dtype not in _QUANTIZED_DTYPES:
+    if data_dtype not in _VALID_DATA_DTYPES:
         raise UnsupportedOpError(
-            f"GatherBlockQuantized data dtype must be integer, "
-            f"got {data_dtype.onnx_name}"
+            f"GatherBlockQuantized unsupported data dtype {data_dtype.onnx_name}"
         )
     if indices_dtype not in {ScalarType.I32, ScalarType.I64}:
         raise UnsupportedOpError("GatherBlockQuantized indices must be int32 or int64")
@@ -78,10 +84,19 @@ def lower_gather_block_quantized(graph: Graph, node: Node) -> GatherBlockQuantiz
     gather_axis = normalize_axis(gather_axis, data_shape, node)
     quantize_axis = normalize_axis(quantize_axis, data_shape, node)
 
-    # Determine whether data is packed (e.g. UINT8 storing 4-bit values).
+    # Determine whether data is packed: only UINT8 storing sub-byte values is
+    # packed (2 nibbles per byte for bits=4).  All other integer types store
+    # one quantized value per element regardless of bits.
     data_bits = data_dtype.bits
-    packed = data_bits > bits
+    packed = data_dtype == ScalarType.U8 and bits < data_bits
     values_per_element = data_bits // bits if packed else 1
+
+    # ORT requires gather_axis == 0 when data is UINT8 packed (bits=4).
+    if packed and data_dtype == ScalarType.U8 and gather_axis != 0:
+        raise UnsupportedOpError(
+            f"GatherBlockQuantized gather_axis must be 0 for uint8 packed data "
+            f"(bits={bits}), got gather_axis={gather_axis}"
+        )
 
     # Logical size along quantize_axis (unpacked).
     logical_quantize_dim = data_shape[quantize_axis] * values_per_element
