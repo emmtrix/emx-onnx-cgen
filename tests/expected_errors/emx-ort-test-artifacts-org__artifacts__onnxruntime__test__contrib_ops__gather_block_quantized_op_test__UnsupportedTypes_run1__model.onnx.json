@@ -1,9 +1,8 @@
 {
-  "error": "Output shape mismatch for output (actual_shape=(1, 3, 8), actual_size=24, expected_shape=(1, 3, 4), expected_size=12, output=output)",
+  "error": "GatherBlockQuantized unsupported data dtype int8; supported: int4, uint4, uint8",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::GatherBlockQuantized"
-  ],
-  "generated_checksum": "810196b98a1a3d5925e922b61847de2be03fa6afb2866a3aa536d4d241a82d69"
+  ]
 }

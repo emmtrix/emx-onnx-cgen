@@ -1,9 +1,8 @@
 {
-  "error": "Testbench execution failed: exit code 1",
+  "error": "GatherBlockQuantized unsupported data dtype uint16; supported: int4, uint4, uint8",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run5 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::GatherBlockQuantized"
-  ],
-  "generated_checksum": "bed7a8b9d28df5d3f570e103d0ba9731fee75847288645102e333ad1f634080f"
+  ]
 }

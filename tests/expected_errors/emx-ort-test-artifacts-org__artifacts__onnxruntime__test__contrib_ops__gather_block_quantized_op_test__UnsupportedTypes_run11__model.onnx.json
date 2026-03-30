@@ -1,5 +1,5 @@
 {
-  "error": "GatherBlockQuantized data dtype must be integer, got int64",
+  "error": "GatherBlockQuantized unsupported data dtype int64; supported: int4, uint4, uint8",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run11 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
