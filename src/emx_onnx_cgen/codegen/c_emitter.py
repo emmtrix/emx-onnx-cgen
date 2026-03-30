@@ -94,6 +94,7 @@ from ..ir.ops import (
     QLinearMatMulOp,
     QLinearSoftmaxOp,
     QLinearUnaryOp,
+    QLinearWhereOp,
     LoopSequenceInsertOp,
     LoopSequenceMapOp,
     RangeOp,
@@ -127,6 +128,7 @@ from ..ir.ops import (
     UniqueOp,
     UnaryOp,
     WhereOp,
+    NGramRepeatBlockOp,
 )
 from shared.scalar_functions import (
     ScalarFunction,
@@ -1052,6 +1054,7 @@ class CEmitter:
                 "qlinear_add": self._env.get_template("qlinear_add_op.c.j2"),
                 "qlinear_concat": self._env.get_template("qlinear_concat_op.c.j2"),
                 "qlinear_mul": self._env.get_template("qlinear_mul_op.c.j2"),
+                "qlinear_where": self._env.get_template("qlinear_where_op.c.j2"),
                 "qlinear_matmul": self._env.get_template("qlinear_matmul_op.c.j2"),
                 "qlinear_avg_pool": self._env.get_template(
                     "qlinear_average_pool_op.c.j2"
@@ -1162,6 +1165,7 @@ class CEmitter:
                 "cdist": self._env.get_template("cdist_op.c.j2"),
                 "det": self._env.get_template("det_op.c.j2"),
                 "inverse": self._env.get_template("inverse_op.c.j2"),
+                "ngram_repeat_block": self._env.get_template("ngram_repeat_block_op.c.j2"),
                 "array_feature_extractor": self._env.get_template(
                     "array_feature_extractor_op.c.j2"
                 ),
@@ -2287,6 +2291,8 @@ class CEmitter:
             | SequenceEraseOp
             | SequenceInsertOp
             | SequenceLengthOp
+            | QLinearWhereOp
+            | NGramRepeatBlockOp
         ],
         temp_buffers: tuple[TempBuffer, ...],
         *,

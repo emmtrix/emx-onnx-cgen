@@ -1,0 +1,24 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+for (idx_t b0 = 0; b0 < {{ batch_size }}; ++b0) {
+    for (idx_t v0 = 0; v0 < {{ vocab_size }}; ++v0) {
+        {{ output }}[b0][v0] = {{ scores }}[b0][v0];
+    }
+}
+for (idx_t b0 = 0; b0 < {{ batch_size }}; ++b0) {
+    for (idx_t i0 = 0; i0 <= {{ seq_len - ngram_size }}; ++i0) {
+        int match = 1;
+        for (idx_t j0 = 0; j0 < {{ ngram_size - 1 }}; ++j0) {
+            if ({{ input_ids }}[b0][i0 + j0] != {{ input_ids }}[b0][{{ seq_len - (ngram_size - 1) }} + j0]) {
+                match = 0;
+                break;
+            }
+        }
+        if (match) {
+            int64_t token = {{ input_ids }}[b0][i0 + {{ ngram_size - 1 }}];
+            if (token >= 0 && token < {{ vocab_size }}) {
+                {{ output }}[b0][(idx_t)token] = -INFINITY;
+            }
+        }
+    }
+}
+}

@@ -1,0 +1,25 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const float x_scale_v = (float){{ x_scale_expr }};
+    const float x_zero_v = (float)(int32_t){{ x_zero_expr }};
+    const float y_scale_v = (float){{ y_scale_expr }};
+    const float y_zero_v = (float)(int32_t){{ y_zero_expr }};
+    const float z_scale_v = (float){{ z_scale_expr }};
+    const float z_zero_v = (float)(int32_t){{ z_zero_expr }};
+{% for idx in range(output_loop_vars | length) %}
+    {% for indent in range(loop.index0) %}    {% endfor %}for (idx_t {{ output_loop_vars[idx] }} = 0; {{ output_loop_vars[idx] }} < {{ output_loop_bounds[idx] }}; ++{{ output_loop_vars[idx] }}) {
+{% endfor %}
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}float dq_val;
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}if ({{ condition_index_expr }}) {
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}    dq_val = ((float)(int32_t){{ x_index_expr }} - x_zero_v) * x_scale_v;
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}} else {
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}    dq_val = ((float)(int32_t){{ y_index_expr }} - y_zero_v) * y_scale_v;
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}}
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}float scaled = dq_val / z_scale_v + z_zero_v;
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}float rounded = nearbyintf(scaled);
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}rounded = rounded < (float){{ min_literal }} ? (float){{ min_literal }} : rounded;
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}rounded = rounded > (float){{ max_literal }} ? (float){{ max_literal }} : rounded;
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ output_index_expr }} = ({{ output_c_type }})rounded;
+{% for idx in range(output_loop_vars | length) | reverse %}
+    {% for indent in range(loop.index0) %}    {% endfor %}}
+{% endfor %}
+}

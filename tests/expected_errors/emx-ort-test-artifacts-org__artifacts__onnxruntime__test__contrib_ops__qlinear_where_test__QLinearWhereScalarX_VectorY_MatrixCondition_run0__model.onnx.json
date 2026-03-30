@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.QLinearWhere",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/qlinear_where_test/QLinearWhereScalarX_VectorY_MatrixCondition_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::QLinearWhere"
-  ]
+  ],
+  "generated_checksum": "ee23537f9151abc1566856173dd95c17a2a28a5f05e392c06cb1a9c20799f256"
 }
