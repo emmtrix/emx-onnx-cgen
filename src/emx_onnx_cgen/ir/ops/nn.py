@@ -272,16 +272,19 @@ class FusedMatMulOp(MatMulLikeOpBase):
     def _effective_shape(
         shape: tuple[int, ...], trans: bool, trans_batch: bool
     ) -> tuple[int, ...]:
-        """Return the effective shape after batch and matrix transpositions."""
+        """Return the effective shape after batch and matrix transpositions.
+
+        ``trans_batch`` applies a cyclic left rotation to all dims except the
+        last (K): ``[d0, d1, ..., d_{n-2}, k] -> [d1, ..., d_{n-2}, d0, k]``.
+        ``trans`` then swaps the last two dims (matrix row/col).
+        """
         if len(shape) < 2:
             return shape
-        batch = shape[:-2]
-        mat = shape[-2:]
-        if trans_batch and len(batch) > 1:
-            batch = tuple(reversed(batch))
+        if trans_batch:
+            shape = shape[1:-1] + (shape[0],) + (shape[-1],)
         if trans:
-            mat = (mat[1], mat[0])
-        return batch + mat
+            shape = shape[:-2] + (shape[-1], shape[-2])
+        return shape
 
     def infer_types(self, ctx: OpContext) -> None:
         input0_dtype = ctx.dtype(self.input0)
@@ -376,7 +379,6 @@ class FusedMatMulOp(MatMulLikeOpBase):
         def batch_indices(
             batch_shape: tuple[int, ...],
             actual_rank: int,
-            trans_batch: bool,
         ) -> list[str]:
             if actual_rank == 0:
                 return []
@@ -386,49 +388,48 @@ class FusedMatMulOp(MatMulLikeOpBase):
                 dim = batch_shape[offset + idx]
                 var = batch_vars[offset + idx]
                 indices.append("0" if dim == 1 else var)
-            if trans_batch and len(indices) > 1:
-                indices = list(reversed(indices))
             return indices
+
+        row = row_var if row_var is not None else "0"
+        col = col_var if col_var is not None else "0"
 
         if left_vector:
             input0_indices: list[str] = ["k"]
         else:
             input0_batch_rank = len(input0_shape) - 2
-            input0_bi = batch_indices(
-                input0_batch_shape, input0_batch_rank, self.trans_batch_a
-            )
-            if self.trans_a:
-                input0_indices = [
-                    *input0_bi,
-                    "k",
-                    row_var if row_var is not None else "0",
-                ]
+            input0_bi = batch_indices(input0_batch_shape, input0_batch_rank)
+            if self.trans_batch_a:
+                # Cyclic rotation: first dim of A becomes the effective row.
+                # Access pattern: A[row, batch..., k] (no trans_a)
+                #                 A[k,   batch..., row] (with trans_a)
+                if self.trans_a:
+                    input0_indices = ["k", *input0_bi, row]
+                else:
+                    input0_indices = [row, *input0_bi, "k"]
             else:
-                input0_indices = [
-                    *input0_bi,
-                    row_var if row_var is not None else "0",
-                    "k",
-                ]
+                if self.trans_a:
+                    input0_indices = [*input0_bi, "k", row]
+                else:
+                    input0_indices = [*input0_bi, row, "k"]
 
         if right_vector:
             input1_indices: list[str] = ["k"]
         else:
             input1_batch_rank = len(input1_shape) - 2
-            input1_bi = batch_indices(
-                input1_batch_shape, input1_batch_rank, self.trans_batch_b
-            )
-            if self.trans_b:
-                input1_indices = [
-                    *input1_bi,
-                    col_var if col_var is not None else "0",
-                    "k",
-                ]
+            input1_bi = batch_indices(input1_batch_shape, input1_batch_rank)
+            if self.trans_batch_b:
+                # Cyclic rotation: first dim of B becomes the effective col.
+                # Access pattern: B[k,   batch..., col] (no trans_b)
+                #                 B[col, batch..., k]   (with trans_b)
+                if self.trans_b:
+                    input1_indices = [col, *input1_bi, "k"]
+                else:
+                    input1_indices = ["k", *input1_bi, col]
             else:
-                input1_indices = [
-                    *input1_bi,
-                    "k",
-                    col_var if col_var is not None else "0",
-                ]
+                if self.trans_b:
+                    input1_indices = [*input1_bi, col, "k"]
+                else:
+                    input1_indices = [*input1_bi, "k", col]
 
         input0_index_expr = f"{input0}" + "".join(f"[{i}]" for i in input0_indices)
         input1_index_expr = f"{input1}" + "".join(f"[{i}]" for i in input1_indices)

@@ -1,9 +1,9 @@
 {
-  "error": "Out of tolerance (max ULP 14680064)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run10 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::FusedMatMul"
   ],
-  "generated_checksum": "636f562b6b18ab4110e19f3beb117e55e6cebfcdc0f9e97b7b8d4ac98e888a26"
+  "generated_checksum": "bb66c728bb674299b03f6f46114a8cf7f5a2f5ee05e2e31b29c159c9685e22b6"
 }

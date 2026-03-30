@@ -1,8 +1,9 @@
 {
-  "error": "FusedMatMul batch dimensions are not broadcastable: (2,) vs (4,)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run40 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::FusedMatMul"
-  ]
+  ],
+  "generated_checksum": "23acbb8cf38cce1f683b5f32b5eb7261c943d2793a8571207fed40e8aea1286c"
 }
