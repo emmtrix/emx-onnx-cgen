@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 236 / 256
+Supported operators: 237 / 256
 
 | Operator | Supported |
 | --- | --- |
@@ -217,7 +217,7 @@ Supported operators: 236 / 256
 | com.microsoft::AttnLSTM | ❌ |
 | com.microsoft::BiasGelu | ✅ |
 | com.microsoft::BifurcationDetector | ❌ |
-| com.microsoft::CDist | ❌ |
+| com.microsoft::CDist | ✅ |
 | com.microsoft::ConvTransposeWithDynamicPads | ❌ |
 | com.microsoft::CropAndResize | ❌ |
 | com.microsoft::DecoderMaskedMultiHeadAttention | ❌ |

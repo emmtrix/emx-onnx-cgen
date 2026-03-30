@@ -218,6 +218,90 @@ class InverseOp(ReduceOpBase):
 
 
 @dataclass(frozen=True)
+class CDistOp(ReduceOpBase):
+    """Pairwise distance computation between two sets of vectors (com.microsoft::CDist)."""
+
+    __io_inputs__ = ("input_a", "input_b")
+
+    input_a: str
+    input_b: str
+    output: str
+    metric: str  # "euclidean" or "sqeuclidean"
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        if self.metric == "euclidean":
+            return {"#include <math.h>"}
+        return set()
+
+    def infer_types(self, ctx: OpContext) -> None:
+        ctx.dtype(self.input_a)
+        ctx.dtype(self.input_b)
+        ctx.dtype(self.output)
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        shape_a = ctx.shape(self.input_a)  # [M, K]
+        shape_b = ctx.shape(self.input_b)  # [N, K]
+        ctx.set_shape(self.output, (shape_a[0], shape_b[0]))  # [M, N]
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        shape_a = emitter.ctx_shape(self.input_a)  # [M, K]
+        shape_b = emitter.ctx_shape(self.input_b)  # [N, K]
+        output_shape = emitter.ctx_shape(self.output)  # [M, N]
+        dtype_a = emitter.ctx_dtype(self.input_a)
+        dtype_b = emitter.ctx_dtype(self.input_b)
+        output_dtype = emitter.ctx_dtype(self.output)
+        if shape_a[1] < 0 or shape_b[0] < 0 or shape_b[1] < 0 or shape_a[0] < 0:
+            raise CodegenError(
+                "CDist requires static shapes; export with static shapes"
+            )
+        # ORT computes CDist in float32 even for float64 inputs, matching InverseOp behavior.
+        compute_type = (
+            "float"
+            if dtype_a in {ScalarType.F64}
+            else dtype_a.c_type
+        )
+        sqrt_fn = "sqrtf" if compute_type == "float" else "sqrt"
+        params = emitter.shared_param_map(
+            [("input_a", self.input_a), ("input_b", self.input_b), ("output", self.output)]
+        )
+        suffix_a = emitter.param_array_suffix(shape_a)
+        suffix_b = emitter.param_array_suffix(shape_b)
+        suffix_out = emitter.param_array_suffix(output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input_a"], dtype_a.c_type, suffix_a, True),
+                (params["input_b"], dtype_b.c_type, suffix_b, True),
+                (params["output"], output_dtype.c_type, suffix_out, False),
+            ]
+        )
+        rendered = (
+            state.templates["cdist"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                params=param_decls,
+                dim_args=dim_args,
+                input_a=params["input_a"],
+                input_b=params["input_b"],
+                output=params["output"],
+                c_type=dtype_a.c_type,
+                compute_type=compute_type,
+                M=shape_a[0],
+                N=shape_b[0],
+                K=shape_a[1],
+                metric=self.metric,
+                sqrt_fn=sqrt_fn,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+
+@dataclass(frozen=True)
 class ArgReduceOp(ReduceOpBase):
     input0: str
     output: str

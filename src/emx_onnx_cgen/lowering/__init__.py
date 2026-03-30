@@ -28,6 +28,7 @@ _LOWERING_MODULES = [
     "conv_integer",
     "conv_transpose",
     "deform_conv",
+    "cdist",
     "det",
     "inverse",
     "cumsum",

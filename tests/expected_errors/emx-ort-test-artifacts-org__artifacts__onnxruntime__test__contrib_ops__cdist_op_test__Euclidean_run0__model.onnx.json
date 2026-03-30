@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.CDist",
+  "error": "OK (max ULP 1)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/cdist_op_test/Euclidean_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::CDist"
-  ]
+  ],
+  "generated_checksum": "04a52bc1d5fbcc5a81e952190964d3dbacdc949923be0fb9b472aa07b310d67f"
 }
