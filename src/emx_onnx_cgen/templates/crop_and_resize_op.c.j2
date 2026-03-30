@@ -1,0 +1,50 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    for (idx_t roi_idx = 0; roi_idx < {{ num_rois }}; ++roi_idx) {
+        const int32_t batch_index = {{ box_ind }}[roi_idx];
+        const {{ c_type }} y1 = {{ rois }}[roi_idx][0];
+        const {{ c_type }} x1 = {{ rois }}[roi_idx][1];
+        const {{ c_type }} y2 = {{ rois }}[roi_idx][2];
+        const {{ c_type }} x2 = {{ rois }}[roi_idx][3];
+
+        for (idx_t c = 0; c < {{ channels }}; ++c) {
+            for (idx_t oy = 0; oy < {{ output_height }}; ++oy) {
+                {{ c_type }} in_y;
+{% if output_height == 1 %}
+                in_y = (y1 + y2) / ({{ c_type }})2.0 * ({{ c_type }})({{ input_height }} - 1);
+{% else %}
+                in_y = y1 * ({{ c_type }})({{ input_height }} - 1) +
+                       ({{ c_type }})oy * (y2 - y1) * ({{ c_type }})({{ input_height }} - 1) /
+                       ({{ c_type }})({{ output_height }} - 1);
+{% endif %}
+                for (idx_t ox = 0; ox < {{ output_width }}; ++ox) {
+                    {{ c_type }} in_x;
+{% if output_width == 1 %}
+                    in_x = (x1 + x2) / ({{ c_type }})2.0 * ({{ c_type }})({{ input_width }} - 1);
+{% else %}
+                    in_x = x1 * ({{ c_type }})({{ input_width }} - 1) +
+                           ({{ c_type }})ox * (x2 - x1) * ({{ c_type }})({{ input_width }} - 1) /
+                           ({{ c_type }})({{ output_width }} - 1);
+{% endif %}
+                    if (in_y < ({{ c_type }})0.0 || in_y > ({{ c_type }})({{ input_height }} - 1) ||
+                        in_x < ({{ c_type }})0.0 || in_x > ({{ c_type }})({{ input_width }} - 1)) {
+                        {{ output }}[roi_idx][c][oy][ox] = ({{ c_type }})({{ extrapolation_value }});
+                    } else {
+                        idx_t top = (idx_t)in_y;
+                        idx_t left = (idx_t)in_x;
+                        idx_t bottom = top + 1;
+                        idx_t right = left + 1;
+                        if (bottom > {{ input_height }} - 1) bottom = {{ input_height }} - 1;
+                        if (right > {{ input_width }} - 1) right = {{ input_width }} - 1;
+                        const {{ c_type }} y_lerp = in_y - ({{ c_type }})top;
+                        const {{ c_type }} x_lerp = in_x - ({{ c_type }})left;
+                        {{ output }}[roi_idx][c][oy][ox] =
+                            (({{ c_type }})1.0 - y_lerp) * (({{ c_type }})1.0 - x_lerp) * {{ x }}[batch_index][c][top][left] +
+                            (({{ c_type }})1.0 - y_lerp) * x_lerp * {{ x }}[batch_index][c][top][right] +
+                            y_lerp * (({{ c_type }})1.0 - x_lerp) * {{ x }}[batch_index][c][bottom][left] +
+                            y_lerp * x_lerp * {{ x }}[batch_index][c][bottom][right];
+                    }
+                }
+            }
+        }
+    }
+}

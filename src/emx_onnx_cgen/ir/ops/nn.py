@@ -9063,3 +9063,91 @@ class RoiAlignOp(RenderableOpBase):
             .rstrip()
         )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+
+class CropAndResizeOp(RenderableOpBase):
+    __io_inputs__ = ("x", "rois", "box_ind")
+    __io_outputs__ = ("output",)
+    x: str
+    rois: str
+    box_ind: str
+    output: str
+    num_rois: int
+    channels: int
+    input_height: int
+    input_width: int
+    output_height: int
+    output_width: int
+    extrapolation_value: float
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.output)
+        c_type = output_dtype.c_type
+        params = emitter.shared_param_map(
+            [
+                ("x", self.x),
+                ("rois", self.rois),
+                ("box_ind", self.box_ind),
+                ("output", self.output),
+            ]
+        )
+        x_shape = emitter.ctx_shape(self.x)
+        rois_shape = emitter.ctx_shape(self.rois)
+        box_ind_shape = emitter.ctx_shape(self.box_ind)
+        output_shape = emitter.ctx_shape(self.output)
+        param_decls = emitter.build_param_decls(
+            [
+                (
+                    params["x"],
+                    c_type,
+                    emitter.param_array_suffix(x_shape),
+                    True,
+                ),
+                (
+                    params["rois"],
+                    c_type,
+                    emitter.param_array_suffix(rois_shape),
+                    True,
+                ),
+                (
+                    params["box_ind"],
+                    ScalarType.I32.c_type,
+                    emitter.param_array_suffix(box_ind_shape),
+                    True,
+                ),
+                (
+                    params["output"],
+                    c_type,
+                    emitter.param_array_suffix(output_shape),
+                    False,
+                ),
+            ]
+        )
+        rendered = (
+            state.templates["crop_and_resize"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                params=param_decls,
+                x=params["x"],
+                rois=params["rois"],
+                box_ind=params["box_ind"],
+                output=params["output"],
+                c_type=c_type,
+                num_rois=self.num_rois,
+                channels=self.channels,
+                input_height=self.input_height,
+                input_width=self.input_width,
+                output_height=self.output_height,
+                output_width=self.output_width,
+                extrapolation_value=emitter.format_double(self.extrapolation_value),
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
