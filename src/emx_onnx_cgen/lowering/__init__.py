@@ -90,6 +90,7 @@ _LOWERING_MODULES = [
     "murmur_hash3",
     "bifurcation_detector",
     "word_conv_embedding",
+    "decoder_masked_mha",
     "ngram_repeat_block",
     "negative_log_likelihood_loss",
     "non_max_suppression",
