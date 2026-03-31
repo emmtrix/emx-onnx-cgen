@@ -9457,7 +9457,11 @@ class AttnLSTMOp(RenderableOpBase):
             return emitter.dim_names_for(name) if name else None
 
         def _suffix(name: str | None, shape):
-            return emitter.param_array_suffix(shape, _dim_names(name)) if shape is not None else ""
+            return (
+                emitter.param_array_suffix(shape, _dim_names(name))
+                if shape is not None
+                else ""
+            )
 
         x_shape = emitter.ctx_shape(self.input_x)
         w_shape = emitter.ctx_shape(self.input_w)
@@ -9485,43 +9489,72 @@ class AttnLSTMOp(RenderableOpBase):
             (params["input_r"], c_type, _suffix(self.input_r, r_shape), True),
             (
                 (params["input_b"], c_type, _suffix(self.input_b, b_shape), True)
-                if params["input_b"] else (None, "", "", True)
+                if params["input_b"]
+                else (None, "", "", True)
             ),
             (
-                (params["input_sequence_lens"], seq_c_type, _suffix(self.input_sequence_lens, seq_shape), True)
-                if params["input_sequence_lens"] else (None, "", "", True)
+                (
+                    params["input_sequence_lens"],
+                    seq_c_type,
+                    _suffix(self.input_sequence_lens, seq_shape),
+                    True,
+                )
+                if params["input_sequence_lens"]
+                else (None, "", "", True)
             ),
             (
-                (params["input_initial_h"], c_type, _suffix(self.input_initial_h, h_shape), True)
-                if params["input_initial_h"] else (None, "", "", True)
+                (
+                    params["input_initial_h"],
+                    c_type,
+                    _suffix(self.input_initial_h, h_shape),
+                    True,
+                )
+                if params["input_initial_h"]
+                else (None, "", "", True)
             ),
             (
-                (params["input_initial_c"], c_type, _suffix(self.input_initial_c, c_shape), True)
-                if params["input_initial_c"] else (None, "", "", True)
+                (
+                    params["input_initial_c"],
+                    c_type,
+                    _suffix(self.input_initial_c, c_shape),
+                    True,
+                )
+                if params["input_initial_c"]
+                else (None, "", "", True)
             ),
             (params["input_qw"], c_type, _suffix(self.input_qw, qw_shape), True),
             (params["input_mw"], c_type, _suffix(self.input_mw, mw_shape), True),
             (params["input_v"], c_type, _suffix(self.input_v, v_shape), True),
             (params["input_m"], c_type, _suffix(self.input_m, m_shape), True),
             (
-                (params["input_memory_seq_lens"], mseq_c_type, _suffix(self.input_memory_seq_lens, mseq_shape), True)
-                if params["input_memory_seq_lens"] else (None, "", "", True)
+                (
+                    params["input_memory_seq_lens"],
+                    mseq_c_type,
+                    _suffix(self.input_memory_seq_lens, mseq_shape),
+                    True,
+                )
+                if params["input_memory_seq_lens"]
+                else (None, "", "", True)
             ),
             (
                 (params["input_aw"], c_type, _suffix(self.input_aw, aw_shape), True)
-                if params["input_aw"] else (None, "", "", True)
+                if params["input_aw"]
+                else (None, "", "", True)
             ),
             (
                 (params["output_y"], c_type, _suffix(self.output_y, y_shape), False)
-                if params["output_y"] else (None, "", "", False)
+                if params["output_y"]
+                else (None, "", "", False)
             ),
             (
                 (params["output_y_h"], c_type, _suffix(self.output_y_h, h_shape), False)
-                if params["output_y_h"] else (None, "", "", False)
+                if params["output_y_h"]
+                else (None, "", "", False)
             ),
             (
                 (params["output_y_c"], c_type, _suffix(self.output_y_c, c_shape), False)
-                if params["output_y_c"] else (None, "", "", False)
+                if params["output_y_c"]
+                else (None, "", "", False)
             ),
         ]
         param_decls = emitter.build_param_decls(decls_list)
@@ -9585,23 +9618,34 @@ class AttnLSTMOp(RenderableOpBase):
     ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
         outputs: list[tuple[str, tuple[int, ...], ScalarType]] = []
         if self.output_y is not None:
-            outputs.append((
-                self.output_y,
-                (self.seq_length, self.num_directions, self.batch_size, self.hidden_size),
-                self.dtype,
-            ))
+            outputs.append(
+                (
+                    self.output_y,
+                    (
+                        self.seq_length,
+                        self.num_directions,
+                        self.batch_size,
+                        self.hidden_size,
+                    ),
+                    self.dtype,
+                )
+            )
         if self.output_y_h is not None:
-            outputs.append((
-                self.output_y_h,
-                (self.num_directions, self.batch_size, self.hidden_size),
-                self.dtype,
-            ))
+            outputs.append(
+                (
+                    self.output_y_h,
+                    (self.num_directions, self.batch_size, self.hidden_size),
+                    self.dtype,
+                )
+            )
         if self.output_y_c is not None:
-            outputs.append((
-                self.output_y_c,
-                (self.num_directions, self.batch_size, self.hidden_size),
-                self.dtype,
-            ))
+            outputs.append(
+                (
+                    self.output_y_c,
+                    (self.num_directions, self.batch_size, self.hidden_size),
+                    self.dtype,
+                )
+            )
         return tuple(outputs)
 
 
@@ -9674,7 +9718,11 @@ class DecoderMaskedMHAOp(RenderableOpBase):
             return emitter.ctx_shape(name) if name else None
 
         def _suffix(name: str | None, shape):
-            return emitter.param_array_suffix(shape, emitter.dim_names_for(name)) if (name and shape is not None) else ""
+            return (
+                emitter.param_array_suffix(shape, emitter.dim_names_for(name))
+                if (name and shape is not None)
+                else ""
+            )
 
         q_shape = emitter.ctx_shape(self.query)
         key_shape = emitter.ctx_shape(self.key)
@@ -9693,35 +9741,72 @@ class DecoderMaskedMHAOp(RenderableOpBase):
             (params["query"], c_type, _suffix(self.query, q_shape), True),
             (params["key"], c_type, _suffix(self.key, key_shape), True),
             (params["value"], c_type, _suffix(self.value, val_shape), True),
-            (params["mask_index"], "int32_t", _suffix(self.mask_index, mask_shape), True),
+            (
+                params["mask_index"],
+                "int32_t",
+                _suffix(self.mask_index, mask_shape),
+                True,
+            ),
             (
                 (params["attn_bias"], c_type, _suffix(self.attn_bias, bias_shape), True)
-                if params["attn_bias"] else (None, "", "", True)
+                if params["attn_bias"]
+                else (None, "", "", True)
             ),
             (
-                (params["past_key"], c_type, _suffix(self.past_key, past_key_shape), True)
-                if params["past_key"] else (None, "", "", True)
+                (
+                    params["past_key"],
+                    c_type,
+                    _suffix(self.past_key, past_key_shape),
+                    True,
+                )
+                if params["past_key"]
+                else (None, "", "", True)
             ),
             (
-                (params["past_value"], c_type, _suffix(self.past_value, past_val_shape), True)
-                if params["past_value"] else (None, "", "", True)
+                (
+                    params["past_value"],
+                    c_type,
+                    _suffix(self.past_value, past_val_shape),
+                    True,
+                )
+                if params["past_value"]
+                else (None, "", "", True)
             ),
             (
-                (params["past_seq_len_input"], "int32_t", _suffix(self.past_seq_len_input, psl_shape), True)
-                if params["past_seq_len_input"] else (None, "", "", True)
+                (
+                    params["past_seq_len_input"],
+                    "int32_t",
+                    _suffix(self.past_seq_len_input, psl_shape),
+                    True,
+                )
+                if params["past_seq_len_input"]
+                else (None, "", "", True)
             ),
             (params["output"], c_type, _suffix(self.output, out_shape), False),
             (
-                (params["present_key"], c_type, _suffix(self.present_key, pk_shape), False)
-                if params["present_key"] else (None, "", "", False)
+                (
+                    params["present_key"],
+                    c_type,
+                    _suffix(self.present_key, pk_shape),
+                    False,
+                )
+                if params["present_key"]
+                else (None, "", "", False)
             ),
             (
-                (params["present_value"], c_type, _suffix(self.present_value, pv_shape), False)
-                if params["present_value"] else (None, "", "", False)
+                (
+                    params["present_value"],
+                    c_type,
+                    _suffix(self.present_value, pv_shape),
+                    False,
+                )
+                if params["present_value"]
+                else (None, "", "", False)
             ),
             (
                 (params["qk_output"], c_type, _suffix(self.qk_output, qk_shape), False)
-                if params["qk_output"] else (None, "", "", False)
+                if params["qk_output"]
+                else (None, "", "", False)
             ),
         ]
         param_decls = emitter.build_param_decls(decls)
@@ -9736,7 +9821,9 @@ class DecoderMaskedMHAOp(RenderableOpBase):
                 zero_literal=zero_literal,
                 min_literal=min_literal,
                 scale_literal=emitter.format_floating(self.scale_value, self.dtype),
-                mask_filter_literal=emitter.format_floating(self.mask_filter_value, self.dtype),
+                mask_filter_literal=emitter.format_floating(
+                    self.mask_filter_value, self.dtype
+                ),
                 query=params["query"],
                 key=params["key"],
                 value=params["value"],
@@ -9768,11 +9855,29 @@ class DecoderMaskedMHAOp(RenderableOpBase):
         outputs: list[tuple[str, tuple[int, ...], ScalarType]] = []
         outputs.append((self.output, (self.batch, 1, self.hidden_size), self.dtype))
         if self.present_key is not None:
-            outputs.append((self.present_key, (self.batch, self.num_heads, self.total_seq, self.head_size), self.dtype))
+            outputs.append(
+                (
+                    self.present_key,
+                    (self.batch, self.num_heads, self.total_seq, self.head_size),
+                    self.dtype,
+                )
+            )
         if self.present_value is not None:
-            outputs.append((self.present_value, (self.batch, self.num_heads, self.total_seq, self.head_size), self.dtype))
+            outputs.append(
+                (
+                    self.present_value,
+                    (self.batch, self.num_heads, self.total_seq, self.head_size),
+                    self.dtype,
+                )
+            )
         if self.qk_output is not None:
-            outputs.append((self.qk_output, (self.batch, self.num_heads, 1, self.kv_seq), self.dtype))
+            outputs.append(
+                (
+                    self.qk_output,
+                    (self.batch, self.num_heads, 1, self.kv_seq),
+                    self.dtype,
+                )
+            )
         return tuple(outputs)
 
 
@@ -9831,7 +9936,11 @@ class MoEOp(RenderableOpBase):
             return emitter.ctx_shape(name) if name else None
 
         def _suffix(name, shape):
-            return emitter.param_array_suffix(shape, emitter.dim_names_for(name)) if (name and shape is not None) else ""
+            return (
+                emitter.param_array_suffix(shape, emitter.dim_names_for(name))
+                if (name and shape is not None)
+                else ""
+            )
 
         inp_shape = emitter.ctx_shape(self.input)
         router_shape = emitter.ctx_shape(self.router_probs)
@@ -9843,16 +9952,23 @@ class MoEOp(RenderableOpBase):
 
         decls = [
             (params["input"], c_type, _suffix(self.input, inp_shape), True),
-            (params["router_probs"], c_type, _suffix(self.router_probs, router_shape), True),
+            (
+                params["router_probs"],
+                c_type,
+                _suffix(self.router_probs, router_shape),
+                True,
+            ),
             (params["fc1_w"], c_type, _suffix(self.fc1_w, fc1_shape), True),
             (
                 (params["fc1_bias"], c_type, _suffix(self.fc1_bias, fc1b_shape), True)
-                if params["fc1_bias"] else (None, "", "", True)
+                if params["fc1_bias"]
+                else (None, "", "", True)
             ),
             (params["fc2_w"], c_type, _suffix(self.fc2_w, fc2_shape), True),
             (
                 (params["fc2_bias"], c_type, _suffix(self.fc2_bias, fc2b_shape), True)
-                if params["fc2_bias"] else (None, "", "", True)
+                if params["fc2_bias"]
+                else (None, "", "", True)
             ),
             (params["output"], c_type, _suffix(self.output, out_shape), False),
         ]

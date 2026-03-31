@@ -29,7 +29,9 @@ def lower_decoder_masked_mha(graph: Graph, node: Node) -> DecoderMaskedMHAOp:
     # 3: qk [batch,heads,1,total_seq] (optional, output_qk=1)
 
     if len(node.inputs) < 4:
-        raise UnsupportedOpError("DecoderMaskedMultiHeadAttention needs at least 4 inputs")
+        raise UnsupportedOpError(
+            "DecoderMaskedMultiHeadAttention needs at least 4 inputs"
+        )
 
     query_name = node.inputs[0]
     key_name = node.inputs[1]
@@ -54,7 +56,9 @@ def lower_decoder_masked_mha(graph: Graph, node: Node) -> DecoderMaskedMHAOp:
 
     num_heads_attr = node.attrs.get("num_heads")
     if num_heads_attr is None:
-        raise UnsupportedOpError("DecoderMaskedMultiHeadAttention requires num_heads attribute")
+        raise UnsupportedOpError(
+            "DecoderMaskedMultiHeadAttention requires num_heads attribute"
+        )
     num_heads = int(num_heads_attr)
 
     mask_filter_value = float(node.attrs.get("mask_filter_value", -10000.0))
@@ -91,7 +95,12 @@ def lower_decoder_masked_mha(graph: Graph, node: Node) -> DecoderMaskedMHAOp:
                 "DecoderMaskedMultiHeadAttention self-attention requires past_key and past_sequence_length"
             )
         pk_shape = value_shape(graph, past_key_name, node)
-        if len(pk_shape) != 4 or pk_shape[0] != batch or pk_shape[1] != num_heads or pk_shape[3] != head_size:
+        if (
+            len(pk_shape) != 4
+            or pk_shape[0] != batch
+            or pk_shape[1] != num_heads
+            or pk_shape[3] != head_size
+        ):
             raise ShapeInferenceError(
                 f"DecoderMaskedMultiHeadAttention: past_key shape mismatch, got {pk_shape}"
             )
@@ -103,7 +112,11 @@ def lower_decoder_masked_mha(graph: Graph, node: Node) -> DecoderMaskedMHAOp:
     elif len(key_shape) == 4:
         # Cross-attention: key = [batch, heads, kv_seq, head_size]
         is_self_attn = False
-        if key_shape[0] != batch or key_shape[1] != num_heads or key_shape[3] != head_size:
+        if (
+            key_shape[0] != batch
+            or key_shape[1] != num_heads
+            or key_shape[3] != head_size
+        ):
             raise ShapeInferenceError(
                 f"DecoderMaskedMultiHeadAttention: cross-attn key shape mismatch, got {key_shape}"
             )

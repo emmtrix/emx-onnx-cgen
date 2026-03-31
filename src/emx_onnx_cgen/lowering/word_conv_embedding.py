@@ -43,9 +43,7 @@ def lower_word_conv_embedding(graph: Graph, node: Node) -> WordConvEmbeddingOp:
         )
     num_filters, _, conv_window, char_emb_size = w_shape
     if _ != 1:
-        raise ShapeInferenceError(
-            f"WordConvEmbedding W dim 1 must be 1, got {_}"
-        )
+        raise ShapeInferenceError(f"WordConvEmbedding W dim 1 must be 1, got {_}")
 
     b_shape = _value_shape(graph, bias_name, node)
     if b_shape != (num_filters,):

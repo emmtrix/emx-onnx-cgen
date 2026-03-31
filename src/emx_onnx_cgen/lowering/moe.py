@@ -59,7 +59,9 @@ def lower_moe(graph: Graph, node: Node) -> MoEOp:
 
     router_shape = value_shape(graph, router_name, node)
     if len(router_shape) != 2 or router_shape[0] != batch:
-        raise UnsupportedOpError(f"MoE: router_probs must be [batch, num_experts], got {router_shape}")
+        raise UnsupportedOpError(
+            f"MoE: router_probs must be [batch, num_experts], got {router_shape}"
+        )
     num_experts = router_shape[1]
 
     fc1_shape = value_shape(graph, fc1_w_name, node)
@@ -71,7 +73,11 @@ def lower_moe(graph: Graph, node: Node) -> MoEOp:
     fc2_in_size = fc1_out_size // 2  # SwiGLU splits fc1_out into gate + value
 
     fc2_shape = value_shape(graph, fc2_w_name, node)
-    if len(fc2_shape) != 3 or fc2_shape[0] != num_experts or fc2_shape[1] != fc2_in_size:
+    if (
+        len(fc2_shape) != 3
+        or fc2_shape[0] != num_experts
+        or fc2_shape[1] != fc2_in_size
+    ):
         raise UnsupportedOpError(
             f"MoE: fc2_w must be [num_experts, fc2_in_size={fc2_in_size}, model_dim], got {fc2_shape}"
         )

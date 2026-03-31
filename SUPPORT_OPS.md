@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 251 / 256
+Supported operators: 255 / 256
 
 | Operator | Supported |
 | --- | --- |
@@ -214,13 +214,13 @@ Supported operators: 251 / 256
 | ai.onnx.preview.training::Gradient | ✅ |
 | ai.onnx.preview.training::Momentum | ✅ |
 | com.microsoft::Attention | ✅ |
-| com.microsoft::AttnLSTM | ❌ |
+| com.microsoft::AttnLSTM | ✅ |
 | com.microsoft::BiasGelu | ✅ |
 | com.microsoft::BifurcationDetector | ✅ |
 | com.microsoft::CDist | ✅ |
 | com.microsoft::ConvTransposeWithDynamicPads | ✅ |
 | com.microsoft::CropAndResize | ✅ |
-| com.microsoft::DecoderMaskedMultiHeadAttention | ❌ |
+| com.microsoft::DecoderMaskedMultiHeadAttention | ✅ |
 | com.microsoft::DequantizeLinear | ✅ |
 | com.microsoft::DynamicQuantizeLSTM | ✅ |
 | com.microsoft::DynamicQuantizeMatMul | ✅ |
@@ -238,7 +238,7 @@ Supported operators: 251 / 256
 | com.microsoft::MatMulIntegerToFloat | ✅ |
 | com.microsoft::MatMulNBits | ✅ |
 | com.microsoft::MaxpoolWithMask | ✅ |
-| com.microsoft::MoE | ❌ |
+| com.microsoft::MoE | ✅ |
 | com.microsoft::MultiHeadAttention | ✅ |
 | com.microsoft::MurmurHash3 | ✅ |
 | com.microsoft::NGramRepeatBlock | ✅ |
@@ -264,4 +264,4 @@ Supported operators: 251 / 256
 | com.microsoft::Trilu | ✅ |
 | com.microsoft::UnfoldTensor | ✅ |
 | com.microsoft::Unique | ✅ |
-| com.microsoft::WordConvEmbedding | ❌ |
+| com.microsoft::WordConvEmbedding | ✅ |

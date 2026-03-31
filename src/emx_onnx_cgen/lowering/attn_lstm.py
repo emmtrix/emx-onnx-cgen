@@ -18,9 +18,7 @@ from .registry import register_lowering
 @register_lowering("AttnLSTM")
 def lower_attn_lstm(graph: Graph, node: Node) -> AttnLSTMOp:
     if len(node.inputs) < 14 or len(node.outputs) < 1:
-        raise UnsupportedOpError(
-            "AttnLSTM expects 14 inputs and 1-3 outputs"
-        )
+        raise UnsupportedOpError("AttnLSTM expects 14 inputs and 1-3 outputs")
 
     input_x = node.inputs[0]
     input_w = node.inputs[1]
@@ -81,7 +79,11 @@ def lower_attn_lstm(graph: Graph, node: Node) -> AttnLSTMOp:
 
     # QW: [num_dirs, hidden_size, attn_dim]
     qw_shape = value_shape(graph, input_qw, node)
-    if len(qw_shape) != 3 or qw_shape[0] != num_directions or qw_shape[1] != hidden_size:
+    if (
+        len(qw_shape) != 3
+        or qw_shape[0] != num_directions
+        or qw_shape[1] != hidden_size
+    ):
         raise UnsupportedOpError(
             f"AttnLSTM QW shape must be [{num_directions}, {hidden_size}, attn_dim], got {qw_shape}"
         )
@@ -150,7 +152,9 @@ def lower_attn_lstm(graph: Graph, node: Node) -> AttnLSTMOp:
         activations = _normalize_activation_names(activations_attr)
     if num_directions == 1:
         if len(activations) != 3:
-            raise UnsupportedOpError("AttnLSTM needs 3 activations for single-direction")
+            raise UnsupportedOpError(
+                "AttnLSTM needs 3 activations for single-direction"
+            )
     else:
         if len(activations) == 3:
             activations = activations * 2
