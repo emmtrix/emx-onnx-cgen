@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.AttnLSTM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/attention_lstm_op_test/BidirectionLstmWithBahdanauAMShortenSeqLength_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::AttnLSTM"
-  ]
+  ],
+  "generated_checksum": "474ecaaeaffe7ccbe804eeb49bbdc9d2e3ccbfca8068aa5365f734e82b468bae"
 }

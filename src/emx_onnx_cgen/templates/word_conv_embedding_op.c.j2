@@ -1,0 +1,19 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    for (idx_t w = 0; w < {{ batch }}; ++w) {
+        for (idx_t f = 0; f < {{ num_filters }}; ++f) {
+            {{ c_type }} max_val = {{ min_literal }};
+            for (idx_t p = 0; p <= {{ max_word_len }} - {{ conv_window }}; ++p) {
+                {{ c_type }} acc = {{ bias }}[f];
+                for (idx_t k = 0; k < {{ conv_window }}; ++k) {
+                    idx_t char_idx = (idx_t){{ sequence }}[w][p + k];
+                    for (idx_t j = 0; j < {{ char_emb_size }}; ++j) {
+                        acc += {{ char_embedding }}[char_idx][j] * {{ weights }}[f][0][k][j];
+                    }
+                }
+                {{ c_type }} val = {{ tanh_fn }}(acc);
+                if (val > max_val) max_val = val;
+            }
+            {{ output }}[w][f] = max_val;
+        }
+    }
+}

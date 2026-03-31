@@ -1,0 +1,81 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    for (int b = 0; b < {{ batch }}; ++b) {
+        for (int j = 0; j < {{ model_dim }}; ++j) {
+            {{ output }}[b][j] = {{ zero_literal }};
+        }
+    }
+    for (int b = 0; b < {{ batch }}; ++b) {
+        /* Select top-{{ k }} experts */
+        int selected_experts[{{ k }}];
+        {{ c_type }} selected_weights[{{ k }}];
+        {
+            /* Find top-k indices by router_probs[b] */
+            int chosen[{{ k }}];
+            for (int ki = 0; ki < {{ k }}; ++ki) {
+                {{ c_type }} best_val = {{ min_literal }};
+                int best_idx = 0;
+                for (int e = 0; e < {{ num_experts }}; ++e) {
+                    int already = 0;
+                    for (int kj = 0; kj < ki; ++kj) {
+                        if (chosen[kj] == e) { already = 1; break; }
+                    }
+                    if (!already && ({{ c_type }}){{ router_probs }}[b][e] > best_val) {
+                        best_val = ({{ c_type }}){{ router_probs }}[b][e];
+                        best_idx = e;
+                    }
+                }
+                chosen[ki] = best_idx;
+            }
+            /* Compute normalized routing weights */
+            {{ c_type }} weight_sum = {{ zero_literal }};
+            for (int ki = 0; ki < {{ k }}; ++ki) {
+                weight_sum += ({{ c_type }}){{ router_probs }}[b][chosen[ki]];
+            }
+            for (int ki = 0; ki < {{ k }}; ++ki) {
+                selected_experts[ki] = chosen[ki];
+                {% if normalize_routing_weights %}
+                selected_weights[ki] = ({{ c_type }}){{ router_probs }}[b][chosen[ki]] / weight_sum;
+                {% else %}
+                selected_weights[ki] = ({{ c_type }}){{ router_probs }}[b][chosen[ki]];
+                {% endif %}
+            }
+        }
+        /* Process each selected expert */
+        for (int ki = 0; ki < {{ k }}; ++ki) {
+            int e = selected_experts[ki];
+            {{ c_type }} rw = selected_weights[ki];
+            /* fc1: input[b] @ fc1_w[e] → fc1_out[fc1_out_size] */
+            {{ c_type }} fc1_out[{{ fc1_out_size }}];
+            for (int k2 = 0; k2 < {{ fc1_out_size }}; ++k2) {
+                {{ c_type }} acc = {{ zero_literal }};
+                for (int i = 0; i < {{ model_dim }}; ++i) {
+                    acc += {{ input }}[b][i] * {{ fc1_w }}[e][i][k2];
+                }
+                {% if fc1_bias %}
+                acc += {{ fc1_bias }}[e][k2];
+                {% endif %}
+                fc1_out[k2] = acc;
+            }
+            /* SwiGLU: gate=fc1_out[:hidden], value=fc1_out[hidden:] */
+            {{ c_type }} swiglu[{{ fc2_in_size }}];
+            for (int k2 = 0; k2 < {{ fc2_in_size }}; ++k2) {
+                {{ c_type }} gate  = fc1_out[k2];
+                {{ c_type }} value = fc1_out[{{ fc2_in_size }} + k2];
+                /* swiglu = silu(gate) * (value + beta) */
+                {{ c_type }} sig = ({{ c_type }})1.0f / (({{ c_type }})1.0f + expf(-gate));
+                swiglu[k2] = gate * sig * (value + {{ beta_literal }});
+            }
+            /* fc2: swiglu @ fc2_w[e] → fc2_out[model_dim] */
+            for (int j = 0; j < {{ model_dim }}; ++j) {
+                {{ c_type }} acc = {{ zero_literal }};
+                for (int k2 = 0; k2 < {{ fc2_in_size }}; ++k2) {
+                    acc += swiglu[k2] * {{ fc2_w }}[e][k2][j];
+                }
+                {% if fc2_bias %}
+                acc += {{ fc2_bias }}[e][j];
+                {% endif %}
+                {{ output }}[b][j] += rw * acc;
+            }
+        }
+    }
+}
