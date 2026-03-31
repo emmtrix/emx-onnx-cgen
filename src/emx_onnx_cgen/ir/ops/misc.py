@@ -8172,6 +8172,126 @@ class SequenceEmptyOp(RenderableOpBase):
         )
 
 
+
+@dataclass(frozen=True)
+class BifurcationDetectorOp(RenderableOpBase):
+    __io_inputs__ = ("src_tokens", "cur_tokens", "match_idx_in", "pred_tokens")
+    __io_outputs__ = ("tokens", "match_idx_out")
+    src_tokens: str
+    cur_tokens: str
+    match_idx_in: str
+    pred_tokens: str | None
+    tokens: str
+    match_idx_out: str
+    src_len: int
+    cur_len: int
+    pred_len: int
+    tokens_len: int
+    min_ngram_size: int
+    max_ngram_size: int
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <string.h>"}
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        param_name_pairs = [
+            ("src_tokens", self.src_tokens),
+            ("cur_tokens", self.cur_tokens),
+            ("match_idx_in", self.match_idx_in),
+            ("tokens", self.tokens),
+            ("match_idx_out", self.match_idx_out),
+        ]
+        if self.pred_tokens is not None:
+            param_name_pairs.insert(3, ("pred_tokens", self.pred_tokens))
+        params = emitter.shared_param_map(param_name_pairs)
+        src_shape = emitter.ctx_shape(self.src_tokens)
+        cur_shape = emitter.ctx_shape(self.cur_tokens)
+        tokens_shape = emitter.ctx_shape(self.tokens)
+        match_idx_shape = emitter.ctx_shape(self.match_idx_out)
+        param_decl_entries: list[tuple[str, str, str, bool]] = [
+            (
+                params["src_tokens"],
+                ScalarType.I64.c_type,
+                emitter.param_array_suffix(src_shape, emitter.dim_names_for(self.src_tokens)),
+                True,
+            ),
+            (
+                params["cur_tokens"],
+                ScalarType.I64.c_type,
+                emitter.param_array_suffix(cur_shape, emitter.dim_names_for(self.cur_tokens)),
+                True,
+            ),
+            (
+                params["match_idx_in"],
+                ScalarType.I64.c_type,
+                emitter.param_array_suffix(match_idx_shape, emitter.dim_names_for(self.match_idx_in)),
+                True,
+            ),
+        ]
+        if self.pred_tokens is not None:
+            pred_shape = emitter.ctx_shape(self.pred_tokens)
+            param_decl_entries.append(
+                (
+                    params["pred_tokens"],
+                    ScalarType.I64.c_type,
+                    emitter.param_array_suffix(pred_shape, emitter.dim_names_for(self.pred_tokens)),
+                    True,
+                )
+            )
+        param_decl_entries.extend(
+            [
+                (
+                    params["tokens"],
+                    ScalarType.I64.c_type,
+                    emitter.param_array_suffix(tokens_shape, emitter.dim_names_for(self.tokens)),
+                    False,
+                ),
+                (
+                    params["match_idx_out"],
+                    ScalarType.I64.c_type,
+                    emitter.param_array_suffix(match_idx_shape, emitter.dim_names_for(self.match_idx_out)),
+                    False,
+                ),
+            ]
+        )
+        param_decls = emitter.build_param_decls(param_decl_entries)
+        rendered = (
+            state.templates["bifurcation_detector"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                src_tokens=params["src_tokens"],
+                cur_tokens=params["cur_tokens"],
+                match_idx_in=params["match_idx_in"],
+                pred_tokens=params.get("pred_tokens", ""),
+                has_pred_tokens=self.pred_tokens is not None,
+                tokens=params["tokens"],
+                match_idx_out=params["match_idx_out"],
+                src_len=self.src_len,
+                cur_len=self.cur_len,
+                pred_len=self.pred_len,
+                tokens_len=self.tokens_len,
+                min_ngram_size=self.min_ngram_size,
+                max_ngram_size=self.max_ngram_size,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        return (
+            (self.tokens, emitter.ctx_shape(self.tokens), ScalarType.I64),
+            (self.match_idx_out, emitter.ctx_shape(self.match_idx_out), ScalarType.I64),
+        )
+
+
 _MURMUR_HASH3_SUPPORTED_DTYPES: frozenset[ScalarType] = frozenset(
     {
         ScalarType.I8,
