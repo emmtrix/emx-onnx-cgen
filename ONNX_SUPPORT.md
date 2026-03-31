@@ -8,7 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1801 / 1802, 99.9% | 1.20.1 |
-| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4117 / 4182, 98.4% | n/a |
+| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4040 / 4091, 98.8% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -1832,7 +1832,7 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 
 Test directory: `emx-ort-test-artifacts-org/artifacts/onnxruntime`
 
-Coverage 4117 / 4182 ONNX files (98.4%).
+Coverage 4040 / 4091 ONNX files (98.8%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1890,7 +1890,7 @@ Coverage 4117 / 4182 ONNX files (98.4%).
 | test/contrib_ops/attention_op_test/AttentionPastStateBatch2WithPadding_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/attention_op_test/AttentionPastStateBatch2_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/attention_op_test/AttentionPastStateBatch2_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/attention_op_test/AttentionPastState_dynamic_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 58877) |
+| test/contrib_ops/attention_op_test/AttentionPastState_dynamic_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 86151) |
 | test/contrib_ops/attention_op_test/AttentionPrunedModel_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/attention_op_test/AttentionPrunedModel_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/attention_op_test/AttentionRightPaddingMaskIndex2_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
@@ -1903,8 +1903,8 @@ Coverage 4117 / 4182 ONNX files (98.4%).
 | test/contrib_ops/attention_op_test/AttentionUnidirectional_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/attention_op_test/AttentionWithNormFactor_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/attention_op_test/AttentionWithNormFactor_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
-| test/contrib_ops/attention_op_test/Attention_Mask1D_Fp32_B2_S64_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 739520) |
-| test/contrib_ops/attention_op_test/Attention_Mask2D_Fp32_B2_S32_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 980293) |
+| test/contrib_ops/attention_op_test/Attention_Mask1D_Fp32_B2_S64_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1020241) |
+| test/contrib_ops/attention_op_test/Attention_Mask2D_Fp32_B2_S32_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 980755) |
 | test/contrib_ops/attention_op_test/SharedPrepackedWeights_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/attention_op_test/SharedPrepackedWeights_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/bifurcation_detector_op_test/Test1_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
@@ -2006,10 +2006,6 @@ Coverage 4117 / 4182 ONNX files (98.4%).
 | test/contrib_ops/expand_dims_test/MaxAxis_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/expand_dims_test/MinAxis_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/expand_dims_test/MinAxis_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/expand_dims_test/NegativeAxisOutOfRange_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/expand_dims_test/NegativeAxisOutOfRange_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/expand_dims_test/PositiveAxisOutOfRange_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/expand_dims_test/PositiveAxisOutOfRange_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/fastgelu_op_test/FastGeluWithBiasFloat32_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/fastgelu_op_test/FastGeluWithNullInput_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/fastgelu_op_test/FastGeluWithoutBiasFloat32_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
@@ -2361,76 +2357,6 @@ Coverage 4117 / 4182 ONNX files (98.4%).
 | test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidBlockSize_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidBlockSize_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidBlockSize_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidBlockSize_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidBlockSize_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidBlockSize_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidGatherAxis_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidIndices_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run11/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/NotSupportedBits_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run0/model.onnx |  | Data/Data | ❌ | Testbench execution failed: exit code 1 |
-| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run1/model.onnx |  | Data/Data | ❌ | Testbench execution failed: exit code 1 |
-| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run2/model.onnx |  | Data/Data | ❌ | Testbench execution failed: exit code 1 |
-| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run3/model.onnx |  | Data/Data | ❌ | Testbench execution failed: exit code 1 |
-| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run4/model.onnx |  | Data/Data | ❌ | Testbench execution failed: exit code 1 |
-| test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run5/model.onnx |  | Data/Data | ❌ | Testbench execution failed: exit code 1 |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run11/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run13/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run14/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run15/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run17/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run18/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run19/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run20/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run21/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run23/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedUInt8DataType_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1073741825) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedUInt8DataType_run1/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1073741825) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedUInt8DataType_run2/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1073741825) |
-| test/contrib_ops/gather_block_quantized_op_test/UnsupportedUInt8DataType_run3/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1073741825) |
 | test/contrib_ops/gridsample_test/gridsample_aligncorners_true_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/gridsample_test/gridsample_default_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/gridsample_test/gridsample_mode_bicubic_run0/model.onnx (--max-ulp 2000) |  | Data/Data | ✅ | OK (max ULP 1678) |
@@ -4388,7 +4314,6 @@ Coverage 4117 / 4182 ONNX files (98.4%).
 | test/contrib_ops/murmur_hash3_test/StringKeyIntWithSeed42_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/murmur_hash3_test/StringKeyUIntResult_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/murmur_hash3_test/StringKeyUIntWithSeed42_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/murmur_hash3_test/UnsupportedInputType_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/murmur_hash3_test/ZeroSeedDoubleResult_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/murmur_hash3_test/ZeroSeedFloatResult_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/murmur_hash3_test/ZeroSeedUIntResult2_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
@@ -5050,18 +4975,6 @@ Coverage 4117 / 4182 ONNX files (98.4%).
 | test/contrib_ops/qlinear_concat_test/ExpectFail_MixedConstDynamic_run5/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/qlinear_concat_test/ExpectFail_MixedConstDynamic_run6/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/qlinear_concat_test/ExpectFail_MixedConstDynamic_run7/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_WrongScaleType_0_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_WrongScaleType_0_run1/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_WrongScaleType_1_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_WrongScaleType_1_run1/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_WrongTensorType_0_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_WrongTensorType_0_run1/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_WrongTensorType_1_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_WrongTensorType_1_run1/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_WrongZeroPointType_0_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_WrongZeroPointType_0_run1/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_WrongZeroPointType_1_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qlinear_concat_test/ExpectFail_WrongZeroPointType_1_run1/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/qlinear_concat_test/Input3_ConstConstConst_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/qlinear_concat_test/Input3_ConstConstConst_run1/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/qlinear_concat_test/Input3_DynamicDynamicDynamic_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
@@ -6012,10 +5925,6 @@ Coverage 4117 / 4182 ONNX files (98.4%).
 | test/contrib_ops/unique_op_test/Unique_Complicated_Example_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0, max ULP 0) |
 | test/contrib_ops/unique_op_test/Unique_Example_SingleElement_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0, max ULP 0) |
 | test/contrib_ops/unique_op_test/Unique_Spec_Example_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0, max ULP 0) |
-| test/contrib_ops/word_conv_embedding_test/WordConvEmbedding_char_embedding_shape_conv_shape_not_match_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.WordConvEmbedding |
-| test/contrib_ops/word_conv_embedding_test/WordConvEmbedding_char_embedding_size_mismatch_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.WordConvEmbedding |
-| test/contrib_ops/word_conv_embedding_test/WordConvEmbedding_conv_window_size_mismatch_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.WordConvEmbedding |
-| test/contrib_ops/word_conv_embedding_test/WordConvEmbedding_embedding_size_mismatch_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.WordConvEmbedding |
 | test/contrib_ops/word_conv_embedding_test/WordConvEmbedding_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.WordConvEmbedding |
 | test/contrib_ops/word_conv_embedding_test/WordConvEmbedding_valid_attribute_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.WordConvEmbedding |
 

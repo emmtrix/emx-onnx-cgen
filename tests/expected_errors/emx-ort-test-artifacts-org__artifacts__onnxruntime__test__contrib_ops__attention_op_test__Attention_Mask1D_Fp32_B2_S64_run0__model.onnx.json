@@ -1,5 +1,5 @@
 {
-  "error": "Out of tolerance (max ULP 739520)",
+  "error": "Out of tolerance (max ULP 1020241)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/attention_op_test/Attention_Mask1D_Fp32_B2_S64_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
