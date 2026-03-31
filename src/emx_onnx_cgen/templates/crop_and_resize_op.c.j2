@@ -29,6 +29,13 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                         in_x < ({{ c_type }})0.0 || in_x > ({{ c_type }})({{ input_width }} - 1)) {
                         {{ output }}[roi_idx][c][oy][ox] = ({{ c_type }})({{ extrapolation_value }});
                     } else {
+{% if method == "nearest" %}
+                        idx_t ny = (idx_t)(in_y + ({{ c_type }})0.5);
+                        idx_t nx = (idx_t)(in_x + ({{ c_type }})0.5);
+                        if (ny >= {{ input_height }}) ny = {{ input_height }} - 1;
+                        if (nx >= {{ input_width }}) nx = {{ input_width }} - 1;
+                        {{ output }}[roi_idx][c][oy][ox] = {{ x }}[batch_index][c][ny][nx];
+{% else %}
                         idx_t top = (idx_t)in_y;
                         idx_t left = (idx_t)in_x;
                         idx_t bottom = top + 1;
@@ -42,6 +49,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                             (({{ c_type }})1.0 - y_lerp) * x_lerp * {{ x }}[batch_index][c][top][right] +
                             y_lerp * (({{ c_type }})1.0 - x_lerp) * {{ x }}[batch_index][c][bottom][left] +
                             y_lerp * x_lerp * {{ x }}[batch_index][c][bottom][right];
+{% endif %}
                     }
                 }
             }

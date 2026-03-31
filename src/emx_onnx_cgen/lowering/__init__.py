@@ -87,6 +87,7 @@ _LOWERING_MODULES = [
     "mel_weight_matrix",
     "multihead_attention",
     "murmur_hash3",
+    "bifurcation_detector",
     "ngram_repeat_block",
     "negative_log_likelihood_loss",
     "non_max_suppression",

@@ -49,7 +49,7 @@ def lower_crop_and_resize(graph: Graph, node: Node) -> CropAndResizeOp:
         elif name == "mode":
             method = val.decode("utf-8") if isinstance(val, bytes) else str(val)
 
-    if method != "bilinear":
+    if method not in {"bilinear", "nearest"}:
         raise UnsupportedOpError(f"CropAndResize method {method!r} is not supported")
 
     input_dtype = node_dtype(graph, node, x_name, output_name)
@@ -76,4 +76,5 @@ def lower_crop_and_resize(graph: Graph, node: Node) -> CropAndResizeOp:
         output_height=output_height,
         output_width=output_width,
         extrapolation_value=extrapolation_value,
+        method=method,
     )

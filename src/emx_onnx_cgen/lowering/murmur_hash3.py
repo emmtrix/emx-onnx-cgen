@@ -27,7 +27,7 @@ def lower_murmur_hash3(graph: Graph, node: Node) -> MurmurHash3Op:
     if input_dtype not in _MURMUR_HASH3_SUPPORTED_DTYPES:
         raise UnsupportedOpError(
             f"MurmurHash3 does not support input dtype {input_dtype.onnx_name}; "
-            f"supported: int32, int64, float, double, string"
+            f"supported: int8, int32, int64, float, double, string"
         )
 
     positive = int(node.attrs.get("positive", 0))
