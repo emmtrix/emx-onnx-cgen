@@ -91,6 +91,7 @@ _LOWERING_MODULES = [
     "bifurcation_detector",
     "word_conv_embedding",
     "decoder_masked_mha",
+    "moe",
     "ngram_repeat_block",
     "negative_log_likelihood_loss",
     "non_max_suppression",
