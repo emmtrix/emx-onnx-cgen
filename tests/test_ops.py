@@ -5075,7 +5075,6 @@ def _run_reference_testbench_compare(model: onnx.ModelProto) -> None:
             )
         else:
             np.testing.assert_array_equal(output_data, ref_output)
-
     model = _make_string_normalizer_model(
         input_shape=[4],
         output_shape=[3],
@@ -5090,6 +5089,12 @@ def _run_reference_testbench_compare(model: onnx.ModelProto) -> None:
     assert op.case_change_action == "LOWER"
     assert op.is_case_sensitive is False
     assert op.stopwords == ("monday",)
+
+
+def _load_test_data_tensor(path: Path) -> np.ndarray:
+    tensor = onnx.TensorProto()
+    tensor.ParseFromString(path.read_bytes())
+    return numpy_helper.to_array(tensor)
 
 
 def test_string_normalizer_codegen_emits_transform_logic() -> None:
@@ -8235,6 +8240,64 @@ def test_mean_variance_normalization_op_matches_onnxruntime() -> None:
     _run_ort_compare(model)
 
 
+@pytest.mark.parametrize(
+    "run_name",
+    [
+        pytest.param(
+            "MeanVarianceNormalizationCPUTest_Version1_TO_8_run0",
+            id="legacy-across-channels-with-variance",
+        ),
+        pytest.param(
+            "MeanVarianceNormalizationCPUTest_Version1_TO_8_run1",
+            id="legacy-across-channels-no-variance",
+        ),
+        pytest.param(
+            "MeanVarianceNormalizationCPUTest_Version1_TO_8_run2",
+            id="legacy-per-channel-no-variance",
+        ),
+        pytest.param(
+            "MeanVarianceNormalizationCPUTest_Version1_TO_8_run3",
+            id="legacy-per-channel-with-variance",
+        ),
+    ],
+)
+def test_legacy_mean_variance_normalization_op_matches_onnxruntime(
+    run_name: str,
+) -> None:
+    model_dir = (
+        PROJECT_ROOT
+        / "emx-ort-test-artifacts-org"
+        / "artifacts"
+        / "onnxruntime"
+        / "test"
+        / "contrib_ops"
+        / "tensor_op_test"
+        / run_name
+    )
+    model = onnx.load(model_dir / "model.onnx")
+    inputs = {
+        value_info.name: _load_test_data_tensor(
+            model_dir / "test_data_set_0" / f"input_{index}.pb"
+        )
+        for index, value_info in enumerate(model.graph.input)
+    }
+    payload = _compile_and_run_testbench(model, testbench_inputs=inputs)
+    outputs_payload = payload.get("outputs", {})
+    for index, output_info in enumerate(model.graph.output):
+        expected = _load_test_data_tensor(
+            model_dir / "test_data_set_0" / f"output_{index}.pb"
+        )
+        output_payload = outputs_payload.get(output_info.name)
+        if output_payload is None:
+            raise AssertionError(f"Missing output {output_info.name} in testbench data")
+        output_data = decode_testbench_array(output_payload["data"], expected.dtype)
+        output_data = output_data.reshape(expected.shape)
+        if np.issubdtype(expected.dtype, np.floating):
+            np.testing.assert_allclose(output_data, expected, rtol=1e-6, atol=1e-6)
+        else:
+            np.testing.assert_array_equal(output_data, expected)
+
+
 def test_rms_normalization_op_matches_onnxruntime() -> None:
     model = _make_rms_normalization_model(input_shape=[2, 3, 4], axis=1)
     _run_ort_compare(model)
@@ -8397,7 +8460,7 @@ def test_mean_variance_normalization_run_matches_numpy() -> None:
     outputs = _run_reference(model, {"in0": data})
     mean = np.mean(data, axis=(0, 2, 3), keepdims=True)
     var = np.mean((data - mean) ** 2, axis=(0, 2, 3), keepdims=True)
-    expected = (data - mean) / np.sqrt(var + 1e-9)
+    expected = (data - mean) / (np.sqrt(var) + 1e-9)
     np.testing.assert_allclose(outputs["out"], expected, rtol=1e-5, atol=1e-6)
 
 
