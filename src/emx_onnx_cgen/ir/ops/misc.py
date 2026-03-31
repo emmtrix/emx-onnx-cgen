@@ -3955,13 +3955,9 @@ class UniqueOp(RenderableOpBase):
         inverse_shape = ctx.shape(self.inverse_indices)
         counts_shape = ctx.shape(self.counts)
         if indices_shape is not None and len(indices_shape) != 1:
-            raise ShapeInferenceError(
-                f"{self.kind} indices output must be rank-1"
-            )
+            raise ShapeInferenceError(f"{self.kind} indices output must be rank-1")
         if len(counts_shape) != 1:
-            raise ShapeInferenceError(
-                f"{self.kind} counts output must be rank-1"
-            )
+            raise ShapeInferenceError(f"{self.kind} counts output must be rank-1")
         if self.axis is None:
             if len(y_shape) != 1:
                 raise ShapeInferenceError(f"{self.kind} Y output must be rank-1")
@@ -4054,7 +4050,12 @@ class UniqueOp(RenderableOpBase):
             )
         param_decl_entries.extend(
             [
-                (params["inverse_indices"], inverse_dtype.c_type, inverse_suffix, False),
+                (
+                    params["inverse_indices"],
+                    inverse_dtype.c_type,
+                    inverse_suffix,
+                    False,
+                ),
                 (params["counts"], counts_dtype.c_type, counts_suffix, False),
             ]
         )
@@ -8172,7 +8173,6 @@ class SequenceEmptyOp(RenderableOpBase):
         )
 
 
-
 @dataclass(frozen=True)
 class BifurcationDetectorOp(RenderableOpBase):
     __io_inputs__ = ("src_tokens", "cur_tokens", "match_idx_in", "pred_tokens")
@@ -8216,19 +8216,25 @@ class BifurcationDetectorOp(RenderableOpBase):
             (
                 params["src_tokens"],
                 ScalarType.I64.c_type,
-                emitter.param_array_suffix(src_shape, emitter.dim_names_for(self.src_tokens)),
+                emitter.param_array_suffix(
+                    src_shape, emitter.dim_names_for(self.src_tokens)
+                ),
                 True,
             ),
             (
                 params["cur_tokens"],
                 ScalarType.I64.c_type,
-                emitter.param_array_suffix(cur_shape, emitter.dim_names_for(self.cur_tokens)),
+                emitter.param_array_suffix(
+                    cur_shape, emitter.dim_names_for(self.cur_tokens)
+                ),
                 True,
             ),
             (
                 params["match_idx_in"],
                 ScalarType.I64.c_type,
-                emitter.param_array_suffix(match_idx_shape, emitter.dim_names_for(self.match_idx_in)),
+                emitter.param_array_suffix(
+                    match_idx_shape, emitter.dim_names_for(self.match_idx_in)
+                ),
                 True,
             ),
         ]
@@ -8238,7 +8244,9 @@ class BifurcationDetectorOp(RenderableOpBase):
                 (
                     params["pred_tokens"],
                     ScalarType.I64.c_type,
-                    emitter.param_array_suffix(pred_shape, emitter.dim_names_for(self.pred_tokens)),
+                    emitter.param_array_suffix(
+                        pred_shape, emitter.dim_names_for(self.pred_tokens)
+                    ),
                     True,
                 )
             )
@@ -8247,13 +8255,17 @@ class BifurcationDetectorOp(RenderableOpBase):
                 (
                     params["tokens"],
                     ScalarType.I64.c_type,
-                    emitter.param_array_suffix(tokens_shape, emitter.dim_names_for(self.tokens)),
+                    emitter.param_array_suffix(
+                        tokens_shape, emitter.dim_names_for(self.tokens)
+                    ),
                     False,
                 ),
                 (
                     params["match_idx_out"],
                     ScalarType.I64.c_type,
-                    emitter.param_array_suffix(match_idx_shape, emitter.dim_names_for(self.match_idx_out)),
+                    emitter.param_array_suffix(
+                        match_idx_shape, emitter.dim_names_for(self.match_idx_out)
+                    ),
                     False,
                 ),
             ]
