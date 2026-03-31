@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import math
 
-from shared.scalar_types import ScalarType
+from shared.scalar_types import ScalarType as _ScalarType  # noqa: F401
 
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 from ..ir.ops import DecoderMaskedMHAOp
-from .common import node_dtype, optional_name, value_dtype, value_shape
+from .common import node_dtype, optional_name, value_shape
 from .registry import register_lowering
 
 

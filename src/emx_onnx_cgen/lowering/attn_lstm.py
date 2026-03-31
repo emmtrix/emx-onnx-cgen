@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from shared.scalar_types import ScalarType
+from shared.scalar_types import ScalarType  # noqa: F401 - kept for type annotations
 
 from ..errors import UnsupportedOpError
 from ..ir.model import Graph, Node
 from ..ir.ops import AttnLSTMOp
 from .common import node_dtype, optional_name, value_dtype, value_shape
 from .lstm import (
-    ACTIVATION_KIND_BY_NAME,
     DEFAULT_ACTIVATIONS,
     _normalize_activation_names,
     _normalize_direction,
