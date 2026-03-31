@@ -1122,6 +1122,9 @@ class CEmitter:
                 "dynamic_quantize_lstm": self._env.get_template(
                     "dynamic_quantize_lstm_op.c.j2"
                 ),
+                "attn_lstm": self._env.get_template("attn_lstm_op.c.j2"),
+                "decoder_masked_mha": self._env.get_template("decoder_masked_mha_op.c.j2"),
+                "moe": self._env.get_template("moe_op.c.j2"),
                 "adam": self._env.get_template("adam_op.c.j2"),
                 "adagrad": self._env.get_template("adagrad_op.c.j2"),
                 "momentum": self._env.get_template("momentum_op.c.j2"),
@@ -1243,6 +1246,9 @@ class CEmitter:
                 "murmur_hash3": self._env.get_template("murmur_hash3_op.c.j2"),
                 "bifurcation_detector": self._env.get_template(
                     "bifurcation_detector_op.c.j2"
+                ),
+                "word_conv_embedding": self._env.get_template(
+                    "word_conv_embedding_op.c.j2"
                 ),
                 "label_encoder": self._env.get_template("label_encoder_op.c.j2"),
                 "string_split": self._env.get_template("string_split_op.c.j2"),

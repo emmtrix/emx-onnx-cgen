@@ -81,7 +81,9 @@ def _normalize_activation_names(values: Iterable[object]) -> list[str]:
             value = value.decode("utf-8")
         if not isinstance(value, str):
             raise UnsupportedOpError("LSTM activations must be strings")
-        names.append(value)
+        # Normalize case: "sigmoid" → "Sigmoid", "tanh" → "Tanh", etc.
+        normalized = value[:1].upper() + value[1:] if value else value
+        names.append(normalized)
     return names
 
 

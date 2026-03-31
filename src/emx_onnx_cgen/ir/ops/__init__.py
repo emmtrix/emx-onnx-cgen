@@ -99,6 +99,7 @@ from .misc import (
     UnfoldTensorOp,
     MaxpoolWithMaskOp,
     ConvTransposeWithDynamicPadsOp,
+    WordConvEmbeddingOp,
 )
 from .nn import (
     AdamOp,
@@ -133,6 +134,9 @@ from .nn import (
     LrnOp,
     RnnOp,
     LstmOp,
+    AttnLSTMOp,
+    DecoderMaskedMHAOp,
+    MoEOp,
     DynamicQuantizeMatMulOp,
     MatMulBnb4Op,
     MatMulIntegerOp,
@@ -240,6 +244,9 @@ __all__ = [
     "LrnOp",
     "RnnOp",
     "LstmOp",
+    "AttnLSTMOp",
+    "DecoderMaskedMHAOp",
+    "MoEOp",
     "MatMulBnb4Op",
     "MatMulIntegerOp",
     "MatMulInteger16Op",
@@ -334,4 +341,5 @@ __all__ = [
     "UnfoldTensorOp",
     "MaxpoolWithMaskOp",
     "ConvTransposeWithDynamicPadsOp",
+    "WordConvEmbeddingOp",
 ]

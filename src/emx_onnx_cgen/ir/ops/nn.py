@@ -9361,3 +9361,533 @@ class CropAndResizeOp(RenderableOpBase):
             .rstrip()
         )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+
+@dataclass(frozen=True)
+class AttnLSTMOp(RenderableOpBase):
+    __io_inputs__ = (
+        "input_x",
+        "input_w",
+        "input_r",
+        "input_b",
+        "input_sequence_lens",
+        "input_initial_h",
+        "input_initial_c",
+        "input_qw",
+        "input_mw",
+        "input_v",
+        "input_m",
+        "input_memory_seq_lens",
+        "input_aw",
+    )
+    __io_outputs__ = ("output_y", "output_y_h", "output_y_c")
+    input_x: str
+    input_w: str
+    input_r: str
+    input_b: str | None
+    input_sequence_lens: str | None
+    input_initial_h: str | None
+    input_initial_c: str | None
+    input_qw: str
+    input_mw: str
+    input_v: str
+    input_m: str
+    input_memory_seq_lens: str | None
+    input_aw: str | None
+    output_y: str | None
+    output_y_h: str | None
+    output_y_c: str | None
+    seq_length: int
+    batch_size: int
+    input_only_size: int
+    hidden_size: int
+    attn_ctx_size: int
+    attn_dim: int
+    memory_depth: int
+    memory_seq_length: int
+    num_directions: int
+    direction: str
+    input_forget: int
+    clip: float | None
+    activation_kinds: tuple[int, ...]
+    activation_alphas: tuple[float, ...]
+    activation_betas: tuple[float, ...]
+    dtype: ScalarType
+    sequence_lens_dtype: ScalarType | None
+    memory_seq_lens_dtype: ScalarType | None
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        output_ref = self.output_y or self.output_y_h or self.output_y_c
+        output_dtype = emitter.ctx_dtype(output_ref)
+        c_type = output_dtype.c_type
+        zero_literal = output_dtype.zero_literal
+        min_literal = output_dtype.min_literal
+
+        io_pairs = [
+            ("input_x", self.input_x),
+            ("input_w", self.input_w),
+            ("input_r", self.input_r),
+            ("input_b", self.input_b),
+            ("input_sequence_lens", self.input_sequence_lens),
+            ("input_initial_h", self.input_initial_h),
+            ("input_initial_c", self.input_initial_c),
+            ("input_qw", self.input_qw),
+            ("input_mw", self.input_mw),
+            ("input_v", self.input_v),
+            ("input_m", self.input_m),
+            ("input_memory_seq_lens", self.input_memory_seq_lens),
+            ("input_aw", self.input_aw),
+            ("output_y", self.output_y),
+            ("output_y_h", self.output_y_h),
+            ("output_y_c", self.output_y_c),
+        ]
+        params = emitter.shared_param_map(io_pairs)
+
+        def _shape(name: str | None) -> tuple[int, ...] | None:
+            return emitter.ctx_shape(name) if name else None
+
+        def _dim_names(name: str | None):
+            return emitter.dim_names_for(name) if name else None
+
+        def _suffix(name: str | None, shape):
+            return emitter.param_array_suffix(shape, _dim_names(name)) if shape is not None else ""
+
+        x_shape = emitter.ctx_shape(self.input_x)
+        w_shape = emitter.ctx_shape(self.input_w)
+        r_shape = emitter.ctx_shape(self.input_r)
+        b_shape = _shape(self.input_b)
+        seq_shape = _shape(self.input_sequence_lens)
+        h_shape_name = self.input_initial_h or self.output_y_h
+        h_shape = _shape(h_shape_name)
+        c_shape_name = self.input_initial_c or self.output_y_c
+        c_shape = _shape(c_shape_name)
+        qw_shape = emitter.ctx_shape(self.input_qw)
+        mw_shape = emitter.ctx_shape(self.input_mw)
+        v_shape = emitter.ctx_shape(self.input_v)
+        m_shape = emitter.ctx_shape(self.input_m)
+        mseq_shape = _shape(self.input_memory_seq_lens)
+        aw_shape = _shape(self.input_aw)
+        y_shape = _shape(self.output_y)
+
+        seq_c_type = (self.sequence_lens_dtype or ScalarType.I32).c_type
+        mseq_c_type = (self.memory_seq_lens_dtype or ScalarType.I32).c_type
+
+        decls_list = [
+            (params["input_x"], c_type, _suffix(self.input_x, x_shape), True),
+            (params["input_w"], c_type, _suffix(self.input_w, w_shape), True),
+            (params["input_r"], c_type, _suffix(self.input_r, r_shape), True),
+            (
+                (params["input_b"], c_type, _suffix(self.input_b, b_shape), True)
+                if params["input_b"] else (None, "", "", True)
+            ),
+            (
+                (params["input_sequence_lens"], seq_c_type, _suffix(self.input_sequence_lens, seq_shape), True)
+                if params["input_sequence_lens"] else (None, "", "", True)
+            ),
+            (
+                (params["input_initial_h"], c_type, _suffix(self.input_initial_h, h_shape), True)
+                if params["input_initial_h"] else (None, "", "", True)
+            ),
+            (
+                (params["input_initial_c"], c_type, _suffix(self.input_initial_c, c_shape), True)
+                if params["input_initial_c"] else (None, "", "", True)
+            ),
+            (params["input_qw"], c_type, _suffix(self.input_qw, qw_shape), True),
+            (params["input_mw"], c_type, _suffix(self.input_mw, mw_shape), True),
+            (params["input_v"], c_type, _suffix(self.input_v, v_shape), True),
+            (params["input_m"], c_type, _suffix(self.input_m, m_shape), True),
+            (
+                (params["input_memory_seq_lens"], mseq_c_type, _suffix(self.input_memory_seq_lens, mseq_shape), True)
+                if params["input_memory_seq_lens"] else (None, "", "", True)
+            ),
+            (
+                (params["input_aw"], c_type, _suffix(self.input_aw, aw_shape), True)
+                if params["input_aw"] else (None, "", "", True)
+            ),
+            (
+                (params["output_y"], c_type, _suffix(self.output_y, y_shape), False)
+                if params["output_y"] else (None, "", "", False)
+            ),
+            (
+                (params["output_y_h"], c_type, _suffix(self.output_y_h, h_shape), False)
+                if params["output_y_h"] else (None, "", "", False)
+            ),
+            (
+                (params["output_y_c"], c_type, _suffix(self.output_y_c, c_shape), False)
+                if params["output_y_c"] else (None, "", "", False)
+            ),
+        ]
+        param_decls = emitter.build_param_decls(decls_list)
+
+        activation_functions = tuple(
+            emitter.rnn_activation_function_name(kind, alpha, beta, self.dtype)
+            for kind, alpha, beta in zip(
+                self.activation_kinds, self.activation_alphas, self.activation_betas
+            )
+        )
+
+        x_dim_names = emitter.dim_names_for(self.input_x)
+        x_dims = CEmitterCompat.shape_dim_exprs(x_shape, x_dim_names)
+        seq_length = x_dims[0]
+        batch_size = x_dims[1]
+
+        rendered = (
+            state.templates["attn_lstm"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                c_type=c_type,
+                zero_literal=zero_literal,
+                min_literal=min_literal,
+                input_x=params["input_x"],
+                input_w=params["input_w"],
+                input_r=params["input_r"],
+                input_b=params["input_b"],
+                input_sequence_lens=params["input_sequence_lens"],
+                input_initial_h=params["input_initial_h"],
+                input_initial_c=params["input_initial_c"],
+                input_qw=params["input_qw"],
+                input_mw=params["input_mw"],
+                input_v=params["input_v"],
+                input_m=params["input_m"],
+                input_memory_seq_lens=params["input_memory_seq_lens"],
+                input_aw=params["input_aw"],
+                output_y=params["output_y"],
+                output_y_h=params["output_y_h"],
+                output_y_c=params["output_y_c"],
+                seq_length=seq_length,
+                batch_size=batch_size,
+                input_only_size=self.input_only_size,
+                hidden_size=self.hidden_size,
+                attn_ctx_size=self.attn_ctx_size,
+                attn_dim=self.attn_dim,
+                memory_depth=self.memory_depth,
+                memory_seq_length=self.memory_seq_length,
+                num_directions=self.num_directions,
+                direction=self.direction,
+                input_forget=self.input_forget,
+                activation_functions=activation_functions,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        outputs: list[tuple[str, tuple[int, ...], ScalarType]] = []
+        if self.output_y is not None:
+            outputs.append((
+                self.output_y,
+                (self.seq_length, self.num_directions, self.batch_size, self.hidden_size),
+                self.dtype,
+            ))
+        if self.output_y_h is not None:
+            outputs.append((
+                self.output_y_h,
+                (self.num_directions, self.batch_size, self.hidden_size),
+                self.dtype,
+            ))
+        if self.output_y_c is not None:
+            outputs.append((
+                self.output_y_c,
+                (self.num_directions, self.batch_size, self.hidden_size),
+                self.dtype,
+            ))
+        return tuple(outputs)
+
+
+@dataclass(frozen=True)
+class DecoderMaskedMHAOp(RenderableOpBase):
+    __io_inputs__ = (
+        "query",
+        "key",
+        "value",
+        "mask_index",
+        "attn_bias",
+        "past_key",
+        "past_value",
+        "past_seq_len_input",
+    )
+    __io_outputs__ = ("output", "present_key", "present_value", "qk_output")
+    query: str
+    key: str
+    value: str
+    mask_index: str
+    attn_bias: str | None
+    past_key: str | None
+    past_value: str | None
+    past_seq_len_input: str | None
+    output: str
+    present_key: str | None
+    present_value: str | None
+    qk_output: str | None
+    batch: int
+    num_heads: int
+    head_size: int
+    hidden_size: int
+    is_self_attn: bool
+    kv_seq: int
+    total_seq: int
+    mask_filter_value: float
+    scale_value: float
+    output_qk: bool
+    dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        c_type = self.dtype.c_type
+        zero_literal = self.dtype.zero_literal
+        min_literal = self.dtype.min_literal
+
+        io_pairs = [
+            ("query", self.query),
+            ("key", self.key),
+            ("value", self.value),
+            ("mask_index", self.mask_index),
+            ("attn_bias", self.attn_bias),
+            ("past_key", self.past_key),
+            ("past_value", self.past_value),
+            ("past_seq_len_input", self.past_seq_len_input),
+            ("output", self.output),
+            ("present_key", self.present_key),
+            ("present_value", self.present_value),
+            ("qk_output", self.qk_output),
+        ]
+        params = emitter.shared_param_map(io_pairs)
+
+        def _shape(name: str | None):
+            return emitter.ctx_shape(name) if name else None
+
+        def _suffix(name: str | None, shape):
+            return emitter.param_array_suffix(shape, emitter.dim_names_for(name)) if (name and shape is not None) else ""
+
+        q_shape = emitter.ctx_shape(self.query)
+        key_shape = emitter.ctx_shape(self.key)
+        val_shape = emitter.ctx_shape(self.value)
+        mask_shape = emitter.ctx_shape(self.mask_index)
+        bias_shape = _shape(self.attn_bias)
+        past_key_shape = _shape(self.past_key)
+        past_val_shape = _shape(self.past_value)
+        psl_shape = _shape(self.past_seq_len_input)
+        out_shape = emitter.ctx_shape(self.output)
+        pk_shape = _shape(self.present_key)
+        pv_shape = _shape(self.present_value)
+        qk_shape = _shape(self.qk_output)
+
+        decls = [
+            (params["query"], c_type, _suffix(self.query, q_shape), True),
+            (params["key"], c_type, _suffix(self.key, key_shape), True),
+            (params["value"], c_type, _suffix(self.value, val_shape), True),
+            (params["mask_index"], "int32_t", _suffix(self.mask_index, mask_shape), True),
+            (
+                (params["attn_bias"], c_type, _suffix(self.attn_bias, bias_shape), True)
+                if params["attn_bias"] else (None, "", "", True)
+            ),
+            (
+                (params["past_key"], c_type, _suffix(self.past_key, past_key_shape), True)
+                if params["past_key"] else (None, "", "", True)
+            ),
+            (
+                (params["past_value"], c_type, _suffix(self.past_value, past_val_shape), True)
+                if params["past_value"] else (None, "", "", True)
+            ),
+            (
+                (params["past_seq_len_input"], "int32_t", _suffix(self.past_seq_len_input, psl_shape), True)
+                if params["past_seq_len_input"] else (None, "", "", True)
+            ),
+            (params["output"], c_type, _suffix(self.output, out_shape), False),
+            (
+                (params["present_key"], c_type, _suffix(self.present_key, pk_shape), False)
+                if params["present_key"] else (None, "", "", False)
+            ),
+            (
+                (params["present_value"], c_type, _suffix(self.present_value, pv_shape), False)
+                if params["present_value"] else (None, "", "", False)
+            ),
+            (
+                (params["qk_output"], c_type, _suffix(self.qk_output, qk_shape), False)
+                if params["qk_output"] else (None, "", "", False)
+            ),
+        ]
+        param_decls = emitter.build_param_decls(decls)
+
+        rendered = (
+            state.templates["decoder_masked_mha"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                c_type=c_type,
+                zero_literal=zero_literal,
+                min_literal=min_literal,
+                scale_literal=emitter.format_floating(self.scale_value, self.dtype),
+                mask_filter_literal=emitter.format_floating(self.mask_filter_value, self.dtype),
+                query=params["query"],
+                key=params["key"],
+                value=params["value"],
+                mask_index=params["mask_index"],
+                attn_bias=params["attn_bias"],
+                past_key=params["past_key"],
+                past_value=params["past_value"],
+                past_seq_len_input=params["past_seq_len_input"],
+                output=params["output"],
+                present_key=params["present_key"],
+                present_value=params["present_value"],
+                qk_output=params["qk_output"],
+                batch=self.batch,
+                num_heads=self.num_heads,
+                head_size=self.head_size,
+                is_self_attn=int(self.is_self_attn),
+                kv_seq=self.kv_seq,
+                total_seq=self.total_seq,
+                static_total_seq=self.total_seq,
+                output_qk=int(self.output_qk),
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        outputs: list[tuple[str, tuple[int, ...], ScalarType]] = []
+        outputs.append((self.output, (self.batch, 1, self.hidden_size), self.dtype))
+        if self.present_key is not None:
+            outputs.append((self.present_key, (self.batch, self.num_heads, self.total_seq, self.head_size), self.dtype))
+        if self.present_value is not None:
+            outputs.append((self.present_value, (self.batch, self.num_heads, self.total_seq, self.head_size), self.dtype))
+        if self.qk_output is not None:
+            outputs.append((self.qk_output, (self.batch, self.num_heads, 1, self.kv_seq), self.dtype))
+        return tuple(outputs)
+
+
+@dataclass(frozen=True)
+class MoEOp(RenderableOpBase):
+    __io_inputs__ = (
+        "input",
+        "router_probs",
+        "fc1_w",
+        "fc1_bias",
+        "fc2_w",
+        "fc2_bias",
+    )
+    __io_outputs__ = ("output",)
+    input: str
+    router_probs: str
+    fc1_w: str
+    fc1_bias: str | None
+    fc2_w: str
+    fc2_bias: str | None
+    output: str
+    batch: int
+    model_dim: int
+    num_experts: int
+    k: int
+    fc1_out_size: int
+    fc2_in_size: int
+    normalize_routing_weights: int
+    activation_beta: float
+    dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        c_type = self.dtype.c_type
+        zero_literal = self.dtype.zero_literal
+        min_literal = self.dtype.min_literal
+
+        io_pairs = [
+            ("input", self.input),
+            ("router_probs", self.router_probs),
+            ("fc1_w", self.fc1_w),
+            ("fc1_bias", self.fc1_bias),
+            ("fc2_w", self.fc2_w),
+            ("fc2_bias", self.fc2_bias),
+            ("output", self.output),
+        ]
+        params = emitter.shared_param_map(io_pairs)
+
+        def _shape(name):
+            return emitter.ctx_shape(name) if name else None
+
+        def _suffix(name, shape):
+            return emitter.param_array_suffix(shape, emitter.dim_names_for(name)) if (name and shape is not None) else ""
+
+        inp_shape = emitter.ctx_shape(self.input)
+        router_shape = emitter.ctx_shape(self.router_probs)
+        fc1_shape = emitter.ctx_shape(self.fc1_w)
+        fc1b_shape = _shape(self.fc1_bias)
+        fc2_shape = emitter.ctx_shape(self.fc2_w)
+        fc2b_shape = _shape(self.fc2_bias)
+        out_shape = emitter.ctx_shape(self.output)
+
+        decls = [
+            (params["input"], c_type, _suffix(self.input, inp_shape), True),
+            (params["router_probs"], c_type, _suffix(self.router_probs, router_shape), True),
+            (params["fc1_w"], c_type, _suffix(self.fc1_w, fc1_shape), True),
+            (
+                (params["fc1_bias"], c_type, _suffix(self.fc1_bias, fc1b_shape), True)
+                if params["fc1_bias"] else (None, "", "", True)
+            ),
+            (params["fc2_w"], c_type, _suffix(self.fc2_w, fc2_shape), True),
+            (
+                (params["fc2_bias"], c_type, _suffix(self.fc2_bias, fc2b_shape), True)
+                if params["fc2_bias"] else (None, "", "", True)
+            ),
+            (params["output"], c_type, _suffix(self.output, out_shape), False),
+        ]
+        param_decls = emitter.build_param_decls(decls)
+
+        rendered = (
+            state.templates["moe"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                c_type=c_type,
+                zero_literal=zero_literal,
+                min_literal=min_literal,
+                beta_literal=emitter.format_floating(self.activation_beta, self.dtype),
+                input=params["input"],
+                router_probs=params["router_probs"],
+                fc1_w=params["fc1_w"],
+                fc1_bias=params["fc1_bias"],
+                fc2_w=params["fc2_w"],
+                fc2_bias=params["fc2_bias"],
+                output=params["output"],
+                batch=self.batch,
+                model_dim=self.model_dim,
+                num_experts=self.num_experts,
+                k=self.k,
+                fc1_out_size=self.fc1_out_size,
+                fc2_in_size=self.fc2_in_size,
+                normalize_routing_weights=self.normalize_routing_weights,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        return ((self.output, (self.batch, self.model_dim), self.dtype),)

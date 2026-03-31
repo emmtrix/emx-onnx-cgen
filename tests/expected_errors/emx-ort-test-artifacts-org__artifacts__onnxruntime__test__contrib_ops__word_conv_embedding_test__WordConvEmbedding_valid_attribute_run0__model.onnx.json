@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.WordConvEmbedding",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/word_conv_embedding_test/WordConvEmbedding_valid_attribute_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::WordConvEmbedding"
-  ]
+  ],
+  "generated_checksum": "9b79b2c2926c9d8ad9ad5a6fc3e1e747d0d46fb034320321b91acab0aa4ae497"
 }

@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.DecoderMaskedMultiHeadAttention",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/decoder_masked_multihead_attention_op_test/cpu_cross_attn_fp32_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::DecoderMaskedMultiHeadAttention"
-  ]
+  ],
+  "generated_checksum": "e79fb399ea58c025294bc1c6f1d980dcc0db88eeeaa54063d41d60a4524db0a8"
 }

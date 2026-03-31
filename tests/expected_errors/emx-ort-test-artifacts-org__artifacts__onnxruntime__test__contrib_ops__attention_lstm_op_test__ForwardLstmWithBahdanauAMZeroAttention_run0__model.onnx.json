@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.AttnLSTM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/attention_lstm_op_test/ForwardLstmWithBahdanauAMZeroAttention_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::AttnLSTM"
-  ]
+  ],
+  "generated_checksum": "a26e63d63e67f4f6b9365a76069e1eddbe3dffecefb02e55a525b2d6f6ad684e"
 }
