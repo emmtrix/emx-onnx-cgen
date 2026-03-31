@@ -1,10 +1,10 @@
 {
-  "error": "Out of tolerance (max ULP 7137119)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/tensor_op_test/MeanVarianceNormalizationCPUTest_Version1_TO_8_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "MeanVarianceNormalization"
   ],
   "opset_version": 7,
-  "generated_checksum": "f1cc3888735e50aeed70e4c78944501bb2e17dd1f055bb1e1264202fa7a54b4d"
+  "generated_checksum": "4b26ed00c4102eecd6dd46305523c70c63663ee02023adec6754c4ad418a4f32"
 }

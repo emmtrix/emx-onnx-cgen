@@ -11,6 +11,7 @@ for (idx_t {{ loop_vars[axis] }} = 0; {{ loop_vars[axis] }} < {{ shape[axis] }};
     }
 {% endfor %}
     {{ c_type }} mean = sum / {{ reduce_count }};
+{% if normalize_variance %}
     {{ c_type }} var = {{ zero_literal }};
 {% for axis in axes %}
     for (idx_t {{ loop_vars[axis] }} = 0; {{ loop_vars[axis] }} < {{ shape[axis] }}; ++{{ loop_vars[axis] }}) {
@@ -20,11 +21,16 @@ for (idx_t {{ loop_vars[axis] }} = 0; {{ loop_vars[axis] }} < {{ shape[axis] }};
 {% for _ in axes %}
     }
 {% endfor %}
-    {{ c_type }} denom = {{ scalar_fn(SF.SQRT, dtype) }}(var / {{ reduce_count }} + {{ epsilon_literal }});
+    {{ c_type }} denom = {{ scalar_fn(SF.SQRT, dtype) }}(var / {{ reduce_count }}) + {{ epsilon_literal }};
+{% endif %}
 {% for axis in axes %}
     for (idx_t {{ loop_vars[axis] }} = 0; {{ loop_vars[axis] }} < {{ shape[axis] }}; ++{{ loop_vars[axis] }}) {
 {% endfor %}
+{% if normalize_variance %}
         {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = ({{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %} - mean) / denom;
+{% else %}
+        {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %} - mean;
+{% endif %}
 {% for _ in axes %}
     }
 {% endfor %}
