@@ -7003,6 +7003,7 @@ class MeanVarianceNormalizationOp(RenderableOpBase):
     axes: tuple[int, ...]
     non_axes: tuple[int, ...]
     reduce_count: int
+    normalize_variance: bool
     epsilon: float
     dtype: ScalarType
 
@@ -7046,6 +7047,7 @@ class MeanVarianceNormalizationOp(RenderableOpBase):
                 axes=self.axes,
                 non_axes=self.non_axes,
                 reduce_count=self.reduce_count,
+                normalize_variance=self.normalize_variance,
                 epsilon_literal=emitter.format_floating(self.epsilon, self.dtype),
                 dtype=self.dtype,
             )

@@ -4,7 +4,7 @@ from ..ir.ops import MeanVarianceNormalizationOp
 from ..errors import UnsupportedOpError
 from ..ir.model import Graph, Node
 from ..validation import ensure_output_shape_matches_input
-from .common import node_dtype, shape_product, value_shape
+from .common import node_dtype, onnx_opset_version, shape_product, value_shape
 from .reduce import normalize_reduce_axes
 from .registry import register_lowering
 
@@ -25,12 +25,23 @@ def lower_mean_variance_normalization(
     input_shape = value_shape(graph, node.inputs[0], node)
     output_shape = value_shape(graph, node.outputs[0], node)
     ensure_output_shape_matches_input(node, input_shape, output_shape)
-    axes_attr = node.attrs.get("axes")
-    if axes_attr is None:
-        axes = (0, 2, 3)
+    opset_version = onnx_opset_version(graph) or 0
+    normalize_variance = True
+    if opset_version < 9:
+        across_channels = bool(int(node.attrs.get("across_channels", 0)))
+        rank = len(input_shape)
+        if across_channels:
+            axes = tuple(range(rank))
+        else:
+            axes = (0, *range(2, rank))
+        normalize_variance = bool(int(node.attrs.get("normalize_variance", 1)))
     else:
-        axes = tuple(int(axis) for axis in axes_attr)
-    axes = normalize_reduce_axes(axes, input_shape, node)
+        axes_attr = node.attrs.get("axes")
+        if axes_attr is None:
+            axes = (0, 2, 3)
+        else:
+            axes = tuple(int(axis) for axis in axes_attr)
+        axes = normalize_reduce_axes(axes, input_shape, node)
     if not axes:
         raise UnsupportedOpError(
             "MeanVarianceNormalization requires non-empty reduction axes"
@@ -44,6 +55,7 @@ def lower_mean_variance_normalization(
         axes=axes,
         non_axes=non_axes,
         reduce_count=reduce_count,
+        normalize_variance=normalize_variance,
         epsilon=1e-9,
         dtype=op_dtype,
     )
