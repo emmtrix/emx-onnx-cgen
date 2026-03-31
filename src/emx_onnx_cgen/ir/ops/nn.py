@@ -9285,6 +9285,7 @@ class CropAndResizeOp(RenderableOpBase):
     output_height: int
     output_width: int
     extrapolation_value: float
+    method: str
 
     def required_includes(self, ctx: OpContext) -> set[str]:
         return {"#include <math.h>"}
@@ -9353,6 +9354,7 @@ class CropAndResizeOp(RenderableOpBase):
                 output_height=self.output_height,
                 output_width=self.output_width,
                 extrapolation_value=emitter.format_double(self.extrapolation_value),
+                method=self.method,
             )
             .rstrip()
         )

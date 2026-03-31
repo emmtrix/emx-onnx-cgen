@@ -10,33 +10,53 @@ from .registry import register_lowering
 
 @register_lowering("Unique")
 def lower_unique(graph: Graph, node: Node) -> UniqueOp:
-    if len(node.inputs) != 1 or len(node.outputs) != 4:
+    n_outputs = len(node.outputs)
+    if len(node.inputs) != 1 or n_outputs not in {3, 4}:
         raise UnsupportedOpError("Unique must have 1 input and 4 outputs")
+
     input_name = node.inputs[0]
-    y_name, indices_name, inverse_indices_name, counts_name = node.outputs
+
+    # com.microsoft::Unique uses 3 outputs: [y, inverse_indices, counts]
+    # Standard ONNX Unique uses 4 outputs: [y, indices, inverse_indices, counts]
+    if n_outputs == 3:
+        y_name, inverse_indices_name, counts_name = node.outputs
+        indices_name: str | None = None
+        # com.microsoft variant defaults to unsorted (first-occurrence order)
+        sorted_default = 0
+    else:
+        y_name, indices_name, inverse_indices_name, counts_name = node.outputs
+        sorted_default = 1
+
     input_shape = value_shape(graph, input_name, node)
     y_shape = value_shape(graph, y_name, node)
-    indices_shape = value_shape(graph, indices_name, node)
     inverse_shape = value_shape(graph, inverse_indices_name, node)
     counts_shape = value_shape(graph, counts_name, node)
     input_dtype = value_dtype(graph, input_name, node)
     y_dtype = value_dtype(graph, y_name, node)
-    indices_dtype = value_dtype(graph, indices_name, node)
     inverse_dtype = value_dtype(graph, inverse_indices_name, node)
     counts_dtype = value_dtype(graph, counts_name, node)
+
     if y_dtype != input_dtype:
         raise UnsupportedOpError(
             f"{node.op_type} Y output dtype must match input dtype {input_dtype.onnx_name}"
         )
-    if indices_dtype.onnx_name != "int64":
-        raise UnsupportedOpError(f"{node.op_type} indices output dtype must be int64")
+    if indices_name is not None:
+        indices_shape = value_shape(graph, indices_name, node)
+        indices_dtype = value_dtype(graph, indices_name, node)
+        if indices_dtype.onnx_name != "int64":
+            raise UnsupportedOpError(
+                f"{node.op_type} indices output dtype must be int64"
+            )
+    else:
+        indices_shape = None
     if inverse_dtype.onnx_name != "int64":
         raise UnsupportedOpError(
             f"{node.op_type} inverse_indices output dtype must be int64"
         )
     if counts_dtype.onnx_name != "int64":
         raise UnsupportedOpError(f"{node.op_type} counts output dtype must be int64")
-    sorted_attr = bool(int(node.attrs.get("sorted", 1)))
+
+    sorted_attr = bool(int(node.attrs.get("sorted", sorted_default)))
     axis_attr = node.attrs.get("axis")
     axis: int | None = None
     if axis_attr is not None:
@@ -53,7 +73,9 @@ def lower_unique(graph: Graph, node: Node) -> UniqueOp:
                     f"{node.op_type} Y shape must match input outside axis {axis}"
                 )
         expected = y_shape[axis]
-        if indices_shape != (expected,) or counts_shape != (expected,):
+        if indices_shape is not None and (
+            indices_shape != (expected,) or counts_shape != (expected,)
+        ):
             raise UnsupportedOpError(
                 f"{node.op_type} indices and counts must have shape ({expected},)"
             )
@@ -65,7 +87,9 @@ def lower_unique(graph: Graph, node: Node) -> UniqueOp:
         if len(y_shape) != 1:
             raise UnsupportedOpError(f"{node.op_type} Y output must be rank-1")
         unique_count = y_shape[0]
-        if indices_shape != (unique_count,) or counts_shape != (unique_count,):
+        if indices_shape is not None and (
+            indices_shape != (unique_count,) or counts_shape != (unique_count,)
+        ):
             raise UnsupportedOpError(
                 f"{node.op_type} indices and counts must have shape ({unique_count},)"
             )

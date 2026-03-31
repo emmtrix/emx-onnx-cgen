@@ -38,8 +38,14 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const {{ input_c_type }} *input_flat = (const {{ input_c_type }} *){{ input_param }};
     {{ output_c_type }} *output_flat = ({{ output_c_type }} *){{ output_param }};
     for (idx_t i = 0; i < {{ elem_count }}; ++i) {
+{% if cast_to_int32 %}
+        int32_t cast_val = (int32_t)input_flat[i];
+        uint32_t h = {{ op_name }}_hash(
+            (const uint8_t *)&cast_val, (uint32_t)sizeof(int32_t), {{ seed }}u);
+{% else %}
         uint32_t h = {{ op_name }}_hash(
             (const uint8_t *)&input_flat[i], (uint32_t)sizeof({{ input_c_type }}), {{ seed }}u);
+{% endif %}
         output_flat[i] = ({{ output_c_type }})h;
     }
 {% endif %}

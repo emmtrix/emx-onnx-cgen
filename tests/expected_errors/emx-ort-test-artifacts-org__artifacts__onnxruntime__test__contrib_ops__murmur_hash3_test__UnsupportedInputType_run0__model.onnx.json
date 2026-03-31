@@ -1,8 +1,9 @@
 {
-  "error": "MurmurHash3 does not support input dtype int8; supported: int32, int64, float, double, string",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/murmur_hash3_test/UnsupportedInputType_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::MurmurHash3"
-  ]
+  ],
+  "generated_checksum": "d592d49042a4365748c12cd703db4303999018c8a45cdd00c60f46383e1f51e5"
 }
