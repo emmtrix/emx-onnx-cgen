@@ -59,25 +59,6 @@
  *   mode: linear
  *   padding_mode: zeros
  */
-static inline double node0_gridsample_reflect(double value, double x_min, double x_max) {
-    const double range = x_max - x_min;
-    if (range == 0.0) {
-        return x_min;
-    }
-    if (value < x_min) {
-        const double dx = x_min - value;
-        const int n = (int)(dx / range);
-        const double r = dx - (double)n * range;
-        return (n % 2 == 0) ? (x_min + r) : (x_max - r);
-    }
-    if (value > x_max) {
-        const double dx = value - x_max;
-        const int n = (int)(dx / range);
-        const double r = dx - (double)n * range;
-        return (n % 2 == 0) ? (x_max - r) : (x_min + r);
-    }
-    return value;
-}
 
 EMX_NODE_FN void node0_gridsample(const float x[1][1][2][2], const float grid[1][2][2][2], float y[1][1][2][2]) {
     const int input_spatial[2] = { 2, 2 };

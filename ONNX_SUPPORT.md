@@ -1890,7 +1890,7 @@ Coverage 4040 / 4091 ONNX files (98.8%).
 | test/contrib_ops/attention_op_test/AttentionPastStateBatch2WithPadding_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/attention_op_test/AttentionPastStateBatch2_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/attention_op_test/AttentionPastStateBatch2_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/attention_op_test/AttentionPastState_dynamic_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 58877) |
+| test/contrib_ops/attention_op_test/AttentionPastState_dynamic_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 86151) |
 | test/contrib_ops/attention_op_test/AttentionPrunedModel_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/attention_op_test/AttentionPrunedModel_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/attention_op_test/AttentionRightPaddingMaskIndex2_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
@@ -1903,8 +1903,8 @@ Coverage 4040 / 4091 ONNX files (98.8%).
 | test/contrib_ops/attention_op_test/AttentionUnidirectional_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/attention_op_test/AttentionWithNormFactor_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/attention_op_test/AttentionWithNormFactor_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
-| test/contrib_ops/attention_op_test/Attention_Mask1D_Fp32_B2_S64_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 739520) |
-| test/contrib_ops/attention_op_test/Attention_Mask2D_Fp32_B2_S32_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 980293) |
+| test/contrib_ops/attention_op_test/Attention_Mask1D_Fp32_B2_S64_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1020241) |
+| test/contrib_ops/attention_op_test/Attention_Mask2D_Fp32_B2_S32_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 980755) |
 | test/contrib_ops/attention_op_test/SharedPrepackedWeights_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/attention_op_test/SharedPrepackedWeights_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/bifurcation_detector_op_test/Test1_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
