@@ -99,6 +99,7 @@ from .misc import (
     UnfoldTensorOp,
     MaxpoolWithMaskOp,
     ConvTransposeWithDynamicPadsOp,
+    WordConvEmbeddingOp,
 )
 from .nn import (
     AdamOp,
@@ -334,4 +335,5 @@ __all__ = [
     "UnfoldTensorOp",
     "MaxpoolWithMaskOp",
     "ConvTransposeWithDynamicPadsOp",
+    "WordConvEmbeddingOp",
 ]

@@ -1244,6 +1244,9 @@ class CEmitter:
                 "bifurcation_detector": self._env.get_template(
                     "bifurcation_detector_op.c.j2"
                 ),
+                "word_conv_embedding": self._env.get_template(
+                    "word_conv_embedding_op.c.j2"
+                ),
                 "label_encoder": self._env.get_template("label_encoder_op.c.j2"),
                 "string_split": self._env.get_template("string_split_op.c.j2"),
                 "tokenizer": self._env.get_template("tokenizer_op.c.j2"),

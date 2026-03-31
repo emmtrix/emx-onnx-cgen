@@ -88,6 +88,7 @@ _LOWERING_MODULES = [
     "multihead_attention",
     "murmur_hash3",
     "bifurcation_detector",
+    "word_conv_embedding",
     "ngram_repeat_block",
     "negative_log_likelihood_loss",
     "non_max_suppression",

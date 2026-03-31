@@ -9115,3 +9115,99 @@ class ConvTransposeWithDynamicPadsOp(RenderableOpBase):
             (self.weights, weight_shape),
             (self.pads_tensor, pads_shape),
         )
+
+
+@dataclass(frozen=True)
+class WordConvEmbeddingOp(RenderableOpBase):
+    __io_inputs__ = ("sequence", "weights", "bias", "char_embedding")
+    __io_outputs__ = ("output",)
+    sequence: str
+    weights: str
+    bias: str
+    char_embedding: str
+    output: str
+    batch: int
+    max_word_len: int
+    vocab_size: int
+    char_emb_size: int
+    conv_window: int
+    num_filters: int
+    dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        c_type = self.dtype.c_type
+        min_literal = self.dtype.min_literal
+        seq_shape = (self.batch, self.max_word_len)
+        w_shape = (self.num_filters, 1, self.conv_window, self.char_emb_size)
+        b_shape = (self.num_filters,)
+        c_shape = (self.vocab_size, self.char_emb_size)
+        out_shape = (self.batch, self.num_filters)
+        params = emitter.shared_param_map(
+            [
+                ("sequence", self.sequence),
+                ("weights", self.weights),
+                ("bias", self.bias),
+                ("char_embedding", self.char_embedding),
+                ("output", self.output),
+            ]
+        )
+        seq_suffix = emitter.param_array_suffix(
+            CEmitterCompat.codegen_shape(seq_shape), dtype=ScalarType.I32
+        )
+        w_suffix = emitter.param_array_suffix(CEmitterCompat.codegen_shape(w_shape))
+        b_suffix = emitter.param_array_suffix(CEmitterCompat.codegen_shape(b_shape))
+        c_suffix = emitter.param_array_suffix(CEmitterCompat.codegen_shape(c_shape))
+        out_suffix = emitter.param_array_suffix(CEmitterCompat.codegen_shape(out_shape))
+        tanh_fn = "tanhf" if self.dtype == ScalarType.F32 else "tanh"
+        param_decls = emitter.build_param_decls(
+            [
+                (params["sequence"], "int32_t", seq_suffix, True),
+                (params["weights"], c_type, w_suffix, True),
+                (params["bias"], c_type, b_suffix, True),
+                (params["char_embedding"], c_type, c_suffix, True),
+                (params["output"], c_type, out_suffix, False),
+            ]
+        )
+        rendered = (
+            state.templates["word_conv_embedding"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                sequence=params["sequence"],
+                weights=params["weights"],
+                bias=params["bias"],
+                char_embedding=params["char_embedding"],
+                output=params["output"],
+                c_type=c_type,
+                min_literal=min_literal,
+                tanh_fn=tanh_fn,
+                batch=self.batch,
+                max_word_len=self.max_word_len,
+                num_filters=self.num_filters,
+                conv_window=self.conv_window,
+                char_emb_size=self.char_emb_size,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return (self.batch, self.num_filters)
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return (
+            (self.sequence, (self.batch, self.max_word_len)),
+            (self.weights, (self.num_filters, 1, self.conv_window, self.char_emb_size)),
+            (self.bias, (self.num_filters,)),
+            (self.char_embedding, (self.vocab_size, self.char_emb_size)),
+        )
