@@ -39,6 +39,7 @@ _LOWERING_MODULES = [
     "dynamic_quantize_linear",
     "dynamic_quantize_matmul",
     "dynamic_quantize_lstm",
+    "attn_lstm",
     "dropout",
     "dft",
     "einsum",

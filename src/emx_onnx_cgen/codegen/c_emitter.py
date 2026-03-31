@@ -1122,6 +1122,7 @@ class CEmitter:
                 "dynamic_quantize_lstm": self._env.get_template(
                     "dynamic_quantize_lstm_op.c.j2"
                 ),
+                "attn_lstm": self._env.get_template("attn_lstm_op.c.j2"),
                 "adam": self._env.get_template("adam_op.c.j2"),
                 "adagrad": self._env.get_template("adagrad_op.c.j2"),
                 "momentum": self._env.get_template("momentum_op.c.j2"),

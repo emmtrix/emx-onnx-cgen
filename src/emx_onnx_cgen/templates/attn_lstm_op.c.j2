@@ -1,0 +1,180 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    {% for dir in range(num_directions) %}
+    {
+        const int dir = {{ dir }};
+        const int reverse = {% if direction == "reverse" %}1{% elif direction == "bidirectional" and dir == 1 %}1{% else %}0{% endif %};
+        {% set act_f = activation_functions[dir * 3] %}
+        {% set act_g = activation_functions[dir * 3 + 1] %}
+        {% set act_h = activation_functions[dir * 3 + 2] %}
+        {{ c_type }} H_prev[{{ batch_size }}][{{ hidden_size }}];
+        {{ c_type }} C_prev[{{ batch_size }}][{{ hidden_size }}];
+        {{ c_type }} attn_prev[{{ batch_size }}][{{ attn_ctx_size }}];
+        for (int b = 0; b < {{ batch_size }}; ++b) {
+            for (int h = 0; h < {{ hidden_size }}; ++h) {
+                {% if input_initial_h %}
+                H_prev[b][h] = {{ input_initial_h }}[dir][b][h];
+                {% else %}
+                H_prev[b][h] = {{ zero_literal }};
+                {% endif %}
+                {% if input_initial_c %}
+                C_prev[b][h] = {{ input_initial_c }}[dir][b][h];
+                {% else %}
+                C_prev[b][h] = {{ zero_literal }};
+                {% endif %}
+            }
+            for (int a = 0; a < {{ attn_ctx_size }}; ++a) {
+                attn_prev[b][a] = {{ zero_literal }};
+            }
+        }
+        for (int b = 0; b < {{ batch_size }}; ++b) {
+            int seq_limit = {{ seq_length }};
+            {% if input_sequence_lens %}
+            seq_limit = (int){{ input_sequence_lens }}[b];
+            if (seq_limit < 0) seq_limit = 0;
+            if (seq_limit > {{ seq_length }}) seq_limit = {{ seq_length }};
+            {% endif %}
+            int mem_limit = {{ memory_seq_length }};
+            {% if input_memory_seq_lens %}
+            mem_limit = (int){{ input_memory_seq_lens }}[b];
+            if (mem_limit < 0) mem_limit = 0;
+            if (mem_limit > {{ memory_seq_length }}) mem_limit = {{ memory_seq_length }};
+            {% endif %}
+            for (int step = 0; step < seq_limit; ++step) {
+                int t = reverse ? (seq_limit - 1 - step) : step;
+                {{ c_type }} H_next[{{ hidden_size }}];
+                {{ c_type }} C_next[{{ hidden_size }}];
+                for (int h = 0; h < {{ hidden_size }}; ++h) {
+                    {{ c_type }} gate_i = {{ zero_literal }};
+                    {{ c_type }} gate_o = {{ zero_literal }};
+                    {{ c_type }} gate_f = {{ zero_literal }};
+                    {{ c_type }} gate_c = {{ zero_literal }};
+                    /* input x */
+                    for (int i = 0; i < {{ input_only_size }}; ++i) {
+                        {{ c_type }} x_val = {{ input_x }}[t][b][i];
+                        gate_i += x_val * {{ input_w }}[dir][h][i];
+                        gate_o += x_val * {{ input_w }}[dir][{{ hidden_size }} + h][i];
+                        gate_f += x_val * {{ input_w }}[dir][{{ hidden_size }} * 2 + h][i];
+                        gate_c += x_val * {{ input_w }}[dir][{{ hidden_size }} * 3 + h][i];
+                    }
+                    /* attention context from previous step */
+                    for (int a = 0; a < {{ attn_ctx_size }}; ++a) {
+                        {{ c_type }} a_val = attn_prev[b][a];
+                        gate_i += a_val * {{ input_w }}[dir][h][{{ input_only_size }} + a];
+                        gate_o += a_val * {{ input_w }}[dir][{{ hidden_size }} + h][{{ input_only_size }} + a];
+                        gate_f += a_val * {{ input_w }}[dir][{{ hidden_size }} * 2 + h][{{ input_only_size }} + a];
+                        gate_c += a_val * {{ input_w }}[dir][{{ hidden_size }} * 3 + h][{{ input_only_size }} + a];
+                    }
+                    /* recurrent */
+                    for (int i = 0; i < {{ hidden_size }}; ++i) {
+                        {{ c_type }} h_val = H_prev[b][i];
+                        gate_i += h_val * {{ input_r }}[dir][h][i];
+                        gate_o += h_val * {{ input_r }}[dir][{{ hidden_size }} + h][i];
+                        gate_f += h_val * {{ input_r }}[dir][{{ hidden_size }} * 2 + h][i];
+                        gate_c += h_val * {{ input_r }}[dir][{{ hidden_size }} * 3 + h][i];
+                    }
+                    {% if input_b %}
+                    gate_i += {{ input_b }}[dir][h] + {{ input_b }}[dir][{{ hidden_size }} * 4 + h];
+                    gate_o += {{ input_b }}[dir][{{ hidden_size }} + h] + {{ input_b }}[dir][{{ hidden_size }} * 5 + h];
+                    gate_f += {{ input_b }}[dir][{{ hidden_size }} * 2 + h] + {{ input_b }}[dir][{{ hidden_size }} * 6 + h];
+                    gate_c += {{ input_b }}[dir][{{ hidden_size }} * 3 + h] + {{ input_b }}[dir][{{ hidden_size }} * 7 + h];
+                    {% endif %}
+                    {{ c_type }} i_gate = {{ act_f }}(gate_i);
+                    {{ c_type }} o_gate = {{ act_f }}(gate_o);
+                    {{ c_type }} f_gate = {{ act_f }}(gate_f);
+                    {{ c_type }} c_gate = {{ act_g }}(gate_c);
+                    {{ c_type }} c_new = f_gate * C_prev[b][h] + i_gate * c_gate;
+                    {{ c_type }} h_new = o_gate * {{ act_h }}(c_new);
+                    C_next[h] = c_new;
+                    H_next[h] = h_new;
+                    {% if output_y %}
+                    {{ output_y }}[t][dir][b][h] = h_new;
+                    {% endif %}
+                }
+                for (int h = 0; h < {{ hidden_size }}; ++h) {
+                    C_prev[b][h] = C_next[h];
+                    H_prev[b][h] = H_next[h];
+                }
+                /* compute attention context for next step */
+                /* query = QW^T @ H_new, dim [attn_dim] */
+                {{ c_type }} query[{{ attn_dim }}];
+                for (int a = 0; a < {{ attn_dim }}; ++a) {
+                    query[a] = {{ zero_literal }};
+                    for (int h = 0; h < {{ hidden_size }}; ++h) {
+                        query[a] += H_next[h] * {{ input_qw }}[dir][h][a];
+                    }
+                }
+                /* energy e_j = V^T * tanh(query + MW^T @ m_j) for j in [0, mem_limit) */
+                {{ c_type }} energies[{{ memory_seq_length }}];
+                {{ c_type }} max_e = {{ min_literal }};
+                for (int j = 0; j < mem_limit; ++j) {
+                    {{ c_type }} e = {{ zero_literal }};
+                    for (int a = 0; a < {{ attn_dim }}; ++a) {
+                        {{ c_type }} key = {{ zero_literal }};
+                        for (int d = 0; d < {{ memory_depth }}; ++d) {
+                            key += {{ input_m }}[b][j][d] * {{ input_mw }}[dir][d][a];
+                        }
+                        e += {{ input_v }}[dir][a] * tanhf(query[a] + key);
+                    }
+                    energies[j] = e;
+                    if (e > max_e) max_e = e;
+                }
+                {{ c_type }} sum_exp = {{ zero_literal }};
+                for (int j = 0; j < mem_limit; ++j) {
+                    energies[j] = expf(energies[j] - max_e);
+                    sum_exp += energies[j];
+                }
+                /* raw context = sum(alpha_j * m_j) [memory_depth] */
+                {{ c_type }} raw_ctx[{{ memory_depth }}];
+                for (int d = 0; d < {{ memory_depth }}; ++d) {
+                    raw_ctx[d] = {{ zero_literal }};
+                }
+                for (int j = 0; j < mem_limit; ++j) {
+                    {{ c_type }} alpha = energies[j] / sum_exp;
+                    for (int d = 0; d < {{ memory_depth }}; ++d) {
+                        raw_ctx[d] += alpha * {{ input_m }}[b][j][d];
+                    }
+                }
+                /* attn_new = AW^T @ [H_next; raw_ctx], AW: [hidden+memory_depth, attn_ctx] */
+                {% if input_aw %}
+                for (int a = 0; a < {{ attn_ctx_size }}; ++a) {
+                    {{ c_type }} val = {{ zero_literal }};
+                    for (int h = 0; h < {{ hidden_size }}; ++h) {
+                        val += H_next[h] * {{ input_aw }}[dir][h][a];
+                    }
+                    for (int d = 0; d < {{ memory_depth }}; ++d) {
+                        val += raw_ctx[d] * {{ input_aw }}[dir][{{ hidden_size }} + d][a];
+                    }
+                    attn_prev[b][a] = val;
+                }
+                {% else %}
+                /* no AW: use raw context (truncated to attn_ctx_size) */
+                for (int a = 0; a < {{ attn_ctx_size }}; ++a) {
+                    attn_prev[b][a] = raw_ctx[a];
+                }
+                {% endif %}
+            }
+            {% if output_y %}
+            for (int step = seq_limit; step < {{ seq_length }}; ++step) {
+                for (int h = 0; h < {{ hidden_size }}; ++h) {
+                    {{ output_y }}[step][dir][b][h] = {{ zero_literal }};
+                }
+            }
+            {% endif %}
+        }
+        {% if output_y_h %}
+        for (int b = 0; b < {{ batch_size }}; ++b) {
+            for (int h = 0; h < {{ hidden_size }}; ++h) {
+                {{ output_y_h }}[dir][b][h] = H_prev[b][h];
+            }
+        }
+        {% endif %}
+        {% if output_y_c %}
+        for (int b = 0; b < {{ batch_size }}; ++b) {
+            for (int h = 0; h < {{ hidden_size }}; ++h) {
+                {{ output_y_c }}[dir][b][h] = C_prev[b][h];
+            }
+        }
+        {% endif %}
+    }
+    {% endfor %}
+}
