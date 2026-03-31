@@ -3926,7 +3926,7 @@ class UniqueOp(RenderableOpBase):
     __io_outputs__ = ("y", "indices", "inverse_indices", "counts")
     input0: str
     y: str
-    indices: str
+    indices: str | None
     inverse_indices: str
     counts: str
     axis: int | None
@@ -3941,7 +3941,7 @@ class UniqueOp(RenderableOpBase):
             raise UnsupportedOpError(
                 f"{self.kind} Y dtype must match input dtype {input_dtype.onnx_name}, got {y_dtype.onnx_name}"
             )
-        for name in (self.indices, self.inverse_indices, self.counts):
+        for name in filter(None, (self.indices, self.inverse_indices, self.counts)):
             output_dtype = ctx.dtype(name)
             if output_dtype != ScalarType.I64:
                 raise UnsupportedOpError(
@@ -3951,12 +3951,16 @@ class UniqueOp(RenderableOpBase):
     def infer_shapes(self, ctx: OpContext) -> None:
         input_shape = ctx.shape(self.input0)
         y_shape = ctx.shape(self.y)
-        indices_shape = ctx.shape(self.indices)
+        indices_shape = ctx.shape(self.indices) if self.indices else None
         inverse_shape = ctx.shape(self.inverse_indices)
         counts_shape = ctx.shape(self.counts)
-        if len(indices_shape) != 1 or len(counts_shape) != 1:
+        if indices_shape is not None and len(indices_shape) != 1:
             raise ShapeInferenceError(
-                f"{self.kind} indices and counts outputs must be rank-1"
+                f"{self.kind} indices output must be rank-1"
+            )
+        if len(counts_shape) != 1:
+            raise ShapeInferenceError(
+                f"{self.kind} counts output must be rank-1"
             )
         if self.axis is None:
             if len(y_shape) != 1:
@@ -3969,7 +3973,9 @@ class UniqueOp(RenderableOpBase):
                 raise ShapeInferenceError(
                     f"{self.kind} inverse_indices length must be {_shape_product(input_shape)}, got {inverse_shape[0]}"
                 )
-            if y_shape[0] != indices_shape[0] or y_shape[0] != counts_shape[0]:
+            if indices_shape is not None and (
+                y_shape[0] != indices_shape[0] or y_shape[0] != counts_shape[0]
+            ):
                 raise ShapeInferenceError(
                     f"{self.kind} Y/indices/counts lengths must match, got {y_shape[0]}, {indices_shape[0]}, {counts_shape[0]}"
                 )
@@ -3991,7 +3997,9 @@ class UniqueOp(RenderableOpBase):
                 raise ShapeInferenceError(
                     f"{self.kind} Y output shape must match input outside axis {axis}, got {y_shape} for input {input_shape}"
                 )
-        if indices_shape[0] != y_shape[axis] or counts_shape[0] != y_shape[axis]:
+        if indices_shape is not None and (
+            indices_shape[0] != y_shape[axis] or counts_shape[0] != y_shape[axis]
+        ):
             raise ShapeInferenceError(
                 f"{self.kind} indices/counts length must match Y axis {axis} size {y_shape[axis]}"
             )
@@ -4006,29 +4014,25 @@ class UniqueOp(RenderableOpBase):
         op_name = emitter.op_function_name(model, ctx.op_index)
         dim_args = emitter.dim_args_str()
         emitter.op_output_dtype(self)
-        params = emitter.shared_param_map(
-            [
-                ("input0", self.input0),
-                ("y", self.y),
-                ("indices", self.indices),
-                ("inverse_indices", self.inverse_indices),
-                ("counts", self.counts),
-            ]
-        )
+        param_name_pairs = [
+            ("input0", self.input0),
+            ("y", self.y),
+            ("inverse_indices", self.inverse_indices),
+            ("counts", self.counts),
+        ]
+        if self.indices is not None:
+            param_name_pairs.insert(2, ("indices", self.indices))
+        params = emitter.shared_param_map(param_name_pairs)
         input_shape = emitter.ctx_shape(self.input0)
         y_shape = emitter.ctx_shape(self.y)
         input_dtype = emitter.ctx_dtype(self.input0)
         y_dtype = emitter.ctx_dtype(self.y)
-        indices_dtype = emitter.ctx_dtype(self.indices)
         inverse_dtype = emitter.ctx_dtype(self.inverse_indices)
         counts_dtype = emitter.ctx_dtype(self.counts)
         input_suffix = emitter.param_array_suffix(
             input_shape, emitter.dim_names_for(self.input0)
         )
         y_suffix = emitter.param_array_suffix(y_shape, emitter.dim_names_for(self.y))
-        indices_suffix = emitter.param_array_suffix(
-            emitter.ctx_shape(self.indices), emitter.dim_names_for(self.indices)
-        )
         inverse_suffix = emitter.param_array_suffix(
             emitter.ctx_shape(self.inverse_indices),
             emitter.dim_names_for(self.inverse_indices),
@@ -4036,19 +4040,27 @@ class UniqueOp(RenderableOpBase):
         counts_suffix = emitter.param_array_suffix(
             emitter.ctx_shape(self.counts), emitter.dim_names_for(self.counts)
         )
-        param_decls = emitter.build_param_decls(
+        param_decl_entries: list[tuple[str, str, str, bool]] = [
+            (params["input0"], input_dtype.c_type, input_suffix, True),
+            (params["y"], y_dtype.c_type, y_suffix, False),
+        ]
+        if self.indices is not None:
+            indices_dtype = emitter.ctx_dtype(self.indices)
+            indices_suffix = emitter.param_array_suffix(
+                emitter.ctx_shape(self.indices), emitter.dim_names_for(self.indices)
+            )
+            param_decl_entries.append(
+                (params["indices"], indices_dtype.c_type, indices_suffix, False)
+            )
+        param_decl_entries.extend(
             [
-                (params["input0"], input_dtype.c_type, input_suffix, True),
-                (params["y"], y_dtype.c_type, y_suffix, False),
-                (params["indices"], indices_dtype.c_type, indices_suffix, False),
-                (
-                    params["inverse_indices"],
-                    inverse_dtype.c_type,
-                    inverse_suffix,
-                    False,
-                ),
+                (params["inverse_indices"], inverse_dtype.c_type, inverse_suffix, False),
                 (params["counts"], counts_dtype.c_type, counts_suffix, False),
             ]
+        )
+        param_decls = emitter.build_param_decls(param_decl_entries)
+        indices_local_size = CEmitterCompat.element_count_expr(
+            (input_shape[self.axis],) if self.axis is not None else input_shape
         )
         rendered = (
             state.templates["unique"]
@@ -4059,7 +4071,8 @@ class UniqueOp(RenderableOpBase):
                 dim_args=dim_args,
                 input0=params["input0"],
                 y=params["y"],
-                indices=params["indices"],
+                indices=params.get("indices", ""),
+                has_indices_output=self.indices is not None,
                 inverse_indices=params["inverse_indices"],
                 counts=params["counts"],
                 input_shape=CEmitterCompat.shape_dim_exprs(
@@ -4085,6 +4098,7 @@ class UniqueOp(RenderableOpBase):
                 ),
                 sorted_output=1 if self.sorted else 0,
                 input_c_type=input_dtype.c_type,
+                indices_local_size=indices_local_size,
             )
             .rstrip()
         )
@@ -4093,24 +4107,32 @@ class UniqueOp(RenderableOpBase):
     def c_op_outputs(
         self, emitter: "Emitter"
     ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
-        return (
+        result: list[tuple[str, tuple[int, ...], "ScalarType"]] = [
             (self.y, emitter.ctx_shape(self.y), emitter.ctx_dtype(self.y)),
-            (
-                self.indices,
-                emitter.ctx_shape(self.indices),
-                emitter.ctx_dtype(self.indices),
-            ),
-            (
-                self.inverse_indices,
-                emitter.ctx_shape(self.inverse_indices),
-                emitter.ctx_dtype(self.inverse_indices),
-            ),
-            (
-                self.counts,
-                emitter.ctx_shape(self.counts),
-                emitter.ctx_dtype(self.counts),
-            ),
+        ]
+        if self.indices is not None:
+            result.append(
+                (
+                    self.indices,
+                    emitter.ctx_shape(self.indices),
+                    emitter.ctx_dtype(self.indices),
+                )
+            )
+        result.extend(
+            [
+                (
+                    self.inverse_indices,
+                    emitter.ctx_shape(self.inverse_indices),
+                    emitter.ctx_dtype(self.inverse_indices),
+                ),
+                (
+                    self.counts,
+                    emitter.ctx_shape(self.counts),
+                    emitter.ctx_dtype(self.counts),
+                ),
+            ]
         )
+        return tuple(result)
 
 
 @dataclass(frozen=True)
@@ -8150,8 +8172,135 @@ class SequenceEmptyOp(RenderableOpBase):
         )
 
 
+
+@dataclass(frozen=True)
+class BifurcationDetectorOp(RenderableOpBase):
+    __io_inputs__ = ("src_tokens", "cur_tokens", "match_idx_in", "pred_tokens")
+    __io_outputs__ = ("tokens", "match_idx_out")
+    src_tokens: str
+    cur_tokens: str
+    match_idx_in: str
+    pred_tokens: str | None
+    tokens: str
+    match_idx_out: str
+    src_len: int
+    cur_len: int
+    pred_len: int
+    tokens_len: int
+    min_ngram_size: int
+    max_ngram_size: int
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <string.h>"}
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        param_name_pairs = [
+            ("src_tokens", self.src_tokens),
+            ("cur_tokens", self.cur_tokens),
+            ("match_idx_in", self.match_idx_in),
+            ("tokens", self.tokens),
+            ("match_idx_out", self.match_idx_out),
+        ]
+        if self.pred_tokens is not None:
+            param_name_pairs.insert(3, ("pred_tokens", self.pred_tokens))
+        params = emitter.shared_param_map(param_name_pairs)
+        src_shape = emitter.ctx_shape(self.src_tokens)
+        cur_shape = emitter.ctx_shape(self.cur_tokens)
+        tokens_shape = emitter.ctx_shape(self.tokens)
+        match_idx_shape = emitter.ctx_shape(self.match_idx_out)
+        param_decl_entries: list[tuple[str, str, str, bool]] = [
+            (
+                params["src_tokens"],
+                ScalarType.I64.c_type,
+                emitter.param_array_suffix(src_shape, emitter.dim_names_for(self.src_tokens)),
+                True,
+            ),
+            (
+                params["cur_tokens"],
+                ScalarType.I64.c_type,
+                emitter.param_array_suffix(cur_shape, emitter.dim_names_for(self.cur_tokens)),
+                True,
+            ),
+            (
+                params["match_idx_in"],
+                ScalarType.I64.c_type,
+                emitter.param_array_suffix(match_idx_shape, emitter.dim_names_for(self.match_idx_in)),
+                True,
+            ),
+        ]
+        if self.pred_tokens is not None:
+            pred_shape = emitter.ctx_shape(self.pred_tokens)
+            param_decl_entries.append(
+                (
+                    params["pred_tokens"],
+                    ScalarType.I64.c_type,
+                    emitter.param_array_suffix(pred_shape, emitter.dim_names_for(self.pred_tokens)),
+                    True,
+                )
+            )
+        param_decl_entries.extend(
+            [
+                (
+                    params["tokens"],
+                    ScalarType.I64.c_type,
+                    emitter.param_array_suffix(tokens_shape, emitter.dim_names_for(self.tokens)),
+                    False,
+                ),
+                (
+                    params["match_idx_out"],
+                    ScalarType.I64.c_type,
+                    emitter.param_array_suffix(match_idx_shape, emitter.dim_names_for(self.match_idx_out)),
+                    False,
+                ),
+            ]
+        )
+        param_decls = emitter.build_param_decls(param_decl_entries)
+        rendered = (
+            state.templates["bifurcation_detector"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                src_tokens=params["src_tokens"],
+                cur_tokens=params["cur_tokens"],
+                match_idx_in=params["match_idx_in"],
+                pred_tokens=params.get("pred_tokens", ""),
+                has_pred_tokens=self.pred_tokens is not None,
+                tokens=params["tokens"],
+                match_idx_out=params["match_idx_out"],
+                src_len=self.src_len,
+                cur_len=self.cur_len,
+                pred_len=self.pred_len,
+                tokens_len=self.tokens_len,
+                min_ngram_size=self.min_ngram_size,
+                max_ngram_size=self.max_ngram_size,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        return (
+            (self.tokens, emitter.ctx_shape(self.tokens), ScalarType.I64),
+            (self.match_idx_out, emitter.ctx_shape(self.match_idx_out), ScalarType.I64),
+        )
+
+
 _MURMUR_HASH3_SUPPORTED_DTYPES: frozenset[ScalarType] = frozenset(
-    {ScalarType.I32, ScalarType.I64, ScalarType.F32, ScalarType.F64, ScalarType.STRING}
+    {
+        ScalarType.I8,
+        ScalarType.I32,
+        ScalarType.I64,
+        ScalarType.F32,
+        ScalarType.F64,
+        ScalarType.STRING,
+    }
 )
 
 
@@ -8215,6 +8364,7 @@ class MurmurHash3Op(RenderableOpBase):
                 output_c_type=self.output_dtype.c_type,
                 seed=self.seed,
                 is_string=self.input_dtype == ScalarType.STRING,
+                cast_to_int32=self.input_dtype == ScalarType.I8,
             )
             .rstrip()
         )

@@ -1,8 +1,9 @@
 {
-  "error": "Unique must have 1 input and 4 outputs",
+  "error": "OK (max abs diff 0, max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/unique_op_test/Unique_Example_SingleElement_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::Unique"
-  ]
+  ],
+  "generated_checksum": "4036300eecb67c8172903b7d8e69a53cf5cec6412781f714cab5ae9274a4c408"
 }

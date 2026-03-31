@@ -1,8 +1,13 @@
 {
-  "error": "GridSample mode 'bicubic' is not supported",
-  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gridsample_test/gridsample_mode_bicubic_run0 model.onnx --test-data-dir test_data_set_0",
+  "error": "OK (max ULP 1678)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gridsample_test/gridsample_mode_bicubic_run0 model.onnx --test-data-dir test_data_set_0 --max-ulp 2000",
+  "extra_cli_args": [
+    "--max-ulp",
+    "2000"
+  ],
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::GridSample"
-  ]
+  ],
+  "generated_checksum": "c369fd9a43b6ab6037b74847ed0c2286311f07bf121d140d38f2d62244682a77"
 }

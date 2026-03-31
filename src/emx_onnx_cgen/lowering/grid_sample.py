@@ -13,6 +13,9 @@ from .registry import register_lowering
 _SUPPORTED_MODES = {"linear", "nearest", "cubic"}
 _SUPPORTED_PADDING_MODES = {"zeros", "border", "reflection"}
 
+# com.microsoft::GridSample uses "bilinear"/"bicubic" as aliases
+_MODE_ALIASES: dict[str, str] = {"bilinear": "linear", "bicubic": "cubic"}
+
 
 @dataclass(frozen=True)
 class _GridSampleShapes:
@@ -104,6 +107,7 @@ def lower_grid_sample(graph: Graph, node: Node) -> GridSampleOp:
     shapes = _resolve_shapes(graph, node)
     _validate_shapes(shapes)
     mode = _decode_attr(node.attrs.get("mode"), "linear")
+    mode = _MODE_ALIASES.get(mode, mode)
     padding_mode = _decode_attr(node.attrs.get("padding_mode"), "zeros")
     align_corners = int(node.attrs.get("align_corners", 0))
     if mode not in _SUPPORTED_MODES:

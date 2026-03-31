@@ -5346,7 +5346,7 @@ def test_murmur_hash3_lowering_int32() -> None:
 def test_murmur_hash3_lowering_rejects_unsupported_dtype() -> None:
     model = _make_murmur_hash3_model(
         input_shape=[1],
-        input_elem_type=TensorProto.INT8,
+        input_elem_type=TensorProto.INT16,
         output_elem_type=TensorProto.INT32,
         seed=0,
         positive=0,

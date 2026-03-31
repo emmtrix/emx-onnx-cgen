@@ -1,3 +1,4 @@
+{% if padding_mode == "reflection" %}
 static inline double {{ op_name }}_reflect(double value, double x_min, double x_max) {
     const double range = x_max - x_min;
     if (range == 0.0) {
@@ -17,6 +18,7 @@ static inline double {{ op_name }}_reflect(double value, double x_min, double x_
     }
     return value;
 }
+{% endif %}
 {% if mode == "cubic" %}
 
 static inline void {{ op_name }}_cubic_coeffs(double x, double coeffs[4]) {

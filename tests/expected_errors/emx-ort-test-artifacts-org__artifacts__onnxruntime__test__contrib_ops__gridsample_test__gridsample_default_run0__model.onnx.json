@@ -1,8 +1,9 @@
 {
-  "error": "GridSample mode 'bilinear' is not supported",
+  "error": "OK (max ULP 2)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gridsample_test/gridsample_default_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::GridSample"
-  ]
+  ],
+  "generated_checksum": "8647084f346238e23a82e6b17488efcb2698f640671b1428cd3eecdb6e4e5a3c"
 }

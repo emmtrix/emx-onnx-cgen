@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.BifurcationDetector",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/bifurcation_detector_op_test/Test1_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::BifurcationDetector"
-  ]
+  ],
+  "generated_checksum": "b65b6dfc6c777fe196507f999bdb2916d88ccaf194e269b2e36420ae70a36ce8"
 }

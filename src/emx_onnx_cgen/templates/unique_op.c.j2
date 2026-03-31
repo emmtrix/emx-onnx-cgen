@@ -1,7 +1,12 @@
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     {{ input_c_type }} *input_flat = ({{ input_c_type }} *){{ input0 }};
     {{ input_c_type }} *y_flat = ({{ input_c_type }} *){{ y }};
+{% if has_indices_output %}
     int64_t *indices_flat = (int64_t *){{ indices }};
+{% else %}
+    int64_t indices_local[{{ indices_local_size }}];
+    int64_t *indices_flat = indices_local;
+{% endif %}
     int64_t *inverse_flat = (int64_t *){{ inverse_indices }};
     int64_t *counts_flat = (int64_t *){{ counts }};
 {% if axis < 0 %}
