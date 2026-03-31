@@ -159,6 +159,10 @@ MODEL_EXTRA_VERIFY_ARGS = {
         "onnx-reference",
         "--test-data-inputs-only",
     ),
+    "emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gridsample_test/gridsample_mode_bicubic_run0/model.onnx": (
+        "--max-ulp",
+        "2000",
+    ),
     "onnx-org/onnx/backend/test/data/node/test_affine_grid_3d/model.onnx": (
         "--fp32-accumulation-strategy",
         "fp64",
