@@ -302,56 +302,19 @@ def _list_expectation_repo_paths(
 
 @cache
 def _official_onnx_file_paths() -> tuple[str, ...]:
-    if os.getenv("UPDATE_REFS"):
-        return tuple(
-            _normalize_official_path(path)
-            for path in _collect_onnx_files(_official_data_root())
-        )
     return tuple(
-        _normalize_official_path(path)
-        for path in _list_expectation_repo_paths(
-            EXPECTED_ERRORS_ROOT,
-            path_filter=lambda repo_relative: repo_relative.startswith(
-                OFFICIAL_ONNX_PREFIX
-            ),
-        )
+        _normalize_official_path(path) for path in _collect_onnx_files(_official_data_root())
     )
 
 
 @cache
 def _ort_artifacts_onnx_file_paths() -> tuple[str, ...]:
-    if os.getenv("UPDATE_REFS"):
-        return tuple(_collect_onnx_files(ORT_ARTIFACTS_ONNX_DATA_ROOT))
-    repo_relative_prefix = ORT_ARTIFACTS_ONNX_DATA_ROOT.relative_to(
-        _repo_root()
-    ).as_posix()
-    return tuple(
-        Path(path).relative_to(repo_relative_prefix).as_posix()
-        for path in _list_expectation_repo_paths(
-            EXPECTED_ERRORS_ROOT,
-            path_filter=lambda repo_relative: repo_relative.startswith(
-                ORT_ARTIFACTS_ONNX_PREFIX
-            ),
-        )
-    )
+    return tuple(_collect_onnx_files(ORT_ARTIFACTS_ONNX_DATA_ROOT))
 
 
 @cache
 def _local_repo_onnx_file_paths() -> tuple[str, ...]:
-    if os.getenv("UPDATE_REFS"):
-        return tuple(_collect_onnx_files(LOCAL_REPO_ONNX_DATA_ROOT))
-    repo_relative_prefix = LOCAL_REPO_ONNX_DATA_ROOT.relative_to(
-        _repo_root()
-    ).as_posix()
-    return tuple(
-        Path(path).relative_to(repo_relative_prefix).as_posix()
-        for path in _list_expectation_repo_paths(
-            EXPECTED_ERRORS_ROOT,
-            path_filter=lambda repo_relative: repo_relative.startswith(
-                LOCAL_REPO_ONNX_PREFIX
-            ),
-        )
-    )
+    return tuple(_collect_onnx_files(LOCAL_REPO_ONNX_DATA_ROOT))
 
 
 def _encode_repo_relative_path(repo_relative_path: str) -> str:
