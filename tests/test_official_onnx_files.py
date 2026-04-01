@@ -303,7 +303,8 @@ def _list_expectation_repo_paths(
 @cache
 def _official_onnx_file_paths() -> tuple[str, ...]:
     return tuple(
-        _normalize_official_path(path) for path in _collect_onnx_files(_official_data_root())
+        _normalize_official_path(path)
+        for path in _collect_onnx_files(_official_data_root())
     )
 
 
