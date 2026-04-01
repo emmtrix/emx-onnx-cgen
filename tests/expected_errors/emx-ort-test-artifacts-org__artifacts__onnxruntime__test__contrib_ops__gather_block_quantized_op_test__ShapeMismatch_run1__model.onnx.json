@@ -1,9 +1,0 @@
-{
-  "error": "Testbench execution failed: exit code 1",
-  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gather_block_quantized_op_test/ShapeMismatch_run1 model.onnx --test-data-dir test_data_set_0",
-  "verification_mode": "Data/Data",
-  "operators": [
-    "com.microsoft::GatherBlockQuantized"
-  ],
-  "generated_checksum": "9039c2b2a75d64d791f7f3f311d34a706fabfaf6204fc11acaec9720832a1265"
-}

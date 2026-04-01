@@ -1,9 +1,0 @@
-{
-  "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run2 model.onnx --test-data-dir test_data_set_0",
-  "verification_mode": "Data/Data",
-  "operators": [
-    "com.microsoft::GatherBlockQuantized"
-  ],
-  "generated_checksum": "11010a307186e5f9ab8d2528e8dc98cbeb5a1d1ef8d5eff69bdfef5eaf52c295"
-}

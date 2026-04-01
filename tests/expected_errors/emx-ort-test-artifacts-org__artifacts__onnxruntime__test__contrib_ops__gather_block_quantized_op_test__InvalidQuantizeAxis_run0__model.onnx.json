@@ -1,9 +1,0 @@
-{
-  "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gather_block_quantized_op_test/InvalidQuantizeAxis_run0 model.onnx --test-data-dir test_data_set_0",
-  "verification_mode": "Data/Data",
-  "operators": [
-    "com.microsoft::GatherBlockQuantized"
-  ],
-  "generated_checksum": "e15c4226def63b092e5c97c7f59283a167f5e3e4fc374aea3549515931693b1b"
-}

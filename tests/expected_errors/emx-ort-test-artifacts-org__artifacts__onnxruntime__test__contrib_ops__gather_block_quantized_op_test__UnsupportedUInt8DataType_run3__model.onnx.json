@@ -1,9 +1,0 @@
-{
-  "error": "Out of tolerance (max ULP 1073741825)",
-  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gather_block_quantized_op_test/UnsupportedUInt8DataType_run3 model.onnx --test-data-dir test_data_set_0",
-  "verification_mode": "Data/Data",
-  "operators": [
-    "com.microsoft::GatherBlockQuantized"
-  ],
-  "generated_checksum": "28f1826239bc3aba8ba8316df727b9bba4dbb91b715ee27cf377a09b38a70116"
-}
