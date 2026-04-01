@@ -1,9 +1,0 @@
-{
-  "error": "OK (max abs diff 0)",
-  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gather_block_quantized_op_test/UnsupportedTypes_run20 model.onnx --test-data-dir test_data_set_0",
-  "verification_mode": "Data/Data",
-  "operators": [
-    "com.microsoft::GatherBlockQuantized"
-  ],
-  "generated_checksum": "c7a5cd381b34f5b2ea456448315ec5a8c4472190a84bf2f4e35ea4350ade7106"
-}

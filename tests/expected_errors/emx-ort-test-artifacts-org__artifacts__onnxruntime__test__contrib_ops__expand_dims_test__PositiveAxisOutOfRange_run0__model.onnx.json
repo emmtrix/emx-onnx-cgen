@@ -1,9 +1,0 @@
-{
-  "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/expand_dims_test/PositiveAxisOutOfRange_run0 model.onnx --test-data-dir test_data_set_0",
-  "verification_mode": "Data/Data",
-  "operators": [
-    "com.microsoft::ExpandDims"
-  ],
-  "generated_checksum": "7fab1ac509354da7fe2137e62a68ba98a39b44852297d9ac0a8f7c8daca4f1dd"
-}

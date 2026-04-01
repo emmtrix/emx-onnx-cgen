@@ -1,9 +1,0 @@
-{
-  "error": "OK (max abs diff 0)",
-  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/qlinear_concat_test/ExpectFail_WrongZeroPointType_1_run0 model.onnx --test-data-dir test_data_set_0",
-  "verification_mode": "Data/Data",
-  "operators": [
-    "com.microsoft::QLinearConcat"
-  ],
-  "generated_checksum": "9dfac14ad6317ced08564248bc46b5122427dc964c610268b6ff177ae4ccb8a7"
-}
