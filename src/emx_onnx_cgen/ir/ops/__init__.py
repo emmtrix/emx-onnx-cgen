@@ -190,6 +190,7 @@ __all__ = [
     "BatchNormOp",
     "BernoulliOp",
     "BlackmanWindowOp",
+    "BitCastOp",
     "BinaryOp",
     "CastOp",
     "Col2ImOp",
