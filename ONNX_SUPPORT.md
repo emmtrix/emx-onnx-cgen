@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1823 / 1827, 99.8% | 1.21.0 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1825 / 1827, 99.9% | 1.21.0 |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4053 / 4091, 99.1% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1823 / 1827 ONNX files (99.8%).
+Coverage 1825 / 1827 ONNX files (99.9%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -614,8 +614,8 @@ Coverage 1823 / 1827 ONNX files (99.8%).
 | node/test_dft_axis_opset19/model.onnx | 19 | Data/Data | ✅ | OK (max ULP 72) |
 | node/test_dft_inverse/model.onnx (--atol-eps 2) | 20 | Data/Data | ✅ | OK (max ULP 8) |
 | node/test_dft_inverse_opset19/model.onnx (--atol-eps 2) | 19 | Data/Data | ✅ | OK (max ULP 8) |
-| node/test_dft_irfft/model.onnx | 20 | Data/Data | ❌ | DFT output last dimension must be 2, got 1 |
-| node/test_dft_irfft_opset19/model.onnx | 19 | Data/Data | ❌ | DFT output last dimension must be 2, got 1 |
+| node/test_dft_irfft/model.onnx | 20 | Data/Data | ✅ | OK (max ULP 3) |
+| node/test_dft_irfft_opset19/model.onnx | 19 | Data/Data | ✅ | OK (max ULP 3) |
 | node/test_dft_opset19/model.onnx | 19 | Data/Data | ✅ | OK (max ULP 4) |
 | node/test_dft_rfft/model.onnx | 20 | Data/Data | ✅ | OK (max ULP 4) |
 | node/test_dft_rfft_opset19/model.onnx | 19 | Data/Data | ✅ | OK (max ULP 4) |

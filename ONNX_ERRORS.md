@@ -9,7 +9,6 @@ Aggregates non-success verification outcomes.
 | --- | --- | --- |
 | Out of tolerance | 32 | 7, 17, 22 |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 8 |  |
-| DFT output last dimension must be 2, got 1 | 2 | 19, 20 |
 
 ## Error frequency by opset
 
@@ -17,8 +16,6 @@ Aggregates non-success verification outcomes.
 | --- | --- | --- |
 | Out of tolerance | 7 | 4 |
 | Out of tolerance | 17 | 13 |
-| DFT output last dimension must be 2, got 1 | 19 | 1 |
-| DFT output last dimension must be 2, got 1 | 20 | 1 |
 | Out of tolerance | 22 | 1 |
 
 ## Failing ONNX files
@@ -28,8 +25,6 @@ Lists every ONNX file with a non-success verification outcome.
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
 | node/test_adam_multiple/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 62311) |
-| node/test_dft_irfft/model.onnx | 20 | Data/Data | ❌ | DFT output last dimension must be 2, got 1 |
-| node/test_dft_irfft_opset19/model.onnx | 19 | Data/Data | ❌ | DFT output last dimension must be 2, got 1 |
 | node/test_l2normalization_axis_0/model.onnx | 22 | Data/Data | ❌ | Out of tolerance (max ULP 4294967295) |
 | test/contrib_ops/attention_op_test/AttentionPastState_dynamic_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 86151) |
 | test/contrib_ops/attention_op_test/Attention_Mask1D_Fp32_B2_S64_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1020241) |

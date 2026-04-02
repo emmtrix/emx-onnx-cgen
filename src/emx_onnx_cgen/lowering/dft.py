@@ -171,7 +171,9 @@ def lower_dft(graph: Graph | GraphContext, node: Node) -> DFTOp:
         expected_axis_dim = (
             dft_length
             if inverse and onesided
-            else dft_length // 2 + 1 if onesided else dft_length
+            else dft_length // 2 + 1
+            if onesided
+            else dft_length
         )
         if output_shape[axis] != expected_axis_dim:
             continue
@@ -203,7 +205,9 @@ def lower_dft(graph: Graph | GraphContext, node: Node) -> DFTOp:
         expected_axis_dim = (
             dft_length
             if inverse and onesided
-            else dft_length // 2 + 1 if onesided else dft_length
+            else dft_length // 2 + 1
+            if onesided
+            else dft_length
         )
         raise ShapeInferenceError(
             f"DFT output axis dimension must be {expected_axis_dim}, got {output_shape[axis]}"
