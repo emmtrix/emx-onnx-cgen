@@ -1,0 +1,9 @@
+{
+  "error": "Unsupported op ai.onnx.BitCast",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_bitcast_int64_to_float64 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "BitCast"
+  ],
+  "opset_version": 26
+}
