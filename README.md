@@ -12,6 +12,8 @@
 
 **emmtrix ONNX-to-C Code Generator (emx-onnx-cgen)** compiles ONNX models to portable, deterministic C code for deeply embedded systems. The generated code is designed to run without dynamic memory allocation, operating-system services, or external runtimes, making it suitable for safety-critical and resource-constrained targets.
 
+It now targets **full standard ONNX opset 26 support** based on **ONNX v1.21.0**, with end-to-end verification against **ONNX Runtime 1.24.4** on Python 3.11+ (and **1.23.2** on Python 3.10, due to upstream wheel availability).
+
 Key characteristics:
 
 - **No dynamic memory allocation** (`malloc`, `free`, heap usage)
@@ -23,6 +25,14 @@ Key characteristics:
 - **Readable, auditable C code** suitable for certification and code reviews
 - **Generated C output format spec:** [`docs/output-format.md`](docs/output-format.md)
 - Designed for **bare-metal and RTOS-based systems**
+
+Current coverage highlights:
+
+- **ONNX opset 26** support for the standard operator set shipped with **ONNX 1.21.0**
+- **> 99%** operator coverage in the generated support report at [`SUPPORT_OPS.md`](SUPPORT_OPS.md)
+- **> 99%** official ONNX backend model coverage in [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md)
+- **> 99%** ONNX Runtime-derived artifact coverage in [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md)
+- Listed on the official [ONNX Backend Scoreboard](https://onnx.ai/backend-scoreboard/)
 
 For PyTorch models, see the related project [`emx-pytorch-cgen`](https://github.com/emmtrix/emx-pytorch-cgen).
 
@@ -45,8 +55,9 @@ For PyTorch models, see the related project [`emx-pytorch-cgen`](https://github.
 - Deterministic codegen with explicit tensor shapes and loop nests.
 - Minimal C runtime templates in `src/emx_onnx_cgen/templates/`.
 - ONNX Runtime comparison for end-to-end validation.
-- Official ONNX operator coverage tracking.
-- Support for a wide range of ONNX operators (see [`SUPPORT_OPS.md`](SUPPORT_OPS.md)).
+- Full standard ONNX opset 26 support on top of ONNX v1.21.0.
+- Auto-generated operator and model coverage tracking (see [`SUPPORT_OPS.md`](SUPPORT_OPS.md), [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md), and [`ONNX_ERRORS.md`](ONNX_ERRORS.md)).
+- Broad support for ONNX Runtime test artifacts beyond the core standard operator set.
 - Supported data types:
   - `bfloat16`, `float16`, `float`, `double`
   - `float8e4m3fn`, `float8e4m3fnuz`, `float8e5m2`, `float8e5m2fnuz`, `float8e8m0` (stored as `uint8_t` with manual conversion to/from `float`)
@@ -123,6 +134,17 @@ Install the package directly from PyPI (recommended):
 ```bash
 pip install emx-onnx-cgen
 ```
+
+To use the verification workflow with ONNX Runtime, install the verification extra:
+
+```bash
+pip install "emx-onnx-cgen[verify]"
+```
+
+The pinned verification runtime is:
+
+- `onnxruntime==1.24.4` on Python 3.11+
+- `onnxruntime==1.23.2` on Python 3.10
 
 Minimum Python version: **3.10**.
 
@@ -256,6 +278,12 @@ How verification works:
    `NOT_IMPLEMENTED`, verification is skipped with a warning (exit code 0).
 
 ## Official ONNX test coverage
+
+`emx-onnx-cgen` tracks support using generated coverage reports checked into the repository and is listed on the official [ONNX Backend Scoreboard](https://onnx.ai/backend-scoreboard/).
+
+- **Standard ONNX operator support:** [`SUPPORT_OPS.md`](SUPPORT_OPS.md) consistently reports **> 99%** verified operator coverage. The remaining unsupported entry is the non-standard contrib operator `com.microsoft::SparseToDenseMatMul`.
+- **Official ONNX backend models:** [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md) reports **> 99%** verified ONNX file coverage against **ONNX 1.21.0**.
+- **ONNX Runtime artifact corpus:** [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md) also reports **> 99%** verified coverage for the exported ONNX Runtime artifact set.
 
 - [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md): overview of ONNX models and their current verification status.
 - [`ONNX_ERRORS.md`](ONNX_ERRORS.md): summary of the most common verification outcomes and failure reasons.
