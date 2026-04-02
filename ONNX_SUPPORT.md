@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1805 / 1827, 98.8% | 1.21.0 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1804 / 1827, 98.7% | 1.21.0 |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4053 / 4091, 99.1% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1805 / 1827 ONNX files (98.8%).
+Coverage 1804 / 1827 ONNX files (98.7%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -815,7 +815,7 @@ Coverage 1805 / 1827 ONNX files (98.8%).
 | node/test_l1normalization_axis_0/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_l1normalization_axis_1/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_l1normalization_axis_last/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_l2normalization_axis_0/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_l2normalization_axis_0/model.onnx | 22 | Data/Data | ❌ | Out of tolerance (max ULP 4294967295) |
 | node/test_l2normalization_axis_1/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_layer_normalization_2d_axis0/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_layer_normalization_2d_axis0_expanded/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 2) |

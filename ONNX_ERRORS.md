@@ -7,7 +7,7 @@ Aggregates non-success verification outcomes.
 
 | Error message | Count | Opset versions |
 | --- | --- | --- |
-| Out of tolerance | 31 | 7, 17 |
+| Out of tolerance | 32 | 7, 17, 22 |
 | Unsupported op ai.onnx.BitCast | 10 | 26 |
 | Unsupported op ai.onnx.CumProd | 9 | 26 |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 8 |  |
@@ -21,6 +21,7 @@ Aggregates non-success verification outcomes.
 | Out of tolerance | 17 | 13 |
 | DFT output last dimension must be 2, got 1 | 19 | 1 |
 | DFT output last dimension must be 2, got 1 | 20 | 1 |
+| Out of tolerance | 22 | 1 |
 | Unsupported op ai.onnx.BitCast | 26 | 10 |
 | Unsupported op ai.onnx.CumProd | 26 | 9 |
 
@@ -52,6 +53,7 @@ Lists every ONNX file with a non-success verification outcome.
 | node/test_cumprod_2d_negative_axis/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
 | node/test_dft_irfft/model.onnx | 20 | Data/Data | ❌ | DFT output last dimension must be 2, got 1 |
 | node/test_dft_irfft_opset19/model.onnx | 19 | Data/Data | ❌ | DFT output last dimension must be 2, got 1 |
+| node/test_l2normalization_axis_0/model.onnx | 22 | Data/Data | ❌ | Out of tolerance (max ULP 4294967295) |
 | test/contrib_ops/attention_op_test/AttentionPastState_dynamic_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 86151) |
 | test/contrib_ops/attention_op_test/Attention_Mask1D_Fp32_B2_S64_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1020241) |
 | test/contrib_ops/attention_op_test/Attention_Mask2D_Fp32_B2_S32_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 980755) |
