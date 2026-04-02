@@ -17,6 +17,7 @@ from test_ops import (
     _make_cast_model,
     _make_constant_of_shape_model,
     _make_conv_model,
+    _make_cumprod_model,
     _make_cumsum_model,
     _make_dft_model,
     _make_deform_conv_model,
@@ -868,6 +869,13 @@ OP_GOLDEN_CASES = [
         "expand",
         lambda: _make_expand_model(
             input_shape=[1, 3], target_shape=[2, 3], dtype=TensorProto.FLOAT
+        ),
+    ),
+    (
+        "cumprod",
+        "cumprod",
+        lambda: _make_cumprod_model(
+            input_shape=[2, 3], axis=1, dtype=TensorProto.FLOAT
         ),
     ),
     (

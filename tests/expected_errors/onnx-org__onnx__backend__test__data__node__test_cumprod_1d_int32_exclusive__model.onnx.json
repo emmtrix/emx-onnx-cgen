@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported op ai.onnx.CumProd",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_cumprod_1d_int32_exclusive model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "CumProd"
   ],
-  "opset_version": 26
+  "opset_version": 26,
+  "generated_checksum": "846ccbc374ca792d310a544d300905a6aae44ac321c2a2db7928c50392e9227d"
 }

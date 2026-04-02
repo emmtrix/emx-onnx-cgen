@@ -4613,6 +4613,71 @@ class CumSumOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class CumProdOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "axis_input")
+    __io_outputs__ = ("output",)
+    input0: str
+    axis_input: str | None
+    axis: int | None
+    output: str
+    exclusive: bool
+    reverse: bool
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        output_dtype = emitter.op_output_dtype(self)
+        c_type = output_dtype.c_type
+        input_shape = emitter.ctx_shape(self.input0)
+        params = emitter.unique_param_map(
+            [
+                ("input0", self.input0),
+                ("axis_input", self.axis_input),
+                ("output", self.output),
+            ]
+        )
+        input_dim_names = emitter.dim_names_for(self.input0)
+        output_dim_names = emitter.dim_names_for(self.output)
+        axis_c_type = (
+            emitter.ctx_dtype(self.axis_input).c_type
+            if self.axis_input is not None
+            else "int64_t"
+        )
+        rendered = (
+            state.templates["cumprod"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                axis_input=params["axis_input"],
+                axis_c_type=axis_c_type,
+                axis_suffix=emitter.param_array_suffix(()),
+                axis_literal=self.axis,
+                output=params["output"],
+                c_type=c_type,
+                input_suffix=emitter.param_array_suffix(input_shape, input_dim_names),
+                output_suffix=emitter.param_array_suffix(input_shape, output_dim_names),
+                input_shape=CEmitterCompat.shape_dim_exprs(
+                    input_shape, input_dim_names
+                ),
+                rank=len(input_shape),
+                exclusive=self.exclusive,
+                reverse=self.reverse,
+                dim_args=dim_args,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ((self.input0, emitter.ctx_shape(self.input0)),)
+
+
+@dataclass(frozen=True)
 class STFTOp(RenderableOpBase):
     __io_inputs__ = ("signal", "frame_step", "window", "frame_length_input")
     __io_outputs__ = ("output",)
