@@ -1835,6 +1835,8 @@ def _verify_model(
             sequence_element_shapes=sequence_element_shapes,
         )
         _decode_image_decoder_inputs(model, testbench_inputs)
+        if testbench_inputs is not None:
+            model = _annotate_unranked_model_inputs(model, testbench_inputs)
         if args.test_data_dir is not None and testbench_inputs is None:
             raise CodegenError(
                 "Failed to load test inputs from --test-data-dir; "
@@ -2613,6 +2615,61 @@ def _verify_model(
     finally:
         active_reporter.info("")
         _cleanup_temp()
+
+
+def _annotate_unranked_model_inputs(
+    model: onnx.ModelProto,
+    testbench_inputs: dict[str, "np.ndarray | list[np.ndarray]"],
+) -> onnx.ModelProto:
+    """Annotate model inputs that lack shape info with shapes from test data.
+
+    Some ONNX models export inputs without any shape annotation
+    (``has_shape=False``).  When explicit test data is provided the actual
+    input shapes are known, so we inject them into the model before
+    compilation.  This allows shape inference to proceed and avoids
+    confusing "out of bounds for shape ()" errors.
+
+    Returns the original model unchanged when no annotation is needed, or a
+    new model proto with the relevant inputs annotated otherwise.
+    """
+    initializer_names = {init.name for init in model.graph.initializer}
+    initializer_names.update(
+        sparse_init.name for sparse_init in model.graph.sparse_initializer
+    )
+    needs_annotation = any(
+        inp.name not in initializer_names
+        and inp.type.WhichOneof("value") == "tensor_type"
+        and not inp.type.tensor_type.HasField("shape")
+        and inp.name in testbench_inputs
+        and isinstance(testbench_inputs[inp.name], np.ndarray)
+        for inp in model.graph.input
+    )
+    if not needs_annotation:
+        return model
+
+    annotated = onnx.ModelProto()
+    annotated.CopyFrom(model)
+    new_inputs: list[onnx.ValueInfoProto] = []
+    for inp in annotated.graph.input:
+        if (
+            inp.name not in initializer_names
+            and inp.type.WhichOneof("value") == "tensor_type"
+            and not inp.type.tensor_type.HasField("shape")
+            and inp.name in testbench_inputs
+            and isinstance(testbench_inputs[inp.name], np.ndarray)
+        ):
+            arr = testbench_inputs[inp.name]
+            new_vi = onnx.helper.make_tensor_value_info(
+                inp.name,
+                inp.type.tensor_type.elem_type,
+                list(arr.shape),
+            )
+            new_inputs.append(new_vi)
+        else:
+            new_inputs.append(inp)
+    del annotated.graph.input[:]
+    annotated.graph.input.extend(new_inputs)
+    return annotated
 
 
 def _decode_image_decoder_inputs(

@@ -32,6 +32,8 @@ def lower_qlinear_softmax(graph: Graph, node: Node) -> QLinearSoftmaxOp:
         output_shape = _value_shape(graph, node.outputs[0], node)
     except ShapeInferenceError:
         output_shape = input_shape
+    if not output_shape and input_shape:
+        output_shape = input_shape
     if output_shape != input_shape:
         raise ShapeInferenceError(
             f"QLinearSoftmax output shape must be {input_shape}, got {output_shape}"
@@ -80,6 +82,12 @@ def lower_qlinear_softmax(graph: Graph, node: Node) -> QLinearSoftmaxOp:
     if axis < 0:
         axis += len(input_shape)
     if axis < 0 or axis >= len(input_shape):
+        if not input_shape:
+            raise ShapeInferenceError(
+                f"QLinearSoftmax input '{node.inputs[0]}' has no shape information "
+                f"(axis={node.attrs.get('axis', None)} cannot be resolved). "
+                "Export the model with static input shapes."
+            )
         raise ShapeInferenceError(
             f"QLinearSoftmax axis {node.attrs.get('axis', None)} "
             f"is out of bounds for shape {input_shape}"
