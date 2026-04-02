@@ -1,0 +1,9 @@
+{
+  "error": "DFT output last dimension must be 2, got 1",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_dft_irfft_opset19 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "DFT"
+  ],
+  "opset_version": 19
+}

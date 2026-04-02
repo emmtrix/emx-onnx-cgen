@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 4)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_dft_rfft_opset19 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "DFT"
+  ],
+  "opset_version": 19,
+  "generated_checksum": "d279f439a38bc35789ce9248b8f4f7233ee05d8db2b27017025b81f8d2ca83a0"
+}

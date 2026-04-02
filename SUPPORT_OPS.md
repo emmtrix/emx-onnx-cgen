@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 255 / 256
+Supported operators: 255 / 258
 
 | Operator | Supported |
 | --- | --- |
@@ -26,6 +26,7 @@ Supported operators: 255 / 256
 | AveragePool | ✅ |
 | BatchNormalization | ✅ |
 | Bernoulli | ✅ |
+| BitCast | ❌ |
 | BitShift | ✅ |
 | BitwiseAnd | ✅ |
 | BitwiseNot | ✅ |
@@ -50,6 +51,7 @@ Supported operators: 255 / 256
 | Cos | ✅ |
 | Cosh | ✅ |
 | Crop | ✅ |
+| CumProd | ❌ |
 | CumSum | ✅ |
 | DFT | ✅ |
 | DeformConv | ✅ |
