@@ -5583,6 +5583,7 @@ class DFTOp(RenderableOpBase):
                 rank=rank,
                 axis_variants=axis_variants,
                 input_components=2 if self.input_is_complex else 1,
+                output_components=1 if self.inverse and self.onesided else 2,
                 inverse=self.inverse,
                 onesided=self.onesided,
                 zero_literal=dft_dtype.zero_literal,

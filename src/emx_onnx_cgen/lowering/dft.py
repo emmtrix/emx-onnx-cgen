@@ -80,14 +80,19 @@ def lower_dft(graph: Graph | GraphContext, node: Node) -> DFTOp:
     if any(dim < 0 for dim in input_shape + output_shape):
         raise ShapeInferenceError("DFT does not support dynamic dimensions")
 
+    inverse = bool(int(node.attrs.get("inverse", 0)))
+    onesided = bool(int(node.attrs.get("onesided", 0)))
     input_complex_lanes = input_shape[-1]
     if input_complex_lanes not in {1, 2}:
         raise ShapeInferenceError(
             f"DFT input last dimension must be 1 or 2, got {input_complex_lanes}"
         )
-    if output_shape[-1] != 2:
+    output_complex_lanes = output_shape[-1]
+    expected_output_complex_lanes = 1 if inverse and onesided else 2
+    if output_complex_lanes != expected_output_complex_lanes:
         raise ShapeInferenceError(
-            f"DFT output last dimension must be 2, got {output_shape[-1]}"
+            "DFT output last dimension must be "
+            f"{expected_output_complex_lanes}, got {output_complex_lanes}"
         )
 
     input_dtype = value_dtype(graph, input_name, node)
@@ -102,12 +107,15 @@ def lower_dft(graph: Graph | GraphContext, node: Node) -> DFTOp:
             f"DFT supports only float and double, got {input_dtype.onnx_name}"
         )
 
-    inverse = bool(int(node.attrs.get("inverse", 0)))
-    onesided = bool(int(node.attrs.get("onesided", 0)))
-    if onesided and input_complex_lanes != 1:
-        raise UnsupportedOpError(
-            "DFT onesided output requires real input (last dim = 1)"
-        )
+    if onesided:
+        if inverse and input_complex_lanes != 2:
+            raise UnsupportedOpError(
+                "DFT inverse onesided output requires complex input (last dim = 2)"
+            )
+        if not inverse and input_complex_lanes != 1:
+            raise UnsupportedOpError(
+                "DFT onesided output requires real input (last dim = 1)"
+            )
 
     axis_value = int(node.attrs.get("axis", -2))
     axis_input: str | None = None
@@ -153,10 +161,20 @@ def lower_dft(graph: Graph | GraphContext, node: Node) -> DFTOp:
     for axis in axis_candidates:
         dft_length = dft_length_const
         if dft_length is None:
-            dft_length = input_shape[axis]
+            dft_length = (
+                2 * (input_shape[axis] - 1)
+                if inverse and onesided
+                else input_shape[axis]
+            )
         if dft_length <= 0:
             continue
-        expected_axis_dim = dft_length // 2 + 1 if onesided else dft_length
+        expected_axis_dim = (
+            dft_length
+            if inverse and onesided
+            else dft_length // 2 + 1
+            if onesided
+            else dft_length
+        )
         if output_shape[axis] != expected_axis_dim:
             continue
         compatible = True
@@ -179,8 +197,18 @@ def lower_dft(graph: Graph | GraphContext, node: Node) -> DFTOp:
         axis = axis_candidates[0]
         dft_length = dft_length_const
         if dft_length is None:
-            dft_length = input_shape[axis]
-        expected_axis_dim = dft_length // 2 + 1 if onesided else dft_length
+            dft_length = (
+                2 * (input_shape[axis] - 1)
+                if inverse and onesided
+                else input_shape[axis]
+            )
+        expected_axis_dim = (
+            dft_length
+            if inverse and onesided
+            else dft_length // 2 + 1
+            if onesided
+            else dft_length
+        )
         raise ShapeInferenceError(
             f"DFT output axis dimension must be {expected_axis_dim}, got {output_shape[axis]}"
         )
