@@ -60,20 +60,23 @@ def lower_bitcast(graph: Graph, node: Node) -> BitCastOp:
             f"got {output_dtype.onnx_name} and {target_dtype.onnx_name}"
         )
 
-    if input_dtype.bits is None or target_dtype.bits is None:
-        raise UnsupportedOpError(
-            f"BitCast requires fixed-width dtypes, got {input_dtype.onnx_name} -> {target_dtype.onnx_name}"
-        )
-    if input_dtype.bits != target_dtype.bits:
+    input_bits = input_dtype.bits
+    if input_bits is None:
+        input_bits = int(input_dtype.np_dtype.itemsize) * 8
+    target_bits = target_dtype.bits
+    if target_bits is None:
+        target_bits = int(target_dtype.np_dtype.itemsize) * 8
+
+    if input_bits != target_bits:
         raise UnsupportedOpError(
             "BitCast requires matching bit-width dtypes, "
-            f"got {input_dtype.onnx_name} ({input_dtype.bits} bits) -> "
-            f"{target_dtype.onnx_name} ({target_dtype.bits} bits)"
+            f"got {input_dtype.onnx_name} ({input_bits} bits) -> "
+            f"{target_dtype.onnx_name} ({target_bits} bits)"
         )
-    if input_dtype.bits % 8 != 0:
+    if input_bits % 8 != 0:
         raise UnsupportedOpError(
             "BitCast for sub-byte dtypes is not supported yet, "
-            f"got {input_dtype.onnx_name} ({input_dtype.bits} bits)."
+            f"got {input_dtype.onnx_name} ({input_bits} bits)."
         )
 
     input_shape = value_shape(graph, node.inputs[0], node)
