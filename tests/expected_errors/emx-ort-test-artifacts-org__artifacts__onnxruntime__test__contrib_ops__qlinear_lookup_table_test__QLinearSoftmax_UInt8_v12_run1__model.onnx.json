@@ -1,8 +1,9 @@
 {
-  "error": "QLinearSoftmax axis -2 is out of bounds for shape ()",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/qlinear_lookup_table_test/QLinearSoftmax_UInt8_v12_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::QLinearSoftmax"
-  ]
+  ],
+  "generated_checksum": "3bad13d6f6b4df1c2ec094ef6ead5c4f99aece39c177b35bb2341bea8a74e14f"
 }
