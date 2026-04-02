@@ -1002,10 +1002,13 @@ def _make_dft_model(
     if axis_norm < 0 or axis_norm >= len(input_shape) - 1:
         raise ValueError("DFT axis must target a signal dimension")
     fft_length = dft_length if dft_length is not None else input_shape[axis_norm]
-    output_axis_dim = fft_length // 2 + 1 if onesided else fft_length
+    if onesided and inverse:
+        output_axis_dim = fft_length
+    else:
+        output_axis_dim = fft_length // 2 + 1 if onesided else fft_length
     output_shape = list(input_shape)
     output_shape[axis_norm] = output_axis_dim
-    output_shape[-1] = 2
+    output_shape[-1] = 1 if onesided and inverse else 2
 
     input_info = helper.make_tensor_value_info("x", dtype, input_shape)
     output_info = helper.make_tensor_value_info("y", dtype, output_shape)
@@ -7438,6 +7441,20 @@ def test_dft_onesided_real_matches_reference() -> None:
         dft_length=8,
         onesided=True,
     )
+    _run_reference_testbench_compare(model)
+
+
+def test_dft_irfft_matches_reference() -> None:
+    model = _make_dft_model(
+        input_shape=[2, 5, 3, 2],
+        axis=1,
+        dtype=TensorProto.FLOAT,
+        dft_length=8,
+        inverse=True,
+        onesided=True,
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "* 1;" in generated
     _run_reference_testbench_compare(model)
 
 
