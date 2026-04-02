@@ -8,7 +8,6 @@ Aggregates non-success verification outcomes.
 | Error message | Count | Opset versions |
 | --- | --- | --- |
 | Out of tolerance | 32 | 7, 17, 22 |
-| Unsupported op ai.onnx.CumProd | 9 | 26 |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 8 |  |
 | DFT output last dimension must be 2, got 1 | 2 | 19, 20 |
 
@@ -21,7 +20,6 @@ Aggregates non-success verification outcomes.
 | DFT output last dimension must be 2, got 1 | 19 | 1 |
 | DFT output last dimension must be 2, got 1 | 20 | 1 |
 | Out of tolerance | 22 | 1 |
-| Unsupported op ai.onnx.CumProd | 26 | 9 |
 
 ## Failing ONNX files
 
@@ -30,15 +28,6 @@ Lists every ONNX file with a non-success verification outcome.
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
 | node/test_adam_multiple/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 62311) |
-| node/test_cumprod_1d/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
-| node/test_cumprod_1d_exclusive/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
-| node/test_cumprod_1d_int32_exclusive/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
-| node/test_cumprod_1d_reverse/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
-| node/test_cumprod_1d_reverse_exclusive/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
-| node/test_cumprod_2d_axis_0/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
-| node/test_cumprod_2d_axis_1/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
-| node/test_cumprod_2d_int32/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
-| node/test_cumprod_2d_negative_axis/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
 | node/test_dft_irfft/model.onnx | 20 | Data/Data | ❌ | DFT output last dimension must be 2, got 1 |
 | node/test_dft_irfft_opset19/model.onnx | 19 | Data/Data | ❌ | DFT output last dimension must be 2, got 1 |
 | node/test_l2normalization_axis_0/model.onnx | 22 | Data/Data | ❌ | Out of tolerance (max ULP 4294967295) |

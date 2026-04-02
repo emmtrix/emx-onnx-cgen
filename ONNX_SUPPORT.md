@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1814 / 1827, 99.3% | 1.21.0 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1823 / 1827, 99.8% | 1.21.0 |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4053 / 4091, 99.1% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1814 / 1827 ONNX files (99.3%).
+Coverage 1823 / 1827 ONNX files (99.8%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -571,15 +571,15 @@ Coverage 1814 / 1827 ONNX files (99.3%).
 | node/test_cos_example/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_cosh/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_cosh_example/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_cumprod_1d/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
-| node/test_cumprod_1d_exclusive/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
-| node/test_cumprod_1d_int32_exclusive/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
-| node/test_cumprod_1d_reverse/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
-| node/test_cumprod_1d_reverse_exclusive/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
-| node/test_cumprod_2d_axis_0/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
-| node/test_cumprod_2d_axis_1/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
-| node/test_cumprod_2d_int32/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
-| node/test_cumprod_2d_negative_axis/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
+| node/test_cumprod_1d/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_cumprod_1d_exclusive/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_cumprod_1d_int32_exclusive/model.onnx | 26 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_cumprod_1d_reverse/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_cumprod_1d_reverse_exclusive/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_cumprod_2d_axis_0/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_cumprod_2d_axis_1/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_cumprod_2d_int32/model.onnx | 26 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_cumprod_2d_negative_axis/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_cumsum_1d/model.onnx | 14 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_cumsum_1d_exclusive/model.onnx | 14 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_cumsum_1d_int32_exclusive/model.onnx | 14 | Data/Data | ✅ | OK (max abs diff 0) |

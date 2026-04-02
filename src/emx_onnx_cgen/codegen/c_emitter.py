@@ -48,6 +48,7 @@ from ..ir.ops import (
     ConvTransposeOp,
     DeformConvOp,
     DetOp,
+    CumProdOp,
     CumSumOp,
     DFTOp,
     DepthToSpaceOp,
@@ -1222,6 +1223,7 @@ class CEmitter:
                     "nonmax_suppression_op.c.j2"
                 ),
                 "expand": self._env.get_template("expand_op.c.j2"),
+                "cumprod": self._env.get_template("cumprod_op.c.j2"),
                 "cumsum": self._env.get_template("cumsum_op.c.j2"),
                 "stft": self._env.get_template("stft_op.c.j2"),
                 "dft": self._env.get_template("dft_op.c.j2"),
@@ -2320,6 +2322,7 @@ class CEmitter:
             | UniqueOp
             | NonMaxSuppressionOp
             | ExpandOp
+            | CumProdOp
             | CumSumOp
             | DFTOp
             | RangeOp
