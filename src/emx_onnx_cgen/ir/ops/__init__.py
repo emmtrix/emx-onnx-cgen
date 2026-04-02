@@ -17,6 +17,7 @@ from .misc import (
     BernoulliOp,
     BlackmanWindowOp,
     CastOp,
+    BitCastOp,
     CompressOp,
     ConcatOp,
     ConcatFromSequenceOp,

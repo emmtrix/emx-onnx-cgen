@@ -1050,6 +1050,7 @@ class CEmitter:
                 "unary": self._env.get_template("unary_op.c.j2"),
                 "clip": self._env.get_template("clip_op.c.j2"),
                 "cast": self._env.get_template("cast_op.c.j2"),
+                "bitcast": self._env.get_template("bitcast_op.c.j2"),
                 "quantize_linear": self._env.get_template("quantize_linear_op.c.j2"),
                 "dequantize_linear": self._env.get_template(
                     "dequantize_linear_op.c.j2"
