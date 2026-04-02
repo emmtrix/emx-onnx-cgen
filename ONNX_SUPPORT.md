@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1801 / 1802, 99.9% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1804 / 1827, 98.7% | 1.21.0 |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4053 / 4091, 99.1% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1801 / 1802 ONNX files (99.9%).
+Coverage 1804 / 1827 ONNX files (98.7%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -273,6 +273,16 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 | node/test_bernoulli_expanded/model.onnx | 22 | Data/Data | ✅ | OK (non-deterministic output) |
 | node/test_bernoulli_seed/model.onnx | 22 | Data/Data | ✅ | OK (non-deterministic output) |
 | node/test_bernoulli_seed_expanded/model.onnx | 22 | Data/Data | ✅ | OK (non-deterministic output) |
+| node/test_bitcast_2d_float32_to_int32/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.BitCast |
+| node/test_bitcast_bool_to_uint8/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.BitCast |
+| node/test_bitcast_float32_to_int32/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.BitCast |
+| node/test_bitcast_float64_to_int64/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.BitCast |
+| node/test_bitcast_int32_to_float32/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.BitCast |
+| node/test_bitcast_int64_to_float64/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.BitCast |
+| node/test_bitcast_int8_to_uint8/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.BitCast |
+| node/test_bitcast_scalar_float32_to_int32/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.BitCast |
+| node/test_bitcast_uint16_to_int16/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.BitCast |
+| node/test_bitcast_uint32_to_int32/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.BitCast |
 | node/test_bitshift_left_uint16/model.onnx | 11 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_left_uint32/model.onnx | 11 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_left_uint64/model.onnx | 11 | Data/Data | ✅ | OK (max abs diff 0) |
@@ -561,6 +571,15 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 | node/test_cos_example/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_cosh/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_cosh_example/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_cumprod_1d/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
+| node/test_cumprod_1d_exclusive/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
+| node/test_cumprod_1d_int32_exclusive/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
+| node/test_cumprod_1d_reverse/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
+| node/test_cumprod_1d_reverse_exclusive/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
+| node/test_cumprod_2d_axis_0/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
+| node/test_cumprod_2d_axis_1/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
+| node/test_cumprod_2d_int32/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
+| node/test_cumprod_2d_negative_axis/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.CumProd |
 | node/test_cumsum_1d/model.onnx | 14 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_cumsum_1d_exclusive/model.onnx | 14 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_cumsum_1d_int32_exclusive/model.onnx | 14 | Data/Data | ✅ | OK (max abs diff 0) |
@@ -595,11 +614,16 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 | node/test_dft_axis_opset19/model.onnx | 19 | Data/Data | ✅ | OK (max ULP 72) |
 | node/test_dft_inverse/model.onnx (--atol-eps 2) | 20 | Data/Data | ✅ | OK (max ULP 8) |
 | node/test_dft_inverse_opset19/model.onnx (--atol-eps 2) | 19 | Data/Data | ✅ | OK (max ULP 8) |
+| node/test_dft_irfft/model.onnx | 20 | Data/Data | ❌ | DFT output last dimension must be 2, got 1 |
+| node/test_dft_irfft_opset19/model.onnx | 19 | Data/Data | ❌ | DFT output last dimension must be 2, got 1 |
 | node/test_dft_opset19/model.onnx | 19 | Data/Data | ✅ | OK (max ULP 4) |
+| node/test_dft_rfft/model.onnx | 20 | Data/Data | ✅ | OK (max ULP 4) |
+| node/test_dft_rfft_opset19/model.onnx | 19 | Data/Data | ✅ | OK (max ULP 4) |
 | node/test_div/model.onnx | 14 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_div_bcast/model.onnx | 14 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_div_example/model.onnx | 14 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_div_int16/model.onnx | 14 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_div_int32_trunc/model.onnx | 14 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_div_int8/model.onnx | 14 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_div_uint16/model.onnx | 14 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_div_uint32/model.onnx | 14 | Data/Data | ✅ | OK (max abs diff 0) |
@@ -791,7 +815,7 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 | node/test_l1normalization_axis_0/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_l1normalization_axis_1/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_l1normalization_axis_last/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_l2normalization_axis_0/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_l2normalization_axis_0/model.onnx | 22 | Data/Data | ❌ | Out of tolerance (max ULP 4294967295) |
 | node/test_l2normalization_axis_1/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_layer_normalization_2d_axis0/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_layer_normalization_2d_axis0_expanded/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 2) |
@@ -1053,6 +1077,7 @@ Coverage 1801 / 1802 ONNX files (99.9%).
 | node/test_nonmaxsuppression_center_point_box_format/model.onnx | 11 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_nonmaxsuppression_flipped_coordinates/model.onnx | 11 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_nonmaxsuppression_identical_boxes/model.onnx | 11 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_nonmaxsuppression_iou_threshold_boundary/model.onnx | 11 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_nonmaxsuppression_limit_output_size/model.onnx | 11 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_nonmaxsuppression_single_box/model.onnx | 11 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_nonmaxsuppression_suppress_by_IOU/model.onnx | 11 | Data/Data | ✅ | OK (max abs diff 0) |
