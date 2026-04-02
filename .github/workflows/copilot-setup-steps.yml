@@ -11,9 +11,13 @@ on:
 
 jobs:
   copilot-setup-steps:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
+    env:
+      CC: gcc-14
+      CXX: g++-14
+      EMX_ENABLE_SANITIZE: "1"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,6 +29,11 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
+
+      - name: Install GCC 14
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-14 g++-14
 
       - name: Initialize submodules
         run: |
