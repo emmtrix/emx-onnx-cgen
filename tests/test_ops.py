@@ -2009,6 +2009,32 @@ def _make_cast_model() -> onnx.ModelProto:
     return model
 
 
+def _make_bitcast_model() -> onnx.ModelProto:
+    input_shape = [2, 3]
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
+    output = helper.make_tensor_value_info("out", TensorProto.INT32, input_shape)
+    node = helper.make_node(
+        "BitCast",
+        inputs=["in0"],
+        outputs=[output.name],
+        to=TensorProto.INT32,
+    )
+    graph = helper.make_graph(
+        [node],
+        "bitcast_graph",
+        [input_info],
+        [output],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 26)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_castlike_model() -> onnx.ModelProto:
     input_shape = [2, 3]
     input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
@@ -7853,6 +7879,11 @@ def test_squeeze_op_matches_onnxruntime() -> None:
 def test_cast_op_matches_onnxruntime() -> None:
     model = _make_cast_model()
     _run_ort_compare(model)
+
+
+def test_bitcast_op_matches_reference() -> None:
+    model = _make_bitcast_model()
+    _run_reference_testbench_compare(model)
 
 
 def test_resize_tf_half_pixel_for_nn_matches_onnxruntime() -> None:

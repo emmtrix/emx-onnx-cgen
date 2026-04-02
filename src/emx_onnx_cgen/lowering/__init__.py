@@ -16,6 +16,7 @@ _LOWERING_MODULES = [
     "batch_normalization",
     "bernoulli",
     "blackman_window",
+    "bitcast",
     "cast",
     "center_crop_pad",
     "col2im",

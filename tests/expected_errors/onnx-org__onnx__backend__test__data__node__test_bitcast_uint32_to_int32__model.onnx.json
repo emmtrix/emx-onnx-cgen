@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported op ai.onnx.BitCast",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_bitcast_uint32_to_int32 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "BitCast"
   ],
-  "opset_version": 26
+  "opset_version": 26,
+  "generated_checksum": "5704b02785e2319dbfe7b25f92be1b933b7f45ecd74a948e9f20fd1afe0e4aab"
 }

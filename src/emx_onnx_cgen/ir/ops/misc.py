@@ -168,6 +168,62 @@ class CastOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class BitCastOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
+    input0: str
+    output: str
+
+    def infer_types(self, ctx: OpContext) -> None:
+        ctx.dtype(self.input0)
+        ctx.dtype(self.output)
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        shape = ctx.shape(self.input0)
+        ctx.set_shape(self.output, shape)
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        input_dtype = emitter.ctx_dtype(self.input0)
+        output_dtype = emitter.ctx_dtype(self.output)
+        output_shape_raw = emitter.ctx_shape(self.output)
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        output_dim_names = emitter.dim_names_for(self.output)
+        shape = CEmitterCompat.shape_dim_exprs(output_shape_raw, output_dim_names)
+        loop_vars = CEmitterCompat.loop_vars(output_shape_raw)
+        array_suffix = emitter.param_array_suffix(output_shape_raw, output_dim_names)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], input_dtype.c_type, array_suffix, True),
+                (params["output"], output_dtype.c_type, array_suffix, False),
+            ]
+        )
+        rendered = (
+            state.templates["bitcast"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                input_c_type=input_dtype.c_type,
+                output_c_type=output_dtype.c_type,
+                array_suffix=array_suffix,
+                shape=shape,
+                loop_vars=loop_vars,
+                dim_args=dim_args,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+
+@dataclass(frozen=True)
 class QuantizeLinearOp(RenderableOpBase):
     __io_inputs__ = ("input0", "scale", "zero_point")
     __io_outputs__ = ("output",)
