@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1804 / 1827, 98.7% | 1.21.0 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1814 / 1827, 99.3% | 1.21.0 |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4053 / 4091, 99.1% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1804 / 1827 ONNX files (98.7%).
+Coverage 1814 / 1827 ONNX files (99.3%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -273,16 +273,16 @@ Coverage 1804 / 1827 ONNX files (98.7%).
 | node/test_bernoulli_expanded/model.onnx | 22 | Data/Data | ✅ | OK (non-deterministic output) |
 | node/test_bernoulli_seed/model.onnx | 22 | Data/Data | ✅ | OK (non-deterministic output) |
 | node/test_bernoulli_seed_expanded/model.onnx | 22 | Data/Data | ✅ | OK (non-deterministic output) |
-| node/test_bitcast_2d_float32_to_int32/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.BitCast |
-| node/test_bitcast_bool_to_uint8/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.BitCast |
-| node/test_bitcast_float32_to_int32/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.BitCast |
-| node/test_bitcast_float64_to_int64/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.BitCast |
-| node/test_bitcast_int32_to_float32/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.BitCast |
-| node/test_bitcast_int64_to_float64/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.BitCast |
-| node/test_bitcast_int8_to_uint8/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.BitCast |
-| node/test_bitcast_scalar_float32_to_int32/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.BitCast |
-| node/test_bitcast_uint16_to_int16/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.BitCast |
-| node/test_bitcast_uint32_to_int32/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.BitCast |
+| node/test_bitcast_2d_float32_to_int32/model.onnx | 26 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_bitcast_bool_to_uint8/model.onnx | 26 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_bitcast_float32_to_int32/model.onnx | 26 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_bitcast_float64_to_int64/model.onnx | 26 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_bitcast_int32_to_float32/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_bitcast_int64_to_float64/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_bitcast_int8_to_uint8/model.onnx | 26 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_bitcast_scalar_float32_to_int32/model.onnx | 26 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_bitcast_uint16_to_int16/model.onnx | 26 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_bitcast_uint32_to_int32/model.onnx | 26 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_left_uint16/model.onnx | 11 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_left_uint32/model.onnx | 11 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_left_uint64/model.onnx | 11 | Data/Data | ✅ | OK (max abs diff 0) |
