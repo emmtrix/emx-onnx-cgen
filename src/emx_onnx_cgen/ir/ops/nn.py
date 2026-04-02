@@ -5316,6 +5316,9 @@ class QLinearSoftmaxOp(RenderableOpBase):
         except ShapeInferenceError:
             ctx.set_shape(self.output, input_shape)
             return None
+        if not output_shape and input_shape:
+            ctx.set_shape(self.output, input_shape)
+            return None
         if output_shape != input_shape:
             raise ShapeInferenceError(
                 f"QLinearSoftmax output shape must be {input_shape}, got {output_shape}"
