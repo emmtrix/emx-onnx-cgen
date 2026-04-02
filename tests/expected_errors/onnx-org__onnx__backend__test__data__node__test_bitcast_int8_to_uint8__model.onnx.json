@@ -1,9 +1,6 @@
 {
   "error": "OK (max abs diff 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_bitcast_int8_to_uint8 model.onnx --test-data-dir test_data_set_0 --runtime=onnx-reference",
-  "extra_cli_args": [
-    "--runtime=onnx-reference"
-  ],
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_bitcast_int8_to_uint8 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "BitCast"
