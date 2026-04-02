@@ -943,6 +943,47 @@ def _make_cumsum_model(
     return model
 
 
+def _make_cumprod_model(
+    *,
+    input_shape: list[int],
+    axis: int,
+    dtype: int,
+    exclusive: bool = False,
+    reverse: bool = False,
+    opset: int = 26,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("input", dtype, input_shape)
+    output = helper.make_tensor_value_info("output", dtype, input_shape)
+    axis_tensor = helper.make_tensor(
+        "axis",
+        TensorProto.INT64,
+        dims=[],
+        vals=[axis],
+    )
+    node = helper.make_node(
+        "CumProd",
+        inputs=["input", "axis"],
+        outputs=[output.name],
+        exclusive=int(exclusive),
+        reverse=int(reverse),
+    )
+    graph = helper.make_graph(
+        [node],
+        "cumprod_graph",
+        [input_info],
+        [output],
+        initializer=[axis_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_dft_model(
     *,
     input_shape: list[int],
@@ -1208,6 +1249,34 @@ def _cumsum_numpy(
         result = _exclusive_cumsum_numpy(working, axis)
     else:
         result = np.cumsum(working, axis=axis, dtype=data.dtype)
+    return np.flip(result, axis=axis) if reverse else result
+
+
+def _exclusive_cumprod_numpy(data: np.ndarray, axis: int) -> np.ndarray:
+    result = np.ones_like(data)
+    if data.shape[axis] == 0:
+        return result
+    cumprod = np.cumprod(data, axis=axis, dtype=data.dtype)
+    src_slice = [slice(None)] * data.ndim
+    dst_slice = [slice(None)] * data.ndim
+    src_slice[axis] = slice(None, -1)
+    dst_slice[axis] = slice(1, None)
+    result[tuple(dst_slice)] = cumprod[tuple(src_slice)]
+    return result
+
+
+def _cumprod_numpy(
+    data: np.ndarray,
+    *,
+    axis: int,
+    exclusive: bool,
+    reverse: bool,
+) -> np.ndarray:
+    working = np.flip(data, axis=axis) if reverse else data
+    if exclusive:
+        result = _exclusive_cumprod_numpy(working, axis)
+    else:
+        result = np.cumprod(working, axis=axis, dtype=data.dtype)
     return np.flip(result, axis=axis) if reverse else result
 
 
@@ -7325,6 +7394,17 @@ def test_cumsum_matches_onnxruntime() -> None:
     _run_ort_compare(model)
 
 
+def test_cumprod_matches_reference_testbench() -> None:
+    model = _make_cumprod_model(
+        input_shape=[2, 3],
+        axis=1,
+        dtype=TensorProto.FLOAT,
+        exclusive=True,
+        reverse=True,
+    )
+    _run_reference_testbench_compare(model)
+
+
 def test_dft_stockham_forward_matches_reference() -> None:
     model = _make_dft_model(
         input_shape=[2, 8, 3, 2],
@@ -7576,6 +7656,29 @@ def test_cumsum_run_matches_numpy(axis: int, exclusive: bool, reverse: bool) -> 
     data = rng.standard_normal((2, 3)).astype(np.float32)
     outputs = _run_reference(model, {"input": data})
     expected = _cumsum_numpy(data, axis=axis, exclusive=exclusive, reverse=reverse)
+    np.testing.assert_allclose(outputs["output"], expected, rtol=1e-5, atol=1e-6)
+
+
+@pytest.mark.parametrize(
+    ("axis", "exclusive", "reverse"),
+    [
+        (0, False, False),
+        (1, True, False),
+        (-1, True, True),
+    ],
+)
+def test_cumprod_run_matches_numpy(axis: int, exclusive: bool, reverse: bool) -> None:
+    model = _make_cumprod_model(
+        input_shape=[2, 3],
+        axis=axis,
+        dtype=TensorProto.FLOAT,
+        exclusive=exclusive,
+        reverse=reverse,
+    )
+    rng = np.random.default_rng(0)
+    data = rng.standard_normal((2, 3)).astype(np.float32)
+    outputs = _run_reference(model, {"input": data})
+    expected = _cumprod_numpy(data, axis=axis, exclusive=exclusive, reverse=reverse)
     np.testing.assert_allclose(outputs["output"], expected, rtol=1e-5, atol=1e-6)
 
 
