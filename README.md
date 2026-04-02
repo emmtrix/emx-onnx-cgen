@@ -12,7 +12,7 @@
 
 **emmtrix ONNX-to-C Code Generator (emx-onnx-cgen)** compiles ONNX models to portable, deterministic C code for deeply embedded systems. The generated code is designed to run without dynamic memory allocation, operating-system services, or external runtimes, making it suitable for safety-critical and resource-constrained targets.
 
-It now targets **full standard ONNX opset 26 support** based on **ONNX v1.21.0**, with end-to-end verification against **ONNX Runtime 1.24.4** on Python 3.11+ (and **1.23.2** on Python 3.10, due to upstream wheel availability).
+It now targets **full standard ONNX opset 26 support** based on **ONNX v1.21.0** and supports microsoft operators based on **ONNX Runtime 1.24.4**.
 
 Key characteristics:
 
