@@ -1,5 +1,5 @@
 {
-  "error": "DFT output last dimension must be 2, got 1",
+  "error": "OK (max ULP 3)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_dft_irfft model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
