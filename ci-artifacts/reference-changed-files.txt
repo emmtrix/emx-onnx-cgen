@@ -1,0 +1,3 @@
+Reference update changed files:
+M	tests/expected_errors/onnx-org__onnx__backend__test__data__node__test_dft_irfft__model.onnx.json
+M	tests/expected_errors/onnx-org__onnx__backend__test__data__node__test_dft_irfft_opset19__model.onnx.json

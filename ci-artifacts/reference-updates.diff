@@ -1,0 +1,24 @@
+diff --git a/tests/expected_errors/onnx-org__onnx__backend__test__data__node__test_dft_irfft__model.onnx.json b/tests/expected_errors/onnx-org__onnx__backend__test__data__node__test_dft_irfft__model.onnx.json
+index 899c9e765..cb3a024b2 100644
+--- a/tests/expected_errors/onnx-org__onnx__backend__test__data__node__test_dft_irfft__model.onnx.json
++++ b/tests/expected_errors/onnx-org__onnx__backend__test__data__node__test_dft_irfft__model.onnx.json
+@@ -5,5 +5,6 @@
+   "operators": [
+     "DFT"
+   ],
+-  "opset_version": 20
++  "opset_version": 20,
++  "generated_checksum": "a41c3f1f828eb585c13b5095349ba194c9c6bb619ba52a2f35ec4e90ce010ff4"
+ }
+diff --git a/tests/expected_errors/onnx-org__onnx__backend__test__data__node__test_dft_irfft_opset19__model.onnx.json b/tests/expected_errors/onnx-org__onnx__backend__test__data__node__test_dft_irfft_opset19__model.onnx.json
+index 6df8a3f56..c0c48da53 100644
+--- a/tests/expected_errors/onnx-org__onnx__backend__test__data__node__test_dft_irfft_opset19__model.onnx.json
++++ b/tests/expected_errors/onnx-org__onnx__backend__test__data__node__test_dft_irfft_opset19__model.onnx.json
+@@ -5,5 +5,6 @@
+   "operators": [
+     "DFT"
+   ],
+-  "opset_version": 19
++  "opset_version": 19,
++  "generated_checksum": "2cd5e3ae6d99a5fa6a11e2f0a10d2db7d912d37c05f42b329bc5ee2aebd26b0f"
+ }
