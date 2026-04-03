@@ -75,15 +75,53 @@ jobs:
         if: github.event_name == 'pull_request'
         run: UPDATE_REFS=3 pytest -q
 
+      - name: Capture reference updates
+        if: github.event_name == 'pull_request'
+        run: |
+          mkdir -p ci-artifacts
+          if git status --porcelain | grep -q .; then
+            {
+              echo "Reference update changed files:"
+              git diff --name-status
+            } | tee ci-artifacts/reference-changed-files.txt
+            git diff --binary > ci-artifacts/reference-updates.diff
+          else
+            echo "No reference updates." | tee ci-artifacts/reference-changed-files.txt
+            : > ci-artifacts/reference-updates.diff
+          fi
+
       - name: Commit updated references
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
         run: |
           if git status --porcelain | grep -q .; then
+            echo "Reference update files to commit:"
+            git diff --name-status
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git add -A
             git commit -m "tests: update golden references"
-            git push origin "HEAD:${GITHUB_HEAD_REF}"
+            git push origin "HEAD:refs/heads/${GITHUB_HEAD_REF}"
           else
             echo "No reference updates."
           fi
+
+      - name: Capture final git state
+        if: github.event_name == 'pull_request' && always()
+        run: |
+          mkdir -p ci-artifacts
+          git status --short > ci-artifacts/final-git-status.txt
+          if git rev-parse --verify HEAD^ >/dev/null 2>&1; then
+            git show --stat --name-status --format=fuller HEAD > ci-artifacts/latest-commit.txt
+            git diff --binary HEAD^ HEAD > ci-artifacts/latest-commit.diff
+          else
+            echo "No parent commit available for HEAD." > ci-artifacts/latest-commit.txt
+            : > ci-artifacts/latest-commit.diff
+          fi
+
+      - name: Upload git change artifacts
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: git-change-artifacts-py${{ matrix.python-version }}
+          path: ci-artifacts/
+          if-no-files-found: warn
