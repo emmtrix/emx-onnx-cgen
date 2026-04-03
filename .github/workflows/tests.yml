@@ -78,16 +78,17 @@ jobs:
       - name: Capture reference updates
         if: github.event_name == 'pull_request'
         run: |
-          mkdir -p ci-artifacts
+          ARTIFACT_DIR="${RUNNER_TEMP}/git-change-artifacts"
+          mkdir -p "${ARTIFACT_DIR}"
           if git status --porcelain | grep -q .; then
             {
               echo "Reference update changed files:"
               git diff --name-status
-            } | tee ci-artifacts/reference-changed-files.txt
-            git diff --binary > ci-artifacts/reference-updates.diff
+            } | tee "${ARTIFACT_DIR}/reference-changed-files.txt"
+            git diff --binary > "${ARTIFACT_DIR}/reference-updates.diff"
           else
-            echo "No reference updates." | tee ci-artifacts/reference-changed-files.txt
-            : > ci-artifacts/reference-updates.diff
+            echo "No reference updates." | tee "${ARTIFACT_DIR}/reference-changed-files.txt"
+            : > "${ARTIFACT_DIR}/reference-updates.diff"
           fi
 
       - name: Commit updated references
@@ -108,14 +109,15 @@ jobs:
       - name: Capture final git state
         if: github.event_name == 'pull_request' && always()
         run: |
-          mkdir -p ci-artifacts
-          git status --short > ci-artifacts/final-git-status.txt
+          ARTIFACT_DIR="${RUNNER_TEMP}/git-change-artifacts"
+          mkdir -p "${ARTIFACT_DIR}"
+          git status --short > "${ARTIFACT_DIR}/final-git-status.txt"
           if git rev-parse --verify HEAD^ >/dev/null 2>&1; then
-            git show --stat --name-status --format=fuller HEAD > ci-artifacts/latest-commit.txt
-            git diff --binary HEAD^ HEAD > ci-artifacts/latest-commit.diff
+            git show --stat --name-status --format=fuller HEAD > "${ARTIFACT_DIR}/latest-commit.txt"
+            git diff --binary HEAD^ HEAD > "${ARTIFACT_DIR}/latest-commit.diff"
           else
-            echo "No parent commit available for HEAD." > ci-artifacts/latest-commit.txt
-            : > ci-artifacts/latest-commit.diff
+            echo "No parent commit available for HEAD." > "${ARTIFACT_DIR}/latest-commit.txt"
+            : > "${ARTIFACT_DIR}/latest-commit.diff"
           fi
 
       - name: Upload git change artifacts
@@ -123,5 +125,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: git-change-artifacts-py${{ matrix.python-version }}
-          path: ci-artifacts/
+          path: ${{ runner.temp }}/git-change-artifacts/
           if-no-files-found: warn
