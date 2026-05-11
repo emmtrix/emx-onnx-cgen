@@ -71,34 +71,11 @@ const EMX_UNUSED int64_t weight1_axis[1] = {
  *   reverse: 0
  */
 EMX_NODE_FN void node0_cumsum(const float input0[2][3], float output[2][3]) {
-    const float *input_data = (const float *)input0;
-    float *output_data = (float *)output;
-    const idx_t dims[2] = { 2, 3 };
-    int axis = 1;
-    if (axis < 0) {
-        axis += 2;
-    }
-    if (axis < 0 || axis >= 2) {
-        return;
-    }
-    idx_t outer = 1;
-    for (int i = 0; i < axis; ++i) {
-        outer *= dims[i];
-    }
-    idx_t inner = 1;
-    for (int i = axis + 1; i < 2; ++i) {
-        inner *= dims[i];
-    }
-    idx_t axis_dim = dims[axis];
-    for (idx_t outer_index = 0; outer_index < outer; ++outer_index) {
-        for (idx_t inner_index = 0; inner_index < inner; ++inner_index) {
-            float acc = (float)0;
-            idx_t base = (outer_index * axis_dim * inner) + inner_index;
-            for (idx_t axis_index = 0; axis_index < axis_dim; ++axis_index) {
-                idx_t offset = base + axis_index * inner;
-                acc += input_data[offset];
-                output_data[offset] = acc;
-            }
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        float acc = (float)0;
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
+            acc += input0[i0][i1];
+            output[i0][i1] = acc;
         }
     }
 }

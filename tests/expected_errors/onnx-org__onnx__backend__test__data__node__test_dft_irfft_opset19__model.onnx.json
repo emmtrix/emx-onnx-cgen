@@ -5,5 +5,6 @@
   "operators": [
     "DFT"
   ],
-  "opset_version": 19
+  "opset_version": 19,
+  "generated_checksum": "2cd5e3ae6d99a5fa6a11e2f0a10d2db7d912d37c05f42b329bc5ee2aebd26b0f"
 }
