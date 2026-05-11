@@ -1,5 +1,31 @@
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ input_suffix }}{% if axis_input %}, const {{ axis_c_type }} {{ axis_input }}{{ axis_suffix }}{% endif %}, {{ c_type }} {{ output }}{{ output_suffix }}) {
-    int axis = {% if axis_literal is not none %}{{ axis_literal }}{% else %}(int){{ axis_input }}[0]{% endif %};
+{% if axis_literal is not none %}
+{% set axis_case = axis_literal %}
+{% set ns = namespace(opened_loops=0) %}
+{% for dim_index in range(rank) if dim_index != axis_case %}
+    for (idx_t {{ loop_vars[dim_index] }} = 0; {{ loop_vars[dim_index] }} < {{ input_shape[dim_index] }}; ++{{ loop_vars[dim_index] }}) {
+{% set ns.opened_loops = ns.opened_loops + 1 %}
+{% endfor %}
+        {{ c_type }} acc = ({{ c_type }})0;
+{% if reverse %}
+        for (idx_t axis_offset = 0; axis_offset < {{ input_shape[axis_case] }}; ++axis_offset) {
+            idx_t {{ loop_vars[axis_case] }} = {{ input_shape[axis_case] }} - 1 - axis_offset;
+{% else %}
+        for (idx_t {{ loop_vars[axis_case] }} = 0; {{ loop_vars[axis_case] }} < {{ input_shape[axis_case] }}; ++{{ loop_vars[axis_case] }}) {
+{% endif %}
+{% if exclusive %}
+            {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = acc;
+            acc += {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %};
+{% else %}
+            acc += {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %};
+            {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = acc;
+{% endif %}
+        }
+{% for _ in range(ns.opened_loops) %}
+    }
+{% endfor %}
+{% else %}
+    int axis = (int){{ axis_input }}[0];
     if (axis < 0) {
         axis += {{ rank }};
     }
@@ -37,4 +63,5 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ i
     default:
         return;
     }
+{% endif %}
 }
