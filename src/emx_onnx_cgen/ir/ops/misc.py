@@ -4597,6 +4597,7 @@ class CumSumOp(RenderableOpBase):
                 input_shape=CEmitterCompat.shape_dim_exprs(
                     input_shape, input_dim_names
                 ),
+                loop_vars=CEmitterCompat.loop_vars(input_shape),
                 rank=len(input_shape),
                 exclusive=self.exclusive,
                 reverse=self.reverse,
