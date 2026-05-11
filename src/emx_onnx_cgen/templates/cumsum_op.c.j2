@@ -1,7 +1,4 @@
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ input_suffix }}{% if axis_input %}, const {{ axis_c_type }} {{ axis_input }}{{ axis_suffix }}{% endif %}, {{ c_type }} {{ output }}{{ output_suffix }}) {
-    const {{ c_type }} *input_data = (const {{ c_type }} *){{ input0 }};
-    {{ c_type }} *output_data = ({{ c_type }} *){{ output }};
-    const idx_t dims[{{ rank }}] = { {% for dim in input_shape %}{{ dim }}{% if not loop.last %}, {% endif %}{% endfor %} };
     int axis = {% if axis_literal is not none %}{{ axis_literal }}{% else %}(int){{ axis_input }}[0]{% endif %};
     if (axis < 0) {
         axis += {{ rank }};
@@ -9,43 +6,35 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ i
     if (axis < 0 || axis >= {{ rank }}) {
         return;
     }
-    idx_t outer = 1;
-    for (int i = 0; i < axis; ++i) {
-        outer *= dims[i];
-    }
-    idx_t inner = 1;
-    for (int i = axis + 1; i < {{ rank }}; ++i) {
-        inner *= dims[i];
-    }
-    idx_t axis_dim = dims[axis];
-    for (idx_t outer_index = 0; outer_index < outer; ++outer_index) {
-        for (idx_t inner_index = 0; inner_index < inner; ++inner_index) {
+    switch (axis) {
+{% for axis_case in range(rank) %}
+    case {{ axis_case }}:
+{% set ns = namespace(opened_loops=0) %}
+{% for dim_index in range(rank) if dim_index != axis_case %}
+        for (idx_t {{ loop_vars[dim_index] }} = 0; {{ loop_vars[dim_index] }} < {{ input_shape[dim_index] }}; ++{{ loop_vars[dim_index] }}) {
+{% set ns.opened_loops = ns.opened_loops + 1 %}
+{% endfor %}
             {{ c_type }} acc = ({{ c_type }})0;
-            idx_t base = (outer_index * axis_dim * inner) + inner_index;
 {% if reverse %}
-            for (idx_t axis_offset = 0; axis_offset < axis_dim; ++axis_offset) {
-                idx_t axis_index = axis_dim - 1 - axis_offset;
-                idx_t offset = base + axis_index * inner;
-{% if exclusive %}
-                output_data[offset] = acc;
-                acc += input_data[offset];
+            for (idx_t axis_offset = 0; axis_offset < {{ input_shape[axis_case] }}; ++axis_offset) {
+                idx_t {{ loop_vars[axis_case] }} = {{ input_shape[axis_case] }} - 1 - axis_offset;
 {% else %}
-                acc += input_data[offset];
-                output_data[offset] = acc;
+            for (idx_t {{ loop_vars[axis_case] }} = 0; {{ loop_vars[axis_case] }} < {{ input_shape[axis_case] }}; ++{{ loop_vars[axis_case] }}) {
+{% endif %}
+{% if exclusive %}
+                {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = acc;
+                acc += {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %};
+{% else %}
+                acc += {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %};
+                {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = acc;
 {% endif %}
             }
-{% else %}
-            for (idx_t axis_index = 0; axis_index < axis_dim; ++axis_index) {
-                idx_t offset = base + axis_index * inner;
-{% if exclusive %}
-                output_data[offset] = acc;
-                acc += input_data[offset];
-{% else %}
-                acc += input_data[offset];
-                output_data[offset] = acc;
-{% endif %}
-            }
-{% endif %}
+{% for _ in range(ns.opened_loops) %}
         }
+{% endfor %}
+        break;
+{% endfor %}
+    default:
+        return;
     }
 }
