@@ -1337,6 +1337,58 @@ def _make_pad_model(
     return model
 
 
+def _make_pad_dynamic_axes_model(
+    *,
+    input_shape: list[int],
+    pads: list[int],
+    axes: list[int],
+    dtype: int,
+    mode: str = "constant",
+    opset: int = 18,
+) -> onnx.ModelProto:
+    """Pad model with pads as a constant initializer and axes as a runtime graph input.
+
+    This exercises the template path where axes_input is set (dynamic axes),
+    meaning the generated C code uses a runtime loop to build pad_begin[].
+    """
+    rank = len(input_shape)
+    n_axes = len(axes)
+    assert len(pads) == 2 * n_axes, "pads must have length 2 * len(axes)"
+    output_shape = list(input_shape)
+    for i, axis in enumerate(axes):
+        normalized = axis if axis >= 0 else axis + rank
+        output_shape[normalized] += pads[i] + pads[n_axes + i]
+    input_info = helper.make_tensor_value_info("input", dtype, input_shape)
+    axes_info = helper.make_tensor_value_info("axes", TensorProto.INT64, [n_axes])
+    output_info = helper.make_tensor_value_info("output", dtype, output_shape)
+    pads_tensor = helper.make_tensor(
+        "pads",
+        TensorProto.INT64,
+        dims=[len(pads)],
+        vals=pads,
+    )
+    node = helper.make_node(
+        "Pad",
+        inputs=["input", "pads", "", "axes"],
+        outputs=["output"],
+        mode=mode,
+    )
+    graph = helper.make_graph(
+        [node],
+        "pad_dynamic_axes_graph",
+        [input_info, axes_info],
+        [output_info],
+        initializer=[pads_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    return model
+
+
 def _depth_to_space_reference(
     value: np.ndarray, *, blocksize: int, mode: str = "DCR"
 ) -> np.ndarray:
@@ -6817,6 +6869,28 @@ def test_lower_pad_dynamic_axes_input() -> None:
     assert op_ctx.shape(op.axes_input) == (2,)
     assert op.pads_begin is None
     assert op.pads_end is None
+
+
+def test_pad_dynamic_axes_matches_reference() -> None:
+    model = _make_pad_dynamic_axes_model(
+        input_shape=[2, 3],
+        pads=[0, 1, 0, 1],
+        axes=[0, 1],
+        dtype=TensorProto.FLOAT,
+    )
+    rng = np.random.default_rng(0)
+    input_data = rng.standard_normal((2, 3)).astype(np.float32)
+    axes_data = np.array([0, 1], dtype=np.int64)
+    reference_outputs = _run_reference(model, {"input": input_data, "axes": axes_data})
+    payload = _compile_and_run_testbench(
+        model,
+        testbench_inputs={"input": input_data, "axes": axes_data},
+    )
+    output_payload = payload["outputs"]["output"]
+    ref_output = reference_outputs["output"]
+    output_data = decode_testbench_array(output_payload["data"], ref_output.dtype)
+    output_data = output_data.reshape(ref_output.shape)
+    np.testing.assert_allclose(output_data, ref_output, rtol=1e-5, atol=1e-6)
 
 
 def test_lower_scatter_shapes() -> None:
