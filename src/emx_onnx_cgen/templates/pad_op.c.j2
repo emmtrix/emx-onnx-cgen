@@ -9,13 +9,14 @@ for (idx_t pad_index = 0; pad_index < {{ output_shape|length }}; ++pad_index) {
     pad_begin[pad_index] = 0;
 }
 for (idx_t axis_index = 0; axis_index < {{ axes_length }}; ++axis_index) {
-    idx_t axis = (idx_t){{ axes_input }}[axis_index];
+    int axis = (int){{ axes_input }}[axis_index];
     if (axis < 0) {
         axis += {{ output_shape|length }};
     }
-    if (axis >= 0 && axis < {{ output_shape|length }}) {
-        pad_begin[axis] = {% if pads_input %}{{ pads_input }}[axis_index]{% else %}pad_values[axis_index]{% endif %};
+    if (axis < 0 || axis >= {{ output_shape|length }}) {
+        return;
     }
+    pad_begin[axis] = {% if pads_input %}{{ pads_input }}[axis_index]{% else %}pad_values[axis_index]{% endif %};
 }
 {% endif %}
 {% for dim in output_shape %}

@@ -32,6 +32,7 @@ from test_ops import (
     _make_mean_variance_normalization_model,
     _make_multihead_attention_model,
     _make_operator_model,
+    _make_pad_dynamic_axes_model,
     _make_pad_model,
     _make_range_model,
     _make_reduce_model,
@@ -835,6 +836,13 @@ OP_GOLDEN_CASES = [
         "pad",
         lambda: _make_pad_model(
             input_shape=[2, 3], pads=[0, 1, 0, 1], value=0.0, dtype=TensorProto.FLOAT
+        ),
+    ),
+    (
+        "pad",
+        "pad_dynamic_axes",
+        lambda: _make_pad_dynamic_axes_model(
+            input_shape=[2, 3], pads=[0, 1, 0, 1], axes=[0, 1], dtype=TensorProto.FLOAT
         ),
     ),
     ("depthtospace", "depth_to_space", _make_depth_to_space_model),
