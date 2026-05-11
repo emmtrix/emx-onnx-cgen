@@ -9,8 +9,10 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ i
     switch (axis) {
 {% for axis_case in range(rank) %}
     case {{ axis_case }}:
+{% set ns = namespace(opened_loops=0) %}
 {% for dim_index in range(rank) if dim_index != axis_case %}
         for (idx_t {{ loop_vars[dim_index] }} = 0; {{ loop_vars[dim_index] }} < {{ input_shape[dim_index] }}; ++{{ loop_vars[dim_index] }}) {
+{% set ns.opened_loops = ns.opened_loops + 1 %}
 {% endfor %}
             {{ c_type }} acc = ({{ c_type }})0;
 {% if reverse %}
@@ -27,7 +29,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ i
                 {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = acc;
 {% endif %}
             }
-{% for _ in range(rank - 1) %}
+{% for _ in range(ns.opened_loops) %}
         }
 {% endfor %}
         break;
