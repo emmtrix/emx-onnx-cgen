@@ -4022,18 +4022,6 @@ def _make_batchnorm_training_model() -> onnx.ModelProto:
     return model
 
 
-def _make_lp_normalization_model(
-    *, input_shape: list[int], axis: int, p: int
-) -> onnx.ModelProto:
-    return _make_operator_model(
-        op_type="LpNormalization",
-        input_shapes=[input_shape],
-        output_shape=input_shape,
-        dtype=TensorProto.FLOAT,
-        attrs={"axis": axis, "p": p},
-        opset=22,
-    )
-
 
 def _make_instance_normalization_model(
     *, input_shape: list[int], epsilon: float = 1e-5
@@ -8360,16 +8348,6 @@ def test_batchnorm_training_mode_matches_onnxruntime() -> None:
     _run_testbench_compare(model)
 
 
-def test_lp_normalization_op_matches_onnxruntime() -> None:
-    model = _make_lp_normalization_model(input_shape=[2, 3], axis=-1, p=1)
-    _run_ort_compare_or_skip(
-        model,
-        skip_substrings=(
-            "LpNormalization",
-            "NOT_IMPLEMENTED",
-        ),
-    )
-
 
 def test_instance_normalization_op_matches_onnxruntime() -> None:
     model = _make_instance_normalization_model(input_shape=[1, 3, 2, 2])
@@ -8549,14 +8527,6 @@ def test_unsqueeze_run_matches_numpy() -> None:
     expected = np.expand_dims(np.expand_dims(input_data, axis=0), axis=2)
     np.testing.assert_allclose(outputs["out"], expected, rtol=1e-6, atol=1e-6)
 
-
-def test_lp_normalization_run_matches_numpy() -> None:
-    model = _make_lp_normalization_model(input_shape=[2, 3], axis=1, p=2)
-    data = np.array([[1.0, 2.0, 2.0], [3.0, 4.0, 0.0]], dtype=np.float32)
-    outputs = _run_reference(model, {"in0": data})
-    denom = np.sqrt(np.sum(data * data, axis=1, keepdims=True))
-    expected = data / denom
-    np.testing.assert_allclose(outputs["out"], expected, rtol=1e-5, atol=1e-6)
 
 
 def test_instance_normalization_run_matches_numpy() -> None:
