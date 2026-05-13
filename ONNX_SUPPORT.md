@@ -8,7 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1825 / 1827, 99.9% | 1.21.0 |
-| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4053 / 4091, 99.1% | n/a |
+| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4286 / 4324, 99.1% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -1857,7 +1857,7 @@ Coverage 1825 / 1827 ONNX files (99.9%).
 
 Test directory: `emx-ort-test-artifacts-org/artifacts/onnxruntime`
 
-Coverage 4053 / 4091 ONNX files (99.1%).
+Coverage 4286 / 4324 ONNX files (99.1%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1932,8 +1932,48 @@ Coverage 4053 / 4091 ONNX files (99.1%).
 | test/contrib_ops/attention_op_test/Attention_Mask2D_Fp32_B2_S32_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 980755) |
 | test/contrib_ops/attention_op_test/SharedPrepackedWeights_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/attention_op_test/SharedPrepackedWeights_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
+| test/contrib_ops/bifurcation_detector_op_test/BifurcationAndSuffixMatchCombined_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/bifurcation_detector_op_test/BifurcationAtFirstToken_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/bifurcation_detector_op_test/BifurcationMidSequence_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/bifurcation_detector_op_test/CustomNgramSize_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/bifurcation_detector_op_test/FullMatchNoBifurcation_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/bifurcation_detector_op_test/NoPredTokens_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/bifurcation_detector_op_test/NonZeroPrevSuffixMatchIdx_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/bifurcation_detector_op_test/PrevSuffixMatchIdxAtBoundary_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/bifurcation_detector_op_test/SuffixMatchAtEndOfSrc_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/bifurcation_detector_op_test/SuffixMatchMultipleSingleGramUniqueDigram_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/bifurcation_detector_op_test/SuffixNgramExceedsOutputLen_run0/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/bifurcation_detector_op_test/Test1_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/bifurcation_detector_op_test/Test2_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
+| test/contrib_ops/causal_conv_with_state_op_test/BasicNoStateNoBias_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/BasicNoStateNoBias_run1/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/BasicWithBias_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/BasicWithBias_run1/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/BasicWithState_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/BasicWithState_run1/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/KernelSize2_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/KernelSize2_run1/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/KernelSize4_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/KernelSize4_run1/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/LargerDimensions_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/LargerDimensions_run1/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/MultiBatch_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/MultiBatch_run1/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/SiluActivationNoState_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/SiluActivationNoState_run1/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/SiluActivationWithBiasAndState_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/SiluActivationWithBiasAndState_run1/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/SiluActivationWithState_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/SiluActivationWithState_run1/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/SingleTokenDecodeMultiBatch_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/SingleTokenDecodeMultiBatch_run1/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/SingleTokenDecode_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/SingleTokenDecode_run1/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/StateContinuity_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/StateContinuity_run1/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/StateContinuity_run2/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/WithStateAndBias_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/causal_conv_with_state_op_test/WithStateAndBias_run1/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/cdist_op_test/DoubleEuclidean_run0/model.onnx (--max-ulp 400000000) |  | Data/Data | ✅ | OK (max ULP 340017558) |
 | test/contrib_ops/cdist_op_test/Euclidean_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/cdist_op_test/Sqeuclidean_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
@@ -2016,6 +2056,7 @@ Coverage 4053 / 4091 ONNX files (99.1%).
 | test/contrib_ops/element_wise_ops_test/Scale_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/embed_layer_norm_op_test/EmbedLayerNormBatch1_EmbeddingSum_NoMaskIndex_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/embed_layer_norm_op_test/EmbedLayerNormBatch1_EmbeddingSum_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0, max ULP 0) |
+| test/contrib_ops/embed_layer_norm_op_test/EmbedLayerNormBatch1_NoMaskIndex_NoSumOutput_run0/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/embed_layer_norm_op_test/EmbedLayerNormBatch1_PositionIdsDiffOrder_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0, max ULP 0) |
 | test/contrib_ops/embed_layer_norm_op_test/EmbedLayerNormBatch1_PositionIds_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0, max ULP 0) |
 | test/contrib_ops/embed_layer_norm_op_test/EmbedLayerNormBatch1_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0, max ULP 0) |
@@ -2038,6 +2079,141 @@ Coverage 4053 / 4091 ONNX files (99.1%).
 | test/contrib_ops/fused_conv_test/Conv2D_HardSigmoid_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/fused_conv_test/Conv2D_Relu_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/fused_conv_test/Cpu_Conv2D_Bias_Z_Relu_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeAlphaZero_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeEmptyInput_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeEmptyKDim_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeNoTranspose_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeNoTranspose_run1/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeNoTranspose_run10/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeNoTranspose_run11/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeNoTranspose_run2/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeNoTranspose_run3/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeNoTranspose_run4/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeNoTranspose_run5/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeNoTranspose_run6/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeNoTranspose_run7/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeNoTranspose_run8/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeNoTranspose_run9/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run1/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run10/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run11/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run12/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run13/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run14/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run15/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run16/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run17/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run18/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run19/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run2/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run20/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run21/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run22/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run23/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run24/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run25/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run26/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run27/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run28/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run29/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run3/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run30/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run31/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run32/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run33/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run34/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run35/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run4/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run5/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run6/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run7/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run8/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeScale_run9/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeAB_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeAB_run1/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeAB_run10/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeAB_run11/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeAB_run2/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeAB_run3/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeAB_run4/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeAB_run5/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeAB_run6/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeAB_run7/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeAB_run8/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeAB_run9/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeA_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeA_run1/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeA_run10/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeA_run11/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeA_run2/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeA_run3/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeA_run4/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeA_run5/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeA_run6/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeA_run7/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeA_run8/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeA_run9/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeB_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeB_run1/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeB_run10/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeB_run11/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeB_run2/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeB_run3/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeB_run4/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeB_run5/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeB_run6/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeB_run7/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeB_run8/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeB_run9/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run1/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run10/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run11/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run12/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run13/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run14/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run15/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run16/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run17/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run18/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run19/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run2/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run20/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run21/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run22/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run23/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run24/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run25/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run26/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run27/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run28/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run29/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run3/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run30/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run31/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run32/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run33/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run34/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run35/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run36/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run37/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run38/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run39/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run4/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run40/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run41/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run42/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run43/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run44/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run45/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run46/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run47/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run5/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run6/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run7/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run8/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeBatch_run9/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/fused_matmul_op_test/FloatTypeNoTranspose_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
@@ -2390,6 +2566,12 @@ Coverage 4053 / 4091 ONNX files (99.1%).
 | test/contrib_ops/gridsample_test/gridsample_paddingmode_border_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/gridsample_test/gridsample_paddingmode_reflection_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/gridsample_test/gridsample_paddingmode_zeros_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/group_query_attention_op_test/BoundaryValidSeqlensKWithLargerPast_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/group_query_attention_op_test/BoundaryValidSeqlensK_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/group_query_attention_op_test/MaxBoundarySeqlensK_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/group_query_attention_op_test/SeqlensKLegacy2DShapeMultiBatch_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/group_query_attention_op_test/SeqlensKLegacy2DShapeTrailingBatch_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/group_query_attention_op_test/SeqlensKLegacy2DShape_run0/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/inverse_test/four_by_four_batches_float_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/inverse_test/four_by_four_float_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/inverse_test/two_by_two_double_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
@@ -2429,6 +2611,32 @@ Coverage 4053 / 4091 ONNX files (99.1%).
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 3) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_ValidScaleBias_Broadcast_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 80) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_run0/model.onnx | 7 | Data/Data | ❌ | Out of tolerance (max ULP 299) |
+| test/contrib_ops/linear_attention_op_test/DeltaRule_MultiToken_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/linear_attention_op_test/DeltaRule_SingleToken_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/linear_attention_op_test/GatedDeltaRule_BroadcastDecay_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/linear_attention_op_test/GatedDeltaRule_InverseGQA_LargerDims_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/linear_attention_op_test/GatedDeltaRule_InverseGQA_Small_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/linear_attention_op_test/GatedDeltaRule_KGQA_Small_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/linear_attention_op_test/GatedDeltaRule_LargerDims_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/linear_attention_op_test/GatedDeltaRule_LongerSequence_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/linear_attention_op_test/GatedDeltaRule_MultiBatchMultiHead_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/linear_attention_op_test/GatedDeltaRule_MultiToken_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/linear_attention_op_test/GatedDeltaRule_NonPowerOf2DK_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/linear_attention_op_test/GatedDeltaRule_Qwen35Like_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/linear_attention_op_test/GatedDeltaRule_Qwen35_KGQA_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/linear_attention_op_test/GatedDeltaRule_SingleToken_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/linear_attention_op_test/GatedRule_BroadcastDecay_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/linear_attention_op_test/GatedRule_LargerDims_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/linear_attention_op_test/GatedRule_MultiToken_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/linear_attention_op_test/GatedRule_SingleToken_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/linear_attention_op_test/LinearRule_DefaultScale_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/linear_attention_op_test/LinearRule_InverseGQA_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/linear_attention_op_test/LinearRule_KGQA_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/linear_attention_op_test/LinearRule_LargerDims_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/linear_attention_op_test/LinearRule_MultiBatchMultiHead_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/linear_attention_op_test/LinearRule_MultiToken_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/linear_attention_op_test/LinearRule_SingleToken_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/linear_attention_op_test/LinearRule_WithInitialState_run0/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/math/matmul_sparse_test/TestCoo_run0/model.onnx |  | Data/Data | ❌ | Unsupported value type 'sparse_tensor_type' for 'A'. Hint: export the model with tensor inputs/outputs. |
 | test/contrib_ops/math/matmul_sparse_test/TestCoo_run1/model.onnx |  | Data/Data | ❌ | Unsupported value type 'sparse_tensor_type' for 'A'. Hint: export the model with tensor inputs/outputs. |
 | test/contrib_ops/math/matmul_sparse_test/TestCoo_run2/model.onnx |  | Data/Data | ❌ | Unsupported value type 'sparse_tensor_type' for 'A'. Hint: export the model with tensor inputs/outputs. |
@@ -2642,6 +2850,16 @@ Coverage 4053 / 4091 ONNX files (99.1%).
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run38/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 940) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run39/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9141) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run40/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run41/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run42/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run43/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run44/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run45/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run46/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run47/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run48/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run49/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
@@ -2814,6 +3032,16 @@ Coverage 4053 / 4091 ONNX files (99.1%).
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run138/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 11961) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run139/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 11529) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run14/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run140/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run141/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run142/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run143/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run144/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run145/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run146/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run147/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run148/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run149/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run15/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run17/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
@@ -4301,6 +4529,8 @@ Coverage 4053 / 4091 ONNX files (99.1%).
 | test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_NoBias_test_U8U8_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/maxpool_mask_test/MaxPoolWithMask_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/moe_test/MoECpuTest_BasicSwiGLU_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/moe_test/QMoETest_CPU_RouterWeights_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/moe_test/QMoETest_CPU_RouterWeights_run1/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/multihead_attention_op_test/CrossAttentionWithPast_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
 | test/contrib_ops/multihead_attention_op_test/CrossAttentionWithPast_run1/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
 | test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch1_HeadSize16_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
@@ -4323,6 +4553,8 @@ Coverage 4053 / 4091 ONNX files (99.1%).
 | test/contrib_ops/multihead_attention_op_test/CrossAttention_DiffSequenceLengths_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/multihead_attention_op_test/CrossAttention_DiffSequenceLengths_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/multihead_attention_op_test/CrossAttention_DiffSequenceLengths_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/multihead_attention_op_test/CrossAttention_WithPastPassedInDirectly_NoMask_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/multihead_attention_op_test/CrossAttention_WithPastPassedInDirectly_NoMask_run1/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/multihead_attention_op_test/SelfAttention_WithPastAndPresent_NoMask_NoRelPosBias_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/multihead_attention_op_test/SelfAttention_WithPastAndPresent_NoMask_NoRelPosBias_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/multihead_attention_op_test/SelfAttention_WithPastAndPresent_NoMask_NoRelPosBias_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 24) |
@@ -5950,6 +6182,7 @@ Coverage 4053 / 4091 ONNX files (99.1%).
 | test/contrib_ops/unique_op_test/Unique_Complicated_Example_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0, max ULP 0) |
 | test/contrib_ops/unique_op_test/Unique_Example_SingleElement_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0, max ULP 0) |
 | test/contrib_ops/unique_op_test/Unique_Spec_Example_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0, max ULP 0) |
+| test/contrib_ops/word_conv_embedding_test/WordConvEmbedding_out_of_range_char_index_treated_as_padding_run0/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/word_conv_embedding_test/WordConvEmbedding_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/word_conv_embedding_test/WordConvEmbedding_valid_attribute_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 
