@@ -4022,7 +4022,6 @@ def _make_batchnorm_training_model() -> onnx.ModelProto:
     return model
 
 
-
 def _make_instance_normalization_model(
     *, input_shape: list[int], epsilon: float = 1e-5
 ) -> onnx.ModelProto:
@@ -8348,7 +8347,6 @@ def test_batchnorm_training_mode_matches_onnxruntime() -> None:
     _run_testbench_compare(model)
 
 
-
 def test_instance_normalization_op_matches_onnxruntime() -> None:
     model = _make_instance_normalization_model(input_shape=[1, 3, 2, 2])
     _run_ort_compare(model)
@@ -8526,7 +8524,6 @@ def test_unsqueeze_run_matches_numpy() -> None:
     outputs = _run_reference(model, {"in0": input_data})
     expected = np.expand_dims(np.expand_dims(input_data, axis=0), axis=2)
     np.testing.assert_allclose(outputs["out"], expected, rtol=1e-6, atol=1e-6)
-
 
 
 def test_instance_normalization_run_matches_numpy() -> None:
