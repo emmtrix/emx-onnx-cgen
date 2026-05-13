@@ -1,0 +1,9 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/embed_layer_norm_op_test/EmbedLayerNormBatch1_NoMaskIndex_NoSumOutput_run0 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "com.microsoft::EmbedLayerNormalization"
+  ],
+  "generated_checksum": "04b17040933e7001bf4322e042b8098856374d7854112b3074df7f0001ee6c7e"
+}

@@ -1,0 +1,9 @@
+{
+  "error": "OK (max ULP 66)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run45 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "com.microsoft::MatMulNBits"
+  ],
+  "generated_checksum": "ff2dfa7164c0c93cfb46c26ff67de2bc357aaeb0a9e8bf0c33aa492db0f9356e"
+}

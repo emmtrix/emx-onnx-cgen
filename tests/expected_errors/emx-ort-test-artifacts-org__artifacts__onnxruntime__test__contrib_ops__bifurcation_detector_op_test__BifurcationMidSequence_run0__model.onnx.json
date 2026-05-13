@@ -1,0 +1,9 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/bifurcation_detector_op_test/BifurcationMidSequence_run0 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "com.microsoft::BifurcationDetector"
+  ],
+  "generated_checksum": "b8fbfd7252ec99643bd71fba882790806473b60c3715da02badeb00aa2d8f9b5"
+}

@@ -1,0 +1,9 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/fused_matmul_op_test/DoubleTypeTransposeB_run5 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "com.microsoft::FusedMatMul"
+  ],
+  "generated_checksum": "68cef19153164aa2bb22b30e285299205df1460c8e0895f13bc32f256dc13044"
+}

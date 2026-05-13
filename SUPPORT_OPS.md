@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 257 / 258
+Supported operators: 257 / 262
 
 | Operator | Supported |
 | --- | --- |
@@ -220,6 +220,7 @@ Supported operators: 257 / 258
 | com.microsoft::BiasGelu | ✅ |
 | com.microsoft::BifurcationDetector | ✅ |
 | com.microsoft::CDist | ✅ |
+| com.microsoft::CausalConvWithState | ❌ |
 | com.microsoft::ConvTransposeWithDynamicPads | ✅ |
 | com.microsoft::CropAndResize | ✅ |
 | com.microsoft::DecoderMaskedMultiHeadAttention | ✅ |
@@ -234,7 +235,9 @@ Supported operators: 257 / 258
 | com.microsoft::FusedMatMul | ✅ |
 | com.microsoft::GatherBlockQuantized | ✅ |
 | com.microsoft::GridSample | ✅ |
+| com.microsoft::GroupQueryAttention | ❌ |
 | com.microsoft::Inverse | ✅ |
+| com.microsoft::LinearAttention | ❌ |
 | com.microsoft::MatMulBnb4 | ✅ |
 | com.microsoft::MatMulInteger16 | ✅ |
 | com.microsoft::MatMulIntegerToFloat | ✅ |
@@ -257,6 +260,7 @@ Supported operators: 257 / 258
 | com.microsoft::QLinearSigmoid | ✅ |
 | com.microsoft::QLinearSoftmax | ✅ |
 | com.microsoft::QLinearWhere | ✅ |
+| com.microsoft::QMoE | ❌ |
 | com.microsoft::QuantizeLinear | ✅ |
 | com.microsoft::RotaryEmbedding | ✅ |
 | com.microsoft::SampleOp | ✅ |
