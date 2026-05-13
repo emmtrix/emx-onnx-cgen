@@ -4022,6 +4022,19 @@ def _make_batchnorm_training_model() -> onnx.ModelProto:
     return model
 
 
+def _make_lp_normalization_model(
+    *, input_shape: list[int], axis: int, p: int
+) -> onnx.ModelProto:
+    return _make_operator_model(
+        op_type="LpNormalization",
+        input_shapes=[input_shape],
+        output_shape=input_shape,
+        dtype=TensorProto.FLOAT,
+        attrs={"axis": axis, "p": p},
+        opset=22,
+    )
+
+
 def _make_instance_normalization_model(
     *, input_shape: list[int], epsilon: float = 1e-5
 ) -> onnx.ModelProto:
