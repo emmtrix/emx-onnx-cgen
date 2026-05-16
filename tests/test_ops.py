@@ -5002,6 +5002,99 @@ def _make_multihead_attention_model(
     return model
 
 
+def _make_group_query_attention_model(
+    *,
+    batch: int = 1,
+    num_heads: int = 2,
+    kv_num_heads: int = 1,
+    qk_head_size: int = 4,
+    v_head_size: int = 4,
+    max_seq_len: int = 4,
+    seqlens_shape: tuple[int, ...] = (1,),
+    with_past: bool = True,
+) -> onnx.ModelProto:
+    q_hidden = num_heads * qk_head_size
+    k_hidden = kv_num_heads * qk_head_size
+    v_hidden = kv_num_heads * v_head_size
+
+    inputs_info = [
+        helper.make_tensor_value_info("query", TensorProto.FLOAT, [batch, 1, q_hidden]),
+        helper.make_tensor_value_info("key", TensorProto.FLOAT, [batch, 1, k_hidden]),
+        helper.make_tensor_value_info("value", TensorProto.FLOAT, [batch, 1, v_hidden]),
+    ]
+    node_inputs = ["query", "key", "value"]
+
+    if with_past:
+        inputs_info.append(
+            helper.make_tensor_value_info(
+                "past_key",
+                TensorProto.FLOAT,
+                [batch, kv_num_heads, max_seq_len, qk_head_size],
+            )
+        )
+        inputs_info.append(
+            helper.make_tensor_value_info(
+                "past_value",
+                TensorProto.FLOAT,
+                [batch, kv_num_heads, max_seq_len, v_head_size],
+            )
+        )
+        node_inputs.extend(["past_key", "past_value"])
+    else:
+        node_inputs.extend(["", ""])
+
+    seqlens_value = np.zeros(seqlens_shape, dtype=np.int32)
+    total_seq_value = np.array([max_seq_len], dtype=np.int32)
+    seqlens_tensor = numpy_helper.from_array(seqlens_value, name="seqlens_k")
+    total_seq_tensor = numpy_helper.from_array(
+        total_seq_value, name="total_sequence_length"
+    )
+    node_inputs.extend(["seqlens_k", "total_sequence_length", "", "", "", "", ""])
+
+    output = helper.make_tensor_value_info("output", TensorProto.FLOAT, [batch, 1, q_hidden])
+    present_key = helper.make_tensor_value_info(
+        "present_key",
+        TensorProto.FLOAT,
+        [batch, kv_num_heads, max_seq_len, qk_head_size],
+    )
+    present_value = helper.make_tensor_value_info(
+        "present_value",
+        TensorProto.FLOAT,
+        [batch, kv_num_heads, max_seq_len, v_head_size],
+    )
+
+    node = helper.make_node(
+        "GroupQueryAttention",
+        inputs=node_inputs,
+        outputs=["output", "present_key", "present_value"],
+        domain="com.microsoft",
+        num_heads=num_heads,
+        kv_num_heads=kv_num_heads,
+        local_window_size=-1,
+        qk_output=0,
+        smooth_softmax=-1,
+        k_quant_type="NONE",
+        v_quant_type="NONE",
+    )
+    graph = helper.make_graph(
+        [node],
+        "group_query_attention_graph",
+        inputs_info,
+        [output, present_key, present_value],
+        initializer=[seqlens_tensor, total_seq_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[
+            helper.make_operatorsetid("", 13),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+    return model
+
+
 def test_multihead_attention_basic_testbench_compare() -> None:
     model = _make_multihead_attention_model()
     _run_testbench_compare(model)
@@ -5034,6 +5127,25 @@ def test_multihead_attention_with_present_testbench_compare() -> None:
 
 def test_multihead_attention_with_past_and_present_testbench_compare() -> None:
     model = _make_multihead_attention_model(past_seq=2, has_present=True)
+    _run_testbench_compare(model)
+
+
+def test_group_query_attention_with_past_testbench_compare() -> None:
+    model = _make_group_query_attention_model(with_past=True)
+    _run_testbench_compare(model)
+
+
+def test_group_query_attention_legacy_2d_seqlens_testbench_compare() -> None:
+    model = _make_group_query_attention_model(
+        batch=2,
+        num_heads=2,
+        kv_num_heads=1,
+        qk_head_size=4,
+        v_head_size=4,
+        max_seq_len=1,
+        seqlens_shape=(1, 2),
+        with_past=False,
+    )
     _run_testbench_compare(model)
 
 
