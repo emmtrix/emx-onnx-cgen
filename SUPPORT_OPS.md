@@ -6,6 +6,7 @@
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
 Supported operators: 258 / 262
+Supported operators: 259 / 262
 
 | Operator | Supported |
 | --- | --- |
@@ -220,7 +221,7 @@ Supported operators: 258 / 262
 | com.microsoft::BiasGelu | ✅ |
 | com.microsoft::BifurcationDetector | ✅ |
 | com.microsoft::CDist | ✅ |
-| com.microsoft::CausalConvWithState | ❌ |
+| com.microsoft::CausalConvWithState | ✅ |
 | com.microsoft::ConvTransposeWithDynamicPads | ✅ |
 | com.microsoft::CropAndResize | ✅ |
 | com.microsoft::DecoderMaskedMultiHeadAttention | ✅ |
@@ -237,7 +238,7 @@ Supported operators: 258 / 262
 | com.microsoft::GridSample | ✅ |
 | com.microsoft::GroupQueryAttention | ❌ |
 | com.microsoft::Inverse | ✅ |
-| com.microsoft::LinearAttention | ❌ |
+| com.microsoft::LinearAttention | ✅ |
 | com.microsoft::MatMulBnb4 | ✅ |
 | com.microsoft::MatMulInteger16 | ✅ |
 | com.microsoft::MatMulIntegerToFloat | ✅ |

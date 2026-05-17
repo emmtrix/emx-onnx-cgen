@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.LinearAttention",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/linear_attention_op_test/GatedDeltaRule_LargerDims_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::LinearAttention"
-  ]
+  ],
+  "generated_checksum": "b5ad5ec9c9f864ac693dbc3f9efbb3db67d4e8929532bc3e662a927022cc6f40"
 }
