@@ -1089,9 +1089,7 @@ class CEmitter:
                 "gemm": self._env.get_template("gemm_op.c.j2"),
                 "qgemm": self._env.get_template("qgemm_op.c.j2"),
                 "attention": self._env.get_template("attention_op.c.j2"),
-                "linear_attention": self._env.get_template(
-                    "linear_attention_op.c.j2"
-                ),
+                "linear_attention": self._env.get_template("linear_attention_op.c.j2"),
                 "ms_attention": self._env.get_template("ms_attention_op.c.j2"),
                 "multihead_attention": self._env.get_template(
                     "multihead_attention_op.c.j2"

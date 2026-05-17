@@ -39,7 +39,13 @@ def lower_linear_attention(graph: Graph, node: Node) -> LinearAttentionOp:
     if present_state is None:
         raise UnsupportedOpError("LinearAttention requires present_state output")
 
-    supported_attrs = {"chunk_size", "kv_num_heads", "q_num_heads", "scale", "update_rule"}
+    supported_attrs = {
+        "chunk_size",
+        "kv_num_heads",
+        "q_num_heads",
+        "scale",
+        "update_rule",
+    }
     if set(node.attrs) - supported_attrs:
         raise UnsupportedOpError("Unsupported op LinearAttention")
 
@@ -56,7 +62,9 @@ def lower_linear_attention(graph: Graph, node: Node) -> LinearAttentionOp:
     q_heads = int(q_heads)
     kv_heads = int(kv_heads)
     if q_heads <= 0 or kv_heads <= 0:
-        raise ShapeInferenceError("LinearAttention q_num_heads/kv_num_heads must be positive")
+        raise ShapeInferenceError(
+            "LinearAttention q_num_heads/kv_num_heads must be positive"
+        )
 
     chunk_size = int(node.attrs.get("chunk_size", 64))
     if chunk_size <= 0:
@@ -72,8 +80,15 @@ def lower_linear_attention(graph: Graph, node: Node) -> LinearAttentionOp:
     if len(query_shape) != 3 or len(key_shape) != 3 or len(value_shape) != 3:
         raise ShapeInferenceError("LinearAttention query/key/value must be 3D")
     batch, seq_len, q_hidden_size = query_shape
-    if key_shape[0] != batch or value_shape[0] != batch or key_shape[1] != seq_len or value_shape[1] != seq_len:
-        raise ShapeInferenceError("LinearAttention query/key/value batch and sequence dims must match")
+    if (
+        key_shape[0] != batch
+        or value_shape[0] != batch
+        or key_shape[1] != seq_len
+        or value_shape[1] != seq_len
+    ):
+        raise ShapeInferenceError(
+            "LinearAttention query/key/value batch and sequence dims must match"
+        )
 
     k_hidden_size = key_shape[2]
     v_hidden_size = value_shape[2]
@@ -93,7 +108,9 @@ def lower_linear_attention(graph: Graph, node: Node) -> LinearAttentionOp:
 
     n_k_heads = k_hidden_size // qk_head_size
     if kv_heads % n_k_heads != 0:
-        raise ShapeInferenceError("LinearAttention kv_num_heads must be divisible by key head count")
+        raise ShapeInferenceError(
+            "LinearAttention kv_num_heads must be divisible by key head count"
+        )
     v_head_size = v_hidden_size // kv_heads
     if q_heads >= kv_heads:
         if q_heads % kv_heads != 0:
@@ -111,7 +128,10 @@ def lower_linear_attention(graph: Graph, node: Node) -> LinearAttentionOp:
     output_hidden_size = max(q_heads, kv_heads) * v_head_size
 
     expected_state_shape = (batch, kv_heads, qk_head_size, v_head_size)
-    if past_state is not None and _value_shape(graph, past_state, node) != expected_state_shape:
+    if (
+        past_state is not None
+        and _value_shape(graph, past_state, node) != expected_state_shape
+    ):
         raise ShapeInferenceError(
             f"LinearAttention past_state shape must be {expected_state_shape}"
         )
@@ -129,9 +149,13 @@ def lower_linear_attention(graph: Graph, node: Node) -> LinearAttentionOp:
     has_decay = update_rule in {"gated", "gated_delta"}
     has_beta = update_rule in {"delta", "gated_delta"}
     if has_decay != (decay is not None):
-        raise UnsupportedOpError("LinearAttention decay input does not match update_rule")
+        raise UnsupportedOpError(
+            "LinearAttention decay input does not match update_rule"
+        )
     if has_beta != (beta is not None):
-        raise UnsupportedOpError("LinearAttention beta input does not match update_rule")
+        raise UnsupportedOpError(
+            "LinearAttention beta input does not match update_rule"
+        )
 
     decay_last_dim = 0
     if decay is not None:

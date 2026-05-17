@@ -4907,9 +4907,15 @@ def _make_linear_attention_model(
     v_hidden = kv_heads * v_head_size
     state_shape = [batch, kv_heads, qk_head_size, v_head_size]
     inputs_info = [
-        helper.make_tensor_value_info("query", TensorProto.FLOAT, [batch, seq_len, q_hidden]),
-        helper.make_tensor_value_info("key", TensorProto.FLOAT, [batch, seq_len, k_hidden]),
-        helper.make_tensor_value_info("value", TensorProto.FLOAT, [batch, seq_len, v_hidden]),
+        helper.make_tensor_value_info(
+            "query", TensorProto.FLOAT, [batch, seq_len, q_hidden]
+        ),
+        helper.make_tensor_value_info(
+            "key", TensorProto.FLOAT, [batch, seq_len, k_hidden]
+        ),
+        helper.make_tensor_value_info(
+            "value", TensorProto.FLOAT, [batch, seq_len, v_hidden]
+        ),
     ]
     node_inputs = ["query", "key", "value"]
     if use_past:
