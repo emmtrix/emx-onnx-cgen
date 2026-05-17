@@ -71,6 +71,7 @@ _LOWERING_MODULES = [
     "instance_normalization",
     "label_encoder",
     "layer_normalization",
+    "linear_attention",
     "logsoftmax",
     "loop",
     "lp_normalization",

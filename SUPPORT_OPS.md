@@ -237,7 +237,7 @@ Supported operators: 258 / 262
 | com.microsoft::GridSample | ✅ |
 | com.microsoft::GroupQueryAttention | ❌ |
 | com.microsoft::Inverse | ✅ |
-| com.microsoft::LinearAttention | ❌ |
+| com.microsoft::LinearAttention | ✅ |
 | com.microsoft::MatMulBnb4 | ✅ |
 | com.microsoft::MatMulInteger16 | ✅ |
 | com.microsoft::MatMulIntegerToFloat | ✅ |

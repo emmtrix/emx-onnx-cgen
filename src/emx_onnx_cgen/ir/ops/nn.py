@@ -3239,6 +3239,167 @@ class MultiHeadAttentionOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class LinearAttentionOp(RenderableOpBase):
+    __io_inputs__ = ("query", "key", "value", "past_state", "decay", "beta")
+    __io_outputs__ = ("output", "present_state")
+    query: str
+    key: str
+    value: str
+    past_state: str | None
+    decay: str | None
+    beta: str | None
+    output: str
+    present_state: str
+    batch: int
+    seq_len: int
+    q_heads: int
+    kv_heads: int
+    qk_head_size: int
+    v_head_size: int
+    q_hidden_size: int
+    n_k_heads: int
+    k_hidden_size: int
+    v_hidden_size: int
+    kv_per_k_head: int
+    head_group_size: int
+    output_hidden_size: int
+    scale: float
+    update_rule: str
+    decay_last_dim: int
+    beta_last_dim: int
+    dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.output)
+        c_type = output_dtype.c_type
+        zero_literal = output_dtype.zero_literal
+        params = emitter.shared_param_map(
+            [
+                ("query", self.query),
+                ("key", self.key),
+                ("value", self.value),
+                ("past_state", self.past_state),
+                ("decay", self.decay),
+                ("beta", self.beta),
+                ("output", self.output),
+                ("present_state", self.present_state),
+            ]
+        )
+        query_shape = (self.batch, self.seq_len, self.q_hidden_size)
+        key_shape = (self.batch, self.seq_len, self.k_hidden_size)
+        value_shape = (self.batch, self.seq_len, self.v_hidden_size)
+        state_shape = (self.batch, self.kv_heads, self.qk_head_size, self.v_head_size)
+        output_shape = (self.batch, self.seq_len, self.output_hidden_size)
+        query_suffix = emitter.param_array_suffix(query_shape)
+        key_suffix = emitter.param_array_suffix(key_shape)
+        value_suffix = emitter.param_array_suffix(value_shape)
+        state_suffix = emitter.param_array_suffix(state_shape)
+        output_suffix = emitter.param_array_suffix(output_shape)
+        decay_shape = (
+            (self.batch, self.seq_len, self.decay_last_dim)
+            if self.decay is not None
+            else None
+        )
+        beta_shape = (
+            (self.batch, self.seq_len, self.beta_last_dim)
+            if self.beta is not None
+            else None
+        )
+        decay_suffix = (
+            emitter.param_array_suffix(decay_shape) if decay_shape is not None else ""
+        )
+        beta_suffix = (
+            emitter.param_array_suffix(beta_shape) if beta_shape is not None else ""
+        )
+        param_decls = emitter.build_param_decls(
+            [
+                (params["query"], c_type, query_suffix, True),
+                (params["key"], c_type, key_suffix, True),
+                (params["value"], c_type, value_suffix, True),
+                (
+                    (params["past_state"], c_type, state_suffix, True)
+                    if params["past_state"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (params["decay"], c_type, decay_suffix, True)
+                    if params["decay"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (params["beta"], c_type, beta_suffix, True)
+                    if params["beta"]
+                    else (None, "", "", True)
+                ),
+                (params["output"], c_type, output_suffix, False),
+                (params["present_state"], c_type, state_suffix, False),
+            ]
+        )
+        rendered = (
+            state.templates["linear_attention"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                query=params["query"],
+                key=params["key"],
+                value=params["value"],
+                past_state=params["past_state"],
+                decay=params["decay"],
+                beta=params["beta"],
+                output=params["output"],
+                present_state=params["present_state"],
+                params=param_decls,
+                c_type=c_type,
+                zero_literal=zero_literal,
+                scale_literal=emitter.format_floating(self.scale, self.dtype),
+                dtype=self.dtype,
+                batch=self.batch,
+                seq_len=self.seq_len,
+                q_heads=self.q_heads,
+                kv_heads=self.kv_heads,
+                qk_head_size=self.qk_head_size,
+                v_head_size=self.v_head_size,
+                q_hidden_size=self.q_hidden_size,
+                n_k_heads=self.n_k_heads,
+                k_hidden_size=self.k_hidden_size,
+                v_hidden_size=self.v_hidden_size,
+                kv_per_k_head=self.kv_per_k_head,
+                head_group_size=self.head_group_size,
+                output_hidden_size=self.output_hidden_size,
+                update_rule=self.update_rule,
+                decay_last_dim=self.decay_last_dim,
+                beta_last_dim=self.beta_last_dim,
+                has_past=int(self.past_state is not None),
+                has_decay=int(self.decay is not None),
+                has_beta=int(self.beta is not None),
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return (self.batch, self.seq_len, self.output_hidden_size)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        return (
+            (self.output, self.computed_output_shape(emitter), self.dtype),
+            (
+                self.present_state,
+                (self.batch, self.kv_heads, self.qk_head_size, self.v_head_size),
+                self.dtype,
+            ),
+        )
+
+
+@dataclass(frozen=True)
 class QAttentionOp(RenderableOpBase):
     """com.microsoft::QAttention contrib operator.
 
