@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/linear_attention_op_test/LinearRule_MultiToken_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft.LinearAttention"
+    "com.microsoft::LinearAttention"
   ],
   "generated_checksum": "c9ed3db37dc0dca6333a323980404661c67ddf3418829bef3339335b989aa0e5"
 }

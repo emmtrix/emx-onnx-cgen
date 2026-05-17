@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/causal_conv_with_state_op_test/BasicWithBias_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft.CausalConvWithState"
+    "com.microsoft::CausalConvWithState"
   ],
   "generated_checksum": "e6dbbd0d2c29a835fd85ca9516154ef0ac070ac18daef4742d162808e2aeb69f"
 }

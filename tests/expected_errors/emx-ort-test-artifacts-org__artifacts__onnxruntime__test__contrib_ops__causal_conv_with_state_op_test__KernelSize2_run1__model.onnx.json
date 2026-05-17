@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/causal_conv_with_state_op_test/KernelSize2_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft.CausalConvWithState"
+    "com.microsoft::CausalConvWithState"
   ],
   "generated_checksum": "0280efd2b824d008d3a3ec68024fea091ec1764fb4c659b81b03e0ad1496049a"
 }

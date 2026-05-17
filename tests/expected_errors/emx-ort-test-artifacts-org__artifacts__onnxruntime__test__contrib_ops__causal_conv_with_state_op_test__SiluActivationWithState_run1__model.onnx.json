@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/causal_conv_with_state_op_test/SiluActivationWithState_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft.CausalConvWithState"
+    "com.microsoft::CausalConvWithState"
   ],
   "generated_checksum": "5c876fe803194cffc6ee01b4d39f21359d8d9d64376e7757e0e237ff750b9a3d"
 }

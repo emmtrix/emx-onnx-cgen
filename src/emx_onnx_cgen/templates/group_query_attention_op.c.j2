@@ -1,0 +1,106 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const {{ c_type }} scale = {{ scale_literal }};
+
+    int max_total_seq = (int){{ total_sequence_length }}[0];
+    if (max_total_seq < 1) {
+        max_total_seq = 1;
+    }
+    if (max_total_seq > {{ max_seq_len }}) {
+        max_total_seq = {{ max_seq_len }};
+    }
+
+    for (int b = 0; b < {{ batch }}; ++b) {
+{% if seqlens_rank == 1 %}
+        int cur_pos = (int){{ seqlens_k }}[b];
+{% elif seqlens_rows == batch %}
+        int cur_pos = (int){{ seqlens_k }}[b][0];
+{% else %}
+        int cur_pos = (int){{ seqlens_k }}[0][b];
+{% endif %}
+        if (cur_pos < 0) {
+            cur_pos = 0;
+        }
+        if (cur_pos >= max_total_seq) {
+            cur_pos = max_total_seq - 1;
+        }
+        int total_seq = cur_pos + 1;
+
+        for (int h = 0; h < {{ kv_num_heads }}; ++h) {
+            for (int s = 0; s < {{ max_seq_len }}; ++s) {
+                for (int d = 0; d < {{ qk_head_size }}; ++d) {
+{% if past_key %}
+                    {{ present_key }}[b][h][s][d] = {{ past_key }}[b][h][s][d];
+{% else %}
+                    {{ present_key }}[b][h][s][d] = {{ zero_literal }};
+{% endif %}
+                }
+                for (int d = 0; d < {{ v_head_size }}; ++d) {
+{% if past_value %}
+                    {{ present_value }}[b][h][s][d] = {{ past_value }}[b][h][s][d];
+{% else %}
+                    {{ present_value }}[b][h][s][d] = {{ zero_literal }};
+{% endif %}
+                }
+            }
+        }
+
+        for (int h = 0; h < {{ kv_num_heads }}; ++h) {
+            for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                {{ present_key }}[b][h][cur_pos][d] = {{ key }}[b][0][h * {{ qk_head_size }} + d];
+            }
+            for (int d = 0; d < {{ v_head_size }}; ++d) {
+                {{ present_value }}[b][h][cur_pos][d] = {{ value }}[b][0][h * {{ v_head_size }} + d];
+            }
+            for (int s = total_seq; s < {{ max_seq_len }}; ++s) {
+                for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                    {{ present_key }}[b][h][s][d] = {{ zero_literal }};
+                }
+                for (int d = 0; d < {{ v_head_size }}; ++d) {
+                    {{ present_value }}[b][h][s][d] = {{ zero_literal }};
+                }
+            }
+        }
+
+        for (int qi = 0; qi < {{ q_seq }}; ++qi) {
+            for (int qh = 0; qh < {{ num_heads }}; ++qh) {
+                int kv_head = qh / {{ head_group_size }};
+
+                {{ c_type }} q[{{ qk_head_size }}];
+                for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                    q[d] = {{ query }}[b][qi][qh * {{ qk_head_size }} + d];
+                }
+
+                {{ c_type }} scores[{{ max_seq_len }}];
+                {{ c_type }} max_score = {{ min_literal }};
+                for (int ki = 0; ki < total_seq; ++ki) {
+                    {{ c_type }} score = {{ zero_literal }};
+                    for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                        score += q[d] * {{ present_key }}[b][kv_head][ki][d];
+                    }
+                    score *= scale;
+                    scores[ki] = score;
+                    if (score > max_score) {
+                        max_score = score;
+                    }
+                }
+
+                {{ c_type }} sum_exp = {{ zero_literal }};
+                for (int ki = 0; ki < total_seq; ++ki) {
+                    scores[ki] = expf(scores[ki] - max_score);
+                    sum_exp += scores[ki];
+                }
+                for (int ki = 0; ki < total_seq; ++ki) {
+                    scores[ki] /= sum_exp;
+                }
+
+                for (int d = 0; d < {{ v_head_size }}; ++d) {
+                    {{ c_type }} acc = {{ zero_literal }};
+                    for (int ki = 0; ki < total_seq; ++ki) {
+                        acc += scores[ki] * {{ present_value }}[b][kv_head][ki][d];
+                    }
+                    {{ output }}[b][qi][qh * {{ v_head_size }} + d] = acc;
+                }
+            }
+        }
+    }
+}
