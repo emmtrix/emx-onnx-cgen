@@ -3238,6 +3238,199 @@ class MultiHeadAttentionOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class GroupQueryAttentionOp(RenderableOpBase):
+    __io_inputs__ = (
+        "query",
+        "key",
+        "value",
+        "past_key",
+        "past_value",
+        "seqlens_k",
+        "total_sequence_length",
+    )
+    __io_outputs__ = ("output", "present_key", "present_value")
+    query: str
+    key: str
+    value: str
+    past_key: str | None
+    past_value: str | None
+    seqlens_k: str
+    total_sequence_length: str
+    output: str
+    present_key: str
+    present_value: str
+    batch: int
+    q_seq: int
+    num_heads: int
+    kv_num_heads: int
+    qk_head_size: int
+    v_head_size: int
+    q_hidden_size: int
+    k_hidden_size: int
+    v_hidden_size: int
+    kv_seq: int
+    max_seq_len: int
+    scale: float
+    head_group_size: int
+    seqlens_rank: int
+    seqlens_rows: int
+    seqlens_cols: int
+    dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        output_dtype = emitter.ctx_dtype(self.output)
+        c_type = output_dtype.c_type
+        zero_literal = output_dtype.zero_literal
+        min_literal = output_dtype.min_literal
+
+        params = emitter.shared_param_map(
+            [
+                ("query", self.query),
+                ("key", self.key),
+                ("value", self.value),
+                ("past_key", self.past_key),
+                ("past_value", self.past_value),
+                ("seqlens_k", self.seqlens_k),
+                ("total_sequence_length", self.total_sequence_length),
+                ("output", self.output),
+                ("present_key", self.present_key),
+                ("present_value", self.present_value),
+            ]
+        )
+
+        query_shape = (self.batch, self.q_seq, self.q_hidden_size)
+        key_shape = (self.batch, self.kv_seq, self.k_hidden_size)
+        value_shape = (self.batch, self.kv_seq, self.v_hidden_size)
+        seqlens_shape = (
+            (self.seqlens_rows,)
+            if self.seqlens_rank == 1
+            else (self.seqlens_rows, self.seqlens_cols)
+        )
+        total_sequence_length_shape = (1,)
+        output_shape = (self.batch, self.q_seq, self.num_heads * self.v_head_size)
+        present_key_shape = (
+            self.batch,
+            self.kv_num_heads,
+            self.max_seq_len,
+            self.qk_head_size,
+        )
+        present_value_shape = (
+            self.batch,
+            self.kv_num_heads,
+            self.max_seq_len,
+            self.v_head_size,
+        )
+
+        query_suffix = emitter.param_array_suffix(query_shape)
+        key_suffix = emitter.param_array_suffix(key_shape)
+        value_suffix = emitter.param_array_suffix(value_shape)
+        seqlens_suffix = emitter.param_array_suffix(seqlens_shape)
+        total_sequence_length_suffix = emitter.param_array_suffix(
+            total_sequence_length_shape
+        )
+        output_suffix = emitter.param_array_suffix(output_shape)
+        present_key_suffix = emitter.param_array_suffix(present_key_shape)
+        present_value_suffix = emitter.param_array_suffix(present_value_shape)
+        past_key_suffix = (
+            emitter.param_array_suffix(present_key_shape) if self.past_key else ""
+        )
+        past_value_suffix = (
+            emitter.param_array_suffix(present_value_shape) if self.past_value else ""
+        )
+
+        param_decls = emitter.build_param_decls(
+            [
+                (params["query"], c_type, query_suffix, True),
+                (params["key"], c_type, key_suffix, True),
+                (params["value"], c_type, value_suffix, True),
+                (
+                    (params["past_key"], c_type, past_key_suffix, True)
+                    if params["past_key"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (params["past_value"], c_type, past_value_suffix, True)
+                    if params["past_value"]
+                    else (None, "", "", True)
+                ),
+                (params["seqlens_k"], ScalarType.I32.c_type, seqlens_suffix, True),
+                (
+                    params["total_sequence_length"],
+                    ScalarType.I32.c_type,
+                    total_sequence_length_suffix,
+                    True,
+                ),
+                (params["output"], c_type, output_suffix, False),
+                (params["present_key"], c_type, present_key_suffix, False),
+                (params["present_value"], c_type, present_value_suffix, False),
+            ]
+        )
+
+        rendered = (
+            state.templates["group_query_attention"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                query=params["query"],
+                key=params["key"],
+                value=params["value"],
+                past_key=params["past_key"],
+                past_value=params["past_value"],
+                seqlens_k=params["seqlens_k"],
+                total_sequence_length=params["total_sequence_length"],
+                output=params["output"],
+                present_key=params["present_key"],
+                present_value=params["present_value"],
+                params=param_decls,
+                c_type=c_type,
+                zero_literal=zero_literal,
+                min_literal=min_literal,
+                scale_literal=emitter.format_floating(self.scale, self.dtype),
+                dtype=self.dtype,
+                batch=self.batch,
+                q_seq=self.q_seq,
+                num_heads=self.num_heads,
+                kv_num_heads=self.kv_num_heads,
+                qk_head_size=self.qk_head_size,
+                v_head_size=self.v_head_size,
+                max_seq_len=self.max_seq_len,
+                head_group_size=self.head_group_size,
+                seqlens_rank=self.seqlens_rank,
+                seqlens_rows=self.seqlens_rows,
+                seqlens_cols=self.seqlens_cols,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return (self.batch, self.q_seq, self.num_heads * self.v_head_size)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        return (
+            (self.output, self.computed_output_shape(emitter), self.dtype),
+            (
+                self.present_key,
+                (self.batch, self.kv_num_heads, self.max_seq_len, self.qk_head_size),
+                self.dtype,
+            ),
+            (
+                self.present_value,
+                (self.batch, self.kv_num_heads, self.max_seq_len, self.v_head_size),
+                self.dtype,
+            ),
+        )
+
+
+@dataclass(frozen=True)
 class QAttentionOp(RenderableOpBase):
     """com.microsoft::QAttention contrib operator.
 
