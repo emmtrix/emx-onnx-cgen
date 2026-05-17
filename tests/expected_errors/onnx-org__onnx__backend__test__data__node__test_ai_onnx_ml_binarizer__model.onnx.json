@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_binarizer model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "ai.onnx.ml::Binarizer"
+    "ai.onnx.ml.Binarizer"
   ],
   "generated_checksum": "646b006fe6b18c32c06b0d6a8fc5d6d87b1413b2ddfecb163ad1870eb7450739"
 }

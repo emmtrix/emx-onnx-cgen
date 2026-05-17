@@ -7,7 +7,7 @@
   ],
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::GridSample"
+    "com.microsoft.GridSample"
   ],
   "generated_checksum": "c369fd9a43b6ab6037b74847ed0c2286311f07bf121d140d38f2d62244682a77"
 }

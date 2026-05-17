@@ -7,7 +7,7 @@
   ],
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::DynamicQuantizeMatMul"
+    "com.microsoft.DynamicQuantizeMatMul"
   ],
   "generated_checksum": "4a227bd868280da04ceb86aa57fa601b4c176dcd03c8aa6ac20fd9163783b20c"
 }

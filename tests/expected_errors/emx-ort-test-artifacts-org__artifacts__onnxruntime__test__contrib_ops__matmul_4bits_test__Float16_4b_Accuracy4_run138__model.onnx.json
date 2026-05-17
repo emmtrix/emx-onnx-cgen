@@ -7,7 +7,7 @@
   ],
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::MatMulNBits"
+    "com.microsoft.MatMulNBits"
   ],
   "generated_checksum": "2e03df326320a3269bb58d6992a6f6904fbd07df01a6138e3013f065727119cf"
 }

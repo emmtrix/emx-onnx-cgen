@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/bifurcation_detector_op_test/NonZeroPrevSuffixMatchIdx_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::BifurcationDetector"
+    "com.microsoft.BifurcationDetector"
   ],
   "generated_checksum": "02b306a76f2938804e4d152fa85f8d4b998c3dae80943131f9528d6a27cc8f19"
 }

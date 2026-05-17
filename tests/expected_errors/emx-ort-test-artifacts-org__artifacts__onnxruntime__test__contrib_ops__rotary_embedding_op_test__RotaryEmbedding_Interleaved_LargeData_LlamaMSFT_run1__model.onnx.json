@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_Interleaved_LargeData_LlamaMSFT_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::RotaryEmbedding"
+    "com.microsoft.RotaryEmbedding"
   ],
   "generated_checksum": "efa55e1d9e426e510bc17290d95d225453c0150d733d378a4ac374b12f9f75f8"
 }

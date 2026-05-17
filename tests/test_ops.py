@@ -9710,3 +9710,234 @@ def test_matmul_nbits_with_canonical_g_idx_compiles() -> None:
     model = _make_matmul_nbits_model()
     generated = Compiler(CompilerOptions()).compile(model)
     assert generated
+
+
+# ---------------------------------------------------------------------------
+# QMoE
+# ---------------------------------------------------------------------------
+
+
+def _make_qmoe_model(
+    *,
+    batch: int = 2,
+    model_dim: int = 16,
+    num_experts: int = 2,
+    fc1_out_size: int = 32,
+    k: int = 2,
+    normalize_routing_weights: int = 0,
+    with_fc1_bias: bool = False,
+    with_fc2_bias: bool = True,
+    with_router_weights: bool = True,
+) -> onnx.ModelProto:
+    """Build a minimal com.microsoft::QMoE model with FLOAT16 input and UINT8 weights."""
+    fc2_in_size = fc1_out_size // 2
+
+    input_info = helper.make_tensor_value_info(
+        "input", TensorProto.FLOAT16, [batch, model_dim]
+    )
+    router_probs_info = helper.make_tensor_value_info(
+        "router_probs", TensorProto.FLOAT16, [batch, num_experts]
+    )
+    fc1_w_info = helper.make_tensor_value_info(
+        "fc1_experts_weights", TensorProto.UINT8, [num_experts, fc1_out_size, model_dim]
+    )
+    fc1_s_info = helper.make_tensor_value_info(
+        "fc1_scales", TensorProto.FLOAT, [num_experts, fc1_out_size]
+    )
+    fc2_w_info = helper.make_tensor_value_info(
+        "fc2_experts_weights", TensorProto.UINT8, [num_experts, fc2_in_size, model_dim]
+    )
+    fc2_s_info = helper.make_tensor_value_info(
+        "fc2_scales", TensorProto.FLOAT, [num_experts, fc2_in_size]
+    )
+
+    graph_inputs = [input_info, router_probs_info, fc1_w_info, fc1_s_info]
+    node_inputs = [
+        "input",
+        "router_probs",
+        "fc1_experts_weights",
+        "fc1_scales",
+    ]
+
+    # position 4: fc1_bias (optional)
+    if with_fc1_bias:
+        fc1_b_info = helper.make_tensor_value_info(
+            "fc1_experts_bias", TensorProto.FLOAT16, [num_experts, fc1_out_size]
+        )
+        graph_inputs.append(fc1_b_info)
+        node_inputs.append("fc1_experts_bias")
+    else:
+        node_inputs.append("")
+
+    graph_inputs.extend([fc2_w_info, fc2_s_info])
+    node_inputs.extend(["fc2_experts_weights", "fc2_scales"])
+
+    # position 7: fc2_bias (optional)
+    if with_fc2_bias:
+        fc2_b_info = helper.make_tensor_value_info(
+            "fc2_experts_bias", TensorProto.FLOAT16, [num_experts, model_dim]
+        )
+        graph_inputs.append(fc2_b_info)
+        node_inputs.append("fc2_experts_bias")
+    else:
+        node_inputs.append("")
+
+    # positions 8-13: reserved, absent
+    for _ in range(6):
+        node_inputs.append("")
+
+    # position 14: router_weights (optional)
+    if with_router_weights:
+        rw_info = helper.make_tensor_value_info(
+            "router_weights", TensorProto.FLOAT16, [batch, num_experts]
+        )
+        graph_inputs.append(rw_info)
+        node_inputs.append("router_weights")
+
+    output_info = helper.make_tensor_value_info(
+        "output", TensorProto.FLOAT16, [batch, model_dim]
+    )
+    node = helper.make_node(
+        "QMoE",
+        inputs=node_inputs,
+        outputs=["output"],
+        domain="com.microsoft",
+        k=k,
+        normalize_routing_weights=normalize_routing_weights,
+        activation_type="swiglu",
+        swiglu_fusion=1,
+        activation_alpha=1.0,
+        activation_beta=0.0,
+        expert_weight_bits=8,
+        use_sparse_mixer=0,
+    )
+    graph = helper.make_graph(
+        [node],
+        "qmoe_graph",
+        graph_inputs,
+        [output_info],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[
+            helper.make_operatorsetid("", 17),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+    return model
+
+
+def test_lower_qmoe_produces_correct_op() -> None:
+    from emx_onnx_cgen.ir.ops import QMoEOp
+    from emx_onnx_cgen.lowering.qmoe import lower_qmoe
+
+    model = _make_qmoe_model(
+        batch=2,
+        model_dim=16,
+        num_experts=2,
+        fc1_out_size=32,
+        k=2,
+        normalize_routing_weights=0,
+        with_fc2_bias=True,
+        with_router_weights=True,
+    )
+    graph = import_onnx(model)
+    op = lower_qmoe(graph, graph.nodes[0])
+    assert isinstance(op, QMoEOp)
+    assert op.batch == 2
+    assert op.model_dim == 16
+    assert op.num_experts == 2
+    assert op.fc1_out_size == 32
+    assert op.fc2_in_size == 16
+    assert op.k == 2
+    assert op.normalize_routing_weights == 0
+    assert op.fc2_bias is not None
+    assert op.router_weights is not None
+    assert op.fc1_bias is None
+
+
+def test_lower_qmoe_normalize_routing_weights() -> None:
+    from emx_onnx_cgen.ir.ops import QMoEOp
+    from emx_onnx_cgen.lowering.qmoe import lower_qmoe
+
+    model = _make_qmoe_model(normalize_routing_weights=1)
+    graph = import_onnx(model)
+    op = lower_qmoe(graph, graph.nodes[0])
+    assert isinstance(op, QMoEOp)
+    assert op.normalize_routing_weights == 1
+
+
+def test_lower_qmoe_without_router_weights() -> None:
+    from emx_onnx_cgen.ir.ops import QMoEOp
+    from emx_onnx_cgen.lowering.qmoe import lower_qmoe
+
+    model = _make_qmoe_model(with_router_weights=False)
+    graph = import_onnx(model)
+    op = lower_qmoe(graph, graph.nodes[0])
+    assert isinstance(op, QMoEOp)
+    assert op.router_weights is None
+
+
+def test_qmoe_compiles() -> None:
+    model = _make_qmoe_model()
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_qmoe_no_router_weights_compiles() -> None:
+    model = _make_qmoe_model(with_router_weights=False)
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_qmoe_normalize_routing_weights_compiles() -> None:
+    model = _make_qmoe_model(normalize_routing_weights=1)
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert generated
+
+
+def test_qmoe_matches_onnxruntime() -> None:
+    """Run the QMoE op against ORT using the ORT test artifact model and inputs."""
+    artifact_base = (
+        PROJECT_ROOT
+        / "emx-ort-test-artifacts-org"
+        / "artifacts"
+        / "onnxruntime"
+        / "test"
+        / "contrib_ops"
+        / "moe_test"
+        / "QMoETest_CPU_RouterWeights_run0"
+    )
+    model_path = artifact_base / "model.onnx"
+    data_dir = artifact_base / "test_data_set_0"
+    if not model_path.exists():
+        pytest.skip("QMoE test artifact not found")
+
+    model = onnx.load(str(model_path))
+    names = [vi.name for vi in model.graph.input]
+    inputs: dict[str, np.ndarray] = {}
+    for i, name in enumerate(names):
+        pb_path = data_dir / f"input_{i}.pb"
+        tensor = onnx.TensorProto()
+        tensor.ParseFromString(pb_path.read_bytes())
+        inputs[name] = onnx.numpy_helper.to_array(tensor)
+
+    session = ort.InferenceSession(
+        model.SerializeToString(), providers=["CPUExecutionProvider"]
+    )
+    ort_outputs = session.run(None, inputs)
+    payload = _compile_and_run_testbench(model, testbench_inputs=inputs)
+    outputs_payload = payload.get("outputs", {})
+    for output_info, ort_output in zip(model.graph.output, ort_outputs):
+        output_payload = outputs_payload.get(output_info.name)
+        assert output_payload is not None, f"Missing output {output_info.name}"
+        output_data = decode_testbench_array(output_payload["data"], ort_output.dtype)
+        output_data = output_data.reshape(ort_output.shape)
+        np.testing.assert_allclose(
+            output_data.astype(np.float32),
+            ort_output.astype(np.float32),
+            rtol=1e-3,
+            atol=0.05,
+        )

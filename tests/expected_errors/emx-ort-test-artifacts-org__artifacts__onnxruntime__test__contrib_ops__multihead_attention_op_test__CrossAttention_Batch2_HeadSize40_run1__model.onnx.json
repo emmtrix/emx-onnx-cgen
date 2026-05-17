@@ -8,7 +8,7 @@
   ],
   "verification_mode": "Data/ORT",
   "operators": [
-    "com.microsoft::MultiHeadAttention"
+    "com.microsoft.MultiHeadAttention"
   ],
   "generated_checksum": "d83c57e08a6cb2afe9cc60f73bd9c980eac3194fd78936f84bda186ab03d8851"
 }

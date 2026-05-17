@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_array_feature_extractor model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "ai.onnx.ml::ArrayFeatureExtractor"
+    "ai.onnx.ml.ArrayFeatureExtractor"
   ],
   "generated_checksum": "2ca817a2521f073b05c8b8904a26e030a32ea883d271e4a2701519fe1b4c2324"
 }

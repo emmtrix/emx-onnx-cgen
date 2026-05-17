@@ -10491,3 +10491,211 @@ class MoEOp(RenderableOpBase):
         self, emitter: "Emitter"
     ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
         return ((self.output, (self.batch, self.model_dim), self.dtype),)
+
+
+@dataclass(frozen=True)
+class QMoEOp(RenderableOpBase):
+    """com.microsoft::QMoE contrib operator.
+
+    Quantized Mixture-of-Experts with INT8 expert weights and per-row scale
+    factors.  Router selection is based on router_probs; routing weights come
+    from the separate router_weights input when provided.
+    """
+
+    __io_inputs__ = (
+        "input",
+        "router_probs",
+        "fc1_w",
+        "fc1_scales",
+        "fc1_bias",
+        "fc2_w",
+        "fc2_scales",
+        "fc2_bias",
+        "router_weights",
+    )
+    __io_outputs__ = ("output",)
+    input: str
+    router_probs: str
+    fc1_w: str
+    fc1_scales: str
+    fc1_bias: str | None
+    fc2_w: str
+    fc2_scales: str
+    fc2_bias: str | None
+    router_weights: str | None
+    output: str
+    batch: int
+    model_dim: int
+    num_experts: int
+    k: int
+    fc1_out_size: int
+    fc2_in_size: int
+    normalize_routing_weights: int
+    activation_beta: float
+    dtype: ScalarType
+    weight_dtype: ScalarType
+    scale_dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        c_type = self.dtype.c_type
+        min_literal = self.dtype.min_literal
+        zero_literal = self.dtype.zero_literal
+        acc_type = self.scale_dtype.c_type
+        weight_c_type = self.weight_dtype.c_type
+
+        io_pairs = [
+            ("input", self.input),
+            ("router_probs", self.router_probs),
+            ("fc1_w", self.fc1_w),
+            ("fc1_scales", self.fc1_scales),
+            ("fc1_bias", self.fc1_bias),
+            ("fc2_w", self.fc2_w),
+            ("fc2_scales", self.fc2_scales),
+            ("fc2_bias", self.fc2_bias),
+            ("router_weights", self.router_weights),
+            ("output", self.output),
+        ]
+        params = emitter.shared_param_map(io_pairs)
+
+        def _shape(name: str | None) -> tuple[int, ...] | None:
+            return emitter.ctx_shape(name) if name else None
+
+        def _suffix(
+            name: str | None, shape: tuple[int, ...] | None, dtype_hint: ScalarType
+        ) -> str:
+            return (
+                emitter.param_array_suffix(
+                    shape, emitter.dim_names_for(name), dtype=dtype_hint
+                )
+                if (name and shape is not None)
+                else ""
+            )
+
+        inp_shape = emitter.ctx_shape(self.input)
+        router_shape = emitter.ctx_shape(self.router_probs)
+        fc1_w_shape = emitter.ctx_shape(self.fc1_w)
+        fc1_s_shape = emitter.ctx_shape(self.fc1_scales)
+        fc1b_shape = _shape(self.fc1_bias)
+        fc2_w_shape = emitter.ctx_shape(self.fc2_w)
+        fc2_s_shape = emitter.ctx_shape(self.fc2_scales)
+        fc2b_shape = _shape(self.fc2_bias)
+        rw_shape = _shape(self.router_weights)
+        out_shape = emitter.ctx_shape(self.output)
+
+        decls = [
+            (params["input"], c_type, _suffix(self.input, inp_shape, self.dtype), True),
+            (
+                params["router_probs"],
+                c_type,
+                _suffix(self.router_probs, router_shape, self.dtype),
+                True,
+            ),
+            (
+                params["fc1_w"],
+                weight_c_type,
+                _suffix(self.fc1_w, fc1_w_shape, self.weight_dtype),
+                True,
+            ),
+            (
+                params["fc1_scales"],
+                acc_type,
+                _suffix(self.fc1_scales, fc1_s_shape, self.scale_dtype),
+                True,
+            ),
+            (
+                (
+                    params["fc1_bias"],
+                    c_type,
+                    _suffix(self.fc1_bias, fc1b_shape, self.dtype),
+                    True,
+                )
+                if params["fc1_bias"]
+                else (None, "", "", True)
+            ),
+            (
+                params["fc2_w"],
+                weight_c_type,
+                _suffix(self.fc2_w, fc2_w_shape, self.weight_dtype),
+                True,
+            ),
+            (
+                params["fc2_scales"],
+                acc_type,
+                _suffix(self.fc2_scales, fc2_s_shape, self.scale_dtype),
+                True,
+            ),
+            (
+                (
+                    params["fc2_bias"],
+                    c_type,
+                    _suffix(self.fc2_bias, fc2b_shape, self.dtype),
+                    True,
+                )
+                if params["fc2_bias"]
+                else (None, "", "", True)
+            ),
+            (
+                (
+                    params["router_weights"],
+                    c_type,
+                    _suffix(self.router_weights, rw_shape, self.dtype),
+                    True,
+                )
+                if params["router_weights"]
+                else (None, "", "", True)
+            ),
+            (
+                params["output"],
+                c_type,
+                _suffix(self.output, out_shape, self.dtype),
+                False,
+            ),
+        ]
+        param_decls = emitter.build_param_decls(decls)
+
+        beta_literal = emitter.format_floating(self.activation_beta, self.scale_dtype)
+
+        rendered = (
+            state.templates["qmoe"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                c_type=c_type,
+                acc_type=acc_type,
+                zero_literal=zero_literal,
+                min_literal=min_literal,
+                beta_literal=beta_literal,
+                input=params["input"],
+                router_probs=params["router_probs"],
+                fc1_w=params["fc1_w"],
+                fc1_scales=params["fc1_scales"],
+                fc1_bias=params["fc1_bias"],
+                fc2_w=params["fc2_w"],
+                fc2_scales=params["fc2_scales"],
+                fc2_bias=params["fc2_bias"],
+                router_weights=params["router_weights"],
+                output=params["output"],
+                batch=self.batch,
+                model_dim=self.model_dim,
+                num_experts=self.num_experts,
+                k=self.k,
+                fc1_out_size=self.fc1_out_size,
+                fc2_in_size=self.fc2_in_size,
+                normalize_routing_weights=self.normalize_routing_weights,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        return ((self.output, (self.batch, self.model_dim), self.dtype),)
