@@ -8,7 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1825 / 1827, 99.9% | 1.21.0 |
-| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4270 / 4324, 98.8% | n/a |
+| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4272 / 4324, 98.8% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -1857,7 +1857,7 @@ Coverage 1825 / 1827 ONNX files (99.9%).
 
 Test directory: `emx-ort-test-artifacts-org/artifacts/onnxruntime`
 
-Coverage 4270 / 4324 ONNX files (98.8%).
+Coverage 4272 / 4324 ONNX files (98.8%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -4529,8 +4529,8 @@ Coverage 4270 / 4324 ONNX files (98.8%).
 | test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_NoBias_test_U8U8_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/maxpool_mask_test/MaxPoolWithMask_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/moe_test/MoECpuTest_BasicSwiGLU_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/moe_test/QMoETest_CPU_RouterWeights_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QMoE |
-| test/contrib_ops/moe_test/QMoETest_CPU_RouterWeights_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QMoE |
+| test/contrib_ops/moe_test/QMoETest_CPU_RouterWeights_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/moe_test/QMoETest_CPU_RouterWeights_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/multihead_attention_op_test/CrossAttentionWithPast_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
 | test/contrib_ops/multihead_attention_op_test/CrossAttentionWithPast_run1/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
 | test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch1_HeadSize16_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |

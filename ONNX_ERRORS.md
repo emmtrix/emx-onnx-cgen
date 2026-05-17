@@ -10,7 +10,6 @@ Aggregates non-success verification outcomes.
 | Out of tolerance | 40 | 7, 17, 22 |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 8 |  |
 | Unsupported op com.microsoft.GroupQueryAttention | 6 |  |
-| Unsupported op com.microsoft.QMoE | 2 |  |
 
 ## Error frequency by opset
 
@@ -68,8 +67,6 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run147/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 10976) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run148/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 11961) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run149/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 11529) |
-| test/contrib_ops/moe_test/QMoETest_CPU_RouterWeights_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QMoE |
-| test/contrib_ops/moe_test/QMoETest_CPU_RouterWeights_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.QMoE |
 | test/contrib_ops/multihead_attention_op_test/CrossAttention_WithPastPassedInDirectly_NoMask_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 64137) |
 | test/contrib_ops/multihead_attention_op_test/CrossAttention_WithPastPassedInDirectly_NoMask_run1/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 64137) |
 | test/contrib_ops/qlinear_lookup_table_test/QLinearSoftmax_Int8_v13_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max abs diff 1) |

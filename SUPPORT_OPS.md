@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 259 / 262
+Supported operators: 260 / 262
 
 | Operator | Supported |
 | --- | --- |
@@ -260,7 +260,7 @@ Supported operators: 259 / 262
 | com.microsoft.QLinearSigmoid | ✅ |
 | com.microsoft.QLinearSoftmax | ✅ |
 | com.microsoft.QLinearWhere | ✅ |
-| com.microsoft.QMoE | ❌ |
+| com.microsoft.QMoE | ✅ |
 | com.microsoft.QuantizeLinear | ✅ |
 | com.microsoft.RotaryEmbedding | ✅ |
 | com.microsoft.SampleOp | ✅ |
