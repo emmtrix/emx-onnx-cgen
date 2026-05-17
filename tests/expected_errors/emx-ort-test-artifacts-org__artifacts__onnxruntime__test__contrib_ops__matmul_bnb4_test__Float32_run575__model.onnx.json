@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/matmul_bnb4_test/Float32_run575 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::MatMulBnb4"
+    "com.microsoft.MatMulBnb4"
   ],
   "generated_checksum": "95656add3726bee5592873ea32c325e727b2a619575b27279c7046ae8ac1f98f"
 }

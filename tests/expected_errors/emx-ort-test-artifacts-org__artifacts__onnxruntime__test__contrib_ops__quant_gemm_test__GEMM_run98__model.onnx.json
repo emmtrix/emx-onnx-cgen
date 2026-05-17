@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/quant_gemm_test/GEMM_run98 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::QGemm"
+    "com.microsoft.QGemm"
   ],
   "generated_checksum": "6e830cc5cb442db7dc58ca10886b48f126b6aa0ea7d5d65f37f2cc381a947d9c"
 }

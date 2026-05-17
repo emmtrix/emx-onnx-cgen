@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gather_block_quantized_op_test/GatherAxis1_run16 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::GatherBlockQuantized"
+    "com.microsoft.GatherBlockQuantized"
   ],
   "generated_checksum": "6b689c6b060633514eb8a951170e885da4db1ebcf16b9ccda95d59949abc5afb"
 }

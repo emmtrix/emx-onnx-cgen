@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run5 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::MatMulNBits"
+    "com.microsoft.MatMulNBits"
   ],
   "generated_checksum": "18046b0594c456f33db1f2198991a337872fc2fc4d3350c5615bc9eef68c805d"
 }

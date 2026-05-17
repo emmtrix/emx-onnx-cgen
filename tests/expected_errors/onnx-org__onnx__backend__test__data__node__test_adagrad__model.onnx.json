@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_adagrad model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "ai.onnx.preview.training::Adagrad"
+    "ai.onnx.preview.training.Adagrad"
   ],
   "generated_checksum": "6ef9b0eca55cd8b7d149201c03b26fbda1561f791477bf9bc50a3cd0289f6991"
 }

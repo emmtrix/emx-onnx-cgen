@@ -10,12 +10,12 @@
     "QuantizeLinear",
     "QLinearConv",
     "MaxPool",
-    "com.microsoft::QLinearAveragePool",
+    "com.microsoft.QLinearAveragePool",
     "DequantizeLinear",
     "Transpose",
     "QLinearMatMul",
-    "com.microsoft::QLinearAdd",
-    "com.microsoft::QLinearSoftmax"
+    "com.microsoft.QLinearAdd",
+    "com.microsoft.QLinearSoftmax"
   ],
   "opset_version": 15,
   "generated_checksum": "9283dc36fa5c0a464c2e50d309d2cfda8cf851a35a40dbe15e7eee73a1235333"

@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/nhwc_maxpool_op_test/MaxPool1D_S8_run20 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::NhwcMaxPool"
+    "com.microsoft.NhwcMaxPool"
   ],
   "generated_checksum": "99ec98493336cc17ecca8e96327e3928888be395704536a60e444c492fc658a3"
 }

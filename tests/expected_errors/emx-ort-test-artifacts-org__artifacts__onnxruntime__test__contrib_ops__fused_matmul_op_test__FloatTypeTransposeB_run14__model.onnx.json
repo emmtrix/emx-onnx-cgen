@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeB_run14 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::FusedMatMul"
+    "com.microsoft.FusedMatMul"
   ],
   "generated_checksum": "d33100f05636674f9769664662ab0c382960482a6c26d33cd1e4f87aa97ed5ae"
 }

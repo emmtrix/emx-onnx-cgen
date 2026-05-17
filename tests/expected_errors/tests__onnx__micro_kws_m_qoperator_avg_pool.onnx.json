@@ -10,7 +10,7 @@
     "QuantizeLinear",
     "QLinearConv",
     "MaxPool",
-    "com.microsoft::QLinearAveragePool",
+    "com.microsoft.QLinearAveragePool",
     "DequantizeLinear",
     "Transpose",
     "QLinearMatMul",

@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/fused_matmul_op_test/FloatTypeScale_run69 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::FusedMatMul"
+    "com.microsoft.FusedMatMul"
   ],
   "generated_checksum": "831330e227cbc3892d88bcd7c3246a22c75b966cd04f19f184ed85ff57999da9"
 }

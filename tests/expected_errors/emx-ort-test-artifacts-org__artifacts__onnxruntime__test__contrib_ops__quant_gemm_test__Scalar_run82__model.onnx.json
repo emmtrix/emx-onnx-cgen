@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/quant_gemm_test/Scalar_run82 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::QGemm"
+    "com.microsoft.QGemm"
   ],
   "generated_checksum": "02342ef285644daf5fe1f2ab88945e2d46a9555a16e44d9e89bfbc0bccb3847f"
 }

@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/dynamic_quantize_matmul_test/UInt8_test_with_empty_input_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::DynamicQuantizeMatMul"
+    "com.microsoft.DynamicQuantizeMatMul"
   ],
   "generated_checksum": "5c28774451e126e8f1d22163787cadcc0c743b1d28ed21bb2e2bb8d0b3d025dc"
 }

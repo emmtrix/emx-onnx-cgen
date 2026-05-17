@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/attention_op_test/AttentionUnidirectional_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::Attention"
+    "com.microsoft.Attention"
   ],
   "generated_checksum": "3475d95bbb7bc48817d34ccd83913b3e52f8215d8ce1262a64c1fd3f73f683e7"
 }

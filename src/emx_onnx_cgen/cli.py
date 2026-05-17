@@ -3137,7 +3137,7 @@ def _collect_model_operators(model: onnx.ModelProto) -> list[str]:
     operators: list[str] = []
     seen: set[str] = set()
     for node in model.graph.node:
-        op_name = f"{node.domain}::{node.op_type}" if node.domain else node.op_type
+        op_name = f"{node.domain}.{node.op_type}" if node.domain else node.op_type
         if op_name in seen:
             continue
         seen.add(op_name)

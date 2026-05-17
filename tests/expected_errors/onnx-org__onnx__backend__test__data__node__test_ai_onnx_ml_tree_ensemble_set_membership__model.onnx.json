@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_tree_ensemble_set_membership model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "ai.onnx.ml::TreeEnsemble"
+    "ai.onnx.ml.TreeEnsemble"
   ],
   "generated_checksum": "b14cb219054e7ffaf2a8270e703573c291282de4d7117b1b74c6149847971a63"
 }

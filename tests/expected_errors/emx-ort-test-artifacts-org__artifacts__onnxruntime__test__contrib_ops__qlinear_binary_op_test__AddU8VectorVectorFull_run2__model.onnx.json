@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/qlinear_binary_op_test/AddU8VectorVectorFull_run2 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::QLinearAdd"
+    "com.microsoft.QLinearAdd"
   ],
   "generated_checksum": "688f2dcc0f1b83b322ceac7fd9224d28cbf0b830f97d26f8c1a49cbbb0d4415c"
 }

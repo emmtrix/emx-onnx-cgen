@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/attention_op_test/AttentionBatch2LeftPaddingMaskIndex2_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::Attention"
+    "com.microsoft.Attention"
   ],
   "generated_checksum": "e9156ac73e13426366daeff2c977bc9fbb5e41fb5d2a2d624115775bd0b127cd"
 }

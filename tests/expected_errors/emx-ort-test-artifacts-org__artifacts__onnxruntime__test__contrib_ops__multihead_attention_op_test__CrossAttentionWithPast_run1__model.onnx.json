@@ -6,7 +6,7 @@
   ],
   "verification_mode": "Data/ORT",
   "operators": [
-    "com.microsoft::MultiHeadAttention"
+    "com.microsoft.MultiHeadAttention"
   ],
   "generated_checksum": "d1327af6d1f8e0ad3e000f1376b4c0564c676d54fefacba92e41e7cad0f85e4f"
 }

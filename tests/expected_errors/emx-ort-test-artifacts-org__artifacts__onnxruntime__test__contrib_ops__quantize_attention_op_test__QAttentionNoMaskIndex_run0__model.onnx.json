@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/quantize_attention_op_test/QAttentionNoMaskIndex_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::QAttention"
+    "com.microsoft.QAttention"
   ],
   "generated_checksum": "1ef3be0e383e5baebaf8b1d4b1ca8b9e24e31c721c5f487fb072539921933f63"
 }

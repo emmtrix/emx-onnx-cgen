@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/qlinear_binary_op_test/MulS8ScalarVectorBroadcast_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::QLinearMul"
+    "com.microsoft.QLinearMul"
   ],
   "generated_checksum": "d4a3751baaae22e25fbcee5e3ba9806237e19a77e46cbfd270460cfc921f43cf"
 }

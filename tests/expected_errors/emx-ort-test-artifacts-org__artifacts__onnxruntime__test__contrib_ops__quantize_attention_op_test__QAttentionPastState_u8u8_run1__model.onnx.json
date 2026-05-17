@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/quantize_attention_op_test/QAttentionPastState_u8u8_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::QAttention"
+    "com.microsoft.QAttention"
   ],
   "generated_checksum": "316899038b861e27b42cc061a8dd27a0ab1d41265026044d978d3b7c10c38f52"
 }

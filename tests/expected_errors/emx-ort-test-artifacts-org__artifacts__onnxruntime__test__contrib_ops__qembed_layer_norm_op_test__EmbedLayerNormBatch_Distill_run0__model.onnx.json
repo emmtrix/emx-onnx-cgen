@@ -7,7 +7,7 @@
   ],
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::QEmbedLayerNormalization"
+    "com.microsoft.QEmbedLayerNormalization"
   ],
   "generated_checksum": "3b89b14a00fc458db43ba97655d9603a74827c6de8f8a6eb5330d25419457c88"
 }

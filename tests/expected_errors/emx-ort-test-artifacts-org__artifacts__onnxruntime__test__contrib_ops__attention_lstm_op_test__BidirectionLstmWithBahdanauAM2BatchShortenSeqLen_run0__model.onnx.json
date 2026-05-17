@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/attention_lstm_op_test/BidirectionLstmWithBahdanauAM2BatchShortenSeqLen_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::AttnLSTM"
+    "com.microsoft.AttnLSTM"
   ],
   "generated_checksum": "7a03a648773766b946722db3acfedb2b9892b29303998b232331dab259ca717c"
 }

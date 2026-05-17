@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/qlinear_lookup_table_test/QLinearSoftmax_UInt8_v13_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::QLinearSoftmax"
+    "com.microsoft.QLinearSoftmax"
   ],
   "generated_checksum": "fa01108330c53c87243fe5317a293a35a1b6484c31e2919a822c02e40ff9bb74"
 }

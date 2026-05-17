@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/multihead_attention_op_test/CrossAttention_DiffSequenceLengths_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::MultiHeadAttention"
+    "com.microsoft.MultiHeadAttention"
   ],
   "generated_checksum": "d520788a4493eae718e95e8a1b6641031529312e5457250f69ff03fa6e3ff1e1"
 }

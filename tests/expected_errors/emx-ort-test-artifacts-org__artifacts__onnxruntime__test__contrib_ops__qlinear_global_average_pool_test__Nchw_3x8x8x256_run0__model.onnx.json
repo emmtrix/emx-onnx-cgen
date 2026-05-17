@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/qlinear_global_average_pool_test/Nchw_3x8x8x256_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::QLinearGlobalAveragePool"
+    "com.microsoft.QLinearGlobalAveragePool"
   ],
   "generated_checksum": "8ddf2356578bc4c4cd6fbaf99bda52df3db3b00a72d3d130c70a8ca5726a99dd"
 }

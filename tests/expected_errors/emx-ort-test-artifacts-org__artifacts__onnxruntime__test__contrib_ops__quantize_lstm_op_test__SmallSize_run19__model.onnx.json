@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/quantize_lstm_op_test/SmallSize_run19 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::DynamicQuantizeLSTM"
+    "com.microsoft.DynamicQuantizeLSTM"
   ],
   "generated_checksum": "bbd94c8436123491f90f5857843bfe750a882f988c7573665abd282bfd65d702"
 }

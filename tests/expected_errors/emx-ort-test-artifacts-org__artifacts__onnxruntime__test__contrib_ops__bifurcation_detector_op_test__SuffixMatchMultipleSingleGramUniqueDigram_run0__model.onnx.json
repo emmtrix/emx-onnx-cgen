@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/bifurcation_detector_op_test/SuffixMatchMultipleSingleGramUniqueDigram_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::BifurcationDetector"
+    "com.microsoft.BifurcationDetector"
   ],
   "generated_checksum": "011a5342f58a5aa67e0651d3670ccb668dcc7ef3f2cc90b9b6f3ab38ac8ab674"
 }

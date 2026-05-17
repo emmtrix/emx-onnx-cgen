@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/linear_attention_op_test/GatedDeltaRule_Qwen35_KGQA_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::LinearAttention"
+    "com.microsoft.LinearAttention"
   ],
   "generated_checksum": "a5c8e12834e9fd5e84dc090002b66066d37da268227ed971b4ae30c2392fe851"
 }
