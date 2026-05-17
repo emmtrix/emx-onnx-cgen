@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 257 / 262
+Supported operators: 258 / 262
 
 | Operator | Supported |
 | --- | --- |
@@ -237,7 +237,7 @@ Supported operators: 257 / 262
 | com.microsoft::GridSample | ✅ |
 | com.microsoft::GroupQueryAttention | ❌ |
 | com.microsoft::Inverse | ✅ |
-| com.microsoft::LinearAttention | ❌ |
+| com.microsoft::LinearAttention | ✅ |
 | com.microsoft::MatMulBnb4 | ✅ |
 | com.microsoft::MatMulInteger16 | ✅ |
 | com.microsoft::MatMulIntegerToFloat | ✅ |
