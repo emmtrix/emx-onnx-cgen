@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/matmul_integer_to_float_test/HasZeroPoint_HasBias_test_U8S8_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::MatMulIntegerToFloat"
+    "com.microsoft.MatMulIntegerToFloat"
   ],
   "generated_checksum": "bd70fa7cc743198943457a06df128b8ae2b327fc5f844acd00f03417264cb0f6"
 }

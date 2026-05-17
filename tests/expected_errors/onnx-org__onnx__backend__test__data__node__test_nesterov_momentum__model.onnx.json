@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_nesterov_momentum model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "ai.onnx.preview.training::Momentum"
+    "ai.onnx.preview.training.Momentum"
   ],
   "generated_checksum": "e751c76f2aa44ae02b726c8dfb00ee1b92cf7806a84c17837ed63e8e6618a240"
 }

@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_label_encoder_tensor_mapping model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "ai.onnx.ml::LabelEncoder"
+    "ai.onnx.ml.LabelEncoder"
   ],
   "generated_checksum": "fb74c6e55de904fb31156ad5e40080f13a8104581f6fb2fe9dd35493efc6d352"
 }

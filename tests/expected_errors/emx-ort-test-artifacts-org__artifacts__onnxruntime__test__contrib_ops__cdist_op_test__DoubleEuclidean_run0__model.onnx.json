@@ -7,7 +7,7 @@
   ],
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::CDist"
+    "com.microsoft.CDist"
   ],
   "generated_checksum": "e0677ed6a4d47a73552ebf1e6fd91532df8446010fba5112d4f6895785381bc6"
 }

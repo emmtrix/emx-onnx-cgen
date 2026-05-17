@@ -7,7 +7,7 @@
   ],
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::DynamicQuantizeLSTM"
+    "com.microsoft.DynamicQuantizeLSTM"
   ],
   "generated_checksum": "2db82d819bff2bf4d4a12a699aac0be678e8d2379032c01c5eb5a191f92928c7"
 }

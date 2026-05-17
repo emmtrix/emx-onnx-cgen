@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/quantize_ops_test/QuantizeLinear_per_channel_negative_axis_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::QuantizeLinear"
+    "com.microsoft.QuantizeLinear"
   ],
   "generated_checksum": "1b61ff8743b10e1a055092c8318775741e89431267ab640d43fbc549db0d0629"
 }
