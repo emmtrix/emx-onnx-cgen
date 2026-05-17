@@ -3746,7 +3746,9 @@ class CausalConvWithStateOp(RenderableOpBase):
         output_shape_expr = CEmitterCompat.shape_dim_exprs(
             input_shape, output_dim_names
         )
-        state_shape_expr = CEmitterCompat.shape_dim_exprs(state_shape, present_dim_names)
+        state_shape_expr = CEmitterCompat.shape_dim_exprs(
+            state_shape, present_dim_names
+        )
         input_suffix = emitter.param_array_suffix(input_shape, input_dim_names)
         weight_suffix = emitter.param_array_suffix(weight_shape)
         bias_suffix = emitter.param_array_suffix((self.channels,))

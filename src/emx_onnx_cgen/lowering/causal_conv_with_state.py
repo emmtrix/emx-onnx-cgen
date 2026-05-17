@@ -35,9 +35,7 @@ def lower_causal_conv_with_state(
     graph: Graph | GraphContext, node: Node
 ) -> CausalConvWithStateOp:
     if len(node.inputs) != 4 or len(node.outputs) != 2:
-        raise UnsupportedOpError(
-            "CausalConvWithState must have 4 inputs and 2 outputs"
-        )
+        raise UnsupportedOpError("CausalConvWithState must have 4 inputs and 2 outputs")
     unsupported_attrs = set(node.attrs) - _SUPPORTED_ATTRS
     if unsupported_attrs:
         raise UnsupportedOpError(
@@ -70,8 +68,7 @@ def lower_causal_conv_with_state(
         )
     if len(weight_shape) != 3:
         raise UnsupportedOpError(
-            "CausalConvWithState weight must have shape (C, 1, K), "
-            f"got {weight_shape}"
+            f"CausalConvWithState weight must have shape (C, 1, K), got {weight_shape}"
         )
 
     batch, channels, seq_len = input_shape

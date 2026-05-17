@@ -3139,10 +3139,9 @@ def _make_causal_conv_with_state_model(
     present_state = helper.make_tensor_value_info(
         "present_state", TensorProto.FLOAT, [batch, channels, kernel_size - 1]
     )
-    weight_values = (
-        np.arange(channels * kernel_size, dtype=np.float32).reshape(channels, 1, kernel_size)
-        / max(kernel_size, 1)
-    )
+    weight_values = np.arange(channels * kernel_size, dtype=np.float32).reshape(
+        channels, 1, kernel_size
+    ) / max(kernel_size, 1)
     weight_tensor = helper.make_tensor(
         "weight",
         TensorProto.FLOAT,
