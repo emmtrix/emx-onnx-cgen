@@ -16,8 +16,9 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     for (int b = 0; b < {{ batch }}; ++b) {
         for (int ti = 0; ti < {{ seq_len }}; ++ti) {
             for (int h = 0; h < {{ kv_heads }}; ++h) {
+                int k_head = h / {{ kv_per_k_head }};
                 {% if has_decay %}
-                {% if decay_last_dim == k_hidden_size %}
+                {% if decay_last_dim == kv_heads * qk_head_size %}
                 for (int dk = 0; dk < {{ qk_head_size }}; ++dk) {
                     {{ c_type }} decay_factor = {{ scalar_fn(SF.EXP, dtype) }}({{ decay }}[b][ti][h * {{ qk_head_size }} + dk]);
                     for (int dv = 0; dv < {{ v_head_size }}; ++dv) {
@@ -38,25 +39,26 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                 for (int dv = 0; dv < {{ v_head_size }}; ++dv) {
                     {{ c_type }} prev_value = {{ zero_literal }};
                     for (int dk = 0; dk < {{ qk_head_size }}; ++dk) {
-                        prev_value += {{ present_state }}[b][h][dk][dv] * {{ key }}[b][ti][h * {{ qk_head_size }} + dk];
+                        prev_value += {{ present_state }}[b][h][dk][dv] * {{ key }}[b][ti][k_head * {{ qk_head_size }} + dk];
                     }
                     residual[dv] = {{ value }}[b][ti][h * {{ v_head_size }} + dv] - prev_value;
                 }
                 {{ c_type }} beta_value = {{ beta }}[b][ti][{% if beta_last_dim == 1 %}0{% else %}h{% endif %}];
                 for (int dk = 0; dk < {{ qk_head_size }}; ++dk) {
-                    {{ c_type }} key_value = {{ key }}[b][ti][h * {{ qk_head_size }} + dk];
+                    {{ c_type }} key_value = {{ key }}[b][ti][k_head * {{ qk_head_size }} + dk];
                     for (int dv = 0; dv < {{ v_head_size }}; ++dv) {
                         {{ present_state }}[b][h][dk][dv] += beta_value * key_value * residual[dv];
                     }
                 }
                 {% else %}
                 for (int dk = 0; dk < {{ qk_head_size }}; ++dk) {
-                    {{ c_type }} key_value = {{ key }}[b][ti][h * {{ qk_head_size }} + dk];
+                    {{ c_type }} key_value = {{ key }}[b][ti][k_head * {{ qk_head_size }} + dk];
                     for (int dv = 0; dv < {{ v_head_size }}; ++dv) {
                         {{ present_state }}[b][h][dk][dv] += key_value * {{ value }}[b][ti][h * {{ v_head_size }} + dv];
                     }
                 }
                 {% endif %}
+                {% if head_group_size > 0 %}
                 for (int gh = 0; gh < {{ head_group_size }}; ++gh) {
                     int qh = h * {{ head_group_size }} + gh;
                     for (int dv = 0; dv < {{ v_head_size }}; ++dv) {
@@ -67,6 +69,16 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                         {{ output }}[b][ti][qh * {{ v_head_size }} + dv] = scale * acc;
                     }
                 }
+                {% else %}
+                int qh = h * {{ q_heads }} / {{ kv_heads }};
+                for (int dv = 0; dv < {{ v_head_size }}; ++dv) {
+                    {{ c_type }} acc = {{ zero_literal }};
+                    for (int dk = 0; dk < {{ qk_head_size }}; ++dk) {
+                        acc += {{ query }}[b][ti][qh * {{ qk_head_size }} + dk] * {{ present_state }}[b][h][dk][dv];
+                    }
+                    {{ output }}[b][ti][h * {{ v_head_size }} + dv] = scale * acc;
+                }
+                {% endif %}
             }
         }
     }

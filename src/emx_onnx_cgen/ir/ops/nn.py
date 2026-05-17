@@ -3256,9 +3256,12 @@ class LinearAttentionOp(RenderableOpBase):
     qk_head_size: int
     v_head_size: int
     q_hidden_size: int
+    n_k_heads: int
     k_hidden_size: int
     v_hidden_size: int
+    kv_per_k_head: int
     head_group_size: int
+    output_hidden_size: int
     scale: float
     update_rule: str
     decay_last_dim: int
@@ -3291,7 +3294,7 @@ class LinearAttentionOp(RenderableOpBase):
         key_shape = (self.batch, self.seq_len, self.k_hidden_size)
         value_shape = (self.batch, self.seq_len, self.v_hidden_size)
         state_shape = (self.batch, self.kv_heads, self.qk_head_size, self.v_head_size)
-        output_shape = (self.batch, self.seq_len, self.q_heads * self.v_head_size)
+        output_shape = (self.batch, self.seq_len, self.output_hidden_size)
         query_suffix = emitter.param_array_suffix(query_shape)
         key_suffix = emitter.param_array_suffix(key_shape)
         value_suffix = emitter.param_array_suffix(value_shape)
@@ -3362,9 +3365,12 @@ class LinearAttentionOp(RenderableOpBase):
                 qk_head_size=self.qk_head_size,
                 v_head_size=self.v_head_size,
                 q_hidden_size=self.q_hidden_size,
+                n_k_heads=self.n_k_heads,
                 k_hidden_size=self.k_hidden_size,
                 v_hidden_size=self.v_hidden_size,
+                kv_per_k_head=self.kv_per_k_head,
                 head_group_size=self.head_group_size,
+                output_hidden_size=self.output_hidden_size,
                 update_rule=self.update_rule,
                 decay_last_dim=self.decay_last_dim,
                 beta_last_dim=self.beta_last_dim,
@@ -3377,7 +3383,7 @@ class LinearAttentionOp(RenderableOpBase):
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
-        return (self.batch, self.seq_len, self.q_heads * self.v_head_size)
+        return (self.batch, self.seq_len, self.output_hidden_size)
 
     def c_op_outputs(
         self, emitter: "Emitter"

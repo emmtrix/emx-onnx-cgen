@@ -55,10 +55,8 @@ def lower_linear_attention(graph: Graph, node: Node) -> LinearAttentionOp:
         raise UnsupportedOpError("Unsupported op LinearAttention")
     q_heads = int(q_heads)
     kv_heads = int(kv_heads)
-    if q_heads <= 0 or kv_heads <= 0 or q_heads < kv_heads or q_heads % kv_heads != 0:
-        raise ShapeInferenceError(
-            "LinearAttention requires q_num_heads to be a positive multiple of kv_num_heads"
-        )
+    if q_heads <= 0 or kv_heads <= 0:
+        raise ShapeInferenceError("LinearAttention q_num_heads/kv_num_heads must be positive")
 
     chunk_size = int(node.attrs.get("chunk_size", 64))
     if chunk_size <= 0:
@@ -83,20 +81,34 @@ def lower_linear_attention(graph: Graph, node: Node) -> LinearAttentionOp:
         raise ShapeInferenceError(
             "LinearAttention query hidden size must be divisible by q_num_heads"
         )
-    if k_hidden_size % kv_heads != 0:
+    qk_head_size = q_hidden_size // q_heads
+    if k_hidden_size % qk_head_size != 0:
         raise ShapeInferenceError(
-            "LinearAttention key hidden size must be divisible by kv_num_heads"
+            "LinearAttention key hidden size must be divisible by query head size"
         )
     if v_hidden_size % kv_heads != 0:
         raise ShapeInferenceError(
             "LinearAttention value hidden size must be divisible by kv_num_heads"
         )
 
-    qk_head_size = q_hidden_size // q_heads
-    if k_hidden_size // kv_heads != qk_head_size:
-        raise ShapeInferenceError("LinearAttention query and key head sizes must match")
+    n_k_heads = k_hidden_size // qk_head_size
+    if kv_heads % n_k_heads != 0:
+        raise ShapeInferenceError("LinearAttention kv_num_heads must be divisible by key head count")
     v_head_size = v_hidden_size // kv_heads
-    head_group_size = q_heads // kv_heads
+    if q_heads >= kv_heads:
+        if q_heads % kv_heads != 0:
+            raise ShapeInferenceError(
+                "LinearAttention q_num_heads must be divisible by kv_num_heads"
+            )
+        head_group_size = q_heads // kv_heads
+    else:
+        if kv_heads % q_heads != 0:
+            raise ShapeInferenceError(
+                "LinearAttention kv_num_heads must be divisible by q_num_heads"
+            )
+        head_group_size = 0
+    kv_per_k_head = kv_heads // n_k_heads
+    output_hidden_size = max(q_heads, kv_heads) * v_head_size
 
     expected_state_shape = (batch, kv_heads, qk_head_size, v_head_size)
     if past_state is not None and _value_shape(graph, past_state, node) != expected_state_shape:
@@ -108,7 +120,7 @@ def lower_linear_attention(graph: Graph, node: Node) -> LinearAttentionOp:
             f"LinearAttention present_state shape must be {expected_state_shape}"
         )
 
-    expected_output_shape = (batch, seq_len, q_heads * v_head_size)
+    expected_output_shape = (batch, seq_len, output_hidden_size)
     if _value_shape(graph, output, node) != expected_output_shape:
         raise ShapeInferenceError(
             f"LinearAttention output shape must be {expected_output_shape}"
@@ -168,9 +180,12 @@ def lower_linear_attention(graph: Graph, node: Node) -> LinearAttentionOp:
         qk_head_size=qk_head_size,
         v_head_size=v_head_size,
         q_hidden_size=q_hidden_size,
+        n_k_heads=n_k_heads,
         k_hidden_size=k_hidden_size,
         v_hidden_size=v_hidden_size,
+        kv_per_k_head=kv_per_k_head,
         head_group_size=head_group_size,
+        output_hidden_size=output_hidden_size,
         scale=scale,
         update_rule=update_rule,
         decay_last_dim=decay_last_dim,

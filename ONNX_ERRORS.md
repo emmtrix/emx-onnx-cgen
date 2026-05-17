@@ -9,7 +9,6 @@ Aggregates non-success verification outcomes.
 | --- | --- | --- |
 | Out of tolerance | 40 | 7, 17, 22 |
 | Unsupported op com.microsoft.CausalConvWithState | 29 |  |
-| Unsupported op com.microsoft.LinearAttention | 26 |  |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 8 |  |
 | Unsupported op com.microsoft.GroupQueryAttention | 6 |  |
 | Unsupported op com.microsoft.QMoE | 2 |  |
@@ -86,32 +85,6 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Scalar_NoBias_Axis2_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 252) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Scalar_NoBias_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 252) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_run0/model.onnx | 7 | Data/Data | ❌ | Out of tolerance (max ULP 299) |
-| test/contrib_ops/linear_attention_op_test/DeltaRule_MultiToken_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
-| test/contrib_ops/linear_attention_op_test/DeltaRule_SingleToken_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
-| test/contrib_ops/linear_attention_op_test/GatedDeltaRule_BroadcastDecay_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
-| test/contrib_ops/linear_attention_op_test/GatedDeltaRule_InverseGQA_LargerDims_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
-| test/contrib_ops/linear_attention_op_test/GatedDeltaRule_InverseGQA_Small_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
-| test/contrib_ops/linear_attention_op_test/GatedDeltaRule_KGQA_Small_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
-| test/contrib_ops/linear_attention_op_test/GatedDeltaRule_LargerDims_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
-| test/contrib_ops/linear_attention_op_test/GatedDeltaRule_LongerSequence_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
-| test/contrib_ops/linear_attention_op_test/GatedDeltaRule_MultiBatchMultiHead_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
-| test/contrib_ops/linear_attention_op_test/GatedDeltaRule_MultiToken_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
-| test/contrib_ops/linear_attention_op_test/GatedDeltaRule_NonPowerOf2DK_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
-| test/contrib_ops/linear_attention_op_test/GatedDeltaRule_Qwen35Like_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
-| test/contrib_ops/linear_attention_op_test/GatedDeltaRule_Qwen35_KGQA_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
-| test/contrib_ops/linear_attention_op_test/GatedDeltaRule_SingleToken_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
-| test/contrib_ops/linear_attention_op_test/GatedRule_BroadcastDecay_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
-| test/contrib_ops/linear_attention_op_test/GatedRule_LargerDims_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
-| test/contrib_ops/linear_attention_op_test/GatedRule_MultiToken_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
-| test/contrib_ops/linear_attention_op_test/GatedRule_SingleToken_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
-| test/contrib_ops/linear_attention_op_test/LinearRule_DefaultScale_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
-| test/contrib_ops/linear_attention_op_test/LinearRule_InverseGQA_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
-| test/contrib_ops/linear_attention_op_test/LinearRule_KGQA_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
-| test/contrib_ops/linear_attention_op_test/LinearRule_LargerDims_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
-| test/contrib_ops/linear_attention_op_test/LinearRule_MultiBatchMultiHead_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
-| test/contrib_ops/linear_attention_op_test/LinearRule_MultiToken_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
-| test/contrib_ops/linear_attention_op_test/LinearRule_SingleToken_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
-| test/contrib_ops/linear_attention_op_test/LinearRule_WithInitialState_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.LinearAttention |
 | test/contrib_ops/math/matmul_sparse_test/TestCoo_run0/model.onnx |  | Data/Data | ❌ | Unsupported value type 'sparse_tensor_type' for 'A'. Hint: export the model with tensor inputs/outputs. |
 | test/contrib_ops/math/matmul_sparse_test/TestCoo_run1/model.onnx |  | Data/Data | ❌ | Unsupported value type 'sparse_tensor_type' for 'A'. Hint: export the model with tensor inputs/outputs. |
 | test/contrib_ops/math/matmul_sparse_test/TestCoo_run2/model.onnx |  | Data/Data | ❌ | Unsupported value type 'sparse_tensor_type' for 'A'. Hint: export the model with tensor inputs/outputs. |
