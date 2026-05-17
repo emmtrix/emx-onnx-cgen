@@ -4,7 +4,7 @@
   "verification_mode": "Data/Data",
   "operators": [
     "Add",
-    "ai.onnx.preview.training::Gradient"
+    "ai.onnx.preview.training.Gradient"
   ],
   "opset_version": 12,
   "generated_checksum": "69ddd793e6fe500db415c36618bb798e7b866a90f494f916188ad9b8f8dbc0ab"

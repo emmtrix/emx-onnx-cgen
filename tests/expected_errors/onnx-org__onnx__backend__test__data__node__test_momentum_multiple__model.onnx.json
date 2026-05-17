@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_momentum_multiple model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "ai.onnx.preview.training::Momentum"
+    "ai.onnx.preview.training.Momentum"
   ],
   "generated_checksum": "268462a9b1fcdc15c0c7086b095ccae7fbe25de00dda00044097974fa2281e72"
 }

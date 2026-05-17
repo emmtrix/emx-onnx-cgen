@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gridsample_test/gridsample_mode_nearest_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::GridSample"
+    "com.microsoft.GridSample"
   ],
   "generated_checksum": "c3e0a4c3ec391af4009f968d8570d8fe80abd2cbd703a0374e91ed03eaee67b0"
 }

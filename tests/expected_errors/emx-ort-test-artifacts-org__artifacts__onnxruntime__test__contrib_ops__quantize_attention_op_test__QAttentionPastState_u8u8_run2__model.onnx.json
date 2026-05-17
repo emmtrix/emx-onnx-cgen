@@ -7,7 +7,7 @@
   ],
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::QAttention"
+    "com.microsoft.QAttention"
   ],
   "generated_checksum": "54979927828ed5ce2278b13a7d8fc6853ee8904fc99d323d3599a17589c6cd19"
 }

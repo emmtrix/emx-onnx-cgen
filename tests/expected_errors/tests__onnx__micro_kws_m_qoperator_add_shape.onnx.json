@@ -14,8 +14,8 @@
     "AveragePool",
     "Transpose",
     "QLinearMatMul",
-    "com.microsoft::QLinearAdd",
-    "com.microsoft::QLinearSoftmax"
+    "com.microsoft.QLinearAdd",
+    "com.microsoft.QLinearSoftmax"
   ],
   "opset_version": 15,
   "generated_checksum": "5b7ad4a262081da688ea0032081c7306d9ba39fe332c6db62d332d19defe58c9"

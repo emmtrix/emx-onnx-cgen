@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize16_8_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::MultiHeadAttention"
+    "com.microsoft.MultiHeadAttention"
   ],
   "generated_checksum": "193a0eb92af57b1714a02b55884cc13c277d87b8432a0bbb07c4b47b7ef8994b"
 }

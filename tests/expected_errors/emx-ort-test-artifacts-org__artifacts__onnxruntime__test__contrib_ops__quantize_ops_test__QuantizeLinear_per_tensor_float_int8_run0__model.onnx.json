@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/quantize_ops_test/QuantizeLinear_per_tensor_float_int8_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::QuantizeLinear"
+    "com.microsoft.QuantizeLinear"
   ],
   "generated_checksum": "e7223548fdd8bc874c46ad2caca21636b139705216ab18402270aead5a73132a"
 }

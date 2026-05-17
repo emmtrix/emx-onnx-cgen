@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/qlinear_concat_test/ExpectFail_MixedConstDynamic_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::QLinearConcat"
+    "com.microsoft.QLinearConcat"
   ],
   "generated_checksum": "8aa09b06f646d6eb5f2724a1d1e3d31d20c4cceb453a8aa165fab15200b251fc"
 }

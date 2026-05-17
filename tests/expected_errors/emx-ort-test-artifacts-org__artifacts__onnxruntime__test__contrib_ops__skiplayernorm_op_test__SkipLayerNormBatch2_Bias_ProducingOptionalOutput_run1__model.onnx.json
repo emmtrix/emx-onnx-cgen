@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch2_Bias_ProducingOptionalOutput_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::SkipLayerNormalization"
+    "com.microsoft.SkipLayerNormalization"
   ],
   "generated_checksum": "31c47eb9c8e1316b64a291cd08019be91218b80b1816ce2657d2774eadfbebe6"
 }

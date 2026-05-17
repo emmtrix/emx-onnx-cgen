@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/trilu_test/two_by_two_float_upper_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::Trilu"
+    "com.microsoft.Trilu"
   ],
   "generated_checksum": "983aa0e306199a1cb32d8ce9673a86ab6681cd85a0aff76099a40a91d9794d00"
 }

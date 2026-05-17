@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/murmur_hash3_test/NonZeroSeedUIntResult_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::MurmurHash3"
+    "com.microsoft.MurmurHash3"
   ],
   "generated_checksum": "0f457746f3883c8cf28d52dd744cab0278d29b9b7126bbd2a9c2d2e0d5c8a420"
 }
