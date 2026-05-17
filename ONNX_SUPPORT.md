@@ -8,6 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1825 / 1827, 99.9% | 1.21.0 |
+| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4244 / 4324, 98.1% | n/a |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4241 / 4324, 98.1% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 7 / 7, 100.0% | n/a |
 
@@ -1857,6 +1858,7 @@ Coverage 1825 / 1827 ONNX files (99.9%).
 
 Test directory: `emx-ort-test-artifacts-org/artifacts/onnxruntime`
 
+Coverage 4244 / 4324 ONNX files (98.1%).
 Coverage 4241 / 4324 ONNX files (98.1%).
 
 | File | Opset | Verification | Supported | Error |
@@ -1945,35 +1947,35 @@ Coverage 4241 / 4324 ONNX files (98.1%).
 | test/contrib_ops/bifurcation_detector_op_test/SuffixNgramExceedsOutputLen_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/bifurcation_detector_op_test/Test1_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/bifurcation_detector_op_test/Test2_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/causal_conv_with_state_op_test/BasicNoStateNoBias_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/BasicNoStateNoBias_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/BasicWithBias_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/BasicWithBias_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/BasicWithState_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/BasicWithState_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/KernelSize2_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/KernelSize2_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/KernelSize4_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/KernelSize4_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/LargerDimensions_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/LargerDimensions_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/MultiBatch_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/MultiBatch_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/SiluActivationNoState_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/SiluActivationNoState_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/SiluActivationWithBiasAndState_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/SiluActivationWithBiasAndState_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/SiluActivationWithState_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/SiluActivationWithState_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/SingleTokenDecodeMultiBatch_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/SingleTokenDecodeMultiBatch_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/SingleTokenDecode_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/SingleTokenDecode_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/StateContinuity_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/StateContinuity_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/StateContinuity_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/WithStateAndBias_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/WithStateAndBias_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
+| test/contrib_ops/causal_conv_with_state_op_test/BasicNoStateNoBias_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/causal_conv_with_state_op_test/BasicNoStateNoBias_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/causal_conv_with_state_op_test/BasicWithBias_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/causal_conv_with_state_op_test/BasicWithBias_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/causal_conv_with_state_op_test/BasicWithState_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/causal_conv_with_state_op_test/BasicWithState_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/causal_conv_with_state_op_test/KernelSize2_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/causal_conv_with_state_op_test/KernelSize2_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/causal_conv_with_state_op_test/KernelSize4_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/causal_conv_with_state_op_test/KernelSize4_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/causal_conv_with_state_op_test/LargerDimensions_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 3) |
+| test/contrib_ops/causal_conv_with_state_op_test/LargerDimensions_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/causal_conv_with_state_op_test/MultiBatch_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
+| test/contrib_ops/causal_conv_with_state_op_test/MultiBatch_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/causal_conv_with_state_op_test/SiluActivationNoState_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/causal_conv_with_state_op_test/SiluActivationNoState_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/causal_conv_with_state_op_test/SiluActivationWithBiasAndState_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
+| test/contrib_ops/causal_conv_with_state_op_test/SiluActivationWithBiasAndState_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/causal_conv_with_state_op_test/SiluActivationWithState_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/causal_conv_with_state_op_test/SiluActivationWithState_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/causal_conv_with_state_op_test/SingleTokenDecodeMultiBatch_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/causal_conv_with_state_op_test/SingleTokenDecodeMultiBatch_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/causal_conv_with_state_op_test/SingleTokenDecode_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/causal_conv_with_state_op_test/SingleTokenDecode_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/causal_conv_with_state_op_test/StateContinuity_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/causal_conv_with_state_op_test/StateContinuity_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/causal_conv_with_state_op_test/StateContinuity_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/causal_conv_with_state_op_test/WithStateAndBias_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/causal_conv_with_state_op_test/WithStateAndBias_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/cdist_op_test/DoubleEuclidean_run0/model.onnx (--max-ulp 400000000) |  | Data/Data | ✅ | OK (max ULP 340017558) |
 | test/contrib_ops/cdist_op_test/Euclidean_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/cdist_op_test/Sqeuclidean_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |

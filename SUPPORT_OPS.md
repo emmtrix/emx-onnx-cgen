@@ -220,7 +220,7 @@ Supported operators: 258 / 262
 | com.microsoft::BiasGelu | ✅ |
 | com.microsoft::BifurcationDetector | ✅ |
 | com.microsoft::CDist | ✅ |
-| com.microsoft::CausalConvWithState | ❌ |
+| com.microsoft::CausalConvWithState | ✅ |
 | com.microsoft::ConvTransposeWithDynamicPads | ✅ |
 | com.microsoft::CropAndResize | ✅ |
 | com.microsoft::DecoderMaskedMultiHeadAttention | ✅ |

@@ -3120,6 +3120,82 @@ def _make_conv_model() -> onnx.ModelProto:
     return model
 
 
+def _make_causal_conv_with_state_model(
+    *,
+    batch: int = 1,
+    channels: int = 2,
+    seq_len: int = 4,
+    kernel_size: int = 3,
+    activation: str = "none",
+    with_bias: bool = False,
+    with_past_state: bool = False,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info(
+        "input", TensorProto.FLOAT, [batch, channels, seq_len]
+    )
+    output = helper.make_tensor_value_info(
+        "output", TensorProto.FLOAT, [batch, channels, seq_len]
+    )
+    present_state = helper.make_tensor_value_info(
+        "present_state", TensorProto.FLOAT, [batch, channels, kernel_size - 1]
+    )
+    weight_values = np.arange(channels * kernel_size, dtype=np.float32).reshape(
+        channels, 1, kernel_size
+    ) / max(kernel_size, 1)
+    weight_tensor = helper.make_tensor(
+        "weight",
+        TensorProto.FLOAT,
+        dims=[channels, 1, kernel_size],
+        vals=weight_values.reshape(-1).tolist(),
+    )
+    inputs = [input_info]
+    initializers = [weight_tensor]
+    node_inputs = ["input", "weight"]
+    if with_bias:
+        bias_values = np.linspace(-0.25, 0.25, channels, dtype=np.float32)
+        bias_tensor = helper.make_tensor(
+            "bias",
+            TensorProto.FLOAT,
+            dims=[channels],
+            vals=bias_values.tolist(),
+        )
+        initializers.append(bias_tensor)
+        node_inputs.append("bias")
+    else:
+        node_inputs.append("")
+    if with_past_state:
+        past_state = helper.make_tensor_value_info(
+            "past_state", TensorProto.FLOAT, [batch, channels, kernel_size - 1]
+        )
+        inputs.append(past_state)
+        node_inputs.append("past_state")
+    else:
+        node_inputs.append("")
+    node = helper.make_node(
+        "CausalConvWithState",
+        inputs=node_inputs,
+        outputs=[output.name, present_state.name],
+        domain="com.microsoft",
+        activation=activation,
+        ndim=1,
+    )
+    graph = helper.make_graph(
+        [node],
+        "causal_conv_with_state_graph",
+        inputs,
+        [output, present_state],
+        initializer=initializers,
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("com.microsoft", 1)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_convinteger_model(*, per_channel_zero_point: bool = False) -> onnx.ModelProto:
     input_shape = [1, 1, 3, 3]
     weight_shape = [2, 1, 2, 2]
@@ -8293,6 +8369,48 @@ def test_unsqueeze_op_matches_onnxruntime() -> None:
 def test_conv_op_matches_onnxruntime() -> None:
     model = _make_conv_model()
     _run_ort_compare(model)
+
+
+def test_lower_causal_conv_with_state() -> None:
+    model = _make_causal_conv_with_state_model(
+        with_bias=True,
+        with_past_state=True,
+        activation="swish",
+    )
+    graph = import_onnx(model)
+    op = get_lowering("CausalConvWithState")(graph, graph.nodes[0])
+    assert op.bias == "bias"
+    assert op.past_state == "past_state"
+    assert op.kernel_size == 3
+    assert op.pad == 2
+    assert op.activation == "silu"
+
+
+def test_causal_conv_with_state_op_matches_onnxruntime() -> None:
+    model = _make_causal_conv_with_state_model(
+        with_bias=True,
+        with_past_state=True,
+        activation="silu",
+    )
+    _run_testbench_compare(model)
+
+
+def test_causal_conv_with_state_no_state_op_matches_onnxruntime() -> None:
+    model = _make_causal_conv_with_state_model()
+    _run_testbench_compare(model)
+
+
+def test_causal_conv_with_state_decode_op_matches_onnxruntime() -> None:
+    model = _make_causal_conv_with_state_model(
+        batch=2,
+        channels=4,
+        seq_len=1,
+        kernel_size=4,
+        with_bias=True,
+        with_past_state=True,
+        activation="silu",
+    )
+    _run_testbench_compare(model)
 
 
 def test_convinteger_op_matches_onnxruntime() -> None:
