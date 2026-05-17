@@ -5051,7 +5051,9 @@ def _make_group_query_attention_model(
     )
     node_inputs.extend(["seqlens_k", "total_sequence_length", "", "", "", "", ""])
 
-    output = helper.make_tensor_value_info("output", TensorProto.FLOAT, [batch, 1, q_hidden])
+    output = helper.make_tensor_value_info(
+        "output", TensorProto.FLOAT, [batch, 1, q_hidden]
+    )
     present_key = helper.make_tensor_value_info(
         "present_key",
         TensorProto.FLOAT,

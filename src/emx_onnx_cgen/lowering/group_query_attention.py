@@ -90,7 +90,9 @@ def resolve_group_query_attention_spec(
     num_heads = int(num_heads)
     kv_num_heads = int(kv_num_heads)
     if num_heads <= 0 or kv_num_heads <= 0:
-        raise ShapeInferenceError("GroupQueryAttention num_heads and kv_num_heads must be > 0")
+        raise ShapeInferenceError(
+            "GroupQueryAttention num_heads and kv_num_heads must be > 0"
+        )
     if num_heads < kv_num_heads or num_heads % kv_num_heads != 0:
         raise ShapeInferenceError(
             "GroupQueryAttention requires num_heads to be a multiple of kv_num_heads"
@@ -108,7 +110,9 @@ def resolve_group_query_attention_spec(
     if key_batch != batch or value_batch != batch:
         raise ShapeInferenceError("GroupQueryAttention batch sizes must match")
     if value_seq != kv_seq:
-        raise ShapeInferenceError("GroupQueryAttention key/value sequence lengths must match")
+        raise ShapeInferenceError(
+            "GroupQueryAttention key/value sequence lengths must match"
+        )
     if kv_seq != 1:
         raise UnsupportedOpError("Unsupported op GroupQueryAttention")
 

@@ -731,7 +731,11 @@ OP_GOLDEN_CASES = [
     ("attention", "attention", _make_attention_model),
     ("ms_attention", "ms_attention", _make_ms_attention_model),
     ("multihead_attention", "multihead_attention", _make_multihead_attention_model),
-    ("group_query_attention", "group_query_attention", _make_group_query_attention_model),
+    (
+        "group_query_attention",
+        "group_query_attention",
+        _make_group_query_attention_model,
+    ),
     ("conv", "conv", _make_conv_model),
     ("deformconv", "deform_conv", _make_deform_conv_model),
     ("averagepool", "average_pool", _make_average_pool_model),
