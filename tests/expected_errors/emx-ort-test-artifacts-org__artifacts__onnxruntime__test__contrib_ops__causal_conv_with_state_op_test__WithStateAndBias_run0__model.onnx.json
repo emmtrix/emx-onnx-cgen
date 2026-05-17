@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.CausalConvWithState",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/causal_conv_with_state_op_test/WithStateAndBias_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::CausalConvWithState"
-  ]
+  ],
+  "generated_checksum": "8e753d9ef6505c0b6197fab64d450a7383f024cc1bac1003ebe3e0e1d013d3c5"
 }

@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.LinearAttention",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/linear_attention_op_test/LinearRule_InverseGQA_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::LinearAttention"
-  ]
+  ],
+  "generated_checksum": "ce22b80c2369e20551b90d4020c30ce211b7c40db2bb1993dee3922a1fb8dd8a"
 }

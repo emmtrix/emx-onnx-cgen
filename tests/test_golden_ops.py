@@ -15,6 +15,7 @@ from test_ops import (
     _make_batchnorm_model,
     _make_binarizer_model,
     _make_cast_model,
+    _make_causal_conv_with_state_model,
     _make_constant_of_shape_model,
     _make_conv_model,
     _make_cumprod_model,
@@ -26,6 +27,7 @@ from test_ops import (
     _make_gather_model,
     _make_gridsample_model,
     _make_layer_normalization_model,
+    _make_linear_attention_model,
     _make_lp_normalization_model,
     _make_lstm_model,
     _make_maxpool_model,
@@ -682,6 +684,15 @@ def test_codegen_golden_conv_simple_accumulation() -> None:
     )
 
 
+def test_codegen_golden_causal_conv_with_state() -> None:
+    model = _make_causal_conv_with_state_model(
+        with_bias=True,
+        with_past_state=True,
+        activation="silu",
+    )
+    _compile_and_assert_golden(model, "op_causal_conv_with_state.c")
+
+
 def test_codegen_golden_matmul_fp64_accumulation() -> None:
     model = _make_matmul_model()
     options = CompilerOptions(fp32_accumulation_strategy="fp64")
@@ -729,6 +740,20 @@ OP_GOLDEN_CASES = [
     ),
     ("gemm", "gemm", _make_gemm_model),
     ("attention", "attention", _make_attention_model),
+    (
+        "linear_attention",
+        "linear_attention",
+        lambda: _make_linear_attention_model(
+            q_heads=4,
+            kv_heads=2,
+            qk_head_size=2,
+            v_head_size=3,
+            update_rule="gated_delta",
+            use_past=True,
+            decay_last_dim=2,
+            beta_last_dim=2,
+        ),
+    ),
     ("ms_attention", "ms_attention", _make_ms_attention_model),
     ("multihead_attention", "multihead_attention", _make_multihead_attention_model),
     (

@@ -3120,6 +3120,82 @@ def _make_conv_model() -> onnx.ModelProto:
     return model
 
 
+def _make_causal_conv_with_state_model(
+    *,
+    batch: int = 1,
+    channels: int = 2,
+    seq_len: int = 4,
+    kernel_size: int = 3,
+    activation: str = "none",
+    with_bias: bool = False,
+    with_past_state: bool = False,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info(
+        "input", TensorProto.FLOAT, [batch, channels, seq_len]
+    )
+    output = helper.make_tensor_value_info(
+        "output", TensorProto.FLOAT, [batch, channels, seq_len]
+    )
+    present_state = helper.make_tensor_value_info(
+        "present_state", TensorProto.FLOAT, [batch, channels, kernel_size - 1]
+    )
+    weight_values = np.arange(channels * kernel_size, dtype=np.float32).reshape(
+        channels, 1, kernel_size
+    ) / max(kernel_size, 1)
+    weight_tensor = helper.make_tensor(
+        "weight",
+        TensorProto.FLOAT,
+        dims=[channels, 1, kernel_size],
+        vals=weight_values.reshape(-1).tolist(),
+    )
+    inputs = [input_info]
+    initializers = [weight_tensor]
+    node_inputs = ["input", "weight"]
+    if with_bias:
+        bias_values = np.linspace(-0.25, 0.25, channels, dtype=np.float32)
+        bias_tensor = helper.make_tensor(
+            "bias",
+            TensorProto.FLOAT,
+            dims=[channels],
+            vals=bias_values.tolist(),
+        )
+        initializers.append(bias_tensor)
+        node_inputs.append("bias")
+    else:
+        node_inputs.append("")
+    if with_past_state:
+        past_state = helper.make_tensor_value_info(
+            "past_state", TensorProto.FLOAT, [batch, channels, kernel_size - 1]
+        )
+        inputs.append(past_state)
+        node_inputs.append("past_state")
+    else:
+        node_inputs.append("")
+    node = helper.make_node(
+        "CausalConvWithState",
+        inputs=node_inputs,
+        outputs=[output.name, present_state.name],
+        domain="com.microsoft",
+        activation=activation,
+        ndim=1,
+    )
+    graph = helper.make_graph(
+        [node],
+        "causal_conv_with_state_graph",
+        inputs,
+        [output, present_state],
+        initializer=initializers,
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("com.microsoft", 1)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_convinteger_model(*, per_channel_zero_point: bool = False) -> onnx.ModelProto:
     input_shape = [1, 1, 3, 3]
     weight_shape = [2, 1, 2, 2]
@@ -4882,6 +4958,184 @@ def test_ms_attention_2d_mask_testbench_compare() -> None:
 
 def test_ms_attention_qkv_sizes_testbench_compare() -> None:
     model = _make_ms_attention_model(qkv_hidden_sizes=[6, 6, 4])
+    _run_testbench_compare(model)
+
+
+def _make_linear_attention_model(
+    *,
+    batch: int = 1,
+    seq_len: int = 2,
+    q_heads: int = 1,
+    kv_heads: int = 1,
+    n_k_heads: int | None = None,
+    qk_head_size: int = 4,
+    v_head_size: int = 4,
+    update_rule: str = "linear",
+    use_past: bool = False,
+    decay_last_dim: int | None = None,
+    beta_last_dim: int | None = None,
+    scale: float | None = 0.5,
+) -> onnx.ModelProto:
+    if n_k_heads is None:
+        n_k_heads = kv_heads
+    q_hidden = q_heads * qk_head_size
+    k_hidden = n_k_heads * qk_head_size
+    v_hidden = kv_heads * v_head_size
+    state_shape = [batch, kv_heads, qk_head_size, v_head_size]
+    inputs_info = [
+        helper.make_tensor_value_info(
+            "query", TensorProto.FLOAT, [batch, seq_len, q_hidden]
+        ),
+        helper.make_tensor_value_info(
+            "key", TensorProto.FLOAT, [batch, seq_len, k_hidden]
+        ),
+        helper.make_tensor_value_info(
+            "value", TensorProto.FLOAT, [batch, seq_len, v_hidden]
+        ),
+    ]
+    node_inputs = ["query", "key", "value"]
+    if use_past:
+        inputs_info.append(
+            helper.make_tensor_value_info("past_state", TensorProto.FLOAT, state_shape)
+        )
+        node_inputs.append("past_state")
+    else:
+        node_inputs.append("")
+    if update_rule in {"gated", "gated_delta"}:
+        if decay_last_dim is None:
+            decay_last_dim = kv_heads * qk_head_size
+        inputs_info.append(
+            helper.make_tensor_value_info(
+                "decay", TensorProto.FLOAT, [batch, seq_len, decay_last_dim]
+            )
+        )
+        node_inputs.append("decay")
+    else:
+        node_inputs.append("")
+    if update_rule in {"delta", "gated_delta"}:
+        if beta_last_dim is None:
+            beta_last_dim = kv_heads
+        inputs_info.append(
+            helper.make_tensor_value_info(
+                "beta", TensorProto.FLOAT, [batch, seq_len, beta_last_dim]
+            )
+        )
+        node_inputs.append("beta")
+    else:
+        node_inputs.append("")
+
+    outputs = [
+        helper.make_tensor_value_info(
+            "output",
+            TensorProto.FLOAT,
+            [batch, seq_len, max(q_heads, kv_heads) * v_head_size],
+        ),
+        helper.make_tensor_value_info("present_state", TensorProto.FLOAT, state_shape),
+    ]
+    attrs: dict[str, object] = {
+        "q_num_heads": q_heads,
+        "kv_num_heads": kv_heads,
+        "update_rule": update_rule,
+        "chunk_size": 64,
+    }
+    if scale is not None:
+        attrs["scale"] = scale
+    node = helper.make_node(
+        "LinearAttention",
+        inputs=node_inputs,
+        outputs=[output.name for output in outputs],
+        domain="com.microsoft",
+        **attrs,
+    )
+    graph = helper.make_graph(
+        [node],
+        "linear_attention_graph",
+        inputs_info,
+        outputs,
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[
+            helper.make_operatorsetid("", 13),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+    return model
+
+
+def test_linear_attention_linear_testbench_compare() -> None:
+    model = _make_linear_attention_model(scale=None)
+    _run_testbench_compare(model)
+
+
+def test_linear_attention_linear_gqa_with_past_testbench_compare() -> None:
+    model = _make_linear_attention_model(
+        q_heads=4,
+        kv_heads=2,
+        qk_head_size=2,
+        v_head_size=2,
+        use_past=True,
+    )
+    _run_testbench_compare(model)
+
+
+def test_linear_attention_linear_inverse_gqa_testbench_compare() -> None:
+    model = _make_linear_attention_model(
+        q_heads=2,
+        kv_heads=4,
+        n_k_heads=4,
+        qk_head_size=4,
+        v_head_size=4,
+    )
+    _run_testbench_compare(model)
+
+
+def test_linear_attention_gated_scalar_decay_testbench_compare() -> None:
+    model = _make_linear_attention_model(
+        update_rule="gated",
+        use_past=True,
+        decay_last_dim=1,
+    )
+    _run_testbench_compare(model)
+
+
+def test_linear_attention_delta_scalar_beta_testbench_compare() -> None:
+    model = _make_linear_attention_model(
+        update_rule="delta",
+        beta_last_dim=1,
+    )
+    _run_testbench_compare(model)
+
+
+def test_linear_attention_gated_delta_head_decay_testbench_compare() -> None:
+    model = _make_linear_attention_model(
+        batch=2,
+        q_heads=4,
+        kv_heads=2,
+        qk_head_size=2,
+        v_head_size=3,
+        update_rule="gated_delta",
+        use_past=True,
+        decay_last_dim=2,
+        beta_last_dim=2,
+    )
+    _run_testbench_compare(model)
+
+
+def test_linear_attention_kgqa_testbench_compare() -> None:
+    model = _make_linear_attention_model(
+        q_heads=4,
+        kv_heads=4,
+        n_k_heads=2,
+        qk_head_size=4,
+        v_head_size=4,
+        update_rule="gated_delta",
+        use_past=True,
+        decay_last_dim=4,
+        beta_last_dim=4,
+    )
     _run_testbench_compare(model)
 
 
@@ -8229,6 +8483,48 @@ def test_unsqueeze_op_matches_onnxruntime() -> None:
 def test_conv_op_matches_onnxruntime() -> None:
     model = _make_conv_model()
     _run_ort_compare(model)
+
+
+def test_lower_causal_conv_with_state() -> None:
+    model = _make_causal_conv_with_state_model(
+        with_bias=True,
+        with_past_state=True,
+        activation="swish",
+    )
+    graph = import_onnx(model)
+    op = get_lowering("CausalConvWithState")(graph, graph.nodes[0])
+    assert op.bias == "bias"
+    assert op.past_state == "past_state"
+    assert op.kernel_size == 3
+    assert op.pad == 2
+    assert op.activation == "silu"
+
+
+def test_causal_conv_with_state_op_matches_onnxruntime() -> None:
+    model = _make_causal_conv_with_state_model(
+        with_bias=True,
+        with_past_state=True,
+        activation="silu",
+    )
+    _run_testbench_compare(model)
+
+
+def test_causal_conv_with_state_no_state_op_matches_onnxruntime() -> None:
+    model = _make_causal_conv_with_state_model()
+    _run_testbench_compare(model)
+
+
+def test_causal_conv_with_state_decode_op_matches_onnxruntime() -> None:
+    model = _make_causal_conv_with_state_model(
+        batch=2,
+        channels=4,
+        seq_len=1,
+        kernel_size=4,
+        with_bias=True,
+        with_past_state=True,
+        activation="silu",
+    )
+    _run_testbench_compare(model)
 
 
 def test_convinteger_op_matches_onnxruntime() -> None:

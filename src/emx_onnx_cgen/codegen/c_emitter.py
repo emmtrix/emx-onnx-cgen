@@ -76,6 +76,7 @@ from ..ir.ops import (
     IdentityOp,
     InstanceNormalizationOp,
     LayerNormalizationOp,
+    LinearAttentionOp,
     LogSoftmaxOp,
     LpNormalizationOp,
     LpPoolOp,
@@ -1092,6 +1093,7 @@ class CEmitter:
                 "group_query_attention": self._env.get_template(
                     "group_query_attention_op.c.j2"
                 ),
+                "linear_attention": self._env.get_template("linear_attention_op.c.j2"),
                 "ms_attention": self._env.get_template("ms_attention_op.c.j2"),
                 "multihead_attention": self._env.get_template(
                     "multihead_attention_op.c.j2"
@@ -1099,6 +1101,9 @@ class CEmitter:
                 "qattention": self._env.get_template("qattention_op.c.j2"),
                 "rotary_embedding": self._env.get_template("rotary_embedding_op.c.j2"),
                 "conv": self._env.get_template("conv_op.c.j2"),
+                "causal_conv_with_state": self._env.get_template(
+                    "causal_conv_with_state_op.c.j2"
+                ),
                 "fused_conv": self._env.get_template("fused_conv_op.c.j2"),
                 "conv_integer": self._env.get_template("conv_integer_op.c.j2"),
                 "col2im": self._env.get_template("col2im_op.c.j2"),
@@ -2263,6 +2268,7 @@ class CEmitter:
             | GemmOp
             | AttentionOp
             | GroupQueryAttentionOp
+            | LinearAttentionOp
             | MsAttentionOp
             | MultiHeadAttentionOp
             | QAttentionOp
