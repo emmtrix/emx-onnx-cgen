@@ -8,8 +8,6 @@ Aggregates non-success verification outcomes.
 | Error message | Count | Opset versions |
 | --- | --- | --- |
 | Out of tolerance | 40 | 7, 17, 22 |
-| Unsupported op com.microsoft.LinearAttention | 26 |  |
-| Unsupported op com.microsoft.CausalConvWithState | 29 |  |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 8 |  |
 | Unsupported op com.microsoft.GroupQueryAttention | 6 |  |
 | Unsupported op com.microsoft.QMoE | 2 |  |
