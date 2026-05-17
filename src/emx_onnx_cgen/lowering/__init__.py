@@ -18,6 +18,7 @@ _LOWERING_MODULES = [
     "blackman_window",
     "bitcast",
     "cast",
+    "causal_conv_with_state",
     "center_crop_pad",
     "col2im",
     "compress",

@@ -8,7 +8,6 @@ Aggregates non-success verification outcomes.
 | Error message | Count | Opset versions |
 | --- | --- | --- |
 | Out of tolerance | 40 | 7, 17, 22 |
-| Unsupported op com.microsoft.CausalConvWithState | 29 |  |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 8 |  |
 | Unsupported op com.microsoft.GroupQueryAttention | 6 |  |
 | Unsupported op com.microsoft.QMoE | 2 |  |
@@ -33,35 +32,6 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/attention_op_test/Attention_Mask1D_Fp32_B2_S64_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1020241) |
 | test/contrib_ops/attention_op_test/Attention_Mask2D_Fp32_B2_S32_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 980755) |
 | test/contrib_ops/bifurcation_detector_op_test/SuffixMatchAtEndOfSrc_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max abs diff 4) |
-| test/contrib_ops/causal_conv_with_state_op_test/BasicNoStateNoBias_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/BasicNoStateNoBias_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/BasicWithBias_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/BasicWithBias_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/BasicWithState_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/BasicWithState_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/KernelSize2_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/KernelSize2_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/KernelSize4_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/KernelSize4_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/LargerDimensions_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/LargerDimensions_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/MultiBatch_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/MultiBatch_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/SiluActivationNoState_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/SiluActivationNoState_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/SiluActivationWithBiasAndState_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/SiluActivationWithBiasAndState_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/SiluActivationWithState_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/SiluActivationWithState_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/SingleTokenDecodeMultiBatch_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/SingleTokenDecodeMultiBatch_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/SingleTokenDecode_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/SingleTokenDecode_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/StateContinuity_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/StateContinuity_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/StateContinuity_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/WithStateAndBias_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/causal_conv_with_state_op_test/WithStateAndBias_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
 | test/contrib_ops/group_query_attention_op_test/BoundaryValidSeqlensKWithLargerPast_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.GroupQueryAttention |
 | test/contrib_ops/group_query_attention_op_test/BoundaryValidSeqlensK_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.GroupQueryAttention |
 | test/contrib_ops/group_query_attention_op_test/MaxBoundarySeqlensK_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.GroupQueryAttention |
