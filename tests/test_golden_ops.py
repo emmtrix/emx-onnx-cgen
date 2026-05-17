@@ -15,6 +15,7 @@ from test_ops import (
     _make_batchnorm_model,
     _make_binarizer_model,
     _make_cast_model,
+    _make_causal_conv_with_state_model,
     _make_constant_of_shape_model,
     _make_conv_model,
     _make_cumprod_model,
@@ -679,6 +680,15 @@ def test_codegen_golden_conv_simple_accumulation() -> None:
         "op_conv_conv_simple.c",
         options=options,
     )
+
+
+def test_codegen_golden_causal_conv_with_state() -> None:
+    model = _make_causal_conv_with_state_model(
+        with_bias=True,
+        with_past_state=True,
+        activation="silu",
+    )
+    _compile_and_assert_golden(model, "op_causal_conv_with_state.c")
 
 
 def test_codegen_golden_matmul_fp64_accumulation() -> None:
