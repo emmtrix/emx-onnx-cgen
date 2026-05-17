@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 
+from shared.scalar_functions import ScalarFunction
 from shared.scalar_types import ScalarType
 
 from ...errors import ShapeInferenceError, UnsupportedOpError
@@ -3689,6 +3690,130 @@ class ConvOp(ConvLikeOpBase):
             .rstrip()
         )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+
+@dataclass(frozen=True)
+class CausalConvWithStateOp(RenderableOpBase):
+    """com.microsoft::CausalConvWithState depthwise causal 1D convolution."""
+
+    __io_inputs__ = ("input0", "weights", "bias", "past_state")
+    __io_outputs__ = ("output", "present_state")
+
+    input0: str
+    weights: str
+    bias: str | None
+    past_state: str | None
+    output: str
+    present_state: str
+    batch: int
+    channels: int
+    seq_len: int
+    kernel_size: int
+    pad: int
+    dtype: ScalarType
+    activation: str
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        c_type = emitter.ctx_dtype(self.output).c_type
+        zero_literal = emitter.ctx_dtype(self.output).zero_literal
+        acc_dtype = emitter.accumulation_dtype(self.dtype)
+        acc_type = acc_dtype.c_type
+        acc_zero_literal = emitter.format_literal(acc_dtype, 0)
+        silu_fn = None
+        if self.activation == "silu":
+            silu_fn = emitter.scalar_fn(ScalarFunction.SILU, acc_dtype)
+        params = emitter.shared_param_map(
+            [
+                ("input0", self.input0),
+                ("weights", self.weights),
+                ("bias", self.bias),
+                ("past_state", self.past_state),
+                ("output", self.output),
+                ("present_state", self.present_state),
+            ]
+        )
+        input_shape = (self.batch, self.channels, self.seq_len)
+        weight_shape = (self.channels, 1, self.kernel_size)
+        state_shape = (self.batch, self.channels, self.pad)
+        input_dim_names = emitter.dim_names_for(self.input0)
+        output_dim_names = emitter.dim_names_for(self.output)
+        present_dim_names = emitter.dim_names_for(self.present_state)
+        input_shape_expr = CEmitterCompat.shape_dim_exprs(input_shape, input_dim_names)
+        output_shape_expr = CEmitterCompat.shape_dim_exprs(
+            input_shape, output_dim_names
+        )
+        state_shape_expr = CEmitterCompat.shape_dim_exprs(state_shape, present_dim_names)
+        input_suffix = emitter.param_array_suffix(input_shape, input_dim_names)
+        weight_suffix = emitter.param_array_suffix(weight_shape)
+        bias_suffix = emitter.param_array_suffix((self.channels,))
+        state_suffix = emitter.param_array_suffix(state_shape, present_dim_names)
+        output_suffix = emitter.param_array_suffix(input_shape, output_dim_names)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["weights"], c_type, weight_suffix, True),
+                (
+                    (params["bias"], c_type, bias_suffix, True)
+                    if params["bias"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (params["past_state"], c_type, state_suffix, True)
+                    if params["past_state"]
+                    else (None, "", "", True)
+                ),
+                (params["output"], c_type, output_suffix, False),
+                (params["present_state"], c_type, state_suffix, False),
+            ]
+        )
+        rendered = (
+            state.templates["causal_conv_with_state"]
+            .render(
+                dim_args=dim_args,
+                op_name=op_name,
+                params=param_decls,
+                input0=params["input0"],
+                weights=params["weights"],
+                bias=params["bias"],
+                past_state=params["past_state"],
+                output=params["output"],
+                present_state=params["present_state"],
+                c_type=c_type,
+                acc_type=acc_type,
+                acc_zero_literal=acc_zero_literal,
+                zero_literal=zero_literal,
+                batch=input_shape_expr[0],
+                channels=self.channels,
+                seq_len=input_shape_expr[2],
+                kernel_size=self.kernel_size,
+                pad=self.pad,
+                output_seq_len=output_shape_expr[2],
+                state_len=state_shape_expr[2],
+                apply_silu=int(self.activation == "silu"),
+                silu_fn=silu_fn,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return (self.batch, self.channels, self.seq_len)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        return (
+            (self.output, self.computed_output_shape(emitter), self.dtype),
+            (
+                self.present_state,
+                (self.batch, self.channels, self.pad),
+                self.dtype,
+            ),
+        )
 
 
 @dataclass(frozen=True)
