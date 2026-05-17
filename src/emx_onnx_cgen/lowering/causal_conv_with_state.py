@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from shared.scalar_types import ScalarType
-
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.context import GraphContext
 from ..ir.model import Graph, Node

@@ -8215,12 +8215,12 @@ def test_causal_conv_with_state_op_matches_onnxruntime() -> None:
         with_past_state=True,
         activation="silu",
     )
-    _run_ort_compare(model)
+    _run_testbench_compare(model)
 
 
 def test_causal_conv_with_state_no_state_op_matches_onnxruntime() -> None:
     model = _make_causal_conv_with_state_model()
-    _run_ort_compare(model)
+    _run_testbench_compare(model)
 
 
 def test_causal_conv_with_state_decode_op_matches_onnxruntime() -> None:
@@ -8233,7 +8233,7 @@ def test_causal_conv_with_state_decode_op_matches_onnxruntime() -> None:
         with_past_state=True,
         activation="silu",
     )
-    _run_ort_compare(model)
+    _run_testbench_compare(model)
 
 
 def test_convinteger_op_matches_onnxruntime() -> None:

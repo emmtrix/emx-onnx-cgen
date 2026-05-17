@@ -3725,7 +3725,7 @@ class CausalConvWithStateOp(RenderableOpBase):
         acc_zero_literal = emitter.format_literal(acc_dtype, 0)
         silu_fn = None
         if self.activation == "silu":
-            silu_fn = emitter.scalar_fn(ScalarFunction.SILU, acc_dtype)
+            silu_fn = emitter.scalar_fn(ScalarFunction.SWISH, acc_dtype)
         params = emitter.shared_param_map(
             [
                 ("input0", self.input0),
