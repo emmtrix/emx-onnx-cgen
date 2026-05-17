@@ -59,9 +59,7 @@ def lower_qmoe(graph: Graph, node: Node) -> QMoEOp:
     # Validate float dtype (input / output / scales)
     op_dtype = value_dtype(graph, input_name, node)
     if not op_dtype.is_float:
-        raise UnsupportedOpError(
-            f"QMoE: input must be float, got {op_dtype.onnx_name}"
-        )
+        raise UnsupportedOpError(f"QMoE: input must be float, got {op_dtype.onnx_name}")
     scale_dtype = value_dtype(graph, fc1_scales_name, node)
     if not scale_dtype.is_float:
         raise UnsupportedOpError(
@@ -91,9 +89,7 @@ def lower_qmoe(graph: Graph, node: Node) -> QMoEOp:
     # Resolve shapes
     inp_shape = value_shape(graph, input_name, node)
     if len(inp_shape) != 2:
-        raise UnsupportedOpError(
-            f"QMoE: input must be rank 2, got {inp_shape}"
-        )
+        raise UnsupportedOpError(f"QMoE: input must be rank 2, got {inp_shape}")
     batch, model_dim = inp_shape
 
     router_shape = value_shape(graph, router_name, node)
@@ -104,11 +100,7 @@ def lower_qmoe(graph: Graph, node: Node) -> QMoEOp:
     num_experts = router_shape[1]
 
     fc1_shape = value_shape(graph, fc1_w_name, node)
-    if (
-        len(fc1_shape) != 3
-        or fc1_shape[0] != num_experts
-        or fc1_shape[2] != model_dim
-    ):
+    if len(fc1_shape) != 3 or fc1_shape[0] != num_experts or fc1_shape[2] != model_dim:
         raise UnsupportedOpError(
             "QMoE: fc1_experts_weights must be [num_experts, fc1_out_size, model_dim],"
             f" got {fc1_shape}"
