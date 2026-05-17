@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.GroupQueryAttention",
+  "error": "Out of tolerance (max ULP 1065353216)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/group_query_attention_op_test/SeqlensKLegacy2DShapeTrailingBatch_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::GroupQueryAttention"
-  ]
+  ],
+  "generated_checksum": "494816e5c534b6a527460a2e58acac8a9b79aa309d99ae24eb6470549df7d4dc"
 }

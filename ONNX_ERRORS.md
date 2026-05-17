@@ -7,11 +7,10 @@ Aggregates non-success verification outcomes.
 
 | Error message | Count | Opset versions |
 | --- | --- | --- |
-| Out of tolerance | 40 | 7, 17, 22 |
+| Out of tolerance | 46 | 7, 17, 22 |
 | Unsupported op com.microsoft.CausalConvWithState | 29 |  |
 | Unsupported op com.microsoft.LinearAttention | 26 |  |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 8 |  |
-| Unsupported op com.microsoft.GroupQueryAttention | 6 |  |
 | Unsupported op com.microsoft.QMoE | 2 |  |
 
 ## Error frequency by opset
@@ -63,12 +62,12 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/causal_conv_with_state_op_test/StateContinuity_run2/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
 | test/contrib_ops/causal_conv_with_state_op_test/WithStateAndBias_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
 | test/contrib_ops/causal_conv_with_state_op_test/WithStateAndBias_run1/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.CausalConvWithState |
-| test/contrib_ops/group_query_attention_op_test/BoundaryValidSeqlensKWithLargerPast_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.GroupQueryAttention |
-| test/contrib_ops/group_query_attention_op_test/BoundaryValidSeqlensK_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.GroupQueryAttention |
-| test/contrib_ops/group_query_attention_op_test/MaxBoundarySeqlensK_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.GroupQueryAttention |
-| test/contrib_ops/group_query_attention_op_test/SeqlensKLegacy2DShapeMultiBatch_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.GroupQueryAttention |
-| test/contrib_ops/group_query_attention_op_test/SeqlensKLegacy2DShapeTrailingBatch_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.GroupQueryAttention |
-| test/contrib_ops/group_query_attention_op_test/SeqlensKLegacy2DShape_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.GroupQueryAttention |
+| test/contrib_ops/group_query_attention_op_test/BoundaryValidSeqlensKWithLargerPast_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1065353216) |
+| test/contrib_ops/group_query_attention_op_test/BoundaryValidSeqlensK_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1065353216) |
+| test/contrib_ops/group_query_attention_op_test/MaxBoundarySeqlensK_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1065353216) |
+| test/contrib_ops/group_query_attention_op_test/SeqlensKLegacy2DShapeMultiBatch_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1065353216) |
+| test/contrib_ops/group_query_attention_op_test/SeqlensKLegacy2DShapeTrailingBatch_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1065353216) |
+| test/contrib_ops/group_query_attention_op_test/SeqlensKLegacy2DShape_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1065353216) |
 | test/contrib_ops/layer_norm_op_test/BERTLayerNorm_NoBias_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 2272) |
 | test/contrib_ops/layer_norm_op_test/BERTLayerNorm_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 5632) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm17_double_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 160715044774) |

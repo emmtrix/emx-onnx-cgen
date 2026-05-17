@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op com.microsoft.GroupQueryAttention",
+  "error": "Out of tolerance (max ULP 1065353216)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/group_query_attention_op_test/BoundaryValidSeqlensKWithLargerPast_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft::GroupQueryAttention"
-  ]
+  ],
+  "generated_checksum": "997e60f726744406efc67fc8f147ecbc101a276567495117e4d0424d11bf508c"
 }
