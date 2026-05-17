@@ -9490,8 +9490,6 @@ def test_qmoe_normalize_routing_weights_compiles() -> None:
 
 def test_qmoe_matches_onnxruntime() -> None:
     """Run the QMoE op against ORT using the ORT test artifact model and inputs."""
-    import os
-
     artifact_base = (
         PROJECT_ROOT
         / "emx-ort-test-artifacts-org"
