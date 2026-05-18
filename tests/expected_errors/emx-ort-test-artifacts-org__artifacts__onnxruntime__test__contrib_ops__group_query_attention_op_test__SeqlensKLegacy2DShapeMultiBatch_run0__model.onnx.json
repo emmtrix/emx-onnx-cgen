@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/group_query_attention_op_test/SeqlensKLegacy2DShapeMultiBatch_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::GroupQueryAttention"
+    "com.microsoft.GroupQueryAttention"
   ],
   "generated_checksum": "046ce0e6832620cbf0ca6e4d5befa104b4fd84f6e9d9ca09432b47e1929bd82e"
 }

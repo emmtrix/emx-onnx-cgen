@@ -3,7 +3,7 @@
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/causal_conv_with_state_op_test/SingleTokenDecode_run1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
-    "com.microsoft::CausalConvWithState"
+    "com.microsoft.CausalConvWithState"
   ],
   "generated_checksum": "a371de63b4f1238f3fbf60a8c38f8753c38f0c794ad90d96313f09164d7c5088"
 }
