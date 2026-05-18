@@ -2566,12 +2566,12 @@ Coverage 4272 / 4324 ONNX files (98.8%).
 | test/contrib_ops/gridsample_test/gridsample_paddingmode_border_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/gridsample_test/gridsample_paddingmode_reflection_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/gridsample_test/gridsample_paddingmode_zeros_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/group_query_attention_op_test/BoundaryValidSeqlensKWithLargerPast_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.GroupQueryAttention |
-| test/contrib_ops/group_query_attention_op_test/BoundaryValidSeqlensK_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.GroupQueryAttention |
-| test/contrib_ops/group_query_attention_op_test/MaxBoundarySeqlensK_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.GroupQueryAttention |
-| test/contrib_ops/group_query_attention_op_test/SeqlensKLegacy2DShapeMultiBatch_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.GroupQueryAttention |
-| test/contrib_ops/group_query_attention_op_test/SeqlensKLegacy2DShapeTrailingBatch_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.GroupQueryAttention |
-| test/contrib_ops/group_query_attention_op_test/SeqlensKLegacy2DShape_run0/model.onnx |  | Data/Data | ❌ | Unsupported op com.microsoft.GroupQueryAttention |
+| test/contrib_ops/group_query_attention_op_test/BoundaryValidSeqlensKWithLargerPast_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1065353216) |
+| test/contrib_ops/group_query_attention_op_test/BoundaryValidSeqlensK_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1065353216) |
+| test/contrib_ops/group_query_attention_op_test/MaxBoundarySeqlensK_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1065353216) |
+| test/contrib_ops/group_query_attention_op_test/SeqlensKLegacy2DShapeMultiBatch_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1065353216) |
+| test/contrib_ops/group_query_attention_op_test/SeqlensKLegacy2DShapeTrailingBatch_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1065353216) |
+| test/contrib_ops/group_query_attention_op_test/SeqlensKLegacy2DShape_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1065353216) |
 | test/contrib_ops/inverse_test/four_by_four_batches_float_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/inverse_test/four_by_four_float_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/inverse_test/two_by_two_double_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |

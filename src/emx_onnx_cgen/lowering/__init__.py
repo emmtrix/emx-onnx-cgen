@@ -62,6 +62,7 @@ _LOWERING_MODULES = [
     "grid_sample",
     "gru",
     "group_normalization",
+    "group_query_attention",
     "hardmax",
     "hamming_window",
     "hann_window",
