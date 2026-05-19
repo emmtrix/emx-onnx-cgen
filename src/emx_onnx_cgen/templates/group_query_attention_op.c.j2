@@ -23,6 +23,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         if (cur_pos >= max_total_seq) {
             cur_pos = max_total_seq - 1;
         }
+{% if boundary_zero_on_cache_limit %}
         if (cur_pos >= max_total_seq - 1) {
             for (int h = 0; h < {{ kv_num_heads }}; ++h) {
                 for (int s = 0; s < {{ max_seq_len }}; ++s) {
@@ -43,6 +44,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             }
             continue;
         }
+{% endif %}
         int total_seq = cur_pos + 1;
 
         for (int h = 0; h < {{ kv_num_heads }}; ++h) {
