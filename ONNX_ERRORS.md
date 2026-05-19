@@ -7,7 +7,7 @@ Aggregates non-success verification outcomes.
 
 | Error message | Count | Opset versions |
 | --- | --- | --- |
-| Out of tolerance | 46 | 7, 17, 22 |
+| Out of tolerance | 40 | 7, 17, 22 |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 8 |  |
 
 ## Error frequency by opset
@@ -30,12 +30,6 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/attention_op_test/Attention_Mask1D_Fp32_B2_S64_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1020241) |
 | test/contrib_ops/attention_op_test/Attention_Mask2D_Fp32_B2_S32_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 980755) |
 | test/contrib_ops/bifurcation_detector_op_test/SuffixMatchAtEndOfSrc_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max abs diff 4) |
-| test/contrib_ops/group_query_attention_op_test/BoundaryValidSeqlensKWithLargerPast_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1065353216) |
-| test/contrib_ops/group_query_attention_op_test/BoundaryValidSeqlensK_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1065353216) |
-| test/contrib_ops/group_query_attention_op_test/MaxBoundarySeqlensK_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1065353216) |
-| test/contrib_ops/group_query_attention_op_test/SeqlensKLegacy2DShapeMultiBatch_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1065353216) |
-| test/contrib_ops/group_query_attention_op_test/SeqlensKLegacy2DShapeTrailingBatch_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1065353216) |
-| test/contrib_ops/group_query_attention_op_test/SeqlensKLegacy2DShape_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1065353216) |
 | test/contrib_ops/layer_norm_op_test/BERTLayerNorm_NoBias_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 2272) |
 | test/contrib_ops/layer_norm_op_test/BERTLayerNorm_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 5632) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm17_double_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 160715044774) |
