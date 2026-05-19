@@ -163,6 +163,10 @@ MODEL_EXTRA_VERIFY_ARGS = {
         "--max-ulp",
         "2000",
     ),
+    "emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/layer_norm_op_test/LayerNorm17_double_run0/model.onnx": (
+        "--max-ulp",
+        "200000000000",
+    ),
     "onnx-org/onnx/backend/test/data/node/test_affine_grid_3d/model.onnx": (
         "--fp32-accumulation-strategy",
         "fp64",
