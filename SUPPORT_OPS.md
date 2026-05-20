@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 260 / 262
+Supported operators: 261 / 262
 
 | Operator | Supported |
 | --- | --- |
@@ -235,7 +235,7 @@ Supported operators: 260 / 262
 | com.microsoft.FusedMatMul | ✅ |
 | com.microsoft.GatherBlockQuantized | ✅ |
 | com.microsoft.GridSample | ✅ |
-| com.microsoft.GroupQueryAttention | ❌ |
+| com.microsoft.GroupQueryAttention | ✅ |
 | com.microsoft.Inverse | ✅ |
 | com.microsoft.LinearAttention | ✅ |
 | com.microsoft.MatMulBnb4 | ✅ |

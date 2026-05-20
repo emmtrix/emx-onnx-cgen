@@ -3373,6 +3373,12 @@ class GroupQueryAttentionOp(RenderableOpBase):
             ]
         )
 
+        constant_names = {const.name for const in model.constants}
+        boundary_zero_on_cache_limit = (
+            self.seqlens_k not in constant_names
+            or self.total_sequence_length not in constant_names
+        )
+
         rendered = (
             state.templates["group_query_attention"]
             .render(
@@ -3405,6 +3411,7 @@ class GroupQueryAttentionOp(RenderableOpBase):
                 seqlens_rank=self.seqlens_rank,
                 seqlens_rows=self.seqlens_rows,
                 seqlens_cols=self.seqlens_cols,
+                boundary_zero_on_cache_limit=boundary_zero_on_cache_limit,
             )
             .rstrip()
         )
