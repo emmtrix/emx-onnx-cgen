@@ -7,7 +7,7 @@ Aggregates non-success verification outcomes.
 
 | Error message | Count | Opset versions |
 | --- | --- | --- |
-| Out of tolerance | 45 | 7, 17, 22 |
+| Out of tolerance | 39 | 7, 17, 22 |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 8 |  |
 
 ## Error frequency by opset
