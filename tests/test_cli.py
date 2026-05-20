@@ -519,6 +519,34 @@ def test_cli_verify_per_node_accuracy_flag_can_be_enabled() -> None:
     assert args.per_node_accuracy is True
 
 
+def test_cli_verify_max_abs_diff_defaults_to_zero() -> None:
+    parser = cli._build_parser()
+    args = parser.parse_args(["verify", "model.onnx"])
+    assert args.max_abs_diff == 0.0
+
+
+def test_cli_verify_max_abs_diff_can_be_set() -> None:
+    parser = cli._build_parser()
+    args = parser.parse_args(["verify", "model.onnx", "--max-abs-diff", "0.002"])
+    assert args.max_abs_diff == pytest.approx(0.002)
+
+
+def test_compare_numeric_outputs_uses_abs_for_float_when_requested() -> None:
+    actual = np.asarray([0.1], dtype=np.float32)
+    expected = np.asarray([0.1002], dtype=np.float32)
+    metric_kind, output_max, output_worst = cli._compare_numeric_outputs(
+        actual,
+        expected,
+        dtype=ScalarType.F32,
+        atol_eps=1.0,
+        use_abs_for_float=True,
+    )
+    assert metric_kind == "abs"
+    assert output_worst is not None
+    assert output_worst[0] == (0,)
+    assert output_max == pytest.approx(abs(float(actual[0]) - float(expected[0])))
+
+
 @pytest.mark.parametrize(
     ("argv", "expected_mode"),
     [

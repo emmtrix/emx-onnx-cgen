@@ -388,8 +388,10 @@ class _ComparisonMetrics:
             return "no numeric comparisons"
         return ", ".join(parts)
 
-    def failing_metric_detail(self, *, max_ulp_limit: int) -> str | None:
-        if self.has_abs_diff and self.max_abs_diff > 0:
+    def failing_metric_detail(
+        self, *, max_ulp_limit: int, max_abs_diff_limit: float = 0.0
+    ) -> str | None:
+        if self.has_abs_diff and self.max_abs_diff > max_abs_diff_limit:
             return f"max abs diff {self.max_abs_diff}"
         if self.has_ulp and self.max_ulp > max_ulp_limit:
             return f"max ULP {self.max_ulp}"
@@ -468,9 +470,19 @@ class _VerificationIssue:
 
     @classmethod
     def out_of_tolerance(
-        cls, metrics: _ComparisonMetrics, *, max_ulp_limit: int
+        cls,
+        metrics: _ComparisonMetrics,
+        *,
+        max_ulp_limit: int,
+        max_abs_diff_limit: float = 0.0,
     ) -> "_VerificationIssue":
-        assert metrics.failing_metric_detail(max_ulp_limit=max_ulp_limit) is not None
+        assert (
+            metrics.failing_metric_detail(
+                max_ulp_limit=max_ulp_limit,
+                max_abs_diff_limit=max_abs_diff_limit,
+            )
+            is not None
+        )
         return cls(
             code="out_of_tolerance",
             message="Out of tolerance",
@@ -787,8 +799,11 @@ def _compare_numeric_outputs(
     *,
     dtype: ScalarType,
     atol_eps: float,
+    use_abs_for_float: bool = False,
 ) -> tuple[str, float | int, tuple[tuple[int, ...], object, object] | None]:
     if dtype.is_float:
+        if use_abs_for_float:
+            return "abs", *_worst_non_ulp_float_diff(actual, expected)
         if _supports_ulp_comparison(dtype):
             return "ulp", *worst_ulp_diff(actual, expected, atol_eps=atol_eps)
         return "abs", *_worst_non_ulp_float_diff(actual, expected)
@@ -1165,6 +1180,16 @@ def _build_parser() -> argparse.ArgumentParser:
         help=(
             "Absolute tolerance as a multiple of machine epsilon for ULP checks "
             "(default: 1.0)"
+        ),
+    )
+    verify_parser.add_argument(
+        "--max-abs-diff",
+        type=float,
+        default=0.0,
+        help=(
+            "Maximum allowed absolute difference for floating outputs. "
+            "When > 0, float comparisons use absolute difference instead of ULP "
+            "(default: 0.0)"
         ),
     )
     verify_parser.add_argument(
@@ -1549,6 +1574,7 @@ def _report_per_node_accuracy(
     output_dtypes: Mapping[str, ScalarType],
     atol_eps: float,
     max_ulp_limit: int,
+    max_abs_diff_limit: float,
 ) -> None:
     producer_by_output: dict[str, int] = {}
     for node_index, node in enumerate(graph.nodes):
@@ -1597,6 +1623,7 @@ def _report_per_node_accuracy(
                 reference,
                 dtype=scalar_type,
                 atol_eps=atol_eps,
+                use_abs_for_float=max_abs_diff_limit > 0,
             )
             if metric_kind == "ulp":
                 output_max_ulp = int(output_max)
@@ -1611,7 +1638,7 @@ def _report_per_node_accuracy(
                 output_max_abs = output_max
                 if output_max_abs > node_peak_abs:
                     node_peak_abs = output_max_abs
-                if output_max_abs > 0:
+                if output_max_abs > max_abs_diff_limit:
                     node_has_failure = True
                     reporter.step_fail(f"max abs diff {output_max_abs}")
                 else:
@@ -2493,6 +2520,7 @@ def _verify_model(
                     runtime_out,
                     dtype=scalar_type,
                     atol_eps=args.atol_eps,
+                    use_abs_for_float=args.max_abs_diff > 0,
                 )
                 if metric_kind == "ulp":
                     if output_worst is not None:
@@ -2521,10 +2549,13 @@ def _verify_model(
         except AssertionError as exc:
             active_reporter.step_fail(str(exc))
             return None, str(exc), operators, opset_version, generated_checksum
-        failure_detail = metrics.failing_metric_detail(max_ulp_limit=args.max_ulp)
+        failure_detail = metrics.failing_metric_detail(
+            max_ulp_limit=args.max_ulp,
+            max_abs_diff_limit=args.max_abs_diff,
+        )
         if failure_detail is not None:
             active_reporter.step_fail(failure_detail)
-        if metrics.has_abs_diff and metrics.max_abs_diff > 0:
+        if metrics.has_abs_diff and metrics.max_abs_diff > args.max_abs_diff:
             if metrics.worst_abs_diff is not None:
                 node_label = metrics.worst_abs_diff.node_name or "(unknown)"
                 index_display = ", ".join(
@@ -2547,10 +2578,13 @@ def _verify_model(
                         output_dtypes=output_dtypes,
                         atol_eps=args.atol_eps,
                         max_ulp_limit=args.max_ulp,
+                        max_abs_diff_limit=args.max_abs_diff,
                     )
                 )
             issue = _VerificationIssue.out_of_tolerance(
-                metrics, max_ulp_limit=args.max_ulp
+                metrics,
+                max_ulp_limit=args.max_ulp,
+                max_abs_diff_limit=args.max_abs_diff,
             )
             return (
                 None,
@@ -2580,10 +2614,13 @@ def _verify_model(
                         output_dtypes=output_dtypes,
                         atol_eps=args.atol_eps,
                         max_ulp_limit=args.max_ulp,
+                        max_abs_diff_limit=args.max_abs_diff,
                     )
                 )
             issue = _VerificationIssue.out_of_tolerance(
-                metrics, max_ulp_limit=args.max_ulp
+                metrics,
+                max_ulp_limit=args.max_ulp,
+                max_abs_diff_limit=args.max_abs_diff,
             )
             return (
                 None,
@@ -2603,6 +2640,7 @@ def _verify_model(
                     output_dtypes=output_dtypes,
                     atol_eps=args.atol_eps,
                     max_ulp_limit=args.max_ulp,
+                    max_abs_diff_limit=args.max_abs_diff,
                 )
             )
         return (
