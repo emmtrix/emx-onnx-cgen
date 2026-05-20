@@ -2579,7 +2579,7 @@ Coverage 4273 / 4324 ONNX files (98.8%).
 | test/contrib_ops/inverse_test/two_by_two_float_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/layer_norm_op_test/BERTLayerNorm_NoBias_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 2272) |
 | test/contrib_ops/layer_norm_op_test/BERTLayerNorm_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 5632) |
-| test/contrib_ops/layer_norm_op_test/LayerNorm17_double_run0/model.onnx (--max-ulp 200000000000) | 17 | Data/Data | ✅ | OK (max ULP 160715044774) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm17_double_run0/model.onnx (--runtime onnxruntime --test-data-inputs-only) | 17 | Data/ORT | ✅ | OK (max ULP 5) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm17_opset_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 299) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm17_opset_run1/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 299) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_NormSize1_NoBias_run0/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
