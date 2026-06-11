@@ -8439,6 +8439,17 @@ def test_slice_op_matches_onnxruntime() -> None:
     _run_ort_compare(model)
 
 
+def test_slice_with_dynamic_batch_compiles() -> None:
+    """Slice over a static axis when the input has a symbolic batch dimension.
+
+    The model is an opset-9 Slice that cuts axis=2 (static, size 4 → 2)
+    while axis=0 carries the symbolic dim-param "batch".  The compiler must
+    not reject this with "Dynamic dims are not supported".
+    """
+    model = onnx.load(PROJECT_ROOT / "tests/onnx/slice_dynamic_batch.onnx")
+    Compiler(CompilerOptions()).compile(model)
+
+
 def test_dropout_op_matches_onnxruntime() -> None:
     model = _make_dropout_model()
     _run_ort_compare(model)
