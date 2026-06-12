@@ -919,9 +919,7 @@ class Compiler:
         ctx: GraphContext,
         action: Callable[[OpBase], None],
     ) -> None:
-        for node_index, (op, node_info) in enumerate(
-            zip(ops, node_infos, strict=True)
-        ):
+        for node_index, (op, node_info) in enumerate(zip(ops, node_infos, strict=True)):
             try:
                 action(op)
             except CompilerError as exc:
