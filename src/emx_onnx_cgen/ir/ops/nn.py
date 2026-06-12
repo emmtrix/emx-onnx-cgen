@@ -32,7 +32,9 @@ def _shape_product(shape: tuple[int, ...]) -> int:
     product = 1
     for dim in shape:
         if dim < 0:
-            raise ShapeInferenceError("Dynamic dims are not supported")
+            raise ShapeInferenceError(
+                f"Cannot compute static shape product for dynamic shape {shape}"
+            )
         product *= dim
     return product
 
