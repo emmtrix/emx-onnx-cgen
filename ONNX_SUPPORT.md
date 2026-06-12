@@ -9,7 +9,7 @@ Overview:
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1825 / 1827, 99.9% | 1.21.0 |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4278 / 4324, 98.9% | n/a |
-| [Local ONNX test coverage](#local-onnx-test-coverage) | 8 / 8, 100.0% | n/a |
+| [Local ONNX test coverage](#local-onnx-test-coverage) | 9 / 9, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
 
@@ -6190,7 +6190,7 @@ Coverage 4278 / 4324 ONNX files (98.9%).
 
 Test directory: `tests/onnx`
 
-Coverage 8 / 8 ONNX files (100.0%).
+Coverage 9 / 9 ONNX files (100.0%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -6201,4 +6201,5 @@ Coverage 8 / 8 ONNX files (100.0%).
 | micro_kws_m_static_fp32.onnx | 15 | Random/ORT | ✅ | OK (max ULP 6) |
 | micro_kws_m_static_qdq.onnx | 15 | Random/ORT | ✅ | OK (max ULP 0) |
 | micro_kws_m_static_qoperator.onnx (--replicate-ort-bugs) | 15 | Random/ORT | ✅ | OK (max ULP 0) |
+| neuralnet_slice_dynamic_batch.onnx | 9 | Random/ORT | ✅ | OK (max ULP 0) |
 | slice_dynamic_batch.onnx | 9 | Random/ORT | ✅ | OK (max ULP 0) |
