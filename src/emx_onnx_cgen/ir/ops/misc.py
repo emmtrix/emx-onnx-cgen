@@ -666,7 +666,9 @@ class ConcatOp(RenderableOpBase):
             axis += len(output_shape)
         dim_args = emitter.dim_args_str()
         output_dim_names = emitter.dim_names_for(self.output)
-        output_shape_exprs = CEmitterCompat.shape_dim_exprs(output_shape, output_dim_names)
+        output_shape_exprs = CEmitterCompat.shape_dim_exprs(
+            output_shape, output_dim_names
+        )
         outer_exprs = output_shape_exprs[:axis]
         inner_exprs = output_shape_exprs[axis + 1 :]
         outer = CEmitterCompat.element_count_expr(outer_exprs) if outer_exprs else "1"
