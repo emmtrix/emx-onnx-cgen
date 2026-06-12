@@ -664,13 +664,21 @@ class ConcatOp(RenderableOpBase):
         axis = self.axis
         if axis < 0:
             axis += len(output_shape)
-        outer = CEmitterCompat.element_count(output_shape[:axis] or (1,))
-        inner = CEmitterCompat.element_count(output_shape[axis + 1 :] or (1,))
+        dim_args = emitter.dim_args_str()
+        output_dim_names = emitter.dim_names_for(self.output)
+        output_shape_exprs = CEmitterCompat.shape_dim_exprs(
+            output_shape, output_dim_names
+        )
+        outer_exprs = output_shape_exprs[:axis]
+        inner_exprs = output_shape_exprs[axis + 1 :]
+        outer = CEmitterCompat.element_count_expr(outer_exprs) if outer_exprs else "1"
+        inner = CEmitterCompat.element_count_expr(inner_exprs) if inner_exprs else "1"
         axis_sizes = tuple(shape[axis] for shape in input_shapes)
         input_suffixes = tuple(
-            emitter.param_array_suffix(shape) for shape in input_shapes
+            emitter.param_array_suffix(shape, emitter.dim_names_for(name))
+            for shape, name in zip(input_shapes, self.inputs)
         )
-        output_suffix = emitter.param_array_suffix(output_shape)
+        output_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
         param_decls = emitter.build_param_decls(
             [
                 *(
@@ -695,6 +703,7 @@ class ConcatOp(RenderableOpBase):
                 input_count=len(self.inputs),
                 outer=outer,
                 inner=inner,
+                dim_args=dim_args,
             )
             .rstrip()
         )

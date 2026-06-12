@@ -6,6 +6,7 @@ import os
 from dataclasses import FrozenInstanceError, fields
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -8448,6 +8449,52 @@ def test_slice_with_dynamic_batch_compiles() -> None:
     """
     model = onnx.load(PROJECT_ROOT / "tests/onnx/slice_dynamic_batch.onnx")
     Compiler(CompilerOptions()).compile(model)
+
+
+@pytest.mark.parametrize("op_type", ["Softmax", "LogSoftmax", "Hardmax"])
+def test_axis_normalization_with_dynamic_batch_matches_onnxruntime(
+    op_type: str,
+) -> None:
+    input_info = helper.make_tensor_value_info(
+        "input", TensorProto.FLOAT, ["batch", 32]
+    )
+    output_info = helper.make_tensor_value_info(
+        "output", TensorProto.FLOAT, ["batch", 32]
+    )
+    node = helper.make_node(op_type, ["input"], ["output"], axis=1)
+    graph = helper.make_graph(
+        [node], f"{op_type.lower()}_dynamic_batch", [input_info], [output_info]
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        model_path = Path(temp_dir) / "model.onnx"
+        onnx.save_model(model, model_path)
+        env = os.environ.copy()
+        python_path = str(PROJECT_ROOT / "src")
+        if env.get("PYTHONPATH"):
+            python_path = f"{python_path}{os.pathsep}{env['PYTHONPATH']}"
+        env["PYTHONPATH"] = python_path
+        subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "emx_onnx_cgen",
+                "verify",
+                str(model_path),
+                "--temp-dir-root",
+                temp_dir,
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_ROOT,
+            env=env,
+        )
 
 
 def test_dropout_op_matches_onnxruntime() -> None:

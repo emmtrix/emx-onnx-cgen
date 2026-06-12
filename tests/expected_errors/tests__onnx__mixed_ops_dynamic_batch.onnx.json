@@ -1,0 +1,20 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir tests/onnx mixed_ops_dynamic_batch.onnx",
+  "verification_mode": "Random/ORT",
+  "operators": [
+    "Slice",
+    "Conv",
+    "PRelu",
+    "GlobalAveragePool",
+    "Squeeze",
+    "Transpose",
+    "MatMul",
+    "Mul",
+    "Softmax",
+    "Concat",
+    "Gemm"
+  ],
+  "opset_version": 9,
+  "generated_checksum": "7834140741f850c348701d46dbe70415eae5b3420c7a0746c63b198e86367a0d"
+}
