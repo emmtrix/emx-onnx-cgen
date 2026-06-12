@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir tests/onnx neuralnet_slice_dynamic_batch.onnx",
+  "command_line": "verify --model-base-dir tests/onnx mixed_ops_dynamic_batch.onnx",
   "verification_mode": "Random/ORT",
   "operators": [
     "Slice",

@@ -6201,5 +6201,5 @@ Coverage 9 / 9 ONNX files (100.0%).
 | micro_kws_m_static_fp32.onnx | 15 | Random/ORT | ✅ | OK (max ULP 6) |
 | micro_kws_m_static_qdq.onnx | 15 | Random/ORT | ✅ | OK (max ULP 0) |
 | micro_kws_m_static_qoperator.onnx (--replicate-ort-bugs) | 15 | Random/ORT | ✅ | OK (max ULP 0) |
-| neuralnet_slice_dynamic_batch.onnx | 9 | Random/ORT | ✅ | OK (max ULP 0) |
+| mixed_ops_dynamic_batch.onnx | 9 | Random/ORT | ✅ | OK (max ULP 0) |
 | slice_dynamic_batch.onnx | 9 | Random/ORT | ✅ | OK (max ULP 0) |
