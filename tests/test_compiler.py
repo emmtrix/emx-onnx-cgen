@@ -6,8 +6,30 @@ import onnx
 from onnx import TensorProto, helper
 import pytest
 
+from shared.scalar_types import ScalarType
+
+from emx_onnx_cgen.codegen.c_emitter import NodeInfo
 from emx_onnx_cgen.compiler import Compiler, CompilerOptions
 from emx_onnx_cgen.errors import ShapeInferenceError, UnsupportedOpError
+from emx_onnx_cgen.ir.context import GraphContext
+from emx_onnx_cgen.ir.model import Graph, TensorType, Value
+from emx_onnx_cgen.ir.op_base import EmitContext, Emitter, OpBase
+from emx_onnx_cgen.ir.op_context import OpContext
+
+
+class _FailingValidateOp(OpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
+
+    def __init__(self, input0: str, output: str) -> None:
+        self.input0 = input0
+        self.output = output
+
+    def validate(self, ctx: OpContext) -> None:
+        raise ShapeInferenceError("validation failed")
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        raise NotImplementedError
 
 
 def _make_split_dynamic_dim_model() -> onnx.ModelProto:
@@ -206,7 +228,7 @@ _OFFICIAL_SEQUENCE_MODELS = (
 )
 
 
-def test_compile_debug_lowering_failure_context_disabled_by_default() -> None:
+def test_compile_reports_lowering_failure_node_context_by_default() -> None:
     compiler = Compiler(CompilerOptions())
 
     with pytest.raises(
@@ -214,7 +236,18 @@ def test_compile_debug_lowering_failure_context_disabled_by_default() -> None:
     ) as exc_info:
         compiler.compile(_make_split_dynamic_dim_model())
 
-    assert "Lowering debug context:" not in str(exc_info.value)
+    message = str(exc_info.value)
+    assert "while lowering node_index=0, op_type=Split, name=split_dynamic" in message
+    assert (
+        "inputs=[x: tensor[dtype=float, shape=(-1, 2, 3), "
+        "dim_params=('N', None, None)]]"
+    ) in message
+    assert (
+        "outputs=[y0: tensor[dtype=float, shape=(-1, 1, 3), "
+        "dim_params=('N', None, None)], y1: tensor[dtype=float, "
+        "shape=(-1, 1, 3), dim_params=('N', None, None)]]"
+    ) in message
+    assert "Lowering debug context:" not in message
 
 
 def test_compile_debug_lowering_failure_context_enabled() -> None:
@@ -226,6 +259,7 @@ def test_compile_debug_lowering_failure_context_enabled() -> None:
         compiler.compile(_make_split_dynamic_dim_model())
 
     message = str(exc_info.value)
+    assert "while lowering node_index=0, op_type=Split, name=split_dynamic" in message
     assert "Lowering debug context:" in message
     assert "node_index: 0" in message
     assert "op_type: Split" in message
@@ -238,6 +272,61 @@ def test_compile_debug_lowering_failure_context_enabled() -> None:
         "y0: tensor[dtype=float, shape=(-1, 1, 3), dim_params=('N', None, None)]"
         in message
     )
+
+
+def test_op_phase_failures_report_node_context() -> None:
+    compiler = Compiler(CompilerOptions())
+    graph = Graph(
+        inputs=(
+            Value(
+                name="x",
+                type=TensorType(
+                    dtype=ScalarType.F32,
+                    shape=(2, 3),
+                    dim_params=(None, None),
+                ),
+            ),
+        ),
+        outputs=(
+            Value(
+                name="y",
+                type=TensorType(
+                    dtype=ScalarType.F32,
+                    shape=(2, 3),
+                    dim_params=(None, None),
+                ),
+            ),
+        ),
+        nodes=(),
+        initializers=(),
+    )
+    ctx = GraphContext(graph)
+    op_ctx = OpContext(ctx)
+    op = _FailingValidateOp("x", "y")
+    node_info = NodeInfo(
+        op_type="Identity",
+        name="identity_validate",
+        inputs=("x",),
+        outputs=("y",),
+        attrs={},
+    )
+
+    with pytest.raises(ShapeInferenceError, match="validation failed") as exc_info:
+        compiler._run_op_phase(  # noqa: SLF001
+            "validate",
+            (op,),
+            (node_info,),
+            ctx,
+            lambda current_op: current_op.validate(op_ctx),
+        )
+
+    message = str(exc_info.value)
+    assert (
+        "during validate for node_index=0, op_type=Identity, "
+        "name=identity_validate, op_class=_FailingValidateOp"
+    ) in message
+    assert "x: tensor[dtype=float, shape=(2, 3), dim_params=(None, None)]" in message
+    assert "y: tensor[dtype=float, shape=(2, 3), dim_params=(None, None)]" in message
 
 
 def test_compile_reports_unsupported_op_with_domain() -> None:
