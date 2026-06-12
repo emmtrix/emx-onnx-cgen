@@ -20,7 +20,12 @@ from .codegen.c_emitter import (
     ModelHeader,
     NodeInfo,
 )
-from .errors import ShapeInferenceError, UnsupportedOpError, unsupported_op_message
+from .errors import (
+    CompilerError,
+    ShapeInferenceError,
+    UnsupportedOpError,
+    unsupported_op_message,
+)
 from .invariants import (
     check_graph_integrity,
     check_inferred_shapes,
@@ -510,16 +515,31 @@ class Compiler:
             output_types,
         ) = self._collect_io_specs(graph)
         ops, node_infos = self._lower_nodes(ctx)
-        check_lowered_ops(ops)
+        self._check_lowered_ops(ops, node_infos, ctx)
         op_ctx = OpContext(ctx)
-        for op in ops:
-            op.validate(op_ctx)
-        for op in ops:
-            op.infer_types(op_ctx)
-        check_inferred_types(ops, op_ctx)
-        for op in ops:
-            op.infer_shapes(op_ctx)
-        check_inferred_shapes(ops, op_ctx)
+        self._run_op_phase(
+            "validate",
+            ops,
+            node_infos,
+            ctx,
+            lambda op: op.validate(op_ctx),
+        )
+        self._run_op_phase(
+            "infer_types",
+            ops,
+            node_infos,
+            ctx,
+            lambda op: op.infer_types(op_ctx),
+        )
+        self._check_inferred_types(ops, node_infos, op_ctx)
+        self._run_op_phase(
+            "infer_shapes",
+            ops,
+            node_infos,
+            ctx,
+            lambda op: op.infer_shapes(op_ctx),
+        )
+        self._check_inferred_shapes(ops, node_infos, op_ctx)
         ops, node_infos = self._prune_dead_ops(ops, node_infos, output_names)
         refreshed_output_types: list[ValueType] = []
         refreshed_output_shapes: list[tuple[int, ...]] = []
@@ -833,6 +853,162 @@ class Compiler:
             lines.append(f"  - {self._format_debug_value(ctx, name)}")
         return "\n".join(lines)
 
+    def _format_lowering_failure_summary(
+        self,
+        ctx: GraphContext,
+        node: Node,
+        *,
+        node_index: int,
+    ) -> str:
+        inputs = ", ".join(self._format_debug_value(ctx, name) for name in node.inputs)
+        outputs = ", ".join(
+            self._format_debug_value(ctx, name) for name in node.outputs
+        )
+        return (
+            f"while lowering node_index={node_index}, op_type={node.op_type}, "
+            f"name={node.name or '<unnamed>'}, inputs=[{inputs}], "
+            f"outputs=[{outputs}]"
+        )
+
+    def _format_node_info_failure_summary(
+        self,
+        ctx: GraphContext,
+        node_info: NodeInfo,
+        *,
+        node_index: int,
+        phase: str,
+        op: OpBase | None = None,
+    ) -> str:
+        inputs = ", ".join(
+            self._format_debug_value(ctx, name) for name in node_info.inputs
+        )
+        outputs = ", ".join(
+            self._format_debug_value(ctx, name) for name in node_info.outputs
+        )
+        op_class = f", op_class={type(op).__name__}" if op is not None else ""
+        return (
+            f"during {phase} for node_index={node_index}, "
+            f"op_type={node_info.op_type}, name={node_info.name or '<unnamed>'}"
+            f"{op_class}, inputs=[{inputs}], outputs=[{outputs}]"
+        )
+
+    def _raise_with_node_info_context(
+        self,
+        exc: CompilerError,
+        ctx: GraphContext,
+        node_info: NodeInfo,
+        *,
+        node_index: int,
+        phase: str,
+        op: OpBase | None = None,
+    ) -> None:
+        summary = self._format_node_info_failure_summary(
+            ctx,
+            node_info,
+            node_index=node_index,
+            phase=phase,
+            op=op,
+        )
+        raise type(exc)(f"{exc} ({summary})") from exc
+
+    def _run_op_phase(
+        self,
+        phase: str,
+        ops: Sequence[OpBase],
+        node_infos: Sequence[NodeInfo],
+        ctx: GraphContext,
+        action: Callable[[OpBase], None],
+    ) -> None:
+        for node_index, (op, node_info) in enumerate(
+            zip(ops, node_infos, strict=True)
+        ):
+            try:
+                action(op)
+            except CompilerError as exc:
+                self._raise_with_node_info_context(
+                    exc,
+                    ctx,
+                    node_info,
+                    node_index=node_index,
+                    phase=phase,
+                    op=op,
+                )
+
+    def _check_lowered_ops(
+        self,
+        ops: Sequence[OpBase],
+        node_infos: Sequence[NodeInfo],
+        ctx: GraphContext,
+    ) -> None:
+        try:
+            check_lowered_ops(ops)
+        except CompilerError as exc:
+            for node_index, (op, node_info) in enumerate(
+                zip(ops, node_infos, strict=True)
+            ):
+                try:
+                    check_lowered_ops((op,))
+                except CompilerError:
+                    self._raise_with_node_info_context(
+                        exc,
+                        ctx,
+                        node_info,
+                        node_index=node_index,
+                        phase="check_lowered_ops",
+                        op=op,
+                    )
+            raise
+
+    def _check_inferred_types(
+        self,
+        ops: Sequence[OpBase],
+        node_infos: Sequence[NodeInfo],
+        op_ctx: OpContext,
+    ) -> None:
+        try:
+            check_inferred_types(ops, op_ctx)
+        except CompilerError as exc:
+            for node_index, (op, node_info) in enumerate(
+                zip(ops, node_infos, strict=True)
+            ):
+                try:
+                    check_inferred_types((op,), op_ctx)
+                except CompilerError:
+                    self._raise_with_node_info_context(
+                        exc,
+                        op_ctx.graph,
+                        node_info,
+                        node_index=node_index,
+                        phase="check_inferred_types",
+                        op=op,
+                    )
+            raise
+
+    def _check_inferred_shapes(
+        self,
+        ops: Sequence[OpBase],
+        node_infos: Sequence[NodeInfo],
+        op_ctx: OpContext,
+    ) -> None:
+        try:
+            check_inferred_shapes(ops, op_ctx)
+        except CompilerError as exc:
+            for node_index, (op, node_info) in enumerate(
+                zip(ops, node_infos, strict=True)
+            ):
+                try:
+                    check_inferred_shapes((op,), op_ctx)
+                except CompilerError:
+                    self._raise_with_node_info_context(
+                        exc,
+                        op_ctx.graph,
+                        node_info,
+                        node_index=node_index,
+                        phase="check_inferred_shapes",
+                        op=op,
+                    )
+            raise
+
     def _lower_nodes(self, ctx: GraphContext) -> tuple[list[OpBase], list[NodeInfo]]:
         ops: list[OpBase] = []
         node_infos: list[NodeInfo] = []
@@ -845,17 +1021,21 @@ class Compiler:
                 )
             try:
                 ops.append(lowering(ctx, node))
-            except (ShapeInferenceError, UnsupportedOpError) as exc:
-                if not self._debug_lowering_failures:
-                    raise
-                debug_context = self._format_lowering_debug_context(
+            except CompilerError as exc:
+                summary = self._format_lowering_failure_summary(
                     ctx,
                     node,
                     node_index=node_index,
                 )
-                raise type(exc)(
-                    f"{exc}\n\nLowering debug context:\n{debug_context}"
-                ) from exc
+                message = f"{exc} ({summary})"
+                if self._debug_lowering_failures:
+                    debug_context = self._format_lowering_debug_context(
+                        ctx,
+                        node,
+                        node_index=node_index,
+                    )
+                    message = f"{message}\n\nLowering debug context:\n{debug_context}"
+                raise type(exc)(message) from exc
             node_infos.append(
                 NodeInfo(
                     op_type=node.op_type,
