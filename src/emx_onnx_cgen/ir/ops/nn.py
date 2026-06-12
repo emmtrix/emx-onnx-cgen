@@ -5656,27 +5656,28 @@ class SoftmaxOp(RenderableOpBase):
         op_name = emitter.op_function_name(model, ctx.op_index)
         output_shape = emitter.ctx_shape(self.output)
         output_dim_names = emitter.dim_names_for(self.output)
+        output_shape_exprs = CEmitterCompat.shape_dim_exprs(
+            output_shape, output_dim_names
+        )
         output_dtype = emitter.ctx_dtype(self.output)
         axis = emitter.derived(self, "axis")
         if self.use_legacy_axis_semantics:
             outer = (
-                _shape_product_expr(output_shape[:axis], output_dim_names)
+                CEmitterCompat.element_count_expr(output_shape_exprs[:axis])
                 if axis > 0
                 else 1
             )
-            axis_size = _shape_product_expr(output_shape[axis:], output_dim_names)
+            axis_size = CEmitterCompat.element_count_expr(output_shape_exprs[axis:])
             inner = 1
         else:
             outer = (
-                _shape_product_expr(output_shape[:axis], output_dim_names)
+                CEmitterCompat.element_count_expr(output_shape_exprs[:axis])
                 if axis > 0
                 else 1
             )
-            axis_size = CEmitterCompat.shape_dim_exprs(output_shape, output_dim_names)[
-                axis
-            ]
+            axis_size = output_shape_exprs[axis]
             inner = (
-                _shape_product_expr(output_shape[axis + 1 :], output_dim_names)
+                CEmitterCompat.element_count_expr(output_shape_exprs[axis + 1 :])
                 if axis + 1 < len(output_shape)
                 else 1
             )
@@ -5929,27 +5930,28 @@ class LogSoftmaxOp(RenderableOpBase):
         op_name = emitter.op_function_name(model, ctx.op_index)
         output_shape = emitter.ctx_shape(self.output)
         output_dim_names = emitter.dim_names_for(self.output)
+        output_shape_exprs = CEmitterCompat.shape_dim_exprs(
+            output_shape, output_dim_names
+        )
         output_dtype = emitter.ctx_dtype(self.output)
         axis = emitter.derived(self, "axis")
         if self.use_legacy_axis_semantics:
             outer = (
-                _shape_product_expr(output_shape[:axis], output_dim_names)
+                CEmitterCompat.element_count_expr(output_shape_exprs[:axis])
                 if axis > 0
                 else 1
             )
-            axis_size = _shape_product_expr(output_shape[axis:], output_dim_names)
+            axis_size = CEmitterCompat.element_count_expr(output_shape_exprs[axis:])
             inner = 1
         else:
             outer = (
-                _shape_product_expr(output_shape[:axis], output_dim_names)
+                CEmitterCompat.element_count_expr(output_shape_exprs[:axis])
                 if axis > 0
                 else 1
             )
-            axis_size = CEmitterCompat.shape_dim_exprs(output_shape, output_dim_names)[
-                axis
-            ]
+            axis_size = output_shape_exprs[axis]
             inner = (
-                _shape_product_expr(output_shape[axis + 1 :], output_dim_names)
+                CEmitterCompat.element_count_expr(output_shape_exprs[axis + 1 :])
                 if axis + 1 < len(output_shape)
                 else 1
             )
@@ -6027,17 +6029,20 @@ class HardmaxOp(RenderableOpBase):
         op_name = emitter.op_function_name(model, ctx.op_index)
         output_shape = emitter.ctx_shape(self.output)
         output_dim_names = emitter.dim_names_for(self.output)
+        output_shape_exprs = CEmitterCompat.shape_dim_exprs(
+            output_shape, output_dim_names
+        )
         output_dtype = emitter.ctx_dtype(self.output)
         zero_literal = output_dtype.zero_literal
         axis = emitter.derived(self, "axis")
         outer = (
-            _shape_product_expr(output_shape[:axis], output_dim_names)
+            CEmitterCompat.element_count_expr(output_shape_exprs[:axis])
             if axis > 0
             else 1
         )
-        axis_size = CEmitterCompat.shape_dim_exprs(output_shape, output_dim_names)[axis]
+        axis_size = output_shape_exprs[axis]
         inner = (
-            _shape_product_expr(output_shape[axis + 1 :], output_dim_names)
+            CEmitterCompat.element_count_expr(output_shape_exprs[axis + 1 :])
             if axis + 1 < len(output_shape)
             else 1
         )
