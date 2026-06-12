@@ -1,0 +1,24 @@
+{
+  "error": "Out of tolerance (max ULP 1975197241)",
+  "command_line": "verify --model-base-dir tests/onnx neuralnet_slice_dynamic_batch.onnx --max-ulp 10000000",
+  "extra_cli_args": [
+    "--max-ulp",
+    "10000000"
+  ],
+  "verification_mode": "Random/ORT",
+  "operators": [
+    "Slice",
+    "Conv",
+    "PRelu",
+    "GlobalAveragePool",
+    "Squeeze",
+    "Transpose",
+    "MatMul",
+    "Mul",
+    "Softmax",
+    "Concat",
+    "Gemm"
+  ],
+  "opset_version": 9,
+  "generated_checksum": "b48d8785d19aa9121ff1f2098e03fdb341bf3ff899ebf09af968e36ae7db4548"
+}

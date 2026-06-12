@@ -8450,6 +8450,23 @@ def test_slice_with_dynamic_batch_compiles() -> None:
     Compiler(CompilerOptions()).compile(model)
 
 
+def test_neuralnet_with_dynamic_batch_compiles() -> None:
+    """Full-network model with a symbolic batch dimension compiles end-to-end.
+
+    The model reproduces the operator mix from a neuralnet_large.onnx report:
+    Slice, Conv, PRelu, GlobalAveragePool, Squeeze, Transpose, MatMul, Mul,
+    Softmax, Concat, Gemm — all at opset 9 with a symbolic "batch" dim.
+
+    Two regressions are covered simultaneously:
+    1. lower_slice rejected inputs whose batch dim was symbolic even when the
+       slice operated only on static spatial axes.
+    2. ConcatOp.emit() called element_count() on the pre-axis shape, which
+       raised ValueError for symbolic (negative) dimensions.
+    """
+    model = onnx.load(PROJECT_ROOT / "tests/onnx/neuralnet_slice_dynamic_batch.onnx")
+    Compiler(CompilerOptions()).compile(model)
+
+
 def test_dropout_op_matches_onnxruntime() -> None:
     model = _make_dropout_model()
     _run_ort_compare(model)

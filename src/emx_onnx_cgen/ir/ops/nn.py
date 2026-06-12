@@ -1637,11 +1637,18 @@ class GemmOp(GemmLikeOpBase):
         trans_b = bool(emitter.derived(self, "trans_b"))
         c_shape = emitter.derived(self, "c_shape")
         c_axis = str(emitter.derived(self, "c_axis"))
+        dim_args = emitter.dim_args_str()
+        input_a_dim_names = emitter.dim_names_for(self.input_a)
+        output_dim_names = emitter.dim_names_for(self.output)
+        # Resolve the m dimension as a string expression (may be a dim name like
+        # "batch" when the leading dimension is symbolic rather than a literal).
+        output_shape_exprs = CEmitterCompat.shape_dim_exprs((m, n), output_dim_names)
+        m_expr = output_shape_exprs[0]
         input_a_shape = (k, m) if trans_a else (m, k)
         input_b_shape = (n, k) if trans_b else (k, n)
-        input_a_suffix = emitter.param_array_suffix(input_a_shape)
+        input_a_suffix = emitter.param_array_suffix(input_a_shape, input_a_dim_names)
         input_b_suffix = emitter.param_array_suffix(input_b_shape)
-        output_suffix = emitter.param_array_suffix((m, n))
+        output_suffix = emitter.param_array_suffix((m, n), output_dim_names)
         c_suffix = emitter.param_array_suffix(c_shape) if c_shape is not None else ""
         param_decls = emitter.build_param_decls(
             [
@@ -1698,7 +1705,7 @@ class GemmOp(GemmLikeOpBase):
                 beta_literal=beta_literal,
                 trans_a=int(trans_a),
                 trans_b=int(trans_b),
-                m=m,
+                m=m_expr,
                 n=n,
                 k=k,
                 input_a_suffix=input_a_suffix,
@@ -1709,6 +1716,7 @@ class GemmOp(GemmLikeOpBase):
                 c_dim0=c_dim0,
                 c_dim1=c_dim1,
                 c_axis=c_axis,
+                dim_args=dim_args,
             )
             .rstrip()
         )
