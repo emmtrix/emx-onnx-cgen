@@ -8451,33 +8451,6 @@ def test_slice_with_dynamic_batch_compiles() -> None:
     Compiler(CompilerOptions()).compile(model)
 
 
-def _run_cli_verify_onnx_path(
-    model_path: Path, *, temp_dir_root: Path | None = None
-) -> None:
-    env = os.environ.copy()
-    python_path = str(PROJECT_ROOT / "src")
-    if env.get("PYTHONPATH"):
-        python_path = f"{python_path}{os.pathsep}{env['PYTHONPATH']}"
-    env["PYTHONPATH"] = python_path
-    verify_cmd = [
-        sys.executable,
-        "-m",
-        "emx_onnx_cgen",
-        "verify",
-        str(model_path),
-    ]
-    if temp_dir_root is not None:
-        verify_cmd.extend(["--temp-dir-root", str(temp_dir_root)])
-    subprocess.run(
-        verify_cmd,
-        check=True,
-        capture_output=True,
-        text=True,
-        cwd=PROJECT_ROOT,
-        env=env,
-    )
-
-
 @pytest.mark.parametrize("op_type", ["Softmax", "LogSoftmax", "Hardmax"])
 def test_axis_normalization_with_dynamic_batch_matches_onnxruntime(
     op_type: str,
@@ -8501,7 +8474,27 @@ def test_axis_normalization_with_dynamic_batch_matches_onnxruntime(
     with tempfile.TemporaryDirectory() as temp_dir:
         model_path = Path(temp_dir) / "model.onnx"
         onnx.save_model(model, model_path)
-        _run_cli_verify_onnx_path(model_path, temp_dir_root=Path(temp_dir))
+        env = os.environ.copy()
+        python_path = str(PROJECT_ROOT / "src")
+        if env.get("PYTHONPATH"):
+            python_path = f"{python_path}{os.pathsep}{env['PYTHONPATH']}"
+        env["PYTHONPATH"] = python_path
+        subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "emx_onnx_cgen",
+                "verify",
+                str(model_path),
+                "--temp-dir-root",
+                temp_dir,
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_ROOT,
+            env=env,
+        )
 
 
 def test_dropout_op_matches_onnxruntime() -> None:
