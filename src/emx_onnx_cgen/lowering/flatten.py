@@ -28,7 +28,10 @@ def _flatten_output_shape(
         if dim < 0:
             if expected_shape is not None:
                 return expected_shape
-            raise ShapeInferenceError("Dynamic dims are not supported")
+            raise ShapeInferenceError(
+                "Flatten requires static input dimensions unless the output "
+                f"shape is known, got input shape {input_shape}"
+            )
     first = shape_product(input_shape[:axis]) if axis else 1
     second = shape_product(input_shape[axis:]) if axis < rank else 1
     return (first, second)
