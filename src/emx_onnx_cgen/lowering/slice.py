@@ -236,7 +236,10 @@ def _normalize_slices(
         seen_axes.add(normalized_axis)
         dim = input_shape[normalized_axis]
         if dim < 0:
-            raise ShapeInferenceError("Dynamic dims are not supported")
+            raise ShapeInferenceError(
+                f"{node.op_type} sliced axis {normalized_axis} must be static, "
+                f"got input shape {input_shape}"
+            )
         step = int(steps[index])
         if step == 0:
             raise UnsupportedOpError(f"{node.op_type} steps must be non-zero")
@@ -273,10 +276,6 @@ def resolve_slice_spec(graph: Graph, node: Node) -> SliceSpec:
             f"{node.op_type} expects matching input/output dtypes, "
             f"got {input_dtype} and {output_dtype}"
         )
-    if any(dim < 0 for dim in input_shape):
-        raise ShapeInferenceError("Dynamic dims are not supported")
-    if any(dim < 0 for dim in output_shape):
-        raise ShapeInferenceError("Dynamic dims are not supported")
     inputs = _resolve_inputs(graph, node)
     if inputs.starts is None or inputs.ends is None:
         raise UnsupportedOpError(

@@ -878,7 +878,9 @@ class CEmitterCompat:
         count = 1
         for dim in shape:
             if dim < 0:
-                raise ValueError("Dynamic dims are not supported for element_count")
+                raise ValueError(
+                    f"Cannot compute element_count for dynamic shape {shape}"
+                )
             if dim == 0:
                 return 0
             count *= dim

@@ -3680,7 +3680,9 @@ class CEmitter:
         count = 1
         for dim in shape:
             if dim < 0:
-                raise CodegenError("Dynamic dims are not supported")
+                raise CodegenError(
+                    f"Cannot compute static element count for dynamic shape {shape}"
+                )
             if dim == 0:
                 return 0
             count *= dim
