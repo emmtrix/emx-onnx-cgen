@@ -18,7 +18,7 @@ from jinja2 import (
 import numpy as np
 from onnx import GraphProto
 
-from ..errors import CodegenError
+from ..errors import CodegenError, CompilerError
 from ..testbench_output_format import parse_testbench_output_format
 from ..sequence_shape_hints import SequenceElementShapeHint
 from ..ir.op_base import (
@@ -1389,10 +1389,7 @@ class CEmitter:
         value_name_map = self._build_value_name_map(name_map, temp_name_map)
         self._emit_state.value_name_map = value_name_map
         self._propagate_tensor_dim_names(resolved_ops, tensor_dim_names)
-        operator_fns = "\n\n".join(
-            op.emit(self, EmitContext(op_index=index))
-            for index, op in enumerate(resolved_ops)
-        )
+        operator_fns = self._emit_operator_functions(model, resolved_ops)
         wrapper_fn = self._emit_model_wrapper(
             model,
             resolved_ops,
@@ -1615,10 +1612,7 @@ class CEmitter:
         value_name_map = self._build_value_name_map(name_map, temp_name_map)
         self._emit_state.value_name_map = value_name_map
         self._propagate_tensor_dim_names(resolved_ops, tensor_dim_names)
-        operator_fns = "\n\n".join(
-            op.emit(self, EmitContext(op_index=index))
-            for index, op in enumerate(resolved_ops)
-        )
+        operator_fns = self._emit_operator_functions(model, resolved_ops)
         wrapper_fn = self._emit_model_wrapper(
             model,
             resolved_ops,
@@ -2805,6 +2799,40 @@ class CEmitter:
 
     def render_op(self, op: OpBase, ctx: EmitContext) -> str:
         return op.emit(self, ctx)
+
+    @staticmethod
+    def _format_codegen_failure_summary(
+        model: LoweredModel,
+        op: OpBase,
+        *,
+        op_index: int,
+    ) -> str:
+        if op_index >= len(model.node_infos):
+            return f"while emitting op_index={op_index}, op_class={type(op).__name__}"
+        node_info = model.node_infos[op_index]
+        return (
+            f"while emitting node_index={op_index}, op_type={node_info.op_type}, "
+            f"name={node_info.name or '<unnamed>'}, op_class={type(op).__name__}, "
+            f"inputs={list(node_info.inputs)}, outputs={list(node_info.outputs)}"
+        )
+
+    def _emit_operator_functions(
+        self,
+        model: LoweredModel,
+        resolved_ops: Sequence[OpBase],
+    ) -> str:
+        rendered_ops: list[str] = []
+        for index, op in enumerate(resolved_ops):
+            try:
+                rendered_ops.append(op.emit(self, EmitContext(op_index=index)))
+            except CompilerError as exc:
+                summary = self._format_codegen_failure_summary(
+                    model,
+                    op,
+                    op_index=index,
+                )
+                raise type(exc)(f"{exc} ({summary})") from exc
+        return "\n\n".join(rendered_ops)
 
     def require_emit_state(self) -> _EmitState:
         if self._emit_state is None:
