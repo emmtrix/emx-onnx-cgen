@@ -67,7 +67,7 @@ EMX_NODE_FN void node0_concat(const float input_0[1][2][3], const float input_1[
     if (concat_axis == 0) {
         return;
     }
-    for (idx_t outer_idx = 0; outer_idx < 2; ++outer_idx) {
+    for (idx_t outer_idx = 0; outer_idx < 1 * 2; ++outer_idx) {
         idx_t output_offset = outer_idx * concat_axis * 1;
         idx_t axis_offset = 0;
         for (idx_t input_idx = 0; input_idx < 2; ++input_idx) {
