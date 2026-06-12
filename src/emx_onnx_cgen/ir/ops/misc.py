@@ -2996,7 +2996,9 @@ class SliceOp(RenderableOpBase):
         output_shape_raw = emitter.ctx_shape(self.output)
         input_dim_names = emitter.dim_names_for(self.input0)
         output_dim_names = emitter.dim_names_for(self.output)
-        output_shape = CEmitterCompat.shape_dim_exprs(output_shape_raw, output_dim_names)
+        output_shape = CEmitterCompat.shape_dim_exprs(
+            output_shape_raw, output_dim_names
+        )
         loop_vars = CEmitterCompat.loop_vars(output_shape_raw)
         if self.starts is not None and self.steps is not None:
             input_indices: list[str] = []
