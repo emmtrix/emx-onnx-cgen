@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir tests/onnx slice_dynamic_batch.onnx",
+  "verification_mode": "Random/ORT",
+  "operators": [
+    "Slice"
+  ],
+  "opset_version": 9,
+  "generated_checksum": "cadb5d36489d2022a3e3739e5d4332eb5e617a49611301b3d52bb43f2f6bc5b9"
+}
