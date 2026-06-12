@@ -315,10 +315,6 @@ def lower_slice(graph: Graph, node: Node) -> SliceOp:
             f"{node.op_type} expects matching input/output dtypes, "
             f"got {input_dtype} and {output_dtype}"
         )
-    if any(dim < 0 for dim in input_shape):
-        raise ShapeInferenceError("Dynamic dims are not supported")
-    if any(dim < 0 for dim in output_shape):
-        raise ShapeInferenceError("Dynamic dims are not supported")
     inputs = _resolve_inputs(graph, node)
     if inputs.starts is not None and inputs.ends is not None:
         normalized_starts, normalized_steps, computed_output_shape = _normalize_slices(

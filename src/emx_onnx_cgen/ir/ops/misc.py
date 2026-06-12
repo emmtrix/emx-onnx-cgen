@@ -2994,8 +2994,10 @@ class SliceOp(RenderableOpBase):
         )
         input_shape_raw = emitter.ctx_shape(self.input0)
         output_shape_raw = emitter.ctx_shape(self.output)
-        output_shape = CEmitterCompat.codegen_shape(output_shape_raw)
-        loop_vars = CEmitterCompat.loop_vars(output_shape)
+        input_dim_names = emitter.dim_names_for(self.input0)
+        output_dim_names = emitter.dim_names_for(self.output)
+        output_shape = CEmitterCompat.shape_dim_exprs(output_shape_raw, output_dim_names)
+        loop_vars = CEmitterCompat.loop_vars(output_shape_raw)
         if self.starts is not None and self.steps is not None:
             input_indices: list[str] = []
             for start, step, loop_var in zip(self.starts, self.steps, loop_vars):
@@ -3007,10 +3009,10 @@ class SliceOp(RenderableOpBase):
                 else:
                     input_indices.append(f"{start} + {step} * {loop_var}")
             input_suffix = emitter.param_array_suffix(
-                input_shape_raw, dtype=output_dtype
+                input_shape_raw, input_dim_names, dtype=output_dtype
             )
             output_suffix = emitter.param_array_suffix(
-                output_shape_raw, dtype=output_dtype
+                output_shape_raw, output_dim_names, dtype=output_dtype
             )
             param_decls = emitter.build_param_decls(
                 [
@@ -3037,8 +3039,12 @@ class SliceOp(RenderableOpBase):
                 .rstrip()
             )
             return emitter.with_node_comment(model, ctx.op_index, rendered)
-        input_suffix = emitter.param_array_suffix(input_shape_raw, dtype=output_dtype)
-        output_suffix = emitter.param_array_suffix(output_shape_raw, dtype=output_dtype)
+        input_suffix = emitter.param_array_suffix(
+            input_shape_raw, input_dim_names, dtype=output_dtype
+        )
+        output_suffix = emitter.param_array_suffix(
+            output_shape_raw, output_dim_names, dtype=output_dtype
+        )
         params = emitter.build_param_decls(
             [
                 (name_params["input0"], c_type, input_suffix, True),
