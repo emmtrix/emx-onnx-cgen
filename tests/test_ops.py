@@ -6,6 +6,7 @@ import os
 from dataclasses import FrozenInstanceError, fields
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -8448,6 +8449,77 @@ def test_slice_with_dynamic_batch_compiles() -> None:
     """
     model = onnx.load(PROJECT_ROOT / "tests/onnx/slice_dynamic_batch.onnx")
     Compiler(CompilerOptions()).compile(model)
+
+
+def _run_cli_verify_onnx_path(
+    model_path: Path, *, temp_dir_root: Path | None = None
+) -> None:
+    env = os.environ.copy()
+    python_path = str(PROJECT_ROOT / "src")
+    if env.get("PYTHONPATH"):
+        python_path = f"{python_path}{os.pathsep}{env['PYTHONPATH']}"
+    env["PYTHONPATH"] = python_path
+    verify_cmd = [
+        sys.executable,
+        "-m",
+        "emx_onnx_cgen",
+        "verify",
+        str(model_path),
+    ]
+    if temp_dir_root is not None:
+        verify_cmd.extend(["--temp-dir-root", str(temp_dir_root)])
+    subprocess.run(
+        verify_cmd,
+        check=True,
+        capture_output=True,
+        text=True,
+        cwd=PROJECT_ROOT,
+        env=env,
+    )
+
+
+def test_neuralnet_with_dynamic_batch_matches_onnxruntime() -> None:
+    """Full-network model with a symbolic batch dimension matches ONNX Runtime.
+
+    The model reproduces the operator mix from a neuralnet_large.onnx report:
+    Slice, Conv, PRelu, GlobalAveragePool, Squeeze, Transpose, MatMul, Mul,
+    Softmax, Concat, Gemm — all at opset 9 with a symbolic "batch" dim.
+
+    Two regressions are covered simultaneously:
+    1. lower_slice rejected inputs whose batch dim was symbolic even when the
+       slice operated only on static spatial axes.
+    2. ConcatOp.emit() called element_count() on the pre-axis shape, which
+       raised ValueError for symbolic (negative) dimensions.
+    """
+    _run_cli_verify_onnx_path(
+        PROJECT_ROOT / "tests/onnx/neuralnet_slice_dynamic_batch.onnx"
+    )
+
+
+@pytest.mark.parametrize("op_type", ["Softmax", "LogSoftmax", "Hardmax"])
+def test_axis_normalization_with_dynamic_batch_matches_onnxruntime(
+    op_type: str,
+) -> None:
+    input_info = helper.make_tensor_value_info(
+        "input", TensorProto.FLOAT, ["batch", 32]
+    )
+    output_info = helper.make_tensor_value_info(
+        "output", TensorProto.FLOAT, ["batch", 32]
+    )
+    node = helper.make_node(op_type, ["input"], ["output"], axis=1)
+    graph = helper.make_graph(
+        [node], f"{op_type.lower()}_dynamic_batch", [input_info], [output_info]
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        model_path = Path(temp_dir) / "model.onnx"
+        onnx.save_model(model, model_path)
+        _run_cli_verify_onnx_path(model_path, temp_dir_root=Path(temp_dir))
 
 
 def test_dropout_op_matches_onnxruntime() -> None:
