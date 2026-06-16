@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1880 / 1914, 98.2% | 1.22.0 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1891 / 1914, 98.8% | 1.22.0 |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4278 / 4324, 98.9% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 9 / 9, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1880 / 1914 ONNX files (98.2%).
+Coverage 1891 / 1914 ONNX files (98.8%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -711,27 +711,27 @@ Coverage 1880 / 1914 ONNX files (98.2%).
 | node/test_flatten_negative_axis2/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_flatten_negative_axis3/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_flatten_negative_axis4/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_flexattention/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.preview.FlexAttention |
-| node/test_flexattention_causal_mask/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.preview.FlexAttention |
+| node/test_flexattention/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 3) |
+| node/test_flexattention_causal_mask/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_flexattention_causal_mask_expanded_ver26/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_flexattention_diff_head_sizes/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.preview.FlexAttention |
+| node/test_flexattention_diff_head_sizes/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 3) |
 | node/test_flexattention_diff_head_sizes_expanded_ver26/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_flexattention_double/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.preview.FlexAttention |
+| node/test_flexattention_double/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_flexattention_double_expanded_ver26/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_flexattention_expanded_ver26/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_flexattention_fp16/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.preview.FlexAttention |
+| node/test_flexattention_fp16/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_flexattention_fp16_expanded_ver26/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_flexattention_gqa/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.preview.FlexAttention |
+| node/test_flexattention_gqa/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 3) |
 | node/test_flexattention_gqa_expanded_ver26/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_flexattention_prob_mod/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.preview.FlexAttention |
+| node/test_flexattention_prob_mod/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_flexattention_prob_mod_expanded_ver26/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_flexattention_relative_positional/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.preview.FlexAttention |
+| node/test_flexattention_relative_positional/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_flexattention_relative_positional_expanded_ver26/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_flexattention_scaled/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.preview.FlexAttention |
+| node/test_flexattention_scaled/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 4) |
 | node/test_flexattention_scaled_expanded_ver26/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 4) |
-| node/test_flexattention_score_mod/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.preview.FlexAttention |
+| node/test_flexattention_score_mod/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_flexattention_score_mod_expanded_ver26/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_flexattention_soft_cap/model.onnx | 26 | Data/Data | ❌ | Unsupported op ai.onnx.preview.FlexAttention |
+| node/test_flexattention_soft_cap/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_flexattention_soft_cap_expanded_ver26/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_floor/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_floor_example/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |

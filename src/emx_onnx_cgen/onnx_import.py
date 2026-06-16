@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Iterable, Mapping
+from typing import Callable, Iterable, Mapping
 
 import onnx
 import numpy as np
@@ -1617,10 +1617,164 @@ def _expand_image_decoder_nodes(
     return model, expanded
 
 
+_FLEXATTENTION_DOMAIN = "ai.onnx.preview"
+
+
+def _rename_function_node(
+    internal_node: onnx.NodeProto,
+    rename: "Callable[[str], str]",
+    prefix: str,
+) -> onnx.NodeProto:
+    """Clone a function-body node, rewiring its edges and nested subgraphs."""
+    new_node = onnx.NodeProto()
+    new_node.CopyFrom(internal_node)
+    new_node.ClearField("input")
+    new_node.ClearField("output")
+    new_node.input.extend(rename(name) for name in internal_node.input)
+    new_node.output.extend(rename(name) for name in internal_node.output)
+    for attr_index, attr in enumerate(internal_node.attribute):
+        if attr.type != onnx.AttributeProto.GRAPH:
+            continue
+        subgraph = new_node.attribute[attr_index].g
+        local: dict[str, str] = {}
+        for descriptor in list(subgraph.input) + list(subgraph.output):
+            local[descriptor.name] = descriptor.name = prefix + descriptor.name
+        for initializer in subgraph.initializer:
+            local[initializer.name] = initializer.name = prefix + initializer.name
+
+        def subgraph_rename(name: str, _local: dict[str, str] = local) -> str:
+            return _local[name] if name in _local else rename(name)
+
+        renamed = [
+            _rename_function_node(child, subgraph_rename, prefix)
+            for child in subgraph.node
+        ]
+        subgraph.ClearField("node")
+        subgraph.node.extend(renamed)
+    return new_node
+
+
+def _expand_function_body(
+    node: onnx.NodeProto, function_proto: onnx.FunctionProto, prefix: str
+) -> list[onnx.NodeProto]:
+    """Inline a function body for ``node``, mapping formal I/O onto its edges."""
+    io_names: dict[str, str] = {}
+    for index, formal in enumerate(function_proto.input):
+        io_names[formal] = node.input[index] if index < len(node.input) else ""
+    for index, formal in enumerate(function_proto.output):
+        if index < len(node.output) and node.output[index] != "":
+            io_names[formal] = node.output[index]
+
+    def rename(name: str) -> str:
+        if name in io_names:
+            return io_names[name]
+        if name == "":
+            return ""
+        return prefix + name
+
+    return [
+        _rename_function_node(child, rename, prefix) for child in function_proto.node
+    ]
+
+
+def _flexattention_function_proto(
+    node: onnx.NodeProto,
+    input_types: list[onnx.TypeProto],
+    preview_version: int,
+) -> onnx.FunctionProto:
+    """Build the FlexAttention function body for a concrete node.
+
+    FlexAttention is a context-dependent ONNX function: the body depends on the
+    node's element types and on its ``score_mod``/``prob_mod`` subgraphs, which
+    are inlined by the schema's builder. This mirrors how the official
+    ``*_expanded_ver26`` reference models are produced.
+    """
+    schema = onnx.defs.get_schema(
+        node.op_type, preview_version, domain=_FLEXATTENTION_DOMAIN
+    )
+    available = sorted(schema.context_dependent_function_opset_versions)
+    if not available:
+        raise UnsupportedOpError(
+            "Unsupported op FlexAttention (no function body available)"
+        )
+    # Pick the newest function definition not exceeding the imported version.
+    eligible = [version for version in available if version <= preview_version]
+    selected = eligible[-1] if eligible else available[0]
+    body = schema.get_context_dependent_function_with_opset_version(
+        selected,
+        node.SerializeToString(),
+        [type_proto.SerializeToString() for type_proto in input_types],
+    )
+    if not body:
+        raise UnsupportedOpError(
+            "Unsupported op FlexAttention (function body unavailable for inputs)"
+        )
+    function_proto = onnx.FunctionProto()
+    function_proto.ParseFromString(body)
+    return function_proto
+
+
+def _expand_flexattention_nodes(
+    model: onnx.ModelProto,
+) -> tuple[onnx.ModelProto, bool]:
+    """Decompose ``ai.onnx.preview.FlexAttention`` into primitive ONNX ops.
+
+    The replacement reuses the operator's context-dependent function body, which
+    expands scaled dot-product attention (including GQA head expansion and any
+    inlined ``score_mod``/``prob_mod`` subgraphs) into standard ops the rest of
+    the pipeline already supports.
+    """
+    graph = model.graph
+    preview_version = next(
+        (
+            int(opset.version)
+            for opset in model.opset_import
+            if opset.domain == _FLEXATTENTION_DOMAIN
+        ),
+        1,
+    )
+    new_nodes: list[onnx.NodeProto] = []
+    expanded = False
+
+    for node_index, node in enumerate(graph.node):
+        if not (
+            node.op_type == "FlexAttention" and node.domain == _FLEXATTENTION_DOMAIN
+        ):
+            new_nodes.append(node)
+            continue
+        if len(node.input) < 3:
+            raise UnsupportedOpError(
+                "FlexAttention requires query, key, and value inputs"
+            )
+
+        input_types: list[onnx.TypeProto] = []
+        for input_name in node.input:
+            type_proto = onnx.TypeProto()
+            type_proto.tensor_type.elem_type = _tensor_elem_type_from_value_info(
+                graph, input_name
+            )
+            input_types.append(type_proto)
+
+        function_proto = _flexattention_function_proto(
+            node, input_types, preview_version
+        )
+        prefix = f"_flexattn_{node_index}_"
+        new_nodes.extend(_expand_function_body(node, function_proto, prefix))
+        expanded = True
+
+    if not expanded:
+        return model, False
+
+    del graph.node[:]
+    graph.node.extend(new_nodes)
+    return model, True
+
+
 def prepare_onnx_model(model: onnx.ModelProto) -> onnx.ModelProto:
     prepared = onnx.ModelProto()
     prepared.CopyFrom(model)
     prepared, _ = _expand_image_decoder_nodes(prepared)
+    prepared, _ = _expand_flexattention_nodes(prepared)
     prepared, _ = _expand_scan_nodes(prepared)
     prepared, _ = _expand_if_nodes(prepared)
     prepared, _ = _expand_sequence_map_nodes(prepared)

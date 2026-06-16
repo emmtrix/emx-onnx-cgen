@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported op ai.onnx.preview.FlexAttention",
+  "error": "OK (max ULP 4)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_flexattention_scaled model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "ai.onnx.preview.FlexAttention"
   ],
-  "opset_version": 26
+  "opset_version": 26,
+  "generated_checksum": "3463f1d43d234454140bf3cd5711b55f2b0f9351aa4103fb12f295dd6baacb72"
 }
