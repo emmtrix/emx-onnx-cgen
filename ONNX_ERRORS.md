@@ -7,7 +7,7 @@ Aggregates non-success verification outcomes.
 
 | Error message | Count | Opset versions |
 | --- | --- | --- |
-| Out of tolerance | 48 | 7, 17, 21, 22, 23 |
+| Out of tolerance | 43 | 7, 17, 21, 22 |
 | Missing shape for '*' in Scan expansion. Hint: run ONNX shape inference or export with static shapes. | 14 | 27 |
 | Unsupported op ai.onnx.preview.FlexAttention | 11 | 26 |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 8 |  |
@@ -30,7 +30,6 @@ Aggregates non-success verification outcomes.
 | Out of tolerance | 17 | 13 |
 | Out of tolerance | 21 | 4 |
 | Out of tolerance | 22 | 1 |
-| Out of tolerance | 23 | 4 |
 | Unsupported op ai.onnx.preview.FlexAttention | 26 | 11 |
 | Missing shape for '*' in Scan expansion. Hint: run ONNX shape inference or export with static shapes. | 27 | 14 |
 | CausalConvWithState must have 4 inputs and 2 outputs (while lowering node_index=0, op_type=CausalConvWithState, name=<unnamed>, inputs=[input: tensor[dtype=float, shape=(2, 4, 8), dim_params=(None, None, None)], weight: tensor[dtype=float, shape=(4, 1, 4), dim_params=(None, None, None)]], outputs=[output: tensor[dtype=float, shape=(2, 4, 8), dim_params=(None, None, None)], present_state: tensor[dtype=float, shape=(2, 4, 3), dim_params=(None, None, None)]]) | 27 | 3 |
@@ -50,11 +49,6 @@ Lists every ONNX file with a non-success verification outcome.
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
-| node/test_adam_multiple/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 62311) |
-| node/test_attention_3d_with_past_and_present_qk_matmul_softcap/model.onnx | 23 | Data/Data | ❌ | Out of tolerance (max ULP 16719215) |
-| node/test_attention_4d_softcap_neginf_mask/model.onnx | 23 | Data/Data | ❌ | Out of tolerance (max ULP 2662733) |
-| node/test_attention_4d_softcap_neginf_mask_poison/model.onnx | 23 | Data/Data | ❌ | Out of tolerance (max ULP 80746724) |
-| node/test_attention_4d_with_qk_matmul_softcap/model.onnx | 23 | Data/Data | ❌ | Out of tolerance (max ULP 16161280) |
 | node/test_causal_conv_with_state_b1_c1_degenerate/model.onnx | 27 | Data/Data | ❌ | CausalConvWithState must have 4 inputs and 2 outputs (while lowering node_index=0, op_type=CausalConvWithState, name=<unnamed>, inputs=[input: tensor[dtype=float, shape=(1, 1, 6), dim_params=(None, None, None)], weight: tensor[dtype=float, shape=(1, 1, 4), dim_params=(None, None, None)]], outputs=[output: tensor[dtype=float, shape=(1, 1, 6), dim_params=(None, None, None)], present_state: tensor[dtype=float, shape=(1, 1, 3), dim_params=(None, None, None)]]) |
 | node/test_causal_conv_with_state_basic/model.onnx | 27 | Data/Data | ❌ | CausalConvWithState must have 4 inputs and 2 outputs (while lowering node_index=0, op_type=CausalConvWithState, name=<unnamed>, inputs=[input: tensor[dtype=float, shape=(2, 4, 8), dim_params=(None, None, None)], weight: tensor[dtype=float, shape=(4, 1, 4), dim_params=(None, None, None)]], outputs=[output: tensor[dtype=float, shape=(2, 4, 8), dim_params=(None, None, None)], present_state: tensor[dtype=float, shape=(2, 4, 3), dim_params=(None, None, None)]]) |
 | node/test_causal_conv_with_state_fp16/model.onnx | 27 | Data/Data | ❌ | CausalConvWithState must have 4 inputs and 2 outputs (while lowering node_index=0, op_type=CausalConvWithState, name=<unnamed>, inputs=[input: tensor[dtype=float16, shape=(2, 4, 8), dim_params=(None, None, None)], weight: tensor[dtype=float16, shape=(4, 1, 4), dim_params=(None, None, None)]], outputs=[output: tensor[dtype=float16, shape=(2, 4, 8), dim_params=(None, None, None)], present_state: tensor[dtype=float16, shape=(2, 4, 3), dim_params=(None, None, None)]]) |

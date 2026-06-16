@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1866 / 1914, 97.5% | 1.22.0 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1871 / 1914, 97.8% | 1.22.0 |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4278 / 4324, 98.9% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 9 / 9, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1866 / 1914 ONNX files (97.5%).
+Coverage 1871 / 1914 ONNX files (97.8%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -37,12 +37,12 @@ Coverage 1866 / 1914 ONNX files (97.5%).
 | node/test_abs/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_acos/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_acos_example/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_acosh/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_acosh/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 1) |
 | node/test_acosh_example/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_adagrad/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_adagrad_multiple/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_adam/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_adam_multiple/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 62311) |
+| node/test_adam_multiple/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | node/test_add/model.onnx | 14 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_add_bcast/model.onnx | 14 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_add_int16/model.onnx | 14 | Data/Data | ✅ | OK (max abs diff 0) |
@@ -157,7 +157,7 @@ Coverage 1866 / 1914 ONNX files (97.5%).
 | node/test_attention_3d_with_past_and_present_qk_matmul_bias/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
 | node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 2) |
 | node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_attention_3d_with_past_and_present_qk_matmul_softcap/model.onnx | 23 | Data/Data | ❌ | Out of tolerance (max ULP 16719215) |
+| node/test_attention_3d_with_past_and_present_qk_matmul_softcap/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 5) |
 | node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 4) |
 | node/test_attention_3d_with_past_and_present_qk_matmul_softmax/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
 | node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
@@ -217,9 +217,9 @@ Coverage 1866 / 1914 ONNX files (97.5%).
 | node/test_attention_4d_scaled_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_softcap/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_softcap_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_softcap_neginf_mask/model.onnx | 23 | Data/Data | ❌ | Out of tolerance (max ULP 2662733) |
+| node/test_attention_4d_softcap_neginf_mask/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_softcap_neginf_mask_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_softcap_neginf_mask_poison/model.onnx | 23 | Data/Data | ❌ | Out of tolerance (max ULP 80746724) |
+| node/test_attention_4d_softcap_neginf_mask_poison/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_softcap_neginf_mask_poison_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_with_past_and_present/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_with_past_and_present_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
@@ -239,7 +239,7 @@ Coverage 1866 / 1914 ONNX files (97.5%).
 | node/test_attention_4d_with_qk_matmul_bias/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 2) |
 | node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 1) |
 | node/test_attention_4d_with_qk_matmul_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 2) |
-| node/test_attention_4d_with_qk_matmul_softcap/model.onnx | 23 | Data/Data | ❌ | Out of tolerance (max ULP 16161280) |
+| node/test_attention_4d_with_qk_matmul_softcap/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
 | node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 4) |
 | node/test_attention_4d_with_qk_matmul_softmax/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
