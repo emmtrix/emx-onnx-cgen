@@ -6,7 +6,12 @@ import onnx
 from onnx import TensorProto, helper
 from shared.scalar_types import ScalarType
 
-from emx_onnx_cgen.onnx_import import import_onnx
+from emx_onnx_cgen.onnx_import import (
+    import_onnx,
+    _fold_constant_of_shape_inputs,
+    _maybe_infer_shapes,
+    prepare_onnx_model,
+)
 from emx_onnx_cgen.dtypes import scalar_type_from_onnx
 
 
@@ -468,3 +473,113 @@ def test_import_flexattention_inlines_score_mod_subgraph() -> None:
     assert "FlexAttention" not in op_types
     # The score_mod body (an Add) is inlined into the expanded graph.
     assert "Add" in op_types
+
+
+def _static_shape(value_info: onnx.ValueInfoProto) -> tuple[int, ...] | None:
+    tensor_type = value_info.type.tensor_type
+    if not tensor_type.HasField("shape"):
+        return None
+    dims = []
+    for dim in tensor_type.shape.dim:
+        if not dim.HasField("dim_value"):
+            return None
+        dims.append(int(dim.dim_value))
+    return tuple(dims)
+
+
+def test_fold_constant_of_shape_resolves_computed_shape() -> None:
+    # ConstantOfShape fed by Shape/Div/Concat: ONNX shape inference cannot fold
+    # the Div, so the output stays dynamic until the constant folder runs.
+    x = helper.make_tensor_value_info("x", TensorProto.FLOAT, [4, 16])
+    out = helper.make_tensor_value_info("out", TensorProto.FLOAT, None)
+    heads = helper.make_tensor("heads", TensorProto.INT64, [1], [4])
+    nodes = [
+        helper.make_node("Shape", ["x"], ["batch"], start=0, end=1),
+        helper.make_node("Shape", ["x"], ["hidden"], start=1, end=2),
+        helper.make_node("Div", ["hidden", "heads"], ["head_size"]),
+        helper.make_node("Concat", ["batch", "head_size"], ["state_shape"], axis=0),
+        helper.make_node("ConstantOfShape", ["state_shape"], ["state"]),
+        helper.make_node("Identity", ["state"], ["out"]),
+    ]
+    graph = helper.make_graph(nodes, "fold_graph", [x], [out], initializer=[heads])
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 27)],
+    )
+    model.ir_version = 10
+
+    model = _maybe_infer_shapes(model)
+    model, folded = _fold_constant_of_shape_inputs(model)
+    assert folded
+    model = _maybe_infer_shapes(model)
+
+    resolved = {value_info.name: value_info for value_info in model.graph.value_info}
+    resolved.update({out.name: out for out in model.graph.output})
+    assert _static_shape(resolved["state"]) == (4, 4)
+
+
+def _make_scan_model(opset: int) -> onnx.ModelProto:
+    body = helper.make_graph(
+        [
+            helper.make_node("Add", ["state_in", "scan_in"], ["state_out"]),
+            helper.make_node("Identity", ["state_out"], ["scan_out"]),
+        ],
+        "scan_body",
+        [
+            helper.make_tensor_value_info("state_in", TensorProto.FLOAT, [2]),
+            helper.make_tensor_value_info("scan_in", TensorProto.FLOAT, [2]),
+        ],
+        [
+            helper.make_tensor_value_info("state_out", TensorProto.FLOAT, [2]),
+            helper.make_tensor_value_info("scan_out", TensorProto.FLOAT, [2]),
+        ],
+    )
+    scan = helper.make_node(
+        "Scan",
+        ["init_state", "x"],
+        ["final_state", "y"],
+        num_scan_inputs=1,
+        body=body,
+    )
+    graph = helper.make_graph(
+        [scan],
+        "scan_graph",
+        [
+            helper.make_tensor_value_info("init_state", TensorProto.FLOAT, [2]),
+            helper.make_tensor_value_info("x", TensorProto.FLOAT, [3, 2]),
+        ],
+        [
+            helper.make_tensor_value_info("final_state", TensorProto.FLOAT, [2]),
+            helper.make_tensor_value_info("y", TensorProto.FLOAT, [3, 2]),
+        ],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 10
+    onnx.checker.check_model(model)
+    return model
+
+
+def test_scan_expansion_uses_input_style_slice_for_modern_opset() -> None:
+    prepared = prepare_onnx_model(_make_scan_model(27))
+    slices = [node for node in prepared.graph.node if node.op_type == "Slice"]
+    squeezes = [node for node in prepared.graph.node if node.op_type == "Squeeze"]
+    assert slices
+    # Opset >= 10 Slice takes starts/ends/axes as inputs, not attributes.
+    assert all(len(node.input) >= 3 for node in slices)
+    assert all(not node.attribute for node in slices)
+    # Opset >= 13 Squeeze takes axes as an input rather than an attribute.
+    assert all(len(node.input) == 2 for node in squeezes)
+
+
+def test_scan_expansion_uses_attribute_slice_for_legacy_opset() -> None:
+    prepared = prepare_onnx_model(_make_scan_model(9))
+    slices = [node for node in prepared.graph.node if node.op_type == "Slice"]
+    assert slices
+    # Opset 9 Slice still carries starts/ends/axes as attributes.
+    assert all(len(node.input) == 1 for node in slices)
+    assert all(node.attribute for node in slices)
