@@ -78,7 +78,9 @@ EMX_NODE_FN void node0_lpnormalization(const float input0[2][3], float output[2]
                 acc += ref_scalar_f32_abs(value);
             }
             for (idx_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
-                output_flat[base + axis_idx * inner] = input_flat[base + axis_idx * inner] / acc;
+                output_flat[base + axis_idx * inner] =
+                acc == 0.0f ? 0.0f
+                : input_flat[base + axis_idx * inner] / acc;
             }
         }
     }

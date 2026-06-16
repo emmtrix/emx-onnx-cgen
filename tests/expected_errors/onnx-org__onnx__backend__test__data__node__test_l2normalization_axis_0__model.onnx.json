@@ -1,10 +1,10 @@
 {
-  "error": "Out of tolerance (max ULP 4294967295)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_l2normalization_axis_0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "LpNormalization"
   ],
   "opset_version": 22,
-  "generated_checksum": "908a686c9d455d63a2b76de152f48c92420984fa7afd496f911f28965e6a5c9d"
+  "generated_checksum": "7b08da3088f6e0f9ffe03ca211135185afc1ccffd094ad37b9662330a7d2f6b7"
 }
