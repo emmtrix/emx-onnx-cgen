@@ -34,8 +34,10 @@ def _parse_activation(node: Node) -> str:
 def lower_causal_conv_with_state(
     graph: Graph | GraphContext, node: Node
 ) -> CausalConvWithStateOp:
-    if len(node.inputs) != 4 or len(node.outputs) != 2:
-        raise UnsupportedOpError("CausalConvWithState must have 4 inputs and 2 outputs")
+    if not (2 <= len(node.inputs) <= 4) or len(node.outputs) != 2:
+        raise UnsupportedOpError(
+            "CausalConvWithState must have 2 to 4 inputs and 2 outputs"
+        )
     unsupported_attrs = set(node.attrs) - _SUPPORTED_ATTRS
     if unsupported_attrs:
         raise UnsupportedOpError(
@@ -47,8 +49,8 @@ def lower_causal_conv_with_state(
     if ndim != 1:
         raise UnsupportedOpError("CausalConvWithState currently supports ndim=1 only")
 
-    bias_name = node.inputs[2] or None
-    past_state_name = node.inputs[3] or None
+    bias_name = (node.inputs[2] if len(node.inputs) > 2 else "") or None
+    past_state_name = (node.inputs[3] if len(node.inputs) > 3 else "") or None
 
     op_dtype = _node_dtype(
         graph,

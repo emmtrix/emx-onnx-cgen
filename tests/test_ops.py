@@ -3172,6 +3172,9 @@ def _make_causal_conv_with_state_model(
         node_inputs.append("past_state")
     else:
         node_inputs.append("")
+    # ONNX models omit trailing optional inputs rather than passing empty names.
+    while node_inputs and node_inputs[-1] == "":
+        node_inputs.pop()
     node = helper.make_node(
         "CausalConvWithState",
         inputs=node_inputs,
@@ -8556,6 +8559,24 @@ def test_lower_causal_conv_with_state() -> None:
     assert op.kernel_size == 3
     assert op.pad == 2
     assert op.activation == "silu"
+
+
+def test_lower_causal_conv_with_state_omits_optional_inputs() -> None:
+    model = _make_causal_conv_with_state_model()
+    graph = import_onnx(model)
+    assert len(graph.nodes[0].inputs) == 2
+    op = get_lowering("CausalConvWithState")(graph, graph.nodes[0])
+    assert op.bias is None
+    assert op.past_state is None
+
+
+def test_lower_causal_conv_with_state_bias_only() -> None:
+    model = _make_causal_conv_with_state_model(with_bias=True)
+    graph = import_onnx(model)
+    assert len(graph.nodes[0].inputs) == 3
+    op = get_lowering("CausalConvWithState")(graph, graph.nodes[0])
+    assert op.bias == "bias"
+    assert op.past_state is None
 
 
 def test_causal_conv_with_state_op_matches_onnxruntime() -> None:
