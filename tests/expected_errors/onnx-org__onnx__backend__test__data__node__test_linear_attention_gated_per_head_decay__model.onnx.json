@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 33)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_linear_attention_gated_per_head_decay model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "LinearAttention"
+  ],
+  "opset_version": 27,
+  "generated_checksum": "778d276a9ddb0343e8f0dbdfad2f6dbc56d139e4628d21a76b9ec1c3d07d25cb"
+}

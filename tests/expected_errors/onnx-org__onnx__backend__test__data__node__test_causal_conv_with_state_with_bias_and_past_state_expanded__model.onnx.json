@@ -1,0 +1,16 @@
+{
+  "error": "OK (max ULP 2)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_causal_conv_with_state_with_bias_and_past_state_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Constant",
+    "Shape",
+    "Sub",
+    "Concat",
+    "Conv",
+    "Identity",
+    "Slice"
+  ],
+  "opset_version": 27,
+  "generated_checksum": "7514fd80f674bb419d190aa4586be59fd82505d02cbf3b9e499a9f4d49a6678d"
+}

@@ -1,9 +1,9 @@
 {
-  "error": "Out of tolerance (max ULP 62311)",
+  "error": "OK (max ULP 1)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_adam_multiple model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "ai.onnx.preview.training.Adam"
   ],
-  "generated_checksum": "22b24e8ef1e873352b2449bec4c3e1b7965a02638e76661234958029f3f66e0e"
+  "generated_checksum": "15be33bbe16b1a3b826f86df93422e19788a2478021fe1aaa4ff745fc716a9c8"
 }

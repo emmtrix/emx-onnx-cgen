@@ -1,0 +1,30 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_softcap_neginf_mask_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Shape",
+    "Identity",
+    "Cast",
+    "Sqrt",
+    "Constant",
+    "Div",
+    "Concat",
+    "Equal",
+    "Not",
+    "Mod",
+    "And",
+    "Where",
+    "Unsqueeze",
+    "Expand",
+    "Reshape",
+    "Transpose",
+    "Mul",
+    "MatMul",
+    "Tanh",
+    "Add",
+    "Softmax"
+  ],
+  "opset_version": 23,
+  "generated_checksum": "7798e42cd35cc68cfcf5cf64dca873b83261a46d35b47e50ac9206353d0f02bd"
+}

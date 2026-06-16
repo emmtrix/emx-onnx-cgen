@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 261 / 262
+Supported operators: 263 / 265
 
 | Operator | Supported |
 | --- | --- |
@@ -35,6 +35,7 @@ Supported operators: 261 / 262
 | BlackmanWindow | ✅ |
 | Cast | ✅ |
 | CastLike | ✅ |
+| CausalConvWithState | ✅ |
 | Ceil | ✅ |
 | Celu | ✅ |
 | CenterCropPad | ✅ |
@@ -101,6 +102,7 @@ Supported operators: 261 / 262
 | LeakyRelu | ✅ |
 | Less | ✅ |
 | LessOrEqual | ✅ |
+| LinearAttention | ✅ |
 | Log | ✅ |
 | LogSoftmax | ✅ |
 | Loop | ✅ |
@@ -211,6 +213,7 @@ Supported operators: 261 / 262
 | ai.onnx.ml.Binarizer | ✅ |
 | ai.onnx.ml.LabelEncoder | ✅ |
 | ai.onnx.ml.TreeEnsemble | ✅ |
+| ai.onnx.preview.FlexAttention | ❌ |
 | ai.onnx.preview.training.Adagrad | ✅ |
 | ai.onnx.preview.training.Adam | ✅ |
 | ai.onnx.preview.training.Gradient | ✅ |

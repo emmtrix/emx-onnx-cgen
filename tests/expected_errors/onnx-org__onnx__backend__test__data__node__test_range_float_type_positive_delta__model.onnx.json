@@ -5,6 +5,6 @@
   "operators": [
     "Range"
   ],
-  "opset_version": 11,
-  "generated_checksum": "bfa68b1613e5a6631aacba83cbb871718a30e917dc0b084f0d136ddc27241af4"
+  "opset_version": 27,
+  "generated_checksum": "6f6ec5a5400119681d4306986d0892a9c7706aafd3c5d2f77124327058034bc2"
 }

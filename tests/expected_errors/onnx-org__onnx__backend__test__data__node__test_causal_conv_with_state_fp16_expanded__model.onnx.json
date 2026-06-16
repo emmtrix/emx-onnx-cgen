@@ -1,0 +1,18 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_causal_conv_with_state_fp16_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Constant",
+    "Shape",
+    "Sub",
+    "Concat",
+    "ConstantOfShape",
+    "CastLike",
+    "Conv",
+    "Identity",
+    "Slice"
+  ],
+  "opset_version": 27,
+  "generated_checksum": "6ea4e20e6fce60907b177789f8cffd6add77dbb83f2af057f1ae09201708f204"
+}

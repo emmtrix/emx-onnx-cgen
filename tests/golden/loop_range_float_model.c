@@ -8,15 +8,15 @@
  *   fp16_accumulation_strategy: fp32
  *   large_temp_threshold: 1024
  *   large_weight_threshold: 102400
- * Model checksum (sha256): 822ebcfef8c81b0dadecc8bea2f5778ae663ba1a1204ef5871fc2f14d0f7a574
+ * Model checksum (sha256): da74c3a978140a5fb3d0925bd28846f7783b2cf1df73c45ef8d88c0fd13176b0
  * Model name: loop_range_float_model
  * Graph name: test_range_float_type_positive_delta_expanded
  * Inputs: 3 Outputs: 1 Nodes: 9 Initializers: 0
- * IR version: 6
+ * IR version: 13
  * Model version: n/a
  * Domain: n/a
  * Producer: backend-test (version: n/a)
- * Opset imports: ai.onnx=11
+ * Opset imports: ai.onnx=27
  * Description:
  *   n/a
  * Graph description:

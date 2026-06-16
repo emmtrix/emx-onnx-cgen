@@ -1,0 +1,25 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_flexattention_soft_cap_expanded_ver26 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Shape",
+    "Div",
+    "Constant",
+    "Unsqueeze",
+    "Concat",
+    "Expand",
+    "Reshape",
+    "Gather",
+    "Cast",
+    "Sqrt",
+    "Identity",
+    "Mul",
+    "Transpose",
+    "MatMul",
+    "Tanh",
+    "Softmax"
+  ],
+  "opset_version": 26,
+  "generated_checksum": "679c3de954dca9551bbd164ed74070b6da77e05c01baf3dc71ba1b90118f9c79"
+}

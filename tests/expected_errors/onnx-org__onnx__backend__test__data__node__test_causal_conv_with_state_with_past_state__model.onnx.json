@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 1)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_causal_conv_with_state_with_past_state model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "CausalConvWithState"
+  ],
+  "opset_version": 27,
+  "generated_checksum": "4c6a85c2b81a0ba46f490ce2b20a36a94b53fb80d6ab1eb095e48e0e00ac8ba9"
+}
