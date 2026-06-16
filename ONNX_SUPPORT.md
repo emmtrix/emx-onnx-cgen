@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1871 / 1914, 97.8% | 1.22.0 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1880 / 1914, 98.2% | 1.22.0 |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4278 / 4324, 98.9% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 9 / 9, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1871 / 1914 ONNX files (97.8%).
+Coverage 1880 / 1914 ONNX files (98.2%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -486,27 +486,27 @@ Coverage 1871 / 1914 ONNX files (97.8%).
 | node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx | 25 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ_expanded/model.onnx | 25 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2_expanded/model.onnx | 25 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_causal_conv_with_state_b1_c1_degenerate/model.onnx | 27 | Data/Data | ❌ | CausalConvWithState must have 4 inputs and 2 outputs (while lowering node_index=0, op_type=CausalConvWithState, name=<unnamed>, inputs=[input: tensor[dtype=float, shape=(1, 1, 6), dim_params=(None, None, None)], weight: tensor[dtype=float, shape=(1, 1, 4), dim_params=(None, None, None)]], outputs=[output: tensor[dtype=float, shape=(1, 1, 6), dim_params=(None, None, None)], present_state: tensor[dtype=float, shape=(1, 1, 3), dim_params=(None, None, None)]]) |
+| node/test_causal_conv_with_state_b1_c1_degenerate/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 1) |
 | node/test_causal_conv_with_state_b1_c1_degenerate_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 1) |
-| node/test_causal_conv_with_state_basic/model.onnx | 27 | Data/Data | ❌ | CausalConvWithState must have 4 inputs and 2 outputs (while lowering node_index=0, op_type=CausalConvWithState, name=<unnamed>, inputs=[input: tensor[dtype=float, shape=(2, 4, 8), dim_params=(None, None, None)], weight: tensor[dtype=float, shape=(4, 1, 4), dim_params=(None, None, None)]], outputs=[output: tensor[dtype=float, shape=(2, 4, 8), dim_params=(None, None, None)], present_state: tensor[dtype=float, shape=(2, 4, 3), dim_params=(None, None, None)]]) |
+| node/test_causal_conv_with_state_basic/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 1) |
 | node/test_causal_conv_with_state_basic_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 1) |
 | node/test_causal_conv_with_state_decode_step/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 1) |
 | node/test_causal_conv_with_state_decode_step_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 1) |
-| node/test_causal_conv_with_state_fp16/model.onnx | 27 | Data/Data | ❌ | CausalConvWithState must have 4 inputs and 2 outputs (while lowering node_index=0, op_type=CausalConvWithState, name=<unnamed>, inputs=[input: tensor[dtype=float16, shape=(2, 4, 8), dim_params=(None, None, None)], weight: tensor[dtype=float16, shape=(4, 1, 4), dim_params=(None, None, None)]], outputs=[output: tensor[dtype=float16, shape=(2, 4, 8), dim_params=(None, None, None)], present_state: tensor[dtype=float16, shape=(2, 4, 3), dim_params=(None, None, None)]]) |
+| node/test_causal_conv_with_state_fp16/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_causal_conv_with_state_fp16_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_causal_conv_with_state_kernel_size_one/model.onnx | 27 | Data/Data | ❌ | CausalConvWithState must have 4 inputs and 2 outputs (while lowering node_index=0, op_type=CausalConvWithState, name=<unnamed>, inputs=[input: tensor[dtype=float, shape=(2, 4, 8), dim_params=(None, None, None)], weight: tensor[dtype=float, shape=(4, 1, 1), dim_params=(None, None, None)]], outputs=[output: tensor[dtype=float, shape=(2, 4, 8), dim_params=(None, None, None)], present_state: tensor[dtype=float, shape=(2, 4, 0), dim_params=(None, None, None)]]) |
+| node/test_causal_conv_with_state_kernel_size_one/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_causal_conv_with_state_kernel_size_one_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_causal_conv_with_state_short_input_no_past_state/model.onnx | 27 | Data/Data | ❌ | CausalConvWithState must have 4 inputs and 2 outputs (while lowering node_index=0, op_type=CausalConvWithState, name=<unnamed>, inputs=[input: tensor[dtype=float, shape=(2, 4, 2), dim_params=(None, None, None)], weight: tensor[dtype=float, shape=(4, 1, 5), dim_params=(None, None, None)]], outputs=[output: tensor[dtype=float, shape=(2, 4, 2), dim_params=(None, None, None)], present_state: tensor[dtype=float, shape=(2, 4, 4), dim_params=(None, None, None)]]) |
+| node/test_causal_conv_with_state_short_input_no_past_state/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_causal_conv_with_state_short_input_no_past_state_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_causal_conv_with_state_silu/model.onnx | 27 | Data/Data | ❌ | CausalConvWithState must have 4 inputs and 2 outputs (while lowering node_index=0, op_type=CausalConvWithState, name=<unnamed>, inputs=[input: tensor[dtype=float, shape=(2, 4, 8), dim_params=(None, None, None)], weight: tensor[dtype=float, shape=(4, 1, 4), dim_params=(None, None, None)]], outputs=[output: tensor[dtype=float, shape=(2, 4, 8), dim_params=(None, None, None)], present_state: tensor[dtype=float, shape=(2, 4, 3), dim_params=(None, None, None)]]) |
+| node/test_causal_conv_with_state_silu/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 2) |
 | node/test_causal_conv_with_state_silu_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 2) |
-| node/test_causal_conv_with_state_silu_fp16/model.onnx | 27 | Data/Data | ❌ | CausalConvWithState must have 4 inputs and 2 outputs (while lowering node_index=0, op_type=CausalConvWithState, name=<unnamed>, inputs=[input: tensor[dtype=float16, shape=(2, 4, 8), dim_params=(None, None, None)], weight: tensor[dtype=float16, shape=(4, 1, 4), dim_params=(None, None, None)]], outputs=[output: tensor[dtype=float16, shape=(2, 4, 8), dim_params=(None, None, None)], present_state: tensor[dtype=float16, shape=(2, 4, 3), dim_params=(None, None, None)]]) |
+| node/test_causal_conv_with_state_silu_fp16/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_causal_conv_with_state_silu_fp16_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_causal_conv_with_state_silu_with_past_state/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 2) |
 | node/test_causal_conv_with_state_silu_with_past_state_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 2) |
-| node/test_causal_conv_with_state_swish_alias/model.onnx | 27 | Data/Data | ❌ | CausalConvWithState must have 4 inputs and 2 outputs (while lowering node_index=0, op_type=CausalConvWithState, name=<unnamed>, inputs=[input: tensor[dtype=float, shape=(2, 4, 8), dim_params=(None, None, None)], weight: tensor[dtype=float, shape=(4, 1, 4), dim_params=(None, None, None)]], outputs=[output: tensor[dtype=float, shape=(2, 4, 8), dim_params=(None, None, None)], present_state: tensor[dtype=float, shape=(2, 4, 3), dim_params=(None, None, None)]]) |
+| node/test_causal_conv_with_state_swish_alias/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 2) |
 | node/test_causal_conv_with_state_swish_alias_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 2) |
-| node/test_causal_conv_with_state_with_bias/model.onnx | 27 | Data/Data | ❌ | CausalConvWithState must have 4 inputs and 2 outputs (while lowering node_index=0, op_type=CausalConvWithState, name=<unnamed>, inputs=[input: tensor[dtype=float, shape=(2, 4, 8), dim_params=(None, None, None)], weight: tensor[dtype=float, shape=(4, 1, 4), dim_params=(None, None, None)], bias: tensor[dtype=float, shape=(4,), dim_params=(None,)]], outputs=[output: tensor[dtype=float, shape=(2, 4, 8), dim_params=(None, None, None)], present_state: tensor[dtype=float, shape=(2, 4, 3), dim_params=(None, None, None)]]) |
+| node/test_causal_conv_with_state_with_bias/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 2) |
 | node/test_causal_conv_with_state_with_bias_and_past_state/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 2) |
 | node/test_causal_conv_with_state_with_bias_and_past_state_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 2) |
 | node/test_causal_conv_with_state_with_bias_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 2) |
