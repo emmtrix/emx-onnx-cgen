@@ -407,3 +407,64 @@ def test_import_optional_sequence_value_info_marks_sequence_optional() -> None:
 
     assert imported.inputs[0].name == "opt_seq"
     assert imported.inputs[0].type.is_optional
+
+
+def _make_flexattention_model(
+    *,
+    score_mod: onnx.GraphProto | None = None,
+) -> onnx.ModelProto:
+    shape = [1, 2, 3, 4]
+    q = helper.make_tensor_value_info("Q", TensorProto.FLOAT, shape)
+    k = helper.make_tensor_value_info("K", TensorProto.FLOAT, shape)
+    v = helper.make_tensor_value_info("V", TensorProto.FLOAT, shape)
+    y = helper.make_tensor_value_info("Y", TensorProto.FLOAT, shape)
+    attrs: dict[str, object] = {}
+    if score_mod is not None:
+        attrs["score_mod"] = score_mod
+    node = helper.make_node(
+        "FlexAttention",
+        inputs=["Q", "K", "V"],
+        outputs=["Y"],
+        domain="ai.onnx.preview",
+        **attrs,
+    )
+    graph = helper.make_graph([node], "flexattention_graph", [q, k, v], [y])
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[
+            helper.make_operatorsetid("", 26),
+            helper.make_operatorsetid("ai.onnx.preview", 1),
+        ],
+    )
+    model.ir_version = 10
+    return model
+
+
+def test_import_flexattention_expands_to_primitive_ops() -> None:
+    model = _make_flexattention_model()
+
+    imported = import_onnx(model)
+
+    op_types = [node.op_type for node in imported.nodes]
+    assert "FlexAttention" not in op_types
+    # Scaled dot-product attention decomposes into two MatMuls around a Softmax.
+    assert op_types.count("MatMul") == 2
+    assert "Softmax" in op_types
+
+
+def test_import_flexattention_inlines_score_mod_subgraph() -> None:
+    score_mod = helper.make_graph(
+        [helper.make_node("Add", inputs=["scores", "scores"], outputs=["scores_out"])],
+        "score_mod",
+        [helper.make_tensor_value_info("scores", TensorProto.FLOAT, [1, 2, 3, 3])],
+        [helper.make_tensor_value_info("scores_out", TensorProto.FLOAT, [1, 2, 3, 3])],
+    )
+    model = _make_flexattention_model(score_mod=score_mod)
+
+    imported = import_onnx(model)
+
+    op_types = [node.op_type for node in imported.nodes]
+    assert "FlexAttention" not in op_types
+    # The score_mod body (an Add) is inlined into the expanded graph.
+    assert "Add" in op_types
