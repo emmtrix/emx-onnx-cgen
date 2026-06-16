@@ -7,7 +7,7 @@ Aggregates non-success verification outcomes.
 
 | Error message | Count | Opset versions |
 | --- | --- | --- |
-| Out of tolerance | 43 | 7, 17, 21, 22 |
+| Out of tolerance | 42 | 7, 17, 21 |
 | Missing shape for '*' in Scan expansion. Hint: run ONNX shape inference or export with static shapes. | 14 | 27 |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 8 |  |
 | Range does not support dtype bfloat16 (while lowering node_index=0, op_type=Range, name=<unnamed>, inputs=[start: tensor[dtype=bfloat16, shape=()], limit: tensor[dtype=bfloat16, shape=()], delta: tensor[dtype=bfloat16, shape=()]], outputs=[output: tensor[dtype=bfloat16, shape=(2,), dim_params=(None,)]]) | 1 | 27 |
@@ -22,7 +22,6 @@ Aggregates non-success verification outcomes.
 | Out of tolerance | 7 | 4 |
 | Out of tolerance | 17 | 13 |
 | Out of tolerance | 21 | 4 |
-| Out of tolerance | 22 | 1 |
 | Missing shape for '*' in Scan expansion. Hint: run ONNX shape inference or export with static shapes. | 27 | 14 |
 | Range does not support dtype bfloat16 (while lowering node_index=0, op_type=Range, name=<unnamed>, inputs=[start: tensor[dtype=bfloat16, shape=()], limit: tensor[dtype=bfloat16, shape=()], delta: tensor[dtype=bfloat16, shape=()]], outputs=[output: tensor[dtype=bfloat16, shape=(2,), dim_params=(None,)]]) | 27 | 1 |
 | Range does not support dtype float16 (while lowering node_index=0, op_type=Range, name=<unnamed>, inputs=[start: tensor[dtype=float16, shape=()], limit: tensor[dtype=float16, shape=()], delta: tensor[dtype=float16, shape=()]], outputs=[output: tensor[dtype=float16, shape=(2,), dim_params=(None,)]]) | 27 | 1 |
@@ -35,7 +34,6 @@ Lists every ONNX file with a non-success verification outcome.
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
-| node/test_l2normalization_axis_0/model.onnx | 22 | Data/Data | ❌ | Out of tolerance (max ULP 4294967295) |
 | node/test_linear_attention_decode_step_expanded/model.onnx | 27 | Data/Data | ❌ | Missing shape for 'LinearAttention_test_linear_attention_decode_step_expanded_function_Q4D' in Scan expansion. Hint: run ONNX shape inference or export with static shapes. |
 | node/test_linear_attention_delta_expanded/model.onnx | 27 | Data/Data | ❌ | Missing shape for 'LinearAttention_test_linear_attention_delta_expanded_function_Q4D' in Scan expansion. Hint: run ONNX shape inference or export with static shapes. |
 | node/test_linear_attention_explicit_scale_expanded/model.onnx | 27 | Data/Data | ❌ | Missing shape for 'LinearAttention_test_linear_attention_explicit_scale_expanded_function_Q4D' in Scan expansion. Hint: run ONNX shape inference or export with static shapes. |
