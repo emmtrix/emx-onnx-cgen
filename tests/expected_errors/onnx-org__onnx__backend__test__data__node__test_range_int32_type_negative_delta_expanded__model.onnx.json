@@ -10,6 +10,6 @@
     "Relu",
     "Loop"
   ],
-  "opset_version": 11,
-  "generated_checksum": "0edcf248ae7d1b8fda5fa830ca1cfbed6354270eee31e115bda1c70ed46edec4"
+  "opset_version": 27,
+  "generated_checksum": "2aa40c699611299fef13bb001a264fded1876a87bcd4622820fbadb2b34cce4f"
 }

@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 3)",
+  "error": "OK (max ULP 4)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softcap_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
@@ -21,10 +21,10 @@
     "Transpose",
     "Mul",
     "MatMul",
-    "Add",
     "Tanh",
+    "Add",
     "Softmax"
   ],
   "opset_version": 23,
-  "generated_checksum": "25fa2822029ebf817173f67009129d6ec66a4ca9d7a90bf6e42e05cdf0772eb3"
+  "generated_checksum": "1a12e22b45a0166a6ea027d8967b0ca250c2566aa58ed6281a7290cd97741f7d"
 }

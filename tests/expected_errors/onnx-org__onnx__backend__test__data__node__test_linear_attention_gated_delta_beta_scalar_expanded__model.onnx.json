@@ -1,0 +1,21 @@
+{
+  "error": "Missing shape for 'LinearAttention_test_linear_attention_gated_delta_beta_scalar_expanded_function_Q4D' in Scan expansion. Hint: run ONNX shape inference or export with static shapes.",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_linear_attention_gated_delta_beta_scalar_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Constant",
+    "Shape",
+    "Concat",
+    "Reshape",
+    "Transpose",
+    "Div",
+    "ConstantOfShape",
+    "Squeeze",
+    "Cast",
+    "Sqrt",
+    "Reciprocal",
+    "Scan",
+    "CastLike"
+  ],
+  "opset_version": 27
+}

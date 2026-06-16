@@ -22,10 +22,10 @@
     "Expand",
     "Mul",
     "MatMul",
-    "Add",
     "Tanh",
+    "Add",
     "Softmax"
   ],
   "opset_version": 23,
-  "generated_checksum": "ab04b7f97f9b6d6f197707c548a2e86a8f46dfbfeee542567c913a4228c80b96"
+  "generated_checksum": "8112c5bc6f6499d09d053c3f1957a4e4f4042b6b2f574be0c7233b6ff9fd8cc5"
 }

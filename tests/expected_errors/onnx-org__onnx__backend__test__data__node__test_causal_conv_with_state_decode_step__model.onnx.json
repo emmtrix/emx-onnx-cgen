@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 1)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_causal_conv_with_state_decode_step model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "CausalConvWithState"
+  ],
+  "opset_version": 27,
+  "generated_checksum": "a9e3e31d9ac7455e8c9cb4fb641fe6ebeff132fa3b63560299e752ed206f6f2e"
+}

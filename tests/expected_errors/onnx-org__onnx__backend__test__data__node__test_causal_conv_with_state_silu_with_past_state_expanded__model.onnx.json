@@ -1,0 +1,19 @@
+{
+  "error": "OK (max ULP 2)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_causal_conv_with_state_silu_with_past_state_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Constant",
+    "Shape",
+    "Sub",
+    "Concat",
+    "Conv",
+    "Cast",
+    "Sigmoid",
+    "Mul",
+    "CastLike",
+    "Slice"
+  ],
+  "opset_version": 27,
+  "generated_checksum": "41cd20fabf73e945a21c3ee47474fcc7c1c9d998d66618b7611151cfb60bc7b6"
+}

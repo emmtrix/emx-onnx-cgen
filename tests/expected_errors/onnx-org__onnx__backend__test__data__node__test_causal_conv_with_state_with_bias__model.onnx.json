@@ -1,0 +1,9 @@
+{
+  "error": "CausalConvWithState must have 4 inputs and 2 outputs (while lowering node_index=0, op_type=CausalConvWithState, name=<unnamed>, inputs=[input: tensor[dtype=float, shape=(2, 4, 8), dim_params=(None, None, None)], weight: tensor[dtype=float, shape=(4, 1, 4), dim_params=(None, None, None)], bias: tensor[dtype=float, shape=(4,), dim_params=(None,)]], outputs=[output: tensor[dtype=float, shape=(2, 4, 8), dim_params=(None, None, None)], present_state: tensor[dtype=float, shape=(2, 4, 3), dim_params=(None, None, None)]])",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_causal_conv_with_state_with_bias model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "CausalConvWithState"
+  ],
+  "opset_version": 27
+}

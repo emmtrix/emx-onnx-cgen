@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 3)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_linear_attention_gated_delta_mqa model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "LinearAttention"
+  ],
+  "opset_version": 27,
+  "generated_checksum": "95469cc6041f8ce4d28eae29b4c5cf625fda453facf88cca1bcae58347d906e5"
+}

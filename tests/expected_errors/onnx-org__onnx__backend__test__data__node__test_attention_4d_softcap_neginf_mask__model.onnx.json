@@ -1,0 +1,10 @@
+{
+  "error": "Out of tolerance (max ULP 2662733)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_softcap_neginf_mask model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Attention"
+  ],
+  "opset_version": 23,
+  "generated_checksum": "348cd277fc22eb3af9c588f5add1cc6a28d04fae546f02245375c05eaff295c4"
+}

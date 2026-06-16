@@ -1,0 +1,18 @@
+{
+  "error": "OK (max ULP 2)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_causal_conv_with_state_with_bias_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Constant",
+    "Shape",
+    "Sub",
+    "Concat",
+    "ConstantOfShape",
+    "CastLike",
+    "Conv",
+    "Identity",
+    "Slice"
+  ],
+  "opset_version": 27,
+  "generated_checksum": "23095101e8b9f0323d0a53f7a37e5b89b861c0d2f7195cdcdbc98cc6a6021724"
+}

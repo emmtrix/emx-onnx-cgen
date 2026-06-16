@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 2)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_linear_attention_prefill_with_past model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "LinearAttention"
+  ],
+  "opset_version": 27,
+  "generated_checksum": "25cd9f91ebe822548caf5a661ab8b69f5b9de4abc063f4b5d649710366ef786b"
+}
