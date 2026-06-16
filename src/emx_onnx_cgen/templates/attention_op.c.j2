@@ -120,22 +120,22 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     if ({{ is_causal }} && ki > qi + {{ past_seq }}) {
                         bias = {{ min_literal }};
                     }
-                    {{ c_type }} score_bias = score + bias;
-                    {{ c_type }} score_softcap = score_bias;
+                    {{ c_type }} score_softcap = score;
                     if (softcap != {{ zero_literal }}) {
-                        score_softcap = softcap * {{ scalar_fn(SF.TANH, dtype) }}(score_bias / softcap);
+                        score_softcap = softcap * {{ scalar_fn(SF.TANH, dtype) }}(score / softcap);
                     }
+                    {{ c_type }} score_bias = score_softcap + bias;
                     {% if output_qk_matmul %}
                     if ({{ qk_matmul_output_mode }} == 0) {
                         {{ output_qk_matmul }}[b][h][qi][ki] = score;
                     } else if ({{ qk_matmul_output_mode }} == 1) {
-                        {{ output_qk_matmul }}[b][h][qi][ki] = score_bias;
-                    } else if ({{ qk_matmul_output_mode }} == 2) {
                         {{ output_qk_matmul }}[b][h][qi][ki] = score_softcap;
+                    } else if ({{ qk_matmul_output_mode }} == 2) {
+                        {{ output_qk_matmul }}[b][h][qi][ki] = score_bias;
                     }
                     {% endif %}
-                    scores[ki] = score_softcap;
-                    max_score = {{ scalar_fn(SF.MAXIMUM, dtype) }}(max_score, score_softcap);
+                    scores[ki] = score_bias;
+                    max_score = {{ scalar_fn(SF.MAXIMUM, dtype) }}(max_score, score_bias);
                 }
                 {{ c_type }} weights[{{ total_seq }}];
                 {{ c_type }} sum = {{ zero_literal }};

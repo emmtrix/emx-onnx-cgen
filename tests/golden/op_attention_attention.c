@@ -93,13 +93,13 @@ EMX_NODE_FN void node0_attention(const float input_q[1][2][3][4], const float in
                     if (0 && ki > qi + 0) {
                         bias = -INFINITY;
                     }
-                    float score_bias = score + bias;
-                    float score_softcap = score_bias;
+                    float score_softcap = score;
                     if (softcap != 0.0f) {
-                        score_softcap = softcap * ref_scalar_f32_tanh(score_bias / softcap);
+                        score_softcap = softcap * ref_scalar_f32_tanh(score / softcap);
                     }
-                    scores[ki] = score_softcap;
-                    max_score = ref_scalar_f32_maximum(max_score, score_softcap);
+                    float score_bias = score_softcap + bias;
+                    scores[ki] = score_bias;
+                    max_score = ref_scalar_f32_maximum(max_score, score_bias);
                 }
                 float weights[5];
                 float sum = 0.0f;
