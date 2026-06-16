@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1896 / 1914, 99.1% | 1.22.0 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1905 / 1914, 99.5% | 1.22.0 |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4278 / 4324, 98.9% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 9 / 9, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1896 / 1914 ONNX files (99.1%).
+Coverage 1905 / 1914 ONNX files (99.5%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -957,33 +957,33 @@ Coverage 1896 / 1914 ONNX files (99.1%).
 | node/test_less_uint64/model.onnx | 13 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_less_uint8/model.onnx | 13 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_linear_attention_decode_step/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_linear_attention_decode_step_expanded/model.onnx | 27 | Data/Data | ❌ | Missing shape for 'LinearAttention_test_linear_attention_decode_step_expanded_function_Q4D' in Scan expansion. Hint: run ONNX shape inference or export with static shapes. |
+| node/test_linear_attention_decode_step_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_linear_attention_delta/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_linear_attention_delta_expanded/model.onnx | 27 | Data/Data | ❌ | Missing shape for 'LinearAttention_test_linear_attention_delta_expanded_function_Q4D' in Scan expansion. Hint: run ONNX shape inference or export with static shapes. |
+| node/test_linear_attention_delta_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_linear_attention_explicit_scale/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 2) |
-| node/test_linear_attention_explicit_scale_expanded/model.onnx | 27 | Data/Data | ❌ | Missing shape for 'LinearAttention_test_linear_attention_explicit_scale_expanded_function_Q4D' in Scan expansion. Hint: run ONNX shape inference or export with static shapes. |
+| node/test_linear_attention_explicit_scale_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 6) |
 | node/test_linear_attention_fp16/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_linear_attention_fp16_expanded/model.onnx | 27 | Data/Data | ❌ | Missing shape for 'LinearAttention_test_linear_attention_fp16_expanded_function_Q4D' in Scan expansion. Hint: run ONNX shape inference or export with static shapes. |
+| node/test_linear_attention_fp16_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_linear_attention_gated/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 67) |
 | node/test_linear_attention_gated_delta/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 18) |
 | node/test_linear_attention_gated_delta_beta_scalar/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_linear_attention_gated_delta_beta_scalar_expanded/model.onnx | 27 | Data/Data | ❌ | Missing shape for 'LinearAttention_test_linear_attention_gated_delta_beta_scalar_expanded_function_Q4D' in Scan expansion. Hint: run ONNX shape inference or export with static shapes. |
-| node/test_linear_attention_gated_delta_expanded/model.onnx | 27 | Data/Data | ❌ | Missing shape for 'LinearAttention_test_linear_attention_gated_delta_expanded_function_Q4D' in Scan expansion. Hint: run ONNX shape inference or export with static shapes. |
+| node/test_linear_attention_gated_delta_beta_scalar_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_linear_attention_gated_delta_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 6) |
 | node/test_linear_attention_gated_delta_gqa/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 26) |
-| node/test_linear_attention_gated_delta_gqa_expanded/model.onnx | 27 | Data/Data | ❌ | Missing shape for 'LinearAttention_test_linear_attention_gated_delta_gqa_expanded_function_Q4D' in Scan expansion. Hint: run ONNX shape inference or export with static shapes. |
+| node/test_linear_attention_gated_delta_gqa_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 19) |
 | node/test_linear_attention_gated_delta_mqa/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_linear_attention_gated_delta_mqa_expanded/model.onnx | 27 | Data/Data | ❌ | Missing shape for 'LinearAttention_test_linear_attention_gated_delta_mqa_expanded_function_Q4D' in Scan expansion. Hint: run ONNX shape inference or export with static shapes. |
-| node/test_linear_attention_gated_expanded/model.onnx | 27 | Data/Data | ❌ | Missing shape for 'LinearAttention_test_linear_attention_gated_expanded_function_Q4D' in Scan expansion. Hint: run ONNX shape inference or export with static shapes. |
+| node/test_linear_attention_gated_delta_mqa_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 3) |
+| node/test_linear_attention_gated_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 67) |
 | node/test_linear_attention_gated_per_head_decay/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 33) |
-| node/test_linear_attention_gated_per_head_decay_expanded/model.onnx | 27 | Data/Data | ❌ | Missing shape for 'LinearAttention_test_linear_attention_gated_per_head_decay_expanded_function_Q4D' in Scan expansion. Hint: run ONNX shape inference or export with static shapes. |
+| node/test_linear_attention_gated_per_head_decay_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 33) |
 | node/test_linear_attention_linear/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 1) |
-| node/test_linear_attention_linear_expanded/model.onnx | 27 | Data/Data | ❌ | Missing shape for 'LinearAttention_test_linear_attention_linear_expanded_function_Q4D' in Scan expansion. Hint: run ONNX shape inference or export with static shapes. |
+| node/test_linear_attention_linear_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 1) |
 | node/test_linear_attention_linear_t1_no_past/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_linear_attention_linear_t1_no_past_expanded/model.onnx | 27 | Data/Data | ❌ | Missing shape for 'LinearAttention_test_linear_attention_linear_t1_no_past_expanded_function_Q4D' in Scan expansion. Hint: run ONNX shape inference or export with static shapes. |
+| node/test_linear_attention_linear_t1_no_past_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_linear_attention_no_past_explicit_zeros/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 18) |
-| node/test_linear_attention_no_past_explicit_zeros_expanded/model.onnx | 27 | Data/Data | ❌ | Missing shape for 'LinearAttention_test_linear_attention_no_past_explicit_zeros_expanded_function_Q4D' in Scan expansion. Hint: run ONNX shape inference or export with static shapes. |
+| node/test_linear_attention_no_past_explicit_zeros_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 6) |
 | node/test_linear_attention_prefill_with_past/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 2) |
-| node/test_linear_attention_prefill_with_past_expanded/model.onnx | 27 | Data/Data | ❌ | Missing shape for 'LinearAttention_test_linear_attention_prefill_with_past_expanded_function_Q4D' in Scan expansion. Hint: run ONNX shape inference or export with static shapes. |
+| node/test_linear_attention_prefill_with_past_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_log/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_log_example/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_logsoftmax_axis_0/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
