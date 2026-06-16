@@ -1,10 +1,10 @@
 {
-  "error": "Out of tolerance (max ULP 16719215)",
+  "error": "OK (max ULP 5)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_softcap model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "Attention"
   ],
   "opset_version": 23,
-  "generated_checksum": "2eef12a4913354b381f79d3b1f39acc9940f6bb28ae802554c7adf8545b1fdbe"
+  "generated_checksum": "e89cd8825763ad886e8080a6fb30f9a8b7beb349208a5b4a40a1067a3e0cc185"
 }
