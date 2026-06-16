@@ -1,10 +1,10 @@
 {
-  "error": "Out of tolerance (max abs diff 148)",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_int8_float32 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "QLinearMatMul"
   ],
   "opset_version": 21,
-  "generated_checksum": "cbcb18a4c2f45a8521710ed300a7f9f09189c531f870ce531f2fe9f6dfab4181"
+  "generated_checksum": "cff9d7858487ede300f9cd89ebec2e12a6690d5163148d76f424e5422b5123a5"
 }

@@ -766,7 +766,7 @@ class QLinearMatMulOp(MatMulLikeOpBase):
                 min_literal=min_literal,
                 max_literal=max_literal,
                 enable_integer_requant=scale_dtype != ScalarType.F16,
-                output_wrap=not emitter.replicate_ort_bugs,
+                output_wrap=False,
                 output_is_signed=self.dtype.is_signed,
                 dim_args=emitter.dim_args_str(),
             )
