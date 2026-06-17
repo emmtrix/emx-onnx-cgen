@@ -1073,6 +1073,16 @@ class MatMulNBitsOp(RenderableOpBase):
     zero_points_has_block_axis: bool
     bias_dtype: ScalarType | None
 
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        # The int8 (accuracy_level=4) path uses nearbyint()/fabs() from <math.h>.
+        if (
+            self.accuracy_level == 4
+            and self.input0_dtype in {ScalarType.F16, ScalarType.BF16}
+            and (self.zero_points is None or self.zero_points_packed)
+        ):
+            return {"#include <math.h>"}
+        return set()
+
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -1160,6 +1170,64 @@ class MatMulNBitsOp(RenderableOpBase):
 
         bit_mask = (1 << self.bits) - 1
         default_zero_point = 1 << (self.bits - 1)
+
+        # accuracy_level=4 selects ONNX Runtime's int8-quantized activation path:
+        # A is dynamically quantized to int8 per block and multiplied with the
+        # quantized weights using an exact int32 accumulation. This mirrors ORT's
+        # CompInt8 kernel (a major performance win on integer targets).
+        #
+        # ORT only takes this int8 path for float16/bfloat16 activations; for
+        # float32 it keeps a floating-point accumulation, so we restrict the int8
+        # lowering to half-precision inputs to stay bitwise-comparable. Float
+        # zero-points fall back to the floating-point path as well.
+        use_int8 = (
+            self.accuracy_level == 4
+            and self.input0_dtype in {ScalarType.F16, ScalarType.BF16}
+            and (self.zero_points is None or self.zero_points_packed)
+        )
+        if use_int8:
+            batch_m_vars = list(output_loop_vars[:-1])
+            batch_m_bounds = list(output_shape[:-1])
+            a_prefix = f"{params['input0']}" + "".join(
+                f"[{var}]" for var in input0_index_parts[:-1]
+            )
+            rendered = (
+                state.templates["matmul_nbits_int8"]
+                .render(
+                    model_name=model.name,
+                    op_name=op_name,
+                    params=param_decls,
+                    dim_args=dim_args,
+                    acc_type=acc_dtype.c_type,
+                    acc_dtype=acc_dtype,
+                    acc_zero=acc_zero_literal,
+                    output_c_type=self.output_dtype.c_type,
+                    output_index_expr=output_index_expr,
+                    a_prefix=a_prefix,
+                    qa="qa_row",
+                    a_scale="a_scale_row",
+                    batch_m_vars=batch_m_vars,
+                    batch_m_bounds=batch_m_bounds,
+                    n_var=n_var,
+                    n_bound=output_shape[-1],
+                    input1=params["input1"],
+                    scales=params["scales"],
+                    zero_points=params["zero_points"],
+                    bias=params["bias"],
+                    k=self.k,
+                    bits=self.bits,
+                    block_size=self.block_size,
+                    n_blocks=self.n_blocks_per_col,
+                    bit_mask=bit_mask,
+                    default_zero_point=default_zero_point,
+                    has_zero_points=params["zero_points"] is not None,
+                    zero_points_has_block_axis=self.zero_points_has_block_axis,
+                    scales_has_block_axis=self.scales_has_block_axis,
+                    has_bias=params["bias"] is not None,
+                )
+                .rstrip()
+            )
+            return emitter.with_node_comment(model, ctx.op_index, rendered)
 
         rendered = (
             state.templates["matmul_nbits"]
