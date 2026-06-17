@@ -1,11 +1,10 @@
 {
-  "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/layer_norm_op_test/BERTLayerNorm_NoBias_run0 model.onnx --test-data-dir test_data_set_0 --atol-eps 16",
+  "error": "OK (max ULP 24)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/layer_norm_op_test/BERTLayerNorm_NoBias_run0 model.onnx --test-data-dir test_data_set_0 --test-data-inputs-only",
   "extra_cli_args": [
-    "--atol-eps",
-    "16"
+    "--test-data-inputs-only"
   ],
-  "verification_mode": "Data/Data",
+  "verification_mode": "Data/ORT",
   "operators": [
     "LayerNormalization"
   ],

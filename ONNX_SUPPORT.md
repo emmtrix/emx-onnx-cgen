@@ -2061,7 +2061,7 @@ Coverage 4311 / 4324 ONNX files (99.7%).
 | test/contrib_ops/causal_conv_with_state_op_test/StateContinuity_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/causal_conv_with_state_op_test/WithStateAndBias_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/causal_conv_with_state_op_test/WithStateAndBias_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/cdist_op_test/DoubleEuclidean_run0/model.onnx (--max-ulp 400000000) |  | Data/Data | ✅ | OK (max ULP 340017558) |
+| test/contrib_ops/cdist_op_test/DoubleEuclidean_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 3) |
 | test/contrib_ops/cdist_op_test/Euclidean_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/cdist_op_test/Sqeuclidean_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/conv_transpose_with_dynamic_pads_test/ConvTransposeWithDynamicPads_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
@@ -2079,45 +2079,45 @@ Coverage 4311 / 4324 ONNX files (99.7%).
 | test/contrib_ops/crop_op_test/Crop_Scale_run0/model.onnx | 1 | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/decoder_masked_multihead_attention_op_test/cpu_cross_attn_fp32_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/decoder_masked_multihead_attention_op_test/cpu_self_attn_fp32_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run0/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 165) |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run1/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 272) |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run10/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 1345) |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run11/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 1345) |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run12/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 3526) |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run13/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 882) |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run14/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 456) |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run15/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 2064) |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run2/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 1345) |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run3/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 1345) |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run4/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 3526) |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run5/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 882) |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run6/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 456) |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run7/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 2064) |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run8/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 165) |
-| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run9/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 272) |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run0/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 1475) |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run1/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 236) |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run10/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 265) |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run11/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 616) |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run12/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 4098) |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run13/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 1024) |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run14/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 149) |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run15/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 298) |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run2/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 265) |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run3/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 616) |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run4/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 4098) |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run5/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 1024) |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run6/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 149) |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run7/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 298) |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run8/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 1475) |
-| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run9/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 236) |
+| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run1/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run10/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run11/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run12/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run13/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run14/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run15/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run2/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run3/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run4/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run5/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run6/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run7/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run8/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/Int8_run9/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run1/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run10/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run11/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run12/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run13/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run14/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run15/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run2/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run3/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run4/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run5/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run6/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run7/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run8/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/UInt8_run9/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
 | test/contrib_ops/dynamic_quantize_matmul_test/UInt8_test_with_empty_input_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/dynamic_quantize_matmul_test/WithConstantBInputs_run0/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 165) |
-| test/contrib_ops/dynamic_quantize_matmul_test/WithConstantBInputs_run1/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 1475) |
-| test/contrib_ops/dynamic_quantize_matmul_test/WithConstantBInputs_run2/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 165) |
-| test/contrib_ops/dynamic_quantize_matmul_test/WithConstantBInputs_run3/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 1475) |
-| test/contrib_ops/dynamic_quantize_matmul_test/WithConstantBInputs_run4/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 1345) |
-| test/contrib_ops/dynamic_quantize_matmul_test/WithConstantBInputs_run5/model.onnx (--max-ulp 5000) |  | Data/Data | ✅ | OK (max ULP 265) |
+| test/contrib_ops/dynamic_quantize_matmul_test/WithConstantBInputs_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/WithConstantBInputs_run1/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/WithConstantBInputs_run2/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/WithConstantBInputs_run3/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/WithConstantBInputs_run4/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/dynamic_quantize_matmul_test/WithConstantBInputs_run5/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
 | test/contrib_ops/dynamic_slice_op_test/dynamic_slice_ends_out_of_bounds_run0/model.onnx | 1 | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/dynamic_slice_op_test/dynamic_slice_full_axes_run0/model.onnx | 1 | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/dynamic_slice_op_test/dynamic_slice_full_axes_run1/model.onnx | 1 | Data/Data | ✅ | OK (max abs diff 0) |
@@ -2647,7 +2647,7 @@ Coverage 4311 / 4324 ONNX files (99.7%).
 | test/contrib_ops/gather_block_quantized_op_test/GatherAxis2_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/gridsample_test/gridsample_aligncorners_true_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/gridsample_test/gridsample_default_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
-| test/contrib_ops/gridsample_test/gridsample_mode_bicubic_run0/model.onnx (--max-ulp 2000) |  | Data/Data | ✅ | OK (max ULP 1678) |
+| test/contrib_ops/gridsample_test/gridsample_mode_bicubic_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 10) |
 | test/contrib_ops/gridsample_test/gridsample_mode_bilinear_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/gridsample_test/gridsample_mode_nearest_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/gridsample_test/gridsample_paddingmode_border_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
@@ -2664,21 +2664,21 @@ Coverage 4311 / 4324 ONNX files (99.7%).
 | test/contrib_ops/inverse_test/two_by_two_double_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/inverse_test/two_by_two_float16_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/inverse_test/two_by_two_float_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/layer_norm_op_test/BERTLayerNorm_NoBias_run0/model.onnx (--atol-eps 16) | 17 | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/layer_norm_op_test/BERTLayerNorm_NoBias_run0/model.onnx (--test-data-inputs-only) | 17 | Data/ORT | ✅ | OK (max ULP 24) |
 | test/contrib_ops/layer_norm_op_test/BERTLayerNorm_run0/model.onnx (--atol-eps 16) | 17 | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/layer_norm_op_test/LayerNorm17_double_run0/model.onnx (--max-ulp 200000000000) | 17 | Data/Data | ✅ | OK (max ULP 160715044774) |
-| test/contrib_ops/layer_norm_op_test/LayerNorm17_opset_run0/model.onnx (--max-ulp 400) | 17 | Data/Data | ✅ | OK (max ULP 299) |
-| test/contrib_ops/layer_norm_op_test/LayerNorm17_opset_run1/model.onnx (--max-ulp 400) | 17 | Data/Data | ✅ | OK (max ULP 299) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm17_double_run0/model.onnx (--test-data-inputs-only) | 17 | Data/ORT | ✅ | OK (max ULP 5) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm17_opset_run0/model.onnx (--test-data-inputs-only) | 17 | Data/ORT | ✅ | OK (max ULP 5) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm17_opset_run1/model.onnx (--test-data-inputs-only) | 17 | Data/ORT | ✅ | OK (max ULP 5) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_NormSize1_NoBias_run0/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_NormSize1_Valid_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_NormSize1_WithBiasScale_run0/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_4D_OuterInnerBroadcast_Axis3_run0/model.onnx (--max-ulp 2000) | 17 | Data/Data | ✅ | OK (max ULP 1613) |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_4D_OuterInnerBroadcast_run0/model.onnx (--max-ulp 2000) | 17 | Data/Data | ✅ | OK (max ULP 1613) |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Axis2_run0/model.onnx (--max-ulp 500) | 17 | Data/Data | ✅ | OK (max ULP 336) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_4D_OuterInnerBroadcast_Axis3_run0/model.onnx (--test-data-inputs-only) | 17 | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_4D_OuterInnerBroadcast_run0/model.onnx (--test-data-inputs-only) | 17 | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Axis2_run0/model.onnx (--test-data-inputs-only) | 17 | Data/ORT | ✅ | OK (max ULP 0) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Broadcast_Dim0_Fp16_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Broadcast_Dim0_run0/model.onnx (--max-ulp 400) | 7 | Data/Data | ✅ | OK (max ULP 286) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Broadcast_Dim0_run0/model.onnx (--test-data-inputs-only) | 7 | Data/ORT | ✅ | OK (max ULP 1) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Broadcast_Dim1_Fp16_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Broadcast_Dim1_run0/model.onnx (--max-ulp 400) | 7 | Data/Data | ✅ | OK (max ULP 286) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Broadcast_Dim1_run0/model.onnx (--test-data-inputs-only) | 7 | Data/ORT | ✅ | OK (max ULP 1) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Broadcast_Fp16_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Broadcast_Fp16_run1/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Float16InputScaleBiasOutput_Initializers_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
@@ -2686,18 +2686,18 @@ Coverage 4311 / 4324 ONNX files (99.7%).
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Float16InputScaleBiasOutput_run1/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_NoBroadcast_Fp16_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_NoBroadcast_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 30) |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_PerLastDim_run0/model.onnx (--max-ulp 500) | 17 | Data/Data | ✅ | OK (max ULP 336) |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Scalar_Axis2_run0/model.onnx (--max-ulp 400) | 17 | Data/Data | ✅ | OK (max ULP 252) |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Scalar_run0/model.onnx (--max-ulp 400) | 17 | Data/Data | ✅ | OK (max ULP 252) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_PerLastDim_run0/model.onnx (--test-data-inputs-only) | 17 | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Scalar_Axis2_run0/model.onnx (--test-data-inputs-only) | 17 | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Scalar_run0/model.onnx (--test-data-inputs-only) | 17 | Data/ORT | ✅ | OK (max ULP 0) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_run0/model.onnx (--max-ulp 12000) | 7 | Data/Data | ✅ | OK (max ULP 10874) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Broadcast_Inner_Mixed_run0/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 21) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Float16InputScaleOutput_Initializers_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Float16InputScaleOutput_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Scalar_NoBias_Axis2_run0/model.onnx (--max-ulp 400) | 17 | Data/Data | ✅ | OK (max ULP 252) |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Scalar_NoBias_run0/model.onnx (--max-ulp 400) | 17 | Data/Data | ✅ | OK (max ULP 252) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Scalar_NoBias_Axis2_run0/model.onnx (--test-data-inputs-only) | 17 | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Scalar_NoBias_run0/model.onnx (--test-data-inputs-only) | 17 | Data/ORT | ✅ | OK (max ULP 0) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 3) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_ValidScaleBias_Broadcast_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 80) |
-| test/contrib_ops/layer_norm_op_test/LayerNorm_run0/model.onnx (--max-ulp 400) | 7 | Data/Data | ✅ | OK (max ULP 299) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_run0/model.onnx (--test-data-inputs-only) | 7 | Data/ORT | ✅ | OK (max ULP 5) |
 | test/contrib_ops/linear_attention_op_test/DeltaRule_MultiToken_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/linear_attention_op_test/DeltaRule_SingleToken_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/linear_attention_op_test/GatedDeltaRule_BroadcastDecay_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
@@ -4618,8 +4618,8 @@ Coverage 4311 / 4324 ONNX files (99.7%).
 | test/contrib_ops/moe_test/MoECpuTest_BasicSwiGLU_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/moe_test/QMoETest_CPU_RouterWeights_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/moe_test/QMoETest_CPU_RouterWeights_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/multihead_attention_op_test/CrossAttentionWithPast_run0/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
-| test/contrib_ops/multihead_attention_op_test/CrossAttentionWithPast_run1/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/multihead_attention_op_test/CrossAttentionWithPast_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/multihead_attention_op_test/CrossAttentionWithPast_run1/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
 | test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch1_HeadSize16_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch1_HeadSize16_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch1_HeadSize16_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 4) |
@@ -5227,18 +5227,18 @@ Coverage 4311 / 4324 ONNX files (99.7%).
 | test/contrib_ops/nhwc_maxpool_op_test/MaxPoolDilations_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/nhwc_maxpool_op_test/MaxPoolStrides_S8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/nhwc_maxpool_op_test/MaxPoolStrides_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch1_Float16_run0/model.onnx (--max-ulp 500000) |  | Data/Data | ✅ | OK (max abs diff 0, max ULP 204330) |
-| test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch1_Float16_run1/model.onnx (--max-ulp 500000) |  | Data/Data | ✅ | OK (max abs diff 0, max ULP 241110) |
-| test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch1_run0/model.onnx (--max-ulp 500000) |  | Data/Data | ✅ | OK (max abs diff 0, max ULP 204330) |
-| test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch1_run1/model.onnx (--max-ulp 500000) |  | Data/Data | ✅ | OK (max abs diff 0, max ULP 241110) |
-| test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch2_NoMask_run0/model.onnx (--max-ulp 500000) |  | Data/Data | ✅ | OK (max abs diff 0, max ULP 204330) |
-| test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch2_NoMask_run1/model.onnx (--max-ulp 500000) |  | Data/Data | ✅ | OK (max abs diff 0, max ULP 241110) |
-| test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch2_run0/model.onnx (--max-ulp 500000) |  | Data/Data | ✅ | OK (max abs diff 0, max ULP 204330) |
-| test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch2_run1/model.onnx (--max-ulp 500000) |  | Data/Data | ✅ | OK (max abs diff 0, max ULP 241110) |
-| test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch_Distill_run0/model.onnx (--max-ulp 500000) |  | Data/Data | ✅ | OK (max abs diff 0, max ULP 405414) |
-| test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch_Distill_run1/model.onnx (--max-ulp 500000) |  | Data/Data | ✅ | OK (max abs diff 0, max ULP 489464) |
-| test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormLargeBatchSmallHiddenSize_run0/model.onnx (--max-ulp 500000) |  | Data/Data | ✅ | OK (max abs diff 0, max ULP 204330) |
-| test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormLargeBatchSmallHiddenSize_run1/model.onnx (--max-ulp 500000) |  | Data/Data | ✅ | OK (max abs diff 0, max ULP 241110) |
+| test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch1_Float16_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max abs diff 0, max ULP 0) |
+| test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch1_Float16_run1/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max abs diff 0, max ULP 0) |
+| test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch1_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max abs diff 0, max ULP 0) |
+| test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch1_run1/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max abs diff 0, max ULP 0) |
+| test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch2_NoMask_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max abs diff 0, max ULP 0) |
+| test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch2_NoMask_run1/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max abs diff 0, max ULP 0) |
+| test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch2_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max abs diff 0, max ULP 0) |
+| test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch2_run1/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max abs diff 0, max ULP 0) |
+| test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch_Distill_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max abs diff 0, max ULP 0) |
+| test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormBatch_Distill_run1/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max abs diff 0, max ULP 0) |
+| test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormLargeBatchSmallHiddenSize_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max abs diff 0, max ULP 0) |
+| test/contrib_ops/qembed_layer_norm_op_test/EmbedLayerNormLargeBatchSmallHiddenSize_run1/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max abs diff 0, max ULP 0) |
 | test/contrib_ops/qlinear_binary_op_test/AddS8ScalarVectorBroadcast_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/qlinear_binary_op_test/AddS8ScalarVectorBroadcast_run1/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/qlinear_binary_op_test/AddS8ScalarVectorBroadcast_run2/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
@@ -6111,34 +6111,34 @@ Coverage 4311 / 4324 ONNX files (99.7%).
 | test/contrib_ops/quantize_attention_op_test/QAttentionPastState_u8u8_run3/model.onnx (--max-ulp 3000) |  | Data/Data | ✅ | OK (max ULP 1220) |
 | test/contrib_ops/quantize_attention_op_test/QAttentionPrunedModel_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 4) |
 | test/contrib_ops/quantize_attention_op_test/QAttentionPrunedModel_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 4) |
-| test/contrib_ops/quantize_attention_op_test/QAttentionUnidirectional_U8S8_run0/model.onnx (--max-ulp 3000) |  | Data/Data | ✅ | OK (max ULP 1522) |
+| test/contrib_ops/quantize_attention_op_test/QAttentionUnidirectional_U8S8_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quantize_attention_op_test/QAttentionUnidirectional_U8U8_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quantize_attention_op_test/SharedPrepackedWeights_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 3) |
 | test/contrib_ops/quantize_attention_op_test/SharedPrepackedWeights_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 3) |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run0/model.onnx (--atol-eps 6) |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run1/model.onnx (--atol-eps 3) |  | Data/Data | ✅ | OK (max ULP 16) |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run10/model.onnx (--atol-eps 6) |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run11/model.onnx (--atol-eps 3) |  | Data/Data | ✅ | OK (max ULP 49) |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run12/model.onnx (--atol-eps 4) |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run13/model.onnx (--atol-eps 2) |  | Data/Data | ✅ | OK (max ULP 90) |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run14/model.onnx (--atol-eps 4) |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run15/model.onnx (--atol-eps 2) |  | Data/Data | ✅ | OK (max ULP 90) |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run16/model.onnx (--atol-eps 3) |  | Data/Data | ✅ | OK (max ULP 65) |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run17/model.onnx (--atol-eps 4) |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run18/model.onnx (--atol-eps 3) |  | Data/Data | ✅ | OK (max ULP 65) |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run19/model.onnx (--atol-eps 4) |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run2/model.onnx (--atol-eps 6) |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run20/model.onnx (--atol-eps 2) |  | Data/Data | ✅ | OK (max ULP 38) |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run21/model.onnx (--atol-eps 3) |  | Data/Data | ✅ | OK (max ULP 50) |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run22/model.onnx (--atol-eps 2) |  | Data/Data | ✅ | OK (max ULP 38) |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run23/model.onnx (--atol-eps 3) |  | Data/Data | ✅ | OK (max ULP 50) |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run3/model.onnx (--atol-eps 3) |  | Data/Data | ✅ | OK (max ULP 16) |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run4/model.onnx (--atol-eps 2) |  | Data/Data | ✅ | OK (max ULP 14) |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run5/model.onnx (--atol-eps 3) |  | Data/Data | ✅ | OK (max ULP 49) |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run6/model.onnx (--atol-eps 2) |  | Data/Data | ✅ | OK (max ULP 14) |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run7/model.onnx (--atol-eps 3) |  | Data/Data | ✅ | OK (max ULP 49) |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run8/model.onnx (--atol-eps 6) |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/quantize_lstm_op_test/LargeSize_run9/model.onnx (--atol-eps 3) |  | Data/Data | ✅ | OK (max ULP 49) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 4) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run1/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 3) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run10/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 6) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run11/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 7) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run12/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 5) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run13/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 6) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run14/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 5) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run15/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 6) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run16/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 3) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run17/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 6) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run18/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 3) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run19/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 6) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run2/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 4) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run20/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 6) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run21/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 5) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run22/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 6) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run23/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 5) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run3/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 3) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run4/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run5/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 9) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run6/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run7/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 9) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run8/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 6) |
+| test/contrib_ops/quantize_lstm_op_test/LargeSize_run9/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 7) |
 | test/contrib_ops/quantize_lstm_op_test/SharedPrepackedWeights_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quantize_lstm_op_test/SharedPrepackedWeights_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quantize_lstm_op_test/SmallSize_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
@@ -6182,17 +6182,17 @@ Coverage 4311 / 4324 ONNX files (99.7%).
 | test/contrib_ops/quantize_ops_test/QuantizeLinear_per_tensor_float_int8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quantize_ops_test/QuantizeLinear_per_tensor_float_uint16_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quantize_ops_test/QuantizeLinear_per_tensor_float_uint8_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_CustomRotaryDim_SmallData_Phi_Packed_Batching_run0/model.onnx (--max-ulp 8000) |  | Data/Data | ✅ | OK (max ULP 6754) |
+| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_CustomRotaryDim_SmallData_Phi_Packed_Batching_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
 | test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_CustomRotaryDim_SmallData_Phi_Packed_Batching_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_CustomRotaryDim_SmallData_Phi_run0/model.onnx (--max-ulp 8000) |  | Data/Data | ✅ | OK (max ULP 6754) |
+| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_CustomRotaryDim_SmallData_Phi_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
 | test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_CustomRotaryDim_SmallData_Phi_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_Interleaved_LargeData_LlamaMSFT_run0/model.onnx (--max-ulp 200000) |  | Data/Data | ✅ | OK (max ULP 177823) |
+| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_Interleaved_LargeData_LlamaMSFT_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 1) |
 | test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_Interleaved_LargeData_LlamaMSFT_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_Interleaved_SmallData_LlamaMSFT_run0/model.onnx (--max-ulp 8000) |  | Data/Data | ✅ | OK (max ULP 6391) |
+| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_Interleaved_SmallData_LlamaMSFT_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
 | test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_Interleaved_SmallData_LlamaMSFT_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_NotInterleaved_LargeData_LlamaMSFT_run0/model.onnx (--max-ulp 60000) |  | Data/Data | ✅ | OK (max ULP 52786) |
+| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_NotInterleaved_LargeData_LlamaMSFT_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 1) |
 | test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_NotInterleaved_LargeData_LlamaMSFT_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_NotInterleaved_SmallData_LlamaMSFT_run0/model.onnx (--max-ulp 30000) |  | Data/Data | ✅ | OK (max ULP 26739) |
+| test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_NotInterleaved_SmallData_LlamaMSFT_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
 | test/contrib_ops/rotary_embedding_op_test/RotaryEmbedding_NotInterleaved_SmallData_LlamaMSFT_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/sample_op_test/SampleOpFloat_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch1_NoBeta_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |

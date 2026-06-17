@@ -160,8 +160,7 @@ MODEL_EXTRA_VERIFY_ARGS = {
         "--test-data-inputs-only",
     ),
     "emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gridsample_test/gridsample_mode_bicubic_run0/model.onnx": (
-        "--max-ulp",
-        "2000",
+        "--test-data-inputs-only",
     ),
     "onnx-org/onnx/backend/test/data/node/test_affine_grid_3d/model.onnx": (
         "--fp32-accumulation-strategy",
@@ -173,8 +172,7 @@ MODEL_EXTRA_VERIFY_ARGS = {
     ),
     **{
         f"emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/dynamic_quantize_matmul_test/{d}/model.onnx": (
-            "--max-ulp",
-            "5000",
+            "--test-data-inputs-only",
         )
         for d in (
             "Int8_run0",
@@ -219,8 +217,7 @@ MODEL_EXTRA_VERIFY_ARGS = {
     },
     **{
         f"emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/qembed_layer_norm_op_test/{d}/model.onnx": (
-            "--max-ulp",
-            "500000",
+            "--test-data-inputs-only",
         )
         for d in (
             "EmbedLayerNormBatch1_run0",
