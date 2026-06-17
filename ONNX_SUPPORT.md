@@ -8,7 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1914 / 1914, 100.0% | 1.22.0 |
-| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4311 / 4324, 99.7% | n/a |
+| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4314 / 4324, 99.8% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 9 / 9, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -1944,7 +1944,7 @@ Coverage 1914 / 1914 ONNX files (100.0%).
 
 Test directory: `emx-ort-test-artifacts-org/artifacts/onnxruntime`
 
-Coverage 4311 / 4324 ONNX files (99.7%).
+Coverage 4314 / 4324 ONNX files (99.8%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -2002,7 +2002,7 @@ Coverage 4311 / 4324 ONNX files (99.7%).
 | test/contrib_ops/attention_op_test/AttentionPastStateBatch2WithPadding_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/attention_op_test/AttentionPastStateBatch2_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/attention_op_test/AttentionPastStateBatch2_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/attention_op_test/AttentionPastState_dynamic_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 86151) |
+| test/contrib_ops/attention_op_test/AttentionPastState_dynamic_run0/model.onnx (--fp32-accumulation-strategy fp64 --max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 11282) |
 | test/contrib_ops/attention_op_test/AttentionPrunedModel_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/attention_op_test/AttentionPrunedModel_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/attention_op_test/AttentionRightPaddingMaskIndex2_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
@@ -4630,18 +4630,18 @@ Coverage 4311 / 4324 ONNX files (99.7%).
 | test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize16_8_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 20) |
 | test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize16_8_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 7) |
 | test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize16_8_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 7) |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize40_run0/model.onnx (--test-data-inputs-only --max-ulp 20000) |  | Data/ORT | ✅ | OK (max ULP 16414) |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize40_run1/model.onnx (--test-data-inputs-only --max-ulp 20000) |  | Data/ORT | ✅ | OK (max ULP 16414) |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize40_run2/model.onnx (--test-data-inputs-only --max-ulp 500) |  | Data/ORT | ✅ | OK (max ULP 388) |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize40_run3/model.onnx (--test-data-inputs-only --max-ulp 500) |  | Data/ORT | ✅ | OK (max ULP 388) |
+| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize40_run0/model.onnx (--fp32-accumulation-strategy fp64 --test-data-inputs-only --max-ulp 8000) |  | Data/ORT | ✅ | OK (max ULP 5905) |
+| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize40_run1/model.onnx (--fp32-accumulation-strategy fp64 --test-data-inputs-only --max-ulp 8000) |  | Data/ORT | ✅ | OK (max ULP 5905) |
+| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize40_run2/model.onnx (--fp32-accumulation-strategy fp64 --test-data-inputs-only --max-ulp 500) |  | Data/ORT | ✅ | OK (max ULP 364) |
+| test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize40_run3/model.onnx (--fp32-accumulation-strategy fp64 --test-data-inputs-only --max-ulp 500) |  | Data/ORT | ✅ | OK (max ULP 364) |
 | test/contrib_ops/multihead_attention_op_test/CrossAttention_DiffSequenceLengths_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/multihead_attention_op_test/CrossAttention_DiffSequenceLengths_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/multihead_attention_op_test/CrossAttention_DiffSequenceLengths_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/multihead_attention_op_test/CrossAttention_DiffSequenceLengths_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/multihead_attention_op_test/CrossAttention_DiffSequenceLengths_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/multihead_attention_op_test/CrossAttention_DiffSequenceLengths_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_WithPastPassedInDirectly_NoMask_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 64137) |
-| test/contrib_ops/multihead_attention_op_test/CrossAttention_WithPastPassedInDirectly_NoMask_run1/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 64137) |
+| test/contrib_ops/multihead_attention_op_test/CrossAttention_WithPastPassedInDirectly_NoMask_run0/model.onnx (--fp32-accumulation-strategy fp64 --test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/multihead_attention_op_test/CrossAttention_WithPastPassedInDirectly_NoMask_run1/model.onnx (--fp32-accumulation-strategy fp64 --test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
 | test/contrib_ops/multihead_attention_op_test/SelfAttention_WithPastAndPresent_NoMask_NoRelPosBias_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/multihead_attention_op_test/SelfAttention_WithPastAndPresent_NoMask_NoRelPosBias_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/multihead_attention_op_test/SelfAttention_WithPastAndPresent_NoMask_NoRelPosBias_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 24) |

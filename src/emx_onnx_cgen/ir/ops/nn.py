@@ -2878,6 +2878,31 @@ class MsAttentionOp(RenderableOpBase):
         c_type = output_dtype.c_type
         zero_literal = output_dtype.zero_literal
         min_literal = output_dtype.min_literal
+        scale_literal = emitter.format_floating(self.scale, self.dtype)
+        mask_filter_literal = emitter.format_floating(
+            self.mask_filter_value, self.dtype
+        )
+        # Accumulate in the configured accumulation precision (e.g. double for
+        # --fp32-accumulation-strategy fp64). This improves accuracy for the
+        # near-zero softmax/value reductions; for the default "simple" strategy
+        # acc_dtype == output_dtype, so the generated code is byte-for-byte
+        # unchanged.
+        acc_dtype = emitter.accumulation_dtype(self.dtype)
+        acc_type = acc_dtype.c_type
+        acc_cast = "" if acc_dtype == output_dtype else f"({acc_type})"
+        out_cast = "" if acc_dtype == output_dtype else f"({c_type})"
+        if acc_dtype == output_dtype:
+            acc_zero_literal = zero_literal
+            acc_min_literal = min_literal
+            acc_scale_literal = scale_literal
+            acc_mask_filter_literal = mask_filter_literal
+        else:
+            acc_zero_literal = emitter.format_literal(acc_dtype, 0)
+            acc_min_literal = acc_dtype.min_literal
+            acc_scale_literal = emitter.format_floating(self.scale, acc_dtype)
+            acc_mask_filter_literal = emitter.format_floating(
+                self.mask_filter_value, acc_dtype
+            )
         params = emitter.shared_param_map(
             [
                 ("input0", self.input0),
@@ -2976,13 +3001,19 @@ class MsAttentionOp(RenderableOpBase):
                 present=params["present"],
                 params=param_decls,
                 c_type=c_type,
+                acc_type=acc_type,
+                acc_cast=acc_cast,
+                out_cast=out_cast,
                 zero_literal=zero_literal,
                 min_literal=min_literal,
-                mask_filter_literal=emitter.format_floating(
-                    self.mask_filter_value, self.dtype
-                ),
-                scale_literal=emitter.format_floating(self.scale, self.dtype),
+                acc_zero_literal=acc_zero_literal,
+                acc_min_literal=acc_min_literal,
+                mask_filter_literal=mask_filter_literal,
+                scale_literal=scale_literal,
+                acc_scale_literal=acc_scale_literal,
+                acc_mask_filter_literal=acc_mask_filter_literal,
                 dtype=self.dtype,
+                acc_dtype=acc_dtype,
                 batch=self.batch,
                 seq_len=self.seq_len,
                 num_heads=self.num_heads,
@@ -3088,6 +3119,30 @@ class MultiHeadAttentionOp(RenderableOpBase):
         c_type = output_dtype.c_type
         zero_literal = output_dtype.zero_literal
         min_literal = output_dtype.min_literal
+        scale_literal = emitter.format_floating(self.scale, self.dtype)
+        mask_filter_literal = emitter.format_floating(
+            self.mask_filter_value, self.dtype
+        )
+        # Honor --fp32-accumulation-strategy: accumulate the score, softmax and
+        # value reductions in the configured precision. Default "simple" keeps
+        # acc_dtype == output dtype, so the generated C is byte-for-byte
+        # unchanged.
+        acc_dtype = emitter.accumulation_dtype(self.dtype)
+        acc_type = acc_dtype.c_type
+        acc_cast = "" if acc_dtype == output_dtype else f"({acc_type})"
+        out_cast = "" if acc_dtype == output_dtype else f"({c_type})"
+        if acc_dtype == output_dtype:
+            acc_zero_literal = zero_literal
+            acc_min_literal = min_literal
+            acc_scale_literal = scale_literal
+            acc_mask_filter_literal = mask_filter_literal
+        else:
+            acc_zero_literal = emitter.format_literal(acc_dtype, 0)
+            acc_min_literal = acc_dtype.min_literal
+            acc_scale_literal = emitter.format_floating(self.scale, acc_dtype)
+            acc_mask_filter_literal = emitter.format_floating(
+                self.mask_filter_value, acc_dtype
+            )
         params = emitter.shared_param_map(
             [
                 ("query", self.query),
@@ -3257,13 +3312,19 @@ class MultiHeadAttentionOp(RenderableOpBase):
                 present_value=params["present_value"],
                 params=param_decls,
                 c_type=c_type,
+                acc_type=acc_type,
+                acc_cast=acc_cast,
+                out_cast=out_cast,
                 zero_literal=zero_literal,
                 min_literal=min_literal,
-                mask_filter_literal=emitter.format_floating(
-                    self.mask_filter_value, self.dtype
-                ),
-                scale_literal=emitter.format_floating(self.scale, self.dtype),
+                acc_zero_literal=acc_zero_literal,
+                acc_min_literal=acc_min_literal,
+                mask_filter_literal=mask_filter_literal,
+                scale_literal=scale_literal,
+                acc_scale_literal=acc_scale_literal,
+                acc_mask_filter_literal=acc_mask_filter_literal,
                 dtype=self.dtype,
+                acc_dtype=acc_dtype,
                 batch=self.batch,
                 q_seq=self.q_seq,
                 num_heads=self.num_heads,
@@ -3367,6 +3428,25 @@ class GroupQueryAttentionOp(RenderableOpBase):
         c_type = output_dtype.c_type
         zero_literal = output_dtype.zero_literal
         min_literal = output_dtype.min_literal
+        scale_literal = emitter.format_floating(self.scale, self.dtype)
+        # Honor --fp32-accumulation-strategy for the score/softmax/value
+        # reductions. Default "simple" keeps acc_dtype == output dtype, so the
+        # generated C is byte-for-byte unchanged.
+        acc_dtype = emitter.accumulation_dtype(self.dtype)
+        acc_type = acc_dtype.c_type
+        acc_cast = "" if acc_dtype == output_dtype else f"({acc_type})"
+        out_cast = "" if acc_dtype == output_dtype else f"({c_type})"
+        # Match the existing bare expf() for the default path; use double exp()
+        # only when accumulating in double, so the default output is unchanged.
+        exp_fn = "exp" if acc_dtype == ScalarType.F64 else "expf"
+        if acc_dtype == output_dtype:
+            acc_zero_literal = zero_literal
+            acc_min_literal = min_literal
+            acc_scale_literal = scale_literal
+        else:
+            acc_zero_literal = emitter.format_literal(acc_dtype, 0)
+            acc_min_literal = acc_dtype.min_literal
+            acc_scale_literal = emitter.format_floating(self.scale, acc_dtype)
 
         params = emitter.shared_param_map(
             [
@@ -3474,10 +3554,18 @@ class GroupQueryAttentionOp(RenderableOpBase):
                 present_value=params["present_value"],
                 params=param_decls,
                 c_type=c_type,
+                acc_type=acc_type,
+                acc_cast=acc_cast,
+                out_cast=out_cast,
                 zero_literal=zero_literal,
                 min_literal=min_literal,
-                scale_literal=emitter.format_floating(self.scale, self.dtype),
+                acc_zero_literal=acc_zero_literal,
+                acc_min_literal=acc_min_literal,
+                scale_literal=scale_literal,
+                acc_scale_literal=acc_scale_literal,
+                exp_fn=exp_fn,
                 dtype=self.dtype,
+                acc_dtype=acc_dtype,
                 batch=self.batch,
                 q_seq=self.q_seq,
                 num_heads=self.num_heads,

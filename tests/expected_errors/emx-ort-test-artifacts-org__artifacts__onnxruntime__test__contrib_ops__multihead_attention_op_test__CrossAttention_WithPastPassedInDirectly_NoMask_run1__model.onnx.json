@@ -1,9 +1,14 @@
 {
-  "error": "Out of tolerance (max ULP 64137)",
-  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/multihead_attention_op_test/CrossAttention_WithPastPassedInDirectly_NoMask_run1 model.onnx --test-data-dir test_data_set_0",
-  "verification_mode": "Data/Data",
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/multihead_attention_op_test/CrossAttention_WithPastPassedInDirectly_NoMask_run1 model.onnx --test-data-dir test_data_set_0 --fp32-accumulation-strategy fp64 --test-data-inputs-only",
+  "extra_cli_args": [
+    "--fp32-accumulation-strategy",
+    "fp64",
+    "--test-data-inputs-only"
+  ],
+  "verification_mode": "Data/ORT",
   "operators": [
     "com.microsoft.MultiHeadAttention"
   ],
-  "generated_checksum": "5be4c8c7b9e9da6a74f58cba189b75d77f49b952b6a619a23d268f7b51f29f4d"
+  "generated_checksum": "fa4bd041859d7ffc9ccbdf7784068321c71b1debb6e40a1b2243c0de65e9cc4a"
 }

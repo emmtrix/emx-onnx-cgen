@@ -1,39 +1,39 @@
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-    const {{ c_type }} scale = {{ scale_literal }};
+    const {{ acc_type }} scale = {{ acc_scale_literal }};
     {% if has_key_padding_mask or unidirectional %}
-    const {{ c_type }} mask_filter_value = {{ mask_filter_literal }};
+    const {{ acc_type }} mask_filter_value = {{ acc_mask_filter_literal }};
     {% endif %}
     for (int b = 0; b < {{ batch }}; ++b) {
         for (int h = 0; h < {{ num_heads }}; ++h) {
             for (int qi = 0; qi < {{ q_seq }}; ++qi) {
-                {{ c_type }} scores[{{ total_seq }}];
-                {{ c_type }} max_score = {{ min_literal }};
+                {{ acc_type }} scores[{{ total_seq }}];
+                {{ acc_type }} max_score = {{ acc_min_literal }};
                 for (int ki = 0; ki < {{ total_seq }}; ++ki) {
-                    {{ c_type }} score = {{ zero_literal }};
+                    {{ acc_type }} score = {{ acc_zero_literal }};
                     {% if has_past %}
                     if (ki < {{ past_seq }}) {
                         for (int d = 0; d < {{ qk_head_size }}; ++d) {
-                            {{ c_type }} q_val = {{ query }}[b][qi][h * {{ qk_head_size }} + d]{% if has_bias %} + {{ bias }}[h * {{ qk_head_size }} + d]{% endif %};
-                            score += q_val * {{ past_key }}[b][h][ki][d];
+                            {{ acc_type }} q_val = {{ acc_cast }}{{ query }}[b][qi][h * {{ qk_head_size }} + d]{% if has_bias %} + {{ acc_cast }}{{ bias }}[h * {{ qk_head_size }} + d]{% endif %};
+                            score += q_val * {{ acc_cast }}{{ past_key }}[b][h][ki][d];
                         }
                     } else {
                         int k_idx = ki - {{ past_seq }};
                         for (int d = 0; d < {{ qk_head_size }}; ++d) {
-                            {{ c_type }} q_val = {{ query }}[b][qi][h * {{ qk_head_size }} + d]{% if has_bias %} + {{ bias }}[h * {{ qk_head_size }} + d]{% endif %};
-                            {{ c_type }} k_val = {{ key }}[b][k_idx][h * {{ qk_head_size }} + d]{% if has_bias %} + {{ bias }}[{{ q_hidden_size }} + h * {{ qk_head_size }} + d]{% endif %};
+                            {{ acc_type }} q_val = {{ acc_cast }}{{ query }}[b][qi][h * {{ qk_head_size }} + d]{% if has_bias %} + {{ acc_cast }}{{ bias }}[h * {{ qk_head_size }} + d]{% endif %};
+                            {{ acc_type }} k_val = {{ acc_cast }}{{ key }}[b][k_idx][h * {{ qk_head_size }} + d]{% if has_bias %} + {{ acc_cast }}{{ bias }}[{{ q_hidden_size }} + h * {{ qk_head_size }} + d]{% endif %};
                             score += q_val * k_val;
                         }
                     }
                     {% elif kv_3d %}
                     for (int d = 0; d < {{ qk_head_size }}; ++d) {
-                        {{ c_type }} q_val = {{ query }}[b][qi][h * {{ qk_head_size }} + d]{% if has_bias %} + {{ bias }}[h * {{ qk_head_size }} + d]{% endif %};
-                        {{ c_type }} k_val = {{ key }}[b][ki][h * {{ qk_head_size }} + d]{% if has_bias %} + {{ bias }}[{{ q_hidden_size }} + h * {{ qk_head_size }} + d]{% endif %};
+                        {{ acc_type }} q_val = {{ acc_cast }}{{ query }}[b][qi][h * {{ qk_head_size }} + d]{% if has_bias %} + {{ acc_cast }}{{ bias }}[h * {{ qk_head_size }} + d]{% endif %};
+                        {{ acc_type }} k_val = {{ acc_cast }}{{ key }}[b][ki][h * {{ qk_head_size }} + d]{% if has_bias %} + {{ acc_cast }}{{ bias }}[{{ q_hidden_size }} + h * {{ qk_head_size }} + d]{% endif %};
                         score += q_val * k_val;
                     }
                     {% else %}
                     for (int d = 0; d < {{ qk_head_size }}; ++d) {
-                        {{ c_type }} q_val = {{ query }}[b][qi][h * {{ qk_head_size }} + d]{% if has_bias %} + {{ bias }}[h * {{ qk_head_size }} + d]{% endif %};
-                        score += q_val * {{ key }}[b][h][ki][d];
+                        {{ acc_type }} q_val = {{ acc_cast }}{{ query }}[b][qi][h * {{ qk_head_size }} + d]{% if has_bias %} + {{ acc_cast }}{{ bias }}[h * {{ qk_head_size }} + d]{% endif %};
+                        score += q_val * {{ acc_cast }}{{ key }}[b][h][ki][d];
                     }
                     {% endif %}
                     score *= scale;
@@ -45,47 +45,47 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     {% if unidirectional %}
                     {# ORT does not apply causal masking for the last query position (qi == q_seq - 1). #}
                     if (ki > qi + {{ past_seq }} && qi < {{ q_seq - 1 }}) {
-                        score = {{ min_literal }};
+                        score = {{ acc_min_literal }};
                     }
                     {% endif %}
                     {% if has_attention_bias %}
-                    score += {{ attention_bias }}[b][h][qi][ki];
+                    score += {{ acc_cast }}{{ attention_bias }}[b][h][qi][ki];
                     {% endif %}
                     scores[ki] = score;
-                    max_score = {{ scalar_fn(SF.MAXIMUM, dtype) }}(max_score, score);
+                    max_score = {{ scalar_fn(SF.MAXIMUM, acc_dtype) }}(max_score, score);
                 }
-                {{ c_type }} sum = {{ zero_literal }};
+                {{ acc_type }} sum = {{ acc_zero_literal }};
                 for (int ki = 0; ki < {{ total_seq }}; ++ki) {
-                    {{ c_type }} w = {{ zero_literal }};
-                    if (max_score != {{ min_literal }}) {
-                        w = {{ scalar_fn(SF.EXP, dtype) }}(scores[ki] - max_score);
+                    {{ acc_type }} w = {{ acc_zero_literal }};
+                    if (max_score != {{ acc_min_literal }}) {
+                        w = {{ scalar_fn(SF.EXP, acc_dtype) }}(scores[ki] - max_score);
                     }
                     scores[ki] = w;
                     sum += w;
                 }
-                {{ c_type }} inv_sum = sum == {{ zero_literal }} ? {{ zero_literal }} : ({{ c_type }})1 / sum;
+                {{ acc_type }} inv_sum = sum == {{ acc_zero_literal }} ? {{ acc_zero_literal }} : ({{ acc_type }})1 / sum;
                 for (int vd = 0; vd < {{ v_head_size }}; ++vd) {
-                    {{ c_type }} acc = {{ zero_literal }};
+                    {{ acc_type }} acc = {{ acc_zero_literal }};
                     for (int ki = 0; ki < {{ total_seq }}; ++ki) {
-                        {{ c_type }} weight_val = scores[ki] * inv_sum;
+                        {{ acc_type }} weight_val = scores[ki] * inv_sum;
                         {% if has_past %}
                         if (ki < {{ past_seq }}) {
-                            acc += weight_val * {{ past_value }}[b][h][ki][vd];
+                            acc += weight_val * {{ acc_cast }}{{ past_value }}[b][h][ki][vd];
                         } else {
                             int v_idx = ki - {{ past_seq }};
-                            {{ c_type }} v_val = {{ value }}[b][v_idx][h * {{ v_head_size }} + vd]{% if has_bias %} + {{ bias }}[{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + vd]{% endif %};
+                            {{ acc_type }} v_val = {{ acc_cast }}{{ value }}[b][v_idx][h * {{ v_head_size }} + vd]{% if has_bias %} + {{ acc_cast }}{{ bias }}[{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + vd]{% endif %};
                             acc += weight_val * v_val;
                         }
                         {% elif kv_3d %}
                         {
-                            {{ c_type }} v_val = {{ value }}[b][ki][h * {{ v_head_size }} + vd]{% if has_bias %} + {{ bias }}[{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + vd]{% endif %};
+                            {{ acc_type }} v_val = {{ acc_cast }}{{ value }}[b][ki][h * {{ v_head_size }} + vd]{% if has_bias %} + {{ acc_cast }}{{ bias }}[{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + vd]{% endif %};
                             acc += weight_val * v_val;
                         }
                         {% else %}
-                        acc += weight_val * {{ value }}[b][h][ki][vd];
+                        acc += weight_val * {{ acc_cast }}{{ value }}[b][h][ki][vd];
                         {% endif %}
                     }
-                    {{ output }}[b][qi][h * {{ v_head_size }} + vd] = acc;
+                    {{ output }}[b][qi][h * {{ v_head_size }} + vd] = {{ out_cast }}acc;
                 }
             }
         }

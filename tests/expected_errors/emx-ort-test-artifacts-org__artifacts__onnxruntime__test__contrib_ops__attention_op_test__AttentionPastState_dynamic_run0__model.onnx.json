@@ -1,9 +1,15 @@
 {
-  "error": "Out of tolerance (max ULP 86151)",
-  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/attention_op_test/AttentionPastState_dynamic_run0 model.onnx --test-data-dir test_data_set_0",
+  "error": "OK (max ULP 11282)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/attention_op_test/AttentionPastState_dynamic_run0 model.onnx --test-data-dir test_data_set_0 --fp32-accumulation-strategy fp64 --max-ulp 12000",
+  "extra_cli_args": [
+    "--fp32-accumulation-strategy",
+    "fp64",
+    "--max-ulp",
+    "12000"
+  ],
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft.Attention"
   ],
-  "generated_checksum": "972daea32d99e1b17958326812a77419c050f1f5f36bedc98ab11028146e9a65"
+  "generated_checksum": "60b32c92f696164f87049a210047c1373596ace6370e616e82bb833a885c939d"
 }

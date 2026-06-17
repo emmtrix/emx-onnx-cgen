@@ -1,46 +1,46 @@
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-    const {{ c_type }} scale = {{ scale_literal }};
+    const {{ acc_type }} scale = {{ acc_scale_literal }};
     {% if mask_type != 0 %}
-    const {{ c_type }} mask_filter_value = {{ mask_filter_literal }};
+    const {{ acc_type }} mask_filter_value = {{ acc_mask_filter_literal }};
     {% endif %}
     for (int b = 0; b < {{ batch }}; ++b) {
         for (int h = 0; h < {{ num_heads }}; ++h) {
             for (int qi = 0; qi < {{ seq_len }}; ++qi) {
-                {{ c_type }} q[{{ qk_head_size }}];
+                {{ acc_type }} q[{{ qk_head_size }}];
                 for (int d = 0; d < {{ qk_head_size }}; ++d) {
-                    {{ c_type }} q_val = {{ zero_literal }};
+                    {{ acc_type }} q_val = {{ acc_zero_literal }};
                     for (int j = 0; j < {{ input_hidden_size }}; ++j) {
-                        q_val += {{ input0 }}[b][qi][j] * {{ weight }}[j][h * {{ qk_head_size }} + d];
+                        q_val += {{ acc_cast }}{{ input0 }}[b][qi][j] * {{ acc_cast }}{{ weight }}[j][h * {{ qk_head_size }} + d];
                     }
-                    q[d] = q_val + {{ bias }}[h * {{ qk_head_size }} + d];
+                    q[d] = q_val + {{ acc_cast }}{{ bias }}[h * {{ qk_head_size }} + d];
                 }
-                {{ c_type }} scores[{{ total_seq }}];
-                {{ c_type }} max_score = {{ min_literal }};
+                {{ acc_type }} scores[{{ total_seq }}];
+                {{ acc_type }} max_score = {{ acc_min_literal }};
                 for (int ki = 0; ki < {{ total_seq }}; ++ki) {
-                    {{ c_type }} score = {{ zero_literal }};
+                    {{ acc_type }} score = {{ acc_zero_literal }};
                     {% if past %}
                     if (ki < {{ past_seq }}) {
                         for (int d = 0; d < {{ qk_head_size }}; ++d) {
-                            score += q[d] * {{ past }}[0][b][h][ki][d];
+                            score += q[d] * {{ acc_cast }}{{ past }}[0][b][h][ki][d];
                         }
                     } else {
                         int k_idx = ki - {{ past_seq }};
                         for (int d = 0; d < {{ qk_head_size }}; ++d) {
-                            {{ c_type }} k_val = {{ zero_literal }};
+                            {{ acc_type }} k_val = {{ acc_zero_literal }};
                             for (int j = 0; j < {{ input_hidden_size }}; ++j) {
-                                k_val += {{ input0 }}[b][k_idx][j] * {{ weight }}[j][{{ q_hidden_size }} + h * {{ qk_head_size }} + d];
+                                k_val += {{ acc_cast }}{{ input0 }}[b][k_idx][j] * {{ acc_cast }}{{ weight }}[j][{{ q_hidden_size }} + h * {{ qk_head_size }} + d];
                             }
-                            k_val += {{ bias }}[{{ q_hidden_size }} + h * {{ qk_head_size }} + d];
+                            k_val += {{ acc_cast }}{{ bias }}[{{ q_hidden_size }} + h * {{ qk_head_size }} + d];
                             score += q[d] * k_val;
                         }
                     }
                     {% else %}
                     for (int d = 0; d < {{ qk_head_size }}; ++d) {
-                        {{ c_type }} k_val = {{ zero_literal }};
+                        {{ acc_type }} k_val = {{ acc_zero_literal }};
                         for (int j = 0; j < {{ input_hidden_size }}; ++j) {
-                            k_val += {{ input0 }}[b][ki][j] * {{ weight }}[j][{{ q_hidden_size }} + h * {{ qk_head_size }} + d];
+                            k_val += {{ acc_cast }}{{ input0 }}[b][ki][j] * {{ acc_cast }}{{ weight }}[j][{{ q_hidden_size }} + h * {{ qk_head_size }} + d];
                         }
-                        k_val += {{ bias }}[{{ q_hidden_size }} + h * {{ qk_head_size }} + d];
+                        k_val += {{ acc_cast }}{{ bias }}[{{ q_hidden_size }} + h * {{ qk_head_size }} + d];
                         score += q[d] * k_val;
                     }
                     {% endif %}
@@ -72,53 +72,53 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     {% endif %}
                     {% if unidirectional %}
                     if (ki > qi + {{ past_seq }}) {
-                        score = {{ min_literal }};
+                        score = {{ acc_min_literal }};
                     }
                     {% endif %}
                     {% if extra_add_qk %}
-                    score += {{ extra_add_qk }}[b][h][qi][ki];
+                    score += {{ acc_cast }}{{ extra_add_qk }}[b][h][qi][ki];
                     {% endif %}
                     scores[ki] = score;
-                    max_score = {{ scalar_fn(SF.MAXIMUM, dtype) }}(max_score, score);
+                    max_score = {{ scalar_fn(SF.MAXIMUM, acc_dtype) }}(max_score, score);
                 }
-                {{ c_type }} sum = {{ zero_literal }};
+                {{ acc_type }} sum = {{ acc_zero_literal }};
                 for (int ki = 0; ki < {{ total_seq }}; ++ki) {
-                    {{ c_type }} w = {{ zero_literal }};
-                    if (max_score != {{ min_literal }}) {
-                        w = {{ scalar_fn(SF.EXP, dtype) }}(scores[ki] - max_score);
+                    {{ acc_type }} w = {{ acc_zero_literal }};
+                    if (max_score != {{ acc_min_literal }}) {
+                        w = {{ scalar_fn(SF.EXP, acc_dtype) }}(scores[ki] - max_score);
                     }
                     scores[ki] = w;
                     sum += w;
                 }
-                {{ c_type }} inv_sum = sum == {{ zero_literal }} ? {{ zero_literal }} : ({{ c_type }})1 / sum;
+                {{ acc_type }} inv_sum = sum == {{ acc_zero_literal }} ? {{ acc_zero_literal }} : ({{ acc_type }})1 / sum;
                 for (int vd = 0; vd < {{ v_head_size }}; ++vd) {
-                    {{ c_type }} acc = {{ zero_literal }};
+                    {{ acc_type }} acc = {{ acc_zero_literal }};
                     for (int ki = 0; ki < {{ total_seq }}; ++ki) {
-                        {{ c_type }} weight_val = scores[ki] * inv_sum;
+                        {{ acc_type }} weight_val = scores[ki] * inv_sum;
                         {% if past %}
                         if (ki < {{ past_seq }}) {
-                            acc += weight_val * {{ past }}[1][b][h][ki][vd];
+                            acc += weight_val * {{ acc_cast }}{{ past }}[1][b][h][ki][vd];
                         } else {
                             int v_idx = ki - {{ past_seq }};
-                            {{ c_type }} v_val = {{ zero_literal }};
+                            {{ acc_type }} v_val = {{ acc_zero_literal }};
                             for (int j = 0; j < {{ input_hidden_size }}; ++j) {
-                                v_val += {{ input0 }}[b][v_idx][j] * {{ weight }}[j][{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + vd];
+                                v_val += {{ acc_cast }}{{ input0 }}[b][v_idx][j] * {{ acc_cast }}{{ weight }}[j][{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + vd];
                             }
-                            v_val += {{ bias }}[{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + vd];
+                            v_val += {{ acc_cast }}{{ bias }}[{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + vd];
                             acc += weight_val * v_val;
                         }
                         {% else %}
                         {
-                            {{ c_type }} v_val = {{ zero_literal }};
+                            {{ acc_type }} v_val = {{ acc_zero_literal }};
                             for (int j = 0; j < {{ input_hidden_size }}; ++j) {
-                                v_val += {{ input0 }}[b][ki][j] * {{ weight }}[j][{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + vd];
+                                v_val += {{ acc_cast }}{{ input0 }}[b][ki][j] * {{ acc_cast }}{{ weight }}[j][{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + vd];
                             }
-                            v_val += {{ bias }}[{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + vd];
+                            v_val += {{ acc_cast }}{{ bias }}[{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + vd];
                             acc += weight_val * v_val;
                         }
                         {% endif %}
                     }
-                    {{ output }}[b][qi][h * {{ v_head_size }} + vd] = acc;
+                    {{ output }}[b][qi][h * {{ v_head_size }} + vd] = {{ out_cast }}acc;
                 }
             }
         }
@@ -138,38 +138,38 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                 } else {
                     int s_idx = ki - {{ past_seq }};
                     for (int d = 0; d < {{ qk_head_size }}; ++d) {
-                        {{ c_type }} k_val = {{ zero_literal }};
+                        {{ acc_type }} k_val = {{ acc_zero_literal }};
                         for (int j = 0; j < {{ input_hidden_size }}; ++j) {
-                            k_val += {{ input0 }}[b][s_idx][j] * {{ weight }}[j][{{ q_hidden_size }} + h * {{ qk_head_size }} + d];
+                            k_val += {{ acc_cast }}{{ input0 }}[b][s_idx][j] * {{ acc_cast }}{{ weight }}[j][{{ q_hidden_size }} + h * {{ qk_head_size }} + d];
                         }
-                        k_val += {{ bias }}[{{ q_hidden_size }} + h * {{ qk_head_size }} + d];
-                        {{ present }}[0][b][h][ki][d] = k_val;
+                        k_val += {{ acc_cast }}{{ bias }}[{{ q_hidden_size }} + h * {{ qk_head_size }} + d];
+                        {{ present }}[0][b][h][ki][d] = {{ out_cast }}k_val;
                     }
                     for (int d = 0; d < {{ v_head_size }}; ++d) {
-                        {{ c_type }} v_val = {{ zero_literal }};
+                        {{ acc_type }} v_val = {{ acc_zero_literal }};
                         for (int j = 0; j < {{ input_hidden_size }}; ++j) {
-                            v_val += {{ input0 }}[b][s_idx][j] * {{ weight }}[j][{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + d];
+                            v_val += {{ acc_cast }}{{ input0 }}[b][s_idx][j] * {{ acc_cast }}{{ weight }}[j][{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + d];
                         }
-                        v_val += {{ bias }}[{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + d];
-                        {{ present }}[1][b][h][ki][d] = v_val;
+                        v_val += {{ acc_cast }}{{ bias }}[{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + d];
+                        {{ present }}[1][b][h][ki][d] = {{ out_cast }}v_val;
                     }
                 }
                 {% else %}
                 for (int d = 0; d < {{ qk_head_size }}; ++d) {
-                    {{ c_type }} k_val = {{ zero_literal }};
+                    {{ acc_type }} k_val = {{ acc_zero_literal }};
                     for (int j = 0; j < {{ input_hidden_size }}; ++j) {
-                        k_val += {{ input0 }}[b][ki][j] * {{ weight }}[j][{{ q_hidden_size }} + h * {{ qk_head_size }} + d];
+                        k_val += {{ acc_cast }}{{ input0 }}[b][ki][j] * {{ acc_cast }}{{ weight }}[j][{{ q_hidden_size }} + h * {{ qk_head_size }} + d];
                     }
-                    k_val += {{ bias }}[{{ q_hidden_size }} + h * {{ qk_head_size }} + d];
-                    {{ present }}[0][b][h][ki][d] = k_val;
+                    k_val += {{ acc_cast }}{{ bias }}[{{ q_hidden_size }} + h * {{ qk_head_size }} + d];
+                    {{ present }}[0][b][h][ki][d] = {{ out_cast }}k_val;
                 }
                 for (int d = 0; d < {{ v_head_size }}; ++d) {
-                    {{ c_type }} v_val = {{ zero_literal }};
+                    {{ acc_type }} v_val = {{ acc_zero_literal }};
                     for (int j = 0; j < {{ input_hidden_size }}; ++j) {
-                        v_val += {{ input0 }}[b][ki][j] * {{ weight }}[j][{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + d];
+                        v_val += {{ acc_cast }}{{ input0 }}[b][ki][j] * {{ acc_cast }}{{ weight }}[j][{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + d];
                     }
-                    v_val += {{ bias }}[{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + d];
-                    {{ present }}[1][b][h][ki][d] = v_val;
+                    v_val += {{ acc_cast }}{{ bias }}[{{ q_hidden_size }} + {{ k_hidden_size }} + h * {{ v_head_size }} + d];
+                    {{ present }}[1][b][h][ki][d] = {{ out_cast }}v_val;
                 }
                 {% endif %}
             }
