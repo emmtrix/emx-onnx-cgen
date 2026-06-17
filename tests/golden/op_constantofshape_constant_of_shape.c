@@ -8,10 +8,10 @@
  *   fp16_accumulation_strategy: fp32
  *   large_temp_threshold: 1024
  *   large_weight_threshold: 102400
- * Model checksum (sha256): 173447dfff228bd02444e911a7bab46ce10d045fa62952111c704220891c6671
+ * Model checksum (sha256): 45d13c1344892932e353392af9bb3390da0d1b5702f1948f5e520eb060c0fa6b
  * Model name: model
  * Graph name: constant_of_shape_graph
- * Inputs: 0 Outputs: 1 Nodes: 1 Initializers: 1
+ * Inputs: 0 Outputs: 1 Nodes: 1 Initializers: 2
  * IR version: 7
  * Model version: n/a
  * Domain: n/a
@@ -47,16 +47,16 @@
 #define EMX_SEQUENCE_MAX_LEN 32
 #endif
 
-extern const int64_t weight1_shape[3];
+extern const int64_t weight1_out_folded_shape_0[3];
 
 /*
  * Weight 1:
- * Name: weight1_shape
+ * Name: weight1_out_folded_shape_0
  * Shape: (3,)
  * Elements: 3
  * Dtype: int64
  */
-const EMX_UNUSED int64_t weight1_shape[3] = {
+const EMX_UNUSED int64_t weight1_out_folded_shape_0[3] = {
     2LL, 3LL, 4LL
 };
 
@@ -64,7 +64,7 @@ const EMX_UNUSED int64_t weight1_shape[3] = {
  * Node 0:
  * OpType: ConstantOfShape
  * Name: n/a
- * Inputs: shape
+ * Inputs: out_folded_shape_0
  * Outputs: out
  * Attrs:
  *   value: dims: 1
@@ -90,5 +90,5 @@ _Bool model_load(const char *path) {
 }
 
 void model(float out[restrict 2][3][4]) {
-    node0_constantofshape(weight1_shape, out);
+    node0_constantofshape(weight1_out_folded_shape_0, out);
 }

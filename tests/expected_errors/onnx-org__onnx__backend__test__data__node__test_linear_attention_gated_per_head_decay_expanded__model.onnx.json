@@ -1,5 +1,5 @@
 {
-  "error": "Missing shape for 'LinearAttention_test_linear_attention_gated_per_head_decay_expanded_function_Q4D' in Scan expansion. Hint: run ONNX shape inference or export with static shapes.",
+  "error": "OK (max ULP 33)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_linear_attention_gated_per_head_decay_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
@@ -17,5 +17,6 @@
     "Scan",
     "CastLike"
   ],
-  "opset_version": 27
+  "opset_version": 27,
+  "generated_checksum": "bc75948f41c8812f554cff6a56db772c755af9c80b7525c0eea2a8fbc0be511c"
 }

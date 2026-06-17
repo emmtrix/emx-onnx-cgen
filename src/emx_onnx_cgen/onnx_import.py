@@ -5,6 +5,7 @@ from typing import Callable, Iterable, Mapping
 import onnx
 import numpy as np
 from onnx import helper, numpy_helper, shape_inference
+from onnx.reference import ReferenceEvaluator
 
 from shared.scalar_types import ScalarType
 
@@ -478,6 +479,92 @@ def _scan_state_inputs(
     return state_names
 
 
+def _emit_int_const(
+    new_nodes: list[onnx.NodeProto], name: str, values: list[int]
+) -> str:
+    new_nodes.append(
+        helper.make_node(
+            "Constant",
+            inputs=[],
+            outputs=[name],
+            name=f"{name}_const",
+            value=numpy_helper.from_array(
+                np.array(list(values), dtype=np.int64), name=name
+            ),
+        )
+    )
+    return name
+
+
+def _emit_slice(
+    new_nodes: list[onnx.NodeProto],
+    *,
+    name: str,
+    data: str,
+    starts: list[int],
+    ends: list[int],
+    axes: list[int],
+    opset_version: int,
+) -> None:
+    # Slice moved its starts/ends/axes/steps from attributes to inputs in opset 10.
+    if opset_version < 10:
+        new_nodes.append(
+            helper.make_node(
+                "Slice",
+                inputs=[data],
+                outputs=[name],
+                name=f"{name}_node",
+                starts=starts,
+                ends=ends,
+                axes=axes,
+            )
+        )
+        return
+    starts_c = _emit_int_const(new_nodes, f"{name}_starts", starts)
+    ends_c = _emit_int_const(new_nodes, f"{name}_ends", ends)
+    axes_c = _emit_int_const(new_nodes, f"{name}_axes", axes)
+    new_nodes.append(
+        helper.make_node(
+            "Slice",
+            inputs=[data, starts_c, ends_c, axes_c],
+            outputs=[name],
+            name=f"{name}_node",
+        )
+    )
+
+
+def _emit_squeeze_like(
+    new_nodes: list[onnx.NodeProto],
+    *,
+    op_type: str,
+    name: str,
+    data: str,
+    axes: list[int],
+    opset_version: int,
+) -> None:
+    # Squeeze/Unsqueeze moved their axes from an attribute to an input in opset 13.
+    if opset_version < 13:
+        new_nodes.append(
+            helper.make_node(
+                op_type,
+                inputs=[data],
+                outputs=[name],
+                name=f"{name}_node",
+                axes=axes,
+            )
+        )
+        return
+    axes_c = _emit_int_const(new_nodes, f"{name}_axes", axes)
+    new_nodes.append(
+        helper.make_node(
+            op_type,
+            inputs=[data, axes_c],
+            outputs=[name],
+            name=f"{name}_node",
+        )
+    )
+
+
 def _scan_iteration_inputs(
     *,
     prefix: str,
@@ -485,6 +572,7 @@ def _scan_iteration_inputs(
     scan_input_names: list[str],
     new_nodes: list[onnx.NodeProto],
     is_opset8: bool,
+    opset_version: int,
 ) -> list[str]:
     scan_iter_inputs: list[str] = []
     slice_axis = _scan_expected_axis(is_opset8)
@@ -492,25 +580,22 @@ def _scan_iteration_inputs(
     for scan_index, scan_name in enumerate(scan_input_names):
         slice_out = f"{prefix}_iter{iter_index}_scan{scan_index}_slice"
         squeeze_out = f"{prefix}_iter{iter_index}_scan{scan_index}_value"
-        new_nodes.append(
-            helper.make_node(
-                "Slice",
-                inputs=[scan_name],
-                outputs=[slice_out],
-                name=f"{slice_out}_node",
-                starts=[iter_index],
-                ends=[iter_index + 1],
-                axes=[slice_axis],
-            )
+        _emit_slice(
+            new_nodes,
+            name=slice_out,
+            data=scan_name,
+            starts=[iter_index],
+            ends=[iter_index + 1],
+            axes=[slice_axis],
+            opset_version=opset_version,
         )
-        new_nodes.append(
-            helper.make_node(
-                "Squeeze",
-                inputs=[slice_out],
-                outputs=[squeeze_out],
-                name=f"{squeeze_out}_node",
-                axes=squeeze_axes,
-            )
+        _emit_squeeze_like(
+            new_nodes,
+            op_type="Squeeze",
+            name=squeeze_out,
+            data=slice_out,
+            axes=squeeze_axes,
+            opset_version=opset_version,
         )
         scan_iter_inputs.append(squeeze_out)
     return scan_iter_inputs
@@ -598,6 +683,7 @@ def _expand_scan_nodes(model: onnx.ModelProto) -> tuple[onnx.ModelProto, bool]:
                 scan_input_names=scan_input_names,
                 new_nodes=new_nodes,
                 is_opset8=is_opset8,
+                opset_version=opset_version,
             )
             name_map: dict[str, str] = {}
             for index, value in enumerate(body.input[:num_state_inputs]):
@@ -656,14 +742,13 @@ def _expand_scan_nodes(model: onnx.ModelProto) -> tuple[onnx.ModelProto, bool]:
                     )
                 unsqueeze_out = f"{prefix}_iter{iter_index}_scanout{output_index}"
                 unsqueeze_axes = [0, 1] if is_opset8 else [0]
-                new_nodes.append(
-                    helper.make_node(
-                        "Unsqueeze",
-                        inputs=[mapped_output],
-                        outputs=[unsqueeze_out],
-                        name=f"{unsqueeze_out}_node",
-                        axes=unsqueeze_axes,
-                    )
+                _emit_squeeze_like(
+                    new_nodes,
+                    op_type="Unsqueeze",
+                    name=unsqueeze_out,
+                    data=mapped_output,
+                    axes=unsqueeze_axes,
+                    opset_version=opset_version,
                 )
                 scan_output_buffers[output_index].append(unsqueeze_out)
 
@@ -1770,20 +1855,295 @@ def _expand_flexattention_nodes(
     return model, True
 
 
+# Integer ops whose result can be evaluated at compile time when all of their
+# inputs are themselves compile-time constants. This is intentionally limited to
+# the operators that show up in shape arithmetic (e.g. the decomposition of
+# LinearAttention into Shape/Div/Concat feeding a ConstantOfShape).
+_FOLDABLE_INT_OPS = frozenset(
+    {
+        "Add",
+        "Cast",
+        "Concat",
+        "Constant",
+        "Div",
+        "Equal",
+        "Gather",
+        "Max",
+        "Min",
+        "Mod",
+        "Mul",
+        "Neg",
+        "Range",
+        "Reshape",
+        "Slice",
+        "Squeeze",
+        "Sub",
+        "Unsqueeze",
+        "Where",
+    }
+)
+_FOLD_MAX_ELEMS = 4096
+
+
+def _static_shape_from_value_info(
+    value_info: onnx.ValueInfoProto,
+) -> tuple[int, ...] | None:
+    tensor_type = value_info.type.tensor_type
+    if not tensor_type.HasField("shape"):
+        return None
+    dims: list[int] = []
+    for dim in tensor_type.shape.dim:
+        if not dim.HasField("dim_value"):
+            return None
+        dims.append(int(dim.dim_value))
+    return tuple(dims)
+
+
+class _ConstantFolder:
+    """Evaluates integer shape arithmetic subgraphs at import time."""
+
+    def __init__(self, graph: onnx.GraphProto) -> None:
+        self._init_map = {init.name: init for init in graph.initializer}
+        self._node_by_output: dict[str, onnx.NodeProto] = {}
+        for node in graph.node:
+            for output in node.output:
+                if output:
+                    self._node_by_output[output] = node
+        self._static_shapes: dict[str, tuple[int, ...]] = {}
+        for value_info in (*graph.input, *graph.value_info, *graph.output):
+            shape = _static_shape_from_value_info(value_info)
+            if shape is not None:
+                self._static_shapes[value_info.name] = shape
+        self._cache: dict[str, np.ndarray | None] = {}
+
+    def evaluate(self, name: str) -> np.ndarray | None:
+        return self._eval(name, depth=0)
+
+    def _accept(self, array: np.ndarray | None) -> np.ndarray | None:
+        if array is None:
+            return None
+        if array.dtype.kind not in {"i", "u", "b"}:
+            return None
+        if array.size > _FOLD_MAX_ELEMS:
+            return None
+        return array
+
+    def _eval(self, name: str, *, depth: int) -> np.ndarray | None:
+        if not name:
+            return None
+        if name in self._cache:
+            return self._cache[name]
+        if depth > 128:
+            return None
+        self._cache[name] = None
+        result: np.ndarray | None = None
+        initializer = self._init_map.get(name)
+        if initializer is not None:
+            result = self._accept(numpy_helper.to_array(initializer))
+        else:
+            node = self._node_by_output.get(name)
+            if node is not None and node.op_type in {"Shape", "Size"}:
+                result = self._accept(self._eval_shape(node))
+            elif node is not None and node.op_type in _FOLDABLE_INT_OPS:
+                outputs = self._eval_node(node, depth=depth)
+                if outputs is not None:
+                    for out_name, array in outputs.items():
+                        self._cache[out_name] = self._accept(array)
+                    return self._cache[name]
+        self._cache[name] = result
+        return result
+
+    def _eval_shape(self, node: onnx.NodeProto) -> np.ndarray | None:
+        if len(node.input) != 1 or not node.input[0]:
+            return None
+        shape = self._static_shapes.get(node.input[0])
+        if shape is None:
+            return None
+        if node.op_type == "Size":
+            return np.array(int(np.prod(shape, dtype=np.int64)), dtype=np.int64)
+        rank = len(shape)
+        attrs = {attr.name: helper.get_attribute_value(attr) for attr in node.attribute}
+        start = int(attrs.get("start", 0))
+        if start < 0:
+            start += rank
+        start = max(0, min(start, rank))
+        end_attr = attrs.get("end")
+        end = rank if end_attr is None else int(end_attr)
+        if end < 0:
+            end += rank
+        end = max(0, min(end, rank))
+        return np.array(shape[start:end], dtype=np.int64)
+
+    def _eval_node(
+        self, node: onnx.NodeProto, *, depth: int
+    ) -> dict[str, np.ndarray] | None:
+        feeds: dict[str, np.ndarray] = {}
+        for input_name in node.input:
+            if not input_name:
+                continue
+            array = self._eval(input_name, depth=depth + 1)
+            if array is None:
+                return None
+            feeds[input_name] = array
+        if node.input and not feeds:
+            return None
+        try:
+            evaluator = ReferenceEvaluator(node)
+            results = evaluator.run(None, feeds)
+        except Exception:  # pragma: no cover - defensive, skips folding
+            return None
+        outputs: dict[str, np.ndarray] = {}
+        for out_name, value in zip(node.output, results):
+            if not out_name:
+                continue
+            if not isinstance(value, np.ndarray):
+                return None
+            outputs[out_name] = value
+        return outputs
+
+
+def _fold_constant_of_shape_inputs(
+    model: onnx.ModelProto,
+) -> tuple[onnx.ModelProto, bool]:
+    """Resolve ConstantOfShape outputs whose shape is computed from constants.
+
+    ONNX shape inference (even with data propagation) does not fold integer
+    arithmetic such as ``Div`` when computing a shape tensor, leaving the
+    ConstantOfShape output with unknown dimensions. That blocks downstream
+    static-shape code generation (e.g. the expanded LinearAttention reference
+    function builds its recurrent state via Shape/Div/Concat/ConstantOfShape).
+    Here we evaluate such shape inputs at import time and rewire the
+    ConstantOfShape node to a constant initializer so the regular shape
+    inference pass can resolve the output statically.
+    """
+
+    graph = model.graph
+    targets: list[onnx.NodeProto] = []
+    value_info_map = {value_info.name: value_info for value_info in graph.value_info}
+    for node in graph.node:
+        if node.op_type != "ConstantOfShape" or len(node.input) != 1:
+            continue
+        if not node.input[0]:
+            continue
+        output_info = value_info_map.get(node.output[0])
+        if output_info is not None and _static_shape_from_value_info(output_info):
+            continue
+        targets.append(node)
+    if not targets:
+        return model, False
+
+    folder = _ConstantFolder(graph)
+    existing_names = {init.name for init in graph.initializer}
+    existing_names.update(
+        output for node in graph.node for output in node.output if output
+    )
+    existing_names.update(value_info.name for value_info in graph.input)
+    changed = False
+    resolved_outputs: set[str] = set()
+    for index, node in enumerate(targets):
+        values = folder.evaluate(node.input[0])
+        if values is None or values.ndim != 1:
+            continue
+        shape_values = [int(value) for value in values.reshape(-1)]
+        if any(value < 0 for value in shape_values):
+            continue
+        const_name = f"{node.output[0]}_folded_shape_{index}"
+        while const_name in existing_names:
+            const_name = f"_{const_name}"
+        existing_names.add(const_name)
+        graph.initializer.append(
+            numpy_helper.from_array(
+                np.array(shape_values, dtype=np.int64), name=const_name
+            )
+        )
+        node.input[0] = const_name
+        resolved_outputs.add(node.output[0])
+        changed = True
+
+    if not changed:
+        return model, False
+    # Drop the stale (dynamic) value_info for the rewired outputs so the next
+    # shape inference pass recomputes them from the folded constant shape rather
+    # than treating the leftover ``unk__N`` dim_params as already resolved.
+    stale = [
+        value_info
+        for value_info in graph.value_info
+        if value_info.name in resolved_outputs
+    ]
+    for value_info in stale:
+        graph.value_info.remove(value_info)
+    _prune_unused_nodes(graph)
+    return model, True
+
+
+def _collect_node_input_refs(node: onnx.NodeProto, used: set[str]) -> None:
+    for input_name in node.input:
+        if input_name:
+            used.add(input_name)
+    # Subgraphs (If/Loop/Scan bodies) may reference outer-scope values that do
+    # not appear in the node's input list. Treat every name referenced at any
+    # nesting level as used so pruning never deletes a producer they depend on.
+    for attr in node.attribute:
+        if attr.HasField("g"):
+            for sub_node in attr.g.node:
+                _collect_node_input_refs(sub_node, used)
+        for sub_graph in attr.graphs:
+            for sub_node in sub_graph.node:
+                _collect_node_input_refs(sub_node, used)
+
+
+def _prune_unused_nodes(graph: onnx.GraphProto) -> None:
+    keep: list[bool] = [True] * len(graph.node)
+    nodes = list(graph.node)
+    # Iterate to a fixpoint so chains of now-dead shape arithmetic are removed.
+    while True:
+        used: set[str] = {output.name for output in graph.output}
+        for kept, node in zip(keep, nodes):
+            if kept:
+                _collect_node_input_refs(node, used)
+        removed_any = False
+        for position, (kept, node) in enumerate(zip(keep, nodes)):
+            if not kept:
+                continue
+            if any(output and output in used for output in node.output):
+                continue
+            keep[position] = False
+            removed_any = True
+        if not removed_any:
+            break
+    surviving = [node for kept, node in zip(keep, nodes) if kept]
+    if len(surviving) != len(nodes):
+        del graph.node[:]
+        graph.node.extend(surviving)
+
+
+def _maybe_infer_shapes(model: onnx.ModelProto) -> onnx.ModelProto:
+    if not _needs_shape_inference(model):
+        return model
+    try:
+        return shape_inference.infer_shapes(model, data_prop=True)
+    except Exception as exc:  # pragma: no cover - onnx inference errors
+        raise ShapeInferenceError("ONNX shape inference failed") from exc
+
+
 def prepare_onnx_model(model: onnx.ModelProto) -> onnx.ModelProto:
     prepared = onnx.ModelProto()
     prepared.CopyFrom(model)
     prepared, _ = _expand_image_decoder_nodes(prepared)
     prepared, _ = _expand_flexattention_nodes(prepared)
+    # Scan unrolling slices its scan inputs, so it needs their static shapes up
+    # front. Run shape inference and fold the integer shape arithmetic that ONNX
+    # leaves unresolved (e.g. the ConstantOfShape state built via Div in the
+    # expanded LinearAttention function) before expanding any Scan nodes.
+    prepared = _maybe_infer_shapes(prepared)
+    prepared, folded = _fold_constant_of_shape_inputs(prepared)
+    if folded:
+        prepared = _maybe_infer_shapes(prepared)
     prepared, _ = _expand_scan_nodes(prepared)
     prepared, _ = _expand_if_nodes(prepared)
     prepared, _ = _expand_sequence_map_nodes(prepared)
     prepared, _ = _expand_gradient_nodes(prepared)
-    if _needs_shape_inference(prepared):
-        try:
-            prepared = shape_inference.infer_shapes(prepared, data_prop=True)
-        except Exception as exc:  # pragma: no cover - onnx inference errors
-            raise ShapeInferenceError("ONNX shape inference failed") from exc
+    prepared = _maybe_infer_shapes(prepared)
     return prepared
 
 
