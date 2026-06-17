@@ -7,7 +7,7 @@ Aggregates non-success verification outcomes.
 
 | Error message | Count | Opset versions |
 | --- | --- | --- |
-| Out of tolerance | 38 | 7, 17 |
+| Out of tolerance | 37 | 7, 17 |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 8 |  |
 | Range does not support dtype bfloat16 (while lowering node_index=0, op_type=Range, name=<unnamed>, inputs=[start: tensor[dtype=bfloat16, shape=()], limit: tensor[dtype=bfloat16, shape=()], delta: tensor[dtype=bfloat16, shape=()]], outputs=[output: tensor[dtype=bfloat16, shape=(2,), dim_params=(None,)]]) | 1 | 27 |
 | Range does not support dtype float16 (while lowering node_index=0, op_type=Range, name=<unnamed>, inputs=[start: tensor[dtype=float16, shape=()], limit: tensor[dtype=float16, shape=()], delta: tensor[dtype=float16, shape=()]], outputs=[output: tensor[dtype=float16, shape=(2,), dim_params=(None,)]]) | 1 | 27 |
@@ -38,7 +38,6 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/attention_op_test/AttentionPastState_dynamic_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 86151) |
 | test/contrib_ops/attention_op_test/Attention_Mask1D_Fp32_B2_S64_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1020241) |
 | test/contrib_ops/attention_op_test/Attention_Mask2D_Fp32_B2_S32_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 980755) |
-| test/contrib_ops/bifurcation_detector_op_test/SuffixMatchAtEndOfSrc_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max abs diff 4) |
 | test/contrib_ops/layer_norm_op_test/BERTLayerNorm_NoBias_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 2272) |
 | test/contrib_ops/layer_norm_op_test/BERTLayerNorm_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 5632) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm17_double_run0/model.onnx | 17 | Data/Data | ❌ | Out of tolerance (max ULP 160715044774) |

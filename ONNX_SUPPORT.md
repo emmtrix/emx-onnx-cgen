@@ -8,7 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1910 / 1914, 99.8% | 1.22.0 |
-| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4278 / 4324, 98.9% | n/a |
+| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4279 / 4324, 99.0% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 9 / 9, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -1944,7 +1944,7 @@ Coverage 1910 / 1914 ONNX files (99.8%).
 
 Test directory: `emx-ort-test-artifacts-org/artifacts/onnxruntime`
 
-Coverage 4278 / 4324 ONNX files (98.9%).
+Coverage 4279 / 4324 ONNX files (99.0%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -2027,7 +2027,7 @@ Coverage 4278 / 4324 ONNX files (98.9%).
 | test/contrib_ops/bifurcation_detector_op_test/NoPredTokens_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/bifurcation_detector_op_test/NonZeroPrevSuffixMatchIdx_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/bifurcation_detector_op_test/PrevSuffixMatchIdxAtBoundary_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/bifurcation_detector_op_test/SuffixMatchAtEndOfSrc_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max abs diff 4) |
+| test/contrib_ops/bifurcation_detector_op_test/SuffixMatchAtEndOfSrc_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/bifurcation_detector_op_test/SuffixMatchMultipleSingleGramUniqueDigram_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/bifurcation_detector_op_test/SuffixNgramExceedsOutputLen_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/bifurcation_detector_op_test/Test1_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
