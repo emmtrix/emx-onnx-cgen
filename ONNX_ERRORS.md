@@ -9,8 +9,6 @@ Aggregates non-success verification outcomes.
 | --- | --- | --- |
 | Out of tolerance | 38 | 7, 17 |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 8 |  |
-| Unsupported op Loop (while lowering node_index=9, op_type=Loop, name=<unnamed>, inputs=[Range_test_range_bfloat16_type_positive_delta_expanded_function_n: tensor[dtype=int64, shape=()], Range_test_range_bfloat16_type_positive_delta_expanded_function_loop_cond: tensor[dtype=bool, shape=()], Range_test_range_bfloat16_type_positive_delta_expanded_function_start_s: tensor[dtype=float, shape=()]], outputs=[Range_test_range_bfloat16_type_positive_delta_expanded_function_variadic_output: tensor[dtype=float, shape=()], Range_test_range_bfloat16_type_positive_delta_expanded_function_output_s: tensor[dtype=float, shape=()]]) | 1 | 27 |
-| Unsupported op Loop (while lowering node_index=9, op_type=Loop, name=<unnamed>, inputs=[Range_test_range_float16_type_positive_delta_expanded_function_n: tensor[dtype=int64, shape=()], Range_test_range_float16_type_positive_delta_expanded_function_loop_cond: tensor[dtype=bool, shape=()], Range_test_range_float16_type_positive_delta_expanded_function_start_s: tensor[dtype=float, shape=()]], outputs=[Range_test_range_float16_type_positive_delta_expanded_function_variadic_output: tensor[dtype=float, shape=()], Range_test_range_float16_type_positive_delta_expanded_function_output_s: tensor[dtype=float, shape=()]]) | 1 | 27 |
 
 ## Error frequency by opset
 
@@ -18,8 +16,6 @@ Aggregates non-success verification outcomes.
 | --- | --- | --- |
 | Out of tolerance | 7 | 4 |
 | Out of tolerance | 17 | 13 |
-| Unsupported op Loop (while lowering node_index=9, op_type=Loop, name=<unnamed>, inputs=[Range_test_range_bfloat16_type_positive_delta_expanded_function_n: tensor[dtype=int64, shape=()], Range_test_range_bfloat16_type_positive_delta_expanded_function_loop_cond: tensor[dtype=bool, shape=()], Range_test_range_bfloat16_type_positive_delta_expanded_function_start_s: tensor[dtype=float, shape=()]], outputs=[Range_test_range_bfloat16_type_positive_delta_expanded_function_variadic_output: tensor[dtype=float, shape=()], Range_test_range_bfloat16_type_positive_delta_expanded_function_output_s: tensor[dtype=float, shape=()]]) | 27 | 1 |
-| Unsupported op Loop (while lowering node_index=9, op_type=Loop, name=<unnamed>, inputs=[Range_test_range_float16_type_positive_delta_expanded_function_n: tensor[dtype=int64, shape=()], Range_test_range_float16_type_positive_delta_expanded_function_loop_cond: tensor[dtype=bool, shape=()], Range_test_range_float16_type_positive_delta_expanded_function_start_s: tensor[dtype=float, shape=()]], outputs=[Range_test_range_float16_type_positive_delta_expanded_function_variadic_output: tensor[dtype=float, shape=()], Range_test_range_float16_type_positive_delta_expanded_function_output_s: tensor[dtype=float, shape=()]]) | 27 | 1 |
 
 ## Failing ONNX files
 
@@ -27,8 +23,6 @@ Lists every ONNX file with a non-success verification outcome.
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
-| node/test_range_bfloat16_type_positive_delta_expanded/model.onnx | 27 | Data/Data | ❌ | Unsupported op Loop (while lowering node_index=9, op_type=Loop, name=<unnamed>, inputs=[Range_test_range_bfloat16_type_positive_delta_expanded_function_n: tensor[dtype=int64, shape=()], Range_test_range_bfloat16_type_positive_delta_expanded_function_loop_cond: tensor[dtype=bool, shape=()], Range_test_range_bfloat16_type_positive_delta_expanded_function_start_s: tensor[dtype=float, shape=()]], outputs=[Range_test_range_bfloat16_type_positive_delta_expanded_function_variadic_output: tensor[dtype=float, shape=()], Range_test_range_bfloat16_type_positive_delta_expanded_function_output_s: tensor[dtype=float, shape=()]]) |
-| node/test_range_float16_type_positive_delta_expanded/model.onnx | 27 | Data/Data | ❌ | Unsupported op Loop (while lowering node_index=9, op_type=Loop, name=<unnamed>, inputs=[Range_test_range_float16_type_positive_delta_expanded_function_n: tensor[dtype=int64, shape=()], Range_test_range_float16_type_positive_delta_expanded_function_loop_cond: tensor[dtype=bool, shape=()], Range_test_range_float16_type_positive_delta_expanded_function_start_s: tensor[dtype=float, shape=()]], outputs=[Range_test_range_float16_type_positive_delta_expanded_function_variadic_output: tensor[dtype=float, shape=()], Range_test_range_float16_type_positive_delta_expanded_function_output_s: tensor[dtype=float, shape=()]]) |
 | test/contrib_ops/attention_op_test/AttentionPastState_dynamic_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 86151) |
 | test/contrib_ops/attention_op_test/Attention_Mask1D_Fp32_B2_S64_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1020241) |
 | test/contrib_ops/attention_op_test/Attention_Mask2D_Fp32_B2_S32_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 980755) |

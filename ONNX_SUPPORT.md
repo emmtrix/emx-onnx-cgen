@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1912 / 1914, 99.9% | 1.22.0 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1914 / 1914, 100.0% | 1.22.0 |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4278 / 4324, 98.9% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 9 / 9, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1912 / 1914 ONNX files (99.9%).
+Coverage 1914 / 1914 ONNX files (100.0%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1230,9 +1230,9 @@ Coverage 1912 / 1914 ONNX files (99.9%).
 | node/test_quantizelinear_uint2/model.onnx | 25 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_quantizelinear_uint4/model.onnx | 25 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_range_bfloat16_type_positive_delta/model.onnx | 27 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_range_bfloat16_type_positive_delta_expanded/model.onnx | 27 | Data/Data | ❌ | Unsupported op Loop (while lowering node_index=9, op_type=Loop, name=<unnamed>, inputs=[Range_test_range_bfloat16_type_positive_delta_expanded_function_n: tensor[dtype=int64, shape=()], Range_test_range_bfloat16_type_positive_delta_expanded_function_loop_cond: tensor[dtype=bool, shape=()], Range_test_range_bfloat16_type_positive_delta_expanded_function_start_s: tensor[dtype=float, shape=()]], outputs=[Range_test_range_bfloat16_type_positive_delta_expanded_function_variadic_output: tensor[dtype=float, shape=()], Range_test_range_bfloat16_type_positive_delta_expanded_function_output_s: tensor[dtype=float, shape=()]]) |
+| node/test_range_bfloat16_type_positive_delta_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_range_float16_type_positive_delta/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_range_float16_type_positive_delta_expanded/model.onnx | 27 | Data/Data | ❌ | Unsupported op Loop (while lowering node_index=9, op_type=Loop, name=<unnamed>, inputs=[Range_test_range_float16_type_positive_delta_expanded_function_n: tensor[dtype=int64, shape=()], Range_test_range_float16_type_positive_delta_expanded_function_loop_cond: tensor[dtype=bool, shape=()], Range_test_range_float16_type_positive_delta_expanded_function_start_s: tensor[dtype=float, shape=()]], outputs=[Range_test_range_float16_type_positive_delta_expanded_function_variadic_output: tensor[dtype=float, shape=()], Range_test_range_float16_type_positive_delta_expanded_function_output_s: tensor[dtype=float, shape=()]]) |
+| node/test_range_float16_type_positive_delta_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_range_float_type_positive_delta/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_range_float_type_positive_delta_expanded/model.onnx | 27 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_range_int32_type_negative_delta/model.onnx | 27 | Data/Data | ✅ | OK (max abs diff 0) |

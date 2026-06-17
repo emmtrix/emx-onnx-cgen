@@ -2118,6 +2118,105 @@ def _prune_unused_nodes(graph: onnx.GraphProto) -> None:
         graph.node.extend(surviving)
 
 
+# Ops whose output tensor always has exactly the same shape as their first
+# (data) input. Used to back-propagate a declared shape to an upstream value
+# that ONNX shape inference left unshaped (e.g. a Loop scan output that only
+# becomes statically sized via the model's declared graph output).
+_SHAPE_PRESERVING_UNARY_OPS = frozenset(
+    {
+        "Cast",
+        "CastLike",
+        "Identity",
+        "Relu",
+        "Ceil",
+        "Floor",
+        "Round",
+        "Abs",
+        "Neg",
+        "Sqrt",
+        "Exp",
+        "Log",
+        "Sigmoid",
+        "Tanh",
+        "Sign",
+        "Reciprocal",
+        "Erf",
+        "Softplus",
+        "Softsign",
+        "Not",
+    }
+)
+
+
+def _tensor_type_proto(value_info: onnx.ValueInfoProto) -> onnx.TypeProto.Tensor | None:
+    if value_info.type.WhichOneof("value") != "tensor_type":
+        return None
+    return value_info.type.tensor_type
+
+
+def _has_complete_tensor_shape(value_info: onnx.ValueInfoProto) -> bool:
+    tensor_type = _tensor_type_proto(value_info)
+    if tensor_type is None or not tensor_type.HasField("shape"):
+        return False
+    for dim in tensor_type.shape.dim:
+        if not (dim.HasField("dim_value") or dim.HasField("dim_param")):
+            return False
+    return True
+
+
+def _propagate_shapes_backward(model: onnx.ModelProto) -> tuple[onnx.ModelProto, bool]:
+    """Fill missing shapes by copying a consumer's shape back to its producer.
+
+    ONNX shape inference only flows forward, so a value feeding a shape-preserving
+    unary op (e.g. a Loop scan output consumed by a final Cast to a declared graph
+    output) can stay unshaped even though its consumer carries a static shape. This
+    copies the consumer's shape onto such an upstream value, keeping the upstream
+    value's own element type intact (Cast changes dtype but not shape).
+    """
+    graph = model.graph
+    produced_names = {out for node in graph.node for out in node.output if out}
+    value_info_by_name: dict[str, onnx.ValueInfoProto] = {}
+    for value_info in graph.value_info:
+        value_info_by_name[value_info.name] = value_info
+    for value_info in graph.output:
+        value_info_by_name.setdefault(value_info.name, value_info)
+
+    changed = False
+    progressed = True
+    while progressed:
+        progressed = False
+        for node in graph.node:
+            if node.op_type not in _SHAPE_PRESERVING_UNARY_OPS:
+                continue
+            if len(node.input) < 1 or len(node.output) != 1:
+                continue
+            source_name = node.input[0]
+            consumer_name = node.output[0]
+            if not source_name or not consumer_name:
+                continue
+            # Only fill intermediate values; never fabricate shapes for graph
+            # inputs or initializers, where a missing shape means "dynamic".
+            if source_name not in produced_names:
+                continue
+            consumer_info = value_info_by_name.get(consumer_name)
+            if consumer_info is None or not _has_complete_tensor_shape(consumer_info):
+                continue
+            source_info = value_info_by_name.get(source_name)
+            # Require an existing entry so the upstream element type is known
+            # (Cast changes dtype, so we must not copy the consumer's).
+            if source_info is None:
+                continue
+            source_tensor = _tensor_type_proto(source_info)
+            if source_tensor is None or not source_tensor.HasField("elem_type"):
+                continue
+            if _has_complete_tensor_shape(source_info):
+                continue
+            source_tensor.shape.CopyFrom(consumer_info.type.tensor_type.shape)
+            changed = True
+            progressed = True
+    return model, changed
+
+
 def _maybe_infer_shapes(model: onnx.ModelProto) -> onnx.ModelProto:
     if not _needs_shape_inference(model):
         return model
@@ -2151,6 +2250,11 @@ def prepare_onnx_model(model: onnx.ModelProto) -> onnx.ModelProto:
     # concrete dims propagate to the remaining tensors.
     prepared, enriched = infer_symbolic_shapes(prepared)
     if enriched:
+        prepared = _maybe_infer_shapes(prepared)
+    # Back-fill shapes that forward inference cannot reach (e.g. a Loop scan
+    # output statically sized only via the declared graph output it feeds).
+    prepared, back_filled = _propagate_shapes_backward(prepared)
+    if back_filled:
         prepared = _maybe_infer_shapes(prepared)
     return prepared
 
