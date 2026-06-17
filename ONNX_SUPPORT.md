@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1910 / 1914, 99.8% | 1.22.0 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1911 / 1914, 99.8% | 1.22.0 |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4278 / 4324, 98.9% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 9 / 9, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1910 / 1914 ONNX files (99.8%).
+Coverage 1911 / 1914 ONNX files (99.8%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1229,7 +1229,7 @@ Coverage 1910 / 1914 ONNX files (99.8%).
 | node/test_quantizelinear_uint16/model.onnx | 25 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_quantizelinear_uint2/model.onnx | 25 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_quantizelinear_uint4/model.onnx | 25 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_range_bfloat16_type_positive_delta/model.onnx | 27 | Data/Data | ❌ | Range does not support dtype bfloat16 (while lowering node_index=0, op_type=Range, name=<unnamed>, inputs=[start: tensor[dtype=bfloat16, shape=()], limit: tensor[dtype=bfloat16, shape=()], delta: tensor[dtype=bfloat16, shape=()]], outputs=[output: tensor[dtype=bfloat16, shape=(2,), dim_params=(None,)]]) |
+| node/test_range_bfloat16_type_positive_delta/model.onnx | 27 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_range_bfloat16_type_positive_delta_expanded/model.onnx | 27 | Data/Data | ❌ | Unsupported op Loop (while lowering node_index=9, op_type=Loop, name=<unnamed>, inputs=[Range_test_range_bfloat16_type_positive_delta_expanded_function_n: tensor[dtype=int64, shape=()], Range_test_range_bfloat16_type_positive_delta_expanded_function_loop_cond: tensor[dtype=bool, shape=()], Range_test_range_bfloat16_type_positive_delta_expanded_function_start_s: tensor[dtype=float, shape=()]], outputs=[Range_test_range_bfloat16_type_positive_delta_expanded_function_variadic_output: tensor[dtype=float, shape=()], Range_test_range_bfloat16_type_positive_delta_expanded_function_output_s: tensor[dtype=float, shape=()]]) |
 | node/test_range_float16_type_positive_delta/model.onnx | 27 | Data/Data | ❌ | Range does not support dtype float16 (while lowering node_index=0, op_type=Range, name=<unnamed>, inputs=[start: tensor[dtype=float16, shape=()], limit: tensor[dtype=float16, shape=()], delta: tensor[dtype=float16, shape=()]], outputs=[output: tensor[dtype=float16, shape=(2,), dim_params=(None,)]]) |
 | node/test_range_float16_type_positive_delta_expanded/model.onnx | 27 | Data/Data | ❌ | Unsupported op Loop (while lowering node_index=9, op_type=Loop, name=<unnamed>, inputs=[Range_test_range_float16_type_positive_delta_expanded_function_n: tensor[dtype=int64, shape=()], Range_test_range_float16_type_positive_delta_expanded_function_loop_cond: tensor[dtype=bool, shape=()], Range_test_range_float16_type_positive_delta_expanded_function_start_s: tensor[dtype=float, shape=()]], outputs=[Range_test_range_float16_type_positive_delta_expanded_function_variadic_output: tensor[dtype=float, shape=()], Range_test_range_float16_type_positive_delta_expanded_function_output_s: tensor[dtype=float, shape=()]]) |
