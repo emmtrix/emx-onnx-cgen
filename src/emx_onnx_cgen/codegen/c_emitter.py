@@ -70,6 +70,7 @@ from ..ir.ops import (
     HannWindowOp,
     FastGeluOp,
     BiasGeluOp,
+    ImageDecoderOp,
     ImageScalerOp,
     IfOptionalSequenceConstOp,
     HardmaxOp,
@@ -1249,6 +1250,7 @@ class CEmitter:
                 "hamming_window": self._env.get_template("hamming_window_op.c.j2"),
                 "hann_window": self._env.get_template("hann_window_op.c.j2"),
                 "image_scaler": self._env.get_template("image_scaler_op.c.j2"),
+                "image_decoder": self._env.get_template("image_decoder_op.c.j2"),
                 "fast_gelu": self._env.get_template("fast_gelu_op.c.j2"),
                 "bias_gelu": self._env.get_template("bias_gelu_op.c.j2"),
                 "qlinear_unary": self._env.get_template("qlinear_unary_op.c.j2"),
@@ -2339,6 +2341,7 @@ class CEmitter:
             | HammingWindowOp
             | HannWindowOp
             | ImageScalerOp
+            | ImageDecoderOp
             | FastGeluOp
             | BiasGeluOp
             | QLinearUnaryOp

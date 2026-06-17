@@ -1,10 +1,10 @@
 {
-  "error": "OK (max abs diff 0)",
+  "error": "Testbench execution failed: exit code 1",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_tiff_rgb model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "ImageDecoder"
   ],
   "opset_version": 20,
-  "generated_checksum": "8587a27102d05b3fa1d625d3b54894e414c58c601c1a98368a08b5e16dfe7dc3"
+  "generated_checksum": "5a149d92461d3dd8b63e647b5e98e5d99604b550f6c0e8cdc65b33b670c59864"
 }

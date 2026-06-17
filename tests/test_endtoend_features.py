@@ -151,3 +151,138 @@ def test_testbench_accepts_constant_inputs() -> None:
         payload["outputs"]["out"]["data"], np.dtype(np.float32)
     )
     np.testing.assert_allclose(output_data, input_values + weights)
+
+
+def _encode_ppm(pixels: np.ndarray) -> bytes:
+    """Encode an HxWx3 uint8 array as a binary PPM (P6) image."""
+    height, width, _ = pixels.shape
+    header = f"P6\n{width} {height}\n255\n".encode("ascii")
+    return header + pixels.tobytes()
+
+
+def _encode_bmp(pixels: np.ndarray) -> bytes:
+    """Encode an HxWx3 uint8 array as a 24-bit (BGR, bottom-up) BMP image."""
+    import struct
+
+    height, width, _ = pixels.shape
+    row_stride = (width * 3 + 3) & ~3
+    body = bytearray()
+    for y in range(height - 1, -1, -1):
+        row = bytearray()
+        for x in range(width):
+            r, g, b = pixels[y, x]
+            row += bytes((int(b), int(g), int(r)))
+        row += b"\x00" * (row_stride - len(row))
+        body += row
+    file_header = b"BM" + struct.pack("<IHHI", 54 + len(body), 0, 0, 54)
+    info_header = struct.pack(
+        "<IiiHHIIiiII", 40, width, height, 1, 24, 0, len(body), 2835, 2835, 0, 0
+    )
+    return bytes(file_header + info_header + body)
+
+
+def _write_image_decoder_case(
+    directory: Path,
+    *,
+    pixel_format: str,
+    expected: np.ndarray,
+    encoded: bytes,
+) -> None:
+    from onnx import numpy_helper
+
+    height, width, channels = expected.shape
+    encoded_input = helper.make_tensor_value_info(
+        "encoded", TensorProto.UINT8, [len(encoded)]
+    )
+    image_output = helper.make_tensor_value_info(
+        "image", TensorProto.UINT8, [height, width, channels]
+    )
+    node = helper.make_node(
+        "ImageDecoder", ["encoded"], ["image"], pixel_format=pixel_format
+    )
+    model = helper.make_model(
+        helper.make_graph([node], "image_decoder", [encoded_input], [image_output]),
+        opset_imports=[helper.make_operatorsetid("", 20)],
+    )
+    model.ir_version = 9
+    onnx.save_model(model, str(directory / "model.onnx"))
+    data_dir = directory / "test_data_set_0"
+    data_dir.mkdir()
+    (data_dir / "input_0.pb").write_bytes(
+        numpy_helper.from_array(
+            np.frombuffer(encoded, dtype=np.uint8).copy(), name="encoded"
+        ).SerializeToString()
+    )
+    (data_dir / "output_0.pb").write_bytes(
+        numpy_helper.from_array(expected, name="image").SerializeToString()
+    )
+
+
+def _verify_image_decoder_case(directory: Path) -> "object":
+    from emx_onnx_cgen import cli
+
+    return cli.run_cli_command(
+        [
+            "emx-onnx-cgen",
+            "verify",
+            "--model-base-dir",
+            str(directory),
+            "model.onnx",
+            "--test-data-dir",
+            "test_data_set_0",
+        ]
+    )
+
+
+@pytest.mark.parametrize("encoder", [_encode_ppm, _encode_bmp])
+@pytest.mark.parametrize("pixel_format", ["RGB", "BGR"])
+def test_image_decoder_lossless_roundtrip(encoder, pixel_format: str) -> None:
+    if shutil.which("cc") is None and shutil.which("gcc") is None:
+        pytest.skip("C compiler not available")
+    rng = np.random.default_rng(0)
+    pixels = rng.integers(0, 256, size=(3, 4, 3), dtype=np.uint8)
+    expected = pixels if pixel_format == "RGB" else pixels[:, :, ::-1].copy()
+    with tempfile.TemporaryDirectory() as temp_dir:
+        directory = Path(temp_dir)
+        _write_image_decoder_case(
+            directory,
+            pixel_format=pixel_format,
+            expected=expected,
+            encoded=encoder(pixels),
+        )
+        result = _verify_image_decoder_case(directory)
+    assert result.exit_code == 0, result.result
+    assert result.result == "OK (max abs diff 0)"
+
+
+def test_image_decoder_grayscale() -> None:
+    if shutil.which("cc") is None and shutil.which("gcc") is None:
+        pytest.skip("C compiler not available")
+    rng = np.random.default_rng(1)
+    gray = rng.integers(0, 256, size=(3, 4, 1), dtype=np.uint8)
+    encoded = _encode_ppm(np.repeat(gray, 3, axis=2))
+    with tempfile.TemporaryDirectory() as temp_dir:
+        directory = Path(temp_dir)
+        _write_image_decoder_case(
+            directory, pixel_format="Grayscale", expected=gray, encoded=encoded
+        )
+        result = _verify_image_decoder_case(directory)
+    assert result.exit_code == 0, result.result
+    assert result.result == "OK (max abs diff 0)"
+
+
+def test_image_decoder_rejects_undecodable_stream() -> None:
+    if shutil.which("cc") is None and shutil.which("gcc") is None:
+        pytest.skip("C compiler not available")
+    rng = np.random.default_rng(2)
+    expected = rng.integers(0, 256, size=(3, 4, 3), dtype=np.uint8)
+    junk = bytes(rng.integers(0, 256, size=128, dtype=np.uint8))
+    with tempfile.TemporaryDirectory() as temp_dir:
+        directory = Path(temp_dir)
+        _write_image_decoder_case(
+            directory, pixel_format="RGB", expected=expected, encoded=junk
+        )
+        result = _verify_image_decoder_case(directory)
+    # stb_image cannot decode arbitrary bytes; the generated C reports the
+    # failure at runtime instead of silently producing garbage.
+    assert result.exit_code != 0

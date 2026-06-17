@@ -1,0 +1,29 @@
+{{ stb_block }}
+
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    int emx_w = 0;
+    int emx_h = 0;
+    int emx_comp = 0;
+    stbi_uc *emx_pixels = stbi_load_from_memory(
+        (const stbi_uc *){{ input0 }}, (int){{ num_bytes }}, &emx_w, &emx_h, &emx_comp, {{ channels }});
+    if (emx_pixels == NULL) {
+        fprintf(stderr, "ImageDecoder: failed to decode image (%s)\n", stbi_failure_reason());
+        exit(1);
+    }
+    if (emx_w != {{ width }} || emx_h != {{ height }}) {
+        fprintf(stderr,
+            "ImageDecoder: decoded size %dx%d does not match expected {{ width }}x{{ height }}\n",
+            emx_w, emx_h);
+        stbi_image_free(emx_pixels);
+        exit(1);
+    }
+    for (idx_t emx_y = 0; emx_y < {{ height }}; ++emx_y) {
+        for (idx_t emx_x = 0; emx_x < {{ width }}; ++emx_x) {
+{% for src_channel in channel_map %}
+            {{ output }}[emx_y][emx_x][{{ loop.index0 }}] =
+                emx_pixels[(emx_y * {{ width }} + emx_x) * {{ channels }} + {{ src_channel }}];
+{% endfor %}
+        }
+    }
+    stbi_image_free(emx_pixels);
+}

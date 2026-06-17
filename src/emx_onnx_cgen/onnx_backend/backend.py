@@ -14,7 +14,6 @@ from onnx import ModelProto
 from onnx.backend.base import Backend, BackendRep
 
 from emx_onnx_cgen.cli import (
-    _decode_image_decoder_inputs,
     _resolve_compiler,
     _serialize_string_tensor,
     _tensor_runtime_dim_values,
@@ -163,7 +162,6 @@ def _normalize_runtime_inputs(
     named_inputs = {
         name: value for name, value in zip(input_names, inputs, strict=True)
     }
-    _decode_image_decoder_inputs(model, named_inputs)
     return tuple(named_inputs[name] for name in input_names)
 
 

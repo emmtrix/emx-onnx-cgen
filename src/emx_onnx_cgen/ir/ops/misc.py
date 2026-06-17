@@ -8590,6 +8590,138 @@ class ImageScalerOp(RenderableOpBase):
         return ((self.input0, self.shape),)
 
 
+_STB_IMAGE_BLOCK: str | None = None
+
+
+def _stb_image_block() -> str:
+    """Return the vendored stb_image single-header decoder, wrapped so it can be
+    embedded once into a generated translation unit and compiled cleanly under
+    ``-Wall -Werror``."""
+    global _STB_IMAGE_BLOCK
+    if _STB_IMAGE_BLOCK is not None:
+        return _STB_IMAGE_BLOCK
+    from pathlib import Path
+
+    header_path = Path(__file__).resolve().parents[1].parent / "vendor" / "stb_image.h"
+    header_source = header_path.read_text(encoding="utf-8")
+    ignored_gcc_warnings = (
+        "-Wpragmas",
+        "-Wunknown-pragmas",
+        "-Wunused-function",
+        "-Wunused-but-set-variable",
+        "-Wunused-parameter",
+        "-Wsign-compare",
+        "-Wsign-conversion",
+        "-Wconversion",
+        "-Wshadow",
+        "-Wcast-qual",
+        "-Wdouble-promotion",
+        "-Wmaybe-uninitialized",
+        "-Wmisleading-indentation",
+        "-Wimplicit-fallthrough",
+    )
+    gcc_ignores = "\n".join(
+        f'#pragma GCC diagnostic ignored "{flag}"' for flag in ignored_gcc_warnings
+    )
+    block = f"""#ifndef EMX_STB_IMAGE_INCLUDED
+#define EMX_STB_IMAGE_INCLUDED
+#include <stdlib.h>
+#include <string.h>
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Weverything"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+{gcc_ignores}
+#endif
+#define STB_IMAGE_STATIC
+#define STB_IMAGE_IMPLEMENTATION
+#define STBI_NO_STDIO
+#define STBI_NO_HDR
+#define STBI_NO_LINEAR
+#define STBI_NO_GIF
+#define STBI_NO_PSD
+#define STBI_NO_PIC
+#define STBI_NO_TGA
+{header_source}
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
+#endif /* EMX_STB_IMAGE_INCLUDED */"""
+    _STB_IMAGE_BLOCK = block
+    return block
+
+
+@dataclass(frozen=True)
+class ImageDecoderOp(RenderableOpBase):
+    """Decode an encoded image byte stream (PNG/JPEG/BMP/PNM) into a pixel
+    tensor using the vendored stb_image decoder."""
+
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
+    input0: str
+    output: str
+    input_shape: tuple[int, ...]
+    shape: tuple[int, ...]
+    channel_map: tuple[int, ...]
+    dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <stdio.h>", "#include <stdlib.h>"}
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        c_type = emitter.ctx_dtype(self.output).c_type
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        input_shape = CEmitterCompat.codegen_shape(self.input_shape)
+        output_shape = CEmitterCompat.codegen_shape(self.shape)
+        input_suffix = emitter.param_array_suffix(input_shape)
+        output_suffix = emitter.param_array_suffix(output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        height, width = output_shape[0], output_shape[1]
+        num_bytes = 1
+        for dim in input_shape:
+            num_bytes *= dim
+        rendered = (
+            state.templates["image_decoder"]
+            .render(
+                stb_block=_stb_image_block(),
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                output=params["output"],
+                num_bytes=num_bytes,
+                width=width,
+                height=height,
+                channels=len(self.channel_map),
+                channel_map=list(self.channel_map),
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.shape
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ((self.input0, self.input_shape),)
+
+
 @dataclass(frozen=True)
 class FastGeluOp(RenderableOpBase):
     __io_inputs__ = ("input0", "bias")

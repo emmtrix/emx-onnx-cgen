@@ -1,10 +1,10 @@
 {
-  "error": "OK (max abs diff 0)",
+  "error": "Out of tolerance (max abs diff 2)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_jpeg_bgr model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "ImageDecoder"
   ],
   "opset_version": 20,
-  "generated_checksum": "7c0257bc28b802b4c99521289555681d79e582f2e5e2d1f35859e64d2cdf419a"
+  "generated_checksum": "24634557772b1ce7df1c97ef227d900b46b6b174cfe3e45a328525cac28838f8"
 }

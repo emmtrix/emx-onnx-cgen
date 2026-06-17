@@ -67,6 +67,7 @@ _LOWERING_MODULES = [
     "hamming_window",
     "hann_window",
     "image_scaler",
+    "image_decoder",
     "identity",
     "if_op",
     "instance_normalization",

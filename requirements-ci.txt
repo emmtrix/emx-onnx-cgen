@@ -15,9 +15,6 @@ sympy==1.14.0
 Jinja2==3.1.6
 emx-regex-cgen==0.2.0
 
-# Image decoding (ImageDecoder operator verification)
-Pillow>=10.0.0
-
 # Testing
 pytest==8.2.0
 pytest-xdist==3.6.1
