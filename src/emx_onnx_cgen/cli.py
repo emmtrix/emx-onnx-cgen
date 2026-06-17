@@ -25,6 +25,7 @@ from shared.scalar_types import ScalarType
 from shared.ulp import ulp_intdiff_float
 
 from ._build_info import BUILD_DATE, GIT_VERSION
+from .codegen.c_emitter import DEFAULT_IMAGE_DECODER_BACKEND, IMAGE_DECODER_BACKENDS
 from .compiler import Compiler, CompilerOptions
 from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from .ir.model import SequenceType, TensorType
@@ -933,6 +934,20 @@ def _build_parser() -> argparse.ArgumentParser:
             ),
         )
 
+    def add_image_decoder_backend_flag(
+        subparser: argparse.ArgumentParser,
+    ) -> None:
+        subparser.add_argument(
+            "--image-decoder-backend",
+            choices=IMAGE_DECODER_BACKENDS,
+            default=DEFAULT_IMAGE_DECODER_BACKEND,
+            help=(
+                "Backend used to generate C for the ImageDecoder operator "
+                f"(default: {DEFAULT_IMAGE_DECODER_BACKEND}; decodes "
+                "PNG/JPEG/BMP/PNM via the vendored stb_image library)."
+            ),
+        )
+
     def add_sequence_shape_hint_flag(subparser: argparse.ArgumentParser) -> None:
         subparser.add_argument(
             "--sequence-element-shape",
@@ -1044,6 +1059,7 @@ def _build_parser() -> argparse.ArgumentParser:
     add_fp16_accumulation_strategy_flag(compile_parser)
     add_runtime_compat_flag(compile_parser)
     add_sequence_shape_hint_flag(compile_parser)
+    add_image_decoder_backend_flag(compile_parser)
 
     verify_parser = subparsers.add_parser(
         "verify",
@@ -1192,6 +1208,7 @@ def _build_parser() -> argparse.ArgumentParser:
     add_fp16_accumulation_strategy_flag(verify_parser)
     add_runtime_compat_flag(verify_parser)
     add_sequence_shape_hint_flag(verify_parser)
+    add_image_decoder_backend_flag(verify_parser)
     return parser
 
 
@@ -1319,6 +1336,7 @@ def _compile_model(
             fp32_accumulation_strategy=args.fp32_accumulation_strategy,
             fp16_accumulation_strategy=args.fp16_accumulation_strategy,
             replicate_ort_bugs=args.replicate_ort_bugs,
+            image_decoder_backend=args.image_decoder_backend,
             sequence_element_shapes=sequence_element_shapes,
             truncate_weights_after=args.truncate_weights_after,
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
@@ -1393,6 +1411,7 @@ def _compile_testbench_declarations(
         fp32_accumulation_strategy=args.fp32_accumulation_strategy,
         fp16_accumulation_strategy=args.fp16_accumulation_strategy,
         replicate_ort_bugs=args.replicate_ort_bugs,
+        image_decoder_backend=args.image_decoder_backend,
         sequence_element_shapes=sequence_element_shapes,
         truncate_weights_after=args.truncate_weights_after,
         large_temp_threshold_bytes=args.large_temp_threshold_bytes,
@@ -1876,6 +1895,7 @@ def _verify_model(
             fp32_accumulation_strategy=args.fp32_accumulation_strategy,
             fp16_accumulation_strategy=args.fp16_accumulation_strategy,
             replicate_ort_bugs=args.replicate_ort_bugs,
+            image_decoder_backend=args.image_decoder_backend,
             sequence_element_shapes=sequence_element_shapes,
             truncate_weights_after=args.truncate_weights_after,
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,

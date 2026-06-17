@@ -15,6 +15,7 @@ import pytest
 from onnx import TensorProto, helper
 
 from emx_onnx_cgen.compiler import Compiler, CompilerOptions
+from emx_onnx_cgen.errors import CodegenError
 from emx_onnx_cgen.testbench import decode_testbench_array
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -292,6 +293,30 @@ def test_image_decoder_grayscale_uses_itu_r_luma_weights() -> None:
         result = _verify_image_decoder_case(directory)
     assert result.exit_code == 0, result.result
     assert result.result == "OK (max abs diff 0)"
+
+
+def _make_image_decoder_model() -> onnx.ModelProto:
+    encoded_input = helper.make_tensor_value_info("encoded", TensorProto.UINT8, [16])
+    image_output = helper.make_tensor_value_info("image", TensorProto.UINT8, [2, 2, 3])
+    node = helper.make_node("ImageDecoder", ["encoded"], ["image"], pixel_format="RGB")
+    model = helper.make_model(
+        helper.make_graph([node], "image_decoder", [encoded_input], [image_output]),
+        opset_imports=[helper.make_operatorsetid("", 20)],
+    )
+    model.ir_version = 9
+    return model
+
+
+def test_image_decoder_backend_stb_emits_stb_image() -> None:
+    model = _make_image_decoder_model()
+    generated = Compiler(CompilerOptions(image_decoder_backend="stb")).compile(model)
+    assert "stbi_load_from_memory" in generated
+
+
+def test_image_decoder_backend_rejects_unknown_value() -> None:
+    model = _make_image_decoder_model()
+    with pytest.raises(CodegenError, match="image_decoder_backend must be one of"):
+        Compiler(CompilerOptions(image_decoder_backend="libjpeg")).compile(model)
 
 
 def test_image_decoder_rejects_undecodable_stream() -> None:

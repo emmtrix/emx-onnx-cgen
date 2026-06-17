@@ -14,6 +14,7 @@ import onnx
 from shared.scalar_types import ScalarType
 
 from .codegen.c_emitter import (
+    DEFAULT_IMAGE_DECODER_BACKEND,
     CEmitter,
     ConstTensor,
     LoweredModel,
@@ -110,6 +111,8 @@ class CompilerOptions:
     large_weight_threshold: int = 100 * 1024
     replicate_ort_bugs: bool = False
     sequence_element_shapes: Mapping[str, SequenceElementShapeHint] | None = None
+    # Selects the backend used to emit C code for the ImageDecoder operator.
+    image_decoder_backend: str = DEFAULT_IMAGE_DECODER_BACKEND
     # Developer-only switch: attach the failing lowering node with typed I/O context.
     debug_lowering_failures: bool = False
     timings: dict[str, float] | None = None
@@ -150,6 +153,7 @@ class Compiler:
             large_weight_threshold=options.large_weight_threshold,
             replicate_ort_bugs=options.replicate_ort_bugs,
             sequence_element_shapes=options.sequence_element_shapes,
+            image_decoder_backend=options.image_decoder_backend,
         )
         load_lowering_registry()
 

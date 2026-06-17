@@ -205,6 +205,13 @@ def _format_c_indentation(source: str, *, indent: str = "    ") -> str:
     return "\n".join(formatted_lines)
 
 
+# Available backends for the ImageDecoder operator. Only the vendored
+# stb_image single-header decoder is implemented today; the indirection keeps
+# the public option surface stable for alternative decoders (e.g. libjpeg).
+IMAGE_DECODER_BACKENDS: tuple[str, ...] = ("stb",)
+DEFAULT_IMAGE_DECODER_BACKEND = "stb"
+
+
 _SCALAR_TYPE_BY_DTYPE: dict[str, ScalarType] = {
     "float": ScalarType.F32,
     "double": ScalarType.F64,
@@ -369,6 +376,7 @@ class CEmitter:
         large_weight_threshold: int = 1024,
         replicate_ort_bugs: bool = False,
         sequence_element_shapes: Mapping[str, SequenceElementShapeHint] | None = None,
+        image_decoder_backend: str = "stb",
     ) -> None:
         loader = (
             FileSystemLoader(str(template_dir))
@@ -398,6 +406,10 @@ class CEmitter:
             raise CodegenError("large_weight_threshold must be >= 0")
         self._large_weight_threshold = large_weight_threshold
         self._replicate_ort_bugs = replicate_ort_bugs
+        if image_decoder_backend not in IMAGE_DECODER_BACKENDS:
+            supported = ", ".join(IMAGE_DECODER_BACKENDS)
+            raise CodegenError(f"image_decoder_backend must be one of: {supported}")
+        self._image_decoder_backend = image_decoder_backend
         self._sequence_element_shapes = dict(sequence_element_shapes or {})
         self._emit_state: _EmitState | None = None
 
@@ -2935,6 +2947,10 @@ class CEmitter:
     @property
     def replicate_ort_bugs(self) -> bool:
         return self._replicate_ort_bugs
+
+    @property
+    def image_decoder_backend(self) -> str:
+        return self._image_decoder_backend
 
     def op_output_dtype(self, op: OpBase) -> ScalarType:
         return self._op_output_dtype(op)

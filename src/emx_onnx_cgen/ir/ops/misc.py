@@ -8699,24 +8699,29 @@ class ImageDecoderOp(RenderableOpBase):
         num_bytes = 1
         for dim in input_shape:
             num_bytes *= dim
-        rendered = (
-            state.templates["image_decoder"]
-            .render(
-                stb_block=_stb_image_block(),
-                op_name=op_name,
-                dim_args=dim_args,
-                params=param_decls,
-                input0=params["input0"],
-                output=params["output"],
-                num_bytes=num_bytes,
-                width=width,
-                height=height,
-                decode_channels=3,
-                grayscale=self.grayscale,
-                channel_map=list(self.channel_map),
+
+        backend = emitter.image_decoder_backend
+        if backend == "stb":
+            rendered = (
+                state.templates["image_decoder"]
+                .render(
+                    stb_block=_stb_image_block(),
+                    op_name=op_name,
+                    dim_args=dim_args,
+                    params=param_decls,
+                    input0=params["input0"],
+                    output=params["output"],
+                    num_bytes=num_bytes,
+                    width=width,
+                    height=height,
+                    decode_channels=3,
+                    grayscale=self.grayscale,
+                    channel_map=list(self.channel_map),
+                )
+                .rstrip()
             )
-            .rstrip()
-        )
+        else:
+            raise CodegenError(f"Unsupported ImageDecoder backend '{backend}'")
         return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
