@@ -3521,11 +3521,11 @@ Coverage 4311 / 4324 ONNX files (99.7%).
 | test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run5/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run6/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run7/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run8/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run9/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run5/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run6/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run7/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run8/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run9/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
