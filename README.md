@@ -213,7 +213,7 @@ These options are accepted by both `compile` and `verify`:
 - `--verbose` / `-v`: Enable verbose logging (includes codegen timing).
 - `--truncate-weights-after`: Truncate inline weight initializers after `N` values and insert `...` placeholders.
 - `--large-weight-threshold`: Store weights in a binary file once the cumulative byte size exceeds this threshold (default: `102400`; set to `0` to disable).
-- `--large-temp-threshold`: Mark local arrays larger than this threshold as static (default: `1024`). This applies to generated model temporaries and to generated testbench input/output buffers.
+- `--large-temp-threshold`: Heap-allocate (via `malloc`/`free`) temporary buffers larger than this byte threshold; smaller buffers stay on the stack (default: `1024`; set to `0` to disable heap allocation and keep all temporaries on the stack). This applies to generated model temporaries and to generated testbench input/output buffers.
 - `--restrict-arrays` / `--no-restrict-arrays`: Enable or disable `restrict` qualifiers on generated array parameters.
 - `--fp32-accumulation-strategy`: Accumulation strategy for float32 inputs (`simple` uses float32, `fp64` uses double; default: `simple`).
 - `--fp16-accumulation-strategy`: Accumulation strategy for float16 inputs (`simple` uses float16, `fp32` uses float; default: `fp32`).
