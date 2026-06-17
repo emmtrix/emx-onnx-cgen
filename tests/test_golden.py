@@ -677,9 +677,9 @@ def test_large_temp_threshold_zero_disables_heap() -> None:
     model = _make_large_temp_model()
 
     heap_generated = Compiler(CompilerOptions()).compile(model)
-    stack_generated = Compiler(
-        CompilerOptions(large_temp_threshold_bytes=0)
-    ).compile(model)
+    stack_generated = Compiler(CompilerOptions(large_temp_threshold_bytes=0)).compile(
+        model
+    )
 
     # Default threshold heap-allocates the large temporary.
     assert "malloc(" in heap_generated
