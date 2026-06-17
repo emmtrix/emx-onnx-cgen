@@ -17,6 +17,7 @@ from .registry import register_lowering
 
 _SUPPORTED_RANGE_DTYPES = {
     ScalarType.BF16,
+    ScalarType.F16,
     ScalarType.F32,
     ScalarType.F64,
     ScalarType.I16,

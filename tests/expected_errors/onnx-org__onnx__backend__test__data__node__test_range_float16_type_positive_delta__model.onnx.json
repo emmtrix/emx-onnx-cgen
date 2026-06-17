@@ -1,9 +1,10 @@
 {
-  "error": "Range does not support dtype float16 (while lowering node_index=0, op_type=Range, name=<unnamed>, inputs=[start: tensor[dtype=float16, shape=()], limit: tensor[dtype=float16, shape=()], delta: tensor[dtype=float16, shape=()]], outputs=[output: tensor[dtype=float16, shape=(2,), dim_params=(None,)]])",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_range_float16_type_positive_delta model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "Range"
   ],
-  "opset_version": 27
+  "opset_version": 27,
+  "generated_checksum": "4a2a59d31d01e4046fd0ce569accb599d2e23f5ce39bd91b2e6965ec0b99aecc"
 }
