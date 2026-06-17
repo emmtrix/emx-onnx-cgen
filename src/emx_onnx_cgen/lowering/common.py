@@ -217,102 +217,6 @@ def _gather_literal_values(
     return gathered
 
 
-def _split_shape_values_from_static_graph_output(
-    graph: Graph | GraphContext,
-    source_node: Node,
-    name: str,
-) -> list[int] | None:
-    if len(source_node.inputs) != 1 or not source_node.outputs:
-        return None
-    output_count = len(source_node.outputs)
-    if output_count not in {4, 5} or name not in source_node.outputs:
-        return None
-    if isinstance(graph, GraphContext):
-        graph_outputs = graph.graph.outputs
-    else:
-        graph_outputs = graph.outputs
-    if len(graph_outputs) != 1:
-        return None
-    graph_output = graph_outputs[0]
-    if not isinstance(graph_output.type, TensorType):
-        return None
-    output_shape = graph_output.type.shape
-    if any(dim < 0 for dim in output_shape):
-        return None
-    output_index = source_node.outputs.index(name)
-    if output_count == 4:
-        if len(output_shape) != 4 or output_shape[-1] != 2:
-            return None
-        inferred = {
-            0: output_shape[0],
-            2: output_shape[1],
-            3: output_shape[2],
-        }
-    else:
-        if len(output_shape) != 5 or output_shape[-1] != 3:
-            return None
-        inferred = {
-            0: output_shape[0],
-            2: output_shape[1],
-            3: output_shape[2],
-            4: output_shape[3],
-        }
-    value = inferred.get(output_index)
-    if value is None:
-        return None
-    return [value]
-
-
-def _center_crop_pad_shape_values_from_static_output(
-    graph: Graph | GraphContext,
-    name: str,
-    node: Node | None,
-    *,
-    _visited: set[str],
-) -> list[int] | None:
-    if isinstance(graph, GraphContext):
-        graph_outputs = graph.graph.outputs
-    else:
-        graph_outputs = graph.outputs
-    if len(graph_outputs) != 1:
-        return None
-    output = graph_outputs[0]
-    if not isinstance(output.type, TensorType):
-        return None
-    output_shape = output.type.shape
-    if any(dim < 0 for dim in output_shape):
-        return None
-    slice_node = _find_node_by_output(graph, output.name)
-    if slice_node is None or slice_node.op_type != "Slice":
-        return None
-    if len(slice_node.inputs) < 3:
-        return None
-    end_name = slice_node.inputs[2]
-    add_node = _find_node_by_output(graph, end_name)
-    if add_node is None or add_node.op_type != "Add" or name not in add_node.inputs:
-        return None
-    consumer_ops = {consumer.op_type for consumer in _find_consumers(graph, name)}
-    if not {"Max", "Add", "Sub"}.issubset(consumer_ops):
-        return None
-    axes_values: list[int] | None = None
-    if len(slice_node.inputs) > 3 and slice_node.inputs[3]:
-        axes_values = _shape_values_from_input(
-            graph,
-            slice_node.inputs[3],
-            node,
-            _visited=_visited,
-        )
-        if axes_values is None:
-            return None
-    if axes_values is None:
-        return list(output_shape)
-    rank = len(output_shape)
-    normalized_axes = [axis if axis >= 0 else axis + rank for axis in axes_values]
-    if any(axis < 0 or axis >= rank for axis in normalized_axes):
-        return None
-    return [output_shape[axis] for axis in normalized_axes]
-
-
 def _shape_values_from_input(
     graph: Graph | GraphContext,
     name: str,
@@ -331,19 +235,6 @@ def _shape_values_from_input(
             return shape_values
         source_node = _find_node_by_output(graph, name)
         if source_node is None:
-            value = graph.find_value(name)
-            if isinstance(value.type, TensorType) and value.type.dtype in {
-                ScalarType.I64,
-                ScalarType.I32,
-            }:
-                inferred_values = _center_crop_pad_shape_values_from_static_output(
-                    graph,
-                    name,
-                    node,
-                    _visited=_visited,
-                )
-                if inferred_values is not None:
-                    return inferred_values
             return None
         if source_node.op_type == "Shape":
             return _shape_values_from_shape_node(graph, source_node, node)
@@ -354,10 +245,6 @@ def _shape_values_from_input(
             if any(dim < 0 for dim in input_shape):
                 return None
             return [shape_product(input_shape)]
-        if source_node.op_type == "Split":
-            return _split_shape_values_from_static_graph_output(
-                graph, source_node, name
-            )
         if source_node.op_type == "Concat":
             axis = int(source_node.attrs.get("axis", 0))
             if axis not in {0, -1}:
@@ -494,21 +381,6 @@ def _shape_values_from_input(
                     if step == 0:
                         return None
                     return list(data_values[slice(starts[0], ends[0], step)])
-                data_node = _find_node_by_output(graph, source_node.inputs[0])
-                if (
-                    data_node is not None
-                    and data_node.op_type == "Concat"
-                    and len(data_node.inputs) == 5
-                    and starts == [2]
-                    and ends == [5]
-                    and steps == [1]
-                    and len(graph.outputs) == 1
-                ):
-                    output_shape = value_shape(graph, graph.outputs[0].name, node)
-                    if len(output_shape) == 4 and output_shape[-1] == 2:
-                        return [1, output_shape[1], output_shape[2]]
-                    if len(output_shape) == 5 and output_shape[-1] == 3:
-                        return [output_shape[1], output_shape[2], output_shape[3]]
         if source_node.op_type in {"Equal", "And", "Or", "Div", "Mod"}:
             if len(source_node.inputs) != 2 or len(source_node.outputs) != 1:
                 raise UnsupportedOpError(
@@ -690,12 +562,6 @@ def _numeric_values_from_input(
             if any(dim < 0 for dim in input_shape):
                 return None
             return [shape_product(input_shape)]
-        if source_node.op_type == "Split":
-            split_values = _split_shape_values_from_static_graph_output(
-                graph, source_node, name
-            )
-            if split_values is not None:
-                return split_values
         if source_node.op_type == "Concat":
             axis = int(source_node.attrs.get("axis", 0))
             rank = len(value_shape(graph, source_node.outputs[0], node))

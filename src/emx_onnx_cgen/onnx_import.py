@@ -11,6 +11,7 @@ from shared.scalar_types import ScalarType
 
 from .dtypes import scalar_type_from_onnx
 from .errors import ShapeInferenceError, UnsupportedOpError
+from .symbolic_shapes import infer_symbolic_shapes
 from .ir.model import (
     Graph,
     Initializer,
@@ -2144,6 +2145,13 @@ def prepare_onnx_model(model: onnx.ModelProto) -> onnx.ModelProto:
     prepared, _ = _expand_sequence_map_nodes(prepared)
     prepared, _ = _expand_gradient_nodes(prepared)
     prepared = _maybe_infer_shapes(prepared)
+    # Recover dimensions that depend on the values of runtime integer inputs
+    # (e.g. AffineGrid's `size` or CenterCropPad's target `shape`), which ONNX
+    # shape inference leaves dynamic. Re-run inference afterwards so the newly
+    # concrete dims propagate to the remaining tensors.
+    prepared, enriched = infer_symbolic_shapes(prepared)
+    if enriched:
+        prepared = _maybe_infer_shapes(prepared)
     return prepared
 
 
