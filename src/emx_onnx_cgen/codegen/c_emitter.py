@@ -2379,13 +2379,14 @@ class CEmitter:
                 storage = (
                     "static "
                     if not dim_names
-                    and self._buffer_size_bytes(
-                        temp.shape,
-                        temp.dtype,
-                        dim_names=dim_names,
-                        is_sequence=temp.is_sequence,
+                    and self._exceeds_temp_threshold(
+                        self._buffer_size_bytes(
+                            temp.shape,
+                            temp.dtype,
+                            dim_names=dim_names,
+                            is_sequence=temp.is_sequence,
+                        )
                     )
-                    > self._large_temp_threshold_bytes
                     else ""
                 )
                 lines.append(
@@ -2406,10 +2407,8 @@ class CEmitter:
                 heap_temp_names.append(temp.name)
             else:
                 storage = ""
-                if (
-                    not dim_names
-                    and self._temp_buffer_size_bytes(temp)
-                    > self._large_temp_threshold_bytes
+                if not dim_names and self._exceeds_temp_threshold(
+                    self._temp_buffer_size_bytes(temp)
                 ):
                     storage = "static "
                 lines.append(
@@ -2664,14 +2663,13 @@ class CEmitter:
     ) -> str:
         if dim_names:
             return ""
-        if (
+        if self._exceeds_temp_threshold(
             self._buffer_size_bytes(
                 shape,
                 dtype,
                 dim_names=dim_names,
                 is_sequence=is_sequence,
             )
-            > self._large_temp_threshold_bytes
         ):
             return "static "
         return ""
@@ -2682,6 +2680,16 @@ class CEmitter:
             temp.shape, temp.dtype, is_sequence=temp.is_sequence
         )
 
+    def _exceeds_temp_threshold(self, size_bytes: int) -> bool:
+        """Return whether a buffer of ``size_bytes`` counts as "large".
+
+        A threshold of ``0`` means "unbounded": no buffer is ever considered
+        large, so temporaries stay on the stack and are never heap-allocated.
+        """
+        if self._large_temp_threshold_bytes == 0:
+            return False
+        return size_bytes > self._large_temp_threshold_bytes
+
     def _temp_buffer_uses_heap(
         self,
         temp: TempBuffer,
@@ -2689,14 +2697,13 @@ class CEmitter:
     ) -> bool:
         if temp.is_sequence:
             return False
-        return (
+        return self._exceeds_temp_threshold(
             self._buffer_size_bytes(
                 temp.shape,
                 temp.dtype,
                 dim_names=dim_names,
                 is_sequence=temp.is_sequence,
             )
-            > self._large_temp_threshold_bytes
         )
 
     def _heap_temp_buffer_lines(
