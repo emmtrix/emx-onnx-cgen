@@ -673,14 +673,14 @@ model entrypoint by default.
 
 Large temporaries:
 
-- If a temporary exceeds `--large-temp-threshold`, it may be emitted as `static`
-  storage inside the entrypoint to avoid large stack usage (see
+- If a temporary exceeds `--large-temp-threshold`, it is heap-allocated with
+  `malloc` at the start of the entrypoint and released with `free` before
+  returning, to avoid large stack usage (see
   [`tests/golden/large_temp_static_model.c`](../tests/golden/large_temp_static_model.c)).
-
-No dynamic allocation:
-
-- Generated code avoids `malloc` / `free`.
-- Memory layout is explicit, visible in the generated source, and stable.
+- Setting `--large-temp-threshold 0` disables heap allocation entirely: all
+  temporaries stay on the stack. Buffers with static shapes become fixed-size
+  local arrays, while buffers with dynamic dimensions become C99 variable-length
+  arrays. This avoids `malloc`/`free` at the cost of higher stack usage.
 
 ## String Tensors
 

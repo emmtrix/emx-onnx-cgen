@@ -673,6 +673,25 @@ def test_codegen_golden_large_temp_static() -> None:
     assert_golden(generated, golden_path)
 
 
+def test_large_temp_threshold_zero_disables_heap() -> None:
+    model = _make_large_temp_model()
+
+    heap_generated = Compiler(CompilerOptions()).compile(model)
+    stack_generated = Compiler(CompilerOptions(large_temp_threshold_bytes=0)).compile(
+        model
+    )
+
+    # Default threshold heap-allocates the large temporary.
+    assert "malloc(" in heap_generated
+    assert "free(" in heap_generated
+
+    # Threshold 0 keeps everything on the stack: no malloc/free, and the
+    # temporary becomes a plain (non-static) local array.
+    assert "malloc(" not in stack_generated
+    assert "free(" not in stack_generated
+    assert "    float tmp0_tmp[1][257];" in stack_generated
+
+
 def test_mul_add_matches_onnxruntime() -> None:
     model = _make_mul_add_model()
     input_a = np.random.rand(2, 3).astype(np.float32)
