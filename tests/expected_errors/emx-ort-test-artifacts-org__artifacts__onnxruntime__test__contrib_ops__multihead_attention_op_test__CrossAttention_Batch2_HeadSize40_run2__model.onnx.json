@@ -1,7 +1,9 @@
 {
-  "error": "OK (max ULP 388)",
-  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize40_run2 model.onnx --test-data-dir test_data_set_0 --test-data-inputs-only --max-ulp 500",
+  "error": "OK (max ULP 364)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch2_HeadSize40_run2 model.onnx --test-data-dir test_data_set_0 --fp32-accumulation-strategy fp64 --test-data-inputs-only --max-ulp 500",
   "extra_cli_args": [
+    "--fp32-accumulation-strategy",
+    "fp64",
     "--test-data-inputs-only",
     "--max-ulp",
     "500"
@@ -10,5 +12,5 @@
   "operators": [
     "com.microsoft.MultiHeadAttention"
   ],
-  "generated_checksum": "f733bd7f45fc34a4bab884cafcf5e705e1313ba3e1dd528ec69ed0ae3b752521"
+  "generated_checksum": "73bf8e80ef72808e74731625fe79f20d0811bd3df9439aaa57eb54fd8acafd17"
 }
