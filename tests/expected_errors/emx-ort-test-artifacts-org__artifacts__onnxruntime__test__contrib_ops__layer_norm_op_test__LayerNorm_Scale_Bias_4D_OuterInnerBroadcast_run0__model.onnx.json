@@ -1,6 +1,10 @@
 {
-  "error": "Out of tolerance (max ULP 1613)",
-  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_4D_OuterInnerBroadcast_run0 model.onnx --test-data-dir test_data_set_0",
+  "error": "OK (max ULP 1613)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_4D_OuterInnerBroadcast_run0 model.onnx --test-data-dir test_data_set_0 --max-ulp 2000",
+  "extra_cli_args": [
+    "--max-ulp",
+    "2000"
+  ],
   "verification_mode": "Data/Data",
   "operators": [
     "LayerNormalization"

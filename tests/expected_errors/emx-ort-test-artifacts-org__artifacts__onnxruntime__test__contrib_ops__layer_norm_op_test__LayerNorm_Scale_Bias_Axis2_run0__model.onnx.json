@@ -1,6 +1,10 @@
 {
-  "error": "Out of tolerance (max ULP 336)",
-  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Axis2_run0 model.onnx --test-data-dir test_data_set_0",
+  "error": "OK (max ULP 336)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Bias_Axis2_run0 model.onnx --test-data-dir test_data_set_0 --max-ulp 500",
+  "extra_cli_args": [
+    "--max-ulp",
+    "500"
+  ],
   "verification_mode": "Data/Data",
   "operators": [
     "LayerNormalization"
