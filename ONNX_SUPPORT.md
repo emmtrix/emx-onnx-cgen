@@ -850,7 +850,7 @@ Coverage 1908 / 1914 ONNX files (99.7%).
 | node/test_image_decoder_decode_bmp_rgb/model.onnx | 20 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_image_decoder_decode_jpeg2k_rgb/model.onnx | 20 | Data/Data | ❌ | Testbench execution failed: exit code 1 |
 | node/test_image_decoder_decode_jpeg_bgr/model.onnx | 20 | Data/Data | ❌ | Out of tolerance (max abs diff 2) |
-| node/test_image_decoder_decode_jpeg_grayscale/model.onnx | 20 | Data/Data | ❌ | Out of tolerance (max abs diff 16) |
+| node/test_image_decoder_decode_jpeg_grayscale/model.onnx | 20 | Data/Data | ❌ | Out of tolerance (max abs diff 2) |
 | node/test_image_decoder_decode_jpeg_rgb/model.onnx | 20 | Data/Data | ❌ | Out of tolerance (max abs diff 2) |
 | node/test_image_decoder_decode_png_rgb/model.onnx | 20 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_image_decoder_decode_pnm_rgb/model.onnx | 20 | Data/Data | ✅ | OK (max abs diff 0) |

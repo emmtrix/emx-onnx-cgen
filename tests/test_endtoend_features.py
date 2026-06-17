@@ -271,6 +271,29 @@ def test_image_decoder_grayscale() -> None:
     assert result.result == "OK (max abs diff 0)"
 
 
+def test_image_decoder_grayscale_uses_itu_r_luma_weights() -> None:
+    if shutil.which("cc") is None and shutil.which("gcc") is None:
+        pytest.skip("C compiler not available")
+    rng = np.random.default_rng(7)
+    pixels = rng.integers(0, 256, size=(3, 4, 3), dtype=np.uint8)
+    # Same ITU-R 601-2 luma transform the generated C applies, matching the
+    # reference (Pillow) decoder: L = (R*19595 + G*38470 + B*7471) >> 16.
+    weights = np.array([19595, 38470, 7471], dtype=np.uint32)
+    luma = (pixels.astype(np.uint32) * weights).sum(axis=2) >> 16
+    expected = luma.astype(np.uint8)[:, :, np.newaxis]
+    with tempfile.TemporaryDirectory() as temp_dir:
+        directory = Path(temp_dir)
+        _write_image_decoder_case(
+            directory,
+            pixel_format="Grayscale",
+            expected=expected,
+            encoded=_encode_ppm(pixels),
+        )
+        result = _verify_image_decoder_case(directory)
+    assert result.exit_code == 0, result.result
+    assert result.result == "OK (max abs diff 0)"
+
+
 def test_image_decoder_rejects_undecodable_stream() -> None:
     if shutil.which("cc") is None and shutil.which("gcc") is None:
         pytest.skip("C compiler not available")

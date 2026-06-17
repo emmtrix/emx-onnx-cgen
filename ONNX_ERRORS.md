@@ -26,7 +26,7 @@ Lists every ONNX file with a non-success verification outcome.
 | --- | --- | --- | --- | --- |
 | node/test_image_decoder_decode_jpeg2k_rgb/model.onnx | 20 | Data/Data | ❌ | Testbench execution failed: exit code 1 |
 | node/test_image_decoder_decode_jpeg_bgr/model.onnx | 20 | Data/Data | ❌ | Out of tolerance (max abs diff 2) |
-| node/test_image_decoder_decode_jpeg_grayscale/model.onnx | 20 | Data/Data | ❌ | Out of tolerance (max abs diff 16) |
+| node/test_image_decoder_decode_jpeg_grayscale/model.onnx | 20 | Data/Data | ❌ | Out of tolerance (max abs diff 2) |
 | node/test_image_decoder_decode_jpeg_rgb/model.onnx | 20 | Data/Data | ❌ | Out of tolerance (max abs diff 2) |
 | node/test_image_decoder_decode_tiff_rgb/model.onnx | 20 | Data/Data | ❌ | Testbench execution failed: exit code 1 |
 | node/test_image_decoder_decode_webp_rgb/model.onnx | 20 | Data/Data | ❌ | Testbench execution failed: exit code 1 |

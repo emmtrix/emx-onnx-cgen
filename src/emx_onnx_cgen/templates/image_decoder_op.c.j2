@@ -5,7 +5,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     int emx_h = 0;
     int emx_comp = 0;
     stbi_uc *emx_pixels = stbi_load_from_memory(
-        (const stbi_uc *){{ input0 }}, (int){{ num_bytes }}, &emx_w, &emx_h, &emx_comp, {{ channels }});
+        (const stbi_uc *){{ input0 }}, (int){{ num_bytes }}, &emx_w, &emx_h, &emx_comp, {{ decode_channels }});
     if (emx_pixels == NULL) {
         fprintf(stderr, "ImageDecoder: failed to decode image (%s)\n", stbi_failure_reason());
         exit(1);
@@ -19,10 +19,19 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     }
     for (idx_t emx_y = 0; emx_y < {{ height }}; ++emx_y) {
         for (idx_t emx_x = 0; emx_x < {{ width }}; ++emx_x) {
+{% if grayscale %}
+            const stbi_uc *emx_rgb = &emx_pixels[(emx_y * {{ width }} + emx_x) * {{ decode_channels }}];
+            /* ITU-R 601-2 luma transform, matching the reference decoder. */
+            {{ output }}[emx_y][emx_x][0] = (uint8_t)(
+                ((uint32_t)emx_rgb[0] * 19595u
+                 + (uint32_t)emx_rgb[1] * 38470u
+                 + (uint32_t)emx_rgb[2] * 7471u) >> 16);
+{% else %}
 {% for src_channel in channel_map %}
             {{ output }}[emx_y][emx_x][{{ loop.index0 }}] =
-                emx_pixels[(emx_y * {{ width }} + emx_x) * {{ channels }} + {{ src_channel }}];
+                emx_pixels[(emx_y * {{ width }} + emx_x) * {{ decode_channels }} + {{ src_channel }}];
 {% endfor %}
+{% endif %}
         }
     }
     stbi_image_free(emx_pixels);

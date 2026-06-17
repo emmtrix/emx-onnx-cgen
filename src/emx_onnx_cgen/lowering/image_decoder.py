@@ -73,5 +73,6 @@ def lower_image_decoder(graph: Graph, node: Node) -> ImageDecoderOp:
         input_shape=input_shape,
         shape=output_shape,
         channel_map=channel_map,
+        grayscale=pixel_format == "Grayscale",
         dtype=op_dtype,
     )

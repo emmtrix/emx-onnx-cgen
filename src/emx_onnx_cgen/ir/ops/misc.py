@@ -8666,10 +8666,15 @@ class ImageDecoderOp(RenderableOpBase):
     input_shape: tuple[int, ...]
     shape: tuple[int, ...]
     channel_map: tuple[int, ...]
+    grayscale: bool
     dtype: ScalarType
 
     def required_includes(self, ctx: OpContext) -> set[str]:
-        return {"#include <stdio.h>", "#include <stdlib.h>"}
+        return {
+            "#include <stdio.h>",
+            "#include <stdlib.h>",
+            "#include <stdint.h>",
+        }
 
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
@@ -8706,7 +8711,8 @@ class ImageDecoderOp(RenderableOpBase):
                 num_bytes=num_bytes,
                 width=width,
                 height=height,
-                channels=len(self.channel_map),
+                decode_channels=3,
+                grayscale=self.grayscale,
                 channel_map=list(self.channel_map),
             )
             .rstrip()
