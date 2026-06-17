@@ -8,6 +8,9 @@ protobuf>=6.33.5
 # Numerics
 numpy==2.2.6
 
+# Symbolic shape inference (emx_onnx_cgen.symbolic_shapes)
+sympy==1.14.0
+
 # Code generation
 Jinja2==3.1.6
 emx-regex-cgen==0.2.0

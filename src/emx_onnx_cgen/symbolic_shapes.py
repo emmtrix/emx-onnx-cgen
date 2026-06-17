@@ -27,12 +27,8 @@ The pass is deliberately conservative:
 from __future__ import annotations
 
 import onnx
+import sympy
 from onnx import helper, numpy_helper
-
-try:  # sympy is a transitive dependency via onnxruntime tooling
-    import sympy
-except Exception:  # pragma: no cover - sympy unavailable
-    sympy = None  # type: ignore[assignment]
 
 
 _MAX_DEPTH = 256
@@ -584,8 +580,6 @@ def infer_symbolic_shapes(model: onnx.ModelProto) -> tuple[onnx.ModelProto, bool
     dimension was recovered and written back.
     """
 
-    if sympy is None:
-        return model, False
     graph = model.graph
     if not _has_dynamic_dims(graph):
         return model, False
