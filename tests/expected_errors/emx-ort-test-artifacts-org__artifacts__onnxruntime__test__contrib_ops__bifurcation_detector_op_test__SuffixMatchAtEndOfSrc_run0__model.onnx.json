@@ -1,9 +1,9 @@
 {
-  "error": "Out of tolerance (max abs diff 4)",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/bifurcation_detector_op_test/SuffixMatchAtEndOfSrc_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft.BifurcationDetector"
   ],
-  "generated_checksum": "0305ea947290282b3492317975ebdcfe02168dd09700d1834e3254a562858b5f"
+  "generated_checksum": "76d62de373675c1f95a4578abf83d02ce0d56780d2ea11fa2ce7e25b61e5ec93"
 }

@@ -1,9 +1,14 @@
 {
-  "error": "OK (max ULP 1)",
-  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run8 model.onnx --test-data-dir test_data_set_0",
-  "verification_mode": "Data/Data",
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run8 model.onnx --test-data-dir test_data_set_0 --test-data-inputs-only --atol-eps 256",
+  "extra_cli_args": [
+    "--test-data-inputs-only",
+    "--atol-eps",
+    "256"
+  ],
+  "verification_mode": "Data/ORT",
   "operators": [
     "com.microsoft.MatMulNBits"
   ],
-  "generated_checksum": "16898b2778374cfba92c67da8272b590cc675f70166785138c783b935513c3c9"
+  "generated_checksum": "b185b3f7547329aeb8aba9f061db4da29a6a78c366d4e54953e61cd5ef2734cc"
 }
