@@ -3072,156 +3072,156 @@ Coverage 4311 / 4324 ONNX files (99.7%).
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run97/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 6080) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run98/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 2330) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy2_run99/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9218) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run100/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run101/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run102/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run103/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run104/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run105/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 6080) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run106/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9218) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run107/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 6080) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run108/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 2330) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run109/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9218) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run11/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run110/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 861) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run111/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 7454) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run112/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 861) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run113/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 571) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run114/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 7454) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run115/model.onnx |  | Data/Data | ✅ | OK (max ULP 10) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run116/model.onnx |  | Data/Data | ✅ | OK (max ULP 5) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run117/model.onnx |  | Data/Data | ✅ | OK (max ULP 10) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run118/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 152) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run119/model.onnx |  | Data/Data | ✅ | OK (max ULP 5) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run12/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run120/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run121/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run122/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run123/model.onnx |  | Data/Data | ✅ | OK (max ULP 5) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run124/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run125/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run126/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run127/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run128/model.onnx |  | Data/Data | ✅ | OK (max ULP 10) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run129/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run13/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run130/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 1730) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run131/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9141) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run132/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 1730) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run133/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 940) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run134/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 9141) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run135/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 18) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run136/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 38) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run137/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 18) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run138/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 34) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run139/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 38) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run14/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run140/model.onnx |  | Data/Data | ✅ | OK (max ULP 66) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run141/model.onnx |  | Data/Data | ✅ | OK (max ULP 5) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run142/model.onnx |  | Data/Data | ✅ | OK (max ULP 66) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run143/model.onnx |  | Data/Data | ✅ | OK (max ULP 17) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run144/model.onnx |  | Data/Data | ✅ | OK (max ULP 5) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run145/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 10976) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run146/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 11529) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run147/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 10976) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run148/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 11961) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run149/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 11529) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run15/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run16/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run17/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run18/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run19/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run20/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run21/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run23/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run24/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run25/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run26/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run27/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run28/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run29/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run30/model.onnx |  | Data/Data | ✅ | OK (max ULP 21) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run31/model.onnx |  | Data/Data | ✅ | OK (max ULP 40) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run32/model.onnx |  | Data/Data | ✅ | OK (max ULP 21) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run33/model.onnx |  | Data/Data | ✅ | OK (max ULP 10) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run34/model.onnx |  | Data/Data | ✅ | OK (max ULP 40) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run35/model.onnx |  | Data/Data | ✅ | OK (max ULP 39) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run36/model.onnx |  | Data/Data | ✅ | OK (max ULP 36) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run37/model.onnx |  | Data/Data | ✅ | OK (max ULP 39) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run38/model.onnx |  | Data/Data | ✅ | OK (max ULP 31) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run39/model.onnx |  | Data/Data | ✅ | OK (max ULP 36) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run40/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run41/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run42/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run43/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run44/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run45/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run46/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run47/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run48/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run49/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run50/model.onnx |  | Data/Data | ✅ | OK (max ULP 22) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run51/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 135) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run52/model.onnx |  | Data/Data | ✅ | OK (max ULP 22) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run53/model.onnx |  | Data/Data | ✅ | OK (max ULP 29) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run54/model.onnx (--max-ulp 12000) |  | Data/Data | ✅ | OK (max ULP 135) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run55/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run56/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run57/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run58/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run59/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run60/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run61/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run62/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run63/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run64/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run65/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run66/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run67/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run68/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run69/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run70/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run71/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run72/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run73/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run74/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run75/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run76/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run77/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run78/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run79/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run80/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run81/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run82/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run83/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run84/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run85/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run86/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run87/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run88/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run89/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run90/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run91/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run92/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run93/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run94/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run95/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run96/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run97/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run98/model.onnx |  | Data/Data | ✅ | OK (max ULP 3) |
-| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run99/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run0/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run1/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run10/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run100/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run101/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run102/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run103/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run104/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run105/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run106/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run107/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run108/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run109/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run11/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run110/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run111/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run112/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run113/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run114/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run115/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run116/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run117/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run118/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run119/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run12/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run120/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run121/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run122/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run123/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run124/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run125/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run126/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run127/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run128/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run129/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run13/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run130/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run131/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run132/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run133/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run134/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run135/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run136/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run137/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run138/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run139/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run14/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run140/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run141/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run142/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run143/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run144/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run145/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run146/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run147/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run148/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run149/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run15/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run16/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run17/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run18/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run19/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run2/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run20/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run21/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run22/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run23/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run24/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run25/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run26/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run27/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run28/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run29/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run3/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run30/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run31/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run32/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run33/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run34/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run35/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run36/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run37/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run38/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run39/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run4/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run40/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run41/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run42/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run43/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run44/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run45/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run46/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run47/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run48/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run49/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run5/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run50/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run51/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run52/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run53/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run54/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run55/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run56/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run57/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run58/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run59/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run6/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run60/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run61/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run62/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run63/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run64/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run65/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run66/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run67/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run68/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run69/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run7/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run70/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run71/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run72/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run73/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run74/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run75/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run76/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run77/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run78/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run79/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run8/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run80/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run81/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run82/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run83/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run84/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run85/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run86/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run87/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run88/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run89/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run9/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run90/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run91/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run92/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run93/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run94/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run95/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run96/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run97/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run98/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run99/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float32_4b_Accuracy0_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
@@ -3521,11 +3521,11 @@ Coverage 4311 / 4324 ONNX files (99.7%).
 | test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run4/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run5/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run6/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
-| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run5/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run6/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run7/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run8/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/matmul_4bits_test/LegacyShape_4b_run9/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_8bits_test/Float32_8b_AccuracyLevel1_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
@@ -4618,8 +4618,8 @@ Coverage 4311 / 4324 ONNX files (99.7%).
 | test/contrib_ops/moe_test/MoECpuTest_BasicSwiGLU_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/moe_test/QMoETest_CPU_RouterWeights_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/moe_test/QMoETest_CPU_RouterWeights_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/multihead_attention_op_test/CrossAttentionWithPast_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
-| test/contrib_ops/multihead_attention_op_test/CrossAttentionWithPast_run1/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/multihead_attention_op_test/CrossAttentionWithPast_run0/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
+| test/contrib_ops/multihead_attention_op_test/CrossAttentionWithPast_run1/model.onnx (--test-data-inputs-only --atol-eps 256) |  | Data/ORT | ✅ | OK (max ULP 0) |
 | test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch1_HeadSize16_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch1_HeadSize16_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/multihead_attention_op_test/CrossAttention_Batch1_HeadSize16_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 4) |

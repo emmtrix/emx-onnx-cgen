@@ -1,0 +1,78 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% set base = batch_m_vars | length %}
+{% for idx in range(base) %}
+{% for _ in range(idx) %}    {% endfor %}for (idx_t {{ batch_m_vars[idx] }} = 0; {{ batch_m_vars[idx] }} < {{ batch_m_bounds[idx] }}; ++{{ batch_m_vars[idx] }}) {
+{% endfor %}
+{% for _ in range(base) %}    {% endfor %}/* Dynamically quantize the activation row to int8 (accuracy_level=4). */
+{% for _ in range(base) %}    {% endfor %}int8_t {{ qa }}[{{ k }}];
+{% for _ in range(base) %}    {% endfor %}{{ acc_type }} {{ a_scale }}[{{ n_blocks }}];
+{% for _ in range(base) %}    {% endfor %}for (idx_t blk = 0; blk < {{ n_blocks }}; ++blk) {
+{% for _ in range(base + 1) %}    {% endfor %}{{ acc_type }} amax = {{ acc_zero }};
+{% for _ in range(base + 1) %}    {% endfor %}for (idx_t kk = 0; kk < {{ block_size }}; ++kk) {
+{% for _ in range(base + 2) %}    {% endfor %}idx_t k = blk * {{ block_size }} + kk;
+{% for _ in range(base + 2) %}    {% endfor %}if (k >= {{ k }}) break;
+{% for _ in range(base + 2) %}    {% endfor %}{{ acc_type }} av = {{ scalar_fn(SF.ABS, acc_dtype) }}(({{ acc_type }}){{ a_prefix }}[k]);
+{% for _ in range(base + 2) %}    {% endfor %}if (av > amax) amax = av;
+{% for _ in range(base + 1) %}    {% endfor %}}
+{% for _ in range(base + 1) %}    {% endfor %}{{ a_scale }}[blk] = amax / ({{ acc_type }})127;
+{% for _ in range(base + 1) %}    {% endfor %}{{ acc_type }} a_inv = amax > {{ acc_zero }} ? ({{ acc_type }})127 / amax : {{ acc_zero }};
+{% for _ in range(base + 1) %}    {% endfor %}for (idx_t kk = 0; kk < {{ block_size }}; ++kk) {
+{% for _ in range(base + 2) %}    {% endfor %}idx_t k = blk * {{ block_size }} + kk;
+{% for _ in range(base + 2) %}    {% endfor %}if (k >= {{ k }}) break;
+{% for _ in range(base + 2) %}    {% endfor %}{{ acc_type }} q = {{ scalar_fn(SF.NEARBYINT, acc_dtype) }}(({{ acc_type }}){{ a_prefix }}[k] * a_inv);
+{% for _ in range(base + 2) %}    {% endfor %}if (q > ({{ acc_type }})127) q = ({{ acc_type }})127;
+{% for _ in range(base + 2) %}    {% endfor %}if (q < ({{ acc_type }})-128) q = ({{ acc_type }})-128;
+{% for _ in range(base + 2) %}    {% endfor %}{{ qa }}[k] = (int8_t)q;
+{% for _ in range(base + 1) %}    {% endfor %}}
+{% for _ in range(base) %}    {% endfor %}}
+{% for _ in range(base) %}    {% endfor %}for (idx_t {{ n_var }} = 0; {{ n_var }} < {{ n_bound }}; ++{{ n_var }}) {
+{% for _ in range(base + 1) %}    {% endfor %}{{ acc_type }} acc = {{ acc_zero }};
+{% for _ in range(base + 1) %}    {% endfor %}for (idx_t blk = 0; blk < {{ n_blocks }}; ++blk) {
+{% for _ in range(base + 2) %}    {% endfor %}int32_t isum = 0;
+{% for _ in range(base + 2) %}    {% endfor %}for (idx_t kk = 0; kk < {{ block_size }}; ++kk) {
+{% for _ in range(base + 3) %}    {% endfor %}idx_t k = blk * {{ block_size }} + kk;
+{% for _ in range(base + 3) %}    {% endfor %}if (k >= {{ k }}) break;
+{% if bits == 8 %}
+{% for _ in range(base + 3) %}    {% endfor %}int quant_val = (int)(unsigned char){{ input1 }}[{{ n_var }}][blk][kk];
+{% else %}
+{% for _ in range(base + 3) %}    {% endfor %}idx_t byte_idx = kk * {{ bits }} / 8;
+{% for _ in range(base + 3) %}    {% endfor %}idx_t bit_shift = (kk * {{ bits }}) % 8;
+{% for _ in range(base + 3) %}    {% endfor %}int quant_val = ((int)(unsigned char){{ input1 }}[{{ n_var }}][blk][byte_idx] >> bit_shift) & {{ bit_mask }};
+{% endif %}
+{% if has_zero_points %}
+{% if bits == 8 %}
+{% if zero_points_has_block_axis %}
+{% for _ in range(base + 3) %}    {% endfor %}int zp = (int)(unsigned char){{ zero_points }}[{{ n_var }}][blk];
+{% else %}
+{% for _ in range(base + 3) %}    {% endfor %}int zp = (int)(unsigned char){{ zero_points }}[{{ n_var }}];
+{% endif %}
+{% else %}
+{% if zero_points_has_block_axis %}
+{% for _ in range(base + 3) %}    {% endfor %}idx_t zp_byte_idx = blk * {{ bits }} / 8;
+{% for _ in range(base + 3) %}    {% endfor %}idx_t zp_bit_shift = (blk * {{ bits }}) % 8;
+{% for _ in range(base + 3) %}    {% endfor %}int zp = ((int)(unsigned char){{ zero_points }}[{{ n_var }}][zp_byte_idx] >> zp_bit_shift) & {{ bit_mask }};
+{% else %}
+{% for _ in range(base + 3) %}    {% endfor %}int zp = ((int)(unsigned char){{ zero_points }}[{{ n_var }}] >> 0) & {{ bit_mask }};
+{% endif %}
+{% endif %}
+{% else %}
+{% for _ in range(base + 3) %}    {% endfor %}int zp = {{ default_zero_point }};
+{% endif %}
+{% for _ in range(base + 3) %}    {% endfor %}isum += (int32_t){{ qa }}[k] * (int32_t)(quant_val - zp);
+{% for _ in range(base + 2) %}    {% endfor %}}
+{% if scales_has_block_axis %}
+{% for _ in range(base + 2) %}    {% endfor %}{{ acc_type }} b_scale = ({{ acc_type }}){{ scales }}[{{ n_var }}][blk];
+{% else %}
+{% for _ in range(base + 2) %}    {% endfor %}{{ acc_type }} b_scale = ({{ acc_type }}){{ scales }}[{{ n_var }}];
+{% endif %}
+{% for _ in range(base + 2) %}    {% endfor %}acc += ({{ acc_type }})isum * ({{ a_scale }}[blk] * b_scale);
+{% for _ in range(base + 1) %}    {% endfor %}}
+{% if has_bias %}
+{% for _ in range(base + 1) %}    {% endfor %}acc += ({{ acc_type }}){{ bias }}[{{ n_var }}];
+{% endif %}
+{% for _ in range(base + 1) %}    {% endfor %}{{ output_index_expr }} = ({{ output_c_type }})acc;
+{% for _ in range(base) %}    {% endfor %}}
+{% for idx in range(base) | reverse %}
+{% for _ in range(idx) %}    {% endfor %}}
+{% endfor %}
+}

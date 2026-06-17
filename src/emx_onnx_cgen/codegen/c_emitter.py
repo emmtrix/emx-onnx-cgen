@@ -1083,6 +1083,9 @@ class CEmitter:
                     "matmul_integer_to_float_op.c.j2"
                 ),
                 "matmul_nbits": self._env.get_template("matmul_nbits_op.c.j2"),
+                "matmul_nbits_int8": self._env.get_template(
+                    "matmul_nbits_int8_op.c.j2"
+                ),
                 "matmul_bnb4": self._env.get_template("matmul_bnb4_op.c.j2"),
                 "matmul": self._env.get_template("matmul_op.c.j2"),
                 "fused_matmul": self._env.get_template("fused_matmul_op.c.j2"),

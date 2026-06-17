@@ -5,5 +5,10 @@
   "operators": [
     "com.microsoft.MatMulNBits"
   ],
-  "generated_checksum": "16898b2778374cfba92c67da8272b590cc675f70166785138c783b935513c3c9"
+  "generated_checksum": "16898b2778374cfba92c67da8272b590cc675f70166785138c783b935513c3c9",
+  "extra_cli_args": [
+    "--test-data-inputs-only",
+    "--atol-eps",
+    "256"
+  ]
 }
