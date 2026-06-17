@@ -40,7 +40,6 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         idx_t pos = {{ op_name }}_search(src_flat, (idx_t)({{ src_len }}), ngram, i);
         if (pos < 0) break;
         idx_t candidate = pos + i;
-        if (candidate >= (idx_t)({{ src_len }})) break;
         idx_t pos2 = {{ op_name }}_search(src_flat + candidate - i + 1, (idx_t)({{ src_len }}) - (candidate - i + 1), ngram, i);
         if (pos2 >= 0) {
             suffix_idx = -1;

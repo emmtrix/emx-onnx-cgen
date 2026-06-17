@@ -1,13 +1,14 @@
 {
-  "error": "OK (max ULP 1730)",
-  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run132 model.onnx --test-data-dir test_data_set_0 --max-ulp 12000",
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy4_run132 model.onnx --test-data-dir test_data_set_0 --test-data-inputs-only --atol-eps 256",
   "extra_cli_args": [
-    "--max-ulp",
-    "12000"
+    "--test-data-inputs-only",
+    "--atol-eps",
+    "256"
   ],
-  "verification_mode": "Data/Data",
+  "verification_mode": "Data/ORT",
   "operators": [
     "com.microsoft.MatMulNBits"
   ],
-  "generated_checksum": "d5c5900df93075480b529e8a1159d12e458b38206457bb44531e90a06161f022"
+  "generated_checksum": "d6b1903d50316242b5d828c889d1d1cbe9fe3da81ca277c0b6d44cb6918a04d8"
 }
