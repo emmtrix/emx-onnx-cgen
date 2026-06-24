@@ -52,9 +52,16 @@ Relevant project files used for the talk material:
 
 ## Working files
 
-- `presentation/story.md`: long-form story document; primary working document
+- `story.md`: long-form story document; primary working document
   before slide creation
-- `presentation/source-input.md`: raw user-provided input and project facts
-- `presentation/talk-brief.md`: condensed talk framing
-- `presentation/outline.md`: proposed 20 minute structure
-- `presentation/lessons-learned.md`: detailed technical lesson notes
+- `source-input.md`: raw user-provided input and project facts
+- `talk-brief.md`: condensed talk framing
+- `outline.md`: proposed 20 minute structure
+- `lessons-learned.md`: detailed technical lesson notes
+
+## Generated decks
+
+- `onnx-community-day-aot-onnx-to-c-v1.pptx`: original deck
+- `onnx-community-day-aot-onnx-to-c-v2.pptx`: 20 minute talk following `outline.md`
+- `onnx-community-day-aot-onnx-to-c-v3.pptx`: extended master deck (all themes)
+- `build-deck.js` / `build-deck-v3.js`: PptxGenJS scripts that regenerate v2 / v3
