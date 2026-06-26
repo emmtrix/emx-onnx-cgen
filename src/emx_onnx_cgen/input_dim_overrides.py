@@ -3,9 +3,12 @@
 ONNX models frequently declare inputs with dynamic dimensions, either as named
 symbolic parameters (``dim_param`` such as ``batch``) or as fully unknown axes.
 The code generator turns such dimensions into runtime parameters of the
-generated C function. Users sometimes want a fully static signature instead --
-for example to emit ``void model(const float in[4][3][4], ...)`` rather than
-``void model(int batch, const float in[batch][3][4], ...)``.
+generated C function, which makes the buffers C99 variable-length arrays.
+Users sometimes want a fully static signature instead -- for example to emit
+``void model(const float in[4][3][4], ...)`` rather than
+``void model(int batch, const float in[batch][3][4], ...)`` -- either for a
+simpler API or to avoid VLAs entirely on toolchains that do not support them
+well (MSVC has none, C11 makes them optional, MISRA C forbids them).
 
 This module recovers the list of dynamic input dimensions (for reporting) and
 applies user-provided overrides that fix them to concrete values, mutating the

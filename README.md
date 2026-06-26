@@ -221,8 +221,9 @@ These options are accepted by both `compile` and `verify`:
 - `--sequence-element-shape`: Declare rank and per-axis maxima for sequence inputs with variable element shapes.
 - `--input-dim`: Pin a dynamic input dimension to a fixed value so the generated code uses a static array extent instead of a runtime parameter. Repeatable. Use a dim-parameter name (`--input-dim batch=1`) to fix every axis carrying that name across the graph, or an input position (`--input-dim images:0=1`) to fix a single axis. The CLI prints the model's dynamic input dimensions as part of the model report; a fixed dimension is shown inline as `in0[0]=batch -> 4`.
 
-  Pinning happens immediately after the model is loaded and **before shape inference**, so the fixed value propagates through the rest of the graph. This has two consequences worth knowing:
+  Pinning happens immediately after the model is loaded and **before shape inference**, so the fixed value propagates through the rest of the graph. This has three consequences worth knowing:
 
+  - **Avoiding C99 VLAs:** by default a dynamic dimension is emitted as a runtime parameter and the buffers become C99 variable-length arrays (e.g. `const float in[batch][3][4]`). Some targets cannot use these — MSVC does not support VLAs at all, C11 makes them optional (`__STDC_NO_VLA__`), and safety-critical guidelines such as MISRA C forbid them because their stack usage is unbounded and not statically analyzable. Pinning the dimension with `--input-dim` turns the extent into a compile-time constant, so the generated code is plain fixed-size arrays portable to any C compiler.
   - **Resolving dynamic-shape problems:** if a model otherwise fails to generate static C because an input dimension is symbolic or unknown (`tensor 'X' has dynamic dimensions`), pinning that input makes it concrete and lets shape inference derive the dependent intermediate and output shapes. (This only helps for dimensions *derived from the input dimension*; shapes computed from runtime tensor *values*, e.g. `AffineGrid`'s `size`, are recovered separately and are unaffected by `--input-dim`.)
   - **Possible inconsistencies:** `--input-dim` only checks that the target is a dynamic input dimension; it does not validate that the chosen value is consistent with the rest of the graph. Contradictory or partial pinning can therefore make a model that previously stayed dynamic fail during shape inference or lowering — for example pinning two operands of an `Add` to incompatible extents (`--input-dim a:0=3 --input-dim b:0=5` → "Broadcasting mismatch"), or pinning only one of two axes that an operator requires to be equal. Such failures are reported as a normal error, not a crash. Named `dim_param`s are always pinned graph-wide, so `--input-dim batch=N` stays consistent by construction; the risk is mainly with the positional form on unnamed (`?`) axes.
 
@@ -299,7 +300,14 @@ lists what is dynamic:
   Dynamic input dimensions (1): in[0]=batch
 ```
 
-Dynamic input dimensions are the root cause of a whole family of failures,
+**Avoiding VLAs:** even when the dynamic build succeeds, the runtime-parameter
+form relies on C99 variable-length arrays. If your toolchain cannot use them —
+MSVC has no VLA support, C11 makes them optional (`__STDC_NO_VLA__`), and
+MISRA C / safety-critical guidelines forbid them due to unbounded stack usage —
+pin the dimensions with `--input-dim` (below) so the generated code uses plain
+fixed-size arrays instead.
+
+Dynamic input dimensions are also the root cause of a whole family of failures,
 because the code generator (and ONNX shape inference itself) often cannot
 resolve the rest of the graph while an input axis is still symbolic. These
 surface in several different ways, for example:
