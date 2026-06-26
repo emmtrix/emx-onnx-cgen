@@ -305,6 +305,48 @@ UPDATE_REFS=1 pytest -q --maxfail=10
   * `codegen: stable symbol naming`
   * `runtime: add Conv2D kernel (NHWC)`
 
+## Creating a Release
+
+Releases are published on GitHub and use `vMAJOR.MINOR.PATCH` tags (e.g. `v1.3.4`).
+Pushing the tag triggers the `release`, `linux-release`, and `windows-release`
+workflows, which build and attach the binary assets
+(`emx-onnx-cgen-linux-amd64.tar.gz`, `emx-onnx-cgen-windows-amd64.zip`).
+
+Steps:
+
+1. **Pick the version.** Bump from the latest tag (`git tag --sort=-creatordate | head -1`):
+   * PATCH for bug fixes / coverage improvements,
+   * MINOR for new user-facing features or a default-behavior change,
+   * MAJOR for breaking changes.
+2. **Determine the change range.** Fetch first, then list commits since the last tag:
+
+   ```bash
+   git fetch --tags origin
+   git log <last-tag>..origin/main --oneline --no-merges
+   ```
+
+   Release from `origin/main`, not a stale local `main`.
+3. **Write the notes** (English; see prior releases via `gh release view <tag>`):
+   * Lead with the single most important change as a `### 🎯 Highlight` section.
+   * Group the rest under `### ✨ New features`, `### 🐛 Correctness fixes`,
+     `### 🔧 Import & shape inference`, etc. Reference each PR as `(#NNN)`.
+   * Summarize impact (e.g. coverage numbers) rather than restating commit bodies.
+   * End with `**Full Changelog**: .../compare/<prev>...<new>`.
+4. **Tag and push** (use the resolved `origin/main` SHA so the tag is exact):
+
+   ```bash
+   git tag -a vX.Y.Z <origin/main-sha> -m "vX.Y.Z"
+   git push origin vX.Y.Z
+   ```
+5. **Create the release** from the existing tag (do not pass `--target`; the tag
+   already pins the commit):
+
+   ```bash
+   gh release create vX.Y.Z --title "vX.Y.Z" --notes-file <notes.md>
+   ```
+6. **Verify the asset builds** were triggered: `gh run list --limit 5` should show
+   the three release workflows in progress for the tag.
+
 ## Agent Instructions (for automated assistants)
 
 When acting as an agent in this repo:
