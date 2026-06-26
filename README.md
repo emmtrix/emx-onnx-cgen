@@ -219,6 +219,13 @@ These options are accepted by both `compile` and `verify`:
 - `--fp16-accumulation-strategy`: Accumulation strategy for float16 inputs (`simple` uses float16, `fp32` uses float; default: `fp32`).
 - `--replicate-ort-bugs`: Compatibility switch for verification/debugging. Enables emulation of known behavior differences of the ONNX Runtime version pinned in `requirements-ci.txt`.
 - `--sequence-element-shape`: Declare rank and per-axis maxima for sequence inputs with variable element shapes.
+- `--input-dim`: Pin a dynamic input dimension to a fixed value so the generated code uses a static array extent instead of a runtime parameter. Repeatable. Use a dim-parameter name (`--input-dim batch=1`) to fix every axis carrying that name across the graph, or an input position (`--input-dim images:0=1`) to fix a single axis. The CLI prints the model's dynamic input dimensions as part of the model report; a fixed dimension is shown inline as `in0[0]=batch -> 4`.
+
+  Pinning happens immediately after the model is loaded and **before shape inference**, so the fixed value propagates through the rest of the graph. This has three consequences worth knowing:
+
+  - **Avoiding C99 VLAs:** by default a dynamic dimension is emitted as a runtime parameter and the buffers become C99 variable-length arrays (e.g. `const float in[batch][3][4]`). Some targets cannot use these — MSVC does not support VLAs at all, C11 makes them optional (`__STDC_NO_VLA__`), and safety-critical guidelines such as MISRA C forbid them because their stack usage is unbounded and not statically analyzable. Pinning the dimension with `--input-dim` turns the extent into a compile-time constant, so the generated code is plain fixed-size arrays portable to any C compiler.
+  - **Resolving dynamic-shape problems:** if a model otherwise fails to generate static C because an input dimension is symbolic or unknown (`tensor 'X' has dynamic dimensions`), pinning that input makes it concrete and lets shape inference derive the dependent intermediate and output shapes. (This only helps for dimensions *derived from the input dimension*; shapes computed from runtime tensor *values*, e.g. `AffineGrid`'s `size`, are recovered separately and are unaffected by `--input-dim`.)
+  - **Possible inconsistencies:** `--input-dim` only checks that the target is a dynamic input dimension; it does not validate that the chosen value is consistent with the rest of the graph. Contradictory or partial pinning can therefore make a model that previously stayed dynamic fail during shape inference or lowering — for example pinning two operands of an `Add` to incompatible extents (`--input-dim a:0=3 --input-dim b:0=5` → "Broadcasting mismatch"), or pinning only one of two axes that an operator requires to be equal. Such failures are reported as a normal error, not a crash. Named `dim_param`s are always pinned graph-wide, so `--input-dim batch=N` stays consistent by construction; the risk is mainly with the positional form on unnamed (`?`) axes.
 
 ### `compile`
 
@@ -276,6 +283,79 @@ How verification works:
    Missing outputs or mismatches are treated as failures.
 5. **ORT unsupported models**: when using `onnxruntime`, if ORT reports
    `NOT_IMPLEMENTED`, verification is skipped with a warning (exit code 0).
+
+## Troubleshooting
+
+Common problems and how to resolve them.
+
+### Dynamic shapes and shape-inference failures
+
+A model whose inputs have dynamic dimensions (a symbolic `dim_param` such as
+`batch`, or a fully unknown axis) is compiled with those axes as C99
+variable-length-array runtime parameters by default, e.g.
+`void model(int batch, const float in[batch][3][4], ...)`. The model report
+lists what is dynamic:
+
+```
+  Dynamic input dimensions (1): in[0]=batch
+```
+
+**Avoiding VLAs:** even when the dynamic build succeeds, the runtime-parameter
+form relies on C99 variable-length arrays. If your toolchain cannot use them —
+MSVC has no VLA support, C11 makes them optional (`__STDC_NO_VLA__`), and
+MISRA C / safety-critical guidelines forbid them due to unbounded stack usage —
+pin the dimensions with `--input-dim` (below) so the generated code uses plain
+fixed-size arrays instead.
+
+Dynamic input dimensions are also the root cause of a whole family of failures,
+because the code generator (and ONNX shape inference itself) often cannot
+resolve the rest of the graph while an input axis is still symbolic. These
+surface in several different ways, for example:
+
+- `Code generation requires static shapes. Reason: tensor 'X' has dynamic
+  dimensions ...` — a dynamic dimension reaches a place that needs a concrete
+  size (a buffer, a reshape, ...).
+- `ONNX shape inference failed` — inference cannot make progress with the
+  unresolved input shapes.
+- Operator-specific lowering errors that mention `-1`/dynamic extents,
+  unresolved `Reshape`/`MatMul`/broadcast shapes, or a shape that "could not be
+  inferred".
+
+The general fix is to make the input shapes concrete *before* shape inference
+runs, by pinning the dynamic dimensions with [`--input-dim`](#common-options).
+Because pinning happens before inference, the fixed values propagate through the
+graph and usually let inference resolve everything downstream:
+
+```bash
+# Fix every axis named "batch" graph-wide:
+emx-onnx-cgen compile model.onnx --input-dim batch=1
+# Or fix a single axis positionally (use this for unnamed "?" axes):
+emx-onnx-cgen compile model.onnx --input-dim images:0=1
+```
+
+Caveats:
+
+- `--input-dim` only helps for dimensions *derived from* the pinned input
+  dimension. Shapes computed from runtime tensor *values* (e.g. `AffineGrid`'s
+  `size`) are recovered automatically and are not affected by `--input-dim`.
+- It is a sharp tool: `--input-dim` only checks that the target is a dynamic
+  input dimension, not that the chosen value agrees with the rest of the graph.
+  Contradictory or partial choices can therefore *introduce* shape-inference or
+  lowering failures (e.g. pinning two operands of an `Add` to incompatible
+  extents reports a "Broadcasting mismatch"). Named `dim_param`s are pinned
+  graph-wide and stay consistent by construction; the risk is mainly the
+  positional form on unnamed (`?`) axes.
+
+### "Code generation requires explicit ragged-sequence bounds"
+
+A sequence input with variable element shapes needs explicit per-axis maxima.
+Declare them with [`--sequence-element-shape`](#common-options), e.g.
+`--sequence-element-shape boxes=[<=100,4]`.
+
+### "No C compiler found" (verify)
+
+`verify` builds and runs a testbench, so it needs a C compiler. Provide one via
+`--cc`, the `CC` environment variable, or install a `cc`/`gcc`/`clang` on `PATH`.
 
 ## Official ONNX test coverage
 

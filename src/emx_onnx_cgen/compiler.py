@@ -217,7 +217,8 @@ class Compiler:
             raise UnsupportedOpError(
                 "Code generation requires static shapes. "
                 f"Reason: {missing_shape_reason}. "
-                "Hint: export the model with static shapes."
+                "Hint: pin dynamic input dimensions with --input-dim "
+                "(e.g. --input-dim batch=1) or export the model with static shapes."
             )
         variable_dim_inputs, variable_dim_outputs = self._time_step(
             "collect_variable_dims", lambda: self._collect_variable_dims(graph)
