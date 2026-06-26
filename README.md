@@ -219,7 +219,7 @@ These options are accepted by both `compile` and `verify`:
 - `--fp16-accumulation-strategy`: Accumulation strategy for float16 inputs (`simple` uses float16, `fp32` uses float; default: `fp32`).
 - `--replicate-ort-bugs`: Compatibility switch for verification/debugging. Enables emulation of known behavior differences of the ONNX Runtime version pinned in `requirements-ci.txt`.
 - `--sequence-element-shape`: Declare rank and per-axis maxima for sequence inputs with variable element shapes.
-- `--input-dim`: Pin a dynamic input dimension to a fixed value so the generated code uses a static array extent instead of a runtime parameter. Repeatable. Use a dim-parameter name (`--input-dim batch=1`) to fix every axis carrying that name across the graph, or an input position (`--input-dim images:0=1`) to fix a single axis. The CLI also prints the model's dynamic input dimensions (and any that were fixed) as part of the model report.
+- `--input-dim`: Pin a dynamic input dimension to a fixed value so the generated code uses a static array extent instead of a runtime parameter. Repeatable. Use a dim-parameter name (`--input-dim batch=1`) to fix every axis carrying that name across the graph, or an input position (`--input-dim images:0=1`) to fix a single axis. The CLI prints the model's dynamic input dimensions as part of the model report; a fixed dimension is shown inline as `in0[0]=batch -> 4`.
 
 ### `compile`
 

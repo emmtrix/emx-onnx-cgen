@@ -3164,17 +3164,25 @@ def _report_model_details(
         f"inputs={input_count}, "
         f"outputs={output_count}"
     )
+    fixed_by_position = {
+        (dim.input_name, dim.axis): dim.value for dim in fixed_input_dims
+    }
+
+    def format_dynamic_dim(dim: DynamicInputDim) -> str:
+        text = dim.format()
+        value = fixed_by_position.get((dim.input_name, dim.axis))
+        if value is not None:
+            text += f" -> {value}"
+        return text
+
     dynamic_display = (
-        ", ".join(dim.format() for dim in dynamic_input_dims)
+        ", ".join(format_dynamic_dim(dim) for dim in dynamic_input_dims)
         if dynamic_input_dims
         else "(none)"
     )
     reporter.info(
         f"  Dynamic input dimensions ({len(dynamic_input_dims)}): {dynamic_display}"
     )
-    if fixed_input_dims:
-        fixed_display = ", ".join(dim.format() for dim in fixed_input_dims)
-        reporter.info(f"  Fixed input dimensions (--input-dim): {fixed_display}")
 
 
 def _report_codegen_timings(

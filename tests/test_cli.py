@@ -626,7 +626,7 @@ def test_cli_compile_input_dim_pins_dynamic_dimension(
     )
     assert exit_code == 0
     captured = capsys.readouterr().out
-    assert "Fixed input dimensions (--input-dim): x[0]=4" in captured
+    assert "Dynamic input dimensions (1): x[0]=N -> 4" in captured
 
 
 def test_cli_compile_input_dim_accepts_positional_form(tmp_path: Path) -> None:
