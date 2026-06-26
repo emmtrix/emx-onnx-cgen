@@ -287,7 +287,7 @@ How verification works:
 
 Common problems and how to resolve them.
 
-### "Code generation requires static shapes" / dynamic input dimensions
+### Dynamic shapes and shape-inference failures
 
 A model whose inputs have dynamic dimensions (a symbolic `dim_param` such as
 `batch`, or a fully unknown axis) is compiled with those axes as C99
@@ -299,11 +299,24 @@ lists what is dynamic:
   Dynamic input dimensions (1): in[0]=batch
 ```
 
-If you need a fully static signature, or if code generation fails with
-`Code generation requires static shapes. Reason: tensor 'X' has dynamic
-dimensions ...` (this happens when a dynamic dimension reaches a place that
-needs a concrete size, e.g. a buffer or reshape), pin the dimension with
-[`--input-dim`](#common-options):
+Dynamic input dimensions are the root cause of a whole family of failures,
+because the code generator (and ONNX shape inference itself) often cannot
+resolve the rest of the graph while an input axis is still symbolic. These
+surface in several different ways, for example:
+
+- `Code generation requires static shapes. Reason: tensor 'X' has dynamic
+  dimensions ...` — a dynamic dimension reaches a place that needs a concrete
+  size (a buffer, a reshape, ...).
+- `ONNX shape inference failed` — inference cannot make progress with the
+  unresolved input shapes.
+- Operator-specific lowering errors that mention `-1`/dynamic extents,
+  unresolved `Reshape`/`MatMul`/broadcast shapes, or a shape that "could not be
+  inferred".
+
+The general fix is to make the input shapes concrete *before* shape inference
+runs, by pinning the dynamic dimensions with [`--input-dim`](#common-options).
+Because pinning happens before inference, the fixed values propagate through the
+graph and usually let inference resolve everything downstream:
 
 ```bash
 # Fix every axis named "batch" graph-wide:
@@ -312,16 +325,18 @@ emx-onnx-cgen compile model.onnx --input-dim batch=1
 emx-onnx-cgen compile model.onnx --input-dim images:0=1
 ```
 
-Pinning runs before shape inference, so the fixed value propagates to the
-dependent intermediate and output shapes. Note that `--input-dim` only helps
-for dimensions *derived from* the pinned input dimension; shapes computed from
-runtime tensor *values* are recovered automatically and are not affected.
+Caveats:
 
-Beware of inconsistent pinning: `--input-dim` does not check that the chosen
-value agrees with the rest of the graph, so contradictory or partial choices
-can make shape inference or lowering fail (e.g. pinning two operands of an
-`Add` to incompatible extents reports a "Broadcasting mismatch"). Named
-`dim_param`s are pinned graph-wide and stay consistent by construction.
+- `--input-dim` only helps for dimensions *derived from* the pinned input
+  dimension. Shapes computed from runtime tensor *values* (e.g. `AffineGrid`'s
+  `size`) are recovered automatically and are not affected by `--input-dim`.
+- It is a sharp tool: `--input-dim` only checks that the target is a dynamic
+  input dimension, not that the chosen value agrees with the rest of the graph.
+  Contradictory or partial choices can therefore *introduce* shape-inference or
+  lowering failures (e.g. pinning two operands of an `Add` to incompatible
+  extents reports a "Broadcasting mismatch"). Named `dim_param`s are pinned
+  graph-wide and stay consistent by construction; the risk is mainly the
+  positional form on unnamed (`?`) axes.
 
 ### "Code generation requires explicit ragged-sequence bounds"
 
