@@ -283,6 +283,57 @@ How verification works:
 5. **ORT unsupported models**: when using `onnxruntime`, if ORT reports
    `NOT_IMPLEMENTED`, verification is skipped with a warning (exit code 0).
 
+## Troubleshooting
+
+Common problems and how to resolve them.
+
+### "Code generation requires static shapes" / dynamic input dimensions
+
+A model whose inputs have dynamic dimensions (a symbolic `dim_param` such as
+`batch`, or a fully unknown axis) is compiled with those axes as C99
+variable-length-array runtime parameters by default, e.g.
+`void model(int batch, const float in[batch][3][4], ...)`. The model report
+lists what is dynamic:
+
+```
+  Dynamic input dimensions (1): in[0]=batch
+```
+
+If you need a fully static signature, or if code generation fails with
+`Code generation requires static shapes. Reason: tensor 'X' has dynamic
+dimensions ...` (this happens when a dynamic dimension reaches a place that
+needs a concrete size, e.g. a buffer or reshape), pin the dimension with
+[`--input-dim`](#common-options):
+
+```bash
+# Fix every axis named "batch" graph-wide:
+emx-onnx-cgen compile model.onnx --input-dim batch=1
+# Or fix a single axis positionally (use this for unnamed "?" axes):
+emx-onnx-cgen compile model.onnx --input-dim images:0=1
+```
+
+Pinning runs before shape inference, so the fixed value propagates to the
+dependent intermediate and output shapes. Note that `--input-dim` only helps
+for dimensions *derived from* the pinned input dimension; shapes computed from
+runtime tensor *values* are recovered automatically and are not affected.
+
+Beware of inconsistent pinning: `--input-dim` does not check that the chosen
+value agrees with the rest of the graph, so contradictory or partial choices
+can make shape inference or lowering fail (e.g. pinning two operands of an
+`Add` to incompatible extents reports a "Broadcasting mismatch"). Named
+`dim_param`s are pinned graph-wide and stay consistent by construction.
+
+### "Code generation requires explicit ragged-sequence bounds"
+
+A sequence input with variable element shapes needs explicit per-axis maxima.
+Declare them with [`--sequence-element-shape`](#common-options), e.g.
+`--sequence-element-shape boxes=[<=100,4]`.
+
+### "No C compiler found" (verify)
+
+`verify` builds and runs a testbench, so it needs a C compiler. Provide one via
+`--cc`, the `CC` environment variable, or install a `cc`/`gcc`/`clang` on `PATH`.
+
 ## Official ONNX test coverage
 
 `emx-onnx-cgen` tracks support using generated coverage reports checked into the repository and is listed on the official [ONNX Backend Scoreboard](https://onnx.ai/backend-scoreboard/).
