@@ -221,6 +221,11 @@ These options are accepted by both `compile` and `verify`:
 - `--sequence-element-shape`: Declare rank and per-axis maxima for sequence inputs with variable element shapes.
 - `--input-dim`: Pin a dynamic input dimension to a fixed value so the generated code uses a static array extent instead of a runtime parameter. Repeatable. Use a dim-parameter name (`--input-dim batch=1`) to fix every axis carrying that name across the graph, or an input position (`--input-dim images:0=1`) to fix a single axis. The CLI prints the model's dynamic input dimensions as part of the model report; a fixed dimension is shown inline as `in0[0]=batch -> 4`.
 
+  Pinning happens immediately after the model is loaded and **before shape inference**, so the fixed value propagates through the rest of the graph. This has two consequences worth knowing:
+
+  - **Resolving dynamic-shape problems:** if a model otherwise fails to generate static C because an input dimension is symbolic or unknown (`tensor 'X' has dynamic dimensions`), pinning that input makes it concrete and lets shape inference derive the dependent intermediate and output shapes. (This only helps for dimensions *derived from the input dimension*; shapes computed from runtime tensor *values*, e.g. `AffineGrid`'s `size`, are recovered separately and are unaffected by `--input-dim`.)
+  - **Possible inconsistencies:** `--input-dim` only checks that the target is a dynamic input dimension; it does not validate that the chosen value is consistent with the rest of the graph. Contradictory or partial pinning can therefore make a model that previously stayed dynamic fail during shape inference or lowering — for example pinning two operands of an `Add` to incompatible extents (`--input-dim a:0=3 --input-dim b:0=5` → "Broadcasting mismatch"), or pinning only one of two axes that an operator requires to be equal. Such failures are reported as a normal error, not a crash. Named `dim_param`s are always pinned graph-wide, so `--input-dim batch=N` stays consistent by construction; the risk is mainly with the positional form on unnamed (`?`) axes.
+
 ### `compile`
 
 ```bash

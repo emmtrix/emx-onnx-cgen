@@ -19,6 +19,21 @@ Override syntax (``--input-dim KEY=VALUE``):
 * ``<input>:<axis>=<int>`` -- fix a single axis positionally, e.g. ``images:0=1``.
   If that axis happens to carry a ``dim_param``, the parameter is pinned
   graph-wide as well.
+
+Ordering and consequences:
+
+* Pinning runs after the model is loaded but **before shape inference**, so the
+  fixed value propagates to dependent intermediate and output shapes. It can
+  therefore be used to resolve "tensor 'X' has dynamic dimensions" code
+  generation failures -- but only for dimensions *derived from* the pinned
+  input dimension, not for shapes computed from runtime tensor values.
+* :func:`apply_input_dim_overrides` only validates that an override targets a
+  dynamic input dimension; it does not check that the value is consistent with
+  the rest of the graph. Contradictory or partial pinning can make shape
+  inference or lowering fail later (e.g. pinning two ``Add`` operands to
+  incompatible extents). Named ``dim_param``\\ s are always pinned graph-wide and
+  stay consistent by construction; the risk is mainly the positional form on
+  unnamed axes.
 """
 
 from __future__ import annotations
