@@ -30,6 +30,14 @@ from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from .ir.model import SequenceType, TensorType
 from .onnx_import import import_onnx
 from .determinism import deterministic_reference_runtime
+from .input_dim_overrides import (
+    AppliedInputDim,
+    DynamicInputDim,
+    InputDimOverrides,
+    apply_input_dim_overrides,
+    collect_dynamic_input_dims,
+    parse_input_dim_overrides,
+)
 from .onnxruntime_utils import make_deterministic_session_options
 from .sequence_shape_hints import (
     SequenceElementShapeHint,
@@ -221,6 +229,14 @@ def _parse_testbench_output_format_arg(value: str) -> str:
 def _parse_sequence_element_shape_arg(value: str) -> str:
     try:
         parse_sequence_element_shape_hints([value])
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(str(exc)) from exc
+    return value
+
+
+def _parse_input_dim_arg(value: str) -> str:
+    try:
+        parse_input_dim_overrides([value])
     except ValueError as exc:
         raise argparse.ArgumentTypeError(str(exc)) from exc
     return value
@@ -947,6 +963,21 @@ def _build_parser() -> argparse.ArgumentParser:
             ),
         )
 
+    def add_input_dim_flag(subparser: argparse.ArgumentParser) -> None:
+        subparser.add_argument(
+            "--input-dim",
+            action="append",
+            default=[],
+            type=_parse_input_dim_arg,
+            help=(
+                "Pin a dynamic input dimension to a fixed value so the generated "
+                "code uses a static shape instead of a runtime parameter. Repeatable. "
+                "Use a dim parameter name (--input-dim batch=1) to fix every axis "
+                "carrying that name, or an input position (--input-dim images:0=1) "
+                "to fix a single axis."
+            ),
+        )
+
     compile_parser = subparsers.add_parser(
         "compile", help="Compile an ONNX model into C source"
     )
@@ -1044,6 +1075,7 @@ def _build_parser() -> argparse.ArgumentParser:
     add_fp16_accumulation_strategy_flag(compile_parser)
     add_runtime_compat_flag(compile_parser)
     add_sequence_shape_hint_flag(compile_parser)
+    add_input_dim_flag(compile_parser)
 
     verify_parser = subparsers.add_parser(
         "verify",
@@ -1192,6 +1224,7 @@ def _build_parser() -> argparse.ArgumentParser:
     add_fp16_accumulation_strategy_flag(verify_parser)
     add_runtime_compat_flag(verify_parser)
     add_sequence_shape_hint_flag(verify_parser)
+    add_input_dim_flag(verify_parser)
     return parser
 
 
@@ -1294,6 +1327,11 @@ def _compile_model(
         return None, None, None, None, str(exc)
     operators = _collect_model_operators(model)
     opset_version = _model_opset_version(model)
+    dynamic_input_dims = collect_dynamic_input_dims(model)
+    try:
+        fixed_input_dims = apply_input_dim_overrides(model, _input_dim_overrides(args))
+    except ValueError as exc:
+        return None, None, None, None, str(exc)
     _report_model_details(
         active_reporter,
         model_path=model_path,
@@ -1304,6 +1342,8 @@ def _compile_model(
         initializer_count=len(model.graph.initializer),
         input_count=len(model.graph.input),
         output_count=len(model.graph.output),
+        dynamic_input_dims=dynamic_input_dims,
+        fixed_input_dims=fixed_input_dims,
     )
     active_reporter.info("")
     codegen_started = active_reporter.start_step("Generating C code")
@@ -1383,6 +1423,10 @@ def _compile_testbench_declarations(
     try:
         model, _model_checksum = _load_model_and_checksum(model_path)
     except OSError as exc:
+        raise CodegenError(str(exc)) from exc
+    try:
+        apply_input_dim_overrides(model, _input_dim_overrides(args))
+    except ValueError as exc:
         raise CodegenError(str(exc)) from exc
     options = CompilerOptions(
         model_name=model_name,
@@ -1779,6 +1823,11 @@ def _verify_model(
 
     operators = _collect_model_operators(model)
     opset_version = _model_opset_version(model)
+    dynamic_input_dims = collect_dynamic_input_dims(model)
+    try:
+        fixed_input_dims = apply_input_dim_overrides(model, _input_dim_overrides(args))
+    except ValueError as exc:
+        return None, str(exc), operators, opset_version, None
     _report_model_details(
         active_reporter,
         model_path=model_path,
@@ -1789,6 +1838,8 @@ def _verify_model(
         initializer_count=len(model.graph.initializer),
         input_count=len(model.graph.input),
         output_count=len(model.graph.output),
+        dynamic_input_dims=dynamic_input_dims,
+        fixed_input_dims=fixed_input_dims,
     )
 
     try:
@@ -3039,6 +3090,10 @@ def _sequence_element_shape_map(
     return parse_sequence_element_shape_hints(args.sequence_element_shape)
 
 
+def _input_dim_overrides(args: argparse.Namespace) -> InputDimOverrides:
+    return parse_input_dim_overrides(getattr(args, "input_dim", []))
+
+
 def _model_sequence_input_requires_shape_hint(
     model: onnx.ModelProto, input_name: str
 ) -> bool:
@@ -3091,6 +3146,8 @@ def _report_model_details(
     initializer_count: int,
     input_count: int,
     output_count: int,
+    dynamic_input_dims: Sequence[DynamicInputDim] = (),
+    fixed_input_dims: Sequence[AppliedInputDim] = (),
 ) -> None:
     operators_display = ", ".join(operators) if operators else "(none)"
     reporter.info(f"  Model operators ({len(operators)}): {operators_display}")
@@ -3107,6 +3164,17 @@ def _report_model_details(
         f"inputs={input_count}, "
         f"outputs={output_count}"
     )
+    dynamic_display = (
+        ", ".join(dim.format() for dim in dynamic_input_dims)
+        if dynamic_input_dims
+        else "(none)"
+    )
+    reporter.info(
+        f"  Dynamic input dimensions ({len(dynamic_input_dims)}): {dynamic_display}"
+    )
+    if fixed_input_dims:
+        fixed_display = ", ".join(dim.format() for dim in fixed_input_dims)
+        reporter.info(f"  Fixed input dimensions (--input-dim): {fixed_display}")
 
 
 def _report_codegen_timings(

@@ -587,6 +587,78 @@ def test_cli_compile_accepts_io_bound_dynamic_intermediates(
     assert "int N" in generated
 
 
+def test_cli_compile_reports_dynamic_input_dimensions(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    model = _make_dynamic_identity_chain_model()
+    model_path = tmp_path / "model.onnx"
+    output_path = tmp_path / "model.c"
+    onnx.save_model(model, model_path)
+
+    exit_code = cli.main(["compile", str(model_path), str(output_path)])
+
+    assert exit_code == 0
+    captured = capsys.readouterr().out
+    assert "Dynamic input dimensions (1): x[0]=N" in captured
+
+
+def test_cli_compile_input_dim_pins_dynamic_dimension(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    model = _make_dynamic_identity_chain_model()
+    model_path = tmp_path / "model.onnx"
+    output_path = tmp_path / "model.c"
+    onnx.save_model(model, model_path)
+
+    result = cli.run_cli_command(
+        ["compile", str(model_path), str(output_path), "--input-dim", "N=4"]
+    )
+
+    assert result.exit_code == 0
+    assert result.generated is not None
+    generated = result.generated
+    # The dynamic dimension becomes a static array extent, not a runtime arg.
+    assert "int N" not in generated
+    assert "[4]" in generated
+
+    exit_code = cli.main(
+        ["compile", str(model_path), str(output_path), "--input-dim", "N=4"]
+    )
+    assert exit_code == 0
+    captured = capsys.readouterr().out
+    assert "Fixed input dimensions (--input-dim): x[0]=4" in captured
+
+
+def test_cli_compile_input_dim_accepts_positional_form(tmp_path: Path) -> None:
+    model = _make_dynamic_identity_chain_model()
+    model_path = tmp_path / "model.onnx"
+    output_path = tmp_path / "model.c"
+    onnx.save_model(model, model_path)
+
+    result = cli.run_cli_command(
+        ["compile", str(model_path), str(output_path), "--input-dim", "x:0=4"]
+    )
+
+    assert result.exit_code == 0
+    assert result.generated is not None
+    assert "int N" not in result.generated
+
+
+def test_cli_compile_input_dim_rejects_unknown_parameter(tmp_path: Path) -> None:
+    model = _make_dynamic_identity_chain_model()
+    model_path = tmp_path / "model.onnx"
+    output_path = tmp_path / "model.c"
+    onnx.save_model(model, model_path)
+
+    result = cli.run_cli_command(
+        ["compile", str(model_path), str(output_path), "--input-dim", "missing=4"]
+    )
+
+    assert result.exit_code == 1
+    assert result.result is not None
+    assert "no dynamic input dimension uses the parameter 'missing'" in result.result
+
+
 def test_augment_model_with_tensor_node_outputs_skips_non_top_level_outputs() -> None:
     output = helper.make_tensor_value_info("y", TensorProto.FLOAT, [1])
     identity = helper.make_node("Identity", inputs=["x"], outputs=["y"])
