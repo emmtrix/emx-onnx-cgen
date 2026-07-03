@@ -240,6 +240,22 @@ Options:
 - `--testbench-output-format`: Choose the generated testbench output format (`json`, `txt`, `txt-emmtrix`, or `txt-emmtrix:<float>`).
 - `--testbench-file`: Emit the testbench into a separate C file at the given path (implies `--emit-testbench`). If not set, the testbench is embedded in the main output C file (legacy behavior).
 - `--emit-data-file`: Emit constant data arrays into a companion `_data` C file.
+- `--shape-inference-json`: Write a JSON report of the shape inference results to the given path. For every named tensor of the model — inputs, outputs, and internal node outputs — the report contains the shape declared in the model file (`model`, with `dim_param` names and `null` for unknown dims) and the shape computed by the compiler (`inferred`). Weight initializers and compiler-internal temporary names are excluded, so the file is stable across runs and can be used as a shape reference. Shapes reflect the model after `--input-dim` pinning.
+
+  ```json
+  {
+    "format": "emx-onnx-cgen-shape-inference",
+    "version": 1,
+    "tensors": {
+      "x":   { "kind": "input",    "model": { "dtype": "float", "dims": [1, 4] },
+                                   "inferred": { "dtype": "float", "dims": [1, 4] } },
+      "mid": { "kind": "internal", "model": null,
+                                   "inferred": { "dtype": "float", "dims": [1, 3] } },
+      "y":   { "kind": "output",   "model": { "dtype": "float" },
+                                   "inferred": { "dtype": "float", "dims": [1, 3] } }
+    }
+  }
+  ```
 
 ### `verify`
 
