@@ -1,0 +1,348 @@
+{
+  "format": "emx-onnx-cgen-shape-inference",
+  "version": 1,
+  "tensors": {
+    "input": {
+      "kind": "input",
+      "model": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          3,
+          32,
+          32
+        ]
+      },
+      "inferred": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          3,
+          32,
+          32
+        ]
+      }
+    },
+    "slice_out": {
+      "kind": "internal",
+      "model": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          3,
+          32,
+          16
+        ]
+      },
+      "inferred": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          3,
+          32,
+          16
+        ]
+      }
+    },
+    "c1_out": {
+      "kind": "internal",
+      "model": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          16,
+          30,
+          14
+        ]
+      },
+      "inferred": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          16,
+          30,
+          14
+        ]
+      }
+    },
+    "p1_out": {
+      "kind": "internal",
+      "model": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          16,
+          30,
+          14
+        ]
+      },
+      "inferred": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          16,
+          30,
+          14
+        ]
+      }
+    },
+    "c2_out": {
+      "kind": "internal",
+      "model": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          32,
+          28,
+          12
+        ]
+      },
+      "inferred": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          32,
+          28,
+          12
+        ]
+      }
+    },
+    "p2_out": {
+      "kind": "internal",
+      "model": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          32,
+          28,
+          12
+        ]
+      },
+      "inferred": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          32,
+          28,
+          12
+        ]
+      }
+    },
+    "c3_out": {
+      "kind": "internal",
+      "model": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          64,
+          26,
+          10
+        ]
+      },
+      "inferred": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          64,
+          26,
+          10
+        ]
+      }
+    },
+    "p3_out": {
+      "kind": "internal",
+      "model": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          64,
+          26,
+          10
+        ]
+      },
+      "inferred": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          64,
+          26,
+          10
+        ]
+      }
+    },
+    "gap_out": {
+      "kind": "internal",
+      "model": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          64,
+          1,
+          1
+        ]
+      },
+      "inferred": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          64,
+          1,
+          1
+        ]
+      }
+    },
+    "sq_out": {
+      "kind": "internal",
+      "model": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          64
+        ]
+      },
+      "inferred": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          64
+        ]
+      }
+    },
+    "tr_out": {
+      "kind": "internal",
+      "model": {
+        "dtype": "float",
+        "dims": [
+          64,
+          "batch"
+        ]
+      },
+      "inferred": {
+        "dtype": "float",
+        "dims": [
+          64,
+          "batch"
+        ]
+      }
+    },
+    "ma_out": {
+      "kind": "internal",
+      "model": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          32
+        ]
+      },
+      "inferred": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          32
+        ]
+      }
+    },
+    "mul_out": {
+      "kind": "internal",
+      "model": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          32
+        ]
+      },
+      "inferred": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          32
+        ]
+      }
+    },
+    "sma_out": {
+      "kind": "internal",
+      "model": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          32
+        ]
+      },
+      "inferred": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          32
+        ]
+      }
+    },
+    "mb_out": {
+      "kind": "internal",
+      "model": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          32
+        ]
+      },
+      "inferred": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          32
+        ]
+      }
+    },
+    "smb_out": {
+      "kind": "internal",
+      "model": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          32
+        ]
+      },
+      "inferred": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          32
+        ]
+      }
+    },
+    "cat_out": {
+      "kind": "internal",
+      "model": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          64
+        ]
+      },
+      "inferred": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          64
+        ]
+      }
+    },
+    "gemm_out": {
+      "kind": "output",
+      "model": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          10
+        ]
+      },
+      "inferred": {
+        "dtype": "float",
+        "dims": [
+          "batch",
+          10
+        ]
+      }
+    }
+  }
+}
