@@ -14,12 +14,15 @@ from onnx import ModelProto
 from onnx.backend.base import Backend, BackendRep
 
 from emx_onnx_cgen.cli import (
-    _decode_image_decoder_inputs,
     _resolve_compiler,
     _serialize_string_tensor,
     _tensor_runtime_dim_values,
 )
 from emx_onnx_cgen.compiler import Compiler, CompilerOptions
+from emx_onnx_cgen.codegen.image_decoder_libs import (
+    DEFAULT_IMAGE_DECODER_LIBS,
+    prepare_image_decoder_build,
+)
 from emx_onnx_cgen.ir.model import SequenceType, TensorType, Value
 from emx_onnx_cgen.onnx_import import import_onnx
 from emx_onnx_cgen.sequence_shape_hints import (
@@ -79,8 +82,20 @@ def _compile_model(
     c_path = temp_dir_path / "model.c"
     exe_path = temp_dir_path / f"model{_resolve_executable_suffix()}"
     c_path.write_text(generated, encoding="utf-8")
+    image_decoder_cflags, image_decoder_link_flags = prepare_image_decoder_build(
+        model, DEFAULT_IMAGE_DECODER_LIBS, temp_dir_path
+    )
 
-    command = [*compiler, "-O2", str(c_path), "-o", str(exe_path), "-lm"]
+    command = [
+        *compiler,
+        "-O2",
+        *image_decoder_cflags,
+        str(c_path),
+        "-o",
+        str(exe_path),
+        "-lm",
+        *image_decoder_link_flags,
+    ]
     result = subprocess.run(
         command,
         capture_output=True,
@@ -163,7 +178,6 @@ def _normalize_runtime_inputs(
     named_inputs = {
         name: value for name, value in zip(input_names, inputs, strict=True)
     }
-    _decode_image_decoder_inputs(model, named_inputs)
     return tuple(named_inputs[name] for name in input_names)
 
 

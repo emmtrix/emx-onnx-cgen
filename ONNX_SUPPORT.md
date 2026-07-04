@@ -848,14 +848,14 @@ Coverage 1914 / 1914 ONNX files (100.0%).
 | node/test_if_opt/model.onnx | 16 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_if_seq/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_image_decoder_decode_bmp_rgb/model.onnx | 20 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_image_decoder_decode_jpeg2k_rgb/model.onnx | 20 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_image_decoder_decode_jpeg_bgr/model.onnx | 20 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_image_decoder_decode_jpeg_grayscale/model.onnx | 20 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_image_decoder_decode_jpeg_rgb/model.onnx | 20 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_image_decoder_decode_jpeg2k_rgb/model.onnx (--image-decoder-libs openjpeg) | 20 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_image_decoder_decode_jpeg_bgr/model.onnx (--image-decoder-libs libjpeg-turbo) | 20 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_image_decoder_decode_jpeg_grayscale/model.onnx (--image-decoder-libs libjpeg-turbo) | 20 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_image_decoder_decode_jpeg_rgb/model.onnx (--image-decoder-libs libjpeg-turbo) | 20 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_image_decoder_decode_png_rgb/model.onnx | 20 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_image_decoder_decode_pnm_rgb/model.onnx | 20 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_image_decoder_decode_tiff_rgb/model.onnx | 20 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_image_decoder_decode_webp_rgb/model.onnx | 20 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_image_decoder_decode_tiff_rgb/model.onnx (--image-decoder-libs libtiff) | 20 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_image_decoder_decode_webp_rgb/model.onnx (--image-decoder-libs libwebp) | 20 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_instancenorm_epsilon/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 2) |
 | node/test_instancenorm_example/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_isinf/model.onnx | 20 | Data/Data | ✅ | OK (max abs diff 0) |

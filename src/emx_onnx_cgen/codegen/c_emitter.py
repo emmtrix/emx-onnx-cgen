@@ -19,6 +19,13 @@ import numpy as np
 from onnx import GraphProto
 
 from ..errors import CodegenError, CompilerError
+from .image_decoder_libs import (
+    DEFAULT_IMAGE_DECODER_LIBS,
+    IMAGE_DECODER_LIBRARIES,
+    STB_FORMAT_DEFINES,
+    image_decoder_function_name,
+    resolve_image_decoder_plan,
+)
 from ..testbench_output_format import parse_testbench_output_format
 from ..sequence_shape_hints import SequenceElementShapeHint
 from ..ir.op_base import (
@@ -30,6 +37,7 @@ from ..ir.op_context import OpContext
 from ..ir.model import SequenceType, TensorType, ValueType
 from ..ir.ops import (
     ArgReduceOp,
+    ImageDecoderOp,
     AttentionOp,
     GroupQueryAttentionOp,
     AveragePoolOp,
@@ -368,6 +376,7 @@ class CEmitter:
         large_weight_threshold: int = 1024,
         replicate_ort_bugs: bool = False,
         sequence_element_shapes: Mapping[str, SequenceElementShapeHint] | None = None,
+        image_decoder_libs: tuple[str, ...] = DEFAULT_IMAGE_DECODER_LIBS,
     ) -> None:
         loader = (
             FileSystemLoader(str(template_dir))
@@ -398,6 +407,7 @@ class CEmitter:
         self._large_weight_threshold = large_weight_threshold
         self._replicate_ort_bugs = replicate_ort_bugs
         self._sequence_element_shapes = dict(sequence_element_shapes or {})
+        self._image_decoder_libs = tuple(image_decoder_libs)
         self._emit_state: _EmitState | None = None
 
     def _setup_template_resolvers(
@@ -1249,6 +1259,7 @@ class CEmitter:
                 "hamming_window": self._env.get_template("hamming_window_op.c.j2"),
                 "hann_window": self._env.get_template("hann_window_op.c.j2"),
                 "image_scaler": self._env.get_template("image_scaler_op.c.j2"),
+                "image_decoder": self._env.get_template("image_decoder_op.c.j2"),
                 "fast_gelu": self._env.get_template("fast_gelu_op.c.j2"),
                 "bias_gelu": self._env.get_template("bias_gelu_op.c.j2"),
                 "qlinear_unary": self._env.get_template("qlinear_unary_op.c.j2"),
@@ -1426,6 +1437,7 @@ class CEmitter:
         scalar_preamble = [
             line for line in scalar_include_lines if not line.startswith("#include ")
         ]
+        image_decoder_support = self._emit_image_decoder_support(resolved_ops)
         fft_kernel_functions = fft_kernel_registry.render()
         fft_kernel_include_lines = (
             fft_kernel_registry.include_lines() if fft_kernel_functions else []
@@ -1498,6 +1510,8 @@ class CEmitter:
             sections.extend(("\n".join(scalar_functions), ""))
         if fft_kernel_functions:
             sections.extend(("\n".join(fft_kernel_functions), ""))
+        if image_decoder_support:
+            sections.extend((image_decoder_support.rstrip(), ""))
         weight_loader = self._emit_weight_loader(model, large_constants)
         sections.extend(
             (
@@ -1649,6 +1663,7 @@ class CEmitter:
         scalar_preamble = [
             line for line in scalar_include_lines if not line.startswith("#include ")
         ]
+        image_decoder_support = self._emit_image_decoder_support(resolved_ops)
         fft_kernel_functions = fft_kernel_registry.render()
         fft_kernel_include_lines = (
             fft_kernel_registry.include_lines() if fft_kernel_functions else []
@@ -1716,6 +1731,8 @@ class CEmitter:
             sections.extend(("\n".join(scalar_functions), ""))
         if fft_kernel_functions:
             sections.extend(("\n".join(fft_kernel_functions), ""))
+        if image_decoder_support:
+            sections.extend((image_decoder_support.rstrip(), ""))
         weight_loader = self._emit_weight_loader(model, large_constants)
         sections.extend(
             (
@@ -2093,6 +2110,37 @@ class CEmitter:
                 f"Failed to resolve scalar function for RNN activation kind {kind}"
             )
         return name
+
+    def _emit_image_decoder_support(self, resolved_ops: list[OpBase]) -> str | None:
+        """Render the shared decode helpers once per model when needed.
+
+        Decoder library headers are included inside this section (mid-file
+        includes are valid C) so the include whitelist in
+        ``_collect_includes`` stays limited to the C standard library.
+        """
+        if not any(isinstance(op, ImageDecoderOp) for op in resolved_ops):
+            return None
+        plan = resolve_image_decoder_plan(self._image_decoder_libs)
+        format_libraries = dict(plan.format_to_library)
+        format_functions = {
+            image_format: image_decoder_function_name(library)
+            for image_format, library in plan.format_to_library
+        }
+        used_names = {library.name for library in plan.used_libraries}
+        stb_only_defines = sorted(
+            STB_FORMAT_DEFINES[image_format]
+            for image_format, library in plan.format_to_library
+            if library == "stb"
+        )
+        context: dict[str, object] = {
+            "format_functions": format_functions,
+            "format_libraries": format_libraries,
+            "stb_only_defines": stb_only_defines,
+        }
+        for name in IMAGE_DECODER_LIBRARIES:
+            context[f"use_{name.replace('-', '_')}"] = name in used_names
+        template = self._env.get_template("image_decoder_support.c.j2")
+        return template.render(**context)
 
     @staticmethod
     def _collect_includes(

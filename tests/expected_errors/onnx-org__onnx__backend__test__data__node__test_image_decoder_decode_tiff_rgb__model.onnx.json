@@ -1,10 +1,14 @@
 {
   "error": "OK (max abs diff 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_tiff_rgb model.onnx --test-data-dir test_data_set_0",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_tiff_rgb model.onnx --test-data-dir test_data_set_0 --image-decoder-libs libtiff",
+  "extra_cli_args": [
+    "--image-decoder-libs",
+    "libtiff"
+  ],
   "verification_mode": "Data/Data",
   "operators": [
     "ImageDecoder"
   ],
   "opset_version": 20,
-  "generated_checksum": "8587a27102d05b3fa1d625d3b54894e414c58c601c1a98368a08b5e16dfe7dc3"
+  "generated_checksum": "9d477122525372007eada044cebf8888da7aba5625052eaf9a144fecccb9a7f0"
 }

@@ -1,3 +1,4 @@
 include packaging_backend.py
 include LICENSE
 recursive-include src/emx_onnx_cgen/templates *.j2
+recursive-include src/emx_onnx_cgen/third_party *.h

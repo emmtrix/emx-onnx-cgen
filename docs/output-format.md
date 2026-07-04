@@ -620,6 +620,42 @@ Weighting modes include raw counts, binary indicators, and TF-IDF weights.
 values are compared against each key entry sequentially, and the corresponding
 value (or a default) is returned.
 
+### Image Decoding (ImageDecoder)
+
+`ImageDecoder` decodes an encoded image byte stream (JPEG, PNG, BMP, TIFF,
+WebP, JPEG 2000, PNM) into an `uint8[H, W, C]` pixel tensor. Because the
+image format is a runtime property of the input bytes — not a compile-time
+property of the model — the generated kernel detects the format at runtime
+via magic bytes and dispatches to a decoder library compiled into `model.c`.
+
+Which library backs each format is selected with `--image-decoder-libs`, a
+comma-separated priority list (first library supporting a format wins;
+default: `stb`):
+
+| Library | Formats | Build requirements |
+| --- | --- | --- |
+| `stb` | bmp, jpeg, png, pnm | none — bundled `stb_image.h` is emitted next to the generated C file |
+| `libjpeg-turbo` | jpeg | `libjpeg-turbo8-dev`, links `-ljpeg` |
+| `libwebp` | webp | `libwebp-dev`, links `-lwebp` |
+| `libtiff` | tiff | `libtiff-dev`, links `-ltiff` |
+| `openjpeg` | jpeg2000 | `libopenjp2-7-dev`, links `-lopenjp2` (include path via pkg-config) |
+
+`verify` applies the required compiler/linker flags automatically; `compile`
+emits the support header and reports the flags. `stb` needs no system
+libraries but its JPEG decoder is not bit-exact with libjpeg — the ONNX
+reference outputs are produced with Pillow (which wraps libjpeg-turbo,
+libwebp, libtiff, and OpenJPEG), so bit-exact verification of
+JPEG/WebP/TIFF/JPEG 2000 models requires selecting the matching library
+(e.g. `--image-decoder-libs libjpeg-turbo,stb`).
+
+All decoders produce row-major RGB8; `pixel_format` conversion happens in the
+node kernel: `BGR` swaps channels, `Grayscale` applies the ITU-R BT.601 luma
+formula `(19595·R + 38470·G + 7471·B + 32768) >> 16`, matching Pillow's
+`convert("L")` bit-exactly. The decoded output shape must be declared
+statically in the model (`H`, `W`, `C`). Undecodable inputs — unknown format,
+no decoder configured for the detected format, or decoded dimensions that do
+not match the declared output shape — zero-fill the output deterministically.
+
 ### Control Flow (Loop, Scan)
 
 Loop and Scan operators are lowered via pattern matching on the subgraph
