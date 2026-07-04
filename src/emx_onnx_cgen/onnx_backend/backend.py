@@ -20,7 +20,8 @@ from emx_onnx_cgen.cli import (
 )
 from emx_onnx_cgen.compiler import Compiler, CompilerOptions
 from emx_onnx_cgen.codegen.image_decoder_libs import (
-    DEFAULT_IMAGE_DECODER_LIBS,
+    ONNX_REFERENCE_IMAGE_DECODER_LIBS,
+    parse_image_decoder_libs,
     prepare_image_decoder_build,
 )
 from emx_onnx_cgen.ir.model import SequenceType, TensorType, Value
@@ -63,6 +64,18 @@ def _decode_value(value: object, *, dtype: np.dtype) -> object:
     return value
 
 
+_IMAGE_DECODER_LIBS_ENV = "EMX_IMAGE_DECODER_LIBS"
+
+
+def _image_decoder_libs() -> tuple[str, ...]:
+    raw = os.environ.get(_IMAGE_DECODER_LIBS_ENV, "").strip()
+    if raw:
+        return parse_image_decoder_libs(raw)
+    # The backend compares against the ONNX-provided reference outputs, which
+    # are produced with Pillow; default to the bit-exact library selection.
+    return ONNX_REFERENCE_IMAGE_DECODER_LIBS
+
+
 def _compile_model(
     model: ModelProto,
     *,
@@ -71,10 +84,12 @@ def _compile_model(
     compiler = _resolve_compiler(None, prefer_ccache=False)
     if compiler is None:
         raise RuntimeError("No C compiler found (set CC environment variable).")
+    image_decoder_libs = _image_decoder_libs()
     options = CompilerOptions(
         emit_testbench=True,
         testbench_output_format="json",
         sequence_element_shapes=sequence_element_shapes,
+        image_decoder_libs=image_decoder_libs,
     )
     generated = Compiler(options).compile(model)
     temp_dir = tempfile.TemporaryDirectory(prefix="emx_onnx_backend_")
@@ -83,7 +98,7 @@ def _compile_model(
     exe_path = temp_dir_path / f"model{_resolve_executable_suffix()}"
     c_path.write_text(generated, encoding="utf-8")
     image_decoder_cflags, image_decoder_link_flags = prepare_image_decoder_build(
-        model, DEFAULT_IMAGE_DECODER_LIBS, temp_dir_path
+        model, image_decoder_libs, temp_dir_path
     )
 
     command = [
