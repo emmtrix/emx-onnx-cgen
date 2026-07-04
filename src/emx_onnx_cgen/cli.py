@@ -854,21 +854,19 @@ def run_cli_command(
                 generated_checksum=generated_checksum,
                 verification_mode=verification_mode,
             )
-        generated, _testbench, data_source, _weight_data, _support_files, error = (
-            _compile_model(args)
-        )
-        if error:
+        compile_result = _compile_model(args)
+        if compile_result.error:
             return CliResult(
                 exit_code=1,
                 command_line=args.command_line,
-                result=error,
+                result=compile_result.error,
             )
         return CliResult(
             exit_code=0,
             command_line=args.command_line,
             result="",
-            generated=generated,
-            data_source=data_source,
+            generated=compile_result.generated,
+            data_source=compile_result.data_source,
         )
     except Exception as exc:  # pragma: no cover - defensive reporting
         LOGGER.exception("Unhandled exception while running CLI command.")
@@ -1057,6 +1055,18 @@ def _build_parser() -> argparse.ArgumentParser:
         help=(
             "If set, emit the testbench into a separate C file at this path "
             "(implies --emit-testbench)."
+        ),
+    )
+    compile_parser.add_argument(
+        "--shape-inference-json",
+        type=Path,
+        default=None,
+        help=(
+            "Write a JSON report of the shape inference results to this path. "
+            "The report lists the model-declared and the inferred shape for "
+            "every named tensor of the model (inputs, outputs, and internal "
+            "node outputs); compiler-internal temporary names are excluded. "
+            "Shapes reflect the model after --input-dim pinning."
         ),
     )
     compile_parser.add_argument(
@@ -1309,13 +1319,15 @@ def _handle_compile(args: argparse.Namespace) -> int:
     model_name = args.model_name or "model"
     if args.testbench_file:
         args.emit_testbench = True
-    generated, testbench, data_source, weight_data, support_files, error = (
-        _compile_model(args, reporter=reporter)
-    )
-    if error:
+    compile_result = _compile_model(args, reporter=reporter)
+    if compile_result.error:
         reporter.info("")
-        reporter.result(error, ok=False)
+        reporter.result(compile_result.error, ok=False)
         return 1
+    generated = compile_result.generated
+    testbench = compile_result.testbench
+    data_source = compile_result.data_source
+    weight_data = compile_result.weight_data
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(generated or "", encoding="utf-8")
@@ -1340,19 +1352,34 @@ def _handle_compile(args: argparse.Namespace) -> int:
     if weight_data is not None:
         weights_path = output_path.with_name(f"{model_name}.bin")
         weights_path.write_bytes(weight_data)
-    if support_files:
-        for header, text in sorted(support_files.items()):
+    if compile_result.support_files:
+        for header, text in sorted(compile_result.support_files.items()):
             output_path.with_name(header).write_text(text, encoding="utf-8")
+    if compile_result.shape_inference_json is not None:
+        shape_json_path: Path = args.shape_inference_json
+        shape_json_path.parent.mkdir(parents=True, exist_ok=True)
+        shape_json_path.write_text(
+            compile_result.shape_inference_json, encoding="utf-8"
+        )
     return 0
+
+
+@dataclass(frozen=True)
+class _CompileModelResult:
+    generated: str | None = None
+    testbench: str | None = None
+    data_source: str | None = None
+    weight_data: bytes | None = None
+    support_files: dict[str, str] | None = None
+    shape_inference_json: str | None = None
+    error: str | None = None
 
 
 def _compile_model(
     args: argparse.Namespace,
     *,
     reporter: _VerifyReporter | None = None,
-) -> tuple[
-    str | None, str | None, str | None, bytes | None, dict[str, str] | None, str | None
-]:
+) -> _CompileModelResult:
     model_path: Path = args.model
     model_name = args.model_name or "model"
     active_reporter = reporter or _NullVerifyReporter()
@@ -1364,14 +1391,14 @@ def _compile_model(
         active_reporter.step_ok(load_started)
     except OSError as exc:
         active_reporter.step_fail(str(exc))
-        return None, None, None, None, None, str(exc)
+        return _CompileModelResult(error=str(exc))
     operators = _collect_model_operators(model)
     opset_version = _model_opset_version(model)
     dynamic_input_dims = collect_dynamic_input_dims(model)
     try:
         fixed_input_dims = apply_input_dim_overrides(model, _input_dim_overrides(args))
     except ValueError as exc:
-        return None, None, None, None, None, str(exc)
+        return _CompileModelResult(error=str(exc))
     _report_model_details(
         active_reporter,
         model_path=model_path,
@@ -1417,12 +1444,16 @@ def _compile_model(
         testbench = None
         if separate_testbench:
             testbench = compiler.compile_testbench(model)
+        shape_inference_json = None
+        if getattr(args, "shape_inference_json", None) is not None:
+            report = compiler.shape_inference_report(model)
+            shape_inference_json = json.dumps(report, indent=2) + "\n"
         active_reporter.step_ok(codegen_started)
         if args.verbose:
             _report_codegen_timings(active_reporter, timings=timings)
     except (CodegenError, ShapeInferenceError, UnsupportedOpError) as exc:
         active_reporter.step_fail(str(exc))
-        return None, None, None, None, None, str(exc)
+        return _CompileModelResult(error=str(exc))
     support_files: dict[str, str] | None = None
     if model_uses_image_decoder(model):
         plan = resolve_image_decoder_plan(args.image_decoder_libs)
@@ -1461,11 +1492,22 @@ def _compile_model(
             artifacts.append(
                 (str(output_path.with_name(header)), len(text.encode("utf-8")))
             )
+    if shape_inference_json is not None:
+        artifacts.append(
+            (str(args.shape_inference_json), len(shape_inference_json.encode("utf-8")))
+        )
     _report_generated_artifacts(active_reporter, artifacts=artifacts)
     active_reporter.info(
         f"  Generated checksum (sha256): {_generated_checksum(generated)}"
     )
-    return generated, testbench, data_source, weight_data, support_files, None
+    return _CompileModelResult(
+        generated=generated,
+        testbench=testbench,
+        data_source=data_source,
+        weight_data=weight_data,
+        support_files=support_files,
+        shape_inference_json=shape_inference_json,
+    )
 
 
 def _compile_testbench_declarations(

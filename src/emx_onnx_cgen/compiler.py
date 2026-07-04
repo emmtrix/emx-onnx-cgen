@@ -52,6 +52,7 @@ from .onnx_import import import_onnx, prepare_onnx_model
 from .sequence_shape_hints import (
     SequenceElementShapeHint,
 )
+from .shape_inference_report import build_shape_inference_report
 
 # Keep this env var near the lowering loop so future shape-debug work can find it fast.
 _DEBUG_LOWERING_FAILURES_ENV = "EMX_DEBUG_LOWERING_FAILURES"
@@ -269,6 +270,15 @@ class Compiler:
                 variable_dim_outputs=ctx.variable_dim_outputs,
             ),
         )
+
+    def shape_inference_report(self, model: onnx.ModelProto) -> dict[str, object]:
+        """Return the shape inference report for ``model``.
+
+        ``model`` must be the original model so the report only contains
+        tensor names and declared shapes from the model file.
+        """
+        ctx = self._build_compile_context(model)
+        return build_shape_inference_report(model, ctx.lowered.op_context)
 
     def compile_testbench(self, model: onnx.ModelProto) -> str:
         ctx = self._build_compile_context(model)
