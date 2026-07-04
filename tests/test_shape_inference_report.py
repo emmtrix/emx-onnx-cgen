@@ -7,6 +7,8 @@ import numpy as np
 import onnx
 from onnx import TensorProto, helper, numpy_helper
 
+from golden_utils import assert_golden
+
 from emx_onnx_cgen import cli
 from emx_onnx_cgen.compiler import Compiler
 
@@ -81,6 +83,28 @@ def test_cli_compile_writes_shape_inference_json(tmp_path: Path) -> None:
     tensors = report["tensors"]
     assert tensors["mid"]["inferred"] == {"dtype": "float", "dims": [1, 3]}
     assert tensors["y"]["model"] == {"dtype": "float", "dims": [1, 3]}
+
+
+# The golden file doubles as the documentation example referenced in README.md.
+def test_shape_inference_json_matches_golden_reference(tmp_path: Path) -> None:
+    model_path = Path(__file__).parent / "onnx" / "mixed_ops_dynamic_batch.onnx"
+    json_path = tmp_path / "shapes.json"
+
+    exit_code = cli.main(
+        [
+            "compile",
+            str(model_path),
+            str(tmp_path / "model.c"),
+            "--shape-inference-json",
+            str(json_path),
+        ]
+    )
+
+    assert exit_code == 0
+    golden_path = (
+        Path(__file__).parent / "golden" / "mixed_ops_dynamic_batch_shapes.json"
+    )
+    assert_golden(json_path.read_text(encoding="utf-8"), golden_path)
 
 
 def test_cli_compile_shape_inference_json_reflects_input_dim_pinning(

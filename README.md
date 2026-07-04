@@ -257,6 +257,8 @@ Options:
   }
   ```
 
+  A complete report for a real model — [`tests/onnx/mixed_ops_dynamic_batch.onnx`](tests/onnx/mixed_ops_dynamic_batch.onnx), including a symbolic `batch` dimension — is checked in as the golden test reference [`tests/golden/mixed_ops_dynamic_batch_shapes.json`](tests/golden/mixed_ops_dynamic_batch_shapes.json).
+
 ### `verify`
 
 ```bash
