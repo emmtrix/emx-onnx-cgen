@@ -1,0 +1,254 @@
+{
+  "description": "Hand-maintained per-operator documentation metadata. SUPPORT_OPS.md is auto-generated; its 'Notes' and 'Relevant CLI options' columns are rendered from this file. 'notes_anchor' must be a heading anchor in docs/operator-notes.md; 'cli_options' lists CLI flags that specifically affect the operator's generated code.",
+  "notes_file": "docs/operator-notes.md",
+  "operators": {
+    "AffineGrid": {
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "Attention": {
+      "notes_anchor": "attention-and-transformers",
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "BatchNormalization": {
+      "notes_anchor": "normalization-variants"
+    },
+    "Bernoulli": {
+      "notes_anchor": "random-number-generation-randomuniform-bernoulli"
+    },
+    "CausalConvWithState": {
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "Col2Im": {
+      "notes_anchor": "reconstruction-col2im-maxunpool"
+    },
+    "Compress": {
+      "notes_anchor": "dynamic-output-operators-unique-nonzero-compress"
+    },
+    "ConcatFromSequence": {
+      "cli_options": ["--sequence-element-shape"]
+    },
+    "Conv": {
+      "notes_anchor": "convolution-family-conv-convtranspose-deformconv",
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "ConvTranspose": {
+      "notes_anchor": "convolution-family-conv-convtranspose-deformconv"
+    },
+    "DFT": {
+      "notes_anchor": "fft-related-operators-dft-stft"
+    },
+    "DeformConv": {
+      "notes_anchor": "convolution-family-conv-convtranspose-deformconv",
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "DequantizeLinear": {
+      "notes_anchor": "quantization-quantizelinear-dequantizelinear"
+    },
+    "Einsum": {
+      "notes_anchor": "einsum-limited-patterns",
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "GRU": {
+      "notes_anchor": "recurrent-networks-lstm-gru-rnn"
+    },
+    "Gemm": {
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "GridSample": {
+      "notes_anchor": "spatial-sampling-resize-gridsample-roialign"
+    },
+    "GroupNormalization": {
+      "notes_anchor": "normalization-variants"
+    },
+    "ImageDecoder": {
+      "notes_anchor": "image-decoding-imagedecoder",
+      "cli_options": ["--image-decoder-libs"]
+    },
+    "InstanceNormalization": {
+      "notes_anchor": "normalization-variants"
+    },
+    "LSTM": {
+      "notes_anchor": "recurrent-networks-lstm-gru-rnn"
+    },
+    "LayerNormalization": {
+      "notes_anchor": "normalization-variants",
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "LogSoftmax": {
+      "notes_anchor": "softmax-and-logsoftmax"
+    },
+    "Loop": {
+      "notes_anchor": "control-flow-loop-scan"
+    },
+    "MatMul": {
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "MaxUnpool": {
+      "notes_anchor": "reconstruction-col2im-maxunpool"
+    },
+    "MelWeightMatrix": {
+      "notes_anchor": "mel-frequency-filter-banks-melweightmatrix"
+    },
+    "NegativeLogLikelihoodLoss": {
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "NonMaxSuppression": {
+      "notes_anchor": "selection-and-filtering-topk-nonmaxsuppression"
+    },
+    "NonZero": {
+      "notes_anchor": "dynamic-output-operators-unique-nonzero-compress"
+    },
+    "QuantizeLinear": {
+      "notes_anchor": "quantization-quantizelinear-dequantizelinear"
+    },
+    "RMSNormalization": {
+      "notes_anchor": "normalization-variants"
+    },
+    "RNN": {
+      "notes_anchor": "recurrent-networks-lstm-gru-rnn"
+    },
+    "RandomUniformLike": {
+      "notes_anchor": "random-number-generation-randomuniform-bernoulli"
+    },
+    "ReduceL1": {
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "ReduceL2": {
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "ReduceLogSum": {
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "ReduceLogSumExp": {
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "ReduceMean": {
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "ReduceProd": {
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "ReduceSum": {
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "ReduceSumSquare": {
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "Resize": {
+      "notes_anchor": "spatial-sampling-resize-gridsample-roialign"
+    },
+    "RoiAlign": {
+      "notes_anchor": "spatial-sampling-resize-gridsample-roialign"
+    },
+    "RotaryEmbedding": {
+      "notes_anchor": "attention-and-transformers"
+    },
+    "STFT": {
+      "notes_anchor": "fft-related-operators-dft-stft"
+    },
+    "Scan": {
+      "notes_anchor": "control-flow-loop-scan"
+    },
+    "SequenceAt": {
+      "cli_options": ["--sequence-element-shape"]
+    },
+    "SequenceConstruct": {
+      "cli_options": ["--sequence-element-shape"]
+    },
+    "SequenceEmpty": {
+      "cli_options": ["--sequence-element-shape"]
+    },
+    "SequenceErase": {
+      "cli_options": ["--sequence-element-shape"]
+    },
+    "SequenceInsert": {
+      "cli_options": ["--sequence-element-shape"]
+    },
+    "SequenceLength": {
+      "cli_options": ["--sequence-element-shape"]
+    },
+    "SequenceMap": {
+      "cli_options": ["--sequence-element-shape"]
+    },
+    "Softmax": {
+      "notes_anchor": "softmax-and-logsoftmax"
+    },
+    "SoftmaxCrossEntropyLoss": {
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "SplitToSequence": {
+      "cli_options": ["--sequence-element-shape"]
+    },
+    "TfIdfVectorizer": {
+      "notes_anchor": "text-processing-tfidfvectorizer-labelencoder"
+    },
+    "TopK": {
+      "notes_anchor": "selection-and-filtering-topk-nonmaxsuppression"
+    },
+    "Unique": {
+      "notes_anchor": "dynamic-output-operators-unique-nonzero-compress"
+    },
+    "ai.onnx.ml.LabelEncoder": {
+      "notes_anchor": "text-processing-tfidfvectorizer-labelencoder"
+    },
+    "ai.onnx.ml.TreeEnsemble": {
+      "notes_anchor": "tree-based-models-treeensemble-treeensembleclassifier"
+    },
+    "com.microsoft.Attention": {
+      "notes_anchor": "attention-and-transformers",
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "com.microsoft.CausalConvWithState": {
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "com.microsoft.DequantizeLinear": {
+      "notes_anchor": "quantization-quantizelinear-dequantizelinear"
+    },
+    "com.microsoft.EmbedLayerNormalization": {
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "com.microsoft.FusedConv": {
+      "notes_anchor": "convolution-family-conv-convtranspose-deformconv",
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "com.microsoft.FusedMatMul": {
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "com.microsoft.GridSample": {
+      "notes_anchor": "spatial-sampling-resize-gridsample-roialign"
+    },
+    "com.microsoft.GroupQueryAttention": {
+      "notes_anchor": "attention-and-transformers",
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "com.microsoft.MatMulBnb4": {
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "com.microsoft.MatMulNBits": {
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "com.microsoft.MultiHeadAttention": {
+      "notes_anchor": "attention-and-transformers",
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "com.microsoft.QEmbedLayerNormalization": {
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "com.microsoft.QLinearSoftmax": {
+      "notes_anchor": "softmax-and-logsoftmax",
+      "cli_options": ["--replicate-ort-bugs"]
+    },
+    "com.microsoft.QuantizeLinear": {
+      "notes_anchor": "quantization-quantizelinear-dequantizelinear"
+    },
+    "com.microsoft.RotaryEmbedding": {
+      "notes_anchor": "attention-and-transformers"
+    },
+    "com.microsoft.SkipLayerNormalization": {
+      "cli_options": ["--fp32-accumulation-strategy", "--fp16-accumulation-strategy"]
+    },
+    "com.microsoft.Unique": {
+      "notes_anchor": "dynamic-output-operators-unique-nonzero-compress"
+    }
+  }
+}
