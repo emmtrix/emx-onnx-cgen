@@ -104,6 +104,13 @@ main function actually runs.
 
 Sanitizers can be controlled via `EMX_ENABLE_SANITIZE` (when set, it overrides `--sanitize`).
 
+Models using the `ImageDecoder` operator decode images in the generated C code.
+The backing libraries are selected with `--image-decoder-libs` (default: the
+bundled `stb`); JPEG/WebP/TIFF/JPEG2000 test models need
+`libjpeg-turbo8-dev`, `libwebp-dev`, `libtiff-dev`, and `libopenjp2-7-dev`
+installed (see `.github/workflows/tests.yml`). The per-model library choice is
+recorded in `extra_cli_args` of the expectation JSON.
+
 Do not rely on `--test-data-dir` to change generated code; it is for verification
 I/O only. Models that need representative inputs to resolve dynamic shapes must
 instead be exported with static shapes.

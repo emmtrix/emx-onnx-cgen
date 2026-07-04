@@ -9351,3 +9351,67 @@ class WordConvEmbeddingOp(RenderableOpBase):
             (self.bias, (self.num_filters,)),
             (self.char_embedding, (self.vocab_size, self.char_emb_size)),
         )
+
+
+@dataclass(frozen=True)
+class ImageDecoderOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
+    input0: str
+    output: str
+    input_length: int
+    output_shape: tuple[int, ...]
+    pixel_format: str
+    dtype: ScalarType
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        # Decoder library headers live in the image decoder support section;
+        # the node function itself only needs malloc/free.
+        return {"#include <stdlib.h>"}
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        dim_args = emitter.dim_args_str()
+        c_type = emitter.ctx_dtype(self.output).c_type
+        params = emitter.shared_param_map(
+            [("input0", self.input0), ("output", self.output)]
+        )
+        input_shape = CEmitterCompat.codegen_shape((self.input_length,))
+        output_shape = CEmitterCompat.codegen_shape(self.output_shape)
+        input_suffix = emitter.param_array_suffix(input_shape)
+        output_suffix = emitter.param_array_suffix(output_shape)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        height, width, channels = self.output_shape
+        rendered = (
+            state.templates["image_decoder"]
+            .render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                output=params["output"],
+                c_type=c_type,
+                input_length=self.input_length,
+                height=height,
+                width=width,
+                channels=channels,
+                pixel_format=self.pixel_format,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
+        return self.output_shape
+
+    def c_op_inputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        return ((self.input0, (self.input_length,)),)

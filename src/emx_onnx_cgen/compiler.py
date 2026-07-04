@@ -20,6 +20,7 @@ from .codegen.c_emitter import (
     ModelHeader,
     NodeInfo,
 )
+from .codegen.image_decoder_libs import DEFAULT_IMAGE_DECODER_LIBS
 from .errors import (
     CompilerError,
     ShapeInferenceError,
@@ -110,6 +111,7 @@ class CompilerOptions:
     large_weight_threshold: int = 100 * 1024
     replicate_ort_bugs: bool = False
     sequence_element_shapes: Mapping[str, SequenceElementShapeHint] | None = None
+    image_decoder_libs: tuple[str, ...] = DEFAULT_IMAGE_DECODER_LIBS
     # Developer-only switch: attach the failing lowering node with typed I/O context.
     debug_lowering_failures: bool = False
     timings: dict[str, float] | None = None
@@ -150,6 +152,7 @@ class Compiler:
             large_weight_threshold=options.large_weight_threshold,
             replicate_ort_bugs=options.replicate_ort_bugs,
             sequence_element_shapes=options.sequence_element_shapes,
+            image_decoder_libs=options.image_decoder_libs,
         )
         load_lowering_registry()
 

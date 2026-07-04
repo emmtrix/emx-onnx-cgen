@@ -26,6 +26,14 @@ from shared.ulp import ulp_intdiff_float
 
 from ._build_info import BUILD_DATE, GIT_VERSION
 from .compiler import Compiler, CompilerOptions
+from .codegen.image_decoder_libs import (
+    DEFAULT_IMAGE_DECODER_LIBS,
+    model_uses_image_decoder,
+    parse_image_decoder_libs,
+    prepare_image_decoder_build,
+    resolve_image_decoder_plan,
+    support_header_text,
+)
 from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from .ir.model import SequenceType, TensorType
 from .onnx_import import import_onnx
@@ -846,7 +854,9 @@ def run_cli_command(
                 generated_checksum=generated_checksum,
                 verification_mode=verification_mode,
             )
-        generated, _testbench, data_source, _weight_data, error = _compile_model(args)
+        generated, _testbench, data_source, _weight_data, _support_files, error = (
+            _compile_model(args)
+        )
         if error:
             return CliResult(
                 exit_code=1,
@@ -963,6 +973,22 @@ def _build_parser() -> argparse.ArgumentParser:
             ),
         )
 
+    def add_image_decoder_libs_flag(subparser: argparse.ArgumentParser) -> None:
+        subparser.add_argument(
+            "--image-decoder-libs",
+            type=_parse_image_decoder_libs_arg,
+            default=DEFAULT_IMAGE_DECODER_LIBS,
+            help=(
+                "Comma-separated priority list of decoding libraries backing the "
+                "ImageDecoder operator; the first library supporting a format "
+                "wins (default: stb). Known libraries: stb (bundled; bmp, jpeg, "
+                "png, pnm), libjpeg-turbo (jpeg, bit-exact with ONNX reference "
+                "outputs), libwebp (webp), libtiff (tiff), openjpeg (jpeg2000). "
+                "Non-stb libraries need their system dev packages and add "
+                "linker flags to the build."
+            ),
+        )
+
     def add_input_dim_flag(subparser: argparse.ArgumentParser) -> None:
         subparser.add_argument(
             "--input-dim",
@@ -1076,6 +1102,7 @@ def _build_parser() -> argparse.ArgumentParser:
     add_runtime_compat_flag(compile_parser)
     add_sequence_shape_hint_flag(compile_parser)
     add_input_dim_flag(compile_parser)
+    add_image_decoder_libs_flag(compile_parser)
 
     verify_parser = subparsers.add_parser(
         "verify",
@@ -1225,7 +1252,15 @@ def _build_parser() -> argparse.ArgumentParser:
     add_runtime_compat_flag(verify_parser)
     add_sequence_shape_hint_flag(verify_parser)
     add_input_dim_flag(verify_parser)
+    add_image_decoder_libs_flag(verify_parser)
     return parser
+
+
+def _parse_image_decoder_libs_arg(value: str) -> tuple[str, ...]:
+    try:
+        return parse_image_decoder_libs(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(str(exc)) from exc
 
 
 def _resolve_with_base_dir(base_dir: Path, path: Path) -> Path:
@@ -1274,8 +1309,8 @@ def _handle_compile(args: argparse.Namespace) -> int:
     model_name = args.model_name or "model"
     if args.testbench_file:
         args.emit_testbench = True
-    generated, testbench, data_source, weight_data, error = _compile_model(
-        args, reporter=reporter
+    generated, testbench, data_source, weight_data, support_files, error = (
+        _compile_model(args, reporter=reporter)
     )
     if error:
         reporter.info("")
@@ -1305,6 +1340,9 @@ def _handle_compile(args: argparse.Namespace) -> int:
     if weight_data is not None:
         weights_path = output_path.with_name(f"{model_name}.bin")
         weights_path.write_bytes(weight_data)
+    if support_files:
+        for header, text in sorted(support_files.items()):
+            output_path.with_name(header).write_text(text, encoding="utf-8")
     return 0
 
 
@@ -1312,7 +1350,9 @@ def _compile_model(
     args: argparse.Namespace,
     *,
     reporter: _VerifyReporter | None = None,
-) -> tuple[str | None, str | None, str | None, bytes | None, str | None]:
+) -> tuple[
+    str | None, str | None, str | None, bytes | None, dict[str, str] | None, str | None
+]:
     model_path: Path = args.model
     model_name = args.model_name or "model"
     active_reporter = reporter or _NullVerifyReporter()
@@ -1324,14 +1364,14 @@ def _compile_model(
         active_reporter.step_ok(load_started)
     except OSError as exc:
         active_reporter.step_fail(str(exc))
-        return None, None, None, None, str(exc)
+        return None, None, None, None, None, str(exc)
     operators = _collect_model_operators(model)
     opset_version = _model_opset_version(model)
     dynamic_input_dims = collect_dynamic_input_dims(model)
     try:
         fixed_input_dims = apply_input_dim_overrides(model, _input_dim_overrides(args))
     except ValueError as exc:
-        return None, None, None, None, str(exc)
+        return None, None, None, None, None, str(exc)
     _report_model_details(
         active_reporter,
         model_path=model_path,
@@ -1360,6 +1400,7 @@ def _compile_model(
             fp16_accumulation_strategy=args.fp16_accumulation_strategy,
             replicate_ort_bugs=args.replicate_ort_bugs,
             sequence_element_shapes=sequence_element_shapes,
+            image_decoder_libs=args.image_decoder_libs,
             truncate_weights_after=args.truncate_weights_after,
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,
@@ -1381,7 +1422,18 @@ def _compile_model(
             _report_codegen_timings(active_reporter, timings=timings)
     except (CodegenError, ShapeInferenceError, UnsupportedOpError) as exc:
         active_reporter.step_fail(str(exc))
-        return None, None, None, None, str(exc)
+        return None, None, None, None, None, str(exc)
+    support_files: dict[str, str] | None = None
+    if model_uses_image_decoder(model):
+        plan = resolve_image_decoder_plan(args.image_decoder_libs)
+        support_files = {
+            header: support_header_text(header) for header in plan.support_headers
+        }
+        build_hints = [f"-l{name}" for name in plan.link_libraries]
+        if build_hints:
+            active_reporter.info(
+                "  ImageDecoder link libraries required: " + " ".join(build_hints)
+            )
     output_path: Path = args.output or model_path.with_suffix(".c")
     artifacts = [(str(output_path), len(generated.encode("utf-8")))]
     if testbench is not None:
@@ -1404,11 +1456,16 @@ def _compile_model(
     if weight_data is not None:
         weights_path = output_path.with_name(f"{model_name}.bin")
         artifacts.append((str(weights_path), len(weight_data)))
+    if support_files:
+        for header, text in sorted(support_files.items()):
+            artifacts.append(
+                (str(output_path.with_name(header)), len(text.encode("utf-8")))
+            )
     _report_generated_artifacts(active_reporter, artifacts=artifacts)
     active_reporter.info(
         f"  Generated checksum (sha256): {_generated_checksum(generated)}"
     )
-    return generated, testbench, data_source, weight_data, None
+    return generated, testbench, data_source, weight_data, support_files, None
 
 
 def _compile_testbench_declarations(
@@ -1438,6 +1495,7 @@ def _compile_testbench_declarations(
         fp16_accumulation_strategy=args.fp16_accumulation_strategy,
         replicate_ort_bugs=args.replicate_ort_bugs,
         sequence_element_shapes=sequence_element_shapes,
+        image_decoder_libs=args.image_decoder_libs,
         truncate_weights_after=args.truncate_weights_after,
         large_temp_threshold_bytes=args.large_temp_threshold_bytes,
         large_weight_threshold=args.large_weight_threshold,
@@ -1887,7 +1945,6 @@ def _verify_model(
             args.test_data_dir,
             sequence_element_shapes=sequence_element_shapes,
         )
-        _decode_image_decoder_inputs(model, testbench_inputs)
         if testbench_inputs is not None:
             model = _annotate_unranked_model_inputs(model, testbench_inputs)
         if args.test_data_dir is not None and testbench_inputs is None:
@@ -1929,6 +1986,7 @@ def _verify_model(
             fp16_accumulation_strategy=args.fp16_accumulation_strategy,
             replicate_ort_bugs=args.replicate_ort_bugs,
             sequence_element_shapes=sequence_element_shapes,
+            image_decoder_libs=args.image_decoder_libs,
             truncate_weights_after=args.truncate_weights_after,
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,
@@ -2135,12 +2193,16 @@ def _verify_model(
         c_path.write_text(generated, encoding="utf-8")
         if weight_data is not None:
             weights_path.write_bytes(weight_data)
+        image_decoder_cflags, image_decoder_link_flags = prepare_image_decoder_build(
+            model, args.image_decoder_libs, temp_path
+        )
         try:
             c_std = "-std=c23" if "_BitInt(" in generated else "-std=c99"
             compile_cmd = [
                 *compiler_cmd,
                 c_std,
                 "-O1",
+                *image_decoder_cflags,
             ]
             sanitize_enabled, sanitize_override = _resolve_sanitize_enabled(
                 args.sanitize
@@ -2159,6 +2221,7 @@ def _verify_model(
                     "-o",
                     str(exe_path.name),
                     "-lm",
+                    *image_decoder_link_flags,
                 ]
             )
             active_reporter.info("")
@@ -2723,49 +2786,6 @@ def _annotate_unranked_model_inputs(
     del annotated.graph.input[:]
     annotated.graph.input.extend(new_inputs)
     return annotated
-
-
-def _decode_image_decoder_inputs(
-    model: onnx.ModelProto,
-    testbench_inputs: dict[str, "np.ndarray"] | None,
-) -> None:
-    """Decode encoded image byte inputs consumed by ImageDecoder nodes.
-
-    ``_expand_image_decoder_nodes`` rewrites ImageDecoder into Identity /
-    Gather, expecting decoded pixel tensors as graph inputs.  This helper
-    applies the corresponding Python-side decoding so that the raw test
-    data (encoded bytes) is converted to the pixel arrays the rewritten
-    graph expects.
-    """
-    if testbench_inputs is None:
-        return
-    import io
-
-    for node in model.graph.node:
-        if node.op_type != "ImageDecoder":
-            continue
-        pixel_format = "RGB"
-        for attr in node.attribute:
-            if attr.name == "pixel_format":
-                pixel_format = attr.s.decode()
-        input_name = node.input[0]
-        if input_name not in testbench_inputs:
-            continue
-        encoded = testbench_inputs[input_name]
-        try:
-            from PIL import Image
-
-            img = Image.open(io.BytesIO(encoded.tobytes()))
-            if pixel_format == "Grayscale":
-                img = img.convert("L")
-                decoded = np.expand_dims(np.array(img), axis=2)
-            else:
-                decoded = np.array(img)
-        except Exception as exc:
-            raise CodegenError(
-                f"Failed to decode image for ImageDecoder input '{input_name}': {exc}"
-            ) from exc
-        testbench_inputs[input_name] = decoded
 
 
 def _load_test_data_inputs(

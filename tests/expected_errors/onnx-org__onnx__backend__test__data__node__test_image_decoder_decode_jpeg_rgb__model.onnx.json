@@ -1,10 +1,14 @@
 {
   "error": "OK (max abs diff 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_jpeg_rgb model.onnx --test-data-dir test_data_set_0",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_jpeg_rgb model.onnx --test-data-dir test_data_set_0 --image-decoder-libs libjpeg-turbo",
+  "extra_cli_args": [
+    "--image-decoder-libs",
+    "libjpeg-turbo"
+  ],
   "verification_mode": "Data/Data",
   "operators": [
     "ImageDecoder"
   ],
   "opset_version": 20,
-  "generated_checksum": "58fda1620b0df4c16bea507a4d38aadd916be100176d033b12e1ed0576d39811"
+  "generated_checksum": "e1555e854a8d9346c8cfbc51992dfb13265bca7359739ff6e7566f4138cdcc02"
 }

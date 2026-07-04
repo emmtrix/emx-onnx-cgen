@@ -1,0 +1,368 @@
+/* ImageDecoder runtime support.
+ * Image format detection happens at runtime via magic bytes; each format is
+ * decoded by the library selected via --image-decoder-libs.
+{% for image_format, function_name in format_functions | dictsort %}
+ *   {{ '%-8s' | format(image_format) }} -> {{ format_libraries[image_format] }}
+{% endfor %}
+ * Every decoder produces row-major RGB8 and fails (returns 0) when the
+ * decoded dimensions do not match the declared static output shape. */
+#include <stdlib.h>
+{% if use_stb %}
+
+#define STB_IMAGE_IMPLEMENTATION
+#define STBI_NO_STDIO
+#define STBI_NO_LINEAR
+#define STBI_NO_HDR
+{% for stb_define in stb_only_defines %}
+#define {{ stb_define }}
+{% endfor %}
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-function"
+#include "stb_image.h"
+#pragma GCC diagnostic pop
+
+static int emx_image_decode_stb(const uint8_t *data, size_t len, uint8_t *out,
+                                idx_t width, idx_t height) {
+    int decoded_width = 0;
+    int decoded_height = 0;
+    int decoded_channels = 0;
+    unsigned char *decoded = stbi_load_from_memory(
+        data, (int)len, &decoded_width, &decoded_height, &decoded_channels, 3);
+    if (decoded == NULL) {
+        return 0;
+    }
+    int ok = (idx_t)decoded_width == width && (idx_t)decoded_height == height;
+    if (ok) {
+        for (size_t i = 0; i < (size_t)width * (size_t)height * 3; ++i) {
+            out[i] = decoded[i];
+        }
+    }
+    stbi_image_free(decoded);
+    return ok;
+}
+{% endif %}
+{% if use_libjpeg_turbo %}
+
+#include <stdio.h>
+#include <setjmp.h>
+#include <jpeglib.h>
+
+struct emx_image_jpeg_error_ctx {
+    struct jpeg_error_mgr mgr;
+    jmp_buf env;
+};
+
+static void emx_image_jpeg_error_exit(j_common_ptr cinfo) {
+    longjmp(((struct emx_image_jpeg_error_ctx *)cinfo->err)->env, 1);
+}
+
+static int emx_image_decode_libjpeg_turbo(const uint8_t *data, size_t len,
+                                          uint8_t *out, idx_t width,
+                                          idx_t height) {
+    struct jpeg_decompress_struct cinfo;
+    struct emx_image_jpeg_error_ctx jerr;
+    cinfo.err = jpeg_std_error(&jerr.mgr);
+    jerr.mgr.error_exit = emx_image_jpeg_error_exit;
+    if (setjmp(jerr.env)) {
+        jpeg_destroy_decompress(&cinfo);
+        return 0;
+    }
+    jpeg_create_decompress(&cinfo);
+    jpeg_mem_src(&cinfo, data, (unsigned long)len);
+    (void)jpeg_read_header(&cinfo, TRUE);
+    cinfo.out_color_space = JCS_RGB;
+    (void)jpeg_start_decompress(&cinfo);
+    if ((idx_t)cinfo.output_width != width ||
+        (idx_t)cinfo.output_height != height || cinfo.output_components != 3) {
+        jpeg_destroy_decompress(&cinfo);
+        return 0;
+    }
+    while (cinfo.output_scanline < cinfo.output_height) {
+        JSAMPROW row = out + (size_t)cinfo.output_scanline * (size_t)width * 3;
+        (void)jpeg_read_scanlines(&cinfo, &row, 1);
+    }
+    (void)jpeg_finish_decompress(&cinfo);
+    jpeg_destroy_decompress(&cinfo);
+    return 1;
+}
+{% endif %}
+{% if use_libwebp %}
+
+#include <webp/decode.h>
+
+static int emx_image_decode_libwebp(const uint8_t *data, size_t len,
+                                    uint8_t *out, idx_t width, idx_t height) {
+    int decoded_width = 0;
+    int decoded_height = 0;
+    if (!WebPGetInfo(data, len, &decoded_width, &decoded_height) ||
+        (idx_t)decoded_width != width || (idx_t)decoded_height != height) {
+        return 0;
+    }
+    uint8_t *decoded = WebPDecodeRGBInto(
+        data, len, out, (size_t)width * (size_t)height * 3, (int)width * 3);
+    return decoded != NULL;
+}
+{% endif %}
+{% if use_libtiff %}
+
+#include <tiffio.h>
+
+struct emx_image_tiff_stream {
+    const uint8_t *data;
+    toff_t len;
+    toff_t pos;
+};
+
+static tmsize_t emx_image_tiff_read(thandle_t handle, void *buf, tmsize_t n) {
+    struct emx_image_tiff_stream *stream = (struct emx_image_tiff_stream *)handle;
+    if (stream->pos >= stream->len) {
+        return 0;
+    }
+    if ((toff_t)n > stream->len - stream->pos) {
+        n = (tmsize_t)(stream->len - stream->pos);
+    }
+    uint8_t *dst = (uint8_t *)buf;
+    for (tmsize_t i = 0; i < n; ++i) {
+        dst[i] = stream->data[stream->pos + (toff_t)i];
+    }
+    stream->pos += (toff_t)n;
+    return n;
+}
+
+static tmsize_t emx_image_tiff_write(thandle_t handle, void *buf, tmsize_t n) {
+    (void)handle;
+    (void)buf;
+    return n;
+}
+
+static toff_t emx_image_tiff_seek(thandle_t handle, toff_t off, int whence) {
+    struct emx_image_tiff_stream *stream = (struct emx_image_tiff_stream *)handle;
+    if (whence == SEEK_SET) {
+        stream->pos = off;
+    } else if (whence == SEEK_CUR) {
+        stream->pos += off;
+    } else {
+        stream->pos = stream->len + off;
+    }
+    return stream->pos;
+}
+
+static int emx_image_tiff_close(thandle_t handle) {
+    (void)handle;
+    return 0;
+}
+
+static toff_t emx_image_tiff_size(thandle_t handle) {
+    return ((struct emx_image_tiff_stream *)handle)->len;
+}
+
+static int emx_image_decode_libtiff(const uint8_t *data, size_t len,
+                                    uint8_t *out, idx_t width, idx_t height) {
+    struct emx_image_tiff_stream stream = {data, (toff_t)len, 0};
+    TIFF *tif = TIFFClientOpen(
+        "memory", "r", (thandle_t)&stream, emx_image_tiff_read,
+        emx_image_tiff_write, emx_image_tiff_seek, emx_image_tiff_close,
+        emx_image_tiff_size, NULL, NULL);
+    if (tif == NULL) {
+        return 0;
+    }
+    uint32_t decoded_width = 0;
+    uint32_t decoded_height = 0;
+    TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &decoded_width);
+    TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &decoded_height);
+    if ((idx_t)decoded_width != width || (idx_t)decoded_height != height) {
+        TIFFClose(tif);
+        return 0;
+    }
+    uint32_t *raster =
+        (uint32_t *)malloc((size_t)width * (size_t)height * sizeof(uint32_t));
+    int ok = 0;
+    if (raster != NULL &&
+        TIFFReadRGBAImageOriented(tif, decoded_width, decoded_height, raster,
+                                  ORIENTATION_TOPLEFT, 0)) {
+        for (size_t i = 0; i < (size_t)width * (size_t)height; ++i) {
+            out[3 * i] = (uint8_t)TIFFGetR(raster[i]);
+            out[3 * i + 1] = (uint8_t)TIFFGetG(raster[i]);
+            out[3 * i + 2] = (uint8_t)TIFFGetB(raster[i]);
+        }
+        ok = 1;
+    }
+    free(raster);
+    TIFFClose(tif);
+    return ok;
+}
+{% endif %}
+{% if use_openjpeg %}
+
+#include <openjpeg.h>
+
+struct emx_image_opj_stream {
+    const uint8_t *data;
+    size_t len;
+    size_t pos;
+};
+
+static OPJ_SIZE_T emx_image_opj_read(void *buf, OPJ_SIZE_T n, void *handle) {
+    struct emx_image_opj_stream *stream = (struct emx_image_opj_stream *)handle;
+    if (stream->pos >= stream->len) {
+        return (OPJ_SIZE_T)-1;
+    }
+    if (n > stream->len - stream->pos) {
+        n = stream->len - stream->pos;
+    }
+    uint8_t *dst = (uint8_t *)buf;
+    for (OPJ_SIZE_T i = 0; i < n; ++i) {
+        dst[i] = stream->data[stream->pos + i];
+    }
+    stream->pos += n;
+    return n;
+}
+
+static OPJ_OFF_T emx_image_opj_skip(OPJ_OFF_T n, void *handle) {
+    struct emx_image_opj_stream *stream = (struct emx_image_opj_stream *)handle;
+    stream->pos += (size_t)n;
+    return n;
+}
+
+static OPJ_BOOL emx_image_opj_seek(OPJ_OFF_T off, void *handle) {
+    struct emx_image_opj_stream *stream = (struct emx_image_opj_stream *)handle;
+    if (off < 0 || (size_t)off > stream->len) {
+        return OPJ_FALSE;
+    }
+    stream->pos = (size_t)off;
+    return OPJ_TRUE;
+}
+
+static int emx_image_decode_openjpeg(const uint8_t *data, size_t len,
+                                     uint8_t *out, idx_t width, idx_t height) {
+    struct emx_image_opj_stream user_stream = {data, len, 0};
+    opj_stream_t *stream = opj_stream_create(len > 0 ? len : 1, OPJ_TRUE);
+    if (stream == NULL) {
+        return 0;
+    }
+    opj_stream_set_user_data(stream, &user_stream, NULL);
+    opj_stream_set_user_data_length(stream, (OPJ_UINT64)len);
+    opj_stream_set_read_function(stream, emx_image_opj_read);
+    opj_stream_set_skip_function(stream, emx_image_opj_skip);
+    opj_stream_set_seek_function(stream, emx_image_opj_seek);
+    /* JP2 container starts with the jP signature box; otherwise assume a raw
+     * J2K codestream (FF 4F FF 51). */
+    int is_jp2 = len >= 12 && data[4] == 0x6A && data[5] == 0x50;
+    opj_codec_t *codec =
+        opj_create_decompress(is_jp2 ? OPJ_CODEC_JP2 : OPJ_CODEC_J2K);
+    if (codec == NULL) {
+        opj_stream_destroy(stream);
+        return 0;
+    }
+    opj_dparameters_t parameters;
+    opj_set_default_decoder_parameters(&parameters);
+    (void)opj_setup_decoder(codec, &parameters);
+    opj_image_t *image = NULL;
+    int ok = 0;
+    if (opj_read_header(stream, codec, &image) &&
+        opj_decode(codec, stream, image) && opj_end_decompress(codec, stream) &&
+        image->numcomps >= 3 && (idx_t)image->comps[0].w == width &&
+        (idx_t)image->comps[0].h == height) {
+        ok = 1;
+        for (OPJ_UINT32 comp = 0; comp < 3; ++comp) {
+            if (image->comps[comp].w != image->comps[0].w ||
+                image->comps[comp].h != image->comps[0].h) {
+                ok = 0;
+            }
+        }
+        if (ok) {
+            for (size_t i = 0; i < (size_t)width * (size_t)height; ++i) {
+                for (size_t comp = 0; comp < 3; ++comp) {
+                    OPJ_INT32 value = image->comps[comp].data[i];
+                    if (value < 0) {
+                        value = 0;
+                    }
+                    if (value > 255) {
+                        value = 255;
+                    }
+                    out[3 * i + comp] = (uint8_t)value;
+                }
+            }
+        }
+    }
+    if (image != NULL) {
+        opj_image_destroy(image);
+    }
+    opj_destroy_codec(codec);
+    opj_stream_destroy(stream);
+    return ok;
+}
+{% endif %}
+
+static int emx_image_decode_rgb(const uint8_t *data, size_t len, uint8_t *out,
+                                idx_t width, idx_t height) {
+    if (len >= 3 && data[0] == 0xFFu && data[1] == 0xD8u && data[2] == 0xFFu) {
+        /* JPEG */
+{% if format_functions.get('jpeg') %}
+        return {{ format_functions['jpeg'] }}(data, len, out, width, height);
+{% else %}
+        return 0;
+{% endif %}
+    }
+    if (len >= 8 && data[0] == 0x89u && data[1] == 0x50u && data[2] == 0x4Eu &&
+        data[3] == 0x47u && data[4] == 0x0Du && data[5] == 0x0Au &&
+        data[6] == 0x1Au && data[7] == 0x0Au) {
+        /* PNG */
+{% if format_functions.get('png') %}
+        return {{ format_functions['png'] }}(data, len, out, width, height);
+{% else %}
+        return 0;
+{% endif %}
+    }
+    if (len >= 2 && data[0] == 0x42u && data[1] == 0x4Du) {
+        /* BMP ("BM") */
+{% if format_functions.get('bmp') %}
+        return {{ format_functions['bmp'] }}(data, len, out, width, height);
+{% else %}
+        return 0;
+{% endif %}
+    }
+    if (len >= 4 &&
+        ((data[0] == 0x49u && data[1] == 0x49u && data[2] == 0x2Au &&
+          data[3] == 0x00u) ||
+         (data[0] == 0x4Du && data[1] == 0x4Du && data[2] == 0x00u &&
+          data[3] == 0x2Au))) {
+        /* TIFF ("II*\0" little endian or "MM\0*" big endian) */
+{% if format_functions.get('tiff') %}
+        return {{ format_functions['tiff'] }}(data, len, out, width, height);
+{% else %}
+        return 0;
+{% endif %}
+    }
+    if (len >= 12 && data[0] == 0x52u && data[1] == 0x49u && data[2] == 0x46u &&
+        data[3] == 0x46u && data[8] == 0x57u && data[9] == 0x45u &&
+        data[10] == 0x42u && data[11] == 0x50u) {
+        /* WebP ("RIFF....WEBP") */
+{% if format_functions.get('webp') %}
+        return {{ format_functions['webp'] }}(data, len, out, width, height);
+{% else %}
+        return 0;
+{% endif %}
+    }
+    if ((len >= 12 && data[0] == 0x00u && data[1] == 0x00u && data[2] == 0x00u &&
+         data[3] == 0x0Cu && data[4] == 0x6Au && data[5] == 0x50u &&
+         data[6] == 0x20u && data[7] == 0x20u) ||
+        (len >= 4 && data[0] == 0xFFu && data[1] == 0x4Fu && data[2] == 0xFFu &&
+         data[3] == 0x51u)) {
+        /* JPEG 2000 (JP2 signature box or raw J2K codestream) */
+{% if format_functions.get('jpeg2000') %}
+        return {{ format_functions['jpeg2000'] }}(data, len, out, width, height);
+{% else %}
+        return 0;
+{% endif %}
+    }
+    if (len >= 2 && data[0] == 0x50u && data[1] >= 0x31u && data[1] <= 0x36u) {
+        /* PNM ("P1".."P6") */
+{% if format_functions.get('pnm') %}
+        return {{ format_functions['pnm'] }}(data, len, out, width, height);
+{% else %}
+        return 0;
+{% endif %}
+    }
+    return 0;
+}

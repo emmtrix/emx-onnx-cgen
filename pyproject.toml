@@ -48,7 +48,7 @@ package-dir = {"" = "src"}
 license-files = ["LICENSE"]
 
 [tool.setuptools.package-data]
-emx_onnx_cgen = ["templates/*.j2"]
+emx_onnx_cgen = ["templates/*.j2", "third_party/*.h"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
