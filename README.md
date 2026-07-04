@@ -24,6 +24,7 @@ Key characteristics:
 - **Bitwise-stable code generation** for reproducible builds
 - **Readable, auditable C code** suitable for certification and code reviews
 - **Generated C output format spec:** [`docs/output-format.md`](docs/output-format.md)
+- **Operator-specific implementation notes:** [`docs/operator-notes.md`](docs/operator-notes.md)
 - Designed for **bare-metal and RTOS-based systems**
 
 Current coverage highlights:
@@ -369,7 +370,7 @@ Declare them with [`--sequence-element-shape`](#common-options), e.g.
 
 - [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md): overview of ONNX models and their current verification status.
 - [`ONNX_ERRORS.md`](ONNX_ERRORS.md): summary of the most common verification outcomes and failure reasons.
-- [`SUPPORT_OPS.md`](SUPPORT_OPS.md): list of ONNX operators and whether they are currently supported.
+- [`SUPPORT_OPS.md`](SUPPORT_OPS.md): list of ONNX operators and whether they are currently supported, with links to operator-specific implementation notes and relevant CLI options.
 
 ## Related Projects
 

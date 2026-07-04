@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 import re
 from collections import Counter
@@ -27,6 +28,11 @@ OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM_PATH = (
     Path(__file__).resolve().parents[1] / "ONNX_ERRORS.md"
 )
 SUPPORT_OPS_PATH = Path(__file__).resolve().parents[1] / "SUPPORT_OPS.md"
+OPERATOR_METADATA_PATH = (
+    Path(__file__).resolve().parents[1] / "docs" / "operator-metadata.json"
+)
+OPERATOR_NOTES_PATH = Path(__file__).resolve().parents[1] / "docs" / "operator-notes.md"
+OPERATOR_NOTES_LINK = "docs/operator-notes.md"
 ONNX_VERSION_PATH = Path(__file__).resolve().parents[1] / "onnx-org" / "VERSION_NUMBER"
 DOCS_REGEN_COMMAND = "UPDATE_REFS=1 pytest -q tests/test_official_onnx_files_docs.py::test_official_onnx_file_support_doc"
 
@@ -330,6 +336,24 @@ def _render_support_histogram_markdown(
     return "\n".join(lines) + "\n"
 
 
+def _load_operator_metadata() -> dict[str, dict]:
+    data = json.loads(OPERATOR_METADATA_PATH.read_text(encoding="utf-8"))
+    return data["operators"]
+
+
+def _markdown_heading_anchors(markdown_path: Path) -> set[str]:
+    """Compute GitHub-style anchors for all headings of a markdown file."""
+    anchors: set[str] = set()
+    for line in markdown_path.read_text(encoding="utf-8").splitlines():
+        match = re.match(r"#+\s+(.*)", line)
+        if not match:
+            continue
+        heading = match.group(1).strip().lower()
+        heading = re.sub(r"[^\w\- ]", "", heading)
+        anchors.add(heading.replace(" ", "-"))
+    return anchors
+
+
 def _render_supported_ops_markdown(
     official_expectations: list[OnnxFileExpectation],
     ort_artifact_expectations: list[OnnxFileExpectation],
@@ -347,6 +371,13 @@ def _render_supported_ops_markdown(
         all_ops.update(expectation.operators)
         if _is_success_message(expectation.error):
             supported_ops.update(expectation.operators)
+    metadata = _load_operator_metadata()
+    unknown_metadata_ops = sorted(set(metadata) - all_ops)
+    if unknown_metadata_ops:
+        raise ValueError(
+            "docs/operator-metadata.json references unknown operators: "
+            f"{unknown_metadata_ops}"
+        )
     sorted_ops = sorted(all_ops)
     lines = [
         *_generated_header(),
@@ -357,14 +388,28 @@ def _render_supported_ops_markdown(
             "with a successful verify result."
         ),
         "",
+        (
+            "The `Notes` column links to implementation notes in "
+            f"[`{OPERATOR_NOTES_LINK}`]({OPERATOR_NOTES_LINK}); the "
+            "`Relevant CLI options` column lists CLI flags that specifically "
+            "affect the operator's generated code. Both are maintained in "
+            "[`docs/operator-metadata.json`](docs/operator-metadata.json)."
+        ),
+        "",
         f"Supported operators: {len(supported_ops)} / {len(sorted_ops)}",
         "",
-        "| Operator | Supported |",
-        "| --- | --- |",
+        "| Operator | Supported | Notes | Relevant CLI options |",
+        "| --- | --- | --- | --- |",
     ]
     for op in sorted_ops:
         marker = "✅" if op in supported_ops else "❌"
-        lines.append(f"| {op} | {marker} |")
+        op_metadata = metadata.get(op, {})
+        notes_anchor = op_metadata.get("notes_anchor")
+        notes = f"[Notes]({OPERATOR_NOTES_LINK}#{notes_anchor})" if notes_anchor else ""
+        cli_options = ", ".join(
+            f"`{option}`" for option in op_metadata.get("cli_options", [])
+        )
+        lines.append(f"| {op} | {marker} | {notes} | {cli_options} |")
     lines.append("")
     return "\n".join(lines)
 
@@ -471,6 +516,29 @@ def test_official_onnx_file_support_doc() -> None:
     assert actual_markdown == expected_markdown
     assert actual_histogram == expected_histogram
     assert actual_support_ops == expected_support_ops
+
+
+def test_operator_metadata_is_consistent() -> None:
+    metadata = _load_operator_metadata()
+    anchors = _markdown_heading_anchors(OPERATOR_NOTES_PATH)
+    allowed_keys = {"notes_anchor", "cli_options"}
+    for op, op_metadata in metadata.items():
+        assert op_metadata, f"{op}: empty metadata entry"
+        unknown_keys = set(op_metadata) - allowed_keys
+        assert not unknown_keys, f"{op}: unknown metadata keys {sorted(unknown_keys)}"
+        notes_anchor = op_metadata.get("notes_anchor")
+        if notes_anchor is not None:
+            assert notes_anchor in anchors, (
+                f"{op}: notes_anchor '{notes_anchor}' not found in "
+                f"{OPERATOR_NOTES_PATH.name}"
+            )
+        cli_options = op_metadata.get("cli_options")
+        if cli_options is not None:
+            assert cli_options, f"{op}: cli_options must not be empty"
+            for option in cli_options:
+                assert re.fullmatch(
+                    r"--[a-z0-9-]+", option
+                ), f"{op}: invalid CLI option '{option}'"
 
 
 def test_render_onnx_file_support_table_includes_extra_cli_args_in_file_column() -> (
