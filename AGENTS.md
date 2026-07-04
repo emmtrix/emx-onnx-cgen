@@ -109,7 +109,10 @@ The backing libraries are selected with `--image-decoder-libs` (default: the
 bundled `stb`); JPEG/WebP/TIFF/JPEG2000 test models need
 `libjpeg-turbo8-dev`, `libwebp-dev`, `libtiff-dev`, and `libopenjp2-7-dev`
 installed (see `.github/workflows/tests.yml`). The per-model library choice is
-recorded in `extra_cli_args` of the expectation JSON.
+recorded in `extra_cli_args` of the expectation JSON. The ONNX backend test
+suite (`python -m emx_onnx_cgen.onnx_backend`) compares against the ONNX
+reference outputs and therefore defaults to the bit-exact library list;
+override it with the `EMX_IMAGE_DECODER_LIBS` environment variable.
 
 Do not rely on `--test-data-dir` to change generated code; it is for verification
 I/O only. Models that need representative inputs to resolve dynamic shapes must

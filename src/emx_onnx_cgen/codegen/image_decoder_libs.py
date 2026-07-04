@@ -85,6 +85,18 @@ IMAGE_DECODER_LIBRARIES: dict[str, ImageDecoderLibrary] = {
 
 DEFAULT_IMAGE_DECODER_LIBS: tuple[str, ...] = ("stb",)
 
+#: Priority list whose decoders are bit-exact with the ONNX reference outputs
+#: (generated with Pillow, which wraps these libraries). Used by verification
+#: harnesses that compare against reference data; requires the system dev
+#: packages of the non-stb libraries.
+ONNX_REFERENCE_IMAGE_DECODER_LIBS: tuple[str, ...] = (
+    "libjpeg-turbo",
+    "libwebp",
+    "libtiff",
+    "openjpeg",
+    "stb",
+)
+
 #: stb_image is compiled with only the decoders assigned to it enabled.
 STB_FORMAT_DEFINES: dict[str, str] = {
     "bmp": "STBI_ONLY_BMP",

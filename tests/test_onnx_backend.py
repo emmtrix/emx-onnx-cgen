@@ -11,6 +11,9 @@ import pytest
 from onnx import TensorProto, helper
 from onnx import numpy_helper
 
+from emx_onnx_cgen.codegen.image_decoder_libs import (
+    ONNX_REFERENCE_IMAGE_DECODER_LIBS,
+)
 from emx_onnx_cgen.onnx_backend import backend as backend_module
 from emx_onnx_cgen.sequence_shape_hints import parse_sequence_element_shape_hints
 
@@ -224,3 +227,12 @@ def test_backend_runs_sequence_map_add_2_sequences_with_variable_shapes() -> Non
     ]
     for actual_item, expected_item in zip(actual, expected, strict=True):
         np.testing.assert_allclose(actual_item, expected_item)
+
+
+def test_backend_image_decoder_libs_default_and_env_override(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv(backend_module._IMAGE_DECODER_LIBS_ENV, raising=False)
+    assert backend_module._image_decoder_libs() == ONNX_REFERENCE_IMAGE_DECODER_LIBS
+    monkeypatch.setenv(backend_module._IMAGE_DECODER_LIBS_ENV, "stb")
+    assert backend_module._image_decoder_libs() == ("stb",)

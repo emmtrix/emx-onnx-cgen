@@ -23,6 +23,21 @@ def test_default_backend_tests_cover_sequence_map_dynamic_sequence_regression() 
     assert "test_sequence_map_add_2_sequences_cpu" in DEFAULT_TESTS
 
 
+def test_default_backend_tests_cover_all_image_decoder_formats() -> None:
+    for name in (
+        "test_image_decoder_decode_bmp_rgb_cpu",
+        "test_image_decoder_decode_jpeg2k_rgb_cpu",
+        "test_image_decoder_decode_jpeg_bgr_cpu",
+        "test_image_decoder_decode_jpeg_grayscale_cpu",
+        "test_image_decoder_decode_jpeg_rgb_cpu",
+        "test_image_decoder_decode_png_rgb_cpu",
+        "test_image_decoder_decode_pnm_rgb_cpu",
+        "test_image_decoder_decode_tiff_rgb_cpu",
+        "test_image_decoder_decode_webp_rgb_cpu",
+    ):
+        assert name in DEFAULT_TESTS
+
+
 def test_build_pytest_args_uses_explicit_node_ids() -> None:
     args = build_pytest_args(
         selected_tests=("test_abs_cpu", "test_add_cpu"),
