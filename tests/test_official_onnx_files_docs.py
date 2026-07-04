@@ -536,9 +536,9 @@ def test_operator_metadata_is_consistent() -> None:
         if cli_options is not None:
             assert cli_options, f"{op}: cli_options must not be empty"
             for option in cli_options:
-                assert re.fullmatch(
-                    r"--[a-z0-9-]+", option
-                ), f"{op}: invalid CLI option '{option}'"
+                assert re.fullmatch(r"--[a-z0-9-]+", option), (
+                    f"{op}: invalid CLI option '{option}'"
+                )
 
 
 def test_render_onnx_file_support_table_includes_extra_cli_args_in_file_column() -> (
