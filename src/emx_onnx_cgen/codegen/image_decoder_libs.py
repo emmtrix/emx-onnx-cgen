@@ -109,7 +109,7 @@ def parse_image_decoder_libs(spec: str) -> tuple[str, ...]:
         if name not in IMAGE_DECODER_LIBRARIES:
             known = ", ".join(IMAGE_DECODER_LIBRARIES)
             raise ValueError(
-                f"Unknown image decoder library {name!r} " f"(known libraries: {known})"
+                f"Unknown image decoder library {name!r} (known libraries: {known})"
             )
         if name in seen:
             continue
