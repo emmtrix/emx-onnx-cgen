@@ -1,0 +1,35 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    {{ c_type }} *decoded = ({{ c_type }} *)malloc((size_t){{ height }} * {{ width }} * 3);
+    int decode_ok = decoded != NULL &&
+        emx_image_decode_rgb(&{{ input0 }}[0], (size_t){{ input_length }}, decoded, {{ width }}, {{ height }});
+    if (decode_ok) {
+        for (idx_t i0 = 0; i0 < {{ height }}; ++i0) {
+            for (idx_t i1 = 0; i1 < {{ width }}; ++i1) {
+                const {{ c_type }} *pixel = decoded + ((size_t)i0 * {{ width }} + i1) * 3;
+{% if pixel_format == 'BGR' %}
+                for (idx_t i2 = 0; i2 < {{ channels }}; ++i2) {
+                    {{ output }}[i0][i1][i2] = pixel[2 - i2];
+                }
+{% elif pixel_format == 'Grayscale' %}
+                /* ITU-R BT.601 luma; matches Pillow Image.convert("L") exactly */
+                {{ output }}[i0][i1][0] = ({{ c_type }})((19595u * pixel[0] + 38470u * pixel[1] + 7471u * pixel[2] + 32768u) >> 16);
+{% else %}
+                for (idx_t i2 = 0; i2 < {{ channels }}; ++i2) {
+                    {{ output }}[i0][i1][i2] = pixel[i2];
+                }
+{% endif %}
+            }
+        }
+    } else {
+        /* Undecodable input (unknown format, no configured decoder, or size
+         * mismatch with the declared static output shape): zero the output. */
+        for (idx_t i0 = 0; i0 < {{ height }}; ++i0) {
+            for (idx_t i1 = 0; i1 < {{ width }}; ++i1) {
+                for (idx_t i2 = 0; i2 < {{ channels }}; ++i2) {
+                    {{ output }}[i0][i1][i2] = 0;
+                }
+            }
+        }
+    }
+    free(decoded);
+}
