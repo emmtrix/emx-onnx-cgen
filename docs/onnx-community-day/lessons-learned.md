@@ -322,6 +322,35 @@ String-specific issue:
 - in testbench serialization, truncate strings that exceed the fixed slot size
   so that the result remains null-terminated
 
+### Proposal: extend the ONNX type system with size bounds
+
+Important framing: this is **not** an emx-specific feature or annotation — it is
+a general extension of the ONNX type system that any backend would benefit from.
+
+The gap is general: ONNX value types carry no maximum size for strings,
+sequences, or dynamic dimensions, so every static/AOT backend has to invent one,
+and different backends can disagree for the same model. emx's particular
+workaround — a single global macro (`EMX_SEQUENCE_MAX_LEN`,
+`EMX_STRING_MAX_LEN`) that wastes memory or truncates — is just one symptom.
+
+The proposal is to make a maximum size an optional, standard part of the ONNX
+type:
+
+- a per-type default maximum (e.g. default max sequence length, max string
+  length);
+- a per-tensor override, so a specific input/output declares its own maximum;
+- carried in type info / `value_info`, backwards-compatible (tools that ignore
+  it still work).
+
+Because it lives in the type system, every exporter, runtime, compiler and tool
+reads the same bound — the same model yields the same sizing everywhere, with no
+waste and no silent truncation. This is the standardized, persisted-in-the-type
+counterpart of the `--sequence-element-shape` command-line specification.
+Conceptually (type-level sketch, not emx metadata): `tensor(string)[max_len=64]`,
+`sequence(tensor(float)[<=100, 4])[max_len=20]` — the element bound carries the
+tensor rank and a maximum per dimension, positionally (axis 0 <= 100, axis 1 = 4),
+not just a single number, plus `max_len` for the number of items.
+
 ## 6. ONNX type and shape inference cannot be the only analysis layer
 
 Practical issue:
@@ -567,6 +596,25 @@ This also reframes generated-code quality:
 - It weakens downstream analysis, vectorization, review, and safety arguments.
 - Clean generated C is part of the compiler contract.
 
+Because C is the IR, performance is added by later source-to-source passes over
+that same C — correctness first, optimization afterwards. Typical passes:
+
+- node / kernel fusion
+- intermediate-memory reduction and buffer reuse
+- vectorization onto SIMD / vector instruction sets
+- target-specific memory-layout optimization
+- offloading or DMA-streaming of large weights
+
+A concrete example is the emmtrix Edge AI Compiler targeting RISC-V with the RVV
+vector extension (project issue #723). A generated `Gemm -> Relu` model — a
+scalar matmul loop nest plus a `Relu` — is transformed into vectorized C using
+RVV intrinsics: the matmul reduction becomes vector fused-multiply-add
+accumulation over the free dimension, and the `Relu` is fused into the vector
+store (`vfmax` against zero). The loop nest is preserved (outer loop over rows,
+inner reduction over the contraction dimension), and the vector length is just
+the RVV register width, so the same code scales to realistic tensors. This only
+works because the generated C is explicit and analyzable to begin with.
+
 Relationship to other stacks:
 
 - `onnx2c` was the most direct existing reference point for ONNX-to-C.
@@ -602,3 +650,25 @@ Why it matters:
 - deterministic code generation
 - honest compiler contract
 - meaningful test results
+
+## 11. Operator importance is unknown
+
+A process lesson rather than a semantics lesson: there is no signal telling a
+backend author which operators matter.
+
+- ONNX defines hundreds of operators as a flat set; nothing says how common,
+  critical, or niche each one is.
+- When implementing the operator set, the priority order was largely guesswork.
+- Example: `ImageDecode` is purely a preprocessing / IO operator, not part of
+  core inference, yet in the spec it looks no different in importance from
+  essential math or neural-network operators.
+
+Two constructive ideas:
+
+- **Operator categories.** Tag operators by role (core math, neural-network
+  layers, preprocessing / IO, control flow, quantization, classic ML, contrib)
+  so backend authors can prioritize and scope by category.
+- **An operator atlas.** Measure how often each operator actually appears in real
+  models and publish a popularity-plus-coverage map — for example by indexing the
+  roughly 40,000 ONNX models hosted on Hugging Face — so backends can prioritize
+  the operators that occur in practice instead of guessing.

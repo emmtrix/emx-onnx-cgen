@@ -68,7 +68,7 @@ Speaker notes:
 - Once coverage became a goal, the project needed architecture and testing
   discipline.
 
-## Slide 5: What emx-onnx-cgen does
+## Slide 5: What emx-onnx-cgen is - goals and generated C
 
 Key points:
 
@@ -80,10 +80,48 @@ Key points:
   - `<model_name>_load(...)`
   - `<model_name>(...)`
 
+Goals (from the project README):
+
+- Correctness-first: outputs comparable to ONNX Runtime.
+- Static, compile-time memory layout - no `malloc`/`free`, no heap.
+- No OS, no external runtime, no hidden dispatch or callbacks.
+- Readable, auditable C suitable for review and certification.
+- Pass-based pipeline: import -> normalize -> optimize -> lower -> emit.
+
+Generated C output example (excerpt from the in-repo golden reference
+`tests/golden/mul_add_relu_model.c`, a `Mul -> Add -> Relu` graph):
+
+```c
+/* tensors map to typed N-D C arrays; each ONNX node is one loop nest */
+static inline float ref_scalar_f32_mul(float a, float b) { return a * b; }
+
+EMX_NODE_FN void node0_mul(const float input0[2][3],
+                           const float input1[2][3], float output[2][3]) {
+    for (idx_t i0 = 0; i0 < 2; ++i0)
+        for (idx_t i1 = 0; i1 < 3; ++i1)
+            output[i0][i1] = ref_scalar_f32_mul(input0[i0][i1], input1[i0][i1]);
+}
+/* node1_add, node2_relu: same shape, one op each */
+
+_Bool model_load(const char *path) { (void)path; return 1; }
+
+void model(const float a[restrict 2][3], const float b[restrict 2][3],
+           const float c[restrict 2][3], float out[restrict 2][3]) {
+    float tmp0_mul_out[2][3];   /* static, stack temporaries */
+    float tmp1_add_out[2][3];
+    node0_mul(a, b, tmp0_mul_out);
+    node1_add(tmp0_mul_out, c, tmp1_add_out);
+    node2_relu(tmp1_add_out, out);   /* no malloc, no runtime, no OS */
+}
+```
+
 Speaker notes:
 
 - Keep this concise.
 - The audience needs enough project context before the lessons learned.
+- The example is a faithful excerpt of a real golden reference, not a mock-up:
+  typed N-D arrays, one explicit loop nest per node, stack temporaries, and a
+  two-function public API (`model_load` + `model`).
 
 ## Slide 6: Architecture shaped by testing
 
@@ -221,3 +259,84 @@ Questions:
 - Which operators need clearer numerical contracts?
 - How should backend scoreboards represent deterministic code generation and
   generated-code quality?
+
+# Additional slides in the master deck (v3)
+
+These slides exist in the extended master deck beyond the 13-slide 20-minute
+structure above. They can be swapped in depending on the audience and time.
+
+## How we use emx-onnx-cgen at emmtrix: C as IR
+
+- C is the intermediate representation, not just the output (instead of MLIR).
+- Flow: ONNX -> emx-onnx-cgen -> C (our IR) -> emmtrix optimizer -> target.
+- Why C, not MLIR: standardized, reviewable, toolchain-agnostic, no IR lock-in.
+- Then the generated C is optimized source-to-source: node fusion, memory
+  reduction, vectorization (SIMD), memory-layout optimization, buffer reuse,
+  weight offloading / DMA.
+- Example: emmtrix Edge AI Compiler output for RISC-V with RVV (project issue
+  #723) — a `Gemm -> Relu` model becomes vector FMA accumulation with the Relu
+  fused into the vector store; the loop nest (over N, K) is preserved, 16 is the
+  vector length, not the problem size.
+
+## Explicit typed arrays - even for dynamic models
+
+- We always emit explicit, typed N-dimensional C arrays; rank and per-axis
+  extents live in the C type, not in hand-written index math.
+- `x[n][c]` mirrors the tensor; out-of-bounds is UB on the declared object, so it
+  is analyzable; cleaner for review and vectorization.
+- This holds even for dynamic models: C99 VLAs (`x[N][C]`) keep the array
+  explicit with runtime extents, for parameters and local temporaries.
+- Keeping arrays explicit for dynamic shapes (onnx2c's weak spot) is why the
+  project started.
+
+## Data types: complete coverage
+
+- Every ONNX value type maps to an explicit C representation.
+- For ~100% coverage you need them all - the awkward ones (sub-byte, FP8/FP4,
+  strings, containers) cannot be skipped.
+- Table: integers & bool, floating-point, sub-byte integers (C23 `_BitInt`),
+  low-precision floats (uint8 storage + converters), strings, sequences
+  (`x[EMX_SEQUENCE_MAX_LEN][...]` + `__count`), optional (value + `_present`).
+- Not supported: `complex64/128`, `map`, `sparse_tensor`, `opaque`.
+
+## Sequences: the element type is underspecified
+
+- `sequence(T)` gives the element dtype, but the element tensor's concrete shape
+  (sometimes its rank) can be unspecified, and may vary per item (ragged).
+- A runtime resolves it at execution; static C must know it up front.
+- emx-onnx-cgen requires an explicit extra specification on the CLI:
+  `--sequence-element-shape name=[<=max, ...]` -> element rank + per-axis maxima;
+  capacity from `EMX_SEQUENCE_MAX_LEN`; variable axes get `name__dim_<axis>`.
+- Missing / insufficient spec -> fail clearly, never a silent guess.
+
+## Proposal: size bounds in the ONNX type system
+
+- Framing: NOT an emx-specific feature — a general extension of the ONNX type
+  system that every backend and tool benefits from.
+- Gap is general: ONNX types carry no max size for strings / sequences / dynamic
+  dims, so each static backend invents its own (emx's global macro is just one
+  symptom -> waste or truncation).
+- Proposal: make a maximum size an optional, standard part of the type — per-type
+  default + per-tensor override, carried in type info / `value_info`,
+  backwards-compatible.
+- Type-level sketch (not emx metadata): `tensor(string)[max_len=64]`,
+  `sequence(tensor(float)[<=100, 4])[max_len=20]` — the element bound carries the
+  tensor rank and per-dimension maxima, positionally (axis 0 <= 100, axis 1 = 4),
+  plus item count.
+- Then any backend sizes each buffer exactly; same model -> same bounds.
+
+## Lesson 4: Operator importance is unknown
+
+- ONNX lists hundreds of operators flat, with no signal which are common,
+  critical, or niche; implementation priority was guesswork.
+- Example: `ImageDecode` is pure preprocessing, not core inference, yet looks no
+  different from essential ops.
+- Idea 1: operator categories (core math, NN layers, preprocessing/IO, control
+  flow, quantization, classic ML, contrib) so backends prioritize by category.
+- Idea 2: an operator atlas of real-world usage frequency, e.g. by indexing the
+  ~40k ONNX models on Hugging Face.
+
+## Condensed single-topic alternatives
+
+- One-slide versions of Lessons 1-3 from the 20-minute deck, for when time is
+  short (use these or the expanded multi-slide versions).

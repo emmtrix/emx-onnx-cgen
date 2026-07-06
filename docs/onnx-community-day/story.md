@@ -76,6 +76,42 @@ That made control over the generated code important:
 The existing approach did not give us enough control over those properties.
 That was the first motivation for starting `emx-onnx-cgen`.
 
+To make this concrete, a complete generated model is small and readable. The
+in-repo golden reference `tests/golden/mul_add_relu_model.c` compiles a
+`Mul -> Add -> Relu` graph into the following shape (lightly trimmed):
+
+```c
+static inline float ref_scalar_f32_mul(float a, float b) { return a * b; }
+static inline float ref_scalar_f32_add(float a, float b) { return a + b; }
+static inline float ref_scalar_f32_relu(float a) { return a > 0.0f ? a : 0.0f; }
+
+EMX_NODE_FN void node0_mul(const float input0[2][3],
+                           const float input1[2][3], float output[2][3]) {
+    for (idx_t i0 = 0; i0 < 2; ++i0)
+        for (idx_t i1 = 0; i1 < 3; ++i1)
+            output[i0][i1] = ref_scalar_f32_mul(input0[i0][i1], input1[i0][i1]);
+}
+/* node1_add, node2_relu: same shape, one op each */
+
+_Bool model_load(const char *path) { (void)path; return 1; }
+
+void model(const float a[restrict 2][3], const float b[restrict 2][3],
+           const float c[restrict 2][3], float out[restrict 2][3]) {
+    float tmp0_mul_out[2][3];
+    float tmp1_add_out[2][3];
+    node0_mul(a, b, tmp0_mul_out);
+    node1_add(tmp0_mul_out, c, tmp1_add_out);
+    node2_relu(tmp1_add_out, out);
+}
+```
+
+This illustrates the properties the project cares about: each ONNX node becomes
+one small, named function with one explicit loop nest over typed N-dimensional C
+arrays; temporaries live on the stack with deterministic names; and the public
+surface is just `model_load` plus `model`. There is no `malloc`, no runtime, no
+OS dependency, and no hidden dispatch - the entire behavior is visible in the
+source.
+
 ## Act 2: Dynamic dimensions and the VLA idea
 
 A second major motivation was dynamic-dimension support.
@@ -441,6 +477,30 @@ beginning. If C is the intermediate representation for the rest of the toolchain
 then messy C is not just aesthetically bad. It weakens later analysis,
 vectorization, verification, and review.
 
+### What the downstream optimization does
+
+Because C is the IR, performance is added by later source-to-source passes over
+that same C, rather than baked into the ONNX lowering. Correctness comes first
+in the generated C; the optimizer then applies transformations such as:
+
+- node / kernel fusion,
+- intermediate-memory reduction and buffer reuse,
+- vectorization onto SIMD / vector instruction sets,
+- target-specific memory-layout optimization,
+- offloading or DMA-streaming of large weights.
+
+A concrete example is the emmtrix Edge AI Compiler targeting RISC-V with the RVV
+vector extension (see project issue #723). A simple generated `Gemm -> Relu`
+model — a scalar matmul loop nest plus a Relu — is transformed into vectorized C
+using RVV intrinsics: the matmul reduction becomes vector fused-multiply-add
+accumulation over the free dimension, and the element-wise `Relu` is fused into
+the vector store (`vfmax` against zero). The loop nest is preserved (an outer
+loop over rows, an inner reduction over the contraction dimension); the vector
+length is just the RVV register width, so the same shape scales to realistic
+tensors. This only works because the generated C is explicit and analyzable in
+the first place — clean C is what makes the optimizer's job tractable. A public
+Compiler Explorer version of this flow is planned.
+
 ### Relation to other compiler stacks
 
 Before starting `emx-onnx-cgen`, we looked for existing ways to generate clean C
@@ -673,6 +733,61 @@ terminating `'\0'`. That behavior is practical for fixed-storage C, but it also
 illustrates the underlying specification gap: without a model-level maximum,
 there is no universally correct bound for a static backend to choose.
 
+### A proposal: extend the ONNX type system with size bounds
+
+This is the most important framing point: the proposal is **not** an
+emx-specific feature or annotation. It is a general extension of the ONNX type
+system that every backend and tool would benefit from.
+
+The underlying gap is general: ONNX value types carry no maximum size for
+strings, sequences, or dynamic dimensions. So every static / AOT backend has to
+invent a bound, and different backends can legitimately pick different limits for
+the same model. The way `emx-onnx-cgen` happens to do it today is just one
+symptom — a single global compile-time macro, `EMX_SEQUENCE_MAX_LEN` and
+`EMX_STRING_MAX_LEN`, where one value applies to *every* sequence or *every*
+string. That either over-allocates memory (waste) when most tensors are small
+but one is large, or truncates when the cap is too small.
+
+The proposal is to make a maximum size an optional, standard part of the ONNX
+**type**:
+
+- a **per-type default maximum** — for example a default maximum sequence length
+  and a default maximum string length;
+- a **per-tensor override** — so a specific input or output can declare its own
+  maximum, independent of the default.
+
+It would be carried in the type info / `value_info`, fully backwards-compatible:
+tools that do not understand the bound still load and run the model. Because the
+bound lives in the type system, it is read by every exporter, runtime, compiler
+and tool — not just `emx-onnx-cgen`.
+
+A point worth making explicitly: ONNX types are not stored as strings. They are
+protobuf messages — a `TypeProto` whose `TypeProto.Tensor` has an `elem_type`
+(a `DataType` enum) and a `shape` (`TensorShapeProto`, with each dimension a
+`dim_value` or a symbolic `dim_param`). So this maximum-size bound should be a
+**structured field** in `TypeProto` / `TensorShapeProto` — a per-dimension
+maximum sitting next to the existing `dim_value` / `dim_param` — not a string in
+`metadata_props`. The text form above is only a human-readable sketch. Conceptually, at the type level (a sketch,
+deliberately not an emx-prefixed metadata key and not proposed concrete syntax):
+
+```text
+tensor(string)[max_len=64]                       # max chars per element
+tensor(float)[<=100, 4]                         # per-dimension maxima: axis 0 <= 100, axis 1 = 4
+sequence(tensor(float)[<=100, 4])[max_len=20]   # <= 20 items, each a 2-D float tensor
+```
+
+The element bound has to carry the tensor's rank and a maximum per dimension —
+not just a single number. The maxima are positional: in `tensor(float)[<=100, 4]`
+the first listed bound is axis 0 (at most 100) and the second is axis 1 (exactly
+4). In the sequence example, `tensor(float)[<=100, 4]` is the element type and
+the separate `[max_len=20]` bounds how many such tensors the sequence holds — the
+two numbers are deliberately different so it is clear which is which.
+
+With the bound in the type, any backend can size each buffer exactly: the same
+model yields the same sizing everywhere, with no waste and no silent truncation.
+This is the standardized, persisted-in-the-type counterpart of the
+`--sequence-element-shape` command-line specification.
+
 ### Dynamic output sizes
 
 Operators such as `NonZero`, `Unique`, and `Compress` can produce output sizes
@@ -865,6 +980,26 @@ The honest framing for the talk is:
 - FP8/FP4 are currently emulated, which is useful for coverage and completeness
   but not necessarily for efficient generated C
 
+### Beyond scalars: the complete type picture
+
+The mapping above is only the scalar/element half. A complete data-type picture
+also has to cover the aggregate and container types, each with an explicit,
+statically-laid-out C representation:
+
+- `tensor(string)` -> fixed-size `'\0'`-terminated `char[...][EMX_STRING_MAX_LEN]`
+- `sequence(T)` -> a fixed-capacity array plus a count, e.g.
+  `float x[EMX_SEQUENCE_MAX_LEN][H][W]; idx_t x__count;`
+- `optional(T)` -> the value plus a presence flag, e.g.
+  `float x[3]; _Bool x_present;`
+- Not supported: `complex64` / `complex128`, and the ONNX `map`,
+  `sparse_tensor` and `opaque` value types.
+
+There is a coverage angle worth stating directly: reaching close to 100% test
+coverage forces you to support *all* of these. The ONNX backend tests and real
+models exercise every value type, so the awkward ones — sub-byte integers,
+FP8/FP4, strings, sequences, optional — cannot be cherry-picked away. Complete
+data-type support is a prerequisite for high coverage, not an optional extra.
+
 ## Lesson: Numerical accuracy needs clearer contracts
 
 Validation against a reference implementation is essential, but it exposes
@@ -965,6 +1100,30 @@ This is a good community discussion point: should ONNX define more explicit
 accuracy guidance for selected operators or dtypes, or should this remain a
 backend/test-suite policy?
 
+## Lesson: Operator importance is unknown
+
+A different kind of lesson, less about ONNX semantics and more about the process
+of building a backend: there is no signal telling you which operators matter.
+
+ONNX defines hundreds of operators, listed as a flat set. Nothing in the spec
+says how common, critical, or niche each one is. When we implemented the
+operator set, the priority order was largely guesswork. A concrete example is
+`ImageDecode`: it is purely a preprocessing / IO operator, not part of core
+inference, yet in the spec it is indistinguishable in apparent importance from
+essential math or neural-network operators. Planning coverage is hard when every
+operator looks equally important.
+
+Two constructive ideas for the community:
+
+1. **Operator categories.** Tag operators by role — core math, neural-network
+   layers, preprocessing / IO, control flow, quantization, classic ML, contrib —
+   so backend authors can prioritize and scope by category.
+2. **An operator atlas.** Measure how often each operator actually appears in
+   real models and publish a popularity-plus-coverage map. A practical way to
+   build it would be to index the roughly 40,000 ONNX models hosted on Hugging
+   Face. That would let any backend prioritize the operators that occur in
+   practice instead of guessing.
+
 ## Lesson: Generated-code quality is a backend feature
 
 In many runtime-oriented systems, generated or lowered code is hidden. In this
@@ -1035,12 +1194,24 @@ Possible asks:
    Sequences, strings, optional values, and dynamic outputs need clearer
    representation strategies for static backends.
 
-4. **Numerical accuracy contracts**
+4. **Size bounds in the model**
+
+   Let ONNX declare maximum sizes per data type and per tensor (max sequence
+   length, max string length, element shape), so a backend sizes each buffer
+   exactly instead of relying on one global cap that wastes memory or truncates.
+
+5. **Numerical accuracy contracts**
 
    Operator specs and tests could provide clearer guidance on expected
    tolerances, accumulation precision, and edge cases.
 
-5. **Generated-code quality as a backend concern**
+6. **Operator importance signal**
+
+   Operator categories (by role) and a usage atlas — e.g. built by indexing the
+   ~40k ONNX models on Hugging Face — would tell backend authors which operators
+   to prioritize instead of treating a flat list as uniformly important.
+
+7. **Generated-code quality as a backend concern**
 
    Backend scoreboards could eventually distinguish between "can execute" and
    "can produce deterministic, auditable, statically plannable code".

@@ -56,10 +56,23 @@ which constraints matter for deterministic AOT compilation.
   - tensor dimensions must be static or explicitly bounded
   - sequence lengths must have capacities
   - string sizes must have maximum lengths
+- The ONNX type system should gain optional max-size bounds (per type and per
+  tensor) — a general standard extension every backend reads, not an
+  emx-specific annotation, replacing per-backend global caps.
+- The compiler always emits explicit, typed N-dimensional C arrays — even for
+  dynamic models (via C99 VLAs) — instead of flat pointers with manual indexing.
+- Complete data-type support (including sub-byte, FP8/FP4, strings, sequences,
+  optional) is a prerequisite for high coverage, not an optional extra.
 - ONNX type and shape inference is not complete enough to be the only compiler
   analysis layer.
 - Numerical accuracy validation needs clearer contracts than many official tests
   currently express.
+- Operator importance is unsignalled: categories and a real-world usage atlas
+  (e.g. indexing the ~40k ONNX models on Hugging Face) would guide backend
+  priorities.
+- C is the handoff IR (instead of MLIR); performance comes from later
+  source-to-source passes (fusion, vectorization, memory-layout, DMA), e.g. RVV
+  for RISC-V.
 - Generated-code quality is a backend feature for embedded and safety-adjacent
   targets.
 
