@@ -23,10 +23,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Show Python version
-        run: |
-          "$PYTHON_BIN" --version
-
       - name: Install system dependencies
         run: |
           if command -v dnf >/dev/null 2>&1; then
@@ -41,6 +37,10 @@ jobs:
             echo "No supported package manager found (dnf/yum/apt-get)." >&2
             exit 1
           fi
+
+      - name: Show Python version
+        run: |
+          "$PYTHON_BIN" --version
 
       - name: Install dependencies
         run: |
