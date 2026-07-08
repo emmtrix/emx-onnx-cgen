@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op GroupQueryAttention (while lowering node_index=0, op_type=GroupQueryAttention, name=node1, inputs=[query: tensor[dtype=float, shape=(1, 1, 16), dim_params=(None, None, None)], key: tensor[dtype=float, shape=(1, 1, 16), dim_params=(None, None, None)], value: tensor[dtype=float, shape=(1, 1, 16), dim_params=(None, None, None)], past_key: tensor[dtype=float, shape=(1, 1, 16, 16), dim_params=(None, None, None, None)], past_value: tensor[dtype=float, shape=(1, 1, 16, 16), dim_params=(None, None, None, None)], seqlens_k: tensor[dtype=int32, shape=(1,), dim_params=(None,)], total_sequence_length: tensor[dtype=int32, shape=(1,), dim_params=(None,)], cos_cache: tensor[dtype=float, shape=(16, 8), dim_params=(None, None)], sin_cache: tensor[dtype=float, shape=(16, 8), dim_params=(None, None)], <omitted>, <omitted>, <omitted>], outputs=[output: tensor[dtype=float, shape=(1, 1, 16), dim_params=(None, None, None)], present_key: tensor[dtype=float, shape=(1, 1, 16, 16), dim_params=(None, None, None, None)], present_value: tensor[dtype=float, shape=(1, 1, 16, 16), dim_params=(None, None, None, None)]])",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/group_query_attention_op_test/SeqlensKWithinCosCache_Rotary_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft.GroupQueryAttention"
-  ]
+  ],
+  "generated_checksum": "23284ee0154e77fd416096a102961ade3b1d3c10d6b0b4e85007f6640cb76612"
 }

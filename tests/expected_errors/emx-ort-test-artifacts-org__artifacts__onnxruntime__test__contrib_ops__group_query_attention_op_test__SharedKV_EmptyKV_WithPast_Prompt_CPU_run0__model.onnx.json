@@ -1,9 +1,9 @@
 {
-  "error": "Out of tolerance (max ULP 1065353216)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/group_query_attention_op_test/SharedKV_EmptyKV_WithPast_Prompt_CPU_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft.GroupQueryAttention"
   ],
-  "generated_checksum": "56a4e4184db7f58bdc975328d70b228e2b98fa3dd3ea0be82e0c39e61f739a39"
+  "generated_checksum": "3575dbe667c97e2280eb8b0527df5ed24181aa889a4bcd97c58f7b4097f42c1e"
 }
