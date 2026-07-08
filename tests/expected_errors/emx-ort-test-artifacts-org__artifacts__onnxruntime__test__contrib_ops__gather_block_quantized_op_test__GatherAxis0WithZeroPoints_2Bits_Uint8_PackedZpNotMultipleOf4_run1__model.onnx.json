@@ -1,0 +1,9 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_2Bits_Uint8_PackedZpNotMultipleOf4_run1 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "com.microsoft.GatherBlockQuantized"
+  ],
+  "generated_checksum": "012be64bab0dace47cacf02f73097787ffd0cb2ecee1a14545619196157d9063"
+}

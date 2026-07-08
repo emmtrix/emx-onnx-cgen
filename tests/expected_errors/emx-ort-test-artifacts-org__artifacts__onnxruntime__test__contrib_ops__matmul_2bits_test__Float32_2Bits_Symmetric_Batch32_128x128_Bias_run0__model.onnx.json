@@ -1,0 +1,9 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/matmul_2bits_test/Float32_2Bits_Symmetric_Batch32_128x128_Bias_run0 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "com.microsoft.MatMulNBits"
+  ],
+  "generated_checksum": "df4c53bb818a34e035b1ce5c454868f461113cd7d57f3e2a1879130cec17f9ea"
+}

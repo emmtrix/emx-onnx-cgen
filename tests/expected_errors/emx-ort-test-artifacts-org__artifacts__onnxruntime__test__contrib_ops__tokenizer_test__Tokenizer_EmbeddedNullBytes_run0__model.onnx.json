@@ -1,0 +1,9 @@
+{
+  "error": "Output value mismatch for Y (got=hello, index=(0, 0), output=Y, reference=hello\u0000world)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/tokenizer_test/Tokenizer_EmbeddedNullBytes_run0 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "com.microsoft.Tokenizer"
+  ],
+  "generated_checksum": "635700f40e7948b0eb087a3c16a694e46b23a5aaf059359c5d3040258bf78b41"
+}
