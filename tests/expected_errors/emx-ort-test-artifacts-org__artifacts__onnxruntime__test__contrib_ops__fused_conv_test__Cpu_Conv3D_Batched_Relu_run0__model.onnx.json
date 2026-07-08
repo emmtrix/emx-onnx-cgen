@@ -1,0 +1,9 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/fused_conv_test/Cpu_Conv3D_Batched_Relu_run0 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "com.microsoft.FusedConv"
+  ],
+  "generated_checksum": "171e5068a722c0d14385a084896ac21d0f44a322c708448d8b27571ea6e8ed30"
+}

@@ -1,0 +1,9 @@
+{
+  "error": "OK (no numeric comparisons)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/tokenizer_test/Tokenizer_LargeInput_run0 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "com.microsoft.Tokenizer"
+  ],
+  "generated_checksum": "db41fcf41242fd4025c130b9c887e7ba05910e0016c770de719bd8c7989665e0"
+}
