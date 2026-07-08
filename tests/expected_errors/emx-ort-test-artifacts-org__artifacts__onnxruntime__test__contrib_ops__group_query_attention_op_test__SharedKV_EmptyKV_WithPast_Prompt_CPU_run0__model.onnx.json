@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op GroupQueryAttention (while lowering node_index=0, op_type=GroupQueryAttention, name=node1, inputs=[query: tensor[dtype=float, shape=(1, 8, 16), dim_params=(None, None, None)], key: tensor[dtype=float, shape=(1, 0, 8), dim_params=(None, None, None)], value: tensor[dtype=float, shape=(1, 0, 8), dim_params=(None, None, None)], past_key: tensor[dtype=float, shape=(1, 1, 8, 8), dim_params=(None, None, None, None)], past_value: tensor[dtype=float, shape=(1, 1, 8, 8), dim_params=(None, None, None, None)], seqlens_k: tensor[dtype=int32, shape=(1,), dim_params=(None,)], total_sequence_length: tensor[dtype=int32, shape=(1,), dim_params=(None,)], <omitted>, <omitted>, <omitted>, <omitted>, <omitted>], outputs=[output: tensor[dtype=float, shape=(1, 8, 16), dim_params=(None, None, None)], present_key: tensor[dtype=float, shape=(1, 1, 8, 8), dim_params=(None, None, None, None)], present_value: tensor[dtype=float, shape=(1, 1, 8, 8), dim_params=(None, None, None, None)]])",
+  "error": "Out of tolerance (max ULP 1065353216)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/group_query_attention_op_test/SharedKV_EmptyKV_WithPast_Prompt_CPU_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft.GroupQueryAttention"
-  ]
+  ],
+  "generated_checksum": "56a4e4184db7f58bdc975328d70b228e2b98fa3dd3ea0be82e0c39e61f739a39"
 }
