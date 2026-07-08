@@ -3387,6 +3387,11 @@ class GroupQueryAttentionOp(RenderableOpBase):
         "past_value",
         "seqlens_k",
         "total_sequence_length",
+        "cos_cache",
+        "sin_cache",
+        "position_ids",
+        "k_scale",
+        "v_scale",
     )
     __io_outputs__ = ("output", "present_key", "present_value")
     query: str
@@ -3415,6 +3420,22 @@ class GroupQueryAttentionOp(RenderableOpBase):
     seqlens_rank: int
     seqlens_rows: int
     seqlens_cols: int
+    do_rotary: bool
+    rotary_interleaved: bool
+    rotary_dim: int
+    cos_cache: str | None
+    sin_cache: str | None
+    position_ids: str | None
+    cos_cache_rows: int
+    position_ids_rows: int
+    position_ids_cols: int
+    quantized: bool
+    cache_dtype: ScalarType
+    cache_qk_head: int
+    cache_v_head: int
+    k_scale: str | None
+    v_scale: str | None
+    k_scale_size: int
     dtype: ScalarType
 
     def required_includes(self, ctx: OpContext) -> set[str]:
@@ -3448,6 +3469,11 @@ class GroupQueryAttentionOp(RenderableOpBase):
             acc_min_literal = acc_dtype.min_literal
             acc_scale_literal = emitter.format_floating(self.scale, acc_dtype)
 
+        # The KV cache may use a quantized (int8/uint8) element type distinct
+        # from the float output dtype.
+        cache_c_type = self.cache_dtype.c_type
+        cache_zero_literal = self.cache_dtype.zero_literal
+
         params = emitter.shared_param_map(
             [
                 ("query", self.query),
@@ -3457,6 +3483,11 @@ class GroupQueryAttentionOp(RenderableOpBase):
                 ("past_value", self.past_value),
                 ("seqlens_k", self.seqlens_k),
                 ("total_sequence_length", self.total_sequence_length),
+                ("cos_cache", self.cos_cache),
+                ("sin_cache", self.sin_cache),
+                ("position_ids", self.position_ids),
+                ("k_scale", self.k_scale),
+                ("v_scale", self.v_scale),
                 ("output", self.output),
                 ("present_key", self.present_key),
                 ("present_value", self.present_value),
@@ -3477,13 +3508,13 @@ class GroupQueryAttentionOp(RenderableOpBase):
             self.batch,
             self.kv_num_heads,
             self.max_seq_len,
-            self.qk_head_size,
+            self.cache_qk_head,
         )
         present_value_shape = (
             self.batch,
             self.kv_num_heads,
             self.max_seq_len,
-            self.v_head_size,
+            self.cache_v_head,
         )
 
         query_suffix = emitter.param_array_suffix(query_shape)
@@ -3502,6 +3533,18 @@ class GroupQueryAttentionOp(RenderableOpBase):
         past_value_suffix = (
             emitter.param_array_suffix(present_value_shape) if self.past_value else ""
         )
+        cos_cache_suffix = (
+            emitter.param_array_suffix((self.cos_cache_rows, self.rotary_dim // 2))
+            if self.cos_cache
+            else ""
+        )
+        sin_cache_suffix = cos_cache_suffix if self.sin_cache else ""
+        position_ids_suffix = (
+            emitter.param_array_suffix((self.position_ids_rows, self.position_ids_cols))
+            if self.position_ids
+            else ""
+        )
+        scale_suffix = emitter.param_array_suffix((max(self.k_scale_size, 1),))
 
         param_decls = emitter.build_param_decls(
             [
@@ -3509,12 +3552,12 @@ class GroupQueryAttentionOp(RenderableOpBase):
                 (params["key"], c_type, key_suffix, True),
                 (params["value"], c_type, value_suffix, True),
                 (
-                    (params["past_key"], c_type, past_key_suffix, True)
+                    (params["past_key"], cache_c_type, past_key_suffix, True)
                     if params["past_key"]
                     else (None, "", "", True)
                 ),
                 (
-                    (params["past_value"], c_type, past_value_suffix, True)
+                    (params["past_value"], cache_c_type, past_value_suffix, True)
                     if params["past_value"]
                     else (None, "", "", True)
                 ),
@@ -3525,9 +3568,39 @@ class GroupQueryAttentionOp(RenderableOpBase):
                     total_sequence_length_suffix,
                     True,
                 ),
+                (
+                    (params["cos_cache"], c_type, cos_cache_suffix, True)
+                    if params["cos_cache"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (params["sin_cache"], c_type, sin_cache_suffix, True)
+                    if params["sin_cache"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (
+                        params["position_ids"],
+                        ScalarType.I64.c_type,
+                        position_ids_suffix,
+                        True,
+                    )
+                    if params["position_ids"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (params["k_scale"], c_type, scale_suffix, True)
+                    if params["k_scale"]
+                    else (None, "", "", True)
+                ),
+                (
+                    (params["v_scale"], c_type, scale_suffix, True)
+                    if params["v_scale"]
+                    else (None, "", "", True)
+                ),
                 (params["output"], c_type, output_suffix, False),
-                (params["present_key"], c_type, present_key_suffix, False),
-                (params["present_value"], c_type, present_value_suffix, False),
+                (params["present_key"], cache_c_type, present_key_suffix, False),
+                (params["present_value"], cache_c_type, present_value_suffix, False),
             ]
         )
 
@@ -3559,6 +3632,7 @@ class GroupQueryAttentionOp(RenderableOpBase):
                 out_cast=out_cast,
                 zero_literal=zero_literal,
                 min_literal=min_literal,
+                present_zero_literal=cache_zero_literal,
                 acc_zero_literal=acc_zero_literal,
                 acc_min_literal=acc_min_literal,
                 scale_literal=scale_literal,
@@ -3566,8 +3640,12 @@ class GroupQueryAttentionOp(RenderableOpBase):
                 exp_fn=exp_fn,
                 dtype=self.dtype,
                 acc_dtype=acc_dtype,
+                quantized=self.quantized,
+                cache_qk_head=self.cache_qk_head,
+                cache_v_head=self.cache_v_head,
                 batch=self.batch,
                 q_seq=self.q_seq,
+                kv_seq=self.kv_seq,
                 num_heads=self.num_heads,
                 kv_num_heads=self.kv_num_heads,
                 qk_head_size=self.qk_head_size,
@@ -3593,13 +3671,13 @@ class GroupQueryAttentionOp(RenderableOpBase):
             (self.output, self.computed_output_shape(emitter), self.dtype),
             (
                 self.present_key,
-                (self.batch, self.kv_num_heads, self.max_seq_len, self.qk_head_size),
-                self.dtype,
+                (self.batch, self.kv_num_heads, self.max_seq_len, self.cache_qk_head),
+                self.cache_dtype,
             ),
             (
                 self.present_value,
-                (self.batch, self.kv_num_heads, self.max_seq_len, self.v_head_size),
-                self.dtype,
+                (self.batch, self.kv_num_heads, self.max_seq_len, self.cache_v_head),
+                self.cache_dtype,
             ),
         )
 

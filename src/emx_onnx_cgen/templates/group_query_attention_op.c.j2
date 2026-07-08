@@ -1,5 +1,7 @@
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% if not quantized %}
     const {{ acc_type }} scale = {{ acc_scale_literal }};
+{% endif %}
 
     int max_total_seq = (int){{ total_sequence_length }}[0];
     if (max_total_seq < 1) {
@@ -23,15 +25,121 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         if (cur_pos >= max_total_seq) {
             cur_pos = max_total_seq - 1;
         }
+{% if kv_seq == 0 %}
 {% if boundary_zero_on_cache_limit %}
         if (cur_pos >= max_total_seq - 1) {
             for (int h = 0; h < {{ kv_num_heads }}; ++h) {
                 for (int s = 0; s < {{ max_seq_len }}; ++s) {
                     for (int d = 0; d < {{ qk_head_size }}; ++d) {
-                        {{ present_key }}[b][h][s][d] = {{ zero_literal }};
+                        {{ present_key }}[b][h][s][d] = {{ present_zero_literal }};
                     }
                     for (int d = 0; d < {{ v_head_size }}; ++d) {
-                        {{ present_value }}[b][h][s][d] = {{ zero_literal }};
+                        {{ present_value }}[b][h][s][d] = {{ present_zero_literal }};
+                    }
+                }
+            }
+            for (int qi = 0; qi < {{ q_seq }}; ++qi) {
+                for (int qh = 0; qh < {{ num_heads }}; ++qh) {
+                    for (int d = 0; d < {{ v_head_size }}; ++d) {
+                        {{ output }}[b][qi][qh * {{ v_head_size }} + d] = {{ zero_literal }};
+                    }
+                }
+            }
+            continue;
+        }
+{% endif %}
+        int total_seq = cur_pos + 1;
+
+        for (int h = 0; h < {{ kv_num_heads }}; ++h) {
+            for (int s = 0; s < {{ max_seq_len }}; ++s) {
+                for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                    {{ present_key }}[b][h][s][d] = (s < total_seq) ? {{ past_key }}[b][h][s][d] : {{ present_zero_literal }};
+                }
+                for (int d = 0; d < {{ v_head_size }}; ++d) {
+                    {{ present_value }}[b][h][s][d] = (s < total_seq) ? {{ past_value }}[b][h][s][d] : {{ present_zero_literal }};
+                }
+            }
+        }
+
+        for (int qi = 0; qi < {{ q_seq }}; ++qi) {
+            // Causal mask: query qi occupies absolute position
+            // (total_seq - q_seq + qi) and attends to keys up to and including
+            // that position.
+            int attend = total_seq - {{ q_seq }} + qi + 1;
+            if (attend < 1) {
+                attend = 1;
+            }
+            for (int qh = 0; qh < {{ num_heads }}; ++qh) {
+                int kv_head = qh / {{ head_group_size }};
+
+                {{ acc_type }} q[{{ qk_head_size }}];
+                for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                    q[d] = {{ acc_cast }}{{ query }}[b][qi][qh * {{ qk_head_size }} + d];
+                }
+
+                {{ acc_type }} scores[{{ max_seq_len }}];
+                {{ acc_type }} max_score = {{ acc_min_literal }};
+                for (int ki = 0; ki < attend; ++ki) {
+                    {{ acc_type }} score = {{ acc_zero_literal }};
+                    for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                        score += q[d] * {{ acc_cast }}{{ present_key }}[b][kv_head][ki][d];
+                    }
+                    score *= scale;
+                    scores[ki] = score;
+                    if (score > max_score) {
+                        max_score = score;
+                    }
+                }
+
+                {{ acc_type }} sum_exp = {{ acc_zero_literal }};
+                for (int ki = 0; ki < attend; ++ki) {
+                    scores[ki] = {{ exp_fn }}(scores[ki] - max_score);
+                    sum_exp += scores[ki];
+                }
+                for (int ki = 0; ki < attend; ++ki) {
+                    scores[ki] /= sum_exp;
+                }
+
+                for (int d = 0; d < {{ v_head_size }}; ++d) {
+                    {{ acc_type }} acc = {{ acc_zero_literal }};
+                    for (int ki = 0; ki < attend; ++ki) {
+                        acc += scores[ki] * {{ acc_cast }}{{ present_value }}[b][kv_head][ki][d];
+                    }
+                    {{ output }}[b][qi][qh * {{ v_head_size }} + d] = {{ out_cast }}acc;
+                }
+            }
+        }
+{% elif quantized %}
+        // Quantized KV cache (int8/uint8, optionally int4-packed). Only the
+        // ONNX Runtime boundary-zero reference behavior is implemented so far;
+        // a full numeric dequantized-attention kernel is a follow-up.
+        for (int h = 0; h < {{ kv_num_heads }}; ++h) {
+            for (int s = 0; s < {{ max_seq_len }}; ++s) {
+                for (int d = 0; d < {{ cache_qk_head }}; ++d) {
+                    {{ present_key }}[b][h][s][d] = {{ present_zero_literal }};
+                }
+                for (int d = 0; d < {{ cache_v_head }}; ++d) {
+                    {{ present_value }}[b][h][s][d] = {{ present_zero_literal }};
+                }
+            }
+        }
+        for (int qi = 0; qi < {{ q_seq }}; ++qi) {
+            for (int qh = 0; qh < {{ num_heads }}; ++qh) {
+                for (int d = 0; d < {{ v_head_size }}; ++d) {
+                    {{ output }}[b][qi][qh * {{ v_head_size }} + d] = {{ zero_literal }};
+                }
+            }
+        }
+{% else %}
+{% if boundary_zero_on_cache_limit %}
+        if (cur_pos >= max_total_seq - 1) {
+            for (int h = 0; h < {{ kv_num_heads }}; ++h) {
+                for (int s = 0; s < {{ max_seq_len }}; ++s) {
+                    for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                        {{ present_key }}[b][h][s][d] = {{ present_zero_literal }};
+                    }
+                    for (int d = 0; d < {{ v_head_size }}; ++d) {
+                        {{ present_value }}[b][h][s][d] = {{ present_zero_literal }};
                     }
                 }
             }
@@ -53,14 +161,14 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% if past_key %}
                     {{ present_key }}[b][h][s][d] = {{ past_key }}[b][h][s][d];
 {% else %}
-                    {{ present_key }}[b][h][s][d] = {{ zero_literal }};
+                    {{ present_key }}[b][h][s][d] = {{ present_zero_literal }};
 {% endif %}
                 }
                 for (int d = 0; d < {{ v_head_size }}; ++d) {
 {% if past_value %}
                     {{ present_value }}[b][h][s][d] = {{ past_value }}[b][h][s][d];
 {% else %}
-                    {{ present_value }}[b][h][s][d] = {{ zero_literal }};
+                    {{ present_value }}[b][h][s][d] = {{ present_zero_literal }};
 {% endif %}
                 }
             }
@@ -75,10 +183,10 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             }
             for (int s = total_seq; s < {{ max_seq_len }}; ++s) {
                 for (int d = 0; d < {{ qk_head_size }}; ++d) {
-                    {{ present_key }}[b][h][s][d] = {{ zero_literal }};
+                    {{ present_key }}[b][h][s][d] = {{ present_zero_literal }};
                 }
                 for (int d = 0; d < {{ v_head_size }}; ++d) {
-                    {{ present_value }}[b][h][s][d] = {{ zero_literal }};
+                    {{ present_value }}[b][h][s][d] = {{ present_zero_literal }};
                 }
             }
         }
@@ -124,5 +232,6 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                 }
             }
         }
+{% endif %}
     }
 }
