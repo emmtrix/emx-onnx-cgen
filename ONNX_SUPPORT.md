@@ -8,7 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1914 / 1914, 100.0% | 1.22.0 |
-| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4314 / 4324, 99.8% | n/a |
+| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4363 / 4373, 99.8% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 9 / 9, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -1944,7 +1944,7 @@ Coverage 1914 / 1914 ONNX files (100.0%).
 
 Test directory: `emx-ort-test-artifacts-org/artifacts/onnxruntime`
 
-Coverage 4314 / 4324 ONNX files (99.8%).
+Coverage 4363 / 4373 ONNX files (99.8%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -2166,6 +2166,7 @@ Coverage 4314 / 4324 ONNX files (99.8%).
 | test/contrib_ops/fused_conv_test/Conv2D_HardSigmoid_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/fused_conv_test/Conv2D_Relu_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/fused_conv_test/Cpu_Conv2D_Bias_Z_Relu_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/fused_conv_test/Cpu_Conv3D_Batched_Relu_run0/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/fused_matmul_op_test/DoubleTypeAlphaZero_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/fused_matmul_op_test/DoubleTypeEmptyInput_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/fused_matmul_op_test/DoubleTypeEmptyKDim_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
@@ -2493,6 +2494,8 @@ Coverage 4314 / 4324 ONNX files (99.8%).
 | test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/fused_matmul_op_test/FloatTypeTransposeBatch_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_2Bits_Uint8_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_2Bits_Uint8_run1/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
@@ -2533,6 +2536,8 @@ Coverage 4314 / 4324 ONNX files (99.8%).
 | test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run7/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_2Bits_Uint8_PackedZpNotMultipleOf4_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_2Bits_Uint8_PackedZpNotMultipleOf4_run1/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_4Bits_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_4Bits_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/gather_block_quantized_op_test/GatherAxis0WithZeroPoints_4Bits_run2/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
@@ -2656,9 +2661,24 @@ Coverage 4314 / 4324 ONNX files (99.8%).
 | test/contrib_ops/group_query_attention_op_test/BoundaryValidSeqlensKWithLargerPast_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/group_query_attention_op_test/BoundaryValidSeqlensK_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/group_query_attention_op_test/MaxBoundarySeqlensK_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/group_query_attention_op_test/QuantizedKV_INT4_GQARatio4_Prompt_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/group_query_attention_op_test/QuantizedKV_INT4_PerChannel_Prompt_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/group_query_attention_op_test/QuantizedKV_INT4_PerTensor_Prompt_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/group_query_attention_op_test/QuantizedKV_INT8_LargeHead_Prompt_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/group_query_attention_op_test/QuantizedKV_INT8_MultiBatch_Prompt_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/group_query_attention_op_test/QuantizedKV_INT8_PerChannel_Prompt_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/group_query_attention_op_test/QuantizedKV_INT8_PerTensor_Prompt_run0/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/group_query_attention_op_test/SeqlensKLegacy2DShapeMultiBatch_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/group_query_attention_op_test/SeqlensKLegacy2DShapeTrailingBatch_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/group_query_attention_op_test/SeqlensKLegacy2DShape_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/group_query_attention_op_test/SeqlensKWithinCosCache_Rotary_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/group_query_attention_op_test/SharedKV_EmptyKV_WithPast_Batched_CPU_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/group_query_attention_op_test/SharedKV_EmptyKV_WithPast_CPU_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/group_query_attention_op_test/SharedKV_EmptyKV_WithPast_GQARatio8_CPU_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/group_query_attention_op_test/SharedKV_EmptyKV_WithPast_LargeHeadSize_CPU_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/group_query_attention_op_test/SharedKV_EmptyKV_WithPast_Prompt_CPU_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/group_query_attention_op_test/SharedKV_EmptyKV_WithPast_Rotary_CPU_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/group_query_attention_op_test/SharedKV_EmptyKV_WithPast_Rotary_CPU_run1/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/inverse_test/four_by_four_batches_float_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/inverse_test/four_by_four_float_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/inverse_test/two_by_two_double_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
@@ -2669,6 +2689,8 @@ Coverage 4314 / 4324 ONNX files (99.8%).
 | test/contrib_ops/layer_norm_op_test/LayerNorm17_double_run0/model.onnx (--test-data-inputs-only) | 17 | Data/ORT | ✅ | OK (max ULP 5) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm17_opset_run0/model.onnx (--test-data-inputs-only) | 17 | Data/ORT | ✅ | OK (max ULP 5) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm17_opset_run1/model.onnx (--test-data-inputs-only) | 17 | Data/ORT | ✅ | OK (max ULP 5) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_ConstantWeights_LargeInput_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_LargeValues_NoNaN_run0/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_NormSize1_NoBias_run0/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_NormSize1_Valid_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_NormSize1_WithBiasScale_run0/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
@@ -2697,6 +2719,8 @@ Coverage 4314 / 4324 ONNX files (99.8%).
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_Scalar_NoBias_run0/model.onnx (--test-data-inputs-only) | 17 | Data/ORT | ✅ | OK (max ULP 0) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_Scale_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 3) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_ValidScaleBias_Broadcast_run0/model.onnx | 7 | Data/Data | ✅ | OK (max ULP 80) |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_VeryLargeValues_NoNaN_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/layer_norm_op_test/LayerNorm_ZeroVariance_run0/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/layer_norm_op_test/LayerNorm_run0/model.onnx (--test-data-inputs-only) | 7 | Data/ORT | ✅ | OK (max ULP 5) |
 | test/contrib_ops/linear_attention_op_test/DeltaRule_MultiToken_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/linear_attention_op_test/DeltaRule_SingleToken_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
@@ -2732,15 +2756,22 @@ Coverage 4314 / 4324 ONNX files (99.8%).
 | test/contrib_ops/math/matmul_sparse_test/TestCsr_run1/model.onnx |  | Data/Data | ❌ | Unsupported value type 'sparse_tensor_type' for 'A'. Hint: export the model with tensor inputs/outputs. |
 | test/contrib_ops/math/matmul_sparse_test/TestCsr_run2/model.onnx |  | Data/Data | ❌ | Unsupported value type 'sparse_tensor_type' for 'A'. Hint: export the model with tensor inputs/outputs. |
 | test/contrib_ops/math/matmul_sparse_test/TestCsr_run3/model.onnx |  | Data/Data | ❌ | Unsupported value type 'sparse_tensor_type' for 'A'. Hint: export the model with tensor inputs/outputs. |
+| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Asymmetric_128x128_Bias_run0/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/matmul_2bits_test/Float32_2Bits_Asymmetric_128x128_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Asymmetric_128x256_BlkLen128_Bias_run0/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/matmul_2bits_test/Float32_2Bits_Asymmetric_128x256_BlkLen128_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Asymmetric_256x256_BlkLen64_Bias_run0/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/matmul_2bits_test/Float32_2Bits_Asymmetric_256x256_BlkLen64_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_2bits_test/Float32_2Bits_Asymmetric_256x256_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Asymmetric_Batch32_256x256_Bias_run0/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/matmul_2bits_test/Float32_2Bits_Asymmetric_Batch32_256x256_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Symmetric_128x128_Bias_run0/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/matmul_2bits_test/Float32_2Bits_Symmetric_128x128_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_2bits_test/Float32_2Bits_Symmetric_128x256_BlkLen128_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Symmetric_256x256_BlkLen64_Bias_run0/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/matmul_2bits_test/Float32_2Bits_Symmetric_256x256_BlkLen64_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_2bits_test/Float32_2Bits_Symmetric_256x256_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_2bits_test/Float32_2Bits_Symmetric_Batch32_128x128_Bias_run0/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/matmul_2bits_test/Float32_2Bits_Symmetric_Batch32_128x128_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy0_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
@@ -2902,6 +2933,16 @@ Coverage 4314 / 4324 ONNX files (99.8%).
 | test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run79/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_2bits_test/Float32_2b_Accuracy4_run9/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_FloatZP_DynamicZP_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_FloatZP_Fallback_NonAlignedK_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_FloatZP_Fallback_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_FloatZP_QAD_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_FloatZP_QAD_run1/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_FloatZP_QAD_run2/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_FloatZP_QAD_run3/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_FloatZP_QAD_run4/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_2bits_test/Float32_2b_FloatZP_VaryingPerBlock_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/matmul_2bits_test/MLFloat16_2b_MLFloat16ZP_Fallback_run0/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/matmul_4bits_test/Float16_4b_Accuracy0_run10/model.onnx |  | Data/Data | ✅ | OK (max ULP 22) |
@@ -4616,6 +4657,8 @@ Coverage 4314 / 4324 ONNX files (99.8%).
 | test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_NoBias_test_U8U8_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/maxpool_mask_test/MaxPoolWithMask_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/moe_test/MoECpuTest_BasicSwiGLU_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/moe_test/MoETest_Gelu_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/moe_test/MoETest_Relu_run0/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/moe_test/QMoETest_CPU_RouterWeights_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/moe_test/QMoETest_CPU_RouterWeights_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/multihead_attention_op_test/CrossAttentionWithPast_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
@@ -6229,11 +6272,15 @@ Coverage 4314 / 4324 ONNX files (99.8%).
 | test/contrib_ops/tokenizer_test/TokenizerCharLevel_LatinCharsWithMarkersC_run0/model.onnx |  | Data/Data | ✅ | OK (no numeric comparisons) |
 | test/contrib_ops/tokenizer_test/TokenizerCharLevel_LatinCharsWithMarkersNC_run0/model.onnx |  | Data/Data | ✅ | OK (no numeric comparisons) |
 | test/contrib_ops/tokenizer_test/TokenizerCharLevel_MixedCharsWithMarkersC_run0/model.onnx |  | Data/Data | ✅ | OK (no numeric comparisons) |
+| test/contrib_ops/tokenizer_test/TokenizerCharLevel_SingleCharWithMark_run0/model.onnx |  |  | ✅ |  |
+| test/contrib_ops/tokenizer_test/TokenizerExpression_EmptyMatchRegex_run0/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/tokenizer_test/TokenizerExpression_Grouping_run0/model.onnx |  | Data/Data | ✅ | OK (no numeric comparisons) |
+| test/contrib_ops/tokenizer_test/TokenizerExpression_MinCharNum_run0/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/tokenizer_test/TokenizerExpression_RegChar_run0/model.onnx |  | Data/Data | ✅ | OK (no numeric comparisons) |
 | test/contrib_ops/tokenizer_test/TokenizerExpression_RegDot_run0/model.onnx |  | Data/Data | ✅ | OK (no numeric comparisons) |
 | test/contrib_ops/tokenizer_test/TokenizerExpression_RegEx_run0/model.onnx |  | Data/Data | ✅ | OK (no numeric comparisons) |
 | test/contrib_ops/tokenizer_test/TokenizerExpression_RegRep_run0/model.onnx |  | Data/Data | ✅ | OK (no numeric comparisons) |
+| test/contrib_ops/tokenizer_test/TokenizerWithSeparators_EmptyMatchRegex_run0/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/tokenizer_test/TokenizerWithSeparators_MixCharCommonPrefixC_run0/model.onnx |  | Data/Data | ✅ | OK (no numeric comparisons) |
 | test/contrib_ops/tokenizer_test/TokenizerWithSeparators_MixCharsNoMarkersSeparatorsOverlapLongFirstC_run0/model.onnx |  | Data/Data | ✅ | OK (no numeric comparisons) |
 | test/contrib_ops/tokenizer_test/TokenizerWithSeparators_MixCharsNoMarkersSeparatorsOverlapLongFirstRepeatedShortC_run0/model.onnx |  | Data/Data | ✅ | OK (no numeric comparisons) |
@@ -6246,9 +6293,11 @@ Coverage 4314 / 4324 ONNX files (99.8%).
 | test/contrib_ops/tokenizer_test/TokenizerWithSeparators_MixCharsWithMarkersEndMatchAtLeast4CharsC_run0/model.onnx |  | Data/Data | ✅ | OK (no numeric comparisons) |
 | test/contrib_ops/tokenizer_test/TokenizerWithSeparators_MixCharsWithMarkersEndMatchC_run0/model.onnx |  | Data/Data | ✅ | OK (no numeric comparisons) |
 | test/contrib_ops/tokenizer_test/TokenizerWithSeparators_MixCharsWithMarkersStartMatchC_run0/model.onnx |  | Data/Data | ✅ | OK (no numeric comparisons) |
+| test/contrib_ops/tokenizer_test/Tokenizer_EmbeddedNullBytes_run0/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/tokenizer_test/Tokenizer_EmptyInput_run0/model.onnx |  | Data/Data | ✅ | OK (no numeric comparisons) |
 | test/contrib_ops/tokenizer_test/Tokenizer_EmptyInput_run1/model.onnx |  | Data/Data | ✅ | OK (no numeric comparisons) |
 | test/contrib_ops/tokenizer_test/Tokenizer_EmptyInput_run2/model.onnx |  | Data/Data | ✅ | OK (no numeric comparisons) |
+| test/contrib_ops/tokenizer_test/Tokenizer_LargeInput_run0/model.onnx |  |  | ✅ |  |
 | test/contrib_ops/trilu_test/neg_k_float_lower_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/trilu_test/neg_k_float_upper_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/trilu_test/small_k_float_lower_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
