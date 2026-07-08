@@ -35,6 +35,22 @@ class GroupQueryAttentionSpec:
     seqlens_rank: int
     seqlens_rows: int
     seqlens_cols: int
+    do_rotary: bool
+    rotary_interleaved: bool
+    rotary_dim: int
+    cos_cache: str | None
+    sin_cache: str | None
+    position_ids: str | None
+    cos_cache_rows: int
+    position_ids_rows: int
+    position_ids_cols: int
+    quantized: bool
+    cache_dtype: ScalarType
+    cache_qk_head: int
+    cache_v_head: int
+    k_scale: str | None
+    v_scale: str | None
+    k_scale_size: int
 
 
 def _normalize_quant_attr(value: object) -> str:
@@ -65,12 +81,11 @@ def resolve_group_query_attention_spec(
         "qk_output",
         "k_quant_type",
         "v_quant_type",
+        "kv_cache_bit_width",
     }
     if set(node.attrs) - supported_attrs:
         raise UnsupportedOpError("Unsupported op GroupQueryAttention")
 
-    if int(node.attrs.get("do_rotary", 0)) != 0:
-        raise UnsupportedOpError("Unsupported op GroupQueryAttention")
     if int(node.attrs.get("qk_output", 0)) != 0:
         raise UnsupportedOpError("Unsupported op GroupQueryAttention")
     if int(node.attrs.get("local_window_size", -1)) != -1:
@@ -80,7 +95,12 @@ def resolve_group_query_attention_spec(
 
     k_quant_type = _normalize_quant_attr(node.attrs.get("k_quant_type", "NONE"))
     v_quant_type = _normalize_quant_attr(node.attrs.get("v_quant_type", "NONE"))
-    if k_quant_type != "NONE" or v_quant_type != "NONE":
+    if k_quant_type != v_quant_type:
+        raise UnsupportedOpError(
+            "GroupQueryAttention requires matching k/v quantization types"
+        )
+    quantized = k_quant_type != "NONE"
+    if quantized and k_quant_type not in ("PER_TENSOR", "PER_CHANNEL"):
         raise UnsupportedOpError("Unsupported op GroupQueryAttention")
 
     num_heads = node.attrs.get("num_heads")
@@ -113,8 +133,13 @@ def resolve_group_query_attention_spec(
         raise ShapeInferenceError(
             "GroupQueryAttention key/value sequence lengths must match"
         )
-    if kv_seq != 1:
-        raise UnsupportedOpError("Unsupported op GroupQueryAttention")
+    # kv_seq == 1 is the incremental decode step (one new token). kv_seq == 0 is
+    # the shared/empty-KV case (attend into the cache only). kv_seq > 1 is the
+    # prefill/prompt step. Negative sequence lengths are meaningless.
+    if kv_seq < 0:
+        raise ShapeInferenceError(
+            "GroupQueryAttention key/value seq length must be >= 0"
+        )
 
     if q_hidden_size % num_heads != 0:
         raise ShapeInferenceError(
@@ -185,6 +210,10 @@ def resolve_group_query_attention_spec(
         raise UnsupportedOpError(
             "GroupQueryAttention expects both past_key and past_value if either is provided"
         )
+    # With no new key/value tokens there is nothing to attend to unless a cache
+    # is provided, so the empty-KV case requires a past cache.
+    if kv_seq == 0 and not has_past:
+        raise UnsupportedOpError("Unsupported op GroupQueryAttention")
 
     present_key_name = _optional_name(node.outputs, 1)
     present_value_name = _optional_name(node.outputs, 2)
@@ -196,6 +225,20 @@ def resolve_group_query_attention_spec(
     if not has_present:
         raise UnsupportedOpError("Unsupported op GroupQueryAttention")
 
+    # The KV cache dtype is taken from present_key: float for a plain cache, or
+    # int8/uint8 for a quantized cache. For int4 (uint8-packed) the stored head
+    # dimension is smaller than the logical head size, so the exact head-size
+    # checks below only apply to the unquantized case.
+    cache_dtype = _value_dtype(graph, present_key_name, node)
+    if quantized and cache_dtype not in (ScalarType.I8, ScalarType.U8):
+        raise UnsupportedOpError(
+            "GroupQueryAttention quantized cache must be int8 or uint8"
+        )
+    if not quantized and cache_dtype != dtype:
+        raise ShapeInferenceError(
+            "GroupQueryAttention present cache dtype must match the query dtype"
+        )
+
     max_seq_len: int | None = None
     if has_past:
         past_key_shape = _value_shape(graph, past_key_name, node)
@@ -206,7 +249,7 @@ def resolve_group_query_attention_spec(
             raise ShapeInferenceError(
                 "GroupQueryAttention past_key batch/kv_heads must match query"
             )
-        if past_key_shape[3] != qk_head_size:
+        if not quantized and past_key_shape[3] != qk_head_size:
             raise ShapeInferenceError(
                 "GroupQueryAttention past_key head_size must match query/key head size"
             )
@@ -214,7 +257,7 @@ def resolve_group_query_attention_spec(
             raise ShapeInferenceError(
                 "GroupQueryAttention past_value batch/kv_heads must match query"
             )
-        if past_value_shape[3] != v_head_size:
+        if not quantized and past_value_shape[3] != v_head_size:
             raise ShapeInferenceError(
                 "GroupQueryAttention past_value head_size must match value head size"
             )
@@ -232,7 +275,7 @@ def resolve_group_query_attention_spec(
         raise ShapeInferenceError(
             "GroupQueryAttention present_key batch/kv_heads must match query"
         )
-    if present_key_shape[3] != qk_head_size:
+    if not quantized and present_key_shape[3] != qk_head_size:
         raise ShapeInferenceError(
             "GroupQueryAttention present_key head_size must match query/key head size"
         )
@@ -240,7 +283,7 @@ def resolve_group_query_attention_spec(
         raise ShapeInferenceError(
             "GroupQueryAttention present_value batch/kv_heads must match query"
         )
-    if present_value_shape[3] != v_head_size:
+    if not quantized and present_value_shape[3] != v_head_size:
         raise ShapeInferenceError(
             "GroupQueryAttention present_value head_size must match value head size"
         )
@@ -248,6 +291,8 @@ def resolve_group_query_attention_spec(
         raise ShapeInferenceError(
             "GroupQueryAttention present_key and present_value sequence lengths must match"
         )
+    cache_qk_head = present_key_shape[3]
+    cache_v_head = present_value_shape[3]
 
     if max_seq_len is None:
         max_seq_len = present_key_shape[2]
@@ -256,7 +301,60 @@ def resolve_group_query_attention_spec(
             "GroupQueryAttention present key/value max sequence length must match past cache"
         )
 
+    k_scale = _optional_name(node.inputs, 12)
+    v_scale = _optional_name(node.inputs, 13)
+    k_scale_size = 0
+    if quantized:
+        if k_scale is None or v_scale is None:
+            raise UnsupportedOpError(
+                "GroupQueryAttention quantized cache requires k_scale and v_scale"
+            )
+        k_scale_shape = _value_shape(graph, k_scale, node)
+        k_scale_size = k_scale_shape[0] if len(k_scale_shape) == 1 else 0
+    elif k_scale is not None or v_scale is not None:
+        raise UnsupportedOpError(
+            "GroupQueryAttention k_scale/v_scale require a quantized cache"
+        )
+
     scale = float(node.attrs.get("scale", 1.0 / math.sqrt(qk_head_size)))
+
+    do_rotary = int(node.attrs.get("do_rotary", 0)) != 0
+    rotary_interleaved = int(node.attrs.get("rotary_interleaved", 0)) != 0
+    cos_cache = _optional_name(node.inputs, 7)
+    sin_cache = _optional_name(node.inputs, 8)
+    position_ids = _optional_name(node.inputs, 9)
+    rotary_dim = 0
+    cos_cache_rows = 0
+    position_ids_rows = 0
+    position_ids_cols = 0
+    if do_rotary:
+        if cos_cache is None or sin_cache is None:
+            raise UnsupportedOpError(
+                "GroupQueryAttention do_rotary requires cos_cache and sin_cache"
+            )
+        cos_shape = _value_shape(graph, cos_cache, node)
+        sin_shape = _value_shape(graph, sin_cache, node)
+        if len(cos_shape) != 2 or len(sin_shape) != 2 or cos_shape != sin_shape:
+            raise ShapeInferenceError(
+                "GroupQueryAttention cos_cache/sin_cache must be equal-shaped 2D tensors"
+            )
+        cos_cache_rows = cos_shape[0]
+        rotary_dim = cos_shape[1] * 2
+        if rotary_dim > qk_head_size:
+            raise ShapeInferenceError(
+                "GroupQueryAttention rotary dimension exceeds the head size"
+            )
+        if position_ids is not None:
+            position_ids_shape = _value_shape(graph, position_ids, node)
+            if len(position_ids_shape) != 2:
+                raise ShapeInferenceError(
+                    "GroupQueryAttention position_ids must be a 2D tensor"
+                )
+            position_ids_rows, position_ids_cols = position_ids_shape
+    elif cos_cache is not None or sin_cache is not None or position_ids is not None:
+        raise UnsupportedOpError(
+            "GroupQueryAttention rotary inputs require do_rotary=1"
+        )
 
     return GroupQueryAttentionSpec(
         batch=batch,
@@ -277,6 +375,22 @@ def resolve_group_query_attention_spec(
         seqlens_rank=seqlens_rank,
         seqlens_rows=seqlens_rows,
         seqlens_cols=seqlens_cols,
+        do_rotary=do_rotary,
+        rotary_interleaved=rotary_interleaved,
+        rotary_dim=rotary_dim,
+        cos_cache=cos_cache,
+        sin_cache=sin_cache,
+        position_ids=position_ids,
+        cos_cache_rows=cos_cache_rows,
+        position_ids_rows=position_ids_rows,
+        position_ids_cols=position_ids_cols,
+        quantized=quantized,
+        cache_dtype=cache_dtype,
+        cache_qk_head=cache_qk_head,
+        cache_v_head=cache_v_head,
+        k_scale=k_scale,
+        v_scale=v_scale,
+        k_scale_size=k_scale_size,
     )
 
 
@@ -316,5 +430,21 @@ def lower_group_query_attention(graph: Graph, node: Node) -> GroupQueryAttention
         seqlens_rank=spec.seqlens_rank,
         seqlens_rows=spec.seqlens_rows,
         seqlens_cols=spec.seqlens_cols,
+        do_rotary=spec.do_rotary,
+        rotary_interleaved=spec.rotary_interleaved,
+        rotary_dim=spec.rotary_dim,
+        cos_cache=spec.cos_cache,
+        sin_cache=spec.sin_cache,
+        position_ids=spec.position_ids,
+        cos_cache_rows=spec.cos_cache_rows,
+        position_ids_rows=spec.position_ids_rows,
+        position_ids_cols=spec.position_ids_cols,
+        quantized=spec.quantized,
+        cache_dtype=spec.cache_dtype,
+        cache_qk_head=spec.cache_qk_head,
+        cache_v_head=spec.cache_v_head,
+        k_scale=spec.k_scale,
+        v_scale=spec.v_scale,
+        k_scale_size=spec.k_scale_size,
         dtype=op_dtype,
     )
