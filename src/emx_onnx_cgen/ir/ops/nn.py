@@ -3568,6 +3568,7 @@ class GroupQueryAttentionOp(RenderableOpBase):
                 acc_dtype=acc_dtype,
                 batch=self.batch,
                 q_seq=self.q_seq,
+                kv_seq=self.kv_seq,
                 num_heads=self.num_heads,
                 kv_num_heads=self.kv_num_heads,
                 qk_head_size=self.qk_head_size,

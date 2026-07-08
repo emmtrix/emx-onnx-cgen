@@ -5270,15 +5270,24 @@ def _make_group_query_attention_model(
     max_seq_len: int = 4,
     seqlens_shape: tuple[int, ...] = (1,),
     with_past: bool = True,
+    q_seq: int = 1,
+    kv_seq: int = 1,
+    seqlens_value: np.ndarray | None = None,
 ) -> onnx.ModelProto:
     q_hidden = num_heads * qk_head_size
     k_hidden = kv_num_heads * qk_head_size
     v_hidden = kv_num_heads * v_head_size
 
     inputs_info = [
-        helper.make_tensor_value_info("query", TensorProto.FLOAT, [batch, 1, q_hidden]),
-        helper.make_tensor_value_info("key", TensorProto.FLOAT, [batch, 1, k_hidden]),
-        helper.make_tensor_value_info("value", TensorProto.FLOAT, [batch, 1, v_hidden]),
+        helper.make_tensor_value_info(
+            "query", TensorProto.FLOAT, [batch, q_seq, q_hidden]
+        ),
+        helper.make_tensor_value_info(
+            "key", TensorProto.FLOAT, [batch, kv_seq, k_hidden]
+        ),
+        helper.make_tensor_value_info(
+            "value", TensorProto.FLOAT, [batch, kv_seq, v_hidden]
+        ),
     ]
     node_inputs = ["query", "key", "value"]
 
@@ -5301,7 +5310,10 @@ def _make_group_query_attention_model(
     else:
         node_inputs.extend(["", ""])
 
-    seqlens_value = np.zeros(seqlens_shape, dtype=np.int32)
+    if seqlens_value is None:
+        seqlens_value = np.zeros(seqlens_shape, dtype=np.int32)
+    else:
+        seqlens_value = seqlens_value.astype(np.int32)
     total_seq_value = np.array([max_seq_len], dtype=np.int32)
     seqlens_tensor = numpy_helper.from_array(seqlens_value, name="seqlens_k")
     total_seq_tensor = numpy_helper.from_array(
@@ -5310,7 +5322,7 @@ def _make_group_query_attention_model(
     node_inputs.extend(["seqlens_k", "total_sequence_length", "", "", "", "", ""])
 
     output = helper.make_tensor_value_info(
-        "output", TensorProto.FLOAT, [batch, 1, q_hidden]
+        "output", TensorProto.FLOAT, [batch, q_seq, q_hidden]
     )
     present_key = helper.make_tensor_value_info(
         "present_key",
@@ -5407,6 +5419,95 @@ def test_group_query_attention_legacy_2d_seqlens_testbench_compare() -> None:
         with_past=False,
     )
     _run_testbench_compare(model)
+
+
+def _run_gqa_testbench_compare(model: onnx.ModelProto) -> None:
+    """Compare the compiled C testbench against onnxruntime for a GQA model.
+
+    Unlike ``_run_testbench_compare`` this preserves static zero-sized input
+    dimensions (the empty key/value tensors of the shared-KV case) instead of
+    substituting 1, so onnxruntime receives the exact declared shapes.
+    """
+    initializer_names = {init.name for init in model.graph.initializer}
+    rng = np.random.default_rng(0)
+    inputs: dict[str, np.ndarray] = {}
+    for value_info in model.graph.input:
+        if value_info.name in initializer_names:
+            continue
+        dtype = _tensorproto_to_dtype(value_info.type.tensor_type.elem_type)
+        shape = [dim.dim_value for dim in value_info.type.tensor_type.shape.dim]
+        inputs[value_info.name] = _make_random_array(rng, shape=shape, dtype=dtype)
+    session = ort.InferenceSession(
+        model.SerializeToString(), providers=["CPUExecutionProvider"]
+    )
+    ort_outputs = session.run(None, inputs)
+    payload = _compile_and_run_testbench(model, testbench_inputs=inputs)
+    outputs_payload = payload.get("outputs", {})
+    for output_info, ort_output in zip(model.graph.output, ort_outputs):
+        output_payload = outputs_payload.get(output_info.name)
+        if output_payload is None:
+            raise AssertionError(f"Missing output {output_info.name} in testbench data")
+        output_data = decode_testbench_array(output_payload["data"], ort_output.dtype)
+        output_data = output_data.reshape(ort_output.shape)
+        np.testing.assert_allclose(output_data, ort_output, rtol=1e-4, atol=1e-5)
+
+
+def test_group_query_attention_empty_kv_shared_past_testbench_compare() -> None:
+    model = _make_group_query_attention_model(
+        kv_seq=0,
+        with_past=True,
+        max_seq_len=4,
+        seqlens_value=np.array([2], dtype=np.int32),
+    )
+    _run_gqa_testbench_compare(model)
+
+
+def test_group_query_attention_empty_kv_batched_testbench_compare() -> None:
+    model = _make_group_query_attention_model(
+        batch=2,
+        kv_seq=0,
+        with_past=True,
+        max_seq_len=4,
+        seqlens_shape=(2,),
+        seqlens_value=np.array([1, 3], dtype=np.int32),
+    )
+    _run_gqa_testbench_compare(model)
+
+
+def test_group_query_attention_empty_kv_gqa_ratio_testbench_compare() -> None:
+    model = _make_group_query_attention_model(
+        num_heads=8,
+        kv_num_heads=1,
+        kv_seq=0,
+        with_past=True,
+        max_seq_len=4,
+        seqlens_value=np.array([2], dtype=np.int32),
+    )
+    _run_gqa_testbench_compare(model)
+
+
+def test_group_query_attention_empty_kv_large_head_testbench_compare() -> None:
+    model = _make_group_query_attention_model(
+        qk_head_size=64,
+        v_head_size=64,
+        kv_seq=0,
+        with_past=True,
+        max_seq_len=4,
+        seqlens_value=np.array([2], dtype=np.int32),
+    )
+    _run_gqa_testbench_compare(model)
+
+
+def test_group_query_attention_empty_kv_prompt_causal_testbench_compare() -> None:
+    # q_seq > 1 attending only into the past cache exercises the causal mask.
+    model = _make_group_query_attention_model(
+        q_seq=8,
+        kv_seq=0,
+        with_past=True,
+        max_seq_len=8,
+        seqlens_value=np.array([7], dtype=np.int32),
+    )
+    _run_gqa_testbench_compare(model)
 
 
 def _run_ort_compare_or_skip(

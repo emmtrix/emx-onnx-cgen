@@ -113,7 +113,11 @@ def resolve_group_query_attention_spec(
         raise ShapeInferenceError(
             "GroupQueryAttention key/value sequence lengths must match"
         )
-    if kv_seq != 1:
+    # kv_seq == 1 is the incremental decode step (one new token). kv_seq == 0 is
+    # the shared/empty-KV case where no new token is supplied and the query
+    # attends only into the existing cache. Longer prefill runs (kv_seq > 1) are
+    # not supported yet.
+    if kv_seq not in (0, 1):
         raise UnsupportedOpError("Unsupported op GroupQueryAttention")
 
     if q_hidden_size % num_heads != 0:
@@ -185,6 +189,10 @@ def resolve_group_query_attention_spec(
         raise UnsupportedOpError(
             "GroupQueryAttention expects both past_key and past_value if either is provided"
         )
+    # With no new key/value tokens there is nothing to attend to unless a cache
+    # is provided, so the empty-KV case requires a past cache.
+    if kv_seq == 0 and not has_past:
+        raise UnsupportedOpError("Unsupported op GroupQueryAttention")
 
     present_key_name = _optional_name(node.outputs, 1)
     present_value_name = _optional_name(node.outputs, 2)
