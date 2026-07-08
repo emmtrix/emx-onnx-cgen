@@ -49,6 +49,29 @@ def _is_success_message(message: str) -> bool:
     return message == "" or message.startswith("OK")
 
 
+_CONTROL_CHAR_RE = re.compile(r"[\x00-\x1f\x7f]")
+
+
+def _escape_table_cell(text: str) -> str:
+    """Escape ``text`` so it renders literally inside a GitHub Markdown table cell.
+
+    Verification error messages can contain content that corrupts the generated
+    document:
+
+    * control characters, most importantly the NUL byte that leaks in from
+      models such as ``Tokenizer_EmbeddedNullBytes`` -- a single NUL makes Git
+      classify the whole file as binary, so GitHub refuses to render it as
+      Markdown at all;
+    * angle-bracketed placeholders such as ``<omitted>`` that GitHub drops as
+      unknown HTML tags;
+    * pipe characters that GitHub treats as column separators.
+
+    Neutralize all three so the surrounding table keeps rendering.
+    """
+    text = _CONTROL_CHAR_RE.sub(lambda match: f"\\x{ord(match.group()):02x}", text)
+    return text.replace("|", "\\|").replace("<", "&lt;").replace(">", "&gt;")
+
+
 def _render_onnx_file_support_table(
     expectations: list[OnnxFileExpectation],
     *,
@@ -77,7 +100,7 @@ def _render_onnx_file_support_table(
             else ""
         )
         verification = _verification_mode(expectation)
-        message = expectation.error.replace("\n", " ").strip()
+        message = _escape_table_cell(expectation.error.replace("\n", " ").strip())
         lines.append(
             f"| {_file_label(expectation)} | {opset} | {verification} | {supported} | {message} |"
         )
@@ -279,7 +302,7 @@ def _render_error_histogram_markdown(
         opset_versions = ", ".join(
             str(opset) for opset in sorted(error_opsets.get(error, set()))
         )
-        lines.append(f"| {error} | {count} | {opset_versions} |")
+        lines.append(f"| {_escape_table_cell(error)} | {count} | {opset_versions} |")
     if error_opset_pairs:
         pair_counts = Counter(error_opset_pairs)
         lines.extend(
@@ -295,7 +318,7 @@ def _render_error_histogram_markdown(
             pair_counts.items(),
             key=lambda item: (item[0][1], -item[1], item[0][0]),
         ):
-            lines.append(f"| {error} | {opset} | {count} |")
+            lines.append(f"| {_escape_table_cell(error)} | {opset} | {count} |")
     lines.append("")
     return "\n".join(lines)
 
@@ -560,6 +583,33 @@ def test_render_onnx_file_support_table_includes_extra_cli_args_in_file_column()
         "| node/test_example/model.onnx (--runtime onnx-reference) | 13 | Data | ✅ | OK (max ULP 0) |"
         in lines
     )
+
+
+def test_render_onnx_file_support_table_escapes_html_in_error_message() -> None:
+    lines = _render_onnx_file_support_table(
+        [
+            OnnxFileExpectation(
+                path="node/test_gqa/model.onnx",
+                error="Unsupported op GroupQueryAttention (inputs=[<omitted>, <omitted>])",
+                verification_mode="Data/Data",
+                opset_version=None,
+            )
+        ]
+    )
+
+    row = lines[-1]
+    assert "<omitted>" not in row
+    assert "&lt;omitted&gt;" in row
+
+
+def test_escape_table_cell_neutralizes_pipes_and_angle_brackets() -> None:
+    assert _escape_table_cell("a | b <tag>") == "a \\| b &lt;tag&gt;"
+
+
+def test_escape_table_cell_escapes_control_characters() -> None:
+    # A NUL byte would otherwise make Git treat the whole doc as binary.
+    assert _escape_table_cell("hello\x00world") == "hello\\x00world"
+    assert "\x00" not in _escape_table_cell("hello\x00world")
 
 
 def test_render_onnx_file_support_markdown_includes_ort_artifact_section(
