@@ -5510,6 +5510,208 @@ def test_group_query_attention_empty_kv_prompt_causal_testbench_compare() -> Non
     _run_gqa_testbench_compare(model)
 
 
+def _assert_gqa_testbench_all_zero(
+    model: onnx.ModelProto, inputs: dict[str, np.ndarray]
+) -> None:
+    """Compile+run the GQA testbench and assert every output is all zeros.
+
+    The rotary and quantized-KV artifact models only ever exercise the cache
+    boundary, where ONNX Runtime's reference outputs are all zeros; runtime
+    ``seqlens_k`` at ``max_seq_len - 1`` triggers the same boundary handling in
+    the generated C.
+    """
+    payload = _compile_and_run_testbench(model, testbench_inputs=inputs)
+    outputs_payload = payload.get("outputs", {})
+    for output_info in model.graph.output:
+        output_payload = outputs_payload.get(output_info.name)
+        if output_payload is None:
+            raise AssertionError(f"Missing output {output_info.name} in testbench data")
+        dtype = _tensorproto_to_dtype(output_info.type.tensor_type.elem_type)
+        data = decode_testbench_array(output_payload["data"], dtype)
+        np.testing.assert_array_equal(data, np.zeros_like(data))
+
+
+def _make_gqa_rotary_boundary_model() -> onnx.ModelProto:
+    num_heads, kv_num_heads, head_size, max_seq_len = 1, 1, 8, 4
+    hidden = num_heads * head_size
+    rotary_half = head_size // 2
+    inputs_info = [
+        helper.make_tensor_value_info("query", TensorProto.FLOAT, [1, 1, hidden]),
+        helper.make_tensor_value_info("key", TensorProto.FLOAT, [1, 1, hidden]),
+        helper.make_tensor_value_info("value", TensorProto.FLOAT, [1, 1, hidden]),
+        helper.make_tensor_value_info(
+            "past_key", TensorProto.FLOAT, [1, kv_num_heads, max_seq_len, head_size]
+        ),
+        helper.make_tensor_value_info(
+            "past_value", TensorProto.FLOAT, [1, kv_num_heads, max_seq_len, head_size]
+        ),
+        helper.make_tensor_value_info("seqlens_k", TensorProto.INT32, [1]),
+        helper.make_tensor_value_info("total_sequence_length", TensorProto.INT32, [1]),
+        helper.make_tensor_value_info(
+            "cos_cache", TensorProto.FLOAT, [max_seq_len, rotary_half]
+        ),
+        helper.make_tensor_value_info(
+            "sin_cache", TensorProto.FLOAT, [max_seq_len, rotary_half]
+        ),
+    ]
+    node = helper.make_node(
+        "GroupQueryAttention",
+        inputs=[
+            "query",
+            "key",
+            "value",
+            "past_key",
+            "past_value",
+            "seqlens_k",
+            "total_sequence_length",
+            "cos_cache",
+            "sin_cache",
+        ],
+        outputs=["output", "present_key", "present_value"],
+        domain="com.microsoft",
+        num_heads=num_heads,
+        kv_num_heads=kv_num_heads,
+        do_rotary=1,
+        local_window_size=-1,
+    )
+    outputs = [
+        helper.make_tensor_value_info("output", TensorProto.FLOAT, [1, 1, hidden]),
+        helper.make_tensor_value_info(
+            "present_key", TensorProto.FLOAT, [1, kv_num_heads, max_seq_len, head_size]
+        ),
+        helper.make_tensor_value_info(
+            "present_value",
+            TensorProto.FLOAT,
+            [1, kv_num_heads, max_seq_len, head_size],
+        ),
+    ]
+    graph = helper.make_graph([node], "gqa_rotary", inputs_info, outputs)
+    model = helper.make_model(
+        graph,
+        opset_imports=[
+            helper.make_operatorsetid("", 13),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+    return model
+
+
+def _make_gqa_quantized_boundary_model(*, per_channel: bool) -> onnx.ModelProto:
+    num_heads, kv_num_heads, head_size, max_seq_len = 2, 1, 8, 4
+    q_hidden = num_heads * head_size
+    kv_hidden = kv_num_heads * head_size
+    scale_size = head_size if per_channel else 1
+    inputs_info = [
+        helper.make_tensor_value_info(
+            "query", TensorProto.FLOAT, [1, max_seq_len, q_hidden]
+        ),
+        helper.make_tensor_value_info(
+            "key", TensorProto.FLOAT, [1, max_seq_len, kv_hidden]
+        ),
+        helper.make_tensor_value_info(
+            "value", TensorProto.FLOAT, [1, max_seq_len, kv_hidden]
+        ),
+        helper.make_tensor_value_info(
+            "past_key", TensorProto.INT8, [1, kv_num_heads, max_seq_len, head_size]
+        ),
+        helper.make_tensor_value_info(
+            "past_value", TensorProto.INT8, [1, kv_num_heads, max_seq_len, head_size]
+        ),
+        helper.make_tensor_value_info("seqlens_k", TensorProto.INT32, [1]),
+        helper.make_tensor_value_info("total_sequence_length", TensorProto.INT32, [1]),
+        helper.make_tensor_value_info("k_scale", TensorProto.FLOAT, [scale_size]),
+        helper.make_tensor_value_info("v_scale", TensorProto.FLOAT, [scale_size]),
+    ]
+    node = helper.make_node(
+        "GroupQueryAttention",
+        inputs=[
+            "query",
+            "key",
+            "value",
+            "past_key",
+            "past_value",
+            "seqlens_k",
+            "total_sequence_length",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "k_scale",
+            "v_scale",
+        ],
+        outputs=["output", "present_key", "present_value"],
+        domain="com.microsoft",
+        num_heads=num_heads,
+        kv_num_heads=kv_num_heads,
+        local_window_size=-1,
+        k_quant_type="PER_CHANNEL" if per_channel else "PER_TENSOR",
+        v_quant_type="PER_CHANNEL" if per_channel else "PER_TENSOR",
+        kv_cache_bit_width=8,
+    )
+    outputs = [
+        helper.make_tensor_value_info(
+            "output", TensorProto.FLOAT, [1, max_seq_len, q_hidden]
+        ),
+        helper.make_tensor_value_info(
+            "present_key", TensorProto.INT8, [1, kv_num_heads, max_seq_len, head_size]
+        ),
+        helper.make_tensor_value_info(
+            "present_value", TensorProto.INT8, [1, kv_num_heads, max_seq_len, head_size]
+        ),
+    ]
+    graph = helper.make_graph([node], "gqa_quantized", inputs_info, outputs)
+    model = helper.make_model(
+        graph,
+        opset_imports=[
+            helper.make_operatorsetid("", 13),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+    return model
+
+
+def test_group_query_attention_rotary_boundary_zeroes_output() -> None:
+    model = _make_gqa_rotary_boundary_model()
+    rng = np.random.default_rng(0)
+    inputs = {
+        "query": rng.standard_normal((1, 1, 8)).astype(np.float32),
+        "key": rng.standard_normal((1, 1, 8)).astype(np.float32),
+        "value": rng.standard_normal((1, 1, 8)).astype(np.float32),
+        "past_key": rng.standard_normal((1, 1, 4, 8)).astype(np.float32),
+        "past_value": rng.standard_normal((1, 1, 4, 8)).astype(np.float32),
+        # seqlens_k == max_seq_len - 1 -> cache boundary.
+        "seqlens_k": np.array([3], dtype=np.int32),
+        "total_sequence_length": np.array([4], dtype=np.int32),
+        "cos_cache": np.ones((4, 4), dtype=np.float32),
+        "sin_cache": np.zeros((4, 4), dtype=np.float32),
+    }
+    _assert_gqa_testbench_all_zero(model, inputs)
+
+
+@pytest.mark.parametrize("per_channel", [False, True])
+def test_group_query_attention_quantized_boundary_zeroes_output(
+    per_channel: bool,
+) -> None:
+    model = _make_gqa_quantized_boundary_model(per_channel=per_channel)
+    rng = np.random.default_rng(0)
+    scale_size = 8 if per_channel else 1
+    inputs = {
+        "query": rng.standard_normal((1, 4, 16)).astype(np.float32),
+        "key": rng.standard_normal((1, 4, 8)).astype(np.float32),
+        "value": rng.standard_normal((1, 4, 8)).astype(np.float32),
+        "past_key": rng.integers(-8, 8, size=(1, 1, 4, 8), dtype=np.int8),
+        "past_value": rng.integers(-8, 8, size=(1, 1, 4, 8), dtype=np.int8),
+        "seqlens_k": np.array([3], dtype=np.int32),
+        "total_sequence_length": np.array([4], dtype=np.int32),
+        "k_scale": np.full((scale_size,), 0.02, dtype=np.float32),
+        "v_scale": np.full((scale_size,), 0.02, dtype=np.float32),
+    }
+    _assert_gqa_testbench_all_zero(model, inputs)
+
+
 def _run_ort_compare_or_skip(
     model: onnx.ModelProto, *, skip_substrings: tuple[str, ...]
 ) -> None:
