@@ -13,7 +13,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         float result = dequant >= 0.0f ? dequant : {{ alpha_literal }} * dequant;
 {% endif %}
         float requant = result / y_scale_val + y_zero_val;
-        int32_t rounded = (int32_t)nearbyintf(requant);
+        int32_t rounded = (int32_t){{ scalar_fn(SF.ROUND, ST.F32) }}(requant);
         if (rounded < {{ qmin }}) rounded = {{ qmin }};
         if (rounded > {{ qmax }}) rounded = {{ qmax }};
         {{ output }}{% for v in loop_vars %}[{{ v }}]{% endfor %} = ({{ q_c_type }})rounded;

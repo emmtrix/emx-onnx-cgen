@@ -201,12 +201,6 @@ class ScalarFunction(str, Enum):
     LDEXP = _common_binary_from_f32_spec("ldexp")
     LE = _scalar_function_spec("le")
     LEAKY_RELU = _common_unary_from_f32_spec("leaky_relu")
-    LLRINT = _scalar_function_spec(
-        "llrint",
-        supports_signed_int=False,
-        supports_unsigned_int=False,
-        supports_bool=False,
-    )
     LGAMMA = _common_unary_from_f32_spec("lgamma")
     LOG = _common_unary_from_f32_spec("log")
     LOG10 = _common_unary_from_f32_spec("log10")
@@ -233,12 +227,6 @@ class ScalarFunction(str, Enum):
     MUL = _bool_binary_from_f32_spec("mul")
     NAN_TO_NUM = _common_unary_from_f32_spec("nan_to_num")
     NE = _scalar_function_spec("ne")
-    NEARBYINT = _scalar_function_spec(
-        "nearbyint",
-        supports_signed_int=False,
-        supports_unsigned_int=False,
-        supports_bool=False,
-    )
     NEG = _bool_unary_from_f32_spec("neg")
     NEXTAFTER = _common_binary_from_f32_spec("nextafter")
     POSITIVE = _bool_unary_from_f32_spec("positive", supports_unsigned_int=False)
@@ -1180,7 +1168,34 @@ def _float_sign(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
 
 
 def _float_round(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
-    return _float_unary_math(dtype_info, "round", "rint")
+    # Round half to even without rint()/nearbyint(), which follow the current
+    # floating-point rounding direction. round() always breaks ties away from
+    # zero and r - a is exact, so ties are detected reliably and moved to the
+    # even neighbour. Half-precision types round in float, which represents
+    # them exactly, instead of being promoted to double.
+    math_info = (
+        dtype_info if dtype_info.suffix == "f64" else _SCALAR_TYPES[ScalarType.F32]
+    )
+    round_fn = _math_fn("round", math_info)
+    fabs_fn = _math_fn("fabs", math_info)
+    half = _float_literal(0.5, math_info)
+    two = _float_literal(2.0, math_info)
+    c_type = dtype_info.c_type
+    math_type = math_info.c_type
+    converts = math_type != c_type
+    value = "x" if converts else "a"
+    lines = [f"static inline {c_type} {dtype_info.prefix}round({c_type} a) {{"]
+    if converts:
+        lines.append(f"    {math_type} x = ({math_type})a;")
+    lines += [
+        f"    {math_type} r = {round_fn}({value});",
+        f"    if ({fabs_fn}(r - {value}) == {half}) {{",
+        f"        r = {two} * {round_fn}({value} * {half});",
+        "    }",
+        f"    return {f'({c_type})r' if converts else 'r'};",
+        "}",
+    ]
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
 
 
 def _float_trunc(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
@@ -1464,16 +1479,6 @@ def _float_binary_math_handler(
     return handler
 
 
-def _float_llrint(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
-    math_name = _math_fn("llrint", dtype_info)
-    lines = [
-        f"static inline long long int {dtype_info.prefix}llrint({dtype_info.c_type} a) {{",
-        f"    return {math_name}(a);",
-        "}",
-    ]
-    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
-
-
 def _float_comparison_handler(
     name: str, op: str
 ) -> Callable[[_ScalarTypeInfo], _GeneratedScalar]:
@@ -1568,8 +1573,6 @@ _FLOAT_OP_DISPATCH: Mapping[str, Callable[[_ScalarTypeInfo], _GeneratedScalar]] 
     "log10": _float_unary_math_handler("log10"),
     "exp2": _float_unary_math_handler("exp2"),
     "lgamma": _float_unary_math_handler("lgamma"),
-    "nearbyint": _float_unary_math_handler("nearbyint"),
-    "llrint": _float_llrint,
     "isfinite": _float_isfinite,
     "rsqrt": _float_rsqrt,
     "sigmoid": _float_sigmoid,
@@ -2279,12 +2282,12 @@ _FLOAT8_FROM_F32_BODY: Dict[str, List[str]] = {
         "    int e; float f = frexpf(a, &e); e--; f *= 2.0f;",
         "    int be = e + 1;",
         "    if (be >= 1) {",
-        "        int m = (int)rintf((f - 1.0f) * 2.0f);",
+        "        int m = (int)ref_scalar_f32_round((f - 1.0f) * 2.0f);",
         "        if (m >= 2) { m = 0; be++; }",
         "        if (be > 3) return s | 0x07u;",
         "        return s | (uint8_t)((be << 1) | m);",
         "    }",
-        "    int m = (int)rintf(a * 2.0f);",
+        "    int m = (int)ref_scalar_f32_round(a * 2.0f);",
         "    if (m >= 2) return s | (1u << 1);",
         "    if (m <= 0) return s;",
         "    return s | (uint8_t)m;",
@@ -2298,12 +2301,12 @@ _FLOAT8_FROM_F32_BODY: Dict[str, List[str]] = {
         "    int e; float f = frexpf(a, &e); e--; f *= 2.0f;",
         "    int be = e + 7;",
         "    if (be >= 1) {",
-        "        int m = (int)rintf((f - 1.0f) * 8.0f);",
+        "        int m = (int)ref_scalar_f32_round((f - 1.0f) * 8.0f);",
         "        if (m >= 8) { m = 0; be++; }",
         "        if (be > 15 || (be == 15 && m >= 7)) return s | 0x7Eu;",
         "        return s | (uint8_t)((be << 3) | m);",
         "    }",
-        "    int m = (int)rintf(ldexpf(a, 9));",
+        "    int m = (int)ref_scalar_f32_round(ldexpf(a, 9));",
         "    if (m >= 8) return s | (1u << 3);",
         "    if (m <= 0) return s;",
         "    return s | (uint8_t)m;",
@@ -2317,12 +2320,12 @@ _FLOAT8_FROM_F32_BODY: Dict[str, List[str]] = {
         "    int e; float f = frexpf(a, &e); e--; f *= 2.0f;",
         "    int be = e + 8;",
         "    if (be >= 1) {",
-        "        int m = (int)rintf((f - 1.0f) * 8.0f);",
+        "        int m = (int)ref_scalar_f32_round((f - 1.0f) * 8.0f);",
         "        if (m >= 8) { m = 0; be++; }",
         "        if (be > 15) return s | 0x7Fu;",
         "        return s | (uint8_t)((be << 3) | m);",
         "    }",
-        "    int m = (int)rintf(ldexpf(a, 10));",
+        "    int m = (int)ref_scalar_f32_round(ldexpf(a, 10));",
         "    if (m >= 8) return s | (1u << 3);",
         "    if (m <= 0) return 0u;",
         "    return s | (uint8_t)m;",
@@ -2336,12 +2339,12 @@ _FLOAT8_FROM_F32_BODY: Dict[str, List[str]] = {
         "    int e; float f = frexpf(a, &e); e--; f *= 2.0f;",
         "    int be = e + 15;",
         "    if (be >= 1) {",
-        "        int m = (int)rintf((f - 1.0f) * 4.0f);",
+        "        int m = (int)ref_scalar_f32_round((f - 1.0f) * 4.0f);",
         "        if (m >= 4) { m = 0; be++; }",
         "        if (be >= 31) return s | 0x7Bu;",
         "        return s | (uint8_t)((be << 2) | m);",
         "    }",
-        "    int m = (int)rintf(ldexpf(a, 16));",
+        "    int m = (int)ref_scalar_f32_round(ldexpf(a, 16));",
         "    if (m >= 4) return s | (1u << 2);",
         "    if (m <= 0) return s;",
         "    return s | (uint8_t)m;",
@@ -2355,12 +2358,12 @@ _FLOAT8_FROM_F32_BODY: Dict[str, List[str]] = {
         "    int e; float f = frexpf(a, &e); e--; f *= 2.0f;",
         "    int be = e + 16;",
         "    if (be >= 1) {",
-        "        int m = (int)rintf((f - 1.0f) * 4.0f);",
+        "        int m = (int)ref_scalar_f32_round((f - 1.0f) * 4.0f);",
         "        if (m >= 4) { m = 0; be++; }",
         "        if (be > 31) return s | 0x7Fu;",
         "        return s | (uint8_t)((be << 2) | m);",
         "    }",
-        "    int m = (int)rintf(ldexpf(a, 17));",
+        "    int m = (int)ref_scalar_f32_round(ldexpf(a, 17));",
         "    if (m >= 4) return s | (1u << 2);",
         "    if (m <= 0) return 0u;",
         "    return s | (uint8_t)m;",
@@ -2389,12 +2392,12 @@ _FLOAT8_FROM_F32_NO_SAT_BODY: Dict[str, List[str]] = {
         "    int e; float f = frexpf(a, &e); e--; f *= 2.0f;",
         "    int be = e + 7;",
         "    if (be >= 1) {",
-        "        int m = (int)rintf((f - 1.0f) * 8.0f);",
+        "        int m = (int)ref_scalar_f32_round((f - 1.0f) * 8.0f);",
         "        if (m >= 8) { m = 0; be++; }",
         "        if (be > 15 || (be == 15 && m >= 7)) return s | 0x7Fu;",
         "        return s | (uint8_t)((be << 3) | m);",
         "    }",
-        "    int m = (int)rintf(ldexpf(a, 9));",
+        "    int m = (int)ref_scalar_f32_round(ldexpf(a, 9));",
         "    if (m >= 8) return s | (1u << 3);",
         "    if (m <= 0) return s;",
         "    return s | (uint8_t)m;",
@@ -2408,12 +2411,12 @@ _FLOAT8_FROM_F32_NO_SAT_BODY: Dict[str, List[str]] = {
         "    int e; float f = frexpf(a, &e); e--; f *= 2.0f;",
         "    int be = e + 8;",
         "    if (be >= 1) {",
-        "        int m = (int)rintf((f - 1.0f) * 8.0f);",
+        "        int m = (int)ref_scalar_f32_round((f - 1.0f) * 8.0f);",
         "        if (m >= 8) { m = 0; be++; }",
         "        if (be > 15) return 0x80u;",
         "        return s | (uint8_t)((be << 3) | m);",
         "    }",
-        "    int m = (int)rintf(ldexpf(a, 10));",
+        "    int m = (int)ref_scalar_f32_round(ldexpf(a, 10));",
         "    if (m >= 8) return s | (1u << 3);",
         "    if (m <= 0) return 0u;",
         "    return s | (uint8_t)m;",
@@ -2427,12 +2430,12 @@ _FLOAT8_FROM_F32_NO_SAT_BODY: Dict[str, List[str]] = {
         "    int e; float f = frexpf(a, &e); e--; f *= 2.0f;",
         "    int be = e + 15;",
         "    if (be >= 1) {",
-        "        int m = (int)rintf((f - 1.0f) * 4.0f);",
+        "        int m = (int)ref_scalar_f32_round((f - 1.0f) * 4.0f);",
         "        if (m >= 4) { m = 0; be++; }",
         "        if (be >= 31) return s | 0x7Cu;",
         "        return s | (uint8_t)((be << 2) | m);",
         "    }",
-        "    int m = (int)rintf(ldexpf(a, 16));",
+        "    int m = (int)ref_scalar_f32_round(ldexpf(a, 16));",
         "    if (m >= 4) return s | (1u << 2);",
         "    if (m <= 0) return s;",
         "    return s | (uint8_t)m;",
@@ -2446,12 +2449,12 @@ _FLOAT8_FROM_F32_NO_SAT_BODY: Dict[str, List[str]] = {
         "    int e; float f = frexpf(a, &e); e--; f *= 2.0f;",
         "    int be = e + 16;",
         "    if (be >= 1) {",
-        "        int m = (int)rintf((f - 1.0f) * 4.0f);",
+        "        int m = (int)ref_scalar_f32_round((f - 1.0f) * 4.0f);",
         "        if (m >= 4) { m = 0; be++; }",
         "        if (be > 31) return 0x80u;",
         "        return s | (uint8_t)((be << 2) | m);",
         "    }",
-        "    int m = (int)rintf(ldexpf(a, 17));",
+        "    int m = (int)ref_scalar_f32_round(ldexpf(a, 17));",
         "    if (m >= 4) return s | (1u << 2);",
         "    if (m <= 0) return 0u;",
         "    return s | (uint8_t)m;",
@@ -2469,6 +2472,16 @@ def _float8_to_f32(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     return _GeneratedScalar(lines=lines, deps=set(), includes=set())
 
 
+def _float8_from_f32_deps(body: List[str]) -> Set[ScalarFunctionKey]:
+    if not any("ref_scalar_f32_round(" in line for line in body):
+        return set()
+    return {
+        ScalarFunctionKey(
+            function=ScalarFunction.ROUND, return_type=ScalarType.F32, params=()
+        )
+    }
+
+
 def _float8_from_f32(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     body = _FLOAT8_FROM_F32_BODY[dtype_info.c_type]
     lines = [
@@ -2476,7 +2489,9 @@ def _float8_from_f32(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
         *body,
         "}",
     ]
-    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+    return _GeneratedScalar(
+        lines=lines, deps=_float8_from_f32_deps(body), includes=set()
+    )
 
 
 def _float8_from_f32_no_sat(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
@@ -2488,7 +2503,9 @@ def _float8_from_f32_no_sat(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
         *body,
         "}",
     ]
-    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+    return _GeneratedScalar(
+        lines=lines, deps=_float8_from_f32_deps(body), includes=set()
+    )
 
 
 def _float8_unary_from_f32(dtype_info: _ScalarTypeInfo, name: str) -> _GeneratedScalar:
