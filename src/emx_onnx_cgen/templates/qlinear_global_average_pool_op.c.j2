@@ -15,7 +15,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                 }
             }
             {{ compute_type }} val = (({{ compute_type }})acc) * scale;
-            int32_t result = (int32_t){{ scalar_fn(SF.NEARBYINT, compute_dtype) }}(val) + output_zero;
+            int32_t result = (int32_t){{ scalar_fn(SF.ROUND, compute_dtype) }}(val) + output_zero;
             result = result < ({{ min_literal }}) ? ({{ min_literal }}) : result;
             result = result > ({{ max_literal }}) ? ({{ max_literal }}) : result;
             {{ output }}[n][0][0][0][c] = ({{ output_c_type }})result;
@@ -33,7 +33,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                 }
             }
             {{ compute_type }} val = (({{ compute_type }})acc) * scale;
-            int32_t result = (int32_t){{ scalar_fn(SF.NEARBYINT, compute_dtype) }}(val) + output_zero;
+            int32_t result = (int32_t){{ scalar_fn(SF.ROUND, compute_dtype) }}(val) + output_zero;
             result = result < ({{ min_literal }}) ? ({{ min_literal }}) : result;
             result = result > ({{ max_literal }}) ? ({{ max_literal }}) : result;
             {{ output }}[n][c][0][0][0] = ({{ output_c_type }})result;
@@ -49,7 +49,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                 acc += ((int32_t){{ input0 }}[n][iw][c]) - input_zero;
             }
             {{ compute_type }} val = (({{ compute_type }})acc) * scale;
-            int32_t result = (int32_t){{ scalar_fn(SF.NEARBYINT, compute_dtype) }}(val) + output_zero;
+            int32_t result = (int32_t){{ scalar_fn(SF.ROUND, compute_dtype) }}(val) + output_zero;
             result = result < ({{ min_literal }}) ? ({{ min_literal }}) : result;
             result = result > ({{ max_literal }}) ? ({{ max_literal }}) : result;
             {{ output }}[n][0][c] = ({{ output_c_type }})result;
@@ -63,7 +63,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                 acc += ((int32_t){{ input0 }}[n][c][iw]) - input_zero;
             }
             {{ compute_type }} val = (({{ compute_type }})acc) * scale;
-            int32_t result = (int32_t){{ scalar_fn(SF.NEARBYINT, compute_dtype) }}(val) + output_zero;
+            int32_t result = (int32_t){{ scalar_fn(SF.ROUND, compute_dtype) }}(val) + output_zero;
             result = result < ({{ min_literal }}) ? ({{ min_literal }}) : result;
             result = result > ({{ max_literal }}) ? ({{ max_literal }}) : result;
             {{ output }}[n][c][0] = ({{ output_c_type }})result;
@@ -81,7 +81,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                 }
             }
             {{ compute_type }} val = (({{ compute_type }})acc) * scale;
-            int32_t result = (int32_t){{ scalar_fn(SF.NEARBYINT, compute_dtype) }}(val) + output_zero;
+            int32_t result = (int32_t){{ scalar_fn(SF.ROUND, compute_dtype) }}(val) + output_zero;
             result = result < ({{ min_literal }}) ? ({{ min_literal }}) : result;
             result = result > ({{ max_literal }}) ? ({{ max_literal }}) : result;
             {{ output }}[n][0][0][c] = ({{ output_c_type }})result;
@@ -97,7 +97,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                 }
             }
             {{ compute_type }} val = (({{ compute_type }})acc) * scale;
-            int32_t result = (int32_t){{ scalar_fn(SF.NEARBYINT, compute_dtype) }}(val) + output_zero;
+            int32_t result = (int32_t){{ scalar_fn(SF.ROUND, compute_dtype) }}(val) + output_zero;
             result = result < ({{ min_literal }}) ? ({{ min_literal }}) : result;
             result = result > ({{ max_literal }}) ? ({{ max_literal }}) : result;
             {{ output }}[n][c][0][0] = ({{ output_c_type }})result;

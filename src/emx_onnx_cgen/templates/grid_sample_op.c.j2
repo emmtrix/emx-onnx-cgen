@@ -74,7 +74,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% if mode == "nearest" %}
                 int in_bounds = 1;
 {% for dim in range(spatial_rank) %}
-                int idx{{ dim }} = (int)nearbyint(coords[{{ dim }}]);
+                int idx{{ dim }} = (int){{ scalar_fn(SF.ROUND, ST.F64) }}(coords[{{ dim }}]);
 {% if padding_mode == "zeros" %}
                 if (idx{{ dim }} < 0 || idx{{ dim }} >= input_spatial[{{ dim }}]) {
                     in_bounds = 0;
