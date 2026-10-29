@@ -9,7 +9,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         }
     }
     {{ compute_type }} a_scale = (a_max - a_min) / ({{ compute_type }})255;
-    {{ compute_type }} a_zero_fp = {{ scalar_fn(SF.NEARBYINT, compute_dtype) }}(-a_min / a_scale);
+    {{ compute_type }} a_zero_fp = {{ scalar_fn(SF.ROUND, compute_dtype) }}(-a_min / a_scale);
     a_zero_fp = {{ scalar_fn(SF.MAXIMUM, compute_dtype) }}(a_zero_fp, ({{ compute_type }})0);
     a_zero_fp = {{ scalar_fn(SF.MINIMUM, compute_dtype) }}(a_zero_fp, ({{ compute_type }})255);
     int32_t a_zero = (int32_t)a_zero_fp;
@@ -31,7 +31,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% endif %}
             int64_t acc = 0;
             for (idx_t k = 0; k < {{ k }}; ++k) {
-                {{ compute_type }} a_q_f = {{ scalar_fn(SF.NEARBYINT, compute_dtype) }}(({{ compute_type }}){{ input_a }}[i][k] / a_scale) + a_zero_fp;
+                {{ compute_type }} a_q_f = {{ scalar_fn(SF.ROUND, compute_dtype) }}(({{ compute_type }}){{ input_a }}[i][k] / a_scale) + a_zero_fp;
                 a_q_f = {{ scalar_fn(SF.MAXIMUM, compute_dtype) }}(a_q_f, ({{ compute_type }})0);
                 a_q_f = {{ scalar_fn(SF.MINIMUM, compute_dtype) }}(a_q_f, ({{ compute_type }})255);
                 int32_t b_v = (int32_t){{ input_b }}[k][j];
