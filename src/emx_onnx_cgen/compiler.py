@@ -528,31 +528,9 @@ class Compiler:
             output_dtypes,
             output_types,
         ) = self._collect_io_specs(graph)
-        ops, node_infos = self._lower_nodes(ctx)
-        self._check_lowered_ops(ops, node_infos, ctx)
         op_ctx = OpContext(ctx)
-        self._run_op_phase(
-            "validate",
-            ops,
-            node_infos,
-            ctx,
-            lambda op: op.validate(op_ctx),
-        )
-        self._run_op_phase(
-            "infer_types",
-            ops,
-            node_infos,
-            ctx,
-            lambda op: op.infer_types(op_ctx),
-        )
+        ops, node_infos = self._lower_nodes(ctx, op_ctx)
         self._check_inferred_types(ops, node_infos, op_ctx)
-        self._run_op_phase(
-            "infer_shapes",
-            ops,
-            node_infos,
-            ctx,
-            lambda op: op.infer_shapes(op_ctx),
-        )
         self._check_inferred_shapes(ops, node_infos, op_ctx)
         ops, node_infos = self._prune_dead_ops(ops, node_infos, output_names)
         refreshed_output_types: list[ValueType] = []
@@ -673,9 +651,7 @@ class Compiler:
                     continue
                 shape_product(value.type.shape)
 
-    def _collect_io_specs(
-        self, graph: Graph
-    ) -> tuple[
+    def _collect_io_specs(self, graph: Graph) -> tuple[
         tuple[str, ...],
         tuple[str | None, ...],
         tuple[tuple[int, ...], ...],
@@ -925,52 +901,6 @@ class Compiler:
         )
         raise type(exc)(f"{exc} ({summary})") from exc
 
-    def _run_op_phase(
-        self,
-        phase: str,
-        ops: Sequence[OpBase],
-        node_infos: Sequence[NodeInfo],
-        ctx: GraphContext,
-        action: Callable[[OpBase], None],
-    ) -> None:
-        for node_index, (op, node_info) in enumerate(zip(ops, node_infos, strict=True)):
-            try:
-                action(op)
-            except CompilerError as exc:
-                self._raise_with_node_info_context(
-                    exc,
-                    ctx,
-                    node_info,
-                    node_index=node_index,
-                    phase=phase,
-                    op=op,
-                )
-
-    def _check_lowered_ops(
-        self,
-        ops: Sequence[OpBase],
-        node_infos: Sequence[NodeInfo],
-        ctx: GraphContext,
-    ) -> None:
-        try:
-            check_lowered_ops(ops)
-        except CompilerError as exc:
-            for node_index, (op, node_info) in enumerate(
-                zip(ops, node_infos, strict=True)
-            ):
-                try:
-                    check_lowered_ops((op,))
-                except CompilerError:
-                    self._raise_with_node_info_context(
-                        exc,
-                        ctx,
-                        node_info,
-                        node_index=node_index,
-                        phase="check_lowered_ops",
-                        op=op,
-                    )
-            raise
-
     def _check_inferred_types(
         self,
         ops: Sequence[OpBase],
@@ -1021,7 +951,16 @@ class Compiler:
                     )
             raise
 
-    def _lower_nodes(self, ctx: GraphContext) -> tuple[list[OpBase], list[NodeInfo]]:
+    def _lower_nodes(
+        self, ctx: GraphContext, op_ctx: OpContext
+    ) -> tuple[list[OpBase], list[NodeInfo]]:
+        """Lower nodes in topological order, inferring each op's outputs eagerly.
+
+        Running validate/infer_types/infer_shapes right after lowering a node
+        makes its output types visible to the lowering of later nodes, so
+        values ONNX shape inference left untyped (e.g. outputs of contrib ops
+        without an ONNX schema) can still be consumed.
+        """
         ops: list[OpBase] = []
         node_infos: list[NodeInfo] = []
         registry = get_lowering_registry()
@@ -1032,7 +971,7 @@ class Compiler:
                     unsupported_op_message(node.op_type, node.domain)
                 )
             try:
-                ops.append(lowering(ctx, node))
+                op = lowering(ctx, node)
             except CompilerError as exc:
                 summary = self._format_lowering_failure_summary(
                     ctx,
@@ -1048,16 +987,43 @@ class Compiler:
                     )
                     message = f"{message}\n\nLowering debug context:\n{debug_context}"
                 raise type(exc)(message) from exc
-            node_infos.append(
-                NodeInfo(
-                    op_type=node.op_type,
-                    name=node.name,
-                    inputs=tuple(node.inputs),
-                    outputs=tuple(node.outputs),
-                    attrs=dict(node.attrs),
-                )
+            node_info = NodeInfo(
+                op_type=node.op_type,
+                name=node.name,
+                inputs=tuple(node.inputs),
+                outputs=tuple(node.outputs),
+                attrs=dict(node.attrs),
             )
+            self._run_op_phases(op, node_info, node_index, ctx, op_ctx)
+            ops.append(op)
+            node_infos.append(node_info)
         return ops, node_infos
+
+    def _run_op_phases(
+        self,
+        op: OpBase,
+        node_info: NodeInfo,
+        node_index: int,
+        ctx: GraphContext,
+        op_ctx: OpContext,
+    ) -> None:
+        for phase, action in (
+            ("check_lowered_ops", lambda _ctx: check_lowered_ops((op,))),
+            ("validate", op.validate),
+            ("infer_types", op.infer_types),
+            ("infer_shapes", op.infer_shapes),
+        ):
+            try:
+                action(op_ctx)
+            except CompilerError as exc:
+                self._raise_with_node_info_context(
+                    exc,
+                    ctx,
+                    node_info,
+                    node_index=node_index,
+                    phase=phase,
+                    op=op,
+                )
 
     @staticmethod
     def _prune_dead_ops(

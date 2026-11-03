@@ -312,13 +312,7 @@ def test_op_phase_failures_report_node_context() -> None:
     )
 
     with pytest.raises(ShapeInferenceError, match="validation failed") as exc_info:
-        compiler._run_op_phase(  # noqa: SLF001
-            "validate",
-            (op,),
-            (node_info,),
-            ctx,
-            lambda current_op: current_op.validate(op_ctx),
-        )
+        compiler._run_op_phases(op, node_info, 0, ctx, op_ctx)  # noqa: SLF001
 
     message = str(exc_info.value)
     assert (
