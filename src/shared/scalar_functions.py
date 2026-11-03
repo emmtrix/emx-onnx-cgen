@@ -1168,34 +1168,13 @@ def _float_sign(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
 
 
 def _float_round(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
-    # Round half to even without rint()/nearbyint(), which follow the current
-    # floating-point rounding direction. round() always breaks ties away from
-    # zero and r - a is exact, so ties are detected reliably and moved to the
-    # even neighbour. Half-precision types round in float, which represents
-    # them exactly, instead of being promoted to double.
-    math_info = (
-        dtype_info if dtype_info.suffix == "f64" else _SCALAR_TYPES[ScalarType.F32]
-    )
-    round_fn = _math_fn("round", math_info)
-    fabs_fn = _math_fn("fabs", math_info)
-    half = _float_literal(0.5, math_info)
-    two = _float_literal(2.0, math_info)
+    # ONNX rounds half to even, which nearbyint() provides in the default
+    # FE_TONEAREST rounding mode. Half-precision types round in float, which
+    # represents them exactly, instead of being promoted to double.
+    if dtype_info.suffix in ("f32", "f64"):
+        return _float_unary_math(dtype_info, "round", "nearbyint")
     c_type = dtype_info.c_type
-    math_type = math_info.c_type
-    converts = math_type != c_type
-    value = "x" if converts else "a"
-    lines = [f"static inline {c_type} {dtype_info.prefix}round({c_type} a) {{"]
-    if converts:
-        lines.append(f"    {math_type} x = ({math_type})a;")
-    lines += [
-        f"    {math_type} r = {round_fn}({value});",
-        f"    if ({fabs_fn}(r - {value}) == {half}) {{",
-        f"        r = {two} * {round_fn}({value} * {half});",
-        "    }",
-        f"    return {f'({c_type})r' if converts else 'r'};",
-        "}",
-    ]
-    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+    return _simple_unary(dtype_info, "round", f"({c_type})nearbyintf((float)a)")
 
 
 def _float_trunc(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
