@@ -58,30 +58,14 @@
  *   axis: 2
  */
 EMX_NODE_FN void node0_concat(const float input_0[1][2][3], const float input_1[1][2][1], float output[1][2][4]) {
-    const void *inputs[] = { input_0, input_1 };
-    const idx_t axis_sizes[] = { 3, 1 };
-    idx_t concat_axis = 0;
-    for (idx_t idx = 0; idx < 2; ++idx) {
-        concat_axis += axis_sizes[idx];
+    for (idx_t i0 = 0; i0 < 1; ++i0) {
+        for (idx_t i1 = 0; i1 < 2; ++i1) {
+            memcpy(&output[i0][i1][0], input_0[i0][i1], 3 * sizeof(float));
+        }
     }
-    if (concat_axis == 0) {
-        return;
-    }
-    for (idx_t outer_idx = 0; outer_idx < 1 * 2; ++outer_idx) {
-        idx_t output_offset = outer_idx * concat_axis * 1;
-        idx_t axis_offset = 0;
-        for (idx_t input_idx = 0; input_idx < 2; ++input_idx) {
-            idx_t axis = axis_sizes[input_idx];
-            idx_t copy_elems = axis * 1;
-            const unsigned char *input_bytes =
-            (const unsigned char *)inputs[input_idx];
-            idx_t input_offset = outer_idx * copy_elems;
-            memcpy(
-            ((unsigned char *)output) + (output_offset + axis_offset) * sizeof(float),
-            input_bytes + input_offset * sizeof(float),
-            copy_elems * sizeof(float)
-            );
-            axis_offset += copy_elems;
+    for (idx_t i0 = 0; i0 < 1; ++i0) {
+        for (idx_t i1 = 0; i1 < 2; ++i1) {
+            output[i0][i1][3] = input_1[i0][i1][0];
         }
     }
 }
