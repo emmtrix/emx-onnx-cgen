@@ -48,7 +48,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             {{ compute_type }} result = {{ alpha_literal }} * a_scale_val * b_scale_val * ({{ compute_type }})acc;
 {% if has_y_scale %}
             {{ compute_type }} scaled = result / y_scale_val + ({{ compute_type }})y_zero;
-            int64_t quantized = (int64_t){{ scalar_fn(SF.LLRINT, compute_dtype) }}(scaled);
+            int64_t quantized = (int64_t){{ scalar_fn(SF.ROUND, compute_dtype) }}(scaled);
             if (quantized < (int64_t){{ min_literal }}) {
                 quantized = (int64_t){{ min_literal }};
             } else if (quantized > (int64_t){{ max_literal }}) {

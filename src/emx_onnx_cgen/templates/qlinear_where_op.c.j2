@@ -15,7 +15,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}    dq_val = ((float)(int32_t){{ y_index_expr }} - y_zero_v) * y_scale_v;
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}}
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}float scaled = dq_val / z_scale_v + z_zero_v;
-        {% for indent in range(output_loop_vars | length) %}    {% endfor %}float rounded = nearbyintf(scaled);
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}float rounded = {{ scalar_fn(SF.ROUND, ST.F32) }}(scaled);
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}rounded = rounded < (float){{ min_literal }} ? (float){{ min_literal }} : rounded;
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}rounded = rounded > (float){{ max_literal }} ? (float){{ max_literal }} : rounded;
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ output_index_expr }} = ({{ output_c_type }})rounded;

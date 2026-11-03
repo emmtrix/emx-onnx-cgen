@@ -1074,7 +1074,7 @@ class MatMulNBitsOp(RenderableOpBase):
     bias_dtype: ScalarType | None
 
     def required_includes(self, ctx: OpContext) -> set[str]:
-        # The int8 (accuracy_level=4) path uses nearbyint()/fabs() from <math.h>.
+        # The int8 (accuracy_level=4) path uses fabs() from <math.h>.
         if (
             self.accuracy_level == 4
             and self.input0_dtype in {ScalarType.F16, ScalarType.BF16}

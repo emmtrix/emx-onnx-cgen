@@ -50,6 +50,14 @@
 #endif
 typedef uint8_t emx_float8e4m3fn_t;
 
+static inline float ref_scalar_f32_round(float a) {
+    float r = roundf(a);
+    if (fabsf(r - a) == 0.5f) {
+        r = 2.0f * roundf(a * 0.5f);
+    }
+    return r;
+}
+
 static inline emx_float8e4m3fn_t ref_scalar_f8e4m3fn_from_f32(float v) {
     if (v != v) return 0x7Fu;
     uint8_t s = signbit(v) ? 0x80u : 0u;
@@ -59,12 +67,12 @@ static inline emx_float8e4m3fn_t ref_scalar_f8e4m3fn_from_f32(float v) {
     int e; float f = frexpf(a, &e); e--; f *= 2.0f;
     int be = e + 7;
     if (be >= 1) {
-        int m = (int)rintf((f - 1.0f) * 8.0f);
+        int m = (int)ref_scalar_f32_round((f - 1.0f) * 8.0f);
         if (m >= 8) { m = 0; be++; }
         if (be > 15 || (be == 15 && m >= 7)) return s | 0x7Eu;
         return s | (uint8_t)((be << 3) | m);
     }
-    int m = (int)rintf(ldexpf(a, 9));
+    int m = (int)ref_scalar_f32_round(ldexpf(a, 9));
     if (m >= 8) return s | (1u << 3);
     if (m <= 0) return s;
     return s | (uint8_t)m;

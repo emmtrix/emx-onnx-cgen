@@ -19,7 +19,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% for _ in range(base + 1) %}    {% endfor %}for (idx_t kk = 0; kk < {{ block_size }}; ++kk) {
 {% for _ in range(base + 2) %}    {% endfor %}idx_t k = blk * {{ block_size }} + kk;
 {% for _ in range(base + 2) %}    {% endfor %}if (k >= {{ k }}) break;
-{% for _ in range(base + 2) %}    {% endfor %}{{ acc_type }} q = {{ scalar_fn(SF.NEARBYINT, acc_dtype) }}(({{ acc_type }}){{ a_prefix }}[k] * a_inv);
+{% for _ in range(base + 2) %}    {% endfor %}{{ acc_type }} q = {{ scalar_fn(SF.ROUND, acc_dtype) }}(({{ acc_type }}){{ a_prefix }}[k] * a_inv);
 {% for _ in range(base + 2) %}    {% endfor %}if (q > ({{ acc_type }})127) q = ({{ acc_type }})127;
 {% for _ in range(base + 2) %}    {% endfor %}if (q < ({{ acc_type }})-128) q = ({{ acc_type }})-128;
 {% for _ in range(base + 2) %}    {% endfor %}{{ qa }}[k] = (int8_t)q;

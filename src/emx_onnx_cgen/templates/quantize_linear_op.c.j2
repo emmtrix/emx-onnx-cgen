@@ -7,7 +7,7 @@ for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ d
     {{ output_expr }} = {{ from_f32_fn }}(scaled);
 {% else %}
     {{ compute_type }} scaled = (({{ compute_type }}){{ input_expr }} / ({{ compute_type }}){{ scale_expr }});
-    {{ compute_type }} rounded = {{ scalar_fn(SF.NEARBYINT, compute_dtype) }}(scaled) + ({{ compute_type }}){{ zero_expr }};
+    {{ compute_type }} rounded = {{ scalar_fn(SF.ROUND, compute_dtype) }}(scaled) + ({{ compute_type }}){{ zero_expr }};
     rounded = {{ scalar_fn(SF.MAXIMUM, compute_dtype) }}(rounded, ({{ compute_type }}){{ min_literal }});
     rounded = {{ scalar_fn(SF.MINIMUM, compute_dtype) }}(rounded, ({{ compute_type }}){{ max_literal }});
     {{ output_expr }} = ({{ output_c_type }})rounded;
