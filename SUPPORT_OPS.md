@@ -7,7 +7,7 @@ Operators are marked supported when they appear in an ONNX file with a successfu
 
 The `Notes` column links to implementation notes in [`docs/operator-notes.md`](docs/operator-notes.md); the `Relevant CLI options` column lists CLI flags that specifically affect the operator's generated code. Both are maintained in [`docs/operator-metadata.json`](docs/operator-metadata.json).
 
-Supported operators: 264 / 265
+Supported operators: 263 / 265
 
 | Operator | Supported | Notes | Relevant CLI options |
 | --- | --- | --- | --- |
@@ -215,7 +215,7 @@ Supported operators: 264 / 265
 | ai.onnx.ml.Binarizer | ✅ |  |  |
 | ai.onnx.ml.LabelEncoder | ✅ | [Notes](docs/operator-notes.md#text-processing-tfidfvectorizer-labelencoder) |  |
 | ai.onnx.ml.TreeEnsemble | ✅ | [Notes](docs/operator-notes.md#tree-based-models-treeensemble-treeensembleclassifier) |  |
-| ai.onnx.preview.FlexAttention | ✅ |  |  |
+| ai.onnx.preview.FlexAttention | ❌ |  |  |
 | ai.onnx.preview.training.Adagrad | ✅ |  |  |
 | ai.onnx.preview.training.Adam | ✅ |  |  |
 | ai.onnx.preview.training.Gradient | ✅ |  |  |

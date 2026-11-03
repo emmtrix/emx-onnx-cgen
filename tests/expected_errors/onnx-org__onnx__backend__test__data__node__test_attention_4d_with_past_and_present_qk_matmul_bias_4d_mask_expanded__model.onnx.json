@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 2)",
+  "error": "Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
@@ -24,6 +24,5 @@
     "Add",
     "Softmax"
   ],
-  "opset_version": 23,
-  "generated_checksum": "4325b063eb5a4d1dba4359e318866d56d7173abf4eb6b2db44748341645b0ab9"
+  "opset_version": 23
 }

@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "Code generation requires static shapes. Reason: tensor 'FlexAttention_test_flexattention_relative_positional_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_flexattention_relative_positional_expanded_ver26 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
@@ -22,6 +22,5 @@
     "Add",
     "Softmax"
   ],
-  "opset_version": 26,
-  "generated_checksum": "824ed424d73a6486e85e14967272d4335cabff44fbe46b146a4a1244a397a0ec"
+  "opset_version": 26
 }

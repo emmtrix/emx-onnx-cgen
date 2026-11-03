@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 3)",
+  "error": "Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
@@ -24,6 +24,5 @@
     "Add",
     "Softmax"
   ],
-  "opset_version": 23,
-  "generated_checksum": "0136edf58ccdbd4096276c5fd9edc85d632bc7d7e5c785dc278d64b72b31fdf1"
+  "opset_version": 23
 }

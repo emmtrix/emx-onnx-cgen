@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_diff_heads_sizes_causal_expanded_function_RangeRow' has dynamic dimensions ('unk__0',). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_causal_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
@@ -29,6 +29,5 @@
     "MatMul",
     "Softmax"
   ],
-  "opset_version": 23,
-  "generated_checksum": "65b41b00b4b6eed34aa3b046176f6ae5f19a764e5ea28cce9d0abd6f865ff635"
+  "opset_version": 23
 }

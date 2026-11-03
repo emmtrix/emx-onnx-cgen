@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1914 / 1914, 100.0% | 1.22.0 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1828 / 1914, 95.5% | 1.22.0 |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4313 / 4324, 99.7% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 9 / 9, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1914 / 1914 ONNX files (100.0%).
+Coverage 1828 / 1914 ONNX files (95.5%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -117,132 +117,132 @@ Coverage 1914 / 1914 ONNX files (100.0%).
 | node/test_atanh_example/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_3d/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_3d_attn_mask/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_3d_attn_mask_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_3d_attn_mask_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_3d_attn_mask_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_3d_causal/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_3d_causal_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_3d_causal_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_3d_causal_expanded_function_RangeRow' has dynamic dimensions ('unk__0',). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_3d_diff_heads_sizes/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_3d_diff_heads_sizes_attn_mask/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_3d_diff_heads_sizes_attn_mask_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_3d_diff_heads_sizes_causal/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_3d_diff_heads_sizes_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_3d_diff_heads_sizes_causal_expanded_function_RangeRow' has dynamic dimensions ('unk__0',). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_3d_diff_heads_sizes_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_3d_diff_heads_sizes_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_3d_diff_heads_sizes_scaled/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_3d_diff_heads_sizes_scaled_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_3d_diff_heads_sizes_softcap/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_3d_diff_heads_sizes_softcap_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_3d_diff_heads_sizes_softcap_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_3d_diff_heads_sizes_softcap_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_3d_diff_heads_with_past_and_present/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_3d_diff_heads_with_past_and_present_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_3d_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_3d_diff_heads_with_past_and_present_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_3d_diff_heads_with_past_and_present_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_3d_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_3d_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_3d_gqa/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_3d_gqa_attn_mask/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_3d_gqa_attn_mask_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_3d_gqa_attn_mask_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_3d_gqa_attn_mask_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_3d_gqa_causal/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_3d_gqa_causal_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_3d_gqa_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_3d_gqa_causal_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_3d_gqa_causal_expanded_function_RangeRow' has dynamic dimensions ('unk__0',). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_3d_gqa_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_3d_gqa_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_3d_gqa_scaled/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_attention_3d_gqa_scaled_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_3d_gqa_scaled_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_3d_gqa_scaled_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_3d_gqa_softcap/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_3d_gqa_softcap_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
+| node/test_attention_3d_gqa_softcap_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_3d_gqa_softcap_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_3d_gqa_with_past_and_present/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_attention_3d_gqa_with_past_and_present_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
+| node/test_attention_3d_gqa_with_past_and_present_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_3d_gqa_with_past_and_present_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_3d_scaled/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_attention_3d_scaled_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_3d_scaled_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_3d_scaled_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_3d_softcap/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_3d_softcap_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_3d_softcap_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_3d_softcap_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_3d_transpose_verification/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_3d_transpose_verification_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_3d_transpose_verification_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_3d_transpose_verification_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_3d_with_past_and_present/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_attention_3d_with_past_and_present_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_3d_with_past_and_present_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_3d_with_past_and_present_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_3d_with_past_and_present_qk_matmul/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
 | node/test_attention_3d_with_past_and_present_qk_matmul_bias/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 2) |
-| node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
+| node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_bias_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_3d_with_past_and_present_qk_matmul_softcap/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 5) |
-| node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 4) |
+| node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_3d_with_past_and_present_qk_matmul_softmax/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_attn_mask/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_attn_mask_3d/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_attn_mask_3d_causal/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_attn_mask_3d_causal_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_attn_mask_3d_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_attn_mask_3d_causal_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_attn_mask_3d_causal_expanded_function_RangeRow' has dynamic dimensions ('unk__0',). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_4d_attn_mask_3d_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_attn_mask_3d_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_attn_mask_4d/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_attn_mask_4d_causal/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_attn_mask_4d_causal_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_attn_mask_4d_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_attn_mask_4d_causal_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_attn_mask_4d_causal_expanded_function_RangeRow' has dynamic dimensions ('unk__0',). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_4d_attn_mask_4d_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_attn_mask_4d_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_attn_mask_bool/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_attn_mask_bool_4d/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_attn_mask_bool_4d_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_attn_mask_bool_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_attn_mask_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_attn_mask_bool_4d_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_attn_mask_bool_4d_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_4d_attn_mask_bool_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_attn_mask_bool_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_4d_attn_mask_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_attn_mask_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_causal/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_causal_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_causal_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_causal_expanded_function_RangeRow' has dynamic dimensions ('unk__0',). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | 24 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_diff_heads_mask4d_padded_kv_expanded_function_AttnBias' has dynamic dimensions ('unk__0', 'unk__1', 'unk__2', 'unk__3'). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_diff_heads_sizes/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_diff_heads_sizes_attn_mask/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_diff_heads_sizes_attn_mask_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_diff_heads_sizes_causal/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_diff_heads_sizes_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_diff_heads_sizes_causal_expanded_function_RangeRow' has dynamic dimensions ('unk__0',). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_4d_diff_heads_sizes_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_diff_heads_sizes_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_diff_heads_sizes_scaled/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_diff_heads_sizes_scaled_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_diff_heads_sizes_softcap/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_diff_heads_sizes_softcap_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_diff_heads_with_past_and_present/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_diff_heads_with_past_and_present_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_diff_heads_with_past_and_present_mask3d/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
+| node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_diff_heads_with_past_and_present_mask4d/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_attention_4d_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_4d_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_fp16/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_fp16_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_fp16_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_fp16_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_gqa/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_gqa_attn_mask/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_gqa_attn_mask_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_gqa_attn_mask_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_gqa_attn_mask_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_gqa_causal/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_gqa_causal_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_gqa_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_gqa_causal_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_gqa_causal_expanded_function_RangeRow' has dynamic dimensions ('unk__0',). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_4d_gqa_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_gqa_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_gqa_scaled/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_gqa_scaled_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_gqa_scaled_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_gqa_scaled_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_gqa_softcap/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_gqa_softcap_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_gqa_softcap_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_gqa_softcap_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_gqa_with_past_and_present/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
+| node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_gqa_with_past_and_present_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_gqa_with_past_and_present_fp16/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_gqa_with_past_and_present_fp16_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_scaled/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_scaled_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_scaled_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_scaled_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_softcap/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_softcap_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_softcap_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_softcap_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_softcap_neginf_mask/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_softcap_neginf_mask_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_softcap_neginf_mask_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_softcap_neginf_mask_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_softcap_neginf_mask_poison/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_softcap_neginf_mask_poison_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_softcap_neginf_mask_poison_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_softcap_neginf_mask_poison_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_with_past_and_present/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_with_past_and_present_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
+| node/test_attention_4d_with_past_and_present_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_with_past_and_present_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_with_past_and_present_qk_matmul/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 2) |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 2) |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 2) |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded_function_RangeRow' has dynamic dimensions ('unk__0',). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 2) |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 2) |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 2) |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 2) |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded_function_RangeRow' has dynamic dimensions ('unk__0',). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_with_qk_matmul/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_with_qk_matmul_bias/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 2) |
-| node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 1) |
-| node/test_attention_4d_with_qk_matmul_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 2) |
+| node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_with_qk_matmul_bias_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_4d_with_qk_matmul_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_with_qk_matmul_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_with_qk_matmul_softcap/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 4) |
+| node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_with_qk_matmul_softcap_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_attention_4d_with_qk_matmul_softmax/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_with_qk_matmul_softmax_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_averagepool_1d_default/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_ceil/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx (--runtime onnx-reference --test-data-inputs-only) | 22 | Data/ONNXRef | ✅ | OK (max ULP 0) |
@@ -711,28 +711,28 @@ Coverage 1914 / 1914 ONNX files (100.0%).
 | node/test_flatten_negative_axis2/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_flatten_negative_axis3/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_flatten_negative_axis4/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_flexattention/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_flexattention_causal_mask/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_flexattention_causal_mask_expanded_ver26/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_flexattention_diff_head_sizes/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_flexattention_diff_head_sizes_expanded_ver26/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_flexattention_double/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_flexattention_double_expanded_ver26/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_flexattention_expanded_ver26/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_flexattention_fp16/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_flexattention_fp16_expanded_ver26/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_flexattention_gqa/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_flexattention_gqa_expanded_ver26/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_flexattention_prob_mod/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_flexattention_prob_mod_expanded_ver26/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_flexattention_relative_positional/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_flexattention_relative_positional_expanded_ver26/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_flexattention_scaled/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 4) |
-| node/test_flexattention_scaled_expanded_ver26/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 4) |
-| node/test_flexattention_score_mod/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_flexattention_score_mod_expanded_ver26/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_flexattention_soft_cap/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_flexattention_soft_cap_expanded_ver26/model.onnx | 26 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_flexattention/model.onnx | 26 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor '_flexattn_0_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_flexattention_causal_mask/model.onnx | 26 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor '_flexattn_0_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_flexattention_causal_mask_expanded_ver26/model.onnx | 26 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'FlexAttention_test_flexattention_causal_mask_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_flexattention_diff_head_sizes/model.onnx | 26 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor '_flexattn_0_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_flexattention_diff_head_sizes_expanded_ver26/model.onnx | 26 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'FlexAttention_test_flexattention_diff_head_sizes_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_flexattention_double/model.onnx | 26 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor '_flexattn_0_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_flexattention_double_expanded_ver26/model.onnx | 26 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'FlexAttention_test_flexattention_double_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_flexattention_expanded_ver26/model.onnx | 26 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'FlexAttention_test_flexattention_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_flexattention_fp16/model.onnx | 26 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor '_flexattn_0_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_flexattention_fp16_expanded_ver26/model.onnx | 26 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'FlexAttention_test_flexattention_fp16_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_flexattention_gqa/model.onnx | 26 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor '_flexattn_0_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_flexattention_gqa_expanded_ver26/model.onnx | 26 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'FlexAttention_test_flexattention_gqa_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_flexattention_prob_mod/model.onnx | 26 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor '_flexattn_0_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_flexattention_prob_mod_expanded_ver26/model.onnx | 26 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'FlexAttention_test_flexattention_prob_mod_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_flexattention_relative_positional/model.onnx | 26 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor '_flexattn_0_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_flexattention_relative_positional_expanded_ver26/model.onnx | 26 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'FlexAttention_test_flexattention_relative_positional_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_flexattention_scaled/model.onnx | 26 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor '_flexattn_0_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_flexattention_scaled_expanded_ver26/model.onnx | 26 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'FlexAttention_test_flexattention_scaled_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_flexattention_score_mod/model.onnx | 26 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor '_flexattn_0_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_flexattention_score_mod_expanded_ver26/model.onnx | 26 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'FlexAttention_test_flexattention_score_mod_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_flexattention_soft_cap/model.onnx | 26 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor '_flexattn_0_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_flexattention_soft_cap_expanded_ver26/model.onnx | 26 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'FlexAttention_test_flexattention_soft_cap_expanded_function_KExpanded' has dynamic dimensions (None, None, 'unk__0', None, None). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
 | node/test_floor/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_floor_example/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_gather_0/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
