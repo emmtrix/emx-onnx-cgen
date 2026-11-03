@@ -6277,7 +6277,7 @@ Coverage 4313 / 4324 ONNX files (99.7%).
 
 Test directory: `tests/onnx`
 
-Coverage 9 / 9 ONNX files (100.0%).
+Coverage 10 / 10 ONNX files (100.0%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -6289,4 +6289,5 @@ Coverage 9 / 9 ONNX files (100.0%).
 | micro_kws_m_static_qdq.onnx | 15 | Random/ORT | ✅ | OK (max ULP 0) |
 | micro_kws_m_static_qoperator.onnx (--replicate-ort-bugs) | 15 | Random/ORT | ✅ | OK (max ULP 0) |
 | mixed_ops_dynamic_batch.onnx | 9 | Random/ORT | ✅ | OK (max ULP 0) |
+| ms_qdq_untyped_intermediates.onnx | 13 | Random/ORT | ✅ | OK (max ULP 0) |
 | slice_dynamic_batch.onnx | 9 | Random/ORT | ✅ | OK (max ULP 0) |
