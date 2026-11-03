@@ -664,16 +664,14 @@ class ConcatOp(RenderableOpBase):
         axis = self.axis
         if axis < 0:
             axis += len(output_shape)
-        dim_args = emitter.dim_args_str()
         output_dim_names = emitter.dim_names_for(self.output)
         output_shape_exprs = CEmitterCompat.shape_dim_exprs(
             output_shape, output_dim_names
         )
-        outer_exprs = output_shape_exprs[:axis]
-        inner_exprs = output_shape_exprs[axis + 1 :]
-        outer = CEmitterCompat.element_count_expr(outer_exprs) if outer_exprs else "1"
-        inner = CEmitterCompat.element_count_expr(inner_exprs) if inner_exprs else "1"
-        axis_sizes = tuple(shape[axis] for shape in input_shapes)
+        loop_vars = CEmitterCompat.loop_vars(output_shape)[:axis]
+        copies = self._copy_specs(
+            emitter, input_names, input_shapes, params["output"], axis, loop_vars
+        )
         input_suffixes = tuple(
             emitter.param_array_suffix(shape, emitter.dim_names_for(name))
             for shape, name in zip(input_shapes, self.inputs)
@@ -691,23 +689,80 @@ class ConcatOp(RenderableOpBase):
         rendered = (
             state.templates["concat"]
             .render(
-                model_name=model.name,
                 op_name=op_name,
-                inputs=input_names,
-                output=params["output"],
                 params=param_decls,
                 c_type=c_type,
-                input_suffixes=input_suffixes,
-                output_suffix=output_suffix,
-                axis_sizes=axis_sizes,
-                input_count=len(self.inputs),
-                outer=outer,
-                inner=inner,
-                dim_args=dim_args,
+                copies=copies,
+                outer_shape=output_shape_exprs[:axis],
+                loop_vars=loop_vars,
+                dim_args=emitter.dim_args_str(),
             )
             .rstrip()
         )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def _copy_specs(
+        self,
+        emitter: Emitter,
+        input_names: tuple[str, ...],
+        input_shapes: tuple[tuple[int, ...], ...],
+        output_name: str,
+        axis: int,
+        outer_vars: tuple[str, ...],
+    ) -> tuple[dict[str, object], ...]:
+        """One contiguous copy per input and outer index.
+
+        Source and destination addresses are formed by indexing the array
+        parameters directly instead of collecting the inputs in a pointer
+        table, so no parameter pointer escapes into local storage. Copies of
+        a single element are emitted as plain assignments, empty copies are
+        omitted, and everything else (including dynamic sizes) uses memcpy.
+        """
+        outer_indices = "".join(f"[{var}]" for var in outer_vars)
+        copies: list[dict[str, object]] = []
+        axis_offset: list[str] = []
+        for name, onnx_name, shape in zip(input_names, self.inputs, input_shapes):
+            shape_exprs = CEmitterCompat.shape_dim_exprs(
+                shape, emitter.dim_names_for(onnx_name)
+            )
+            offset_expr = self._sum_expr(axis_offset)
+            axis_offset.append(str(shape_exprs[axis]))
+            copy_dims = shape_exprs[axis:]
+            static_count = (
+                math.prod(copy_dims)
+                if all(isinstance(dim, int) for dim in copy_dims)
+                else None
+            )
+            if static_count == 0:
+                continue
+            output_target = f"{output_name}{outer_indices}[{offset_expr}]"
+            if static_count == 1:
+                trailing_zeros = "[0]" * (len(copy_dims) - 1)
+                copies.append(
+                    {
+                        "assign": True,
+                        "output_expr": f"{output_target}{trailing_zeros}",
+                        "input_expr": f"{name}{outer_indices}[0]{trailing_zeros}",
+                    }
+                )
+                continue
+            copies.append(
+                {
+                    "assign": False,
+                    "input_ptr": f"{name}{outer_indices}",
+                    "output_ptr": f"&{output_target}",
+                    "elem_count": CEmitterCompat.element_count_expr(copy_dims),
+                }
+            )
+        return tuple(copies)
+
+    @staticmethod
+    def _sum_expr(terms: list[str]) -> str:
+        constant = sum(int(term) for term in terms if term.isdigit())
+        symbolic = [term for term in terms if not term.isdigit()]
+        if constant or not symbolic:
+            symbolic.append(str(constant))
+        return " + ".join(symbolic)
 
 
 @dataclass(frozen=True)
@@ -841,9 +896,11 @@ class QLinearConcatOp(RenderableOpBase):
         )
         # When a zero-point's dtype mismatches the input dtype, use 0 (ORT behaviour).
         input_zero_exprs = tuple(
-            f"{params[f'input_zero_{i}']}[{scale_index}]"
-            if self.input_zero_dtype_matches[i]
-            else "0"
+            (
+                f"{params[f'input_zero_{i}']}[{scale_index}]"
+                if self.input_zero_dtype_matches[i]
+                else "0"
+            )
             for i in range(n)
         )
         unused_zero_params = tuple(
@@ -7807,9 +7864,9 @@ class SequenceInsertOp(RenderableOpBase):
                             if axis < len(tensor_shape)
                             else None
                         ),
-                        "tensor_shape": tensor_shape[axis]
-                        if axis < len(tensor_shape)
-                        else 1,
+                        "tensor_shape": (
+                            tensor_shape[axis] if axis < len(tensor_shape) else 1
+                        ),
                     }
                     for axis in dynamic_output_axes
                 ),
@@ -8802,9 +8859,11 @@ class QLinearUnaryOp(RenderableOpBase):
                 params=param_decls,
                 input0=params_map["input0"],
                 x_scale=params_map["x_scale"],
-                x_zero_point=params_map["x_zero_point"]
-                if self.x_zero_point is not None
-                else None,
+                x_zero_point=(
+                    params_map["x_zero_point"]
+                    if self.x_zero_point is not None
+                    else None
+                ),
                 has_x_zero_point=self.x_zero_point is not None,
                 y_scale=params_map["y_scale"],
                 y_zero_point=params_map["y_zero_point"],
