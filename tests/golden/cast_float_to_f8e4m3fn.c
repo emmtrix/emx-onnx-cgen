@@ -51,11 +51,7 @@
 typedef uint8_t emx_float8e4m3fn_t;
 
 static inline float ref_scalar_f32_round(float a) {
-    float r = roundf(a);
-    if (fabsf(r - a) == 0.5f) {
-        r = 2.0f * roundf(a * 0.5f);
-    }
-    return r;
+    return nearbyintf(a);
 }
 
 static inline emx_float8e4m3fn_t ref_scalar_f8e4m3fn_from_f32(float v) {
