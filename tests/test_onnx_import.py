@@ -583,3 +583,38 @@ def test_scan_expansion_uses_attribute_slice_for_legacy_opset() -> None:
     # Opset 9 Slice still carries starts/ends/axes as attributes.
     assert all(len(node.input) == 1 for node in slices)
     assert all(node.attribute for node in slices)
+
+
+def test_import_ms_dequantize_linear_infers_output_type() -> None:
+    initializers = [
+        helper.make_tensor("q", TensorProto.INT32, [4], [1, 2, 3, 4]),
+        helper.make_tensor("scale", TensorProto.FLOAT, [1], [0.5]),
+        helper.make_tensor("zero_point", TensorProto.INT32, [], [0]),
+    ]
+    node = helper.make_node(
+        "DequantizeLinear",
+        ["q", "scale", "zero_point"],
+        ["dq"],
+        domain="com.microsoft",
+    )
+    add = helper.make_node("Add", ["x", "dq"], ["y"])
+    graph = helper.make_graph(
+        [node, add],
+        "ms_dequantize_linear",
+        [helper.make_tensor_value_info("x", TensorProto.FLOAT, [4])],
+        [helper.make_tensor_value_info("y", TensorProto.FLOAT, [4])],
+        initializers,
+    )
+    model = helper.make_model(
+        graph,
+        opset_imports=[
+            helper.make_operatorsetid("", 13),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+
+    imported = import_onnx(model)
+
+    dq_value = imported.find_value("dq")
+    assert dq_value.type.dtype == ScalarType.F32
+    assert dq_value.type.shape == (4,)

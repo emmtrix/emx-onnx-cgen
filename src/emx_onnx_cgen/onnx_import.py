@@ -2152,9 +2152,27 @@ def _maybe_infer_shapes(model: onnx.ModelProto) -> onnx.ModelProto:
         raise ShapeInferenceError("ONNX shape inference failed") from exc
 
 
+_MS_QDQ_OP_TYPES = frozenset({"QuantizeLinear", "DequantizeLinear"})
+
+
+def _canonicalize_ms_qdq_nodes(model: onnx.ModelProto) -> None:
+    """Move ``com.microsoft`` Q/DQ nodes into the default domain.
+
+    The contrib ops share the standard ops' signature, but ONNX shape inference
+    has no schema for them and would leave their outputs untyped.
+    """
+    opset = _onnx_opset_version(model)
+    if opset is None or opset < 10:
+        return
+    for node in model.graph.node:
+        if node.domain == "com.microsoft" and node.op_type in _MS_QDQ_OP_TYPES:
+            node.domain = ""
+
+
 def prepare_onnx_model(model: onnx.ModelProto) -> onnx.ModelProto:
     prepared = onnx.ModelProto()
     prepared.CopyFrom(model)
+    _canonicalize_ms_qdq_nodes(prepared)
     prepared, _ = _expand_flexattention_nodes(prepared)
     # Scan unrolling slices its scan inputs, so it needs their static shapes up
     # front. Run shape inference and fold the integer shape arithmetic that ONNX
