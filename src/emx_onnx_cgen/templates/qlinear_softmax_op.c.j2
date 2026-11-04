@@ -38,10 +38,9 @@ uint8_t wrapped_u8 = (uint8_t)quantized;
 {{ output }}{{ nest.index }} = ({{ output_c_type }})wrapped_u8;
 {% else %}
 {{ compute_type }} scaled = (exp_value * output_inv_scale) / sum;
-{{ compute_type }} rounded = {{ scalar_fn(SF.NEARBYINT, compute_dtype) }}(scaled) + output_zero;
-rounded = {{ scalar_fn(SF.MAXIMUM, compute_dtype) }}(rounded, output_min);
-rounded = {{ scalar_fn(SF.MINIMUM, compute_dtype) }}(rounded, output_max);
-{{ output }}{{ nest.index }} = ({{ output_c_type }})rounded;
+scaled = {{ scalar_fn(SF.MAXIMUM, compute_dtype) }}(scaled, output_min - output_zero);
+scaled = {{ scalar_fn(SF.MINIMUM, compute_dtype) }}(scaled, output_max - output_zero);
+{{ output }}{{ nest.index }} = ({{ output_c_type }})((int32_t){{ scalar_fn(SF.NEARBYINT, compute_dtype) }}(scaled) + (int32_t)output_zero);
 {% endif %}
 {% endcall %}
 {% endcall %}

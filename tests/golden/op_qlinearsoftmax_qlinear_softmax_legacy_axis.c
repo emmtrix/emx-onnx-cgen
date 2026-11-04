@@ -111,12 +111,12 @@ static inline float ref_scalar_f32_exp(float a) {
     return expf(a);
 }
 
-static inline float ref_scalar_f32_nearbyint(float a) {
-    return nearbyintf(a);
-}
-
 static inline float ref_scalar_f32_minimum(float a, float b) {
     return fminf(a, b);
+}
+
+static inline float ref_scalar_f32_nearbyint(float a) {
+    return nearbyintf(a);
 }
 
 /*
@@ -158,10 +158,9 @@ EMX_NODE_FN void node0_qlinearsoftmax(const uint8_t input0[2][3][4], const float
                 float value = (((float)((int32_t)input0[i0][i1][i2] - input_zero)) * input_scale_value);
                 float exp_value = ref_scalar_f32_exp(value - max_value);
                 float scaled = (exp_value * output_inv_scale) / sum;
-                float rounded = ref_scalar_f32_nearbyint(scaled) + output_zero;
-                rounded = ref_scalar_f32_maximum(rounded, output_min);
-                rounded = ref_scalar_f32_minimum(rounded, output_max);
-                output[i0][i1][i2] = (uint8_t)rounded;
+                scaled = ref_scalar_f32_maximum(scaled, output_min - output_zero);
+                scaled = ref_scalar_f32_minimum(scaled, output_max - output_zero);
+                output[i0][i1][i2] = (uint8_t)((int32_t)ref_scalar_f32_nearbyint(scaled) + (int32_t)output_zero);
             }
         }
     }
