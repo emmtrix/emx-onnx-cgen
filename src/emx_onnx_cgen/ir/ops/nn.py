@@ -1922,6 +1922,8 @@ class QGemmOp(GemmLikeOpBase):
     y_scale_shape: tuple[int, ...] | None
     y_zero_shape: tuple[int, ...] | None
     b_scale_per_column: bool
+    # int32_t when the accumulator provably fits (see lowering/qgemm.py), int64_t otherwise.
+    acc_type: str = "int32_t"
 
     def required_includes(self, ctx: OpContext) -> set[str]:
         includes: set[str] = {"#include <math.h>"}
@@ -2070,9 +2072,9 @@ class QGemmOp(GemmLikeOpBase):
         param_entries.append((params["output"], output_c_type, output_suffix, False))
         param_decls = emitter.build_param_decls(param_entries)
 
-        # Determine compute type (double for best precision).
-        compute_dtype = ScalarType.F64
-        compute_type = "double"
+        # The requantization runs in float32 on the integer accumulator.
+        compute_dtype = ScalarType.F32
+        compute_type = "float"
 
         if output_dtype.is_signed:
             min_literal = "-128"
@@ -2085,7 +2087,7 @@ class QGemmOp(GemmLikeOpBase):
             max_literal = "255"
 
         has_y_scale = self.y_scale is not None
-        alpha_literal = emitter.format_literal(ScalarType.F64, self.alpha)
+        alpha_literal = emitter.format_literal(ScalarType.F32, self.alpha)
 
         if c_shape is None:
             c_rank = 0
@@ -2139,6 +2141,7 @@ class QGemmOp(GemmLikeOpBase):
                 c_axis=c_axis,
                 has_y_scale=has_y_scale,
                 b_scale_per_column=self.b_scale_per_column,
+                acc_type=self.acc_type,
                 min_literal=min_literal,
                 max_literal=max_literal,
                 dim_args=emitter.dim_args_str(),
