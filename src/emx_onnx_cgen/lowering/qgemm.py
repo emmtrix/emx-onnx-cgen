@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import numpy as np
+
 from shared.scalar_types import ScalarType
 
 from ..ir.ops import QGemmOp
 from ..ir.context import GraphContext
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
+from .common import _find_initializer
 from .common import value_dtype as _value_dtype
 from .common import value_shape as _value_shape
 from .registry import register_lowering
@@ -23,6 +26,28 @@ def _ensure_scalar_input(
 def _ensure_scale_dtype(dtype: ScalarType, label: str) -> None:
     if not dtype.is_float:
         raise UnsupportedOpError(f"QGemm {label} must be float16/float/double")
+
+
+def _fold_zero_points(
+    graph: Graph, a_zero_name: str, b_name: str, b_zero_name: str, trans_b: int
+) -> tuple[int, ...] | None:
+    """-a_zp * sum_k B[k][j] when b_zero_point is a constant all-zero initializer.
+
+    sum((a - a_zp) * b) = sum(a * b) - a_zp * sum(b); the second term is a per-column constant.
+    """
+    inits = [
+        _find_initializer(graph, name) for name in (a_zero_name, b_name, b_zero_name)
+    ]
+    if any(init is None for init in inits):
+        return None
+    a_zero, b, b_zero = (init.data for init in inits)  # type: ignore[union-attr]
+    if b_zero.any():
+        return None
+    b_kj = b.T if trans_b else b
+    folded = -int(a_zero.reshape(-1)[0]) * b_kj.astype(np.int64).sum(axis=0)
+    if np.abs(folded).max(initial=0) >= 2**31:
+        return None
+    return tuple(int(value) for value in folded)
 
 
 @register_lowering("QGemm")
@@ -140,6 +165,9 @@ def lower_qgemm(graph: Graph, node: Node) -> QGemmOp:
     if expected_output_dtype != output_dtype:
         output_dtype = expected_output_dtype
 
+    zp_folded = _fold_zero_points(
+        graph, node.inputs[2], node.inputs[3], node.inputs[5], trans_b
+    )
     lowered = QGemmOp(
         input_a=node.inputs[0],
         a_scale=node.inputs[1],
@@ -168,6 +196,7 @@ def lower_qgemm(graph: Graph, node: Node) -> QGemmOp:
         y_scale_shape=y_scale_shape_resolved,
         y_zero_shape=y_zero_shape_resolved,
         b_scale_per_column=b_scale_per_column,
+        zp_folded=zp_folded,
     )
 
     if isinstance(graph, GraphContext):

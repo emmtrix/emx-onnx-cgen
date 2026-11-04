@@ -1922,6 +1922,9 @@ class QGemmOp(GemmLikeOpBase):
     y_scale_shape: tuple[int, ...] | None
     y_zero_shape: tuple[int, ...] | None
     b_scale_per_column: bool
+    # -a_zero_point * sum_k B[k][j] per column, folded at codegen time when b_zero_point is a constant
+    # all-zero initializer; None keeps the runtime subtraction of both zero points.
+    zp_folded: tuple[int, ...] | None = None
 
     def required_includes(self, ctx: OpContext) -> set[str]:
         includes: set[str] = {"#include <math.h>"}
@@ -2104,6 +2107,14 @@ class QGemmOp(GemmLikeOpBase):
             c_dim0 = c_shape[0]
             c_dim1 = c_shape[1]
 
+        tables = []
+        zp_folded = None
+        if self.zp_folded is not None:
+            zp_folded = f"{op_name}_zp_folded"
+            values = ", ".join(map(str, self.zp_folded))
+            tables.append(
+                f"static const int32_t {zp_folded}[{len(self.zp_folded)}] = {{{values}}};"
+            )
         rendered = (
             state.templates["qgemm"]
             .render(
@@ -2142,10 +2153,13 @@ class QGemmOp(GemmLikeOpBase):
                 min_literal=min_literal,
                 max_literal=max_literal,
                 dim_args=emitter.dim_args_str(),
+                zp_folded=zp_folded,
             )
             .rstrip()
         )
-        return emitter.with_node_comment(model, ctx.op_index, rendered)
+        return emitter.with_node_comment(
+            model, ctx.op_index, "\n".join([*tables, rendered])
+        )
 
     def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
         m = int(emitter.derived(self, "m"))
@@ -4813,6 +4827,11 @@ class QLinearConvOp(ConvLikeOpBase):
     output_zero_shape: tuple[int, ...]
     weight_scale_per_channel: bool
     weight_zero_per_channel: bool
+    # w_zero_point is a constant all-zero initializer: the weight term drops its subtraction.
+    weight_zero_is_zero: bool = False
+    # bias - x_zero_point * sum(w - w_zero_point) per output channel, folded at codegen time when no
+    # padding tap can be skipped (or x_zero_point is 0); None keeps the runtime subtraction.
+    folded_bias: tuple[int, ...] | None = None
 
     def required_includes(self, ctx: OpContext) -> set[str]:
         return {"#include <math.h>"}
@@ -4929,6 +4948,14 @@ class QLinearConvOp(ConvLikeOpBase):
             if self.weight_zero_per_channel
             else f"{params['weight_zero_point']}[0]"
         )
+        tables = []
+        folded_bias = None
+        if self.folded_bias is not None:
+            folded_bias = f"{op_name}_bias_folded"
+            values = ", ".join(map(str, self.folded_bias))
+            tables.append(
+                f"static const int32_t {folded_bias}[{len(self.folded_bias)}] = {{{values}}};"
+            )
         rendered = (
             state.templates["qlinear_conv"]
             .render(
@@ -4994,10 +5021,14 @@ class QLinearConvOp(ConvLikeOpBase):
                 max_literal=self.dtype.max_literal,
                 round_dtype=ScalarType.F64,
                 compute_dtype=compute_dtype,
+                weight_zero_is_zero=self.weight_zero_is_zero,
+                folded_bias=folded_bias,
             )
             .rstrip()
         )
-        return emitter.with_node_comment(model, ctx.op_index, rendered)
+        return emitter.with_node_comment(
+            model, ctx.op_index, "\n".join([*tables, rendered])
+        )
 
 
 @dataclass(frozen=True)

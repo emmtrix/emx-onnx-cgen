@@ -14,7 +14,11 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             const {{ compute_type }} b_scale_val = ({{ compute_type }}){{ b_scale }}[0];
             const int32_t b_zero = (int32_t){{ b_zero_point }}[0];
 {% endif %}
+{% if zp_folded %}
+            int64_t acc = (int64_t){{ zp_folded }}[j];
+{% else %}
             int64_t acc = 0;
+{% endif %}
             for (idx_t k = 0; k < {{ k }}; ++k) {
 {% if trans_a %}
                 const int32_t a_val = (int32_t){{ input_a }}[k][i];
@@ -26,7 +30,11 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% else %}
                 const int32_t b_val = (int32_t){{ input_b }}[k][j];
 {% endif %}
+{% if zp_folded %}
+                acc += (int64_t)a_val * (int64_t)b_val;
+{% else %}
                 acc += (int64_t)(a_val - a_zero) * (int64_t)(b_val - b_zero);
+{% endif %}
             }
 {% if input_c %}
 {% if c_rank == 2 %}
