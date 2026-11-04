@@ -4992,7 +4992,7 @@ class QLinearConvOp(ConvLikeOpBase):
                 output_zero_expr=f"{params['output_zero_point']}[0]",
                 min_literal=self.dtype.min_literal,
                 max_literal=self.dtype.max_literal,
-                round_dtype=ScalarType.F64,
+                round_dtype=compute_dtype,
                 compute_dtype=compute_dtype,
             )
             .rstrip()
