@@ -8,5 +8,5 @@
   "operators": [
     "com.microsoft.DynamicQuantizeMatMul"
   ],
-  "generated_checksum": "79863ddfdc307bcffb488b9064f9c2f01616367cf16f975690b61899ed85ba83"
+  "generated_checksum": "0de23976613112b9c301ff6bb8ea7ef8712b059b021e17b4c2683d3db6c29f1f"
 }
