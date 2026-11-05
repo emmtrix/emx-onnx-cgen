@@ -256,6 +256,7 @@ class ScalarFunction(str, Enum):
     RELU = _bool_unary_from_f32_spec("relu")
     RELU6 = _common_unary_from_f32_spec("relu6")
     REMAINDER = _bool_binary_from_f32_spec("remainder")
+    ROUND = _bool_unary_from_f32_spec("round")
     RSQRT = _common_unary_from_f32_spec("rsqrt")
     SELU = _common_unary_from_f32_spec("selu")
     SGN = _bool_unary_from_f32_spec("sgn", supports_unsigned_int=False)
@@ -1178,6 +1179,10 @@ def _float_sign(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     return _GeneratedScalar(lines=lines, deps=set(), includes=set())
 
 
+def _float_round(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
+    return _float_unary_math(dtype_info, "round", "round")
+
+
 def _float_nearbyint(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     if dtype_info.suffix in ("f32", "f64"):
         return _float_unary_math(dtype_info, "nearbyint", "nearbyint")
@@ -1594,6 +1599,7 @@ _FLOAT_OP_DISPATCH: Mapping[str, Callable[[_ScalarTypeInfo], _GeneratedScalar]] 
     ),
     "thresholded_relu": _float_thresholded_relu,
     "sign": _float_sign,
+    "round": _float_round,
     "trunc": _float_trunc,
     "angle": _float_angle,
     "conj": lambda dtype_info: _float_conj(dtype_info, "conj"),
@@ -1924,6 +1930,10 @@ def _int_ceil_floor(dtype_info: _ScalarTypeInfo, name: str) -> _GeneratedScalar:
     return _simple_unary(dtype_info, name, "a")
 
 
+def _int_round(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
+    return _simple_unary(dtype_info, "round", "a")
+
+
 def _int_trunc(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     return _simple_unary(dtype_info, "trunc", "a")
 
@@ -2058,6 +2068,7 @@ _INT_OP_DISPATCH: Mapping[str, Callable[[_ScalarTypeInfo], _GeneratedScalar]] = 
     "relu": _int_relu,
     "ceil": lambda dtype_info: _int_ceil_floor(dtype_info, "ceil"),
     "floor": lambda dtype_info: _int_ceil_floor(dtype_info, "floor"),
+    "round": _int_round,
     "trunc": _int_trunc,
     "frac": _int_frac,
     "sign": _int_sign,

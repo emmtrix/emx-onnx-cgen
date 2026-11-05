@@ -129,6 +129,7 @@ def _unary_symbols_int(abs_func: str) -> dict:
         ScalarFunction.BITWISE_NOT: "bitwise_not",
         ScalarFunction.POSITIVE: "identity",
         ScalarFunction.NEG: "neg",
+        ScalarFunction.ROUND: "round",
         ScalarFunction.SIGN: "sign",
     }
 
@@ -141,6 +142,7 @@ UNARY_SYMBOLS_INT8 = UNARY_SYMBOLS_INT32
 UNARY_SYMBOLS_UINT = {
     ScalarFunction.BITWISE_NOT: "bitwise_not",
     ScalarFunction.POSITIVE: "identity",
+    ScalarFunction.ROUND: "round",
 }
 
 UNARY_SYMBOLS_DOUBLE = {

@@ -2044,6 +2044,7 @@ class CEmitter:
             ScalarFunction.POW,
             ScalarFunction.RECIPROCAL,
             ScalarFunction.RELU,
+            ScalarFunction.ROUND,
             ScalarFunction.SELU,
             ScalarFunction.SHRINK,
             ScalarFunction.SIGMOID,
