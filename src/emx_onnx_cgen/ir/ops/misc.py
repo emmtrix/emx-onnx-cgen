@@ -2834,6 +2834,19 @@ class PadOp(RenderableOpBase):
             pad_value_expr = emitter.format_literal(
                 emitter.ctx_dtype(self.output), self.value
             )
+        # Constant padding with static non-negative pads and static shapes: fill the output and
+        # copy the input into it with plain loop nests, without a bounds check per element
+        direct_constant = (
+            self.mode == "constant"
+            and self.pads_input is None
+            and self.axes_input is None
+            and self.pads_begin is not None
+            and self.pads_end is not None
+            and all(pad >= 0 for pad in (*self.pads_begin, *self.pads_end))
+            and not input_dim_names
+            and not output_dim_names
+            and len(input_shape_raw) > 0
+        )
         input_strides: list[int] = []
         stride = 1
         for dim in reversed(input_shape_raw):
@@ -2876,6 +2889,7 @@ class PadOp(RenderableOpBase):
                 base_index="pad_index",
                 idx_vars=idx_vars,
                 reflect_vars=reflect_vars,
+                direct_constant=direct_constant,
             )
             .rstrip()
         )
