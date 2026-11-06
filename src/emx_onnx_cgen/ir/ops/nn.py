@@ -15,6 +15,7 @@ from ..op_base import (
     GemmLikeOpBase,
     MatMulLikeOpBase,
     RenderableOpBase,
+    window_bounds_checks,
 )
 from ..op_context import OpContext
 
@@ -4260,6 +4261,17 @@ class ConvOp(ConvLikeOpBase):
         rendered = (
             state.templates["conv"]
             .render(
+                bounds_checks=window_bounds_checks(
+                    emitter,
+                    self.input0,
+                    self.output,
+                    self.in_spatial,
+                    self.out_spatial,
+                    self.kernel_shape,
+                    self.strides,
+                    self.dilations,
+                    self.pads[: self.spatial_rank],
+                ),
                 model_name=model.name,
                 op_name=op_name,
                 input0=params["input0"],
@@ -4531,6 +4543,17 @@ class FusedConvOp(ConvLikeOpBase):
         rendered = (
             state.templates["fused_conv"]
             .render(
+                bounds_checks=window_bounds_checks(
+                    emitter,
+                    self.input0,
+                    self.output,
+                    self.in_spatial,
+                    self.out_spatial,
+                    self.kernel_shape,
+                    self.strides,
+                    self.dilations,
+                    self.pads[: self.spatial_rank],
+                ),
                 model_name=model.name,
                 op_name=op_name,
                 input0=params_map["input0"],
@@ -4690,6 +4713,17 @@ class ConvIntegerOp(ConvLikeOpBase):
         rendered = (
             state.templates["conv_integer"]
             .render(
+                bounds_checks=window_bounds_checks(
+                    emitter,
+                    self.input0,
+                    self.output,
+                    self.in_spatial,
+                    self.out_spatial,
+                    self.kernel_shape,
+                    self.strides,
+                    self.dilations,
+                    self.pads[: self.spatial_rank],
+                ),
                 model_name=model.name,
                 op_name=op_name,
                 input0=params["input0"],
@@ -4897,6 +4931,17 @@ class QLinearConvOp(ConvLikeOpBase):
         rendered = (
             state.templates["qlinear_conv"]
             .render(
+                bounds_checks=window_bounds_checks(
+                    emitter,
+                    self.input0,
+                    self.output,
+                    self.in_spatial,
+                    self.out_spatial,
+                    self.kernel_shape,
+                    self.strides,
+                    self.dilations,
+                    self.pads[: self.spatial_rank],
+                ),
                 model_name=model.name,
                 op_name=op_name,
                 input0=params["input0"],
