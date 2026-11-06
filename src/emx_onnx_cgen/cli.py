@@ -943,6 +943,18 @@ def _build_parser() -> argparse.ArgumentParser:
             ),
         )
 
+    def add_explicit_padding_flag(subparser: argparse.ArgumentParser) -> None:
+        subparser.add_argument(
+            "--explicit-padding",
+            action="store_true",
+            default=False,
+            help=(
+                "Move the padding of Conv operators into Pad operators, so that their "
+                "kernels need no bounds checks (faster, one more tensor per padded "
+                "operator; default: disabled)"
+            ),
+        )
+
     def add_runtime_compat_flag(
         subparser: argparse.ArgumentParser,
     ) -> None:
@@ -1110,6 +1122,7 @@ def _build_parser() -> argparse.ArgumentParser:
     add_fp32_accumulation_strategy_flag(compile_parser)
     add_fp16_accumulation_strategy_flag(compile_parser)
     add_runtime_compat_flag(compile_parser)
+    add_explicit_padding_flag(compile_parser)
     add_sequence_shape_hint_flag(compile_parser)
     add_input_dim_flag(compile_parser)
     add_image_decoder_libs_flag(compile_parser)
@@ -1260,6 +1273,7 @@ def _build_parser() -> argparse.ArgumentParser:
     add_fp32_accumulation_strategy_flag(verify_parser)
     add_fp16_accumulation_strategy_flag(verify_parser)
     add_runtime_compat_flag(verify_parser)
+    add_explicit_padding_flag(verify_parser)
     add_sequence_shape_hint_flag(verify_parser)
     add_input_dim_flag(verify_parser)
     add_image_decoder_libs_flag(verify_parser)
@@ -1426,6 +1440,7 @@ def _compile_model(
             fp32_accumulation_strategy=args.fp32_accumulation_strategy,
             fp16_accumulation_strategy=args.fp16_accumulation_strategy,
             replicate_ort_bugs=args.replicate_ort_bugs,
+            explicit_padding=args.explicit_padding,
             sequence_element_shapes=sequence_element_shapes,
             image_decoder_libs=args.image_decoder_libs,
             truncate_weights_after=args.truncate_weights_after,
@@ -1536,6 +1551,7 @@ def _compile_testbench_declarations(
         fp32_accumulation_strategy=args.fp32_accumulation_strategy,
         fp16_accumulation_strategy=args.fp16_accumulation_strategy,
         replicate_ort_bugs=args.replicate_ort_bugs,
+        explicit_padding=args.explicit_padding,
         sequence_element_shapes=sequence_element_shapes,
         image_decoder_libs=args.image_decoder_libs,
         truncate_weights_after=args.truncate_weights_after,
@@ -2027,6 +2043,7 @@ def _verify_model(
             fp32_accumulation_strategy=args.fp32_accumulation_strategy,
             fp16_accumulation_strategy=args.fp16_accumulation_strategy,
             replicate_ort_bugs=args.replicate_ort_bugs,
+            explicit_padding=args.explicit_padding,
             sequence_element_shapes=sequence_element_shapes,
             image_decoder_libs=args.image_decoder_libs,
             truncate_weights_after=args.truncate_weights_after,

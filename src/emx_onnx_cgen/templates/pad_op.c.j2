@@ -1,4 +1,21 @@
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ input_suffix }}{% if pads_input %}, const {{ pads_c_type }} {{ pads_input }}{{ pads_suffix }}{% endif %}{% if axes_input %}, const {{ axes_c_type }} {{ axes_input }}{{ axes_suffix }}{% endif %}{% if value_input %}, const {{ c_type }} {{ value_input }}{{ value_suffix }}{% endif %}, {{ c_type }} {{ output }}{{ output_suffix }}) {
+{% if direct_constant %}
+{% for dim in output_shape %}
+for (idx_t {{ out_loop_vars[loop.index0] }} = 0; {{ out_loop_vars[loop.index0] }} < {{ dim }}; ++{{ out_loop_vars[loop.index0] }}) {
+{% endfor %}
+{{ output }}{% for var in out_loop_vars %}[{{ var }}]{% endfor %} = {{ pad_value_expr }};
+{% for _ in output_shape %}
+}
+{% endfor %}
+{% for dim in input_shape %}
+for (idx_t {{ in_loop_vars[loop.index0] }} = 0; {{ in_loop_vars[loop.index0] }} < {{ dim }}; ++{{ in_loop_vars[loop.index0] }}) {
+{% endfor %}
+{{ output }}{% for var in in_loop_vars %}[{{ var }}{% if pad_begin_exprs[loop.index0] != "0" %} + {{ pad_begin_exprs[loop.index0] }}{% endif %}]{% endfor %} = {{ input0 }}{% for var in in_loop_vars %}[{{ var }}]{% endfor %};
+{% for _ in input_shape %}
+}
+{% endfor %}
+}
+{% else %}
 const {{ c_type }} *{{ input0_flat }} = (const {{ c_type }} *){{ input0 }};
 {% if axes_input %}
 {% if pads_values %}
@@ -78,3 +95,4 @@ if (!pad_in_bounds) {
 }
 {% endfor %}
 }
+{% endif %}

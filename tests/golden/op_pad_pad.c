@@ -83,40 +83,14 @@ const EMX_UNUSED float weight2_value[1] = {
  *   mode: constant
  */
 EMX_NODE_FN void node0_pad(const float input[2][3], float output[2][5]) {
-    const float *input_flat = (const float *)input;
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 5; ++i1) {
             output[i0][i1] = 0.0f;
         }
     }
     for (idx_t i0 = 0; i0 < 2; ++i0) {
-        for (idx_t i1 = 0; i1 < 5; ++i1) {
-            idx_t pad_index = 0;
-            int pad_in_bounds = 1;
-            idx_t pad_idx0 = i0 - (idx_t)(0);
-            if (2 == 0) {
-                pad_in_bounds = 0;
-            }
-            if (pad_in_bounds && (pad_idx0 < 0 || pad_idx0 >= 2)) {
-                pad_in_bounds = 0;
-            }
-            if (pad_in_bounds) {
-                pad_index += pad_idx0 * 3;
-            }
-            idx_t pad_idx1 = i1 - (idx_t)(1);
-            if (3 == 0) {
-                pad_in_bounds = 0;
-            }
-            if (pad_in_bounds && (pad_idx1 < 0 || pad_idx1 >= 3)) {
-                pad_in_bounds = 0;
-            }
-            if (pad_in_bounds) {
-                pad_index += pad_idx1 * 1;
-            }
-            if (!pad_in_bounds) {
-            } else {
-                output[i0][i1] = input_flat[pad_index];
-            }
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
+            output[i0][i1 + 1] = input[i0][i1];
         }
     }
 }

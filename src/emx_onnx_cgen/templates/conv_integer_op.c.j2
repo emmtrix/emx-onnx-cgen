@@ -15,11 +15,15 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                             {% for dim in range(spatial_rank) %}
                             const idx_t {{ in_indices[dim] }} = {{ out_indices[dim] }} * {{ strides[dim] }} + {{ kernel_indices[dim] }} * {{ dilations[dim] }} - {{ pads_begin[dim] }};
                             {% endfor %}
-                            if ({% for dim in range(spatial_rank) %}{{ in_indices[dim] }} >= 0 && {{ in_indices[dim] }} < {{ in_spatial[dim] }}{% if not loop.last %} && {% endif %}{% endfor %}) {
+{% if true in bounds_checks %}
+                            if ({% for dim in range(spatial_rank) if bounds_checks[dim] %}{{ in_indices[dim] }} >= 0 && {{ in_indices[dim] }} < {{ in_spatial[dim] }}{% if not loop.last %} && {% endif %}{% endfor %}) {
+{% endif %}
                                 {{ acc_type }} input_value = ({{ acc_type }}){{ input0 }}[n][ic_global]{% for dim in range(spatial_rank) %}[{{ in_indices[dim] }}]{% endfor %} - ({{ acc_type }})({{ x_zero_expr }});
                                 {{ acc_type }} weight_value = ({{ acc_type }}){{ weights }}[oc_global][ic]{% for dim in range(spatial_rank) %}[{{ kernel_indices[dim] }}]{% endfor %} - ({{ acc_type }})({{ w_zero_expr }});
                                 acc += input_value * weight_value;
+{% if true in bounds_checks %}
                             }
+{% endif %}
                         {% for dim in range(spatial_rank) %}
                         }
                         {% endfor %}

@@ -48,6 +48,7 @@ from .ir.op_context import OpContext
 from .lowering import load_lowering_registry
 from .lowering.common import ensure_supported_dtype, shape_product
 from .lowering.registry import get_lowering_registry
+from .explicit_padding import make_padding_explicit
 from .onnx_import import import_onnx, prepare_onnx_model
 from .sequence_shape_hints import (
     SequenceElementShapeHint,
@@ -113,6 +114,8 @@ class CompilerOptions:
     replicate_ort_bugs: bool = False
     sequence_element_shapes: Mapping[str, SequenceElementShapeHint] | None = None
     image_decoder_libs: tuple[str, ...] = DEFAULT_IMAGE_DECODER_LIBS
+    # Move the padding of Conv nodes into Pad nodes (see explicit_padding)
+    explicit_padding: bool = False
     # Developer-only switch: attach the failing lowering node with typed I/O context.
     debug_lowering_failures: bool = False
     timings: dict[str, float] | None = None
@@ -186,6 +189,11 @@ class Compiler:
         prepared_model = self._time_step(
             "prepare_onnx_model", lambda: prepare_onnx_model(model)
         )
+        if self._options.explicit_padding:
+            prepared_model = self._time_step(
+                "make_padding_explicit",
+                lambda: make_padding_explicit(prepared_model)[0],
+            )
         graph = self._time_step(
             "import_onnx",
             lambda: import_onnx(prepared_model, _prepared=True),
