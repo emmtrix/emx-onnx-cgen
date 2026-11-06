@@ -5972,6 +5972,24 @@ class SoftmaxOp(RenderableOpBase):
                 (params["output"], output_dtype.c_type, array_suffix, False),
             ]
         )
+        # Static shapes with a single reduced axis index the arrays directly instead of through a
+        # flat index, so that the loops over the other axes stay visible to later optimizations
+        rank = len(output_shape)
+        nested = (
+            not emitter.dim_names_for(self.input0)
+            and not output_dim_names
+            and (
+                not self.use_legacy_axis_semantics or axis == rank - 1
+            )
+        )
+        loop_vars = [f"i{dim}" for dim in range(rank) if dim != axis]
+        loop_sizes = [output_shape[dim] for dim in range(rank) if dim != axis]
+
+        def index(axis_expr: str) -> str:
+            return "".join(
+                f"[{axis_expr if dim == axis else f'i{dim}'}]" for dim in range(rank)
+            )
+
         rendered = (
             state.templates["softmax"]
             .render(
@@ -5986,6 +6004,11 @@ class SoftmaxOp(RenderableOpBase):
                 axis_size=axis_size,
                 inner=inner,
                 dtype=output_dtype,
+                nested=nested,
+                loop_vars=loop_vars,
+                loop_sizes=loop_sizes,
+                first_index=index("0"),
+                axis_index=index("axis_idx"),
             )
             .rstrip()
         )
