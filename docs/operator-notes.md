@@ -25,7 +25,16 @@ windowing around the same spectral kernel. A concrete example is
 batch, group, output channel, spatial dimensions, input channel, and kernel
 elements). It does *not* use im2col + GEMM. Padding and dilation are computed
 inline for each output element. Grouped convolution divides the output channels
-by the group count.
+by the group count. The kernel checks whether a tap falls into the padding only
+for spatial dimensions where an input index can leave the input (begin padding,
+an index past the end due to end padding, or a dynamic dimension).
+With `--explicit-padding`, the padding of Conv, FusedConv, ConvInteger and
+QLinearConv moves into a `Pad` node in front of them (pad value 0, or the input
+zero point for the quantized variants), so that their kernel has no bounds check
+at all. Pooling keeps its padding: its pad value depends on the operator,
+`ceil_mode` drops windows that start in the end padding, and its windows are
+small. A constant `Pad` with static, non-negative pads fills the output and
+copies the input into it with plain loop nests.
 
 **ConvTranspose** uses a scatter-accumulate approach: the output is initialized
 with bias, then for each input spatial position and kernel element, the
