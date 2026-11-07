@@ -1,0 +1,15 @@
+{
+  "error": "OK (max ULP 2)",
+  "command_line": "verify --model-base-dir tests/onnx depth_space_loss_dynamic_batch.onnx",
+  "verification_mode": "Random/ORT",
+  "operators": [
+    "DepthToSpace",
+    "SpaceToDepth",
+    "Abs",
+    "LogSoftmax",
+    "NegativeLogLikelihoodLoss",
+    "SoftmaxCrossEntropyLoss"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "c2649e35aa129f642cda8390c3a573f704f2b81973cf4edcdd050ff015e98f15"
+}

@@ -15,19 +15,19 @@ bool ignored = ((int64_t)target_value == {{ ignore_index }});
 {% endif %}
 idx_t class_index = (idx_t)target_value;
 {{ acc_type }} max_value = ({{ acc_type }}){{ input0 }}{{ at_class(0) }};
-for (idx_t c_idx = 1; c_idx < {{ c }}; ++c_idx) {
+for (idx_t c_idx = 1; c_idx < {{ classes }}; ++c_idx) {
     {{ acc_type }} value = ({{ acc_type }}){{ input0 }}{{ at_class("c_idx") }};
     max_value = {{ scalar_fn(SF.MAXIMUM, acc_dtype) }}(max_value, value);
 }
 {{ acc_type }} sum = {{ acc_zero_literal }};
-for (idx_t c_idx = 0; c_idx < {{ c }}; ++c_idx) {
+for (idx_t c_idx = 0; c_idx < {{ classes }}; ++c_idx) {
     {{ acc_type }} value = ({{ acc_type }}){{ input0 }}{{ at_class("c_idx") }} - max_value;
     sum += {{ scalar_fn(SF.EXP, acc_dtype) }}(value);
 }
 {{ acc_type }} logsum = {{ scalar_fn(SF.LOG, acc_dtype) }}(sum);
 {% if log_prob %}
 {{ acc_type }} loss_value = {{ acc_zero_literal }};
-for (idx_t c_idx = 0; c_idx < {{ c }}; ++c_idx) {
+for (idx_t c_idx = 0; c_idx < {{ classes }}; ++c_idx) {
     {{ acc_type }} log_prob_value = ({{ acc_type }}){{ input0 }}{{ at_class("c_idx") }} - max_value - logsum;
     {{ log_prob }}{{ at_class("c_idx") }} = ({{ c_type }})log_prob_value;
     if (c_idx == class_index) {
@@ -87,7 +87,7 @@ if (!ignored) {
         {{ output }}[0] = loss_sum / weight_sum;
     }
 {% else %}
-    {{ output }}[0] = loss_sum / ({{ n }} * {{ d }});
+    {{ output }}[0] = loss_sum / ({{ sample_count }});
 {% endif %}
 {% elif reduction == "sum" %}
     {{ output }}[0] = loss_sum;

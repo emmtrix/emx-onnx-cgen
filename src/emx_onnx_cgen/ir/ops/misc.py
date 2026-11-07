@@ -2855,8 +2855,12 @@ class DepthToSpaceOp(RenderableOpBase):
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
-        output_suffix = emitter.param_array_suffix(output_shape)
-        input_suffix = emitter.param_array_suffix(input_shape)
+        input_dim_names = emitter.dim_names_for(self.input0)
+        output_dim_names = emitter.dim_names_for(self.output)
+        output_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
+        input_suffix = emitter.param_array_suffix(input_shape, input_dim_names)
+        input_dims = CEmitterCompat.shape_dim_exprs(input_shape, input_dim_names)
+        output_dims = CEmitterCompat.shape_dim_exprs(output_shape, output_dim_names)
         param_decls = emitter.build_param_decls(
             [
                 (params["input0"], c_type, input_suffix, True),
@@ -2874,13 +2878,11 @@ class DepthToSpaceOp(RenderableOpBase):
                 c_type=c_type,
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
-                batch=input_shape[0],
-                in_channels=input_shape[1],
-                out_channels=output_shape[1],
-                in_h=input_shape[2],
-                in_w=input_shape[3],
-                out_h=output_shape[2],
-                out_w=output_shape[3],
+                batch=input_dims[0],
+                in_channels=input_dims[1],
+                out_channels=output_dims[1],
+                out_h=output_dims[2],
+                out_w=output_dims[3],
                 blocksize=self.blocksize,
                 mode=self.mode,
             )
@@ -2909,8 +2911,12 @@ class SpaceToDepthOp(RenderableOpBase):
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
-        output_suffix = emitter.param_array_suffix(output_shape)
-        input_suffix = emitter.param_array_suffix(input_shape)
+        input_dim_names = emitter.dim_names_for(self.input0)
+        output_dim_names = emitter.dim_names_for(self.output)
+        output_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
+        input_suffix = emitter.param_array_suffix(input_shape, input_dim_names)
+        input_dims = CEmitterCompat.shape_dim_exprs(input_shape, input_dim_names)
+        output_dims = CEmitterCompat.shape_dim_exprs(output_shape, output_dim_names)
         param_decls = emitter.build_param_decls(
             [
                 (params["input0"], c_type, input_suffix, True),
@@ -2928,13 +2934,11 @@ class SpaceToDepthOp(RenderableOpBase):
                 c_type=c_type,
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
-                batch=input_shape[0],
-                in_channels=input_shape[1],
-                out_channels=output_shape[1],
-                in_h=input_shape[2],
-                in_w=input_shape[3],
-                out_h=output_shape[2],
-                out_w=output_shape[3],
+                batch=input_dims[0],
+                in_channels=input_dims[1],
+                out_channels=output_dims[1],
+                out_h=output_dims[2],
+                out_w=output_dims[3],
                 blocksize=self.blocksize,
             )
             .rstrip()

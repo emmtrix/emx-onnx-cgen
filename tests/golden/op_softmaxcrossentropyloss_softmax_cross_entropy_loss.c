@@ -96,7 +96,7 @@ EMX_NODE_FN void node0_softmaxcrossentropyloss(const float input0[2][3], const i
         }
         loss_sum += loss_value;
     }
-    output[0] = loss_sum / (2 * 1);
+    output[0] = loss_sum / (2);
 }
 
 _Bool model_load(const char *path) {
