@@ -5958,7 +5958,9 @@ class SoftmaxOp(RenderableOpBase):
         reduce_end = rank if self.use_legacy_axis_semantics else axis + 1
         loop_vars = [f"i{dim}" for dim in range(rank) if not axis <= dim < reduce_end]
         loop_sizes = [
-            output_shape_exprs[dim] for dim in range(rank) if not axis <= dim < reduce_end
+            output_shape_exprs[dim]
+            for dim in range(rank)
+            if not axis <= dim < reduce_end
         ]
         reduce_vars = [f"i{dim}" for dim in range(axis, reduce_end)]
         reduce_sizes = [output_shape_exprs[dim] for dim in range(axis, reduce_end)]
