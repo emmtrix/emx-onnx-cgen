@@ -492,30 +492,19 @@ class ShapeLikeOpBase(RenderableOpBase):
                 (params["output"], c_type, output_suffix, False),
             ]
         )
-        input_shape_padded = emitter.derived(self, "input_shape_padded")
-        input_strides = emitter.derived(self, "input_strides")
-        input_index_terms = [
-            f"{loop_var} * {stride}"
-            for loop_var, input_dim, stride in zip(
-                loop_vars, input_shape_padded, input_strides
-            )
-            if input_dim != 1
-        ]
-        input_index_expr = " + ".join(input_index_terms) if input_index_terms else "0"
+        input_expr = CEmitterCompat.broadcast_index_expr(
+            params["input0"], input_shape, output_shape_raw, loop_vars
+        )
         rendered = (
-            state.templates["expand"]
+            state.templates["broadcast_copy"]
             .render(
                 model_name=model.name,
                 op_name=op_name,
-                input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
-                c_type=c_type,
-                input_suffix=input_suffix,
-                output_suffix=output_suffix,
                 output_shape=output_shape,
                 loop_vars=loop_vars,
-                input_index_expr=input_index_expr,
+                input_expr=input_expr,
             )
             .rstrip()
         )

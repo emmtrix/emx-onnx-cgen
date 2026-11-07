@@ -69,14 +69,9 @@ const EMX_UNUSED int64_t weight1_repeats[2] = {
  * Attrs: n/a
  */
 EMX_NODE_FN void node0_tile(const float input0[2][3], const int64_t repeats_input[2], float output[4][3]) {
-    const float *input_data = (const float *)input0;
-    float *output_data = (float *)output;
-    idx_t output_index = 0;
     for (idx_t i0 = 0; i0 < 4; ++i0) {
         for (idx_t i1 = 0; i1 < 3; ++i1) {
-            idx_t input_index = (i0 % 2) * 3 + (i1 % 3) * 1;
-            output_data[output_index] = input_data[input_index];
-            output_index++;
+            output[i0][i1] = input0[i0 % 2][i1 % 3];
         }
     }
 }

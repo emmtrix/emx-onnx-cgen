@@ -58,28 +58,9 @@
  */
 EMX_NODE_FN void node0_eyelike(const float input0[3][3], float output[3][3]) {
     (void)input0;
-    float *output_data = (float *)output;
-    idx_t total = (idx_t)1 * 3 * 3;
-    for (idx_t index = 0; index < total; ++index) {
-        output_data[index] = 0.0f;
-    }
-    idx_t k = 0;
-    idx_t rows = 3;
-    idx_t cols = 3;
-    idx_t row_start = k >= 0 ? 0 : -k;
-    idx_t col_start = k >= 0 ? k : 0;
-    if (row_start >= rows || col_start >= cols) {
-        return;
-    }
-    idx_t max_rows = rows - row_start;
-    idx_t max_cols = cols - col_start;
-    idx_t diag_len = max_rows < max_cols ? max_rows : max_cols;
-    for (idx_t batch = 0; batch < 1; ++batch) {
-        idx_t base = batch * rows * cols;
-        for (idx_t diag = 0; diag < diag_len; ++diag) {
-            idx_t row = row_start + diag;
-            idx_t col = col_start + diag;
-            output_data[base + row * cols + col] = ((float)1);
+    for (idx_t row = 0; row < 3; ++row) {
+        for (idx_t col = 0; col < 3; ++col) {
+            output[row][col] = ((idx_t)col - (idx_t)row == 0) ? ((float)1) : 0.0f;
         }
     }
 }
