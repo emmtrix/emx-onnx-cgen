@@ -2978,11 +2978,6 @@ class SliceOp(RenderableOpBase):
                 dtypes.add(ctx.dtype(name))
         return dtypes
 
-    def required_includes(self, ctx: "OpContext") -> set[str]:
-        if ctx.dtype(self.output) == ScalarType.STRING:
-            return {"#include <string.h>"}
-        return set()
-
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -8292,9 +8287,6 @@ class BifurcationDetectorOp(RenderableOpBase):
     tokens_len: int
     min_ngram_size: int
     max_ngram_size: int
-
-    def required_includes(self, ctx: OpContext) -> set[str]:
-        return {"#include <string.h>"}
 
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()

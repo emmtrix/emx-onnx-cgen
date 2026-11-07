@@ -3,7 +3,9 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}
 {% if is_string %}
-memcpy({{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %}, {{ input0 }}{% for idx in input_indices %}[{{ idx }}]{% endfor %}, EMX_STRING_MAX_LEN);
+for (idx_t char_idx = 0; char_idx < EMX_STRING_MAX_LEN; ++char_idx) {
+{{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %}[char_idx] = {{ input0 }}{% for idx in input_indices %}[{{ idx }}]{% endfor %}[char_idx];
+}
 {% else %}
 {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {{ input0 }}{% for idx in input_indices %}[{{ idx }}]{% endfor %};
 {% endif %}

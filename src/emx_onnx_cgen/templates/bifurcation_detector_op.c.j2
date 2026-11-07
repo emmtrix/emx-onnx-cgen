@@ -1,51 +1,50 @@
-static idx_t {{ op_name }}_search(const int64_t *haystack, idx_t hlen, const int64_t *needle, idx_t nlen) {
-    if (nlen == 0 || nlen > hlen) return -1;
-    for (idx_t i = 0; i <= hlen - nlen; ++i) {
+{# Finds needle[needle_start .. needle_start + needle_len) in haystack[haystack_start ..) and
+   returns its position in haystack, or -1. #}
+static idx_t {{ op_name }}_search(const int64_t haystack[{{ src_len }}], idx_t haystack_start, const int64_t needle[{{ tokens_len }}], idx_t needle_start, idx_t needle_len) {
+    if (needle_len == 0 || needle_len > (idx_t)({{ src_len }}) - haystack_start) return -1;
+    for (idx_t i = haystack_start; i <= (idx_t)({{ src_len }}) - needle_len; ++i) {
         idx_t j;
-        for (j = 0; j < nlen; ++j) {
-            if (haystack[i + j] != needle[j]) break;
+        for (j = 0; j < needle_len; ++j) {
+            if (haystack[i + j] != needle[needle_start + j]) break;
         }
-        if (j == nlen) return i;
+        if (j == needle_len) return i;
     }
     return -1;
 }
 
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-    const int64_t *src_flat = (const int64_t *){{ src_tokens }};
-    const int64_t *cur_flat = (const int64_t *){{ cur_tokens }};
-    int64_t *tokens_flat = (int64_t *){{ tokens }};
     idx_t actual_len;
 
+    for (idx_t i = 0; i < (idx_t)({{ cur_len }}); ++i) {
+        {{ tokens }}[i] = {{ cur_tokens }}[i];
+    }
 {% if has_pred_tokens %}
-    const int64_t *pred_flat = (const int64_t *){{ pred_tokens }};
-    const int64_t prev_match = *((const int64_t *){{ match_idx_in }});
+    const int64_t prev_match = {{ match_idx_in }}[0];
     idx_t pred_bifur_idx = 0;
     for (; pred_bifur_idx < (idx_t)({{ src_len }}) - (idx_t)prev_match; ++pred_bifur_idx) {
-        if (pred_flat[pred_bifur_idx] != src_flat[pred_bifur_idx + (idx_t)prev_match]) {
+        if ({{ pred_tokens }}[pred_bifur_idx] != {{ src_tokens }}[pred_bifur_idx + (idx_t)prev_match]) {
             break;
         }
     }
-    memcpy(tokens_flat, cur_flat, (size_t)({{ cur_len }}) * sizeof(int64_t));
-    memcpy(tokens_flat + {{ cur_len }}, pred_flat, (size_t)(pred_bifur_idx + 1) * sizeof(int64_t));
+    for (idx_t i = 0; i <= pred_bifur_idx; ++i) {
+        {{ tokens }}[(idx_t)({{ cur_len }}) + i] = {{ pred_tokens }}[i];
+    }
     actual_len = (idx_t)({{ cur_len }}) + pred_bifur_idx + 1;
 {% else %}
-    memcpy(tokens_flat, cur_flat, (size_t)({{ cur_len }}) * sizeof(int64_t));
     actual_len = (idx_t)({{ cur_len }});
 {% endif %}
 
     int64_t suffix_idx = -1;
-    for (idx_t i = (idx_t)({{ min_ngram_size }}); i <= (idx_t)({{ max_ngram_size }}); ++i) {
-        if (i > actual_len) break;
-        const int64_t *ngram = tokens_flat + actual_len - i;
-        idx_t pos = {{ op_name }}_search(src_flat, (idx_t)({{ src_len }}), ngram, i);
+    for (idx_t ngram_len = (idx_t)({{ min_ngram_size }}); ngram_len <= (idx_t)({{ max_ngram_size }}); ++ngram_len) {
+        if (ngram_len > actual_len) break;
+        const idx_t ngram_start = actual_len - ngram_len;
+        const idx_t pos = {{ op_name }}_search({{ src_tokens }}, 0, {{ tokens }}, ngram_start, ngram_len);
         if (pos < 0) break;
-        idx_t candidate = pos + i;
-        idx_t pos2 = {{ op_name }}_search(src_flat + candidate - i + 1, (idx_t)({{ src_len }}) - (candidate - i + 1), ngram, i);
-        if (pos2 >= 0) {
+        if ({{ op_name }}_search({{ src_tokens }}, pos + 1, {{ tokens }}, ngram_start, ngram_len) >= 0) {
             suffix_idx = -1;
             continue;
         }
-        suffix_idx = candidate;
+        suffix_idx = pos + ngram_len;
     }
-    *((int64_t *){{ match_idx_out }}) = suffix_idx;
+    {{ match_idx_out }}[0] = suffix_idx;
 }
