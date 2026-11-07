@@ -5942,26 +5942,6 @@ class SoftmaxOp(RenderableOpBase):
         )
         output_dtype = emitter.ctx_dtype(self.output)
         axis = emitter.derived(self, "axis")
-        if self.use_legacy_axis_semantics:
-            outer = (
-                CEmitterCompat.element_count_expr(output_shape_exprs[:axis])
-                if axis > 0
-                else 1
-            )
-            axis_size = CEmitterCompat.element_count_expr(output_shape_exprs[axis:])
-            inner = 1
-        else:
-            outer = (
-                CEmitterCompat.element_count_expr(output_shape_exprs[:axis])
-                if axis > 0
-                else 1
-            )
-            axis_size = output_shape_exprs[axis]
-            inner = (
-                CEmitterCompat.element_count_expr(output_shape_exprs[axis + 1 :])
-                if axis + 1 < len(output_shape)
-                else 1
-            )
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
@@ -5972,6 +5952,22 @@ class SoftmaxOp(RenderableOpBase):
                 (params["output"], output_dtype.c_type, array_suffix, False),
             ]
         )
+        # The legacy semantics (opset < 13) reduce over all axes from `axis` on, opset 13 over
+        # `axis` only. Every axis has its own loop and indexes the arrays directly.
+        rank = len(output_shape)
+        reduce_end = rank if self.use_legacy_axis_semantics else axis + 1
+        loop_vars = [f"i{dim}" for dim in range(rank) if not axis <= dim < reduce_end]
+        loop_sizes = [
+            output_shape_exprs[dim] for dim in range(rank) if not axis <= dim < reduce_end
+        ]
+        reduce_vars = [f"i{dim}" for dim in range(axis, reduce_end)]
+        reduce_sizes = [output_shape_exprs[dim] for dim in range(axis, reduce_end)]
+        # The maximum starts with the first element, so a single reduced axis skips it
+        max_starts = [1] if len(reduce_vars) == 1 else [0] * len(reduce_vars)
+        first_index = "".join(
+            f"[{0 if axis <= dim < reduce_end else f'i{dim}'}]" for dim in range(rank)
+        )
+        index = "".join(f"[i{dim}]" for dim in range(rank))
         rendered = (
             state.templates["softmax"]
             .render(
@@ -5981,11 +5977,14 @@ class SoftmaxOp(RenderableOpBase):
                 output=params["output"],
                 params=param_decls,
                 c_type=output_dtype.c_type,
-                array_suffix=array_suffix,
-                outer=outer,
-                axis_size=axis_size,
-                inner=inner,
                 dtype=output_dtype,
+                loop_vars=loop_vars,
+                loop_sizes=loop_sizes,
+                reduce_vars=reduce_vars,
+                reduce_sizes=reduce_sizes,
+                max_starts=max_starts,
+                first_index=first_index,
+                index=index,
             )
             .rstrip()
         )

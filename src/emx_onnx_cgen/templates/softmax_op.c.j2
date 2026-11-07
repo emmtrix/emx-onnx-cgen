@@ -1,26 +1,31 @@
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-    const {{ c_type }} *input_flat = (const {{ c_type }} *){{ input0 }};
-    {{ c_type }} *output_flat = ({{ c_type }} *){{ output }};
-    const idx_t outer = {{ outer }};
-    const idx_t axis_size = {{ axis_size }};
-    const idx_t inner = {{ inner }};
-    for (idx_t outer_idx = 0; outer_idx < outer; ++outer_idx) {
-        for (idx_t inner_idx = 0; inner_idx < inner; ++inner_idx) {
-            idx_t base = (outer_idx * axis_size * inner) + inner_idx;
-            {{ c_type }} max_value = input_flat[base];
-            for (idx_t axis_idx = 1; axis_idx < axis_size; ++axis_idx) {
-                {{ c_type }} value = input_flat[base + axis_idx * inner];
-                max_value = {{ scalar_fn(SF.MAXIMUM, dtype) }}(max_value, value);
-            }
-            {{ c_type }} sum = 0;
-            for (idx_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
-                {{ c_type }} value = {{ scalar_fn(SF.EXP, dtype) }}(input_flat[base + axis_idx * inner] - max_value);
-                output_flat[base + axis_idx * inner] = value;
-                sum += value;
-            }
-            for (idx_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
-                output_flat[base + axis_idx * inner] /= sum;
-            }
-        }
-    }
+{% macro reduce_loops(starts) %}
+{% for var in reduce_vars %}
+for (idx_t {{ var }} = {{ starts[loop.index0] }}; {{ var }} < {{ reduce_sizes[loop.index0] }}; ++{{ var }}) {
+{% endfor %}
+{{ caller() | trim }}
+{% for _ in reduce_vars %}
+}
+{% endfor %}
+{% endmacro %}
+{% set zero_starts = [0] * (reduce_vars | length) %}
+{% for var in loop_vars %}
+for (idx_t {{ var }} = 0; {{ var }} < {{ loop_sizes[loop.index0] }}; ++{{ var }}) {
+{% endfor %}
+{{ c_type }} max_value = {{ input0 }}{{ first_index }};
+{% call reduce_loops(max_starts) %}
+max_value = {{ scalar_fn(SF.MAXIMUM, dtype) }}(max_value, {{ input0 }}{{ index }});
+{% endcall %}
+{{ c_type }} sum = 0;
+{% call reduce_loops(zero_starts) %}
+{{ c_type }} value = {{ scalar_fn(SF.EXP, dtype) }}({{ input0 }}{{ index }} - max_value);
+{{ output }}{{ index }} = value;
+sum += value;
+{% endcall %}
+{% call reduce_loops(zero_starts) %}
+{{ output }}{{ index }} /= sum;
+{% endcall %}
+{% for _ in loop_vars %}
+}
+{% endfor %}
 }

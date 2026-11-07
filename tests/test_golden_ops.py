@@ -413,6 +413,28 @@ def _make_softmax_model() -> onnx.ModelProto:
     )
 
 
+def _make_softmax_inner_axis_model() -> onnx.ModelProto:
+    return _make_operator_model(
+        op_type="Softmax",
+        input_shapes=[[2, 3, 4]],
+        output_shape=[2, 3, 4],
+        dtype=TensorProto.FLOAT,
+        attrs={"axis": 1},
+        opset=13,
+    )
+
+
+def _make_softmax_legacy_axis_model() -> onnx.ModelProto:
+    return _make_operator_model(
+        op_type="Softmax",
+        input_shapes=[[2, 3, 4]],
+        output_shape=[2, 3, 4],
+        dtype=TensorProto.FLOAT,
+        attrs={"axis": 1},
+        opset=11,
+    )
+
+
 def _make_logsoftmax_model() -> onnx.ModelProto:
     return _make_operator_model(
         op_type="LogSoftmax",
@@ -765,6 +787,8 @@ OP_GOLDEN_CASES = [
     ("deformconv", "deform_conv", _make_deform_conv_model),
     ("averagepool", "average_pool", _make_average_pool_model),
     ("softmax", "softmax", _make_softmax_model),
+    ("softmax", "softmax_inner_axis", _make_softmax_inner_axis_model),
+    ("softmax", "softmax_legacy_axis", _make_softmax_legacy_axis_model),
     ("logsoftmax", "logsoftmax", _make_logsoftmax_model),
     ("hardmax", "hardmax", _make_hardmax_model),
     (
