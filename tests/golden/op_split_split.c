@@ -26,7 +26,6 @@
  */
 
 #include <stdint.h>
-#include <string.h>
 
 #ifndef idx_t
 #define idx_t int32_t
@@ -71,20 +70,19 @@ const EMX_UNUSED int64_t weight1_split[3] = {
  *   axis: 1
  */
 EMX_NODE_FN void node0_split(const float input0[2][6], float output_0[2][2], float output_1[2][2], float output_2[2][2]) {
-    const float *input_data = (const float *)input0;
-    float *output_ptrs[] = { (float *)output_0, (float *)output_1, (float *)output_2 };
-    const idx_t axis_sizes[] = { 2, 2, 2 };
-    for (idx_t outer_idx = 0; outer_idx < 2; ++outer_idx) {
-        idx_t input_base = outer_idx * 6 * 1;
-        idx_t axis_offset = 0;
-        for (idx_t output_idx = 0; output_idx < 3; ++output_idx) {
-            idx_t copy_elems = axis_sizes[output_idx] * 1;
-            memcpy(
-            output_ptrs[output_idx] + outer_idx * copy_elems,
-            input_data + input_base + axis_offset,
-            copy_elems * sizeof(float)
-            );
-            axis_offset += copy_elems;
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 2; ++i1) {
+            output_0[i0][i1] = input0[i0][i1];
+        }
+    }
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 2; ++i1) {
+            output_1[i0][i1] = input0[i0][i1 + 2];
+        }
+    }
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 2; ++i1) {
+            output_2[i0][i1] = input0[i0][i1 + 4];
         }
     }
 }
