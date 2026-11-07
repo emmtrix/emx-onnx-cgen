@@ -67,27 +67,24 @@ static inline float ref_scalar_f32_exp(float a) {
  *   axis: 1
  */
 EMX_NODE_FN void node0_softmax(const float input0[2][3][4], float output[2][3][4]) {
-    const float *input_flat = (const float *)input0;
-    float *output_flat = (float *)output;
-    const idx_t outer = 2;
-    const idx_t axis_size = 3 * 4;
-    const idx_t inner = 1;
-    for (idx_t outer_idx = 0; outer_idx < outer; ++outer_idx) {
-        for (idx_t inner_idx = 0; inner_idx < inner; ++inner_idx) {
-            idx_t base = (outer_idx * axis_size * inner) + inner_idx;
-            float max_value = input_flat[base];
-            for (idx_t axis_idx = 1; axis_idx < axis_size; ++axis_idx) {
-                float value = input_flat[base + axis_idx * inner];
-                max_value = ref_scalar_f32_maximum(max_value, value);
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        float max_value = input0[i0][0][0];
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
+            for (idx_t i2 = 0; i2 < 4; ++i2) {
+                max_value = ref_scalar_f32_maximum(max_value, input0[i0][i1][i2]);
             }
-            float sum = 0;
-            for (idx_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
-                float value = ref_scalar_f32_exp(input_flat[base + axis_idx * inner] - max_value);
-                output_flat[base + axis_idx * inner] = value;
+        }
+        float sum = 0;
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
+            for (idx_t i2 = 0; i2 < 4; ++i2) {
+                float value = ref_scalar_f32_exp(input0[i0][i1][i2] - max_value);
+                output[i0][i1][i2] = value;
                 sum += value;
             }
-            for (idx_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
-                output_flat[base + axis_idx * inner] /= sum;
+        }
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
+            for (idx_t i2 = 0; i2 < 4; ++i2) {
+                output[i0][i1][i2] /= sum;
             }
         }
     }

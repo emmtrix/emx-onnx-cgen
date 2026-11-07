@@ -69,17 +69,17 @@ static inline float ref_scalar_f32_exp(float a) {
 EMX_NODE_FN void node0_softmax(const float input0[2][3], float output[2][3]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         float max_value = input0[i0][0];
-        for (idx_t axis_idx = 1; axis_idx < 3; ++axis_idx) {
-            max_value = ref_scalar_f32_maximum(max_value, input0[i0][axis_idx]);
+        for (idx_t i1 = 1; i1 < 3; ++i1) {
+            max_value = ref_scalar_f32_maximum(max_value, input0[i0][i1]);
         }
         float sum = 0;
-        for (idx_t axis_idx = 0; axis_idx < 3; ++axis_idx) {
-            float value = ref_scalar_f32_exp(input0[i0][axis_idx] - max_value);
-            output[i0][axis_idx] = value;
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
+            float value = ref_scalar_f32_exp(input0[i0][i1] - max_value);
+            output[i0][i1] = value;
             sum += value;
         }
-        for (idx_t axis_idx = 0; axis_idx < 3; ++axis_idx) {
-            output[i0][axis_idx] /= sum;
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
+            output[i0][i1] /= sum;
         }
     }
 }
