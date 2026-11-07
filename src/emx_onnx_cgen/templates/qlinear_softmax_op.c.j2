@@ -1,6 +1,6 @@
+{% import "axis_loops.c.j2" as axis_loops %}
+{% macro dequantized(index) %}((({{ compute_type }})((int32_t){{ input0 }}{{ index }} - input_zero)) * input_scale_value){% endmacro %}
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-    const {{ input_c_type }} *input_flat = (const {{ input_c_type }} *){{ input0 }};
-    {{ output_c_type }} *output_flat = ({{ output_c_type }} *){{ output }};
     const {{ compute_type }} input_scale_value = ({{ compute_type }}){{ input_scale_expr }};
     const {{ compute_type }} output_scale_value = ({{ compute_type }}){{ output_scale_expr }};
     const int32_t input_zero = (int32_t){{ input_zero_expr }};
@@ -11,44 +11,38 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     /* ONNX Runtime quantizes with the floored reciprocal of the output scale. */
     const {{ compute_type }} output_inv_scale = {{ scalar_fn(SF.FLOOR, compute_dtype) }}(({{ compute_type }})1 / output_scale_value);
 {% endif %}
-    for (idx_t outer_idx = 0; outer_idx < {{ outer }}; ++outer_idx) {
-        for (idx_t inner_idx = 0; inner_idx < {{ inner }}; ++inner_idx) {
-            idx_t base = (outer_idx * {{ axis_size }} * {{ inner }}) + inner_idx;
-            {{ compute_type }} max_value = ((({{ compute_type }})((int32_t)input_flat[base] - input_zero)) * input_scale_value);
-            for (idx_t axis_idx = 1; axis_idx < {{ axis_size }}; ++axis_idx) {
-                idx_t axis_offset = base + axis_idx * {{ inner }};
-                {{ compute_type }} value = ((({{ compute_type }})((int32_t)input_flat[axis_offset] - input_zero)) * input_scale_value);
-                max_value = {{ scalar_fn(SF.MAXIMUM, compute_dtype) }}(max_value, value);
-            }
-            {{ compute_type }} sum = ({{ compute_type }})0;
-            for (idx_t axis_idx = 0; axis_idx < {{ axis_size }}; ++axis_idx) {
-                idx_t axis_offset = base + axis_idx * {{ inner }};
-                {{ compute_type }} value = ((({{ compute_type }})((int32_t)input_flat[axis_offset] - input_zero)) * input_scale_value);
-                sum += {{ scalar_fn(SF.EXP, compute_dtype) }}(value - max_value);
-            }
-            for (idx_t axis_idx = 0; axis_idx < {{ axis_size }}; ++axis_idx) {
-                idx_t axis_offset = base + axis_idx * {{ inner }};
-                {{ compute_type }} value = ((({{ compute_type }})((int32_t)input_flat[axis_offset] - input_zero)) * input_scale_value);
-                {{ compute_type }} exp_value = {{ scalar_fn(SF.EXP, compute_dtype) }}(value - max_value);
+{% call axis_loops.loops(nest.loop_vars, nest.loop_sizes) %}
+{{ compute_type }} max_value = {{ dequantized(nest.first_index) }};
+{% call axis_loops.loops(nest.reduce_vars, nest.reduce_sizes, nest.after_first_starts) %}
+{{ compute_type }} value = {{ dequantized(nest.index) }};
+max_value = {{ scalar_fn(SF.MAXIMUM, compute_dtype) }}(max_value, value);
+{% endcall %}
+{{ compute_type }} sum = ({{ compute_type }})0;
+{% call axis_loops.loops(nest.reduce_vars, nest.reduce_sizes) %}
+{{ compute_type }} value = {{ dequantized(nest.index) }};
+sum += {{ scalar_fn(SF.EXP, compute_dtype) }}(value - max_value);
+{% endcall %}
+{% call axis_loops.loops(nest.reduce_vars, nest.reduce_sizes) %}
+{{ compute_type }} value = {{ dequantized(nest.index) }};
+{{ compute_type }} exp_value = {{ scalar_fn(SF.EXP, compute_dtype) }}(value - max_value);
 {% if output_wrap and output_is_signed %}
-                {{ compute_type }} scaled = (exp_value / sum) / output_scale_value + output_zero;
-                int32_t quantized = (int32_t){{ scalar_fn(SF.LLRINT, compute_dtype) }}(scaled);
-                uint8_t wrapped_u8 = (uint8_t)(quantized + 128);
-                int8_t wrapped_i8 = (int8_t)((int32_t)wrapped_u8 - 128);
-                output_flat[axis_offset] = ({{ output_c_type }})wrapped_i8;
+{{ compute_type }} scaled = (exp_value / sum) / output_scale_value + output_zero;
+int32_t quantized = (int32_t){{ scalar_fn(SF.LLRINT, compute_dtype) }}(scaled);
+uint8_t wrapped_u8 = (uint8_t)(quantized + 128);
+int8_t wrapped_i8 = (int8_t)((int32_t)wrapped_u8 - 128);
+{{ output }}{{ nest.index }} = ({{ output_c_type }})wrapped_i8;
 {% elif output_wrap %}
-                {{ compute_type }} scaled = (exp_value / sum) / output_scale_value + output_zero;
-                int32_t quantized = (int32_t){{ scalar_fn(SF.LLRINT, compute_dtype) }}(scaled);
-                uint8_t wrapped_u8 = (uint8_t)quantized;
-                output_flat[axis_offset] = ({{ output_c_type }})wrapped_u8;
+{{ compute_type }} scaled = (exp_value / sum) / output_scale_value + output_zero;
+int32_t quantized = (int32_t){{ scalar_fn(SF.LLRINT, compute_dtype) }}(scaled);
+uint8_t wrapped_u8 = (uint8_t)quantized;
+{{ output }}{{ nest.index }} = ({{ output_c_type }})wrapped_u8;
 {% else %}
-                {{ compute_type }} scaled = (exp_value * output_inv_scale) / sum;
-                {{ compute_type }} rounded = {{ scalar_fn(SF.NEARBYINT, compute_dtype) }}(scaled) + output_zero;
-                rounded = {{ scalar_fn(SF.MAXIMUM, compute_dtype) }}(rounded, output_min);
-                rounded = {{ scalar_fn(SF.MINIMUM, compute_dtype) }}(rounded, output_max);
-                output_flat[axis_offset] = ({{ output_c_type }})rounded;
+{{ compute_type }} scaled = (exp_value * output_inv_scale) / sum;
+{{ compute_type }} rounded = {{ scalar_fn(SF.NEARBYINT, compute_dtype) }}(scaled) + output_zero;
+rounded = {{ scalar_fn(SF.MAXIMUM, compute_dtype) }}(rounded, output_min);
+rounded = {{ scalar_fn(SF.MINIMUM, compute_dtype) }}(rounded, output_max);
+{{ output }}{{ nest.index }} = ({{ output_c_type }})rounded;
 {% endif %}
-            }
-        }
-    }
+{% endcall %}
+{% endcall %}
 }

@@ -1172,7 +1172,7 @@ class CEmitter:
                 "qembed_layer_norm": self._env.get_template(
                     "qembed_layer_norm_op.c.j2"
                 ),
-                "concat": self._env.get_template("concat_op.c.j2"),
+                "part_copy": self._env.get_template("part_copy_op.c.j2"),
                 "concat_from_sequence": self._env.get_template(
                     "concat_from_sequence_op.c.j2"
                 ),
@@ -1195,7 +1195,7 @@ class CEmitter:
                 "dropout": self._env.get_template("dropout_op.c.j2"),
                 "eye_like": self._env.get_template("eye_like_op.c.j2"),
                 "trilu": self._env.get_template("trilu_op.c.j2"),
-                "tile": self._env.get_template("tile_op.c.j2"),
+                "broadcast_copy": self._env.get_template("broadcast_copy_op.c.j2"),
                 "center_crop_pad": self._env.get_template("center_crop_pad_op.c.j2"),
                 "pad": self._env.get_template("pad_op.c.j2"),
                 "depth_to_space": self._env.get_template("depth_to_space_op.c.j2"),
@@ -1245,9 +1245,7 @@ class CEmitter:
                 "nonmax_suppression": self._env.get_template(
                     "nonmax_suppression_op.c.j2"
                 ),
-                "expand": self._env.get_template("expand_op.c.j2"),
-                "cumprod": self._env.get_template("cumprod_op.c.j2"),
-                "cumsum": self._env.get_template("cumsum_op.c.j2"),
+                "cumulative": self._env.get_template("cumulative_op.c.j2"),
                 "stft": self._env.get_template("stft_op.c.j2"),
                 "dft": self._env.get_template("dft_op.c.j2"),
                 "range": self._env.get_template("range_op.c.j2"),
@@ -1286,7 +1284,6 @@ class CEmitter:
                 "tree_ensemble_classifier": self._env.get_template(
                     "tree_ensemble_classifier_op.c.j2"
                 ),
-                "split": self._env.get_template("split_op.c.j2"),
                 "split_to_sequence": self._env.get_template(
                     "split_to_sequence_op.c.j2"
                 ),

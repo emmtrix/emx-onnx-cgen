@@ -60,42 +60,17 @@
 EMX_NODE_FN void node0_averagepool(const float input0[1][1][4][4], float output[1][1][2][2]) {
     for (idx_t n = 0; n < 1; ++n) {
         for (idx_t c = 0; c < 1; ++c) {
-            for (idx_t oh = 0; oh < 2; ++oh) {
-                for (idx_t ow = 0; ow < 2; ++ow) {
-                    float values[4];
-                    idx_t count = 0;
-                    for (idx_t kh = 0; kh < 2; ++kh) {
-                        const idx_t ih = oh * 2 + kh * 1 - 0;
-                        for (idx_t kw = 0; kw < 2; ++kw) {
-                            const idx_t iw = ow * 2 + kw * 1 - 0;
-                            if (ih >= 0 && ih < 4 && iw >= 0 && iw < 4) {
-                                values[count++] = input0[n][c][ih][iw];
-                            } else if (
-                            0
-                            && ih >= -0 && ih < 4 + 0
-                            && iw >= -0 && iw < 4 + 0
-                            ) {
-                                values[count++] = 0.0f;
-                            }
-                        }
-                    }
-                    const idx_t denom = count;
+            for (idx_t od0 = 0; od0 < 2; ++od0) {
+                for (idx_t od1 = 0; od1 < 2; ++od1) {
                     float acc = 0.0f;
-                    if (count > 0) {
-                        idx_t reduce_count = count;
-                        while (reduce_count > 1) {
-                            idx_t next = 0;
-                            for (idx_t i = 0; i + 1 < reduce_count; i += 2) {
-                                values[next++] = values[i] + values[i + 1];
-                            }
-                            if (reduce_count % 2) {
-                                values[next++] = values[reduce_count - 1];
-                            }
-                            reduce_count = next;
+                    for (idx_t kd0 = 0; kd0 < 2; ++kd0) {
+                        for (idx_t kd1 = 0; kd1 < 2; ++kd1) {
+                            const idx_t id0 = od0 * 2 + kd0 * 1 - 0;
+                            const idx_t id1 = od1 * 2 + kd1 * 1 - 0;
+                            acc += input0[n][c][id0][id1];
                         }
-                        acc = values[0];
                     }
-                    output[n][c][oh][ow] = denom ? acc / (float)denom : 0.0f;
+                    output[n][c][od0][od1] = acc / (float)4;
                 }
             }
         }

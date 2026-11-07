@@ -63,26 +63,18 @@ static inline float ref_scalar_f32_maximum(float a, float b) {
  *   axis: 1
  */
 EMX_NODE_FN void node0_hardmax(const float input0[2][3], float output[2][3]) {
-    const float *input_flat = (const float *)input0;
-    float *output_flat = (float *)output;
-    const idx_t outer = 2;
-    const idx_t axis_size = 3;
-    const idx_t inner = 1;
-    for (idx_t outer_idx = 0; outer_idx < outer; ++outer_idx) {
-        for (idx_t inner_idx = 0; inner_idx < inner; ++inner_idx) {
-            idx_t base = (outer_idx * axis_size * inner) + inner_idx;
-            float max_value = input_flat[base];
-            idx_t max_index = 0;
-            for (idx_t axis_idx = 1; axis_idx < axis_size; ++axis_idx) {
-                float value = input_flat[base + axis_idx * inner];
-                const float prev_max = max_value;
-                max_value = ref_scalar_f32_maximum(max_value, value);
-                max_index = (value > prev_max) ? axis_idx : max_index;
-            }
-            for (idx_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
-                output_flat[base + axis_idx * inner] =
-                axis_idx == max_index ? 1.0f : 0.0f;
-            }
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        float max_value = input0[i0][0];
+        for (idx_t i1 = 1; i1 < 3; ++i1) {
+            max_value = ref_scalar_f32_maximum(max_value, input0[i0][i1]);
+        }
+        idx_t first = 3;
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
+            const idx_t candidate = (input0[i0][i1] == max_value) ? i1 : 3;
+            first = (first < candidate) ? first : candidate;
+        }
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
+            output[i0][i1] = (i1 == first) ? 1.0f : 0.0f;
         }
     }
 }

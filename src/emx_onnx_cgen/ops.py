@@ -170,7 +170,7 @@ UNARY_SYMBOLS_DOUBLE = {
     ScalarFunction.NEG: "neg",
     ScalarFunction.RECIPROCAL: "reciprocal",
     ScalarFunction.RELU: "relu",
-    ScalarFunction.ROUND: "round",
+    ScalarFunction.NEARBYINT: "nearbyint",
     ScalarFunction.SELU: "selu",
     ScalarFunction.SIGMOID: "sigmoid",
     ScalarFunction.SIGN: "sign",
@@ -369,7 +369,7 @@ UNARY_APPLY_FUNCS = {
     "neg": lambda value: -value,
     "reciprocal": lambda value: 1.0 / value,
     "relu": lambda value: np.maximum(value, 0),
-    "round": np.round,
+    "nearbyint": np.round,
     "selu": lambda value: np.where(
         value > 0.0,
         1.0507009873554805 * value,

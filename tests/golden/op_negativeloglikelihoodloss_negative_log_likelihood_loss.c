@@ -57,32 +57,22 @@
  *   reduction: mean
  */
 EMX_NODE_FN void node0_negativeloglikelihoodloss(const float input0[2][3], const int64_t target[2], float output[1]) {
-    const float *input_flat = (const float *)input0;
-    const int64_t *target_flat = (const int64_t *)target;
-    float *output_flat = (float *)output;
-    const idx_t n = 2;
-    const idx_t c = 3;
-    const idx_t d = 1;
     float loss_sum = 0.0f;
     float weight_sum = 0.0f;
-    for (idx_t n_idx = 0; n_idx < n; ++n_idx) {
-        for (idx_t d_idx = 0; d_idx < d; ++d_idx) {
-            idx_t target_index = n_idx * d + d_idx;
-            int64_t target_value = target_flat[target_index];
-            if ((int64_t)target_value == -1) {
-            } else {
-                idx_t class_index = (idx_t)target_value;
-                idx_t input_index = (n_idx * c + class_index) * d + d_idx;
-                float value = -(float)input_flat[input_index];
-                loss_sum += value;
-                weight_sum += 1.0f;
-            }
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        int64_t target_value = target[i0];
+        if ((int64_t)target_value == -1) {
+        } else {
+            idx_t class_index = (idx_t)target_value;
+            float value = -(float)input0[i0][class_index];
+            loss_sum += value;
+            weight_sum += 1.0f;
         }
     }
     if (weight_sum == 0.0f) {
-        output_flat[0] = 0.0f;
+        output[0] = 0.0f;
     } else {
-        output_flat[0] = loss_sum / weight_sum;
+        output[0] = loss_sum / weight_sum;
     }
 }
 

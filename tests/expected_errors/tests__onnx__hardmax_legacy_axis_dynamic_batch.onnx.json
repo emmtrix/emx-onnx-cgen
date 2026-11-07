@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir tests/onnx hardmax_legacy_axis_dynamic_batch.onnx",
+  "verification_mode": "Random/ORT",
+  "operators": [
+    "Hardmax"
+  ],
+  "opset_version": 11,
+  "generated_checksum": "b435995a4c6acda78dfc7b9cdd4b905a23f146e7341b08ae8ad99645fd803a4c"
+}

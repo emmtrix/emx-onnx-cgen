@@ -12,6 +12,7 @@ from shared.scalar_types import ScalarType
 
 from ...errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from ..model import SequenceType
+from ..axis_loops import ConcatPart
 from ..op_base import (
     CEmitterCompat,
     EmitContext,
@@ -644,9 +645,6 @@ class ConcatOp(RenderableOpBase):
     output: str
     axis: int
 
-    def required_includes(self, ctx: OpContext) -> set[str]:
-        return {"#include <string.h>"}
-
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -665,12 +663,21 @@ class ConcatOp(RenderableOpBase):
         if axis < 0:
             axis += len(output_shape)
         output_dim_names = emitter.dim_names_for(self.output)
-        output_shape_exprs = CEmitterCompat.shape_dim_exprs(
-            output_shape, output_dim_names
+        parts = ConcatPart.along(
+            axis,
+            [
+                CEmitterCompat.shape_dim_exprs(shape, emitter.dim_names_for(onnx_name))
+                for shape, onnx_name in zip(input_shapes, self.inputs)
+            ],
         )
-        loop_vars = CEmitterCompat.loop_vars(output_shape)[:axis]
-        copies = self._copy_specs(
-            emitter, input_names, input_shapes, params["output"], axis, loop_vars
+        copies = tuple(
+            {
+                "part": part,
+                "target": f"{params['output']}{part.whole_index}",
+                "source": f"{name}{part.part_index}",
+            }
+            for name, part in zip(input_names, parts)
+            if part is not None
         )
         input_suffixes = tuple(
             emitter.param_array_suffix(shape, emitter.dim_names_for(name))
@@ -687,82 +694,16 @@ class ConcatOp(RenderableOpBase):
             ]
         )
         rendered = (
-            state.templates["concat"]
+            state.templates["part_copy"]
             .render(
                 op_name=op_name,
                 params=param_decls,
-                c_type=c_type,
                 copies=copies,
-                outer_shape=output_shape_exprs[:axis],
-                loop_vars=loop_vars,
                 dim_args=emitter.dim_args_str(),
             )
             .rstrip()
         )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
-
-    def _copy_specs(
-        self,
-        emitter: Emitter,
-        input_names: tuple[str, ...],
-        input_shapes: tuple[tuple[int, ...], ...],
-        output_name: str,
-        axis: int,
-        outer_vars: tuple[str, ...],
-    ) -> tuple[dict[str, object], ...]:
-        """One contiguous copy per input and outer index.
-
-        Source and destination addresses are formed by indexing the array
-        parameters directly instead of collecting the inputs in a pointer
-        table, so no parameter pointer escapes into local storage. Copies of
-        a single element are emitted as plain assignments, empty copies are
-        omitted, and everything else (including dynamic sizes) uses memcpy.
-        """
-        outer_indices = "".join(f"[{var}]" for var in outer_vars)
-        copies: list[dict[str, object]] = []
-        axis_offset: list[str] = []
-        for name, onnx_name, shape in zip(input_names, self.inputs, input_shapes):
-            shape_exprs = CEmitterCompat.shape_dim_exprs(
-                shape, emitter.dim_names_for(onnx_name)
-            )
-            offset_expr = self._sum_expr(axis_offset)
-            axis_offset.append(str(shape_exprs[axis]))
-            copy_dims = shape_exprs[axis:]
-            static_count = (
-                math.prod(copy_dims)
-                if all(isinstance(dim, int) for dim in copy_dims)
-                else None
-            )
-            if static_count == 0:
-                continue
-            output_target = f"{output_name}{outer_indices}[{offset_expr}]"
-            if static_count == 1:
-                trailing_zeros = "[0]" * (len(copy_dims) - 1)
-                copies.append(
-                    {
-                        "assign": True,
-                        "output_expr": f"{output_target}{trailing_zeros}",
-                        "input_expr": f"{name}{outer_indices}[0]{trailing_zeros}",
-                    }
-                )
-                continue
-            copies.append(
-                {
-                    "assign": False,
-                    "input_ptr": f"{name}{outer_indices}",
-                    "output_ptr": f"&{output_target}",
-                    "elem_count": CEmitterCompat.element_count_expr(copy_dims),
-                }
-            )
-        return tuple(copies)
-
-    @staticmethod
-    def _sum_expr(terms: list[str]) -> str:
-        constant = sum(int(term) for term in terms if term.isdigit())
-        symbolic = [term for term in terms if not term.isdigit()]
-        if constant or not symbolic:
-            symbolic.append(str(constant))
-        return " + ".join(symbolic)
 
 
 @dataclass(frozen=True)
@@ -824,10 +765,6 @@ class QLinearConcatOp(RenderableOpBase):
         params = emitter.shared_param_map(param_map_entries)
 
         output_shape = self.output_shape
-        axis = self.axis
-        outer = CEmitterCompat.element_count(output_shape[:axis] or (1,))
-        inner = CEmitterCompat.element_count(output_shape[axis + 1 :] or (1,))
-        axis_sizes = tuple(shape[axis] for shape in self.input_shapes)
 
         param_decls_list = [
             (
@@ -918,26 +855,34 @@ class QLinearConcatOp(RenderableOpBase):
             () if self.output_zero_dtype_match else (params["output_zero_point"],)
         )
         output_name = params["output"]
-
+        copies = tuple(
+            {
+                "part": part,
+                "input": name,
+                "scale_expr": scale_expr,
+                "zero_expr": zero_expr,
+            }
+            for part, name, scale_expr, zero_expr in zip(
+                ConcatPart.along(self.axis, self.input_shapes),
+                input_names,
+                input_scale_exprs,
+                input_zero_exprs,
+            )
+            if part is not None
+        )
         rendered = (
             state.templates["qlinear_concat"]
             .render(
                 model_name=model.name,
                 op_name=op_name,
-                input_names=input_names,
+                copies=copies,
                 output_name=output_name,
                 params=param_decls,
                 compute_type=compute_type,
                 output_c_type=self.dtype.c_type,
                 y_scale_expr=y_scale_expr,
                 y_zero_expr=y_zero_expr,
-                input_scale_exprs=input_scale_exprs,
-                input_zero_exprs=input_zero_exprs,
                 unused_zero_params=unused_zero_params + unused_y_zero_param,
-                axis_sizes=axis_sizes,
-                input_count=n,
-                outer=outer,
-                inner=inner,
                 compute_dtype=compute_dtype,
                 min_literal=self.dtype.min_literal,
                 max_literal=self.dtype.max_literal,
@@ -2114,6 +2059,19 @@ class ReshapeOp(RenderableOpBase):
             )
 
 
+def _matrix_batch_loops(shape: tuple[str | int, ...]) -> dict[str, object]:
+    """Template arguments of a kernel over the last two axes (`row`, `col`) of `shape`, with
+    one loop per leading batch axis."""
+    batch_vars = tuple(f"i{axis}" for axis in range(len(shape) - 2))
+    return {
+        "batch_vars": batch_vars,
+        "batch_sizes": shape[:-2],
+        "rows": shape[-2],
+        "cols": shape[-1],
+        "index": "".join(f"[{var}]" for var in batch_vars) + "[row][col]",
+    }
+
+
 @dataclass(frozen=True)
 class EyeLikeOp(RenderableOpBase):
     __io_inputs__ = ("input0",)
@@ -2141,8 +2099,6 @@ class EyeLikeOp(RenderableOpBase):
         input_suffix = emitter.param_array_suffix(
             output_shape, emitter.dim_names_for(self.input0)
         )
-        batch_dims = output_shape[:-2]
-        batch_size = CEmitterCompat.element_count(batch_dims or (1,))
         param_decls = emitter.build_param_decls(
             [
                 (params["input0"], input_dtype.c_type, input_suffix, True),
@@ -2160,10 +2116,7 @@ class EyeLikeOp(RenderableOpBase):
                 c_type=c_type,
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
-                shape=shape,
-                batch_size=batch_size,
-                rows=output_shape[-2],
-                cols=output_shape[-1],
+                **_matrix_batch_loops(shape),
                 k=self.k,
                 zero_literal=zero_literal,
                 one_literal=f"(({c_type})1)",
@@ -2473,6 +2426,15 @@ class DropoutOp(RenderableOpBase):
         return tuple(outputs)
 
 
+def _trilu_offset(k: int, rows: int | str, cols: int | str) -> int:
+    """The constant diagonal offset of Trilu clamped to the `idx_t` range of the kernel: an offset
+    beyond the matrix selects all or nothing, like `-rows` or `cols`."""
+    if isinstance(rows, int) and isinstance(cols, int):
+        return max(-rows, min(cols, k))
+    limit = 2**31 - 1
+    return max(-limit, min(limit, k))
+
+
 @dataclass(frozen=True)
 class TriluOp(RenderableOpBase):
     __io_inputs__ = ("input0", "k_input")
@@ -2520,8 +2482,6 @@ class TriluOp(RenderableOpBase):
             k_suffix = emitter.param_array_suffix(
                 emitter.ctx_shape(self.k_input), emitter.dim_names_for(self.k_input)
             )
-        batch_dims = output_shape[:-2]
-        batch_size = CEmitterCompat.element_count(batch_dims or (1,))
         param_decls = [
             (params["input0"], c_type, input_suffix, True),
             (params["output"], c_type, output_suffix, False),
@@ -2552,11 +2512,8 @@ class TriluOp(RenderableOpBase):
                 ),
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
-                shape=shape,
-                batch_size=batch_size,
-                rows=output_shape[-2],
-                cols=output_shape[-1],
-                k_value=self.k_value,
+                **_matrix_batch_loops(shape),
+                k_value=_trilu_offset(self.k_value, shape[-2], shape[-1]),
                 upper=self.upper,
                 zero_literal=zero_literal,
             )
@@ -2623,31 +2580,24 @@ class TileOp(RenderableOpBase):
                 (params["output"], c_type, output_suffix, False),
             ]
         )
-        input_strides: list[int] = []
-        stride = 1
-        for dim in reversed(input_shape):
-            input_strides.append(stride)
-            stride *= dim
-        input_strides = list(reversed(input_strides))
-        input_index_terms = [
-            f"({var} % {dim}) * {stride}"
-            for var, dim, stride in zip(loop_vars, input_shape, input_strides)
-        ]
-        input_index_expr = " + ".join(input_index_terms) or "0"
+        # Output index `i` reads the input at `i % input_dim` on every axis
+        input_dims = CEmitterCompat.shape_dim_exprs(
+            input_shape, emitter.dim_names_for(self.input0)
+        )
+        input_expr = params["input0"] + "".join(
+            "[0]" if dim == 1 else f"[{var} % {dim}]"
+            for var, dim in zip(loop_vars, input_dims)
+        )
         rendered = (
-            state.templates["tile"]
+            state.templates["broadcast_copy"]
             .render(
                 model_name=model.name,
                 op_name=op_name,
-                input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
-                c_type=c_type,
-                input_suffix=input_suffix,
-                output_suffix=output_suffix,
                 output_shape=output_shape,
                 loop_vars=loop_vars,
-                input_index_expr=input_index_expr,
+                input_expr=input_expr,
             )
             .rstrip()
         )
@@ -2722,13 +2672,6 @@ class CenterCropPadOp(RenderableOpBase):
                 crop_starts[a] = (in_dim - out_dim) // 2
             elif out_dim > in_dim:
                 pad_starts[a] = (out_dim - in_dim) // 2
-        # Compute row-major strides of input
-        input_strides: list[int] = []
-        stride = 1
-        for dim in reversed(input_shape_raw):
-            input_strides.append(stride)
-            stride *= dim
-        input_strides = list(reversed(input_strides))
         rendered = (
             state.templates["center_crop_pad"]
             .render(
@@ -2746,7 +2689,6 @@ class CenterCropPadOp(RenderableOpBase):
                 out_loop_vars=out_loop_vars,
                 crop_starts=crop_starts,
                 pad_starts=pad_starts,
-                input_strides=input_strides,
             )
             .rstrip()
         )
@@ -2834,12 +2776,19 @@ class PadOp(RenderableOpBase):
             pad_value_expr = emitter.format_literal(
                 emitter.ctx_dtype(self.output), self.value
             )
-        input_strides: list[int] = []
-        stride = 1
-        for dim in reversed(input_shape_raw):
-            input_strides.append(stride)
-            stride *= dim
-        input_strides = list(reversed(input_strides))
+        # Constant padding with static non-negative pads and static shapes: fill the output and
+        # copy the input into it with plain loop nests, without a bounds check per element
+        direct_constant = (
+            self.mode == "constant"
+            and self.pads_input is None
+            and self.axes_input is None
+            and self.pads_begin is not None
+            and self.pads_end is not None
+            and all(pad >= 0 for pad in (*self.pads_begin, *self.pads_end))
+            and not input_dim_names
+            and not output_dim_names
+            and len(input_shape_raw) > 0
+        )
         rendered = (
             state.templates["pad"]
             .render(
@@ -2869,13 +2818,11 @@ class PadOp(RenderableOpBase):
                 pad_begin_exprs=pad_begin_exprs,
                 axes_length=axes_length,
                 pads_values=pads_values,
-                input_strides=tuple(input_strides),
                 mode=self.mode,
                 pad_value_expr=pad_value_expr,
-                input0_flat="input_flat",
-                base_index="pad_index",
                 idx_vars=idx_vars,
                 reflect_vars=reflect_vars,
+                direct_constant=direct_constant,
             )
             .rstrip()
         )
@@ -2917,8 +2864,12 @@ class DepthToSpaceOp(RenderableOpBase):
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
-        output_suffix = emitter.param_array_suffix(output_shape)
-        input_suffix = emitter.param_array_suffix(input_shape)
+        input_dim_names = emitter.dim_names_for(self.input0)
+        output_dim_names = emitter.dim_names_for(self.output)
+        output_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
+        input_suffix = emitter.param_array_suffix(input_shape, input_dim_names)
+        input_dims = CEmitterCompat.shape_dim_exprs(input_shape, input_dim_names)
+        output_dims = CEmitterCompat.shape_dim_exprs(output_shape, output_dim_names)
         param_decls = emitter.build_param_decls(
             [
                 (params["input0"], c_type, input_suffix, True),
@@ -2936,13 +2887,11 @@ class DepthToSpaceOp(RenderableOpBase):
                 c_type=c_type,
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
-                batch=input_shape[0],
-                in_channels=input_shape[1],
-                out_channels=output_shape[1],
-                in_h=input_shape[2],
-                in_w=input_shape[3],
-                out_h=output_shape[2],
-                out_w=output_shape[3],
+                batch=input_dims[0],
+                in_channels=input_dims[1],
+                out_channels=output_dims[1],
+                out_h=output_dims[2],
+                out_w=output_dims[3],
                 blocksize=self.blocksize,
                 mode=self.mode,
             )
@@ -2971,8 +2920,12 @@ class SpaceToDepthOp(RenderableOpBase):
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
-        output_suffix = emitter.param_array_suffix(output_shape)
-        input_suffix = emitter.param_array_suffix(input_shape)
+        input_dim_names = emitter.dim_names_for(self.input0)
+        output_dim_names = emitter.dim_names_for(self.output)
+        output_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
+        input_suffix = emitter.param_array_suffix(input_shape, input_dim_names)
+        input_dims = CEmitterCompat.shape_dim_exprs(input_shape, input_dim_names)
+        output_dims = CEmitterCompat.shape_dim_exprs(output_shape, output_dim_names)
         param_decls = emitter.build_param_decls(
             [
                 (params["input0"], c_type, input_suffix, True),
@@ -2990,13 +2943,11 @@ class SpaceToDepthOp(RenderableOpBase):
                 c_type=c_type,
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
-                batch=input_shape[0],
-                in_channels=input_shape[1],
-                out_channels=output_shape[1],
-                in_h=input_shape[2],
-                in_w=input_shape[3],
-                out_h=output_shape[2],
-                out_w=output_shape[3],
+                batch=input_dims[0],
+                in_channels=input_dims[1],
+                out_channels=output_dims[1],
+                out_h=output_dims[2],
+                out_w=output_dims[3],
                 blocksize=self.blocksize,
             )
             .rstrip()
@@ -3035,11 +2986,6 @@ class SliceOp(RenderableOpBase):
             if name is not None:
                 dtypes.add(ctx.dtype(name))
         return dtypes
-
-    def required_includes(self, ctx: "OpContext") -> set[str]:
-        if ctx.dtype(self.output) == ScalarType.STRING:
-            return {"#include <string.h>"}
-        return set()
 
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
@@ -4607,22 +4553,11 @@ class ExpandOp(ShapeLikeOpBase):
             raise ShapeInferenceError(f"{self.kind} output shape must be specified")
         return output_shape
 
-    def _shape_derived(
-        self,
-        ctx: OpContext,
-        *,
-        data_shape: tuple[int, ...],
-        target_shape: tuple[int, ...],
-        output_shape: tuple[int, ...],
-    ) -> None:
-        input_shape_padded = (1,) * (len(output_shape) - len(data_shape)) + data_shape
-        input_strides = _compute_strides(input_shape_padded)
-        ctx.set_derived(self, "input_shape_padded", input_shape_padded)
-        ctx.set_derived(self, "input_strides", input_strides)
-
 
 @dataclass(frozen=True)
-class CumSumOp(RenderableOpBase):
+class CumulativeOpBase(RenderableOpBase):
+    """CumSum and CumProd: a running reduction along `axis`, written at every element."""
+
     __io_inputs__ = ("input0", "axis_input")
     __io_outputs__ = ("output",)
     input0: str
@@ -4631,6 +4566,9 @@ class CumSumOp(RenderableOpBase):
     output: str
     exclusive: bool
     reverse: bool
+
+    # Subclasses set `__identity__` (the start value of the running reduction) and
+    # `__accumulate_op__` (its C compound assignment)
 
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
@@ -4655,7 +4593,7 @@ class CumSumOp(RenderableOpBase):
             else "int64_t"
         )
         rendered = (
-            state.templates["cumsum"]
+            state.templates["cumulative"]
             .render(
                 model_name=model.name,
                 op_name=op_name,
@@ -4666,6 +4604,8 @@ class CumSumOp(RenderableOpBase):
                 axis_literal=self.axis,
                 output=params["output"],
                 c_type=c_type,
+                identity=self.__identity__,
+                accumulate_op=self.__accumulate_op__,
                 input_suffix=emitter.param_array_suffix(input_shape, input_dim_names),
                 output_suffix=emitter.param_array_suffix(input_shape, output_dim_names),
                 input_shape=CEmitterCompat.shape_dim_exprs(
@@ -4688,68 +4628,15 @@ class CumSumOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
-class CumProdOp(RenderableOpBase):
-    __io_inputs__ = ("input0", "axis_input")
-    __io_outputs__ = ("output",)
-    input0: str
-    axis_input: str | None
-    axis: int | None
-    output: str
-    exclusive: bool
-    reverse: bool
+class CumSumOp(CumulativeOpBase):
+    __identity__ = 0
+    __accumulate_op__ = "+="
 
-    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
-        state = emitter.require_emit_state()
-        model = state.model
-        op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
-        output_dtype = emitter.op_output_dtype(self)
-        c_type = output_dtype.c_type
-        input_shape = emitter.ctx_shape(self.input0)
-        params = emitter.unique_param_map(
-            [
-                ("input0", self.input0),
-                ("axis_input", self.axis_input),
-                ("output", self.output),
-            ]
-        )
-        input_dim_names = emitter.dim_names_for(self.input0)
-        output_dim_names = emitter.dim_names_for(self.output)
-        axis_c_type = (
-            emitter.ctx_dtype(self.axis_input).c_type
-            if self.axis_input is not None
-            else "int64_t"
-        )
-        rendered = (
-            state.templates["cumprod"]
-            .render(
-                model_name=model.name,
-                op_name=op_name,
-                input0=params["input0"],
-                axis_input=params["axis_input"],
-                axis_c_type=axis_c_type,
-                axis_suffix=emitter.param_array_suffix(()),
-                axis_literal=self.axis,
-                output=params["output"],
-                c_type=c_type,
-                input_suffix=emitter.param_array_suffix(input_shape, input_dim_names),
-                output_suffix=emitter.param_array_suffix(input_shape, output_dim_names),
-                input_shape=CEmitterCompat.shape_dim_exprs(
-                    input_shape, input_dim_names
-                ),
-                rank=len(input_shape),
-                exclusive=self.exclusive,
-                reverse=self.reverse,
-                dim_args=dim_args,
-            )
-            .rstrip()
-        )
-        return emitter.with_node_comment(model, ctx.op_index, rendered)
 
-    def c_op_inputs(
-        self, emitter: "Emitter"
-    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
-        return ((self.input0, emitter.ctx_shape(self.input0)),)
+@dataclass(frozen=True)
+class CumProdOp(CumulativeOpBase):
+    __identity__ = 1
+    __accumulate_op__ = "*="
 
 
 @dataclass(frozen=True)
@@ -5524,6 +5411,12 @@ class RangeOp(RenderableOpBase):
         return ((self.start, ()), (self.limit, ()), (self.delta, ()))
 
 
+def _signal_index(signal_rank: int, axis: int, axis_var: str) -> str:
+    return "".join(
+        f"[{axis_var}]" if dim == axis else f"[i{dim}]" for dim in range(signal_rank)
+    )
+
+
 @dataclass(frozen=True)
 class DFTOp(RenderableOpBase):
     __io_inputs__ = ("input0", "axis_input")
@@ -5611,15 +5504,14 @@ class DFTOp(RenderableOpBase):
                 inverse=self.inverse,
                 dtype=dft_dtype,
             )
+            batch_axes = tuple(dim for dim in range(signal_rank) if dim != axis)
             axis_variants.append(
                 {
                     "axis": axis,
-                    "outer_expr": CEmitterCompat.element_count_expr(
-                        input_shape_expr[:axis]
-                    ),
-                    "inner_expr": CEmitterCompat.element_count_expr(
-                        input_shape_expr[axis + 1 : signal_rank]
-                    ),
+                    "loop_vars": tuple(f"i{dim}" for dim in batch_axes),
+                    "loop_sizes": tuple(input_shape_expr[dim] for dim in batch_axes),
+                    "input_index": _signal_index(signal_rank, axis, "n"),
+                    "output_index": _signal_index(signal_rank, axis, "k"),
                     "input_axis_expr": str(input_shape_expr[axis]),
                     "output_axis_expr": str(output_shape_expr[axis]),
                     "fft_length": fft_length,
@@ -7038,9 +6930,6 @@ class SplitOp(RenderableOpBase):
     axis: int
     split_sizes: tuple[int, ...]
 
-    def required_includes(self, ctx: OpContext) -> set[str]:
-        return {"#include <string.h>"}
-
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -7061,12 +6950,22 @@ class SplitOp(RenderableOpBase):
             emitter.param_array_suffix(shape, emitter.dim_names_for(name))
             for name, shape in zip(output_names, output_shapes)
         )
-        outer = 1
-        for dim in input_shape[: self.axis]:
-            outer *= dim
-        inner = 1
-        for dim in input_shape[self.axis + 1 :]:
-            inner *= dim
+        parts = ConcatPart.along(
+            self.axis,
+            [
+                CEmitterCompat.shape_dim_exprs(shape, emitter.dim_names_for(onnx_name))
+                for shape, onnx_name in zip(output_shapes, self.outputs)
+            ],
+        )
+        copies = tuple(
+            {
+                "part": part,
+                "target": f"{name}{part.part_index}",
+                "source": f"{params['input0']}{part.whole_index}",
+            }
+            for name, part in zip(output_names, parts)
+            if part is not None
+        )
         input_suffix = emitter.param_array_suffix(
             input_shape, emitter.dim_names_for(self.input0)
         )
@@ -7080,21 +6979,12 @@ class SplitOp(RenderableOpBase):
             ]
         )
         rendered = (
-            state.templates["split"]
+            state.templates["part_copy"]
             .render(
-                model_name=model.name,
                 op_name=op_name,
-                input0=params["input0"],
-                outputs=output_names,
                 params=param_decls,
-                output_suffixes=output_suffixes,
-                c_type=c_type,
-                input_suffix=input_suffix,
-                axis_sizes=self.split_sizes,
-                axis_total=input_shape[self.axis],
-                outer=outer,
-                inner=inner,
-                output_count=len(output_names),
+                copies=copies,
+                dim_args=emitter.dim_args_str(),
             )
             .rstrip()
         )
@@ -7109,6 +6999,10 @@ class SplitOp(RenderableOpBase):
         )
 
 
+def _without(values: tuple, index: int) -> tuple:
+    return (*values[:index], *values[index + 1 :])
+
+
 @dataclass(frozen=True)
 class SplitToSequenceOp(RenderableOpBase):
     __io_inputs__ = ("input0", "split")
@@ -7120,9 +7014,6 @@ class SplitToSequenceOp(RenderableOpBase):
     keepdims: bool
     split_sizes: tuple[int, ...] | None
     split_scalar: bool
-
-    def required_includes(self, ctx: OpContext) -> set[str]:
-        return {"#include <string.h>"}
 
     def call_args(self) -> tuple[str, ...]:
         args = [self.input0]
@@ -7160,9 +7051,6 @@ class SplitToSequenceOp(RenderableOpBase):
         )
         input_shape_expr = CEmitterCompat.shape_dim_exprs(
             input_shape, emitter.dim_names_for(self.input0)
-        )
-        output_shape_expr = CEmitterCompat.shape_dim_exprs(
-            storage_shape, emitter.dim_names_for(self.output_sequence)
         )
         dynamic_output_axes = emitter.sequence_dynamic_axes(self.output_sequence)
         param_specs = [
@@ -7202,8 +7090,26 @@ class SplitToSequenceOp(RenderableOpBase):
             ]
         )
         param_decls = emitter.build_param_decls(param_specs)
-        outer = CEmitterCompat.element_count_expr(input_shape_expr[: self.axis])
-        inner = CEmitterCompat.element_count_expr(input_shape_expr[self.axis + 1 :])
+        # One loop per input axis; the split axis runs over the current chunk, which starts
+        # at `axis_offset` in the input. Without keepdims, the chunk is one slice and the
+        # element has no split axis.
+        input_vars = tuple(f"i{axis}" for axis in range(len(input_shape)))
+        axis_var = input_vars[self.axis]
+        loop_vars = input_vars if self.keepdims else _without(input_vars, self.axis)
+        loop_sizes = tuple(input_shape_expr[axis] for axis in range(len(input_shape)))
+        loop_sizes = (
+            (*loop_sizes[: self.axis], "chunk", *loop_sizes[self.axis + 1 :])
+            if self.keepdims
+            else _without(loop_sizes, self.axis)
+        )
+        input_index = "".join(
+            (
+                (f"[{axis_var} + axis_offset]" if self.keepdims else "[axis_offset]")
+                if axis == self.axis
+                else f"[{var}]"
+            )
+            for axis, var in enumerate(input_vars)
+        )
         split_len = (
             emitter.ctx_shape(self.split)[0]
             if self.split is not None and len(emitter.ctx_shape(self.split)) == 1
@@ -7227,12 +7133,11 @@ class SplitToSequenceOp(RenderableOpBase):
                 axis_sizes=self.split_sizes,
                 output_sequence=params["output_sequence"],
                 axis_total=input_shape_expr[self.axis],
-                outer=outer,
-                inner=inner,
-                keepdims=self.keepdims,
-                output_axis_capacity=(
-                    output_shape_expr[self.axis] if self.keepdims else 1
-                ),
+                loop_vars=loop_vars,
+                loop_sizes=loop_sizes,
+                input_index=input_index,
+                # A rank-0 element is stored as a one-element array
+                output_index="".join(f"[{var}]" for var in loop_vars) or "[0]",
                 output_dim_arrays=tuple(
                     {
                         "axis": axis,
@@ -7340,7 +7245,7 @@ class ReverseSequenceOp(RenderableOpBase):
                 input0=params["input0"],
                 sequence_lens=params["sequence_lens"],
                 output=params["output"],
-                rank=len(input_shape),
+                loop_vars=CEmitterCompat.loop_vars(input_shape),
                 dims=CEmitterCompat.shape_dim_exprs(
                     input_shape, emitter.dim_names_for(self.input0)
                 ),
@@ -7404,14 +7309,19 @@ class ConcatFromSequenceOp(RenderableOpBase):
                 (params["output"], c_type, output_suffix, False),
             ]
         )
+        elem_sizes = CEmitterCompat.shape_dim_exprs(
+            elem_shape, emitter.dim_names_for(self.input_sequence)
+        )
+        elem_vars = tuple(f"i{axis}" for axis in range(len(elem_shape)))
         if self.new_axis:
-            outer = CEmitterCompat.element_count(elem_shape[: self.axis] or (1,))
-            inner = CEmitterCompat.element_count(elem_shape[self.axis :] or (1,))
-            axis_extent = 1
+            # The sequence index becomes a new output axis at `axis`
+            output_vars = (*elem_vars[: self.axis], "seq_idx", *elem_vars[self.axis :])
         else:
-            outer = CEmitterCompat.element_count(elem_shape[: self.axis] or (1,))
-            inner = CEmitterCompat.element_count(elem_shape[self.axis + 1 :] or (1,))
-            axis_extent = elem_shape[self.axis]
+            # The elements are concatenated along `axis`
+            output_vars = tuple(
+                (f"seq_idx * {elem_sizes[axis]} + {var}" if axis == self.axis else var)
+                for axis, var in enumerate(elem_vars)
+            )
         rendered = (
             state.templates["concat_from_sequence"]
             .render(
@@ -7420,11 +7330,11 @@ class ConcatFromSequenceOp(RenderableOpBase):
                 params=param_decls,
                 input_sequence=params["input_sequence"],
                 output=params["output"],
-                c_type=c_type,
-                outer=outer,
-                inner=inner,
-                axis_extent=axis_extent,
-                new_axis=self.new_axis,
+                elem_vars=elem_vars,
+                elem_sizes=elem_sizes,
+                # A rank-0 element is stored as a one-element array
+                elem_index="".join(f"[{var}]" for var in elem_vars) or "[0]",
+                output_index="".join(f"[{var}]" for var in output_vars),
             )
             .rstrip()
         )
@@ -8386,9 +8296,6 @@ class BifurcationDetectorOp(RenderableOpBase):
     tokens_len: int
     min_ngram_size: int
     max_ngram_size: int
-
-    def required_includes(self, ctx: OpContext) -> set[str]:
-        return {"#include <string.h>"}
 
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()

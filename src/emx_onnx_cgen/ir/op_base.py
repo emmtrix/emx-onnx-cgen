@@ -492,30 +492,19 @@ class ShapeLikeOpBase(RenderableOpBase):
                 (params["output"], c_type, output_suffix, False),
             ]
         )
-        input_shape_padded = emitter.derived(self, "input_shape_padded")
-        input_strides = emitter.derived(self, "input_strides")
-        input_index_terms = [
-            f"{loop_var} * {stride}"
-            for loop_var, input_dim, stride in zip(
-                loop_vars, input_shape_padded, input_strides
-            )
-            if input_dim != 1
-        ]
-        input_index_expr = " + ".join(input_index_terms) if input_index_terms else "0"
+        input_expr = CEmitterCompat.broadcast_index_expr(
+            params["input0"], input_shape, output_shape_raw, loop_vars
+        )
         rendered = (
-            state.templates["expand"]
+            state.templates["broadcast_copy"]
             .render(
                 model_name=model.name,
                 op_name=op_name,
-                input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
-                c_type=c_type,
-                input_suffix=input_suffix,
-                output_suffix=output_suffix,
                 output_shape=output_shape,
                 loop_vars=loop_vars,
-                input_index_expr=input_index_expr,
+                input_expr=input_expr,
             )
             .rstrip()
         )
@@ -846,6 +835,34 @@ class MatMulLikeOpBase(RenderableOpBase):
 class GemmLikeOpBase(RenderableOpBase):
     __io_inputs__ = ("input_a", "input_b", "input_c")
     __io_outputs__ = ("output",)
+
+
+def window_bounds_checks(
+    emitter: "Emitter",
+    input_name: str,
+    output_name: str,
+    in_spatial: Sequence[int],
+    out_spatial: Sequence[int],
+    kernel_shape: Sequence[int],
+    strides: Sequence[int],
+    dilations: Sequence[int],
+    pads_begin: Sequence[int],
+) -> tuple[bool, ...]:
+    """Per spatial dimension of a windowed kernel (e.g. Conv), whether the input index
+    `out * stride + k * dilation - pad_begin` can leave `[0, in)`, so that the kernel needs a
+    bounds check; always for dynamic dimensions."""
+    dynamic = any(
+        index >= 2
+        for name in (input_name, output_name)
+        for index in emitter.dim_names_for(name)
+    )
+    checks: list[bool] = []
+    for size, out, kernel, stride, dilation, pad in zip(
+        in_spatial, out_spatial, kernel_shape, strides, dilations, pads_begin
+    ):
+        last_index = (out - 1) * stride + (kernel - 1) * dilation - pad
+        checks.append(dynamic or pad > 0 or last_index >= size)
+    return tuple(checks)
 
 
 class ConvLikeOpBase(RenderableOpBase):

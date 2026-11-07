@@ -7,6 +7,7 @@ from shared.scalar_functions import ScalarFunction
 from shared.scalar_types import ScalarType
 
 from ...errors import ShapeInferenceError, UnsupportedOpError
+from ..axis_loops import AxisLoopNest
 from ..op_base import (
     CEmitterCompat,
     ConvLikeOpBase,
@@ -15,6 +16,7 @@ from ..op_base import (
     GemmLikeOpBase,
     MatMulLikeOpBase,
     RenderableOpBase,
+    window_bounds_checks,
 )
 from ..op_context import OpContext
 
@@ -4260,6 +4262,17 @@ class ConvOp(ConvLikeOpBase):
         rendered = (
             state.templates["conv"]
             .render(
+                bounds_checks=window_bounds_checks(
+                    emitter,
+                    self.input0,
+                    self.output,
+                    self.in_spatial,
+                    self.out_spatial,
+                    self.kernel_shape,
+                    self.strides,
+                    self.dilations,
+                    self.pads[: self.spatial_rank],
+                ),
                 model_name=model.name,
                 op_name=op_name,
                 input0=params["input0"],
@@ -4531,6 +4544,17 @@ class FusedConvOp(ConvLikeOpBase):
         rendered = (
             state.templates["fused_conv"]
             .render(
+                bounds_checks=window_bounds_checks(
+                    emitter,
+                    self.input0,
+                    self.output,
+                    self.in_spatial,
+                    self.out_spatial,
+                    self.kernel_shape,
+                    self.strides,
+                    self.dilations,
+                    self.pads[: self.spatial_rank],
+                ),
                 model_name=model.name,
                 op_name=op_name,
                 input0=params_map["input0"],
@@ -4690,6 +4714,17 @@ class ConvIntegerOp(ConvLikeOpBase):
         rendered = (
             state.templates["conv_integer"]
             .render(
+                bounds_checks=window_bounds_checks(
+                    emitter,
+                    self.input0,
+                    self.output,
+                    self.in_spatial,
+                    self.out_spatial,
+                    self.kernel_shape,
+                    self.strides,
+                    self.dilations,
+                    self.pads[: self.spatial_rank],
+                ),
                 model_name=model.name,
                 op_name=op_name,
                 input0=params["input0"],
@@ -4897,6 +4932,17 @@ class QLinearConvOp(ConvLikeOpBase):
         rendered = (
             state.templates["qlinear_conv"]
             .render(
+                bounds_checks=window_bounds_checks(
+                    emitter,
+                    self.input0,
+                    self.output,
+                    self.in_spatial,
+                    self.out_spatial,
+                    self.kernel_shape,
+                    self.strides,
+                    self.dilations,
+                    self.pads[: self.spatial_rank],
+                ),
                 model_name=model.name,
                 op_name=op_name,
                 input0=params["input0"],
@@ -5371,27 +5417,58 @@ class AveragePoolOp(RenderableOpBase):
         output_shape_expr = CEmitterCompat.shape_dim_exprs(
             output_shape, output_dim_names
         )
+        spatial = slice(2, 2 + self.spatial_rank)
+        in_spatial = input_shape[spatial]
+        out_spatial = output_shape[spatial]
         if self.spatial_rank == 3:
-            in_d = input_shape_expr[2]
-            in_h = input_shape_expr[3]
-            in_w = input_shape_expr[4]
-            out_d = output_shape_expr[2]
-            out_h = output_shape_expr[3]
-            out_w = output_shape_expr[4]
+            kernel_shape = (self.kernel_d, self.kernel_h, self.kernel_w)
+            strides = (self.stride_d, self.stride_h, self.stride_w)
+            dilations = (self.dilation_d, self.dilation_h, self.dilation_w)
+            pads_begin = (self.pad_front, self.pad_top, self.pad_left)
+            pads_end = (self.pad_back, self.pad_bottom, self.pad_right)
         elif self.spatial_rank == 1:
-            in_d = self.in_d
-            in_h = self.in_h
-            in_w = input_shape_expr[2]
-            out_d = self.out_d
-            out_h = self.out_h
-            out_w = output_shape_expr[2]
+            kernel_shape = (self.kernel_w,)
+            strides = (self.stride_w,)
+            dilations = (self.dilation_w,)
+            pads_begin = (self.pad_left,)
+            pads_end = (self.pad_right,)
         else:
-            in_d = self.in_d
-            in_h = input_shape_expr[2]
-            in_w = input_shape_expr[3]
-            out_d = self.out_d
-            out_h = output_shape_expr[2]
-            out_w = output_shape_expr[3]
+            kernel_shape = (self.kernel_h, self.kernel_w)
+            strides = (self.stride_h, self.stride_w)
+            dilations = (self.dilation_h, self.dilation_w)
+            pads_begin = (self.pad_top, self.pad_left)
+            pads_end = (self.pad_bottom, self.pad_right)
+        bounds_checks = window_bounds_checks(
+            emitter,
+            self.input0,
+            self.output,
+            in_spatial,
+            out_spatial,
+            kernel_shape,
+            strides,
+            dilations,
+            pads_begin,
+        )
+        # With count_include_pad, a window position counts if it lies inside the padded input;
+        # it can only leave it at the end (ceil_mode) or with a dynamic dimension.
+        dynamic = any(index >= 2 for index in input_dim_names) or any(
+            index >= 2 for index in output_dim_names
+        )
+        pad_checks = tuple(
+            dynamic or (out - 1) * stride + (kernel - 1) * dilation - pad >= size + end
+            for size, out, kernel, stride, dilation, pad, end in zip(
+                in_spatial,
+                out_spatial,
+                kernel_shape,
+                strides,
+                dilations,
+                pads_begin,
+                pads_end,
+            )
+        )
+        kernel_size = 1
+        for kernel in kernel_shape:
+            kernel_size *= kernel
         input_suffix = emitter.param_array_suffix(input_shape, input_dim_names)
         output_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
         param_decls = emitter.build_param_decls(
@@ -5403,40 +5480,29 @@ class AveragePoolOp(RenderableOpBase):
         rendered = (
             state.templates["avg_pool"]
             .render(
-                model_name=model.name,
                 op_name=op_name,
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
                 c_type=c_type,
                 zero_literal=zero_literal,
-                input_suffix=input_suffix,
-                output_suffix=output_suffix,
                 batch=input_shape_expr[0],
                 channels=input_shape_expr[1],
                 spatial_rank=self.spatial_rank,
-                in_d=in_d,
-                in_h=in_h,
-                in_w=in_w,
-                out_d=out_d,
-                out_h=out_h,
-                out_w=out_w,
-                kernel_d=self.kernel_d,
-                kernel_h=self.kernel_h,
-                kernel_w=self.kernel_w,
-                dilation_d=self.dilation_d,
-                dilation_h=self.dilation_h,
-                dilation_w=self.dilation_w,
-                stride_d=self.stride_d,
-                stride_h=self.stride_h,
-                stride_w=self.stride_w,
-                pad_front=self.pad_front,
-                pad_top=self.pad_top,
-                pad_left=self.pad_left,
-                pad_back=self.pad_back,
-                pad_bottom=self.pad_bottom,
-                pad_right=self.pad_right,
-                count_include_pad=int(self.count_include_pad),
+                in_spatial=input_shape_expr[spatial],
+                out_spatial=output_shape_expr[spatial],
+                out_indices=tuple(f"od{dim}" for dim in range(self.spatial_rank)),
+                kernel_indices=tuple(f"kd{dim}" for dim in range(self.spatial_rank)),
+                in_indices=tuple(f"id{dim}" for dim in range(self.spatial_rank)),
+                kernel_shape=kernel_shape,
+                kernel_size=kernel_size,
+                strides=strides,
+                dilations=dilations,
+                pads_begin=pads_begin,
+                pads_end=pads_end,
+                bounds_checks=bounds_checks,
+                pad_checks=pad_checks,
+                count_include_pad=self.count_include_pad,
             )
             .rstrip()
         )
@@ -5897,26 +5963,6 @@ class SoftmaxOp(RenderableOpBase):
         )
         output_dtype = emitter.ctx_dtype(self.output)
         axis = emitter.derived(self, "axis")
-        if self.use_legacy_axis_semantics:
-            outer = (
-                CEmitterCompat.element_count_expr(output_shape_exprs[:axis])
-                if axis > 0
-                else 1
-            )
-            axis_size = CEmitterCompat.element_count_expr(output_shape_exprs[axis:])
-            inner = 1
-        else:
-            outer = (
-                CEmitterCompat.element_count_expr(output_shape_exprs[:axis])
-                if axis > 0
-                else 1
-            )
-            axis_size = output_shape_exprs[axis]
-            inner = (
-                CEmitterCompat.element_count_expr(output_shape_exprs[axis + 1 :])
-                if axis + 1 < len(output_shape)
-                else 1
-            )
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
@@ -5927,6 +5973,12 @@ class SoftmaxOp(RenderableOpBase):
                 (params["output"], output_dtype.c_type, array_suffix, False),
             ]
         )
+        # The legacy semantics (opset < 13) reduce over all axes from `axis` on, opset 13 over
+        # `axis` only
+        reduce_end = (
+            len(output_shape_exprs) if self.use_legacy_axis_semantics else axis + 1
+        )
+        nest = AxisLoopNest.over(output_shape_exprs, axis, reduce_end)
         rendered = (
             state.templates["softmax"]
             .render(
@@ -5936,11 +5988,8 @@ class SoftmaxOp(RenderableOpBase):
                 output=params["output"],
                 params=param_decls,
                 c_type=output_dtype.c_type,
-                array_suffix=array_suffix,
-                outer=outer,
-                axis_size=axis_size,
-                inner=inner,
                 dtype=output_dtype,
+                nest=nest,
             )
             .rstrip()
         )
@@ -6012,9 +6061,7 @@ class QLinearSoftmaxOp(RenderableOpBase):
     input_shape: tuple[int, ...]
     output_shape: tuple[int, ...]
     axis: int
-    outer: int
-    axis_size: int
-    inner: int
+    use_legacy_axis_semantics: bool
     dtype: ScalarType
     input_dtype: ScalarType
     input_scale_dtype: ScalarType
@@ -6130,9 +6177,16 @@ class QLinearSoftmaxOp(RenderableOpBase):
                 output_scale_expr=f"{params['output_scale']}[0]",
                 input_zero_expr=f"{params['input_zero_point']}[0]",
                 output_zero_expr=f"{params['output_zero_point']}[0]",
-                outer=self.outer,
-                axis_size=self.axis_size,
-                inner=self.inner,
+                # The legacy semantics (opset < 13) reduce over all axes from `axis` on
+                nest=AxisLoopNest.over(
+                    self.output_shape,
+                    self.axis,
+                    (
+                        len(self.output_shape)
+                        if self.use_legacy_axis_semantics
+                        else self.axis + 1
+                    ),
+                ),
                 min_literal=self.dtype.min_literal,
                 max_literal=self.dtype.max_literal,
                 compute_dtype=compute_dtype,
@@ -6171,26 +6225,12 @@ class LogSoftmaxOp(RenderableOpBase):
         )
         output_dtype = emitter.ctx_dtype(self.output)
         axis = emitter.derived(self, "axis")
-        if self.use_legacy_axis_semantics:
-            outer = (
-                CEmitterCompat.element_count_expr(output_shape_exprs[:axis])
-                if axis > 0
-                else 1
-            )
-            axis_size = CEmitterCompat.element_count_expr(output_shape_exprs[axis:])
-            inner = 1
-        else:
-            outer = (
-                CEmitterCompat.element_count_expr(output_shape_exprs[:axis])
-                if axis > 0
-                else 1
-            )
-            axis_size = output_shape_exprs[axis]
-            inner = (
-                CEmitterCompat.element_count_expr(output_shape_exprs[axis + 1 :])
-                if axis + 1 < len(output_shape)
-                else 1
-            )
+        # The legacy semantics (opset < 13) reduce over all axes from `axis` on, opset 13 over
+        # `axis` only
+        reduce_end = (
+            len(output_shape_exprs) if self.use_legacy_axis_semantics else axis + 1
+        )
+        nest = AxisLoopNest.over(output_shape_exprs, axis, reduce_end)
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
@@ -6210,10 +6250,7 @@ class LogSoftmaxOp(RenderableOpBase):
                 output=params["output"],
                 params=param_decls,
                 c_type=output_dtype.c_type,
-                array_suffix=array_suffix,
-                outer=outer,
-                axis_size=axis_size,
-                inner=inner,
+                nest=nest,
                 dtype=output_dtype,
             )
             .rstrip()
@@ -6258,6 +6295,7 @@ class HardmaxOp(RenderableOpBase):
     input0: str
     output: str
     axis: int | None
+    use_legacy_axis_semantics: bool = False
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
@@ -6271,17 +6309,18 @@ class HardmaxOp(RenderableOpBase):
         output_dtype = emitter.ctx_dtype(self.output)
         zero_literal = output_dtype.zero_literal
         axis = emitter.derived(self, "axis")
-        outer = (
-            CEmitterCompat.element_count_expr(output_shape_exprs[:axis])
-            if axis > 0
-            else 1
+        # The legacy semantics (opset < 13) take the first maximum over all axes from `axis`
+        # on, opset 13 over `axis` only
+        reduce_end = (
+            len(output_shape_exprs) if self.use_legacy_axis_semantics else axis + 1
         )
-        axis_size = output_shape_exprs[axis]
-        inner = (
-            CEmitterCompat.element_count_expr(output_shape_exprs[axis + 1 :])
-            if axis + 1 < len(output_shape)
-            else 1
+        nest = AxisLoopNest.over(output_shape_exprs, axis, reduce_end)
+        # The row-major position within the reduced axes and their element count
+        position = " + ".join(
+            " * ".join((var, *(str(size) for size in nest.reduce_sizes[index + 1 :])))
+            for index, var in enumerate(nest.reduce_vars)
         )
+        reduce_count = " * ".join(str(size) for size in nest.reduce_sizes)
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
@@ -6301,10 +6340,9 @@ class HardmaxOp(RenderableOpBase):
                 output=params["output"],
                 params=param_decls,
                 c_type=output_dtype.c_type,
-                array_suffix=array_suffix,
-                outer=outer,
-                axis_size=axis_size,
-                inner=inner,
+                nest=nest,
+                position=position,
+                reduce_count=reduce_count,
                 zero_literal=zero_literal,
                 one_literal=emitter.format_literal(output_dtype, 1),
                 dtype=output_dtype,
@@ -6337,11 +6375,8 @@ class HardmaxOp(RenderableOpBase):
     def infer_shapes(self, ctx: OpContext) -> None:
         input_shape = ctx.shape(self.input0)
         axis = self.axis
-        legacy_axis_semantics = False
         if axis is None:
-            opset_version = ctx.opset_version()
-            legacy_axis_semantics = opset_version is not None and opset_version < 13
-            axis = 1 if legacy_axis_semantics else -1
+            axis = 1 if self.use_legacy_axis_semantics else -1
         if axis < 0:
             axis += len(input_shape)
         if axis < 0 or axis >= len(input_shape):
@@ -6350,6 +6385,23 @@ class HardmaxOp(RenderableOpBase):
             )
         ctx.set_shape(self.output, input_shape)
         ctx.set_derived(self, "axis", axis)
+
+
+def _loss_sample_loops(input_dims: tuple[int | str, ...]) -> dict[str, object]:
+    """Template arguments of a loss kernel over an input `[N, C, d1, ..., dk]` with the
+    dimension expressions `input_dims`: one loop per sample axis (`i0` for N, `i2`... for the
+    spatial axes); the class axis is indexed explicitly."""
+    spatial_vars = tuple(f"i{axis}" for axis in range(2, len(input_dims)))
+    spatial_index = "".join(f"[{var}]" for var in spatial_vars)
+    sample_sizes = (input_dims[0], *input_dims[2:])
+    return {
+        "sample_vars": ("i0", *spatial_vars),
+        "sample_sizes": sample_sizes,
+        "sample_count": " * ".join(str(size) for size in sample_sizes),
+        "sample_index": f"[i0]{spatial_index}",
+        "spatial_index": spatial_index,
+        "classes": input_dims[1],
+    }
 
 
 @dataclass(frozen=True)
@@ -6396,10 +6448,16 @@ class NegativeLogLikelihoodLossOp(RenderableOpBase):
                 ("output", self.output),
             ]
         )
-        input_suffix = emitter.param_array_suffix(self.input_shape)
-        target_suffix = emitter.param_array_suffix(self.target_shape)
-        output_suffix = emitter.param_array_suffix(self.output_shape)
-        weight_suffix = f"[{self.c}]"
+        input_dim_names = emitter.dim_names_for(self.input0)
+        input_dims = CEmitterCompat.shape_dim_exprs(self.input_shape, input_dim_names)
+        input_suffix = emitter.param_array_suffix(self.input_shape, input_dim_names)
+        target_suffix = emitter.param_array_suffix(
+            self.target_shape, emitter.dim_names_for(self.target)
+        )
+        output_suffix = emitter.param_array_suffix(
+            self.output_shape, emitter.dim_names_for(self.output)
+        )
+        weight_suffix = f"[{input_dims[1]}]"
         param_decls = emitter.build_param_decls(
             [
                 (params["input0"], c_type, input_suffix, True),
@@ -6432,9 +6490,7 @@ class NegativeLogLikelihoodLossOp(RenderableOpBase):
                 input_suffix=input_suffix,
                 target_suffix=target_suffix,
                 output_suffix=output_suffix,
-                n=self.n,
-                c=self.c,
-                d=self.d,
+                **_loss_sample_loops(input_dims),
                 reduction=self.reduction,
                 ignore_index=self.ignore_index,
                 zero_literal=zero_literal,
@@ -6506,15 +6562,23 @@ class SoftmaxCrossEntropyLossOp(RenderableOpBase):
         )
         use_ignore_index = int(self.ignore_index is not None)
         ignore_index = self.ignore_index if self.ignore_index is not None else -1
-        input_suffix = emitter.param_array_suffix(self.input_shape)
-        target_suffix = emitter.param_array_suffix(self.target_shape)
-        output_suffix = emitter.param_array_suffix(self.output_shape)
+        input_dim_names = emitter.dim_names_for(self.input0)
+        input_dims = CEmitterCompat.shape_dim_exprs(self.input_shape, input_dim_names)
+        input_suffix = emitter.param_array_suffix(self.input_shape, input_dim_names)
+        target_suffix = emitter.param_array_suffix(
+            self.target_shape, emitter.dim_names_for(self.target)
+        )
+        output_suffix = emitter.param_array_suffix(
+            self.output_shape, emitter.dim_names_for(self.output)
+        )
         log_prob_suffix = (
-            emitter.param_array_suffix(self.log_prob_shape)
+            emitter.param_array_suffix(
+                self.log_prob_shape, emitter.dim_names_for(self.log_prob)
+            )
             if self.log_prob_shape is not None
             else ""
         )
-        weight_suffix = f"[{self.c}]"
+        weight_suffix = f"[{input_dims[1]}]"
         param_decls = emitter.build_param_decls(
             [
                 (params["input0"], c_type, input_suffix, True),
@@ -6561,9 +6625,7 @@ class SoftmaxCrossEntropyLossOp(RenderableOpBase):
                 log_prob_suffix=(
                     log_prob_suffix if self.log_prob_shape is not None else None
                 ),
-                n=self.n,
-                c=self.c,
-                d=self.d,
+                **_loss_sample_loops(input_dims),
                 reduction=self.reduction,
                 use_ignore_index=use_ignore_index,
                 ignore_index=ignore_index,
@@ -6704,9 +6766,6 @@ class LpNormalizationOp(RenderableOpBase):
     shape: tuple[int, ...]
     axis: int
     p: int
-    outer: int
-    axis_size: int
-    inner: int
     dtype: ScalarType
 
     def required_includes(self, ctx: OpContext) -> set[str]:
@@ -6721,8 +6780,12 @@ class LpNormalizationOp(RenderableOpBase):
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
-        shape = CEmitterCompat.codegen_shape(self.shape)
-        array_suffix = emitter.param_array_suffix(shape)
+        output_shape = emitter.ctx_shape(self.output)
+        output_dim_names = emitter.dim_names_for(self.output)
+        output_shape_exprs = CEmitterCompat.shape_dim_exprs(
+            output_shape, output_dim_names
+        )
+        array_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
         param_decls = emitter.build_param_decls(
             [
                 (params["input0"], c_type, array_suffix, True),
@@ -6738,10 +6801,7 @@ class LpNormalizationOp(RenderableOpBase):
                 output=params["output"],
                 params=param_decls,
                 c_type=c_type,
-                array_suffix=array_suffix,
-                outer=self.outer,
-                axis_size=self.axis_size,
-                inner=self.inner,
+                nest=AxisLoopNest.over(output_shape_exprs, self.axis, self.axis + 1),
                 p=self.p,
                 zero_literal=zero_literal,
                 dtype=self.dtype,

@@ -1,7 +1,9 @@
+{# One transform per signal position: the loops run over every signal axis except the
+   transformed one, which the kernel reads and writes as `n` and `k`. The last axis holds
+   the real and imaginary components. #}
+{% import "axis_loops.c.j2" as axis_loops %}
 {% macro emit_axis_variant(v) -%}
 {
-    const idx_t outer = {{ v.outer_expr }};
-    const idx_t inner = {{ v.inner_expr }};
     const idx_t input_axis_dim = {{ v.input_axis_expr }};
     const idx_t output_axis_dim = {{ v.output_axis_expr }};
     static const {{ c_type }} twiddle_re[{{ v.twiddle_len }}] = { {% for value in v.twiddle_re_values %}{{ value }}{% if not loop.last %}, {% endif %}{% endfor %} };
@@ -11,14 +13,12 @@
     {{ c_type }} buf1_re[{{ v.fft_length }}];
     {{ c_type }} buf1_im[{{ v.fft_length }}];
 
-    for (idx_t outer_idx = 0; outer_idx < outer; ++outer_idx) {
-        for (idx_t inner_idx = 0; inner_idx < inner; ++inner_idx) {
+    {% call axis_loops.loops(v.loop_vars, v.loop_sizes) %}
             for (idx_t n = 0; n < {{ v.fft_length }}; ++n) {
 {% if inverse and onesided %}
                 if (n < input_axis_dim) {
-                    const idx_t input_offset = ((((outer_idx * input_axis_dim) + n) * inner) + inner_idx) * {{ input_components }};
-                    buf0_re[n] = input_flat[input_offset];
-                    buf0_im[n] = input_flat[input_offset + 1];
+                    buf0_re[n] = {{ input0 }}{{ v.input_index }}[0];
+                    buf0_im[n] = {{ input0 }}{{ v.input_index }}[1];
                 } else {
                     const idx_t mirror = {{ v.fft_length }} - n;
                     if (mirror < input_axis_dim) {
@@ -31,10 +31,9 @@
                 }
 {% else %}
                 if (n < input_axis_dim) {
-                    const idx_t input_offset = ((((outer_idx * input_axis_dim) + n) * inner) + inner_idx) * {{ input_components }};
-                    buf0_re[n] = input_flat[input_offset];
+                    buf0_re[n] = {{ input0 }}{{ v.input_index }}[0];
 {% if input_components == 2 %}
-                    buf0_im[n] = input_flat[input_offset + 1];
+                    buf0_im[n] = {{ input0 }}{{ v.input_index }}[1];
 {% else %}
                     buf0_im[n] = {{ zero_literal }};
 {% endif %}
@@ -189,19 +188,15 @@
             (void)src_im;
 {% endif %}
             for (idx_t k = 0; k < output_axis_dim; ++k) {
-                const idx_t output_offset = ((((outer_idx * output_axis_dim) + k) * inner) + inner_idx) * {{ output_components }};
-                output_flat[output_offset] = src_re[k];
+                {{ output }}{{ v.output_index }}[0] = src_re[k];
 {% if output_components == 2 %}
-                output_flat[output_offset + 1] = src_im[k];
+                {{ output }}{{ v.output_index }}[1] = src_im[k];
 {% endif %}
             }
-        }
-    }
+    {% endcall %}
 }
 {%- endmacro %}
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-    const {{ c_type }} *input_flat = (const {{ c_type }} *){{ input0 }};
-    {{ c_type }} *output_flat = ({{ c_type }} *){{ output }};
 {% if axis_input %}
     int axis = (int){{ axis_input }}[0];
     if (axis < 0) {

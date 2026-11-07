@@ -1,54 +1,47 @@
+{% import "axis_loops.c.j2" as axis_loops %}
+{# The input element of class `cls` for the current sample: input0[i0][cls][i2]... #}
+{% macro at_class(cls) %}[i0][{{ cls }}]{{ spatial_index }}{% endmacro %}
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-    const {{ c_type }} *input_flat = (const {{ c_type }} *){{ input0 }};
-    const {{ target_c_type }} *target_flat = (const {{ target_c_type }} *){{ target }};
-    {{ c_type }} *output_flat = ({{ c_type }} *){{ output }};
-    const idx_t n = {{ n }};
-    const idx_t c = {{ c }};
-    const idx_t d = {{ d }};
 {% if reduction != "none" %}
     {{ acc_type }} loss_sum = {{ acc_zero_literal }};
 {% if reduction == "mean" %}
     {{ acc_type }} weight_sum = {{ acc_zero_literal }};
 {% endif %}
 {% endif %}
-    for (idx_t n_idx = 0; n_idx < n; ++n_idx) {
-        for (idx_t d_idx = 0; d_idx < d; ++d_idx) {
-            idx_t target_index = n_idx * d + d_idx;
-            {{ target_c_type }} target_value = target_flat[target_index];
-            if ((int64_t)target_value == {{ ignore_index }}) {
+{% call axis_loops.loops(sample_vars, sample_sizes) %}
+{{ target_c_type }} target_value = {{ target }}{{ sample_index }};
+if ((int64_t)target_value == {{ ignore_index }}) {
 {% if reduction == "none" %}
-                output_flat[target_index] = {{ zero_literal }};
+    {{ output }}{{ sample_index }} = {{ zero_literal }};
 {% endif %}
-            } else {
-                idx_t class_index = (idx_t)target_value;
-                idx_t input_index = (n_idx * c + class_index) * d + d_idx;
-                {{ acc_type }} value = -({{ acc_type }})input_flat[input_index];
+} else {
+    idx_t class_index = (idx_t)target_value;
+    {{ acc_type }} value = -({{ acc_type }}){{ input0 }}{{ at_class("class_index") }};
 {% if weight %}
-                {{ acc_type }} sample_weight = {{ weight }}[class_index];
-                value *= sample_weight;
+    {{ acc_type }} sample_weight = {{ weight }}[class_index];
+    value *= sample_weight;
 {% endif %}
 {% if reduction == "none" %}
-                output_flat[target_index] = value;
+    {{ output }}{{ sample_index }} = value;
 {% else %}
-                loss_sum += value;
+    loss_sum += value;
 {% if reduction == "mean" %}
 {% if weight %}
-                weight_sum += sample_weight;
+    weight_sum += sample_weight;
 {% else %}
-                weight_sum += {{ acc_one_literal }};
+    weight_sum += {{ acc_one_literal }};
 {% endif %}
 {% endif %}
 {% endif %}
-            }
-        }
-    }
+}
+{% endcall %}
 {% if reduction == "mean" %}
     if (weight_sum == {{ acc_zero_literal }}) {
-        output_flat[0] = {{ zero_literal }};
+        {{ output }}[0] = {{ zero_literal }};
     } else {
-        output_flat[0] = loss_sum / weight_sum;
+        {{ output }}[0] = loss_sum / weight_sum;
     }
 {% elif reduction == "sum" %}
-    output_flat[0] = loss_sum;
+    {{ output }}[0] = loss_sum;
 {% endif %}
 }

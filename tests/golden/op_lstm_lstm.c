@@ -73,6 +73,8 @@ EMX_NODE_FN void node0_lstm(const float input_x[1][1][2], const float input_w[1]
         const int reverse = 0;
         float H_prev[1][3];
         float C_prev[1][3];
+        float H_next[1][3];
+        float C_next[1][3];
         for (int b = 0; b < 1; ++b) {
             for (int h = 0; h < 3; ++h) {
                 H_prev[b][h] = 0.0f;
@@ -83,8 +85,6 @@ EMX_NODE_FN void node0_lstm(const float input_x[1][1][2], const float input_w[1]
             int seq_limit = 1;
             for (int step = 0; step < seq_limit; ++step) {
                 int t = reverse ? (seq_limit - 1 - step) : step;
-                float H_next[3];
-                float C_next[3];
                 for (int h = 0; h < 3; ++h) {
                     float gate_i = 0.0f;
                     float gate_o = 0.0f;
@@ -110,13 +110,13 @@ EMX_NODE_FN void node0_lstm(const float input_x[1][1][2], const float input_w[1]
                     float c_new = f_gate * C_prev[b][h] + i_gate * c_gate;
                     float o_gate = ref_scalar_f32_sigmoid(gate_o);
                     float h_new = o_gate * ref_scalar_f32_tanh(c_new);
-                    C_next[h] = c_new;
-                    H_next[h] = h_new;
+                    C_next[b][h] = c_new;
+                    H_next[b][h] = h_new;
                     output_y[step][dir][b][h] = h_new;
                 }
                 for (int h = 0; h < 3; ++h) {
-                    C_prev[b][h] = C_next[h];
-                    H_prev[b][h] = H_next[h];
+                    C_prev[b][h] = C_next[b][h];
+                    H_prev[b][h] = H_next[b][h];
                 }
             }
             for (int step = seq_limit; step < 1; ++step) {

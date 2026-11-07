@@ -1,29 +1,19 @@
+{% import "axis_loops.c.j2" as axis_loops %}
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-    const {{ c_type }} *input_flat = (const {{ c_type }} *){{ input0 }};
-    {{ c_type }} *output_flat = ({{ c_type }} *){{ output }};
-    const idx_t outer = {{ outer }};
-    const idx_t axis_size = {{ axis_size }};
-    const idx_t inner = {{ inner }};
-    for (idx_t outer_idx = 0; outer_idx < outer; ++outer_idx) {
-        for (idx_t inner_idx = 0; inner_idx < inner; ++inner_idx) {
-            idx_t base = (outer_idx * axis_size * inner) + inner_idx;
-            {{ c_type }} acc = {{ zero_literal }};
-            for (idx_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
-                {{ c_type }} value = input_flat[base + axis_idx * inner];
+{% call axis_loops.loops(nest.loop_vars, nest.loop_sizes) %}
+{{ c_type }} acc = {{ zero_literal }};
+{% call axis_loops.loops(nest.reduce_vars, nest.reduce_sizes) %}
 {% if p == 1 %}
-                acc += {{ scalar_fn(SF.ABS, dtype) }}(value);
+acc += {{ scalar_fn(SF.ABS, dtype) }}({{ input0 }}{{ nest.index }});
 {% else %}
-                acc += value * value;
+acc += {{ input0 }}{{ nest.index }} * {{ input0 }}{{ nest.index }};
 {% endif %}
-            }
+{% endcall %}
 {% if p == 2 %}
-            acc = {{ scalar_fn(SF.SQRT, dtype) }}(acc);
+acc = {{ scalar_fn(SF.SQRT, dtype) }}(acc);
 {% endif %}
-            for (idx_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
-                output_flat[base + axis_idx * inner] =
-                    acc == {{ zero_literal }} ? {{ zero_literal }}
-                                              : input_flat[base + axis_idx * inner] / acc;
-            }
-        }
-    }
+{% call axis_loops.loops(nest.reduce_vars, nest.reduce_sizes) %}
+{{ output }}{{ nest.index }} = acc == {{ zero_literal }} ? {{ zero_literal }} : {{ input0 }}{{ nest.index }} / acc;
+{% endcall %}
+{% endcall %}
 }

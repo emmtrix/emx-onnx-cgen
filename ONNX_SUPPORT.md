@@ -9,7 +9,7 @@ Overview:
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1914 / 1914, 100.0% | 1.22.0 |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4313 / 4324, 99.7% | n/a |
-| [Local ONNX test coverage](#local-onnx-test-coverage) | 10 / 10, 100.0% | n/a |
+| [Local ONNX test coverage](#local-onnx-test-coverage) | 14 / 14, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
 
@@ -248,7 +248,7 @@ Coverage 1914 / 1914 ONNX files (100.0%).
 | node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx (--runtime onnx-reference --test-data-inputs-only) | 22 | Data/ONNXRef | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_default/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_dilations/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_averagepool_2d_pads/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 3) |
+| node/test_averagepool_2d_pads/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_pads_count_include_pad/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_precomputed_pads/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_precomputed_pads_count_include_pad/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
@@ -257,8 +257,8 @@ Coverage 1914 / 1914 ONNX files (100.0%).
 | node/test_averagepool_2d_same_lower/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_same_upper/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_strides/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_averagepool_3d_default/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_False/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_averagepool_3d_default/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 5) |
+| node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_False/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 9) |
 | node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_True/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_False/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_True/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
@@ -6277,10 +6277,12 @@ Coverage 4313 / 4324 ONNX files (99.7%).
 
 Test directory: `tests/onnx`
 
-Coverage 10 / 10 ONNX files (100.0%).
+Coverage 14 / 14 ONNX files (100.0%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
+| depth_space_loss_dynamic_batch.onnx | 13 | Random/ORT | ✅ | OK (max ULP 2) |
+| hardmax_legacy_axis_dynamic_batch.onnx | 11 | Random/ORT | ✅ | OK (max ULP 0) |
 | micro_kws_m_qdq.onnx | 15 | Random/ORT | ✅ | OK (max ULP 0) |
 | micro_kws_m_qoperator_add_shape.onnx (--replicate-ort-bugs) | 15 | Random/ORT | ✅ | OK (max ULP 0) |
 | micro_kws_m_qoperator_avg_pool.onnx (--replicate-ort-bugs) | 15 | Random/ORT | ✅ | OK (max ULP 0) |
@@ -6290,4 +6292,6 @@ Coverage 10 / 10 ONNX files (100.0%).
 | micro_kws_m_static_qoperator.onnx (--replicate-ort-bugs) | 15 | Random/ORT | ✅ | OK (max ULP 0) |
 | mixed_ops_dynamic_batch.onnx | 9 | Random/ORT | ✅ | OK (max ULP 0) |
 | ms_qdq_untyped_intermediates.onnx | 13 | Random/ORT | ✅ | OK (max ULP 0) |
+| sequence_scalar_elements.onnx | 18 | Random/ORT | ✅ | OK (max ULP 0) |
 | slice_dynamic_batch.onnx | 9 | Random/ORT | ✅ | OK (max ULP 0) |
+| trilu_dynamic_batch.onnx | 14 | Random/ORT | ✅ | OK (max ULP 0) |

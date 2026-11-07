@@ -5,7 +5,7 @@ from ..errors import UnsupportedOpError
 from ..ir.model import Graph, Node
 from ..validation import ensure_output_shape_matches_input
 from ..validation import normalize_axis
-from .common import node_dtype, shape_product, value_shape
+from .common import node_dtype, value_shape
 from .registry import register_lowering
 
 
@@ -25,17 +25,11 @@ def lower_lp_normalization(graph: Graph, node: Node) -> LpNormalizationOp:
     p = int(node.attrs.get("p", 2))
     if p not in {1, 2}:
         raise UnsupportedOpError("LpNormalization only supports p=1 or p=2")
-    outer = shape_product(input_shape[:axis]) if axis > 0 else 1
-    axis_size = input_shape[axis]
-    inner = shape_product(input_shape[axis + 1 :]) if axis + 1 < len(input_shape) else 1
     return LpNormalizationOp(
         input0=node.inputs[0],
         output=node.outputs[0],
         shape=input_shape,
         axis=axis,
         p=p,
-        outer=outer,
-        axis_size=axis_size,
-        inner=inner,
         dtype=op_dtype,
     )

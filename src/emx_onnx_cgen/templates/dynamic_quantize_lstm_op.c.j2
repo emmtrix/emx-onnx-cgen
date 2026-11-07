@@ -8,6 +8,8 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         {% set act_h = activation_functions[dir * 3 + 2] %}
         {{ c_type }} H_prev[{{ batch_size }}][{{ hidden_size }}];
         {{ c_type }} C_prev[{{ batch_size }}][{{ hidden_size }}];
+        {{ c_type }} H_next[{{ batch_size }}][{{ hidden_size }}];
+        {{ c_type }} C_next[{{ batch_size }}][{{ hidden_size }}];
         for (int b = 0; b < {{ batch_size }}; ++b) {
             for (int h = 0; h < {{ hidden_size }}; ++h) {
                 {% if input_initial_h %}
@@ -95,8 +97,6 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     continue;
                 }
                 {% endif %}
-                {{ c_type }} H_next[{{ hidden_size }}];
-                {{ c_type }} C_next[{{ hidden_size }}];
                 for (int h = 0; h < {{ hidden_size }}; ++h) {
                     {{ c_type }} gate_i = {{ zero_literal }};
                     {{ c_type }} gate_o = {{ zero_literal }};
@@ -204,15 +204,15 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     {{ c_type }} o_gate = {{ act_f }}(gate_o);
                     {% endif %}
                     {{ c_type }} h_new = o_gate * {{ act_h }}(c_new);
-                    C_next[h] = c_new;
-                    H_next[h] = h_new;
+                    C_next[b][h] = c_new;
+                    H_next[b][h] = h_new;
                     {% if output_y %}
                     {{ output_y }}[step][dir][b][h] = h_new;
                     {% endif %}
                 }
                 for (int h = 0; h < {{ hidden_size }}; ++h) {
-                    C_prev[b][h] = C_next[h];
-                    H_prev[b][h] = H_next[h];
+                    C_prev[b][h] = C_next[b][h];
+                    H_prev[b][h] = H_next[b][h];
                 }
             }
         }

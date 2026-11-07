@@ -1,0 +1,10 @@
+{# One loop per axis around the caller's body; the generated code indexes the arrays directly. #}
+{% macro loops(vars, sizes, starts=None) %}
+{% for var in vars %}
+for (idx_t {{ var }} = {{ starts[loop.index0] if starts else 0 }}; {{ var }} < {{ sizes[loop.index0] }}; ++{{ var }}) {
+{% endfor %}
+{{ caller() | trim }}
+{% for _ in vars %}
+}
+{% endfor %}
+{% endmacro %}

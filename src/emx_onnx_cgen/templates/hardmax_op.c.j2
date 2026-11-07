@@ -1,24 +1,20 @@
+{% import "axis_loops.c.j2" as axis_loops %}
+{# Three vectorizable passes: the maximum, the first position holding it (a min reduction over the
+   row-major position within the reduced axes, which only serves as a comparison key), the one-hot
+   output. The reduction variable stays the first operand of the min, as reduction detectors expect. #}
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-    const {{ c_type }} *input_flat = (const {{ c_type }} *){{ input0 }};
-    {{ c_type }} *output_flat = ({{ c_type }} *){{ output }};
-    const idx_t outer = {{ outer }};
-    const idx_t axis_size = {{ axis_size }};
-    const idx_t inner = {{ inner }};
-    for (idx_t outer_idx = 0; outer_idx < outer; ++outer_idx) {
-        for (idx_t inner_idx = 0; inner_idx < inner; ++inner_idx) {
-            idx_t base = (outer_idx * axis_size * inner) + inner_idx;
-            {{ c_type }} max_value = input_flat[base];
-            idx_t max_index = 0;
-            for (idx_t axis_idx = 1; axis_idx < axis_size; ++axis_idx) {
-                {{ c_type }} value = input_flat[base + axis_idx * inner];
-                const {{ c_type }} prev_max = max_value;
-                max_value = {{ scalar_fn(SF.MAXIMUM, dtype) }}(max_value, value);
-                max_index = (value > prev_max) ? axis_idx : max_index;
-            }
-            for (idx_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
-                output_flat[base + axis_idx * inner] =
-                    axis_idx == max_index ? {{ one_literal }} : {{ zero_literal }};
-            }
-        }
-    }
+{% call axis_loops.loops(nest.loop_vars, nest.loop_sizes) %}
+{{ c_type }} max_value = {{ input0 }}{{ nest.first_index }};
+{% call axis_loops.loops(nest.reduce_vars, nest.reduce_sizes, nest.after_first_starts) %}
+max_value = {{ scalar_fn(SF.MAXIMUM, dtype) }}(max_value, {{ input0 }}{{ nest.index }});
+{% endcall %}
+idx_t first = {{ reduce_count }};
+{% call axis_loops.loops(nest.reduce_vars, nest.reduce_sizes) %}
+const idx_t candidate = ({{ input0 }}{{ nest.index }} == max_value) ? {{ position }} : {{ reduce_count }};
+first = (first < candidate) ? first : candidate;
+{% endcall %}
+{% call axis_loops.loops(nest.reduce_vars, nest.reduce_sizes) %}
+{{ output }}{{ nest.index }} = ({{ position }} == first) ? {{ one_literal }} : {{ zero_literal }};
+{% endcall %}
+{% endcall %}
 }

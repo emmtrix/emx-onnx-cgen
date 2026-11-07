@@ -1,33 +1,22 @@
+{% import "axis_loops.c.j2" as axis_loops %}
+{# The diagonal offset is compared in idx_t: an offset beyond the matrix selects all or nothing,
+   so the runtime offset is clamped to [-rows, cols] first. #}
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-    const {{ c_type }} *input_data = (const {{ c_type }} *){{ input0 }};
-    {{ c_type }} *output_data = ({{ c_type }} *){{ output }};
-    int64_t k = {{ k_value }};
     {% if k_input %}
-    const {{ k_c_type }} *k_data = (const {{ k_c_type }} *){{ k_input }};
-    k = (int64_t)k_data[0];
+    const int64_t k_offset = (int64_t){{ k_input }}[0];
+    const idx_t k = (idx_t)(k_offset < -(int64_t){{ rows }} ? -(int64_t){{ rows }} : (k_offset > (int64_t){{ cols }} ? (int64_t){{ cols }} : k_offset));
+    {% else %}
+    const idx_t k = {{ k_value }};
     {% endif %}
-    idx_t rows = {{ rows }};
-    idx_t cols = {{ cols }};
-    idx_t batch_size = {{ batch_size }};
-    for (idx_t batch = 0; batch < batch_size; ++batch) {
-        idx_t base = batch * rows * cols;
-        for (idx_t row = 0; row < rows; ++row) {
-            for (idx_t col = 0; col < cols; ++col) {
-                idx_t offset = base + row * cols + col;
-                {% if upper %}
-                if ((int64_t)col - (int64_t)row >= k) {
-                    output_data[offset] = input_data[offset];
-                } else {
-                    output_data[offset] = {{ zero_literal }};
-                }
-                {% else %}
-                if ((int64_t)row - (int64_t)col >= -k) {
-                    output_data[offset] = input_data[offset];
-                } else {
-                    output_data[offset] = {{ zero_literal }};
-                }
-                {% endif %}
-            }
-        }
+{% call axis_loops.loops(batch_vars, batch_sizes) %}
+for (idx_t row = 0; row < {{ rows }}; ++row) {
+    for (idx_t col = 0; col < {{ cols }}; ++col) {
+{% if upper %}
+        {{ output }}{{ index }} = (col - row >= k) ? {{ input0 }}{{ index }} : {{ zero_literal }};
+{% else %}
+        {{ output }}{{ index }} = (row - col >= -k) ? {{ input0 }}{{ index }} : {{ zero_literal }};
+{% endif %}
     }
+}
+{% endcall %}
 }
