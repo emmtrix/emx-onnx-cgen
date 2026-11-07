@@ -6270,6 +6270,7 @@ class HardmaxOp(RenderableOpBase):
     input0: str
     output: str
     axis: int | None
+    use_legacy_axis_semantics: bool = False
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
@@ -6283,7 +6284,18 @@ class HardmaxOp(RenderableOpBase):
         output_dtype = emitter.ctx_dtype(self.output)
         zero_literal = output_dtype.zero_literal
         axis = emitter.derived(self, "axis")
-        nest = AxisLoopNest.over(output_shape_exprs, axis, axis + 1)
+        # The legacy semantics (opset < 13) take the first maximum over all axes from `axis`
+        # on, opset 13 over `axis` only
+        reduce_end = (
+            len(output_shape_exprs) if self.use_legacy_axis_semantics else axis + 1
+        )
+        nest = AxisLoopNest.over(output_shape_exprs, axis, reduce_end)
+        # The position of the maximum, one index per reduced axis
+        max_index_vars = (
+            ("max_index",)
+            if len(nest.reduce_vars) == 1
+            else tuple(f"max_{var}" for var in nest.reduce_vars)
+        )
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
@@ -6304,6 +6316,7 @@ class HardmaxOp(RenderableOpBase):
                 params=param_decls,
                 c_type=output_dtype.c_type,
                 nest=nest,
+                max_index_vars=max_index_vars,
                 zero_literal=zero_literal,
                 one_literal=emitter.format_literal(output_dtype, 1),
                 dtype=output_dtype,
@@ -6336,11 +6349,8 @@ class HardmaxOp(RenderableOpBase):
     def infer_shapes(self, ctx: OpContext) -> None:
         input_shape = ctx.shape(self.input0)
         axis = self.axis
-        legacy_axis_semantics = False
         if axis is None:
-            opset_version = ctx.opset_version()
-            legacy_axis_semantics = opset_version is not None and opset_version < 13
-            axis = 1 if legacy_axis_semantics else -1
+            axis = 1 if self.use_legacy_axis_semantics else -1
         if axis < 0:
             axis += len(input_shape)
         if axis < 0 or axis >= len(input_shape):
