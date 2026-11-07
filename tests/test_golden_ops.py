@@ -446,6 +446,18 @@ def _make_logsoftmax_model() -> onnx.ModelProto:
     )
 
 
+def _make_axis_op_model(op_type: str, opset: int) -> onnx.ModelProto:
+    """A 2x3x4 tensor with axis 1: the reduced axis lies between kept axes."""
+    return _make_operator_model(
+        op_type=op_type,
+        input_shapes=[[2, 3, 4]],
+        output_shape=[2, 3, 4],
+        dtype=TensorProto.FLOAT,
+        attrs={"axis": 1},
+        opset=opset,
+    )
+
+
 def _make_negative_log_likelihood_loss_model() -> onnx.ModelProto:
     input_info = helper.make_tensor_value_info("input", TensorProto.FLOAT, [2, 3])
     target_info = helper.make_tensor_value_info("target", TensorProto.INT64, [2])
@@ -790,7 +802,22 @@ OP_GOLDEN_CASES = [
     ("softmax", "softmax_inner_axis", _make_softmax_inner_axis_model),
     ("softmax", "softmax_legacy_axis", _make_softmax_legacy_axis_model),
     ("logsoftmax", "logsoftmax", _make_logsoftmax_model),
+    (
+        "logsoftmax",
+        "logsoftmax_inner_axis",
+        lambda: _make_axis_op_model("LogSoftmax", opset=13),
+    ),
+    (
+        "logsoftmax",
+        "logsoftmax_legacy_axis",
+        lambda: _make_axis_op_model("LogSoftmax", opset=11),
+    ),
     ("hardmax", "hardmax", _make_hardmax_model),
+    (
+        "hardmax",
+        "hardmax_inner_axis",
+        lambda: _make_axis_op_model("Hardmax", opset=13),
+    ),
     (
         "negativeloglikelihoodloss",
         "negative_log_likelihood_loss",
@@ -806,6 +833,11 @@ OP_GOLDEN_CASES = [
         "lpnormalization",
         "lp_normalization",
         lambda: _make_lp_normalization_model(input_shape=[2, 3], axis=-1, p=1),
+    ),
+    (
+        "lpnormalization",
+        "lp_normalization_inner_axis",
+        lambda: _make_lp_normalization_model(input_shape=[2, 3, 4], axis=1, p=2),
     ),
     (
         "instancenormalization",

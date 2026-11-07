@@ -7,6 +7,7 @@ from shared.scalar_functions import ScalarFunction
 from shared.scalar_types import ScalarType
 
 from ...errors import ShapeInferenceError, UnsupportedOpError
+from ..axis_loops import AxisLoopNest
 from ..op_base import (
     CEmitterCompat,
     ConvLikeOpBase,
@@ -5953,23 +5954,11 @@ class SoftmaxOp(RenderableOpBase):
             ]
         )
         # The legacy semantics (opset < 13) reduce over all axes from `axis` on, opset 13 over
-        # `axis` only. Every axis has its own loop and indexes the arrays directly.
-        rank = len(output_shape)
-        reduce_end = rank if self.use_legacy_axis_semantics else axis + 1
-        loop_vars = [f"i{dim}" for dim in range(rank) if not axis <= dim < reduce_end]
-        loop_sizes = [
-            output_shape_exprs[dim]
-            for dim in range(rank)
-            if not axis <= dim < reduce_end
-        ]
-        reduce_vars = [f"i{dim}" for dim in range(axis, reduce_end)]
-        reduce_sizes = [output_shape_exprs[dim] for dim in range(axis, reduce_end)]
-        # The maximum starts with the first element, so a single reduced axis skips it
-        max_starts = [1] if len(reduce_vars) == 1 else [0] * len(reduce_vars)
-        first_index = "".join(
-            f"[{0 if axis <= dim < reduce_end else f'i{dim}'}]" for dim in range(rank)
+        # `axis` only
+        reduce_end = (
+            len(output_shape_exprs) if self.use_legacy_axis_semantics else axis + 1
         )
-        index = "".join(f"[i{dim}]" for dim in range(rank))
+        nest = AxisLoopNest.over(output_shape_exprs, axis, reduce_end)
         rendered = (
             state.templates["softmax"]
             .render(
@@ -5980,13 +5969,7 @@ class SoftmaxOp(RenderableOpBase):
                 params=param_decls,
                 c_type=output_dtype.c_type,
                 dtype=output_dtype,
-                loop_vars=loop_vars,
-                loop_sizes=loop_sizes,
-                reduce_vars=reduce_vars,
-                reduce_sizes=reduce_sizes,
-                max_starts=max_starts,
-                first_index=first_index,
-                index=index,
+                nest=nest,
             )
             .rstrip()
         )
@@ -6217,26 +6200,12 @@ class LogSoftmaxOp(RenderableOpBase):
         )
         output_dtype = emitter.ctx_dtype(self.output)
         axis = emitter.derived(self, "axis")
-        if self.use_legacy_axis_semantics:
-            outer = (
-                CEmitterCompat.element_count_expr(output_shape_exprs[:axis])
-                if axis > 0
-                else 1
-            )
-            axis_size = CEmitterCompat.element_count_expr(output_shape_exprs[axis:])
-            inner = 1
-        else:
-            outer = (
-                CEmitterCompat.element_count_expr(output_shape_exprs[:axis])
-                if axis > 0
-                else 1
-            )
-            axis_size = output_shape_exprs[axis]
-            inner = (
-                CEmitterCompat.element_count_expr(output_shape_exprs[axis + 1 :])
-                if axis + 1 < len(output_shape)
-                else 1
-            )
+        # The legacy semantics (opset < 13) reduce over all axes from `axis` on, opset 13 over
+        # `axis` only
+        reduce_end = (
+            len(output_shape_exprs) if self.use_legacy_axis_semantics else axis + 1
+        )
+        nest = AxisLoopNest.over(output_shape_exprs, axis, reduce_end)
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
@@ -6256,10 +6225,7 @@ class LogSoftmaxOp(RenderableOpBase):
                 output=params["output"],
                 params=param_decls,
                 c_type=output_dtype.c_type,
-                array_suffix=array_suffix,
-                outer=outer,
-                axis_size=axis_size,
-                inner=inner,
+                nest=nest,
                 dtype=output_dtype,
             )
             .rstrip()
@@ -6317,17 +6283,7 @@ class HardmaxOp(RenderableOpBase):
         output_dtype = emitter.ctx_dtype(self.output)
         zero_literal = output_dtype.zero_literal
         axis = emitter.derived(self, "axis")
-        outer = (
-            CEmitterCompat.element_count_expr(output_shape_exprs[:axis])
-            if axis > 0
-            else 1
-        )
-        axis_size = output_shape_exprs[axis]
-        inner = (
-            CEmitterCompat.element_count_expr(output_shape_exprs[axis + 1 :])
-            if axis + 1 < len(output_shape)
-            else 1
-        )
+        nest = AxisLoopNest.over(output_shape_exprs, axis, axis + 1)
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
@@ -6347,10 +6303,7 @@ class HardmaxOp(RenderableOpBase):
                 output=params["output"],
                 params=param_decls,
                 c_type=output_dtype.c_type,
-                array_suffix=array_suffix,
-                outer=outer,
-                axis_size=axis_size,
-                inner=inner,
+                nest=nest,
                 zero_literal=zero_literal,
                 one_literal=emitter.format_literal(output_dtype, 1),
                 dtype=output_dtype,
@@ -6750,9 +6703,6 @@ class LpNormalizationOp(RenderableOpBase):
     shape: tuple[int, ...]
     axis: int
     p: int
-    outer: int
-    axis_size: int
-    inner: int
     dtype: ScalarType
 
     def required_includes(self, ctx: OpContext) -> set[str]:
@@ -6767,8 +6717,12 @@ class LpNormalizationOp(RenderableOpBase):
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
-        shape = CEmitterCompat.codegen_shape(self.shape)
-        array_suffix = emitter.param_array_suffix(shape)
+        output_shape = emitter.ctx_shape(self.output)
+        output_dim_names = emitter.dim_names_for(self.output)
+        output_shape_exprs = CEmitterCompat.shape_dim_exprs(
+            output_shape, output_dim_names
+        )
+        array_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
         param_decls = emitter.build_param_decls(
             [
                 (params["input0"], c_type, array_suffix, True),
@@ -6784,10 +6738,7 @@ class LpNormalizationOp(RenderableOpBase):
                 output=params["output"],
                 params=param_decls,
                 c_type=c_type,
-                array_suffix=array_suffix,
-                outer=self.outer,
-                axis_size=self.axis_size,
-                inner=self.inner,
+                nest=AxisLoopNest.over(output_shape_exprs, self.axis, self.axis + 1),
                 p=self.p,
                 zero_literal=zero_literal,
                 dtype=self.dtype,
