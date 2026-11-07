@@ -7128,7 +7128,8 @@ class SplitToSequenceOp(RenderableOpBase):
                 loop_vars=loop_vars,
                 loop_sizes=loop_sizes,
                 input_index=input_index,
-                output_index="".join(f"[{var}]" for var in loop_vars),
+                # A rank-0 element is stored as a one-element array
+                output_index="".join(f"[{var}]" for var in loop_vars) or "[0]",
                 output_dim_arrays=tuple(
                     {
                         "axis": axis,
@@ -7323,7 +7324,8 @@ class ConcatFromSequenceOp(RenderableOpBase):
                 output=params["output"],
                 elem_vars=elem_vars,
                 elem_sizes=elem_sizes,
-                elem_index="".join(f"[{var}]" for var in elem_vars),
+                # A rank-0 element is stored as a one-element array
+                elem_index="".join(f"[{var}]" for var in elem_vars) or "[0]",
                 output_index="".join(f"[{var}]" for var in output_vars),
             )
             .rstrip()
