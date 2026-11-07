@@ -2114,6 +2114,19 @@ class ReshapeOp(RenderableOpBase):
             )
 
 
+def _matrix_batch_loops(shape: tuple[str | int, ...]) -> dict[str, object]:
+    """Template arguments of a kernel over the last two axes (`row`, `col`) of `shape`, with
+    one loop per leading batch axis."""
+    batch_vars = tuple(f"i{axis}" for axis in range(len(shape) - 2))
+    return {
+        "batch_vars": batch_vars,
+        "batch_sizes": shape[:-2],
+        "rows": shape[-2],
+        "cols": shape[-1],
+        "index": "".join(f"[{var}]" for var in batch_vars) + "[row][col]",
+    }
+
+
 @dataclass(frozen=True)
 class EyeLikeOp(RenderableOpBase):
     __io_inputs__ = ("input0",)
@@ -2141,8 +2154,6 @@ class EyeLikeOp(RenderableOpBase):
         input_suffix = emitter.param_array_suffix(
             output_shape, emitter.dim_names_for(self.input0)
         )
-        batch_dims = output_shape[:-2]
-        batch_size = CEmitterCompat.element_count(batch_dims or (1,))
         param_decls = emitter.build_param_decls(
             [
                 (params["input0"], input_dtype.c_type, input_suffix, True),
@@ -2160,10 +2171,7 @@ class EyeLikeOp(RenderableOpBase):
                 c_type=c_type,
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
-                shape=shape,
-                batch_size=batch_size,
-                rows=output_shape[-2],
-                cols=output_shape[-1],
+                **_matrix_batch_loops(shape),
                 k=self.k,
                 zero_literal=zero_literal,
                 one_literal=f"(({c_type})1)",
@@ -2520,8 +2528,6 @@ class TriluOp(RenderableOpBase):
             k_suffix = emitter.param_array_suffix(
                 emitter.ctx_shape(self.k_input), emitter.dim_names_for(self.k_input)
             )
-        batch_dims = output_shape[:-2]
-        batch_size = CEmitterCompat.element_count(batch_dims or (1,))
         param_decls = [
             (params["input0"], c_type, input_suffix, True),
             (params["output"], c_type, output_suffix, False),
@@ -2552,10 +2558,7 @@ class TriluOp(RenderableOpBase):
                 ),
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
-                shape=shape,
-                batch_size=batch_size,
-                rows=output_shape[-2],
-                cols=output_shape[-1],
+                **_matrix_batch_loops(shape),
                 k_value=self.k_value,
                 upper=self.upper,
                 zero_literal=zero_literal,
@@ -2623,31 +2626,24 @@ class TileOp(RenderableOpBase):
                 (params["output"], c_type, output_suffix, False),
             ]
         )
-        input_strides: list[int] = []
-        stride = 1
-        for dim in reversed(input_shape):
-            input_strides.append(stride)
-            stride *= dim
-        input_strides = list(reversed(input_strides))
-        input_index_terms = [
-            f"({var} % {dim}) * {stride}"
-            for var, dim, stride in zip(loop_vars, input_shape, input_strides)
-        ]
-        input_index_expr = " + ".join(input_index_terms) or "0"
+        # Output index `i` reads the input at `i % input_dim` on every axis
+        input_dims = CEmitterCompat.shape_dim_exprs(
+            input_shape, emitter.dim_names_for(self.input0)
+        )
+        input_expr = params["input0"] + "".join(
+            "[0]" if dim == 1 else f"[{var} % {dim}]"
+            for var, dim in zip(loop_vars, input_dims)
+        )
         rendered = (
-            state.templates["tile"]
+            state.templates["broadcast_copy"]
             .render(
                 model_name=model.name,
                 op_name=op_name,
-                input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
-                c_type=c_type,
-                input_suffix=input_suffix,
-                output_suffix=output_suffix,
                 output_shape=output_shape,
                 loop_vars=loop_vars,
-                input_index_expr=input_index_expr,
+                input_expr=input_expr,
             )
             .rstrip()
         )
@@ -2722,13 +2718,6 @@ class CenterCropPadOp(RenderableOpBase):
                 crop_starts[a] = (in_dim - out_dim) // 2
             elif out_dim > in_dim:
                 pad_starts[a] = (out_dim - in_dim) // 2
-        # Compute row-major strides of input
-        input_strides: list[int] = []
-        stride = 1
-        for dim in reversed(input_shape_raw):
-            input_strides.append(stride)
-            stride *= dim
-        input_strides = list(reversed(input_strides))
         rendered = (
             state.templates["center_crop_pad"]
             .render(
@@ -2746,7 +2735,6 @@ class CenterCropPadOp(RenderableOpBase):
                 out_loop_vars=out_loop_vars,
                 crop_starts=crop_starts,
                 pad_starts=pad_starts,
-                input_strides=input_strides,
             )
             .rstrip()
         )
@@ -2847,12 +2835,6 @@ class PadOp(RenderableOpBase):
             and not output_dim_names
             and len(input_shape_raw) > 0
         )
-        input_strides: list[int] = []
-        stride = 1
-        for dim in reversed(input_shape_raw):
-            input_strides.append(stride)
-            stride *= dim
-        input_strides = list(reversed(input_strides))
         rendered = (
             state.templates["pad"]
             .render(
@@ -2882,11 +2864,8 @@ class PadOp(RenderableOpBase):
                 pad_begin_exprs=pad_begin_exprs,
                 axes_length=axes_length,
                 pads_values=pads_values,
-                input_strides=tuple(input_strides),
                 mode=self.mode,
                 pad_value_expr=pad_value_expr,
-                input0_flat="input_flat",
-                base_index="pad_index",
                 idx_vars=idx_vars,
                 reflect_vars=reflect_vars,
                 direct_constant=direct_constant,
@@ -4620,19 +4599,6 @@ class ExpandOp(ShapeLikeOpBase):
         if not output_shape:
             raise ShapeInferenceError(f"{self.kind} output shape must be specified")
         return output_shape
-
-    def _shape_derived(
-        self,
-        ctx: OpContext,
-        *,
-        data_shape: tuple[int, ...],
-        target_shape: tuple[int, ...],
-        output_shape: tuple[int, ...],
-    ) -> None:
-        input_shape_padded = (1,) * (len(output_shape) - len(data_shape)) + data_shape
-        input_strides = _compute_strides(input_shape_padded)
-        ctx.set_derived(self, "input_shape_padded", input_shape_padded)
-        ctx.set_derived(self, "input_strides", input_strides)
 
 
 @dataclass(frozen=True)
@@ -7308,7 +7274,7 @@ class ReverseSequenceOp(RenderableOpBase):
                 input0=params["input0"],
                 sequence_lens=params["sequence_lens"],
                 output=params["output"],
-                rank=len(input_shape),
+                loop_vars=CEmitterCompat.loop_vars(input_shape),
                 dims=CEmitterCompat.shape_dim_exprs(
                     input_shape, emitter.dim_names_for(self.input0)
                 ),

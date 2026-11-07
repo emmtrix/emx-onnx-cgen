@@ -1,0 +1,7 @@
+{# Tile and Expand: every output element is copied from one input element. #}
+{% import "axis_loops.c.j2" as axis_loops %}
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% call axis_loops.loops(loop_vars, output_shape) %}
+{{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {{ input_expr }};
+{% endcall %}
+}

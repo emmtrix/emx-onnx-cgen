@@ -1,27 +1,11 @@
+{% import "axis_loops.c.j2" as axis_loops %}
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     (void){{ input0 }};
-    {{ c_type }} *output_data = ({{ c_type }} *){{ output }};
-    idx_t total = (idx_t){{ batch_size }} * {{ rows }} * {{ cols }};
-    for (idx_t index = 0; index < total; ++index) {
-        output_data[index] = {{ zero_literal }};
+{% call axis_loops.loops(batch_vars, batch_sizes) %}
+for (idx_t row = 0; row < {{ rows }}; ++row) {
+    for (idx_t col = 0; col < {{ cols }}; ++col) {
+        {{ output }}{{ index }} = ((idx_t)col - (idx_t)row == {{ k }}) ? {{ one_literal }} : {{ zero_literal }};
     }
-    idx_t k = {{ k }};
-    idx_t rows = {{ rows }};
-    idx_t cols = {{ cols }};
-    idx_t row_start = k >= 0 ? 0 : -k;
-    idx_t col_start = k >= 0 ? k : 0;
-    if (row_start >= rows || col_start >= cols) {
-        return;
-    }
-    idx_t max_rows = rows - row_start;
-    idx_t max_cols = cols - col_start;
-    idx_t diag_len = max_rows < max_cols ? max_rows : max_cols;
-    for (idx_t batch = 0; batch < {{ batch_size }}; ++batch) {
-        idx_t base = batch * rows * cols;
-        for (idx_t diag = 0; diag < diag_len; ++diag) {
-            idx_t row = row_start + diag;
-            idx_t col = col_start + diag;
-            output_data[base + row * cols + col] = {{ one_literal }};
-        }
-    }
+}
+{% endcall %}
 }

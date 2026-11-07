@@ -58,9 +58,6 @@
  *   mode: DCR
  */
 EMX_NODE_FN void node0_depthtospace(const float input0[1][4][2][2], float output[1][1][4][4]) {
-    const float *input_data = (const float *)input0;
-    float *output_data = (float *)output;
-    idx_t output_index = 0;
     for (idx_t n = 0; n < 1; ++n) {
         for (idx_t c_out = 0; c_out < 1; ++c_out) {
             for (idx_t h_out = 0; h_out < 4; ++h_out) {
@@ -71,9 +68,7 @@ EMX_NODE_FN void node0_depthtospace(const float input0[1][4][2][2], float output
                     idx_t offset_w = w_out % 2;
                     idx_t c_in;
                     c_in = (offset_h * 2 + offset_w) * 1 + c_out;
-                    idx_t input_index = ((n * 4 + c_in) * 2 + h_in) * 2 + w_in;
-                    output_data[output_index] = input_data[input_index];
-                    output_index++;
+                    output[n][c_out][h_out][w_out] = input0[n][c_in][h_in][w_in];
                 }
             }
         }
