@@ -6366,6 +6366,20 @@ class HardmaxOp(RenderableOpBase):
         ctx.set_derived(self, "axis", axis)
 
 
+def _loss_sample_loops(input_shape: tuple[int, ...]) -> dict[str, object]:
+    """Template arguments of a loss kernel over an input `[N, C, d1, ..., dk]`: one loop per
+    sample axis (`i0` for N, `i2`... for the spatial axes); the class axis is indexed
+    explicitly."""
+    spatial_vars = tuple(f"i{axis}" for axis in range(2, len(input_shape)))
+    spatial_index = "".join(f"[{var}]" for var in spatial_vars)
+    return {
+        "sample_vars": ("i0", *spatial_vars),
+        "sample_sizes": (input_shape[0], *input_shape[2:]),
+        "sample_index": f"[i0]{spatial_index}",
+        "spatial_index": spatial_index,
+    }
+
+
 @dataclass(frozen=True)
 class NegativeLogLikelihoodLossOp(RenderableOpBase):
     __io_inputs__ = ("input0", "target", "weight")
@@ -6449,6 +6463,7 @@ class NegativeLogLikelihoodLossOp(RenderableOpBase):
                 n=self.n,
                 c=self.c,
                 d=self.d,
+                **_loss_sample_loops(self.input_shape),
                 reduction=self.reduction,
                 ignore_index=self.ignore_index,
                 zero_literal=zero_literal,
@@ -6578,6 +6593,7 @@ class SoftmaxCrossEntropyLossOp(RenderableOpBase):
                 n=self.n,
                 c=self.c,
                 d=self.d,
+                **_loss_sample_loops(self.input_shape),
                 reduction=self.reduction,
                 use_ignore_index=use_ignore_index,
                 ignore_index=ignore_index,

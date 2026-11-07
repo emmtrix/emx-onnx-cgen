@@ -1,105 +1,95 @@
+{% import "axis_loops.c.j2" as axis_loops %}
+{# The input (and log_prob) element of class `cls` for the current sample: x[i0][cls][i2]... #}
+{% macro at_class(cls) %}[i0][{{ cls }}]{{ spatial_index }}{% endmacro %}
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-    const {{ c_type }} *input_flat = (const {{ c_type }} *){{ input0 }};
-    const {{ target_c_type }} *target_flat = (const {{ target_c_type }} *){{ target }};
-    {{ c_type }} *output_flat = ({{ c_type }} *){{ output }};
-{% if log_prob %}
-    {{ c_type }} *log_prob_flat = ({{ c_type }} *){{ log_prob }};
-{% endif %}
-    const idx_t n = {{ n }};
-    const idx_t c = {{ c }};
-    const idx_t d = {{ d }};
 {% if reduction != "none" %}
     {{ acc_type }} loss_sum = {{ acc_zero_literal }};
 {% if reduction == "mean" and (weight or use_ignore_index) %}
     {{ acc_type }} weight_sum = {{ acc_zero_literal }};
 {% endif %}
 {% endif %}
-    for (idx_t n_idx = 0; n_idx < n; ++n_idx) {
-        for (idx_t d_idx = 0; d_idx < d; ++d_idx) {
-            idx_t target_index = n_idx * d + d_idx;
-            {{ target_c_type }} target_value = target_flat[target_index];
+{% call axis_loops.loops(sample_vars, sample_sizes) %}
+{{ target_c_type }} target_value = {{ target }}{{ sample_index }};
 {% if use_ignore_index %}
-            bool ignored = ((int64_t)target_value == {{ ignore_index }});
+bool ignored = ((int64_t)target_value == {{ ignore_index }});
 {% endif %}
-            idx_t class_index = (idx_t)target_value;
-            idx_t base = (n_idx * c * d) + d_idx;
-            {{ acc_type }} max_value = ({{ acc_type }})input_flat[base];
-            for (idx_t c_idx = 1; c_idx < c; ++c_idx) {
-                {{ acc_type }} value = ({{ acc_type }})input_flat[base + c_idx * d];
-                max_value = {{ scalar_fn(SF.MAXIMUM, acc_dtype) }}(max_value, value);
-            }
-            {{ acc_type }} sum = {{ acc_zero_literal }};
-            for (idx_t c_idx = 0; c_idx < c; ++c_idx) {
-                {{ acc_type }} value = ({{ acc_type }})input_flat[base + c_idx * d] - max_value;
-                sum += {{ scalar_fn(SF.EXP, acc_dtype) }}(value);
-            }
-            {{ acc_type }} logsum = {{ scalar_fn(SF.LOG, acc_dtype) }}(sum);
+idx_t class_index = (idx_t)target_value;
+{{ acc_type }} max_value = ({{ acc_type }}){{ input0 }}{{ at_class(0) }};
+for (idx_t c_idx = 1; c_idx < {{ c }}; ++c_idx) {
+    {{ acc_type }} value = ({{ acc_type }}){{ input0 }}{{ at_class("c_idx") }};
+    max_value = {{ scalar_fn(SF.MAXIMUM, acc_dtype) }}(max_value, value);
+}
+{{ acc_type }} sum = {{ acc_zero_literal }};
+for (idx_t c_idx = 0; c_idx < {{ c }}; ++c_idx) {
+    {{ acc_type }} value = ({{ acc_type }}){{ input0 }}{{ at_class("c_idx") }} - max_value;
+    sum += {{ scalar_fn(SF.EXP, acc_dtype) }}(value);
+}
+{{ acc_type }} logsum = {{ scalar_fn(SF.LOG, acc_dtype) }}(sum);
 {% if log_prob %}
-            {{ acc_type }} loss_value = {{ acc_zero_literal }};
-            for (idx_t c_idx = 0; c_idx < c; ++c_idx) {
-                {{ acc_type }} log_prob_value = ({{ acc_type }})input_flat[base + c_idx * d] - max_value - logsum;
-                log_prob_flat[base + c_idx * d] = ({{ c_type }})log_prob_value;
-                if (c_idx == class_index) {
-                    loss_value = -log_prob_value;
-                }
-            }
+{{ acc_type }} loss_value = {{ acc_zero_literal }};
+for (idx_t c_idx = 0; c_idx < {{ c }}; ++c_idx) {
+    {{ acc_type }} log_prob_value = ({{ acc_type }}){{ input0 }}{{ at_class("c_idx") }} - max_value - logsum;
+    {{ log_prob }}{{ at_class("c_idx") }} = ({{ c_type }})log_prob_value;
+    if (c_idx == class_index) {
+        loss_value = -log_prob_value;
+    }
+}
 {% if use_ignore_index %}
-            if (ignored) {
+if (ignored) {
 {% if reduction == "none" %}
-                output_flat[target_index] = {{ zero_literal }};
+    {{ output }}{{ sample_index }} = {{ zero_literal }};
 {% endif %}
-            }
+}
 {% endif %}
 {% else %}
-            {{ acc_type }} loss_value = {{ acc_zero_literal }};
+{{ acc_type }} loss_value = {{ acc_zero_literal }};
 {% if use_ignore_index %}
-            if (ignored) {
+if (ignored) {
 {% if reduction == "none" %}
-                output_flat[target_index] = {{ zero_literal }};
+    {{ output }}{{ sample_index }} = {{ zero_literal }};
 {% endif %}
-            } else {
+} else {
 {% endif %}
-                {{ acc_type }} log_prob_value = ({{ acc_type }})input_flat[base + class_index * d] - max_value - logsum;
-                loss_value = -log_prob_value;
+    {{ acc_type }} log_prob_value = ({{ acc_type }}){{ input0 }}{{ at_class("class_index") }} - max_value - logsum;
+    loss_value = -log_prob_value;
 {% if use_ignore_index %}
-            }
+}
 {% endif %}
 {% endif %}
 {% if use_ignore_index %}
-            if (!ignored) {
+if (!ignored) {
 {% endif %}
 {% if weight %}
-                {{ acc_type }} sample_weight = {{ weight }}[class_index];
-                loss_value *= sample_weight;
+    {{ acc_type }} sample_weight = {{ weight }}[class_index];
+    loss_value *= sample_weight;
 {% endif %}
 {% if reduction == "none" %}
-                output_flat[target_index] = loss_value;
+    {{ output }}{{ sample_index }} = loss_value;
 {% else %}
-                loss_sum += loss_value;
+    loss_sum += loss_value;
 {% if reduction == "mean" %}
 {% if weight %}
-                weight_sum += sample_weight;
+    weight_sum += sample_weight;
 {% elif use_ignore_index %}
-                weight_sum += {{ acc_one_literal }};
+    weight_sum += {{ acc_one_literal }};
 {% endif %}
 {% endif %}
 {% endif %}
 {% if use_ignore_index %}
-            }
+}
 {% endif %}
-        }
-    }
+{% endcall %}
 {% if reduction == "mean" %}
 {% if weight or use_ignore_index %}
     if (weight_sum == {{ acc_zero_literal }}) {
-        output_flat[0] = {{ zero_literal }};
+        {{ output }}[0] = {{ zero_literal }};
     } else {
-        output_flat[0] = loss_sum / weight_sum;
+        {{ output }}[0] = loss_sum / weight_sum;
     }
 {% else %}
-    output_flat[0] = loss_sum / ({{ n }} * {{ d }});
+    {{ output }}[0] = loss_sum / ({{ n }} * {{ d }});
 {% endif %}
 {% elif reduction == "sum" %}
-    output_flat[0] = loss_sum;
+    {{ output }}[0] = loss_sum;
 {% endif %}
 }
