@@ -5403,6 +5403,12 @@ class RangeOp(RenderableOpBase):
         return ((self.start, ()), (self.limit, ()), (self.delta, ()))
 
 
+def _signal_index(signal_rank: int, axis: int, axis_var: str) -> str:
+    return "".join(
+        f"[{axis_var}]" if dim == axis else f"[i{dim}]" for dim in range(signal_rank)
+    )
+
+
 @dataclass(frozen=True)
 class DFTOp(RenderableOpBase):
     __io_inputs__ = ("input0", "axis_input")
@@ -5490,15 +5496,14 @@ class DFTOp(RenderableOpBase):
                 inverse=self.inverse,
                 dtype=dft_dtype,
             )
+            batch_axes = tuple(dim for dim in range(signal_rank) if dim != axis)
             axis_variants.append(
                 {
                     "axis": axis,
-                    "outer_expr": CEmitterCompat.element_count_expr(
-                        input_shape_expr[:axis]
-                    ),
-                    "inner_expr": CEmitterCompat.element_count_expr(
-                        input_shape_expr[axis + 1 : signal_rank]
-                    ),
+                    "loop_vars": tuple(f"i{dim}" for dim in batch_axes),
+                    "loop_sizes": tuple(input_shape_expr[dim] for dim in batch_axes),
+                    "input_index": _signal_index(signal_rank, axis, "n"),
+                    "output_index": _signal_index(signal_rank, axis, "k"),
                     "input_axis_expr": str(input_shape_expr[axis]),
                     "output_axis_expr": str(output_shape_expr[axis]),
                     "fft_length": fft_length,
