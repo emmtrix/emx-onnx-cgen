@@ -65,20 +65,21 @@ static inline float ref_scalar_f32_maximum(float a, float b) {
 EMX_NODE_FN void node0_hardmax(const float input0[2][3][4], float output[2][3][4]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         float max_value = input0[i0][0][0];
-        idx_t max_i1 = 0;
-        idx_t max_i2 = 0;
         for (idx_t i1 = 0; i1 < 3; ++i1) {
             for (idx_t i2 = 0; i2 < 4; ++i2) {
-                float value = input0[i0][i1][i2];
-                const float prev_max = max_value;
-                max_value = ref_scalar_f32_maximum(max_value, value);
-                max_i1 = (value > prev_max) ? i1 : max_i1;
-                max_i2 = (value > prev_max) ? i2 : max_i2;
+                max_value = ref_scalar_f32_maximum(max_value, input0[i0][i1][i2]);
+            }
+        }
+        idx_t first = 3 * 4;
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
+            for (idx_t i2 = 0; i2 < 4; ++i2) {
+                const idx_t candidate = (input0[i0][i1][i2] == max_value) ? i1 * 4 + i2 : 3 * 4;
+                first = (first < candidate) ? first : candidate;
             }
         }
         for (idx_t i1 = 0; i1 < 3; ++i1) {
             for (idx_t i2 = 0; i2 < 4; ++i2) {
-                output[i0][i1][i2] = i1 == max_i1 && i2 == max_i2 ? 1.0f : 0.0f;
+                output[i0][i1][i2] = (i1 * 4 + i2 == first) ? 1.0f : 0.0f;
             }
         }
     }

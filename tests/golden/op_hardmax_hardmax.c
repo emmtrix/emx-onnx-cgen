@@ -65,15 +65,16 @@ static inline float ref_scalar_f32_maximum(float a, float b) {
 EMX_NODE_FN void node0_hardmax(const float input0[2][3], float output[2][3]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         float max_value = input0[i0][0];
-        idx_t max_index = 0;
         for (idx_t i1 = 1; i1 < 3; ++i1) {
-            float value = input0[i0][i1];
-            const float prev_max = max_value;
-            max_value = ref_scalar_f32_maximum(max_value, value);
-            max_index = (value > prev_max) ? i1 : max_index;
+            max_value = ref_scalar_f32_maximum(max_value, input0[i0][i1]);
+        }
+        idx_t first = 3;
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
+            const idx_t candidate = (input0[i0][i1] == max_value) ? i1 : 3;
+            first = (first < candidate) ? first : candidate;
         }
         for (idx_t i1 = 0; i1 < 3; ++i1) {
-            output[i0][i1] = i1 == max_index ? 1.0f : 0.0f;
+            output[i0][i1] = (i1 == first) ? 1.0f : 0.0f;
         }
     }
 }

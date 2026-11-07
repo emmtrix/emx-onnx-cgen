@@ -6315,12 +6315,12 @@ class HardmaxOp(RenderableOpBase):
             len(output_shape_exprs) if self.use_legacy_axis_semantics else axis + 1
         )
         nest = AxisLoopNest.over(output_shape_exprs, axis, reduce_end)
-        # The position of the maximum, one index per reduced axis
-        max_index_vars = (
-            ("max_index",)
-            if len(nest.reduce_vars) == 1
-            else tuple(f"max_{var}" for var in nest.reduce_vars)
+        # The row-major position within the reduced axes and their element count
+        position = " + ".join(
+            " * ".join((var, *(str(size) for size in nest.reduce_sizes[index + 1 :])))
+            for index, var in enumerate(nest.reduce_vars)
         )
+        reduce_count = " * ".join(str(size) for size in nest.reduce_sizes)
         params = emitter.shared_param_map(
             [("input0", self.input0), ("output", self.output)]
         )
@@ -6341,7 +6341,8 @@ class HardmaxOp(RenderableOpBase):
                 params=param_decls,
                 c_type=output_dtype.c_type,
                 nest=nest,
-                max_index_vars=max_index_vars,
+                position=position,
+                reduce_count=reduce_count,
                 zero_literal=zero_literal,
                 one_literal=emitter.format_literal(output_dtype, 1),
                 dtype=output_dtype,
