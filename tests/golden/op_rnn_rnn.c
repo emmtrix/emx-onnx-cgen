@@ -68,6 +68,7 @@ EMX_NODE_FN void node0_rnn(const float input_x[1][1][2], const float input_w[1][
         const int dir = 0;
         const int reverse = 0;
         float H_prev[1][3];
+        float H_next[1][3];
         for (int b = 0; b < 1; ++b) {
             for (int h = 0; h < 3; ++h) {
                 H_prev[b][h] = 0.0f;
@@ -77,7 +78,6 @@ EMX_NODE_FN void node0_rnn(const float input_x[1][1][2], const float input_w[1][
             int seq_limit = 1;
             for (int step = 0; step < seq_limit; ++step) {
                 int t = reverse ? (seq_limit - 1 - step) : step;
-                float H_next[3];
                 for (int h = 0; h < 3; ++h) {
                     float sum = 0.0f;
                     for (int i = 0; i < 2; ++i) {
@@ -88,11 +88,11 @@ EMX_NODE_FN void node0_rnn(const float input_x[1][1][2], const float input_w[1][
                         sum += H_prev[b][i] * input_r[dir][h][i];
                     }
                     float h_new = ref_scalar_f32_tanh(sum);
-                    H_next[h] = h_new;
+                    H_next[b][h] = h_new;
                     output_y[step][dir][b][h] = h_new;
                 }
                 for (int h = 0; h < 3; ++h) {
-                    H_prev[b][h] = H_next[h];
+                    H_prev[b][h] = H_next[b][h];
                 }
             }
             for (int step = seq_limit; step < 1; ++step) {
