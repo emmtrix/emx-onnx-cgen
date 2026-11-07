@@ -1,16 +1,20 @@
 {% import "axis_loops.c.j2" as axis_loops %}
+{# The diagonal offset is compared in idx_t: an offset beyond the matrix selects all or nothing,
+   so the runtime offset is clamped to [-rows, cols] first. #}
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-    int64_t k = {{ k_value }};
     {% if k_input %}
-    k = (int64_t){{ k_input }}[0];
+    const int64_t k_offset = (int64_t){{ k_input }}[0];
+    const idx_t k = (idx_t)(k_offset < -(int64_t){{ rows }} ? -(int64_t){{ rows }} : (k_offset > (int64_t){{ cols }} ? (int64_t){{ cols }} : k_offset));
+    {% else %}
+    const idx_t k = {{ k_value }};
     {% endif %}
 {% call axis_loops.loops(batch_vars, batch_sizes) %}
 for (idx_t row = 0; row < {{ rows }}; ++row) {
     for (idx_t col = 0; col < {{ cols }}; ++col) {
 {% if upper %}
-        {{ output }}{{ index }} = ((int64_t)col - (int64_t)row >= k) ? {{ input0 }}{{ index }} : {{ zero_literal }};
+        {{ output }}{{ index }} = (col - row >= k) ? {{ input0 }}{{ index }} : {{ zero_literal }};
 {% else %}
-        {{ output }}{{ index }} = ((int64_t)row - (int64_t)col >= -k) ? {{ input0 }}{{ index }} : {{ zero_literal }};
+        {{ output }}{{ index }} = (row - col >= -k) ? {{ input0 }}{{ index }} : {{ zero_literal }};
 {% endif %}
     }
 }
