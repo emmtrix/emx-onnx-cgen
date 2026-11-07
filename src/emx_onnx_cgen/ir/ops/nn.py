@@ -5417,27 +5417,58 @@ class AveragePoolOp(RenderableOpBase):
         output_shape_expr = CEmitterCompat.shape_dim_exprs(
             output_shape, output_dim_names
         )
+        spatial = slice(2, 2 + self.spatial_rank)
+        in_spatial = input_shape[spatial]
+        out_spatial = output_shape[spatial]
         if self.spatial_rank == 3:
-            in_d = input_shape_expr[2]
-            in_h = input_shape_expr[3]
-            in_w = input_shape_expr[4]
-            out_d = output_shape_expr[2]
-            out_h = output_shape_expr[3]
-            out_w = output_shape_expr[4]
+            kernel_shape = (self.kernel_d, self.kernel_h, self.kernel_w)
+            strides = (self.stride_d, self.stride_h, self.stride_w)
+            dilations = (self.dilation_d, self.dilation_h, self.dilation_w)
+            pads_begin = (self.pad_front, self.pad_top, self.pad_left)
+            pads_end = (self.pad_back, self.pad_bottom, self.pad_right)
         elif self.spatial_rank == 1:
-            in_d = self.in_d
-            in_h = self.in_h
-            in_w = input_shape_expr[2]
-            out_d = self.out_d
-            out_h = self.out_h
-            out_w = output_shape_expr[2]
+            kernel_shape = (self.kernel_w,)
+            strides = (self.stride_w,)
+            dilations = (self.dilation_w,)
+            pads_begin = (self.pad_left,)
+            pads_end = (self.pad_right,)
         else:
-            in_d = self.in_d
-            in_h = input_shape_expr[2]
-            in_w = input_shape_expr[3]
-            out_d = self.out_d
-            out_h = output_shape_expr[2]
-            out_w = output_shape_expr[3]
+            kernel_shape = (self.kernel_h, self.kernel_w)
+            strides = (self.stride_h, self.stride_w)
+            dilations = (self.dilation_h, self.dilation_w)
+            pads_begin = (self.pad_top, self.pad_left)
+            pads_end = (self.pad_bottom, self.pad_right)
+        bounds_checks = window_bounds_checks(
+            emitter,
+            self.input0,
+            self.output,
+            in_spatial,
+            out_spatial,
+            kernel_shape,
+            strides,
+            dilations,
+            pads_begin,
+        )
+        # With count_include_pad, a window position counts if it lies inside the padded input;
+        # it can only leave it at the end (ceil_mode) or with a dynamic dimension.
+        dynamic = any(index >= 2 for index in input_dim_names) or any(
+            index >= 2 for index in output_dim_names
+        )
+        pad_checks = tuple(
+            dynamic or (out - 1) * stride + (kernel - 1) * dilation - pad >= size + end
+            for size, out, kernel, stride, dilation, pad, end in zip(
+                in_spatial,
+                out_spatial,
+                kernel_shape,
+                strides,
+                dilations,
+                pads_begin,
+                pads_end,
+            )
+        )
+        kernel_size = 1
+        for kernel in kernel_shape:
+            kernel_size *= kernel
         input_suffix = emitter.param_array_suffix(input_shape, input_dim_names)
         output_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
         param_decls = emitter.build_param_decls(
@@ -5449,40 +5480,29 @@ class AveragePoolOp(RenderableOpBase):
         rendered = (
             state.templates["avg_pool"]
             .render(
-                model_name=model.name,
                 op_name=op_name,
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
                 c_type=c_type,
                 zero_literal=zero_literal,
-                input_suffix=input_suffix,
-                output_suffix=output_suffix,
                 batch=input_shape_expr[0],
                 channels=input_shape_expr[1],
                 spatial_rank=self.spatial_rank,
-                in_d=in_d,
-                in_h=in_h,
-                in_w=in_w,
-                out_d=out_d,
-                out_h=out_h,
-                out_w=out_w,
-                kernel_d=self.kernel_d,
-                kernel_h=self.kernel_h,
-                kernel_w=self.kernel_w,
-                dilation_d=self.dilation_d,
-                dilation_h=self.dilation_h,
-                dilation_w=self.dilation_w,
-                stride_d=self.stride_d,
-                stride_h=self.stride_h,
-                stride_w=self.stride_w,
-                pad_front=self.pad_front,
-                pad_top=self.pad_top,
-                pad_left=self.pad_left,
-                pad_back=self.pad_back,
-                pad_bottom=self.pad_bottom,
-                pad_right=self.pad_right,
-                count_include_pad=int(self.count_include_pad),
+                in_spatial=input_shape_expr[spatial],
+                out_spatial=output_shape_expr[spatial],
+                out_indices=tuple(f"od{dim}" for dim in range(self.spatial_rank)),
+                kernel_indices=tuple(f"kd{dim}" for dim in range(self.spatial_rank)),
+                in_indices=tuple(f"id{dim}" for dim in range(self.spatial_rank)),
+                kernel_shape=kernel_shape,
+                kernel_size=kernel_size,
+                strides=strides,
+                dilations=dilations,
+                pads_begin=pads_begin,
+                pads_end=pads_end,
+                bounds_checks=bounds_checks,
+                pad_checks=pad_checks,
+                count_include_pad=self.count_include_pad,
             )
             .rstrip()
         )

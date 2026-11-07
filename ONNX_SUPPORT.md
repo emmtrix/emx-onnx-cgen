@@ -248,7 +248,7 @@ Coverage 1914 / 1914 ONNX files (100.0%).
 | node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx (--runtime onnx-reference --test-data-inputs-only) | 22 | Data/ONNXRef | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_default/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_dilations/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_averagepool_2d_pads/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 3) |
+| node/test_averagepool_2d_pads/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_pads_count_include_pad/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_precomputed_pads/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_precomputed_pads_count_include_pad/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
@@ -257,8 +257,8 @@ Coverage 1914 / 1914 ONNX files (100.0%).
 | node/test_averagepool_2d_same_lower/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_same_upper/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_2d_strides/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_averagepool_3d_default/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_False/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_averagepool_3d_default/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 5) |
+| node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_False/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 9) |
 | node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_True/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_False/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_True/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
