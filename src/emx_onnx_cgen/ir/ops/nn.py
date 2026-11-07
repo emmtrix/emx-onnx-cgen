@@ -6041,9 +6041,7 @@ class QLinearSoftmaxOp(RenderableOpBase):
     input_shape: tuple[int, ...]
     output_shape: tuple[int, ...]
     axis: int
-    outer: int
-    axis_size: int
-    inner: int
+    use_legacy_axis_semantics: bool
     dtype: ScalarType
     input_dtype: ScalarType
     input_scale_dtype: ScalarType
@@ -6159,9 +6157,16 @@ class QLinearSoftmaxOp(RenderableOpBase):
                 output_scale_expr=f"{params['output_scale']}[0]",
                 input_zero_expr=f"{params['input_zero_point']}[0]",
                 output_zero_expr=f"{params['output_zero_point']}[0]",
-                outer=self.outer,
-                axis_size=self.axis_size,
-                inner=self.inner,
+                # The legacy semantics (opset < 13) reduce over all axes from `axis` on
+                nest=AxisLoopNest.over(
+                    self.output_shape,
+                    self.axis,
+                    (
+                        len(self.output_shape)
+                        if self.use_legacy_axis_semantics
+                        else self.axis + 1
+                    ),
+                ),
                 min_literal=self.dtype.min_literal,
                 max_literal=self.dtype.max_literal,
                 compute_dtype=compute_dtype,

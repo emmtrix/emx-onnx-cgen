@@ -93,23 +93,6 @@ def lower_qlinear_softmax(graph: Graph, node: Node) -> QLinearSoftmaxOp:
             f"is out of bounds for shape {input_shape}"
         )
 
-    if use_legacy_axis_semantics:
-        outer = 1
-        for dim in input_shape[:axis]:
-            outer *= dim
-        axis_size = 1
-        for dim in input_shape[axis:]:
-            axis_size *= dim
-        inner = 1
-    else:
-        outer = 1
-        for dim in input_shape[:axis]:
-            outer *= dim
-        axis_size = input_shape[axis]
-        inner = 1
-        for dim in input_shape[axis + 1 :]:
-            inner *= dim
-
     return QLinearSoftmaxOp(
         input0=node.inputs[0],
         input_scale=node.inputs[1],
@@ -120,9 +103,7 @@ def lower_qlinear_softmax(graph: Graph, node: Node) -> QLinearSoftmaxOp:
         input_shape=input_shape,
         output_shape=output_shape,
         axis=axis,
-        outer=outer,
-        axis_size=axis_size,
-        inner=inner,
+        use_legacy_axis_semantics=use_legacy_axis_semantics,
         dtype=output_dtype,
         input_dtype=input_dtype,
         input_scale_dtype=input_scale_dtype,

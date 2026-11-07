@@ -458,6 +458,64 @@ def _make_axis_op_model(op_type: str, opset: int) -> onnx.ModelProto:
     )
 
 
+def _make_qlinear_softmax_model(*, opset: int) -> onnx.ModelProto:
+    """QLinearSoftmax over axis 1 of a 2x3x4 tensor; `opset` selects the Softmax semantics."""
+    input_info = helper.make_tensor_value_info("in0", TensorProto.UINT8, [2, 3, 4])
+    output = helper.make_tensor_value_info("out", TensorProto.UINT8, [2, 3, 4])
+    initializers = [
+        helper.make_tensor("x_scale", TensorProto.FLOAT, dims=[], vals=[0.125]),
+        helper.make_tensor("x_zero_point", TensorProto.UINT8, dims=[], vals=[3]),
+        helper.make_tensor("y_scale", TensorProto.FLOAT, dims=[], vals=[1.0 / 256.0]),
+        helper.make_tensor("y_zero_point", TensorProto.UINT8, dims=[], vals=[0]),
+    ]
+    node = helper.make_node(
+        "QLinearSoftmax",
+        inputs=["in0", "x_scale", "x_zero_point", "y_scale", "y_zero_point"],
+        outputs=[output.name],
+        domain="com.microsoft",
+        axis=1,
+        opset=opset,
+    )
+    graph = helper.make_graph(
+        [node],
+        "qlinear_softmax_graph",
+        [input_info],
+        [output],
+        initializer=initializers,
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[
+            helper.make_operatorsetid("", 15),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+    return model
+
+
+def _make_cumprod_runtime_axis_model() -> onnx.ModelProto:
+    """CumProd whose axis is a graph input, so the kernel dispatches on it at runtime."""
+    input_info = helper.make_tensor_value_info("input", TensorProto.FLOAT, [2, 3, 4])
+    axis_info = helper.make_tensor_value_info("axis", TensorProto.INT64, [])
+    output = helper.make_tensor_value_info("output", TensorProto.FLOAT, [2, 3, 4])
+    node = helper.make_node(
+        "CumProd", ["input", "axis"], ["output"], exclusive=1, reverse=1
+    )
+    graph = helper.make_graph(
+        [node], "cumprod_runtime_axis_graph", [input_info, axis_info], [output]
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 26)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_negative_log_likelihood_loss_model() -> onnx.ModelProto:
     input_info = helper.make_tensor_value_info("input", TensorProto.FLOAT, [2, 3])
     target_info = helper.make_tensor_value_info("target", TensorProto.INT64, [2])
@@ -801,6 +859,16 @@ OP_GOLDEN_CASES = [
     ("softmax", "softmax", _make_softmax_model),
     ("softmax", "softmax_inner_axis", _make_softmax_inner_axis_model),
     ("softmax", "softmax_legacy_axis", _make_softmax_legacy_axis_model),
+    (
+        "qlinearsoftmax",
+        "qlinear_softmax_inner_axis",
+        lambda: _make_qlinear_softmax_model(opset=13),
+    ),
+    (
+        "qlinearsoftmax",
+        "qlinear_softmax_legacy_axis",
+        lambda: _make_qlinear_softmax_model(opset=11),
+    ),
     ("logsoftmax", "logsoftmax", _make_logsoftmax_model),
     (
         "logsoftmax",
@@ -970,6 +1038,7 @@ OP_GOLDEN_CASES = [
             input_shape=[2, 3], axis=1, dtype=TensorProto.FLOAT
         ),
     ),
+    ("cumprod", "cumprod_runtime_axis", _make_cumprod_runtime_axis_model),
     (
         "cumsum",
         "cumsum",
