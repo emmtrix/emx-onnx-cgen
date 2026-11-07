@@ -236,6 +236,42 @@ UPDATE_REFS=1 pytest -q --maxfail=10
 * Unclear naming: prefer descriptive names over abbreviations.
 * Tight coupling between passes and codegen or runtime internals.
 
+### Generated kernels: index arrays directly
+
+Kernel parameters are declared as multi-dimensional arrays (`const float input0[N][3][5]`).
+Kernels must index them as such, with one loop per axis:
+
+```c
+/* do */
+for (idx_t i0 = 0; i0 < N; ++i0)
+    for (idx_t i1 = 0; i1 < 3; ++i1)
+        for (idx_t i2 = 0; i2 < 5; ++i2)
+            output[i0][i1][i2] = input0[i0][i1][i2] * scale;
+
+/* don't */
+const float *input_flat = (const float *)input0;
+float *output_flat = (float *)output;
+for (idx_t idx = 0; idx < N * 3 * 5; ++idx)
+    output_flat[idx] = input_flat[idx] * scale;
+```
+
+* Do not cast tensor parameters to flat pointers, do not address elements through computed
+  linear offsets (`base + axis_idx * inner`, `idx += i * stride`), and do not recover axis
+  indices from a running linear index with `/` and `%`.
+* Why: downstream C compilers and source-level optimizers see the loop structure, the bounds
+  and the access pattern only in the nested form; a flat pointer hides them and has to be
+  reverse-engineered.
+* Dynamic dimensions are no reason to flatten: use their dimension names as loop bounds,
+  the parameters are already declared with them.
+* Kernels that reduce over a range of axes and then write every element (Softmax, LogSoftmax,
+  Hardmax, LpNormalization) use `AxisLoopNest` (`src/emx_onnx_cgen/ir/axis_loops.py`) and
+  the `loops` macro of `templates/axis_loops.c.j2`; reuse them instead of new loop code.
+* Exceptions only where ONNX itself defines a flattened view (e.g. the input of Reshape,
+  Compress/Unique without `axis`) or for sequence/string storage. Keep such a cast local and
+  comment why it is needed.
+* Existing kernels with flat pointers are legacy: convert a kernel when you change it, in a
+  separate commit with golden reference updates.
+
 ### Error handling
 
 * Prefer explicit custom exceptions:
@@ -411,7 +447,7 @@ When adding support for a new operator:
 1. **Specification:** read and understand the ONNX operator spec at
    `onnx-org/docs/Operators.md`.
 2. **Lowering:** add a `register_lowering()` handler in `src/onnx2c/lowering/` that validates shapes/dtypes and returns a new op dataclass.
-3. **Codegen:** add a new op dataclass + rendering path in `src/onnx2c/codegen/c_emitter.py` and a matching template in `templates/`.
+3. **Codegen:** add a new op dataclass + rendering path in `src/onnx2c/codegen/c_emitter.py` and a matching template in `templates/`. The kernel indexes its arrays directly, without flat pointers (see "Generated kernels: index arrays directly").
 4. **Runtime evaluator:** implement the op in `src/onnx2c/runtime/evaluator.py` for verification/constant folding.
 5. **Tests:** add at least one unit test and one ORT comparison test.
 6. **Reference updates:** refresh `tests/expected_errors/**.json` and regenerate `OFFICIAL_ONNX_FILE_SUPPORT*.md` via `UPDATE_REFS=1 pytest -q`.
