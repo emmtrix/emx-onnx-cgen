@@ -71,43 +71,32 @@ static inline float ref_scalar_f32_log(float a) {
  *   reduction: mean
  */
 EMX_NODE_FN void node0_softmaxcrossentropyloss(const float input0[2][3], const int64_t target[2], float output[1], float log_prob[2][3]) {
-    const float *input_flat = (const float *)input0;
-    const int64_t *target_flat = (const int64_t *)target;
-    float *output_flat = (float *)output;
-    float *log_prob_flat = (float *)log_prob;
-    const idx_t n = 2;
-    const idx_t c = 3;
-    const idx_t d = 1;
     float loss_sum = 0.0f;
-    for (idx_t n_idx = 0; n_idx < n; ++n_idx) {
-        for (idx_t d_idx = 0; d_idx < d; ++d_idx) {
-            idx_t target_index = n_idx * d + d_idx;
-            int64_t target_value = target_flat[target_index];
-            idx_t class_index = (idx_t)target_value;
-            idx_t base = (n_idx * c * d) + d_idx;
-            float max_value = (float)input_flat[base];
-            for (idx_t c_idx = 1; c_idx < c; ++c_idx) {
-                float value = (float)input_flat[base + c_idx * d];
-                max_value = ref_scalar_f32_maximum(max_value, value);
-            }
-            float sum = 0.0f;
-            for (idx_t c_idx = 0; c_idx < c; ++c_idx) {
-                float value = (float)input_flat[base + c_idx * d] - max_value;
-                sum += ref_scalar_f32_exp(value);
-            }
-            float logsum = ref_scalar_f32_log(sum);
-            float loss_value = 0.0f;
-            for (idx_t c_idx = 0; c_idx < c; ++c_idx) {
-                float log_prob_value = (float)input_flat[base + c_idx * d] - max_value - logsum;
-                log_prob_flat[base + c_idx * d] = (float)log_prob_value;
-                if (c_idx == class_index) {
-                    loss_value = -log_prob_value;
-                }
-            }
-            loss_sum += loss_value;
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        int64_t target_value = target[i0];
+        idx_t class_index = (idx_t)target_value;
+        float max_value = (float)input0[i0][0];
+        for (idx_t c_idx = 1; c_idx < 3; ++c_idx) {
+            float value = (float)input0[i0][c_idx];
+            max_value = ref_scalar_f32_maximum(max_value, value);
         }
+        float sum = 0.0f;
+        for (idx_t c_idx = 0; c_idx < 3; ++c_idx) {
+            float value = (float)input0[i0][c_idx] - max_value;
+            sum += ref_scalar_f32_exp(value);
+        }
+        float logsum = ref_scalar_f32_log(sum);
+        float loss_value = 0.0f;
+        for (idx_t c_idx = 0; c_idx < 3; ++c_idx) {
+            float log_prob_value = (float)input0[i0][c_idx] - max_value - logsum;
+            log_prob[i0][c_idx] = (float)log_prob_value;
+            if (c_idx == class_index) {
+                loss_value = -log_prob_value;
+            }
+        }
+        loss_sum += loss_value;
     }
-    output_flat[0] = loss_sum / (2 * 1);
+    output[0] = loss_sum / (2 * 1);
 }
 
 _Bool model_load(const char *path) {
