@@ -6366,17 +6366,20 @@ class HardmaxOp(RenderableOpBase):
         ctx.set_derived(self, "axis", axis)
 
 
-def _loss_sample_loops(input_shape: tuple[int, ...]) -> dict[str, object]:
-    """Template arguments of a loss kernel over an input `[N, C, d1, ..., dk]`: one loop per
-    sample axis (`i0` for N, `i2`... for the spatial axes); the class axis is indexed
-    explicitly."""
-    spatial_vars = tuple(f"i{axis}" for axis in range(2, len(input_shape)))
+def _loss_sample_loops(input_dims: tuple[int | str, ...]) -> dict[str, object]:
+    """Template arguments of a loss kernel over an input `[N, C, d1, ..., dk]` with the
+    dimension expressions `input_dims`: one loop per sample axis (`i0` for N, `i2`... for the
+    spatial axes); the class axis is indexed explicitly."""
+    spatial_vars = tuple(f"i{axis}" for axis in range(2, len(input_dims)))
     spatial_index = "".join(f"[{var}]" for var in spatial_vars)
+    sample_sizes = (input_dims[0], *input_dims[2:])
     return {
         "sample_vars": ("i0", *spatial_vars),
-        "sample_sizes": (input_shape[0], *input_shape[2:]),
+        "sample_sizes": sample_sizes,
+        "sample_count": " * ".join(str(size) for size in sample_sizes),
         "sample_index": f"[i0]{spatial_index}",
         "spatial_index": spatial_index,
+        "classes": input_dims[1],
     }
 
 
@@ -6424,10 +6427,16 @@ class NegativeLogLikelihoodLossOp(RenderableOpBase):
                 ("output", self.output),
             ]
         )
-        input_suffix = emitter.param_array_suffix(self.input_shape)
-        target_suffix = emitter.param_array_suffix(self.target_shape)
-        output_suffix = emitter.param_array_suffix(self.output_shape)
-        weight_suffix = f"[{self.c}]"
+        input_dim_names = emitter.dim_names_for(self.input0)
+        input_dims = CEmitterCompat.shape_dim_exprs(self.input_shape, input_dim_names)
+        input_suffix = emitter.param_array_suffix(self.input_shape, input_dim_names)
+        target_suffix = emitter.param_array_suffix(
+            self.target_shape, emitter.dim_names_for(self.target)
+        )
+        output_suffix = emitter.param_array_suffix(
+            self.output_shape, emitter.dim_names_for(self.output)
+        )
+        weight_suffix = f"[{input_dims[1]}]"
         param_decls = emitter.build_param_decls(
             [
                 (params["input0"], c_type, input_suffix, True),
@@ -6460,10 +6469,7 @@ class NegativeLogLikelihoodLossOp(RenderableOpBase):
                 input_suffix=input_suffix,
                 target_suffix=target_suffix,
                 output_suffix=output_suffix,
-                n=self.n,
-                c=self.c,
-                d=self.d,
-                **_loss_sample_loops(self.input_shape),
+                **_loss_sample_loops(input_dims),
                 reduction=self.reduction,
                 ignore_index=self.ignore_index,
                 zero_literal=zero_literal,
@@ -6535,15 +6541,23 @@ class SoftmaxCrossEntropyLossOp(RenderableOpBase):
         )
         use_ignore_index = int(self.ignore_index is not None)
         ignore_index = self.ignore_index if self.ignore_index is not None else -1
-        input_suffix = emitter.param_array_suffix(self.input_shape)
-        target_suffix = emitter.param_array_suffix(self.target_shape)
-        output_suffix = emitter.param_array_suffix(self.output_shape)
+        input_dim_names = emitter.dim_names_for(self.input0)
+        input_dims = CEmitterCompat.shape_dim_exprs(self.input_shape, input_dim_names)
+        input_suffix = emitter.param_array_suffix(self.input_shape, input_dim_names)
+        target_suffix = emitter.param_array_suffix(
+            self.target_shape, emitter.dim_names_for(self.target)
+        )
+        output_suffix = emitter.param_array_suffix(
+            self.output_shape, emitter.dim_names_for(self.output)
+        )
         log_prob_suffix = (
-            emitter.param_array_suffix(self.log_prob_shape)
+            emitter.param_array_suffix(
+                self.log_prob_shape, emitter.dim_names_for(self.log_prob)
+            )
             if self.log_prob_shape is not None
             else ""
         )
-        weight_suffix = f"[{self.c}]"
+        weight_suffix = f"[{input_dims[1]}]"
         param_decls = emitter.build_param_decls(
             [
                 (params["input0"], c_type, input_suffix, True),
@@ -6590,10 +6604,7 @@ class SoftmaxCrossEntropyLossOp(RenderableOpBase):
                 log_prob_suffix=(
                     log_prob_suffix if self.log_prob_shape is not None else None
                 ),
-                n=self.n,
-                c=self.c,
-                d=self.d,
-                **_loss_sample_loops(self.input_shape),
+                **_loss_sample_loops(input_dims),
                 reduction=self.reduction,
                 use_ignore_index=use_ignore_index,
                 ignore_index=ignore_index,

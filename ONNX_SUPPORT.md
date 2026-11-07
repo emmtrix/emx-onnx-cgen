@@ -9,7 +9,7 @@ Overview:
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1914 / 1914, 100.0% | 1.22.0 |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4313 / 4324, 99.7% | n/a |
-| [Local ONNX test coverage](#local-onnx-test-coverage) | 11 / 11, 100.0% | n/a |
+| [Local ONNX test coverage](#local-onnx-test-coverage) | 13 / 13, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
 
@@ -6277,10 +6277,11 @@ Coverage 4313 / 4324 ONNX files (99.7%).
 
 Test directory: `tests/onnx`
 
-Coverage 11 / 11 ONNX files (100.0%).
+Coverage 13 / 13 ONNX files (100.0%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
+| depth_space_loss_dynamic_batch.onnx | 13 | Random/ORT | ✅ | OK (max ULP 2) |
 | hardmax_legacy_axis_dynamic_batch.onnx | 11 | Random/ORT | ✅ | OK (max ULP 0) |
 | micro_kws_m_qdq.onnx | 15 | Random/ORT | ✅ | OK (max ULP 0) |
 | micro_kws_m_qoperator_add_shape.onnx (--replicate-ort-bugs) | 15 | Random/ORT | ✅ | OK (max ULP 0) |
@@ -6290,5 +6291,6 @@ Coverage 11 / 11 ONNX files (100.0%).
 | micro_kws_m_static_qdq.onnx | 15 | Random/ORT | ✅ | OK (max ULP 0) |
 | micro_kws_m_static_qoperator.onnx (--replicate-ort-bugs) | 15 | Random/ORT | ✅ | OK (max ULP 0) |
 | mixed_ops_dynamic_batch.onnx | 9 | Random/ORT | ✅ | OK (max ULP 0) |
+| sequence_scalar_elements.onnx | 18 | Random/ORT | ✅ | OK (max ULP 0) |
 | slice_dynamic_batch.onnx | 9 | Random/ORT | ✅ | OK (max ULP 0) |
 | trilu_dynamic_batch.onnx | 14 | Random/ORT | ✅ | OK (max ULP 0) |

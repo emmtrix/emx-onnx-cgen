@@ -1,0 +1,12 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir tests/onnx sequence_scalar_elements.onnx",
+  "verification_mode": "Random/ORT",
+  "operators": [
+    "SplitToSequence",
+    "SequenceAt",
+    "ConcatFromSequence"
+  ],
+  "opset_version": 18,
+  "generated_checksum": "9f8b9a210d9396b3f02255ff96a658176a624c23b5e3a008b2c8efddaeda680c"
+}
