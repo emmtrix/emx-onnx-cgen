@@ -2426,6 +2426,15 @@ class DropoutOp(RenderableOpBase):
         return tuple(outputs)
 
 
+def _trilu_offset(k: int, rows: int | str, cols: int | str) -> int:
+    """The constant diagonal offset of Trilu clamped to the `idx_t` range of the kernel: an offset
+    beyond the matrix selects all or nothing, like `-rows` or `cols`."""
+    if isinstance(rows, int) and isinstance(cols, int):
+        return max(-rows, min(cols, k))
+    limit = 2**31 - 1
+    return max(-limit, min(limit, k))
+
+
 @dataclass(frozen=True)
 class TriluOp(RenderableOpBase):
     __io_inputs__ = ("input0", "k_input")
@@ -2504,7 +2513,7 @@ class TriluOp(RenderableOpBase):
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
                 **_matrix_batch_loops(shape),
-                k_value=self.k_value,
+                k_value=_trilu_offset(self.k_value, shape[-2], shape[-1]),
                 upper=self.upper,
                 zero_literal=zero_literal,
             )
