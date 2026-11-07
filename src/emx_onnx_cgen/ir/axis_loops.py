@@ -1,4 +1,4 @@
-"""Loop nests for kernels that reduce over a range of axes and then write every element."""
+"""Loop nests that let generated kernels index their array parameters directly."""
 
 from __future__ import annotations
 
@@ -61,3 +61,58 @@ class AxisLoopNest:
         if len(self.reduce_vars) == 1:
             return (1,)
         return self.zero_starts
+
+
+@dataclass(frozen=True)
+class ConcatPart:
+    """One part of a tensor that is concatenated from (or split into) parts along `axis`.
+
+    The loops run over the part; the part is indexed with `part_index` (`[i0][i1][i2]`), the
+    whole tensor with `whole_index`, which shifts the axis by the sizes of the preceding parts
+    (`[i0][i1 + 3][i2]`).
+    """
+
+    loop_vars: tuple[str, ...]
+    loop_sizes: tuple[str | int, ...]
+    part_index: str
+    whole_index: str
+
+    @staticmethod
+    def along(
+        axis: int, part_shapes: Sequence[Sequence[str | int]]
+    ) -> tuple["ConcatPart | None", ...]:
+        """The parts in order; `None` for a part that is statically empty."""
+        parts: list[ConcatPart | None] = []
+        offsets: list[str | int] = []
+        for shape in part_shapes:
+            offset = _sum_expr(offsets)
+            offsets.append(shape[axis])
+            if any(dim == 0 for dim in shape):
+                parts.append(None)
+                continue
+            loop_vars = tuple(f"i{dim}" for dim in range(len(shape)))
+            parts.append(
+                ConcatPart(
+                    loop_vars=loop_vars,
+                    loop_sizes=tuple(shape),
+                    part_index="".join(f"[{var}]" for var in loop_vars),
+                    whole_index="".join(
+                        (
+                            f"[{var} + {offset}]"
+                            if dim == axis and offset != "0"
+                            else f"[{var}]"
+                        )
+                        for dim, var in enumerate(loop_vars)
+                    ),
+                )
+            )
+        return tuple(parts)
+
+
+def _sum_expr(terms: Sequence[str | int]) -> str:
+    """`terms` summed, with the static terms folded into one constant."""
+    constant = sum(term for term in terms if isinstance(term, int))
+    symbolic = [str(term) for term in terms if not isinstance(term, int)]
+    if constant or not symbolic:
+        symbolic.append(str(constant))
+    return " + ".join(symbolic)

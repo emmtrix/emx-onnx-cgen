@@ -1172,7 +1172,7 @@ class CEmitter:
                 "qembed_layer_norm": self._env.get_template(
                     "qembed_layer_norm_op.c.j2"
                 ),
-                "concat": self._env.get_template("concat_op.c.j2"),
+                "part_copy": self._env.get_template("part_copy_op.c.j2"),
                 "concat_from_sequence": self._env.get_template(
                     "concat_from_sequence_op.c.j2"
                 ),
@@ -1284,7 +1284,6 @@ class CEmitter:
                 "tree_ensemble_classifier": self._env.get_template(
                     "tree_ensemble_classifier_op.c.j2"
                 ),
-                "split": self._env.get_template("split_op.c.j2"),
                 "split_to_sequence": self._env.get_template(
                     "split_to_sequence_op.c.j2"
                 ),
