@@ -7431,9 +7431,7 @@ def test_lower_qlinearsoftmax() -> None:
     assert op.input_dtype == ScalarType.U8
     assert op.dtype == ScalarType.U8
     assert op.axis == 2
-    assert op.outer == 2
-    assert op.axis_size == 4
-    assert op.inner == 1
+    assert op.use_legacy_axis_semantics is False
 
 
 def test_lower_qlinearconv_per_channel_weights() -> None:

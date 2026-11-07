@@ -1246,8 +1246,7 @@ class CEmitter:
                     "nonmax_suppression_op.c.j2"
                 ),
                 "expand": self._env.get_template("expand_op.c.j2"),
-                "cumprod": self._env.get_template("cumprod_op.c.j2"),
-                "cumsum": self._env.get_template("cumsum_op.c.j2"),
+                "cumulative": self._env.get_template("cumulative_op.c.j2"),
                 "stft": self._env.get_template("stft_op.c.j2"),
                 "dft": self._env.get_template("dft_op.c.j2"),
                 "range": self._env.get_template("range_op.c.j2"),

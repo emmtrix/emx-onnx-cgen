@@ -4636,7 +4636,9 @@ class ExpandOp(ShapeLikeOpBase):
 
 
 @dataclass(frozen=True)
-class CumSumOp(RenderableOpBase):
+class CumulativeOpBase(RenderableOpBase):
+    """CumSum and CumProd: a running reduction along `axis`, written at every element."""
+
     __io_inputs__ = ("input0", "axis_input")
     __io_outputs__ = ("output",)
     input0: str
@@ -4645,6 +4647,9 @@ class CumSumOp(RenderableOpBase):
     output: str
     exclusive: bool
     reverse: bool
+
+    # Subclasses set `__identity__` (the start value of the running reduction) and
+    # `__accumulate_op__` (its C compound assignment)
 
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
@@ -4669,7 +4674,7 @@ class CumSumOp(RenderableOpBase):
             else "int64_t"
         )
         rendered = (
-            state.templates["cumsum"]
+            state.templates["cumulative"]
             .render(
                 model_name=model.name,
                 op_name=op_name,
@@ -4680,6 +4685,8 @@ class CumSumOp(RenderableOpBase):
                 axis_literal=self.axis,
                 output=params["output"],
                 c_type=c_type,
+                identity=self.__identity__,
+                accumulate_op=self.__accumulate_op__,
                 input_suffix=emitter.param_array_suffix(input_shape, input_dim_names),
                 output_suffix=emitter.param_array_suffix(input_shape, output_dim_names),
                 input_shape=CEmitterCompat.shape_dim_exprs(
@@ -4702,68 +4709,15 @@ class CumSumOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
-class CumProdOp(RenderableOpBase):
-    __io_inputs__ = ("input0", "axis_input")
-    __io_outputs__ = ("output",)
-    input0: str
-    axis_input: str | None
-    axis: int | None
-    output: str
-    exclusive: bool
-    reverse: bool
+class CumSumOp(CumulativeOpBase):
+    __identity__ = 0
+    __accumulate_op__ = "+="
 
-    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
-        state = emitter.require_emit_state()
-        model = state.model
-        op_name = emitter.op_function_name(model, ctx.op_index)
-        dim_args = emitter.dim_args_str()
-        output_dtype = emitter.op_output_dtype(self)
-        c_type = output_dtype.c_type
-        input_shape = emitter.ctx_shape(self.input0)
-        params = emitter.unique_param_map(
-            [
-                ("input0", self.input0),
-                ("axis_input", self.axis_input),
-                ("output", self.output),
-            ]
-        )
-        input_dim_names = emitter.dim_names_for(self.input0)
-        output_dim_names = emitter.dim_names_for(self.output)
-        axis_c_type = (
-            emitter.ctx_dtype(self.axis_input).c_type
-            if self.axis_input is not None
-            else "int64_t"
-        )
-        rendered = (
-            state.templates["cumprod"]
-            .render(
-                model_name=model.name,
-                op_name=op_name,
-                input0=params["input0"],
-                axis_input=params["axis_input"],
-                axis_c_type=axis_c_type,
-                axis_suffix=emitter.param_array_suffix(()),
-                axis_literal=self.axis,
-                output=params["output"],
-                c_type=c_type,
-                input_suffix=emitter.param_array_suffix(input_shape, input_dim_names),
-                output_suffix=emitter.param_array_suffix(input_shape, output_dim_names),
-                input_shape=CEmitterCompat.shape_dim_exprs(
-                    input_shape, input_dim_names
-                ),
-                rank=len(input_shape),
-                exclusive=self.exclusive,
-                reverse=self.reverse,
-                dim_args=dim_args,
-            )
-            .rstrip()
-        )
-        return emitter.with_node_comment(model, ctx.op_index, rendered)
 
-    def c_op_inputs(
-        self, emitter: "Emitter"
-    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
-        return ((self.input0, emitter.ctx_shape(self.input0)),)
+@dataclass(frozen=True)
+class CumProdOp(CumulativeOpBase):
+    __identity__ = 1
+    __accumulate_op__ = "*="
 
 
 @dataclass(frozen=True)

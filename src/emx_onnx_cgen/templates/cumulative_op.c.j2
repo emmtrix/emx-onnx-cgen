@@ -6,7 +6,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ i
     for (idx_t {{ loop_vars[dim_index] }} = 0; {{ loop_vars[dim_index] }} < {{ input_shape[dim_index] }}; ++{{ loop_vars[dim_index] }}) {
 {% set ns.opened_loops = ns.opened_loops + 1 %}
 {% endfor %}
-        {{ c_type }} acc = ({{ c_type }})0;
+        {{ c_type }} acc = ({{ c_type }}){{ identity }};
 {% if reverse %}
         for (idx_t axis_offset = 0; axis_offset < {{ input_shape[axis_case] }}; ++axis_offset) {
             idx_t {{ loop_vars[axis_case] }} = {{ input_shape[axis_case] }} - 1 - axis_offset;
@@ -15,9 +15,9 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ i
 {% endif %}
 {% if exclusive %}
             {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = acc;
-            acc += {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %};
+            acc {{ accumulate_op }} {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %};
 {% else %}
-            acc += {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %};
+            acc {{ accumulate_op }} {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %};
             {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = acc;
 {% endif %}
         }
@@ -40,7 +40,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ i
         for (idx_t {{ loop_vars[dim_index] }} = 0; {{ loop_vars[dim_index] }} < {{ input_shape[dim_index] }}; ++{{ loop_vars[dim_index] }}) {
 {% set ns.opened_loops = ns.opened_loops + 1 %}
 {% endfor %}
-            {{ c_type }} acc = ({{ c_type }})0;
+            {{ c_type }} acc = ({{ c_type }}){{ identity }};
 {% if reverse %}
             for (idx_t axis_offset = 0; axis_offset < {{ input_shape[axis_case] }}; ++axis_offset) {
                 idx_t {{ loop_vars[axis_case] }} = {{ input_shape[axis_case] }} - 1 - axis_offset;
@@ -49,9 +49,9 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ i
 {% endif %}
 {% if exclusive %}
                 {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = acc;
-                acc += {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %};
+                acc {{ accumulate_op }} {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %};
 {% else %}
-                acc += {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %};
+                acc {{ accumulate_op }} {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %};
                 {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = acc;
 {% endif %}
             }
