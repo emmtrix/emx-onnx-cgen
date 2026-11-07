@@ -1,0 +1,12 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir tests/onnx ms_qdq_untyped_intermediates.onnx",
+  "verification_mode": "Random/ORT",
+  "operators": [
+    "com.microsoft.QuantizeLinear",
+    "com.microsoft.DequantizeLinear",
+    "Add"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "30b3aa0c79d961e403f150046f5c8746730b20e60acdaad47ddf4153fb80f01c"
+}
