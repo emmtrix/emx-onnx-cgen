@@ -819,6 +819,11 @@ OP_GOLDEN_CASES = [
         lambda: _make_axis_op_model("Hardmax", opset=13),
     ),
     (
+        "hardmax",
+        "hardmax_legacy_axis",
+        lambda: _make_axis_op_model("Hardmax", opset=11),
+    ),
+    (
         "negativeloglikelihoodloss",
         "negative_log_likelihood_loss",
         _make_negative_log_likelihood_loss_model,

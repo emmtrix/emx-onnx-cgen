@@ -1,17 +1,20 @@
 {% import "axis_loops.c.j2" as axis_loops %}
-{% set axis_var = nest.reduce_vars[0] %}
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% call axis_loops.loops(nest.loop_vars, nest.loop_sizes) %}
 {{ c_type }} max_value = {{ input0 }}{{ nest.first_index }};
-idx_t max_index = 0;
+{% for max_var in max_index_vars %}
+idx_t {{ max_var }} = 0;
+{% endfor %}
 {% call axis_loops.loops(nest.reduce_vars, nest.reduce_sizes, nest.after_first_starts) %}
 {{ c_type }} value = {{ input0 }}{{ nest.index }};
 const {{ c_type }} prev_max = max_value;
 max_value = {{ scalar_fn(SF.MAXIMUM, dtype) }}(max_value, value);
-max_index = (value > prev_max) ? {{ axis_var }} : max_index;
+{% for max_var in max_index_vars %}
+{{ max_var }} = (value > prev_max) ? {{ nest.reduce_vars[loop.index0] }} : {{ max_var }};
+{% endfor %}
 {% endcall %}
 {% call axis_loops.loops(nest.reduce_vars, nest.reduce_sizes) %}
-{{ output }}{{ nest.index }} = {{ axis_var }} == max_index ? {{ one_literal }} : {{ zero_literal }};
+{{ output }}{{ nest.index }} = {% for max_var in max_index_vars %}{{ nest.reduce_vars[loop.index0] }} == {{ max_var }}{% if not loop.last %} && {% endif %}{% endfor %} ? {{ one_literal }} : {{ zero_literal }};
 {% endcall %}
 {% endcall %}
 }
