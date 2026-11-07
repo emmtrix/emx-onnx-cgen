@@ -5978,9 +5978,7 @@ class SoftmaxOp(RenderableOpBase):
         nested = (
             not emitter.dim_names_for(self.input0)
             and not output_dim_names
-            and (
-                not self.use_legacy_axis_semantics or axis == rank - 1
-            )
+            and (not self.use_legacy_axis_semantics or axis == rank - 1)
         )
         loop_vars = [f"i{dim}" for dim in range(rank) if dim != axis]
         loop_sizes = [output_shape[dim] for dim in range(rank) if dim != axis]
