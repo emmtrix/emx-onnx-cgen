@@ -1,31 +1,18 @@
+{% import "axis_loops.c.j2" as axis_loops %}
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-{% macro reduce_loops(starts) %}
-{% for var in reduce_vars %}
-for (idx_t {{ var }} = {{ starts[loop.index0] }}; {{ var }} < {{ reduce_sizes[loop.index0] }}; ++{{ var }}) {
-{% endfor %}
-{{ caller() | trim }}
-{% for _ in reduce_vars %}
-}
-{% endfor %}
-{% endmacro %}
-{% set zero_starts = [0] * (reduce_vars | length) %}
-{% for var in loop_vars %}
-for (idx_t {{ var }} = 0; {{ var }} < {{ loop_sizes[loop.index0] }}; ++{{ var }}) {
-{% endfor %}
-{{ c_type }} max_value = {{ input0 }}{{ first_index }};
-{% call reduce_loops(max_starts) %}
-max_value = {{ scalar_fn(SF.MAXIMUM, dtype) }}(max_value, {{ input0 }}{{ index }});
+{% call axis_loops.loops(nest.loop_vars, nest.loop_sizes) %}
+{{ c_type }} max_value = {{ input0 }}{{ nest.first_index }};
+{% call axis_loops.loops(nest.reduce_vars, nest.reduce_sizes, nest.after_first_starts) %}
+max_value = {{ scalar_fn(SF.MAXIMUM, dtype) }}(max_value, {{ input0 }}{{ nest.index }});
 {% endcall %}
 {{ c_type }} sum = 0;
-{% call reduce_loops(zero_starts) %}
-{{ c_type }} value = {{ scalar_fn(SF.EXP, dtype) }}({{ input0 }}{{ index }} - max_value);
-{{ output }}{{ index }} = value;
+{% call axis_loops.loops(nest.reduce_vars, nest.reduce_sizes) %}
+{{ c_type }} value = {{ scalar_fn(SF.EXP, dtype) }}({{ input0 }}{{ nest.index }} - max_value);
+{{ output }}{{ nest.index }} = value;
 sum += value;
 {% endcall %}
-{% call reduce_loops(zero_starts) %}
-{{ output }}{{ index }} /= sum;
+{% call axis_loops.loops(nest.reduce_vars, nest.reduce_sizes) %}
+{{ output }}{{ nest.index }} /= sum;
 {% endcall %}
-{% for _ in loop_vars %}
-}
-{% endfor %}
+{% endcall %}
 }
