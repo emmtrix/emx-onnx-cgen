@@ -1,7 +1,4 @@
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-    const {{ c_type }} *input_data = (const {{ c_type }} *){{ input0 }};
-    {{ c_type }} *output_data = ({{ c_type }} *){{ output }};
-    idx_t output_index = 0;
     for (idx_t n = 0; n < {{ batch }}; ++n) {
         for (idx_t c_out = 0; c_out < {{ out_channels }}; ++c_out) {
             idx_t c_in = c_out % {{ in_channels }};
@@ -12,9 +9,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                 idx_t h_in = h_out * {{ blocksize }} + offset_h;
                 for (idx_t w_out = 0; w_out < {{ out_w }}; ++w_out) {
                     idx_t w_in = w_out * {{ blocksize }} + offset_w;
-                    idx_t input_index = ((n * {{ in_channels }} + c_in) * {{ in_h }} + h_in) * {{ in_w }} + w_in;
-                    output_data[output_index] = input_data[input_index];
-                    output_index++;
+                    {{ output }}[n][c_out][h_out][w_out] = {{ input0 }}[n][c_in][h_in][w_in];
                 }
             }
         }

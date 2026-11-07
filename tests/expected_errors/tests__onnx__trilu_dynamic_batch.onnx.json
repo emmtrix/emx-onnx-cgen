@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir tests/onnx trilu_dynamic_batch.onnx",
+  "verification_mode": "Random/ORT",
+  "operators": [
+    "Trilu"
+  ],
+  "opset_version": 14,
+  "generated_checksum": "47037eae3a5ae884c77118c5d7eca3d3370cefa8a3e1ba70997b65273cf89ecb"
+}

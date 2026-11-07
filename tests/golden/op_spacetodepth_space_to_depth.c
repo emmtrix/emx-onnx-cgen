@@ -57,9 +57,6 @@
  *   blocksize: 2
  */
 EMX_NODE_FN void node0_spacetodepth(const float input0[1][1][4][4], float output[1][4][2][2]) {
-    const float *input_data = (const float *)input0;
-    float *output_data = (float *)output;
-    idx_t output_index = 0;
     for (idx_t n = 0; n < 1; ++n) {
         for (idx_t c_out = 0; c_out < 4; ++c_out) {
             idx_t c_in = c_out % 1;
@@ -70,9 +67,7 @@ EMX_NODE_FN void node0_spacetodepth(const float input0[1][1][4][4], float output
                 idx_t h_in = h_out * 2 + offset_h;
                 for (idx_t w_out = 0; w_out < 2; ++w_out) {
                     idx_t w_in = w_out * 2 + offset_w;
-                    idx_t input_index = ((n * 1 + c_in) * 4 + h_in) * 4 + w_in;
-                    output_data[output_index] = input_data[input_index];
-                    output_index++;
+                    output[n][c_out][h_out][w_out] = input0[n][c_in][h_in][w_in];
                 }
             }
         }
