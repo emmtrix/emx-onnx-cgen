@@ -264,7 +264,7 @@ for (idx_t idx = 0; idx < N * 3 * 5; ++idx)
 * Dynamic dimensions are no reason to flatten: use their dimension names as loop bounds,
   the parameters are already declared with them.
 * Kernels that reduce over a range of axes and then write every element (Softmax, LogSoftmax,
-  Hardmax, LpNormalization) use `AxisLoopNest` (`src/emx_onnx_cgen/ir/axis_loops.py`) and
+  QLinearSoftmax, Hardmax, LpNormalization) use `AxisLoopNest` (`src/emx_onnx_cgen/ir/axis_loops.py`) and
   the `loops` macro of `templates/axis_loops.c.j2`; reuse them instead of new loop code.
 * Exceptions only where ONNX itself defines a flattened view (e.g. the input of Reshape,
   Compress/Unique without `axis`) or for sequence/string storage. Keep such a cast local and
