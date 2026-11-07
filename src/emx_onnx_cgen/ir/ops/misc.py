@@ -12,6 +12,7 @@ from shared.scalar_types import ScalarType
 
 from ...errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from ..model import SequenceType
+from ..axis_loops import ConcatPart
 from ..op_base import (
     CEmitterCompat,
     EmitContext,
@@ -644,9 +645,6 @@ class ConcatOp(RenderableOpBase):
     output: str
     axis: int
 
-    def required_includes(self, ctx: OpContext) -> set[str]:
-        return {"#include <string.h>"}
-
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -665,12 +663,21 @@ class ConcatOp(RenderableOpBase):
         if axis < 0:
             axis += len(output_shape)
         output_dim_names = emitter.dim_names_for(self.output)
-        output_shape_exprs = CEmitterCompat.shape_dim_exprs(
-            output_shape, output_dim_names
+        parts = ConcatPart.along(
+            axis,
+            [
+                CEmitterCompat.shape_dim_exprs(shape, emitter.dim_names_for(onnx_name))
+                for shape, onnx_name in zip(input_shapes, self.inputs)
+            ],
         )
-        loop_vars = CEmitterCompat.loop_vars(output_shape)[:axis]
-        copies = self._copy_specs(
-            emitter, input_names, input_shapes, params["output"], axis, loop_vars
+        copies = tuple(
+            {
+                "part": part,
+                "target": f"{params['output']}{part.whole_index}",
+                "source": f"{name}{part.part_index}",
+            }
+            for name, part in zip(input_names, parts)
+            if part is not None
         )
         input_suffixes = tuple(
             emitter.param_array_suffix(shape, emitter.dim_names_for(name))
@@ -687,82 +694,16 @@ class ConcatOp(RenderableOpBase):
             ]
         )
         rendered = (
-            state.templates["concat"]
+            state.templates["part_copy"]
             .render(
                 op_name=op_name,
                 params=param_decls,
-                c_type=c_type,
                 copies=copies,
-                outer_shape=output_shape_exprs[:axis],
-                loop_vars=loop_vars,
                 dim_args=emitter.dim_args_str(),
             )
             .rstrip()
         )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
-
-    def _copy_specs(
-        self,
-        emitter: Emitter,
-        input_names: tuple[str, ...],
-        input_shapes: tuple[tuple[int, ...], ...],
-        output_name: str,
-        axis: int,
-        outer_vars: tuple[str, ...],
-    ) -> tuple[dict[str, object], ...]:
-        """One contiguous copy per input and outer index.
-
-        Source and destination addresses are formed by indexing the array
-        parameters directly instead of collecting the inputs in a pointer
-        table, so no parameter pointer escapes into local storage. Copies of
-        a single element are emitted as plain assignments, empty copies are
-        omitted, and everything else (including dynamic sizes) uses memcpy.
-        """
-        outer_indices = "".join(f"[{var}]" for var in outer_vars)
-        copies: list[dict[str, object]] = []
-        axis_offset: list[str] = []
-        for name, onnx_name, shape in zip(input_names, self.inputs, input_shapes):
-            shape_exprs = CEmitterCompat.shape_dim_exprs(
-                shape, emitter.dim_names_for(onnx_name)
-            )
-            offset_expr = self._sum_expr(axis_offset)
-            axis_offset.append(str(shape_exprs[axis]))
-            copy_dims = shape_exprs[axis:]
-            static_count = (
-                math.prod(copy_dims)
-                if all(isinstance(dim, int) for dim in copy_dims)
-                else None
-            )
-            if static_count == 0:
-                continue
-            output_target = f"{output_name}{outer_indices}[{offset_expr}]"
-            if static_count == 1:
-                trailing_zeros = "[0]" * (len(copy_dims) - 1)
-                copies.append(
-                    {
-                        "assign": True,
-                        "output_expr": f"{output_target}{trailing_zeros}",
-                        "input_expr": f"{name}{outer_indices}[0]{trailing_zeros}",
-                    }
-                )
-                continue
-            copies.append(
-                {
-                    "assign": False,
-                    "input_ptr": f"{name}{outer_indices}",
-                    "output_ptr": f"&{output_target}",
-                    "elem_count": CEmitterCompat.element_count_expr(copy_dims),
-                }
-            )
-        return tuple(copies)
-
-    @staticmethod
-    def _sum_expr(terms: list[str]) -> str:
-        constant = sum(int(term) for term in terms if term.isdigit())
-        symbolic = [term for term in terms if not term.isdigit()]
-        if constant or not symbolic:
-            symbolic.append(str(constant))
-        return " + ".join(symbolic)
 
 
 @dataclass(frozen=True)
@@ -824,10 +765,6 @@ class QLinearConcatOp(RenderableOpBase):
         params = emitter.shared_param_map(param_map_entries)
 
         output_shape = self.output_shape
-        axis = self.axis
-        outer = CEmitterCompat.element_count(output_shape[:axis] or (1,))
-        inner = CEmitterCompat.element_count(output_shape[axis + 1 :] or (1,))
-        axis_sizes = tuple(shape[axis] for shape in self.input_shapes)
 
         param_decls_list = [
             (
@@ -918,26 +855,34 @@ class QLinearConcatOp(RenderableOpBase):
             () if self.output_zero_dtype_match else (params["output_zero_point"],)
         )
         output_name = params["output"]
-
+        copies = tuple(
+            {
+                "part": part,
+                "input": name,
+                "scale_expr": scale_expr,
+                "zero_expr": zero_expr,
+            }
+            for part, name, scale_expr, zero_expr in zip(
+                ConcatPart.along(self.axis, self.input_shapes),
+                input_names,
+                input_scale_exprs,
+                input_zero_exprs,
+            )
+            if part is not None
+        )
         rendered = (
             state.templates["qlinear_concat"]
             .render(
                 model_name=model.name,
                 op_name=op_name,
-                input_names=input_names,
+                copies=copies,
                 output_name=output_name,
                 params=param_decls,
                 compute_type=compute_type,
                 output_c_type=self.dtype.c_type,
                 y_scale_expr=y_scale_expr,
                 y_zero_expr=y_zero_expr,
-                input_scale_exprs=input_scale_exprs,
-                input_zero_exprs=input_zero_exprs,
                 unused_zero_params=unused_zero_params + unused_y_zero_param,
-                axis_sizes=axis_sizes,
-                input_count=n,
-                outer=outer,
-                inner=inner,
                 compute_dtype=compute_dtype,
                 min_literal=self.dtype.min_literal,
                 max_literal=self.dtype.max_literal,
@@ -6972,9 +6917,6 @@ class SplitOp(RenderableOpBase):
     axis: int
     split_sizes: tuple[int, ...]
 
-    def required_includes(self, ctx: OpContext) -> set[str]:
-        return {"#include <string.h>"}
-
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
         model = state.model
@@ -6995,12 +6937,22 @@ class SplitOp(RenderableOpBase):
             emitter.param_array_suffix(shape, emitter.dim_names_for(name))
             for name, shape in zip(output_names, output_shapes)
         )
-        outer = 1
-        for dim in input_shape[: self.axis]:
-            outer *= dim
-        inner = 1
-        for dim in input_shape[self.axis + 1 :]:
-            inner *= dim
+        parts = ConcatPart.along(
+            self.axis,
+            [
+                CEmitterCompat.shape_dim_exprs(shape, emitter.dim_names_for(onnx_name))
+                for shape, onnx_name in zip(output_shapes, self.outputs)
+            ],
+        )
+        copies = tuple(
+            {
+                "part": part,
+                "target": f"{name}{part.part_index}",
+                "source": f"{params['input0']}{part.whole_index}",
+            }
+            for name, part in zip(output_names, parts)
+            if part is not None
+        )
         input_suffix = emitter.param_array_suffix(
             input_shape, emitter.dim_names_for(self.input0)
         )
@@ -7014,21 +6966,12 @@ class SplitOp(RenderableOpBase):
             ]
         )
         rendered = (
-            state.templates["split"]
+            state.templates["part_copy"]
             .render(
-                model_name=model.name,
                 op_name=op_name,
-                input0=params["input0"],
-                outputs=output_names,
                 params=param_decls,
-                output_suffixes=output_suffixes,
-                c_type=c_type,
-                input_suffix=input_suffix,
-                axis_sizes=self.split_sizes,
-                axis_total=input_shape[self.axis],
-                outer=outer,
-                inner=inner,
-                output_count=len(output_names),
+                copies=copies,
+                dim_args=emitter.dim_args_str(),
             )
             .rstrip()
         )
@@ -7043,6 +6986,10 @@ class SplitOp(RenderableOpBase):
         )
 
 
+def _without(values: tuple, index: int) -> tuple:
+    return (*values[:index], *values[index + 1 :])
+
+
 @dataclass(frozen=True)
 class SplitToSequenceOp(RenderableOpBase):
     __io_inputs__ = ("input0", "split")
@@ -7054,9 +7001,6 @@ class SplitToSequenceOp(RenderableOpBase):
     keepdims: bool
     split_sizes: tuple[int, ...] | None
     split_scalar: bool
-
-    def required_includes(self, ctx: OpContext) -> set[str]:
-        return {"#include <string.h>"}
 
     def call_args(self) -> tuple[str, ...]:
         args = [self.input0]
@@ -7094,9 +7038,6 @@ class SplitToSequenceOp(RenderableOpBase):
         )
         input_shape_expr = CEmitterCompat.shape_dim_exprs(
             input_shape, emitter.dim_names_for(self.input0)
-        )
-        output_shape_expr = CEmitterCompat.shape_dim_exprs(
-            storage_shape, emitter.dim_names_for(self.output_sequence)
         )
         dynamic_output_axes = emitter.sequence_dynamic_axes(self.output_sequence)
         param_specs = [
@@ -7136,8 +7077,26 @@ class SplitToSequenceOp(RenderableOpBase):
             ]
         )
         param_decls = emitter.build_param_decls(param_specs)
-        outer = CEmitterCompat.element_count_expr(input_shape_expr[: self.axis])
-        inner = CEmitterCompat.element_count_expr(input_shape_expr[self.axis + 1 :])
+        # One loop per input axis; the split axis runs over the current chunk, which starts
+        # at `axis_offset` in the input. Without keepdims, the chunk is one slice and the
+        # element has no split axis.
+        input_vars = tuple(f"i{axis}" for axis in range(len(input_shape)))
+        axis_var = input_vars[self.axis]
+        loop_vars = input_vars if self.keepdims else _without(input_vars, self.axis)
+        loop_sizes = tuple(input_shape_expr[axis] for axis in range(len(input_shape)))
+        loop_sizes = (
+            (*loop_sizes[: self.axis], "chunk", *loop_sizes[self.axis + 1 :])
+            if self.keepdims
+            else _without(loop_sizes, self.axis)
+        )
+        input_index = "".join(
+            (
+                (f"[{axis_var} + axis_offset]" if self.keepdims else "[axis_offset]")
+                if axis == self.axis
+                else f"[{var}]"
+            )
+            for axis, var in enumerate(input_vars)
+        )
         split_len = (
             emitter.ctx_shape(self.split)[0]
             if self.split is not None and len(emitter.ctx_shape(self.split)) == 1
@@ -7161,12 +7120,10 @@ class SplitToSequenceOp(RenderableOpBase):
                 axis_sizes=self.split_sizes,
                 output_sequence=params["output_sequence"],
                 axis_total=input_shape_expr[self.axis],
-                outer=outer,
-                inner=inner,
-                keepdims=self.keepdims,
-                output_axis_capacity=(
-                    output_shape_expr[self.axis] if self.keepdims else 1
-                ),
+                loop_vars=loop_vars,
+                loop_sizes=loop_sizes,
+                input_index=input_index,
+                output_index="".join(f"[{var}]" for var in loop_vars),
                 output_dim_arrays=tuple(
                     {
                         "axis": axis,
@@ -7338,14 +7295,19 @@ class ConcatFromSequenceOp(RenderableOpBase):
                 (params["output"], c_type, output_suffix, False),
             ]
         )
+        elem_sizes = CEmitterCompat.shape_dim_exprs(
+            elem_shape, emitter.dim_names_for(self.input_sequence)
+        )
+        elem_vars = tuple(f"i{axis}" for axis in range(len(elem_shape)))
         if self.new_axis:
-            outer = CEmitterCompat.element_count(elem_shape[: self.axis] or (1,))
-            inner = CEmitterCompat.element_count(elem_shape[self.axis :] or (1,))
-            axis_extent = 1
+            # The sequence index becomes a new output axis at `axis`
+            output_vars = (*elem_vars[: self.axis], "seq_idx", *elem_vars[self.axis :])
         else:
-            outer = CEmitterCompat.element_count(elem_shape[: self.axis] or (1,))
-            inner = CEmitterCompat.element_count(elem_shape[self.axis + 1 :] or (1,))
-            axis_extent = elem_shape[self.axis]
+            # The elements are concatenated along `axis`
+            output_vars = tuple(
+                (f"seq_idx * {elem_sizes[axis]} + {var}" if axis == self.axis else var)
+                for axis, var in enumerate(elem_vars)
+            )
         rendered = (
             state.templates["concat_from_sequence"]
             .render(
@@ -7354,11 +7316,10 @@ class ConcatFromSequenceOp(RenderableOpBase):
                 params=param_decls,
                 input_sequence=params["input_sequence"],
                 output=params["output"],
-                c_type=c_type,
-                outer=outer,
-                inner=inner,
-                axis_extent=axis_extent,
-                new_axis=self.new_axis,
+                elem_vars=elem_vars,
+                elem_sizes=elem_sizes,
+                elem_index="".join(f"[{var}]" for var in elem_vars),
+                output_index="".join(f"[{var}]" for var in output_vars),
             )
             .rstrip()
         )

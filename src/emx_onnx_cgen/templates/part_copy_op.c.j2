@@ -1,0 +1,10 @@
+{# Concat and Split: every part of the axis is copied element by element between the whole
+   tensor and its part. #}
+{% import "axis_loops.c.j2" as axis_loops %}
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% for copy in copies %}
+{% call axis_loops.loops(copy.part.loop_vars, copy.part.loop_sizes) %}
+{{ copy.target }} = {{ copy.source }};
+{% endcall %}
+{% endfor %}
+}
