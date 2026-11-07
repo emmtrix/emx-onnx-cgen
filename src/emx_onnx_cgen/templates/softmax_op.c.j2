@@ -1,4 +1,25 @@
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% if nested %}
+{% for var in loop_vars %}
+for (idx_t {{ var }} = 0; {{ var }} < {{ loop_sizes[loop.index0] }}; ++{{ var }}) {
+{% endfor %}
+{{ c_type }} max_value = {{ input0 }}{{ first_index }};
+for (idx_t axis_idx = 1; axis_idx < {{ axis_size }}; ++axis_idx) {
+max_value = {{ scalar_fn(SF.MAXIMUM, dtype) }}(max_value, {{ input0 }}{{ axis_index }});
+}
+{{ c_type }} sum = 0;
+for (idx_t axis_idx = 0; axis_idx < {{ axis_size }}; ++axis_idx) {
+{{ c_type }} value = {{ scalar_fn(SF.EXP, dtype) }}({{ input0 }}{{ axis_index }} - max_value);
+{{ output }}{{ axis_index }} = value;
+sum += value;
+}
+for (idx_t axis_idx = 0; axis_idx < {{ axis_size }}; ++axis_idx) {
+{{ output }}{{ axis_index }} /= sum;
+}
+{% for _ in loop_vars %}
+}
+{% endfor %}
+{% else %}
     const {{ c_type }} *input_flat = (const {{ c_type }} *){{ input0 }};
     {{ c_type }} *output_flat = ({{ c_type }} *){{ output }};
     const idx_t outer = {{ outer }};
@@ -23,4 +44,5 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             }
         }
     }
+{% endif %}
 }
