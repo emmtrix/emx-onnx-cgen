@@ -22,7 +22,6 @@ from .ir.model import (
     ValueType,
 )
 
-
 _UNKNOWN_DIM = -1
 
 
@@ -2159,14 +2158,24 @@ def _canonicalize_ms_qdq_nodes(model: onnx.ModelProto) -> None:
     """Move ``com.microsoft`` Q/DQ nodes into the default domain.
 
     The contrib ops share the standard ops' signature, but ONNX shape inference
-    has no schema for them and would leave their outputs untyped.
+    has no schema for them and would leave their outputs untyped. Subgraphs
+    (If/Loop/Scan bodies) are rewritten too, since inference recurses into them.
     """
     opset = _onnx_opset_version(model)
     if opset is None or opset < 10:
         return
-    for node in model.graph.node:
+    _canonicalize_ms_qdq_graph(model.graph)
+
+
+def _canonicalize_ms_qdq_graph(graph: onnx.GraphProto) -> None:
+    for node in graph.node:
         if node.domain == "com.microsoft" and node.op_type in _MS_QDQ_OP_TYPES:
             node.domain = ""
+        for attr in node.attribute:
+            if attr.HasField("g"):
+                _canonicalize_ms_qdq_graph(attr.g)
+            for sub_graph in attr.graphs:
+                _canonicalize_ms_qdq_graph(sub_graph)
 
 
 def prepare_onnx_model(model: onnx.ModelProto) -> onnx.ModelProto:
