@@ -583,3 +583,79 @@ def test_scan_expansion_uses_attribute_slice_for_legacy_opset() -> None:
     # Opset 9 Slice still carries starts/ends/axes as attributes.
     assert all(len(node.input) == 1 for node in slices)
     assert all(node.attribute for node in slices)
+
+
+def _ms_qdq_nodes(prefix: str) -> list[onnx.NodeProto]:
+    scale_zp = [f"{prefix}scale", f"{prefix}zp"]
+    return [
+        helper.make_node(
+            "QuantizeLinear",
+            ["x", *scale_zp],
+            [f"{prefix}q"],
+            domain="com.microsoft",
+        ),
+        helper.make_node(
+            "DequantizeLinear",
+            [f"{prefix}q", *scale_zp],
+            [f"{prefix}y"],
+            domain="com.microsoft",
+        ),
+    ]
+
+
+def test_prepare_onnx_model_canonicalizes_ms_qdq_in_subgraphs() -> None:
+    def branch(name: str) -> onnx.GraphProto:
+        return helper.make_graph(
+            _ms_qdq_nodes(f"{name}_"),
+            name,
+            [],
+            [helper.make_tensor_value_info(f"{name}_y", TensorProto.FLOAT, None)],
+            [
+                helper.make_tensor(f"{name}_scale", TensorProto.FLOAT, [], [0.5]),
+                helper.make_tensor(f"{name}_zp", TensorProto.UINT8, [], [3]),
+            ],
+        )
+
+    if_node = helper.make_node(
+        "If",
+        ["c"],
+        ["y"],
+        then_branch=branch("then"),
+        else_branch=branch("else"),
+    )
+    graph = helper.make_graph(
+        [if_node],
+        "ms_qdq_if",
+        [
+            helper.make_tensor_value_info("x", TensorProto.FLOAT, [2, 3]),
+            helper.make_tensor_value_info("c", TensorProto.BOOL, []),
+        ],
+        [helper.make_tensor_value_info("y", TensorProto.FLOAT, [2, 3])],
+    )
+    model = helper.make_model(
+        graph,
+        opset_imports=[
+            helper.make_operatorsetid("", 13),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+
+    prepared = prepare_onnx_model(model)
+
+    # If expansion inlines both branches into the main graph; inference must
+    # have typed their quantized intermediates.
+    dtypes = {
+        info.name: info.type.tensor_type.elem_type for info in prepared.graph.value_info
+    }
+    quantize_outputs = [
+        node.output[0]
+        for node in prepared.graph.node
+        if node.op_type == "QuantizeLinear"
+    ]
+    assert len(quantize_outputs) == 2
+    assert {node.domain for node in prepared.graph.node} == {""}
+    assert all(dtypes.get(name) == TensorProto.UINT8 for name in quantize_outputs)
+    # The caller's model must stay untouched.
+    original_branch = model.graph.node[0].attribute[0].g
+    assert {node.domain for node in original_branch.node} == {"com.microsoft"}

@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir tests/onnx ms_qdq_in_if_branch.onnx",
+  "verification_mode": "Random/ORT",
+  "operators": [
+    "If"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "0a84e110e0910a8343ae7bb1192ada55b17dbdd3ae9024f0237c59defc6c7ba5"
+}
