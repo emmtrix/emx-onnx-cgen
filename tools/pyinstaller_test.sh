@@ -21,9 +21,9 @@ python "${repo_root}/tools/pyinstaller_build.py" \
   --specpath "${spec_dir}"
 
 "${dist_dir}/emx-onnx-cgen/emx-onnx-cgen" --help >/dev/null
-compile_output="${tmp_dir}/single_relu.c"
+compile_output="${tmp_dir}/micro_kws_m_static_fp32.c"
 "${dist_dir}/emx-onnx-cgen/emx-onnx-cgen" compile \
-  "${repo_root}/onnx-org/examples/resources/single_relu.onnx" \
+  "${repo_root}/tests/onnx/micro_kws_m_static_fp32.onnx" \
   "${compile_output}"
 test -s "${compile_output}"
 

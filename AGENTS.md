@@ -436,15 +436,21 @@ When acting as an agent in this repo:
     make `compile` or `verify` read `input_*.pb` files for code generation.
     Models that require representative inputs to resolve dynamic shapes should
     fail with a clear error and must be re-exported with static shapes.
-12. To find operator specifications within this repository, prefer:
-    * `onnx-org/docs/Operators.md` for the current consolidated operator docs.
-    * `onnx-org/docs/Changelog.md` for versioned operator specs (e.g., Slice-13).
-    * `onnx-org/onnx/defs/**/defs.cc` or `onnx-org/onnx/defs/**/old.cc` for the
-      schema source and historical documentation strings.
-    * Use ripgrep (`rg -n "<OpName>" onnx-org`) to locate the relevant sections.
+12. Operator specifications come from the installed onnx package (pinned in
+    `requirements-ci.txt`). `<onnx>` below is its directory, printed by
+    `python -c "import onnx, pathlib; print(pathlib.Path(onnx.__file__).parent)"`
+    (e.g. `.venv/Lib/site-packages/onnx` on Windows). Prefer:
+    * `python tools/onnx_op_spec.py <OpName>` for the current operator spec
+      (doc, inputs, outputs, attributes, type constraints).
+    * `python tools/onnx_op_spec.py <OpName> --all-versions` for versioned
+      operator specs (e.g., Slice-13).
+    * `<onnx>/defs/**/defs.cc` or `<onnx>/defs/**/old.cc` for the schema source
+      and historical documentation strings.
+    * `<onnx>/reference/ops/` for the numpy reference implementations.
+    * Use ripgrep (`rg -n "<OpName>" <onnx>/defs`) to locate the relevant sections.
 13. When implementing min/max selection in templates, use scalar min/max helpers
     from the scalar function registry instead of `if`-based comparisons.
-14. Do not modify `onnx-org/` or any other submodule contents.
+14. Do not modify submodule contents or the installed onnx package.
 15. After creating or updating a pull request, re-check the PR title and
     description for accuracy and completeness.
 
@@ -452,8 +458,8 @@ When acting as an agent in this repo:
 
 When adding support for a new operator:
 
-1. **Specification:** read and understand the ONNX operator spec at
-   `onnx-org/docs/Operators.md`.
+1. **Specification:** read and understand the ONNX operator spec
+   (`python tools/onnx_op_spec.py <OpName>`, see Agent Instructions 12).
 2. **Lowering:** add a `register_lowering()` handler in `src/onnx2c/lowering/` that validates shapes/dtypes and returns a new op dataclass.
 3. **Codegen:** add a new op dataclass + rendering path in `src/onnx2c/codegen/c_emitter.py` and a matching template in `templates/`. The kernel indexes its arrays directly, without flat pointers (see "Generated kernels: index arrays directly").
 4. **Runtime evaluator:** implement the op in `src/onnx2c/runtime/evaluator.py` for verification/constant folding.
@@ -482,9 +488,10 @@ Rules for updating:
 Agents:
 - If you encounter ambiguity not covered by this document, propose an update to `AGENTS.md`.
 - If your change introduces new conventions, update this file in the same PR.
-- If you need the operator reference implementation or schema details, look in
-  `onnx-org/onnx/defs/**/defs.cc` or `onnx-org/onnx/defs/**/old.cc`, and use
-  `rg -n "<OpName>" onnx-org` to locate the relevant operator definition.
+- If you need the operator reference implementation or schema details, use
+  `python tools/onnx_op_spec.py <OpName>` or look in `<onnx>/defs/**/defs.cc`,
+  `<onnx>/defs/**/old.cc` and `<onnx>/reference/ops/` of the installed onnx
+  package (see Agent Instructions 12).
 
 ## Security / Safety
 

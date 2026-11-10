@@ -71,9 +71,10 @@ def main() -> None:
 
     # High-signal, operator-agnostic references and workflow hints.
     prompt_lines.append(
-        "Helpful references: onnx-org/docs/Operators.md for general operator specs, "
-        "onnx-org/onnx/reference/ops/ for numpy reference behavior, "
-        "and onnx-org/onnx/backend/test/case/node for backend test inputs."
+        "Helpful references (installed onnx package): "
+        "python tools/onnx_op_spec.py <OpName> for the operator spec, "
+        "onnx/reference/ops/ for numpy reference behavior, "
+        "and onnx/backend/test/case/node/ for backend test inputs."
     )
     prompt_lines.append(
         "Implementation map: add/adjust lowering in src/emx_onnx_cgen/lowering/, "
