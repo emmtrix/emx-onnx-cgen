@@ -51,7 +51,7 @@ def _model(
         [node], "explicit_padding", [x], output_infos, initializer=list(extra_inputs)
     )
     opsets = [helper.make_opsetid("", opset)]
-    model = helper.make_model(graph, opset_imports=opsets)
+    model = helper.make_model_gen_version(graph, opset_imports=opsets)
     return onnx.shape_inference.infer_shapes(model)
 
 
@@ -186,7 +186,9 @@ def test_qlinearconv_pads_with_input_zero_point() -> None:
     )
     graph = helper.make_graph([node], "qlinearconv", [x], [y], initializer=inputs)
     model = onnx.shape_inference.infer_shapes(
-        helper.make_model(graph, opset_imports=[helper.make_opsetid("", 19)])
+        helper.make_model_gen_version(
+            graph, opset_imports=[helper.make_opsetid("", 19)]
+        )
     )
     rewritten, _ = make_padding_explicit(model)
     value = next(
@@ -323,9 +325,15 @@ def _graph_model(
     graph = helper.make_graph(
         [node], "explicit_padding", inputs, [output], initializer=initializers
     )
-    return onnx.shape_inference.infer_shapes(
-        helper.make_model(graph, opset_imports=opsets)
+    # Derive the IR version from the opsets: the onnx default can be newer than
+    # onnxruntime supports. Custom domains such as com.microsoft are unknown to
+    # make_model_gen_version, hence ignore_unknown.
+    model = helper.make_model(
+        graph,
+        opset_imports=opsets,
+        ir_version=helper.find_min_ir_version_for(opsets, ignore_unknown=True),
     )
+    return onnx.shape_inference.infer_shapes(model)
 
 
 def test_c_convinteger_with_zero_point(tmp_path: Path) -> None:

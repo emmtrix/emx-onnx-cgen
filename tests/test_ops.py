@@ -8769,7 +8769,7 @@ def test_axis_normalization_with_dynamic_batch_matches_onnxruntime(
     graph = helper.make_graph(
         [node], f"{op_type.lower()}_dynamic_batch", [input_info], [output_info]
     )
-    model = helper.make_model(
+    model = helper.make_model_gen_version(
         graph,
         producer_name="emx-onnx-cgen",
         opset_imports=[helper.make_operatorsetid("", 13)],

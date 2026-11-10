@@ -375,7 +375,7 @@ Declare them with [`--sequence-element-shape`](#common-options), e.g.
 `emx-onnx-cgen` tracks support using generated coverage reports checked into the repository and is listed on the official [ONNX Backend Scoreboard](https://onnx.ai/backend-scoreboard/).
 
 - **Standard ONNX operator support:** [`SUPPORT_OPS.md`](SUPPORT_OPS.md) consistently reports **> 99%** verified operator coverage. The remaining unsupported entry is the non-standard contrib operator `com.microsoft::SparseToDenseMatMul`.
-- **Official ONNX backend models:** [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md) reports **> 99%** verified ONNX file coverage against **ONNX 1.21.0**.
+- **Official ONNX backend models:** [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md) reports **> 96%** verified ONNX file coverage against **ONNX 1.23.2**.
 - **ONNX Runtime artifact corpus:** [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md) also reports **> 99%** verified coverage for the exported ONNX Runtime artifact set.
 
 - [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md): overview of ONNX models and their current verification status.

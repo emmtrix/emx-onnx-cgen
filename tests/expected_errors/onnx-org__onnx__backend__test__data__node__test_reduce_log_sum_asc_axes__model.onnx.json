@@ -5,6 +5,6 @@
   "operators": [
     "ReduceLogSum"
   ],
-  "opset_version": 18,
-  "generated_checksum": "1fea6df570bfb55fc356fa70a43b6851fb2a03ff5224373929d5aa72fe6d38d9"
+  "opset_version": 28,
+  "generated_checksum": "42d9a172fc90ab239b3ef143ba6b595768a1878fee56dc5657fa16d2b33e6624"
 }

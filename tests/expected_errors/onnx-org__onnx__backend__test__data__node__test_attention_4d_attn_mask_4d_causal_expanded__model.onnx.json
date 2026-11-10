@@ -17,6 +17,7 @@
     "Add",
     "Less",
     "Where",
+    "CastLike",
     "Equal",
     "Not",
     "Mod",
@@ -26,8 +27,9 @@
     "Transpose",
     "Mul",
     "MatMul",
-    "Softmax"
+    "Softmax",
+    "ReduceMax"
   ],
   "opset_version": 23,
-  "generated_checksum": "b7e1080d5c74c17ff26ef5c66dd464b724be05921abea433a41cd5257cc92f23"
+  "generated_checksum": "7c1671427f8e2d37f6a8bcc560acab6ff0f7fbda3f451bff1695d6e51c6de7af"
 }

@@ -5,6 +5,6 @@
   "operators": [
     "Mod"
   ],
-  "opset_version": 13,
-  "generated_checksum": "ee0a80e22c478cb64ffc88dd23343d022331a316cb859098c6bd59452167dbac"
+  "opset_version": 28,
+  "generated_checksum": "c48ddadae924a4c65871fd0bfae08c694f01681bdb23bb39aec7643440ac2aac"
 }

@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_reversesequence_bfloat16 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "ReverseSequence"
+  ],
+  "opset_version": 28,
+  "generated_checksum": "0fea2fd29828c9be1482dc0cd9bf3a162ca4f9183636b3e7477cf0e574505f09"
+}

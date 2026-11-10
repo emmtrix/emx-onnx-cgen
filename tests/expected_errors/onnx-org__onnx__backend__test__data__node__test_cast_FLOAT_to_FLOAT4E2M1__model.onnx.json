@@ -5,6 +5,6 @@
   "operators": [
     "Cast"
   ],
-  "opset_version": 25,
-  "generated_checksum": "896f36ddf9f4509a4f224bd6a8fca2f49c0090e95e65d72fbc98b932c5667fdd"
+  "opset_version": 28,
+  "generated_checksum": "b18fc0c84da19735f7e5bb5dc1659ad5f03551578ee8ed835d3237c94565ad74"
 }

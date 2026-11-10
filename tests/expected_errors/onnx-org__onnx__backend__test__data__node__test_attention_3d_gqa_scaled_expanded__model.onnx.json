@@ -23,8 +23,10 @@
     "Mul",
     "MatMul",
     "Add",
-    "Softmax"
+    "Softmax",
+    "ReduceMax",
+    "CastLike"
   ],
   "opset_version": 23,
-  "generated_checksum": "3d57be613bc66cda2e85bfc336131f97ea6356b6e8969b629ae734f695bb5914"
+  "generated_checksum": "bd2855616b10638a0cdfc8a9e4cb5278b80684864eddeeb9ed55b2a8089cd178"
 }

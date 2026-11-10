@@ -1,10 +1,9 @@
 {
-  "error": "OK (max abs diff 0, max ULP 0)",
+  "error": "Unique inverse_indices must have shape (3,) (while lowering node_index=0, op_type=Unique, name=<unnamed>, inputs=[X: tensor[dtype=float, shape=(3, 3), dim_params=(None, None)]], outputs=[Y: tensor[dtype=float, shape=(3, -1), dim_params=(None, 'unk__0')], indices: tensor[dtype=int64, shape=(-1,), dim_params=('unk__1',)], inverse_indices: tensor[dtype=int64, shape=(-1,), dim_params=('unk__2',)], counts: tensor[dtype=int64, shape=(-1,), dim_params=('unk__3',)]])",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_unique_sorted_with_negative_axis model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "Unique"
   ],
-  "opset_version": 11,
-  "generated_checksum": "607ce4398b52f66db645a48b9cb7fd3c5f89b60e5a889ff568cf38879e6c7215"
+  "opset_version": 28
 }

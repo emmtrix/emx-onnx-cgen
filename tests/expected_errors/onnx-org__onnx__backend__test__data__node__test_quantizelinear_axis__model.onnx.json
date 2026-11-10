@@ -5,6 +5,6 @@
   "operators": [
     "QuantizeLinear"
   ],
-  "opset_version": 25,
-  "generated_checksum": "1f9adc2e191c93a56aa37b58ad9ffa01cd1585f4e687a12de22945d01c618565"
+  "opset_version": 28,
+  "generated_checksum": "7711dec57d3867944e39e6ff339dad8be8295c1b43c01761b106fb79b3e2da0c"
 }

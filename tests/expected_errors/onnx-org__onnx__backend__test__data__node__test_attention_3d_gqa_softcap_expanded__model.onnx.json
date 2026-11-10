@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 3)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_softcap_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
@@ -24,8 +24,10 @@
     "MatMul",
     "Tanh",
     "Add",
-    "Softmax"
+    "Softmax",
+    "ReduceMax",
+    "CastLike"
   ],
   "opset_version": 23,
-  "generated_checksum": "951ab02a7f049bc9e33a6d8911c5816e971436c9cd6218a03cfa88ef39db2e84"
+  "generated_checksum": "297aea2c4f06ce172594f9e6d8ffe55fda23ccd568eddfbe3978685a6fe4fefa"
 }

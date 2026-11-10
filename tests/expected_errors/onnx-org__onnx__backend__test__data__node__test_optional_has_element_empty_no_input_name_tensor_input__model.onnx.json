@@ -1,10 +1,10 @@
 {
-  "error": "OK (max abs diff 0)",
+  "error": "onnxruntime failed to run onnx-org\\onnx\\backend\\test\\data\\node\\test_optional_has_element_empty_no_input_name_tensor_input\\model.onnx: [ONNXRuntimeError] : 1 : FAIL : E:\\_work\\1\\s\\onnxruntime\\core\\graph\\model.cc:182 onnxruntime::Model::Model Unsupported model IR version: 14, max supported IR version: 13\n",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_no_input_name_tensor_input model.onnx",
   "verification_mode": "Random/ORT",
   "operators": [
     "OptionalHasElement"
   ],
-  "opset_version": 18,
-  "generated_checksum": "435762d8b2f960b86ed14e6c375f64b60afe5abb90917648a1631f0bb56ee90e"
+  "opset_version": 28,
+  "generated_checksum": "76349fd1ed85ceaa8801d84b11c4a6f44309f6d1f68451b90abef260fbfcf13b"
 }
