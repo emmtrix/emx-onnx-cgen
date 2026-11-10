@@ -21,7 +21,7 @@ The project is a Python package with a CLI:
 - Package sources live under `src/` (import root is `src/emx_onnx_cgen`).
 - Templates are shipped as package data (Jinja2 templates).
 
-The repository also contains submodules used for tests and reference material (for example the ONNX operator specs and ONNX Runtime-derived artifacts).
+The repository also contains submodules used for tests and reference material (ONNX Runtime-derived artifacts and the emx-pytorch2c reference implementation). ONNX operator specs come from the installed onnx package, see `tools/onnx_op_spec.py`.
 
 ---
 
