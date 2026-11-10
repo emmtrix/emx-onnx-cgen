@@ -5,6 +5,6 @@
   "operators": [
     "ReverseSequence"
   ],
-  "opset_version": 10,
-  "generated_checksum": "28b3ef1ed1ed8ba3f8b2c0489f03026ee35e42063373d98d52c74c6d70c4737d"
+  "opset_version": 28,
+  "generated_checksum": "d7dd66c52b74998747abbd8e03a99a9f4d2acb79ffa96ae8a58c8b789366aa10"
 }

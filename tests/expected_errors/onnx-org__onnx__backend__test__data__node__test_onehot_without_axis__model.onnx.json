@@ -5,6 +5,6 @@
   "operators": [
     "OneHot"
   ],
-  "opset_version": 11,
-  "generated_checksum": "4054526da7d64bca99d79d4e863335ef16c98c1f236de186ae126364e62eb012"
+  "opset_version": 28,
+  "generated_checksum": "7614f9916242c17111cb2e4b6dbb48d6f1e7f37b705bc741295afd678fe218f6"
 }

@@ -98,6 +98,13 @@ source of truth for CLI arguments:
 PYTHONPATH=src python -m emx_onnx_cgen <command_line from JSON>
 ```
 
+Since onnx 1.23 the official node backend models
+(`onnx-org/onnx/backend/test/data/node/`) are no longer part of the onnx
+repository. pytest generates them from the installed onnx package on startup
+(`tests/onnx_node_test_data.py`). It requires the installed onnx version to
+match the `onnx-org` submodule. To reproduce a node model's command line outside of
+pytest, generate them first with `python tests/onnx_node_test_data.py`.
+
 Do not invoke verification via `python -m emx_onnx_cgen.cli ...`; use
 `python -m emx_onnx_cgen ...` or the `emx-onnx-cgen` entry point so the CLI
 main function actually runs.

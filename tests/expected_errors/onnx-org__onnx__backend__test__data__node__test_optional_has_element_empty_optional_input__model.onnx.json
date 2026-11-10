@@ -5,6 +5,6 @@
   "operators": [
     "OptionalHasElement"
   ],
-  "opset_version": 18,
-  "generated_checksum": "0b1effb1eca5dbb7a7cd2e9eebc6697f894aa2a6ffd945efce27d85c365015c3"
+  "opset_version": 28,
+  "generated_checksum": "f2b024b2410be69c14269cd9110678a75bca61ec9f2f7b54753c212567b93dfd"
 }

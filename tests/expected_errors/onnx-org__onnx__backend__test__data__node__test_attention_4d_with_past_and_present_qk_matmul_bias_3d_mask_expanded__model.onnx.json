@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 3)",
+  "error": "OK (max ULP 7)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
@@ -22,8 +22,10 @@
     "Mul",
     "MatMul",
     "Add",
-    "Softmax"
+    "Softmax",
+    "ReduceMax",
+    "CastLike"
   ],
   "opset_version": 23,
-  "generated_checksum": "68b75a4cb6ef9fd3fa1d6aea6722eeca232c3c730d177117c32d0f5723fae54f"
+  "generated_checksum": "421cb25e7fdc579ed0a387a45b4e70ad2cb09122afe573dfb93a88bf8935d43c"
 }

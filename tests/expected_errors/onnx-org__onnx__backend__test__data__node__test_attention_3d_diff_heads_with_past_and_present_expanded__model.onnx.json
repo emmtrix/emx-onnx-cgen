@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "OK (max ULP 3)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_with_past_and_present_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
@@ -22,8 +22,10 @@
     "Mul",
     "MatMul",
     "Add",
-    "Softmax"
+    "Softmax",
+    "ReduceMax",
+    "CastLike"
   ],
   "opset_version": 23,
-  "generated_checksum": "94a6b05e0be1e9587adc23a22cb4694dd7bc599c136f0210262ee093f201f3f2"
+  "generated_checksum": "38d49ef251c98dfdc17e288b56ac6e7f867359e5bde3824907dc8e62ebc45645"
 }

@@ -1,0 +1,32 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_local_window_default_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Shape",
+    "Identity",
+    "Cast",
+    "Sqrt",
+    "Constant",
+    "Div",
+    "Concat",
+    "ConstantOfShape",
+    "Equal",
+    "Not",
+    "Mod",
+    "And",
+    "Where",
+    "Unsqueeze",
+    "Expand",
+    "Reshape",
+    "Transpose",
+    "Mul",
+    "MatMul",
+    "Add",
+    "Softmax",
+    "ReduceMax",
+    "CastLike"
+  ],
+  "opset_version": 25,
+  "generated_checksum": "517cdc508215f91687c6ff404667e440efb364579dc0c82d81511f61b90a1d62"
+}

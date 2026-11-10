@@ -9,6 +9,6 @@
     "Log",
     "CastLike"
   ],
-  "opset_version": 18,
-  "generated_checksum": "ffb235b6d68d352f3793d205d663a1d18d8a446f03092082633b7e57a87e10fd"
+  "opset_version": 28,
+  "generated_checksum": "143e4d5d03c0e8e1bb5a0f3cd45948da960caf6ed6c8c078fd90bc6bfd705ec0"
 }

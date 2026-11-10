@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 3)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
@@ -22,8 +22,10 @@
     "Mul",
     "MatMul",
     "Add",
-    "Softmax"
+    "Softmax",
+    "ReduceMax",
+    "CastLike"
   ],
   "opset_version": 23,
-  "generated_checksum": "6a1123ca8a540af64e6ebe67b0dedcd0dbe0f4f3125912b45c04c07059b0ef52"
+  "generated_checksum": "cb3b90ec23d50cb38c44da8a3e151aba2847f99941dee6fbd91acc3044af654d"
 }

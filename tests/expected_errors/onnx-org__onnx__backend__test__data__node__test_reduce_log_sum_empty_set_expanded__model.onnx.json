@@ -6,6 +6,6 @@
     "ReduceSum",
     "Log"
   ],
-  "opset_version": 18,
-  "generated_checksum": "0ad0c48d9bf7c531c745191889f74f2bf797ad331a85608d6b4a0fcda3858d3e"
+  "opset_version": 28,
+  "generated_checksum": "f12feb62695213fa282b28404cdbe2e98f530fb0393cf59e7d83ac078cb297a1"
 }

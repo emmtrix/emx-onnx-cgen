@@ -1,10 +1,10 @@
 {
-  "error": "OK (max abs diff 0)",
+  "error": "onnxruntime failed to run onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_no_input_name_optional_input/model.onnx: [ONNXRuntimeError] : 1 : FAIL : /onnxruntime_src/onnxruntime/core/graph/model.cc:192 onnxruntime::Model::Model(onnx::ModelProto&&, const onnxruntime::PathString&, const onnxruntime::IOnnxRuntimeOpSchemaRegistryList*, const onnxruntime::logging::Logger&, const onnxruntime::ModelOptions&) Unsupported model IR version: 14, max supported IR version: 13\n",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_no_input_name_optional_input model.onnx",
   "verification_mode": "Random/ORT",
   "operators": [
     "OptionalHasElement"
   ],
-  "opset_version": 18,
-  "generated_checksum": "71deb4365a88adb498626eb2238c24f0dabde6a661462b870ff4b9e3fd36d0f6"
+  "opset_version": 28,
+  "generated_checksum": "2387a88634390dd665d8d16d1a666e82bf98929ac3b40e3169cbc80b7518727a"
 }
