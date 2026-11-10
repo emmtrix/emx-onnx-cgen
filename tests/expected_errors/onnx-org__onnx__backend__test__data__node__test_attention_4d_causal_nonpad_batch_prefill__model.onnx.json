@@ -1,0 +1,10 @@
+{
+  "error": "Out of tolerance (max ULP 48723182)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_causal_nonpad_batch_prefill model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Attention"
+  ],
+  "opset_version": 24,
+  "generated_checksum": "8125e65ce7e72c5668fc29767ba2e2ff99610c77f87560be08076eea36a82909"
+}

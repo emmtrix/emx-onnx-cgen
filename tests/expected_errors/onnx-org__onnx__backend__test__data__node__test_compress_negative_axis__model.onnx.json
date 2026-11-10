@@ -5,6 +5,6 @@
   "operators": [
     "Compress"
   ],
-  "opset_version": 11,
-  "generated_checksum": "ff74e5828bb2611ad6acdf00b42619940109b320586ed7bebaa4fe21fd1cf229"
+  "opset_version": 28,
+  "generated_checksum": "8189dc3514a0252dfb51b2f29de97406ce6246aae33a7472c2e6de2ad9884a52"
 }

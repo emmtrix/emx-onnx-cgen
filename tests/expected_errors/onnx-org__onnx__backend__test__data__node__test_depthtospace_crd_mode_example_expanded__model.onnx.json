@@ -1,0 +1,17 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_depthtospace_crd_mode_example_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Constant",
+    "Shape",
+    "Slice",
+    "Mul",
+    "Div",
+    "Concat",
+    "Reshape",
+    "Transpose"
+  ],
+  "opset_version": 28,
+  "generated_checksum": "f772583858c68109a951654da0d62b275b5c7f89ff9525c336761d64d7d6ca83"
+}

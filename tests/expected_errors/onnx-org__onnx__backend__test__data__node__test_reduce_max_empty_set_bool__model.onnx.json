@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_reduce_max_empty_set_bool model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "ReduceMax"
+  ],
+  "opset_version": 20,
+  "generated_checksum": "935946c96965149ef254c22e74f5432abab11795deb46117a357c0dcdc9a0b3e"
+}

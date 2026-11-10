@@ -5,6 +5,6 @@
   "operators": [
     "Celu"
   ],
-  "opset_version": 12,
-  "generated_checksum": "c5d18a906c2e515f26d928c27d5226ec31ebdc6831999a0fb0d11f9e91fa58c6"
+  "opset_version": 28,
+  "generated_checksum": "d4bf647c87b3d6f10c3e10c09025d8219b3f672f4c650b2623cf4d78110c029f"
 }

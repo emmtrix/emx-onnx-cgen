@@ -24,8 +24,10 @@
     "MatMul",
     "Tanh",
     "Add",
-    "Softmax"
+    "Softmax",
+    "ReduceMax",
+    "CastLike"
   ],
   "opset_version": 23,
-  "generated_checksum": "f3c345f0f7d38878e29023fc0607f7e5f8237698766bf4b16c036595f4df8827"
+  "generated_checksum": "0c132c648f23cfa377ee3f385b5035d6e9f601fbdc25fe47e4d26ee7767290be"
 }

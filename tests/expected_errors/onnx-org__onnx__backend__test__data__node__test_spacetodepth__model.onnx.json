@@ -5,6 +5,6 @@
   "operators": [
     "SpaceToDepth"
   ],
-  "opset_version": 13,
-  "generated_checksum": "81dfb662459cbf70f669da11552b6e578ac1115499b85aa9a314ea5c615beb58"
+  "opset_version": 28,
+  "generated_checksum": "32d8b1e42f2b0dae4eaa8aa6ae9d40b729bfa37b72e773b15d5acc97a0744b52"
 }

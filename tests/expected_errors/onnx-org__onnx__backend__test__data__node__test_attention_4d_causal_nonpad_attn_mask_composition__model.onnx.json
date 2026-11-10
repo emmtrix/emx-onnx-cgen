@@ -1,0 +1,10 @@
+{
+  "error": "Out of tolerance (max ULP 31711351)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_causal_nonpad_attn_mask_composition model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Attention"
+  ],
+  "opset_version": 24,
+  "generated_checksum": "935974d40e08ccea46751eec6df920c51932aa7625de500f79efa9199a83a398"
+}

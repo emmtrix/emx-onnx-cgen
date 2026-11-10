@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_onehot_with_bfloat16_values model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "OneHot"
+  ],
+  "opset_version": 28,
+  "generated_checksum": "c894b3fe1e233818f3b9baeea55fdf67e46d69836dca5dd89503bc2df9efdf86"
+}

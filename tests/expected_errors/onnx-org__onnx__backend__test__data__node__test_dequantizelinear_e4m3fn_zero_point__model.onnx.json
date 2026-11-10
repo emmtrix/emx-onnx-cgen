@@ -5,6 +5,6 @@
   "operators": [
     "DequantizeLinear"
   ],
-  "opset_version": 25,
-  "generated_checksum": "fbb414c248836b6d159dd87b303dfaa6bf67055058cf6270af9d7421cf7d9176"
+  "opset_version": 28,
+  "generated_checksum": "3f80c336b1759d205dadbcce65c6922bc6b28cedad470fc80c600a7e1e431769"
 }

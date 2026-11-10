@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_compress_bfloat16 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Compress"
+  ],
+  "opset_version": 28,
+  "generated_checksum": "50b94a2a66df5d57ac9b0fb068273b14fc037aa8190a54d53149bf91800743ac"
+}
