@@ -1,0 +1,22 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_linear_attention_fp16_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Constant",
+    "Shape",
+    "Concat",
+    "Reshape",
+    "Transpose",
+    "Div",
+    "ConstantOfShape",
+    "Squeeze",
+    "Cast",
+    "Sqrt",
+    "Reciprocal",
+    "Scan",
+    "CastLike"
+  ],
+  "opset_version": 27,
+  "generated_checksum": "0342fe29c17c4c5560a79723a9a7cf26c7e22fad266616622735d5862ea91ba6"
+}

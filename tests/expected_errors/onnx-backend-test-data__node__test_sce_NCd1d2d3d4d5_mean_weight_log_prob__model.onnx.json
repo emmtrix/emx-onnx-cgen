@@ -1,0 +1,14 @@
+{
+  "error": "OK (max ULP 2)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob model.onnx --test-data-dir test_data_set_0 --fp32-accumulation-strategy fp64",
+  "extra_cli_args": [
+    "--fp32-accumulation-strategy",
+    "fp64"
+  ],
+  "verification_mode": "Data/Data",
+  "operators": [
+    "SoftmaxCrossEntropyLoss"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "6152e684271adb4f358e28500b2709fffb9a5118f2e18cf3afebebd9678f0ead"
+}

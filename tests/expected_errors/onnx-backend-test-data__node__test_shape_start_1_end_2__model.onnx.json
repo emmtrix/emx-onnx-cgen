@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_shape_start_1_end_2 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Shape"
+  ],
+  "opset_version": 25,
+  "generated_checksum": "3aee395ab0a213bfcbf44d1654a60cb27a90ff18d54f8282ffadccad9cf45608"
+}

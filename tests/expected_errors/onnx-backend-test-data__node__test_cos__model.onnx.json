@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_cos model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Cos"
+  ],
+  "opset_version": 22,
+  "generated_checksum": "ebd47935c54d504a26077016d300fb661e4aaf760f0e4fa1791073e58ef87757"
+}

@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_einsum_batch_matmul model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Einsum"
+  ],
+  "opset_version": 28,
+  "generated_checksum": "f5f5a2862684a84a35d07b6c267401b57478e9c446d451e0466889bd3e1b5d1b"
+}

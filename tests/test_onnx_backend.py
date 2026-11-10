@@ -157,7 +157,7 @@ def test_backend_runs_dynamic_split_to_sequence_with_empty_tensor() -> None:
 def test_serialize_runtime_input_handles_dynamic_sequence_shapes() -> None:
     model = onnx.load(
         PROJECT_ROOT
-        / "onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences/model.onnx"
+        / "onnx-backend-test-data/node/test_sequence_map_add_2_sequences/model.onnx"
     )
     sequence_hints = parse_sequence_element_shape_hints(["x0=[<=6]", "x1=[<=6]"])
     metadata = backend_module._build_backend_metadata(
@@ -200,11 +200,11 @@ def test_backend_runs_sequence_map_add_2_sequences_with_variable_shapes() -> Non
 
     model = onnx.load(
         PROJECT_ROOT
-        / "onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences/model.onnx"
+        / "onnx-backend-test-data/node/test_sequence_map_add_2_sequences/model.onnx"
     )
     data_dir = (
         PROJECT_ROOT
-        / "onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences/test_data_set_0"
+        / "onnx-backend-test-data/node/test_sequence_map_add_2_sequences/test_data_set_0"
     )
 
     def _load_sequence(path: Path) -> list[np.ndarray]:

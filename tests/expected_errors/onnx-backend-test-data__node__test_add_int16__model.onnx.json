@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_add_int16 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Add"
+  ],
+  "opset_version": 14,
+  "generated_checksum": "bd77f981db3058b9e980d8c5ffa281cad18abb7d7657f7e0286a83ede548c83d"
+}

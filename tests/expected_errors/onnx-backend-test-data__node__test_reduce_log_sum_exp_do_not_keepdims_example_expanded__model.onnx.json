@@ -1,0 +1,14 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_reduce_log_sum_exp_do_not_keepdims_example_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Cast",
+    "Exp",
+    "ReduceSum",
+    "Log",
+    "CastLike"
+  ],
+  "opset_version": 28,
+  "generated_checksum": "b3d08bb08a3ec6e0ad1a3a5449dd115f0935aa8e300540973da1d8918b0b4211"
+}

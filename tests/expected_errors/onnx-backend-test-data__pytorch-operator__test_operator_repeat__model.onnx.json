@@ -1,0 +1,11 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/pytorch-operator/test_operator_repeat model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Constant",
+    "Tile"
+  ],
+  "opset_version": 9,
+  "generated_checksum": "4acbb0f13082b5bae73408c574c84033a04b007a2941b39c328c8f29d0cbd3d8"
+}

@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 2)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/pytorch-converted/test_LogSoftmax model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "LogSoftmax"
+  ],
+  "opset_version": 6,
+  "generated_checksum": "0ac6ce11681b3532cd47410e2ac9c75f976e5728c479ce3ceddca2a856164840"
+}

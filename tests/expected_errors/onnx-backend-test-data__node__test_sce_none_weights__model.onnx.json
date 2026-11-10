@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_sce_none_weights model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "SoftmaxCrossEntropyLoss"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "12d353aa965ad6b248127182d9e19822d6c529a3e5865b938b4d9be8c10d2b16"
+}

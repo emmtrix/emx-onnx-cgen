@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_True model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "AveragePool"
+  ],
+  "opset_version": 22,
+  "generated_checksum": "939f5ced68897e1c3124a98a41a684e02415f4991ea4e0058613bd2010195ff0"
+}

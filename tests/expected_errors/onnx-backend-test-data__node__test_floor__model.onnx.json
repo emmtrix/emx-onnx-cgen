@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_floor model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Floor"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "a4021ad7be725c51812d7de6bfe07e6d0bacf1a75902676cc07fa6ed08988cc1"
+}

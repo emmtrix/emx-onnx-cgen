@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/pytorch-converted/test_MaxPool2d model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "MaxPool"
+  ],
+  "opset_version": 6,
+  "generated_checksum": "0b76cf0777462c0d0d60aa3c689173b505e54e50a5776247cfcf84343e4884af"
+}

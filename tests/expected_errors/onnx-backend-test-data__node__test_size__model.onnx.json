@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_size model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Size"
+  ],
+  "opset_version": 25,
+  "generated_checksum": "918b5850e1e54306f02f9afe0e517f8e96611a04ca6581bd954eba9ba65a110d"
+}

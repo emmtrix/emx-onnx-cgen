@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_reduce_min_bool_inputs model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "ReduceMin"
+  ],
+  "opset_version": 20,
+  "generated_checksum": "2a786331b373d18f77311e5539aee3a63bd9d26aa0049b8d4ecc3898f10908c3"
+}

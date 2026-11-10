@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_atan_example model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Atan"
+  ],
+  "opset_version": 22,
+  "generated_checksum": "a539c847da927109f9bfce3027bd0d941c9a1f34d5ac1a305f4dadfc11bc97a3"
+}

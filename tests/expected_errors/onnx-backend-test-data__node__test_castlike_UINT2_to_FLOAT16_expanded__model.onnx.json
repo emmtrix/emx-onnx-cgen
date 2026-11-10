@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_castlike_UINT2_to_FLOAT16_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Cast"
+  ],
+  "opset_version": 25,
+  "generated_checksum": "d035427f8452570363863443681f486393fa50abd69f902d68941f4205b47539"
+}

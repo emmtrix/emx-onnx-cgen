@@ -1,0 +1,15 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_range_int32_type_negative_delta_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Sub",
+    "Cast",
+    "Div",
+    "Ceil",
+    "Relu",
+    "Loop"
+  ],
+  "opset_version": 27,
+  "generated_checksum": "2aa40c699611299fef13bb001a264fded1876a87bcd4622820fbadb2b34cce4f"
+}

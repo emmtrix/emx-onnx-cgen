@@ -1,0 +1,14 @@
+{
+  "error": "OK (max ULP 1)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_softplus_expanded_ver18 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Exp",
+    "Constant",
+    "CastLike",
+    "Add",
+    "Log"
+  ],
+  "opset_version": 18,
+  "generated_checksum": "54232fe91e7494830607033e7f944f6594d7ea879e8473d971a5bbf9db86fe50"
+}

@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_less model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Less"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "e434ea18ee4e3c5083ee08d7347477704de1e6f2c25c0c86a59bc97f8cd10e0f"
+}

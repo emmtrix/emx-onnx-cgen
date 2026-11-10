@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_argmin_default_axis_example model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "ArgMin"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "b59728858c99a6cdd4b8bdb7822559cea005f7a18994c75d3898d2de6b32a0c6"
+}

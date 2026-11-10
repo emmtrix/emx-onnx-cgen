@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 3)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_flexattention_gqa model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "ai.onnx.preview.FlexAttention"
+  ],
+  "opset_version": 26,
+  "generated_checksum": "b8179db281b46437b91db896a7e7b34940ec649e9f55973996e13cf2d82bc18e"
+}

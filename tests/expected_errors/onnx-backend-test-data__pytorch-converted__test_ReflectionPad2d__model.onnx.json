@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/pytorch-converted/test_ReflectionPad2d model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Pad"
+  ],
+  "opset_version": 6,
+  "generated_checksum": "7f21f90090d2e627e46cd81ec99515d8c545ed0a45086200e41cce9b8e854b55"
+}

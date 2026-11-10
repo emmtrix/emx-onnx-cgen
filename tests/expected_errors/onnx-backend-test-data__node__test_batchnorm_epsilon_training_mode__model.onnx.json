@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 1)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_batchnorm_epsilon_training_mode model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "BatchNormalization"
+  ],
+  "opset_version": 15,
+  "generated_checksum": "fecd74d2d72b2b15ff506dacb1a85836b85d67ada2674f31753ca2de4d337964"
+}

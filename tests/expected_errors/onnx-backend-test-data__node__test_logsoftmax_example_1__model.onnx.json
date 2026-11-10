@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 1)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_logsoftmax_example_1 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "LogSoftmax"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "4587db60b2961a602e88d782c10b80e77cf81f3d04c5eafb357225d3aa8015c6"
+}

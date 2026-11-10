@@ -1,0 +1,10 @@
+{
+  "error": "Out of tolerance (max ULP 16777216)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_spacetodepth_crd_mode_example model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "SpaceToDepth"
+  ],
+  "opset_version": 28,
+  "generated_checksum": "dba3c489c467e4f3c65683192b42a3f3a4068e0b0c42666cacf8c5ee99a0988d"
+}

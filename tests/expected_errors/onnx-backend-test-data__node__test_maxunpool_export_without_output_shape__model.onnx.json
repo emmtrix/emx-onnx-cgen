@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_maxunpool_export_without_output_shape model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "MaxUnpool"
+  ],
+  "opset_version": 22,
+  "generated_checksum": "da6384240f39634a12e7794958ad0c9e8c33ad791dfd0831d4e2401b12900375"
+}

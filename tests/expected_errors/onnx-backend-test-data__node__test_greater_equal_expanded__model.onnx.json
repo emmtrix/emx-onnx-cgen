@@ -1,0 +1,12 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_greater_equal_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Greater",
+    "Equal",
+    "Or"
+  ],
+  "opset_version": 16,
+  "generated_checksum": "a5f816b8ed7e962e9260398346d7bc3a002eff1203e0e265cae5218e6fdedd82"
+}

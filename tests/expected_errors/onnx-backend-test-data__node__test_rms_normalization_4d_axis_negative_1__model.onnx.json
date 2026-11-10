@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 2)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_rms_normalization_4d_axis_negative_1 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "RMSNormalization"
+  ],
+  "opset_version": 23,
+  "generated_checksum": "c9649d3f8f6fab4065ef334a0038476943dcebb365127de45c906af365b2cab8"
+}

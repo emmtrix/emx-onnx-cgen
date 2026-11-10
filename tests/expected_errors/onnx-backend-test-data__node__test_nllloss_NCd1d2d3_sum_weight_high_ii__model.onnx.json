@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_nllloss_NCd1d2d3_sum_weight_high_ii model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "NegativeLogLikelihoodLoss"
+  ],
+  "opset_version": 22,
+  "generated_checksum": "3b25bdf3a16d6160352cde120f213a7ce762097cb11363c9311f07d4d88b8b1f"
+}

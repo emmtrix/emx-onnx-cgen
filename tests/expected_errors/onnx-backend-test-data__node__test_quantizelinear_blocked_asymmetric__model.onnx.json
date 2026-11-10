@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_quantizelinear_blocked_asymmetric model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "QuantizeLinear"
+  ],
+  "opset_version": 28,
+  "generated_checksum": "e5649902f043be29ea1dfb208fd5918e884f3d2a2514328a3fec3dde01c2c5be"
+}

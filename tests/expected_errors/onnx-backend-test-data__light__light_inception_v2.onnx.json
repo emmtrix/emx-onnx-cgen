@@ -1,0 +1,22 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/light light_inception_v2.onnx",
+  "verification_mode": "Random/ORT",
+  "operators": [
+    "ConstantOfShape",
+    "Conv",
+    "BatchNormalization",
+    "Unsqueeze",
+    "Mul",
+    "Add",
+    "Relu",
+    "MaxPool",
+    "AveragePool",
+    "Concat",
+    "Reshape",
+    "Gemm",
+    "Softmax"
+  ],
+  "opset_version": 9,
+  "generated_checksum": "9972abf8c1f6d851ba79b4aa35098934abd87464079d867b7839616fa674b457"
+}

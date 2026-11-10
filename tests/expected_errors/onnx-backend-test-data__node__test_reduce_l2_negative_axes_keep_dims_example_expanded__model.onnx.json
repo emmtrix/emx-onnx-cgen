@@ -1,0 +1,14 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_reduce_l2_negative_axes_keep_dims_example_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Mul",
+    "ReduceSum",
+    "Cast",
+    "Sqrt",
+    "CastLike"
+  ],
+  "opset_version": 18,
+  "generated_checksum": "373790320f3466f9611309d75e32bee2cf558aed0a4617900b098051c95fee93"
+}

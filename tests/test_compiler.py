@@ -208,23 +208,23 @@ def _make_reduce_after_resolveable_reshape_model() -> onnx.ModelProto:
 
 
 _OFFICIAL_AFFINE_GRID_EXPANDED_MODELS = (
-    "onnx-org/onnx/backend/test/data/node/test_affine_grid_2d_align_corners_expanded/model.onnx",
-    "onnx-org/onnx/backend/test/data/node/test_affine_grid_2d_expanded/model.onnx",
-    "onnx-org/onnx/backend/test/data/node/test_affine_grid_3d_align_corners_expanded/model.onnx",
-    "onnx-org/onnx/backend/test/data/node/test_affine_grid_3d_expanded/model.onnx",
+    "onnx-backend-test-data/node/test_affine_grid_2d_align_corners_expanded/model.onnx",
+    "onnx-backend-test-data/node/test_affine_grid_2d_expanded/model.onnx",
+    "onnx-backend-test-data/node/test_affine_grid_3d_align_corners_expanded/model.onnx",
+    "onnx-backend-test-data/node/test_affine_grid_3d_expanded/model.onnx",
 )
 
 _OFFICIAL_CENTER_CROP_PAD_EXPANDED_MODELS = (
-    "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_and_pad_expanded/model.onnx",
-    "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_axes_chw_expanded/model.onnx",
-    "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_axes_hwc_expanded/model.onnx",
-    "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_expanded/model.onnx",
-    "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_negative_axes_hwc_expanded/model.onnx",
-    "onnx-org/onnx/backend/test/data/node/test_center_crop_pad_pad_expanded/model.onnx",
+    "onnx-backend-test-data/node/test_center_crop_pad_crop_and_pad_expanded/model.onnx",
+    "onnx-backend-test-data/node/test_center_crop_pad_crop_axes_chw_expanded/model.onnx",
+    "onnx-backend-test-data/node/test_center_crop_pad_crop_axes_hwc_expanded/model.onnx",
+    "onnx-backend-test-data/node/test_center_crop_pad_crop_expanded/model.onnx",
+    "onnx-backend-test-data/node/test_center_crop_pad_crop_negative_axes_hwc_expanded/model.onnx",
+    "onnx-backend-test-data/node/test_center_crop_pad_pad_expanded/model.onnx",
 )
 
 _OFFICIAL_SEQUENCE_MODELS = (
-    "onnx-org/onnx/backend/test/data/simple/test_sequence_model8/model.onnx",
+    "onnx-backend-test-data/simple/test_sequence_model8/model.onnx",
 )
 
 

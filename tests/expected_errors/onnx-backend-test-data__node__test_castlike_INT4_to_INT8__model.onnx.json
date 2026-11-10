@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_castlike_INT4_to_INT8 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "CastLike"
+  ],
+  "opset_version": 25,
+  "generated_checksum": "b346dae712b957ad4961fb5d8fd666b17631cdcb5489100fe0071883ca5f805c"
+}

@@ -1,0 +1,22 @@
+{
+  "error": "OK (max ULP 19)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_linear_attention_gated_delta_gqa_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Constant",
+    "Shape",
+    "Concat",
+    "Reshape",
+    "Transpose",
+    "Div",
+    "ConstantOfShape",
+    "Squeeze",
+    "Cast",
+    "Sqrt",
+    "Reciprocal",
+    "Scan",
+    "CastLike"
+  ],
+  "opset_version": 27,
+  "generated_checksum": "15b678fa1e30267334bb7f7ba519b99577b6da1ab87d6a78fba2acb1459cd7e7"
+}

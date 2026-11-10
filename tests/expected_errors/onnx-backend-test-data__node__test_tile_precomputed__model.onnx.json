@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_tile_precomputed model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Tile"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "bfa774c7e871ecdb8e00d4363249bf63d31e90d0a0afd9dddf3536658dd2cf89"
+}

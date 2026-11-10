@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_maxpool_2d_ceil model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "MaxPool"
+  ],
+  "opset_version": 22,
+  "generated_checksum": "078493e642c02c86f3f6c82ff63bdf1f64286d81ff4bf64d177fa5f2d91ac193"
+}

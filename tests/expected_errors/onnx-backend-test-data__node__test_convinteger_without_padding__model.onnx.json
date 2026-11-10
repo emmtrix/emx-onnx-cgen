@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_convinteger_without_padding model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "ConvInteger"
+  ],
+  "opset_version": 10,
+  "generated_checksum": "7fe2111e89cf7235debd6ea1e834886d7e419881066317b88801e15ef20521e5"
+}

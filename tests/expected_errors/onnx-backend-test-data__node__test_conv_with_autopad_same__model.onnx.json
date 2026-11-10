@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_conv_with_autopad_same model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Conv"
+  ],
+  "opset_version": 22,
+  "generated_checksum": "440fcfec3ad9c508b2772f1ec4bbcaf1f6dcf01368e880e7555bf74687adab71"
+}

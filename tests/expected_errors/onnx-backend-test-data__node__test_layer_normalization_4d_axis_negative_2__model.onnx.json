@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 12)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_layer_normalization_4d_axis_negative_2 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "LayerNormalization"
+  ],
+  "opset_version": 17,
+  "generated_checksum": "82fc40b9b610938deb870c4354bce592880a3932c7cf7b429441f6327c4b3627"
+}

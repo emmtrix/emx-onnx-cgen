@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_nonzero_example model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "NonZero"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "892fb9883bc4c9b868c210e7859b2c9284100c40dc20edde8d61f4e55e230716"
+}

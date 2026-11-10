@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_reduce_sum_square_do_not_keepdims_example model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "ReduceSumSquare"
+  ],
+  "opset_version": 18,
+  "generated_checksum": "77548542d8179817f36c4ecf8d35c7688a8f0eaccbf24c4c70abdef896b675bf"
+}

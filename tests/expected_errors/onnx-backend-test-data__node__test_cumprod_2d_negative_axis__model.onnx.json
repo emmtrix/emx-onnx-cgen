@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_cumprod_2d_negative_axis model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "CumProd"
+  ],
+  "opset_version": 26,
+  "generated_checksum": "418b23fa4ef4266de7b5f6d5a6eef9bb73ed81226b4eaeb53c45ad8ef04f5542"
+}

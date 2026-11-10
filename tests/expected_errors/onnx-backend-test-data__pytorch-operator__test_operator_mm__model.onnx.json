@@ -1,0 +1,11 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/pytorch-operator/test_operator_mm model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Constant",
+    "Gemm"
+  ],
+  "opset_version": 6,
+  "generated_checksum": "10d78039f3d600935fffd493d62d7ca56b74e27bbcbb74ff4ef941845cb82048"
+}

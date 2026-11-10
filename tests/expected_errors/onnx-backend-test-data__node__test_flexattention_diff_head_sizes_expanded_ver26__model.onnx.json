@@ -1,0 +1,24 @@
+{
+  "error": "OK (max ULP 3)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_flexattention_diff_head_sizes_expanded_ver26 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Shape",
+    "Div",
+    "Constant",
+    "Unsqueeze",
+    "Concat",
+    "Expand",
+    "Reshape",
+    "Gather",
+    "Cast",
+    "Sqrt",
+    "Identity",
+    "Mul",
+    "Transpose",
+    "MatMul",
+    "Softmax"
+  ],
+  "opset_version": 26,
+  "generated_checksum": "30262b8393791c811c51a8c49d5fe7168ea75291d22bac880e2266a7a8761f09"
+}

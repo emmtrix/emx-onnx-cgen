@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_bitwise_xor_ui8_bcast_4v3d model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "BitwiseXor"
+  ],
+  "opset_version": 18,
+  "generated_checksum": "6f5d3cc1d40371bd434bcf08000d94d07b4e6e2630f122991406f351627dab57"
+}

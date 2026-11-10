@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 1)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_swish model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Swish"
+  ],
+  "opset_version": 24,
+  "generated_checksum": "4955a7b779569be3ee495557d9a3ec1b3b5656af7e585dfc8204ddab727c3483"
+}

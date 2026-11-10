@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_min_one_input model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Min"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "b56f89211fa651f24b0c0502dc66c34952bb15ffc2daec855e64f81fc4c25f8e"
+}

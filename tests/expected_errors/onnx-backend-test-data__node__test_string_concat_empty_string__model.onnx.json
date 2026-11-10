@@ -1,0 +1,10 @@
+{
+  "error": "OK (no numeric comparisons)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_string_concat_empty_string model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "StringConcat"
+  ],
+  "opset_version": 20,
+  "generated_checksum": "1853059099284a6eb863ab6b74fef8a011705a94c5c847719c10aa5426a3179b"
+}

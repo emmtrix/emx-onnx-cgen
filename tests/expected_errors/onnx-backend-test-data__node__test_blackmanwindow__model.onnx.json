@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_blackmanwindow model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "BlackmanWindow"
+  ],
+  "opset_version": 17,
+  "generated_checksum": "9fb2ef58c81ace5d2044a75bdf921a4543817714cca10e7297030622935c837a"
+}

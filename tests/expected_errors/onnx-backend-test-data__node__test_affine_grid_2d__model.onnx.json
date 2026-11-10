@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 1)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_affine_grid_2d model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "AffineGrid"
+  ],
+  "opset_version": 20,
+  "generated_checksum": "7a019789e7f5b2c25adc049fdcba66df3a53e678a99c7bf4a6d0520c6f3f3081"
+}

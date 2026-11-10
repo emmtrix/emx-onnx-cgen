@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/pytorch-converted/test_Softmax model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Softmax"
+  ],
+  "opset_version": 6,
+  "generated_checksum": "323b4ebdd7f34c2bcab38e20bcaf0778ba521ccb71caa170c260e07582e81b02"
+}

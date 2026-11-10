@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_gathernd_example_int32 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "GatherND"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "82ff92542037018f63f785326dc30a0e2f1d48285f1f8bad4b6bb4b182ebb277"
+}

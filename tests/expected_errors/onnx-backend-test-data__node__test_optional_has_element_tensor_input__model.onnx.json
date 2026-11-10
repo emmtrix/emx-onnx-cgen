@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_optional_has_element_tensor_input model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "OptionalHasElement"
+  ],
+  "opset_version": 28,
+  "generated_checksum": "bb423d917a3bbd393c3f20d0087f8d19cd4274b3179f8665c6e80dabe36e9f54"
+}

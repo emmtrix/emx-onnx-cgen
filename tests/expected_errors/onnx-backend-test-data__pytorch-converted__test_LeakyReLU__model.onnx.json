@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/pytorch-converted/test_LeakyReLU model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "LeakyRelu"
+  ],
+  "opset_version": 6,
+  "generated_checksum": "7ca8ee19f871ea6fca85c89626a26052cb53e5d6769c5e592480925657aa9e7b"
+}

@@ -9,13 +9,13 @@ from typing import Callable
 
 import pytest
 
+from onnx_backend_test_data import BACKEND_TEST_DATA_ROOT, VERSION_STAMP_NAME
 from test_official_onnx_files import (
     LOCAL_REPO_ONNX_DATA_ROOT,
     ORT_ARTIFACTS_ONNX_DATA_ROOT,
     OnnxFileExpectation,
     _load_expectation_for_repo_relative,
     _local_repo_onnx_file_paths,
-    _maybe_init_onnx_org,
     _official_onnx_file_paths,
     _ort_artifacts_onnx_file_paths,
     _repo_root,
@@ -33,7 +33,8 @@ OPERATOR_METADATA_PATH = (
 )
 OPERATOR_NOTES_PATH = Path(__file__).resolve().parents[1] / "docs" / "operator-notes.md"
 OPERATOR_NOTES_LINK = "docs/operator-notes.md"
-ONNX_VERSION_PATH = Path(__file__).resolve().parents[1] / "onnx-org" / "VERSION_NUMBER"
+ONNX_VERSION_PATH = BACKEND_TEST_DATA_ROOT / VERSION_STAMP_NAME
+OFFICIAL_TEST_DIRECTORY = BACKEND_TEST_DATA_ROOT.name
 DOCS_REGEN_COMMAND = "UPDATE_REFS=1 pytest -q tests/test_official_onnx_files_docs.py::test_official_onnx_file_support_doc"
 
 
@@ -193,7 +194,7 @@ def _render_onnx_file_support_markdown(
     sections = [
         *_render_onnx_file_support_section(
             title="Official ONNX test coverage",
-            test_directory="onnx-org/onnx/backend/test/data",
+            test_directory=OFFICIAL_TEST_DIRECTORY,
             expectations=official_expectations,
         ),
     ]
@@ -442,14 +443,12 @@ def _render_supported_ops_markdown(
 )
 def test_official_onnx_file_support_doc() -> None:
     if not ONNX_VERSION_PATH.exists():
-        _maybe_init_onnx_org()
-    if not ONNX_VERSION_PATH.exists():
         pytest.skip(
-            "onnx-org version metadata is unavailable. Initialize the onnx-org "
-            "submodule and fetch its data files or set ONNX_ORG_AUTO_INIT=0 to skip auto-init."
+            "ONNX backend test data is unavailable. pytest generates it on "
+            "startup from the installed onnx package, which must match the onnx "
+            "pin in requirements-ci.txt."
         )
-    official_test_directory = "onnx-org/onnx/backend/test/data"
-    official_prefix = f"{official_test_directory}/"
+    official_prefix = f"{OFFICIAL_TEST_DIRECTORY}/"
     official_expectations: list[OnnxFileExpectation] = []
     for path in _official_onnx_file_paths():
         expectation = _load_expectation_for_repo_relative(path)
@@ -559,9 +558,9 @@ def test_operator_metadata_is_consistent() -> None:
         if cli_options is not None:
             assert cli_options, f"{op}: cli_options must not be empty"
             for option in cli_options:
-                assert re.fullmatch(r"--[a-z0-9-]+", option), (
-                    f"{op}: invalid CLI option '{option}'"
-                )
+                assert re.fullmatch(
+                    r"--[a-z0-9-]+", option
+                ), f"{op}: invalid CLI option '{option}'"
 
 
 def test_render_onnx_file_support_table_includes_extra_cli_args_in_file_column() -> (

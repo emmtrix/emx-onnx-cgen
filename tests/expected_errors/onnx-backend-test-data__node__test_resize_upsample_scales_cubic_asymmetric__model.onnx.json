@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_resize_upsample_scales_cubic_asymmetric model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Resize"
+  ],
+  "opset_version": 19,
+  "generated_checksum": "cd65435ac07e2640f3c7cf828d2e138d82744c666b3e4f10e7baf88d38c2099b"
+}

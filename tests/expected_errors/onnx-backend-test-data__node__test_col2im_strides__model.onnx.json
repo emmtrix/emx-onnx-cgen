@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_col2im_strides model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Col2Im"
+  ],
+  "opset_version": 18,
+  "generated_checksum": "8f4cb56459810f377e7c87fd5504c94124cc2a8b739ea57dde8324593cefb413"
+}

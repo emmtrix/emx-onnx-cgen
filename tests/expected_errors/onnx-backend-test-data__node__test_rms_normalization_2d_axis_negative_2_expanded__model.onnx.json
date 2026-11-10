@@ -1,0 +1,19 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_rms_normalization_2d_axis_negative_2_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Constant",
+    "Cast",
+    "Shape",
+    "Size",
+    "Add",
+    "Range",
+    "Mul",
+    "ReduceMean",
+    "Sqrt",
+    "Div"
+  ],
+  "opset_version": 23,
+  "generated_checksum": "60c71e32e7db163610e83438d5025b74de8c174e71dbd29bb7b1fa580984f024"
+}

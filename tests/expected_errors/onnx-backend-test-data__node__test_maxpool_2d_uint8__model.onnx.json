@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_maxpool_2d_uint8 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "MaxPool"
+  ],
+  "opset_version": 22,
+  "generated_checksum": "f1a0fdbbf48c7ea1570ad7ef8ecdd7a298268af164496669166a86f16044210d"
+}

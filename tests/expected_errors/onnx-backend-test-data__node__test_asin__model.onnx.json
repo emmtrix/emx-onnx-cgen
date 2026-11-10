@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_asin model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Asin"
+  ],
+  "opset_version": 22,
+  "generated_checksum": "171394538586f4132d71ecd9ce600252eb8e005f28ac9cafe02636dc305dada8"
+}

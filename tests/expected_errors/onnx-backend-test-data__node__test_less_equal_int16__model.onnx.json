@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_less_equal_int16 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "LessOrEqual"
+  ],
+  "opset_version": 16,
+  "generated_checksum": "a05bf81c922dd98ac1f546c646c38ad93e427a1ef2d09d434ec4e0e19976191f"
+}

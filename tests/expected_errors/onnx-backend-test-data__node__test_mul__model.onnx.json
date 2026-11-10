@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_mul model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Mul"
+  ],
+  "opset_version": 14,
+  "generated_checksum": "7df679acc6b2b49d177cc37699059bb747c61796f84677316450e87f2172e049"
+}

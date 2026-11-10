@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_cumprod_2d_int32 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "CumProd"
+  ],
+  "opset_version": 26,
+  "generated_checksum": "7be4ec966f81f14c2f2798fc17410feb0584de06aca8546986f31df3a476b2c2"
+}

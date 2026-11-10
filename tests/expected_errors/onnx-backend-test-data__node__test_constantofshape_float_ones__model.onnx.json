@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_constantofshape_float_ones model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "ConstantOfShape"
+  ],
+  "opset_version": 25,
+  "generated_checksum": "3a9b90947dfc5f3192b5028e1b8e3d921e3eb16ec20d63c6bb15583c361ed1fd"
+}

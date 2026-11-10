@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_tanh model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Tanh"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "072f95ac83c9bbf437168280f154bb7ca36b528fd4d0a6f0db8e9cff6cb543a1"
+}

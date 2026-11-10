@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_reduce_sum_keepdims_random model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "ReduceSum"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "e2f10f79e4f552e4b4b2ad4b1801fddd0e78f2ea4233f0458e301eaaa8c13c88"
+}
