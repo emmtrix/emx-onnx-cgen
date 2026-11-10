@@ -9,8 +9,9 @@ from typing import Callable
 
 import pytest
 
-from onnx_backend_test_data import BACKEND_TEST_DATA_ROOT, VERSION_STAMP_NAME
 from test_official_onnx_files import (
+    BACKEND_TEST_DATA_ROOT,
+    BACKEND_TEST_DATA_VERSION_PATH,
     LOCAL_REPO_ONNX_DATA_ROOT,
     ORT_ARTIFACTS_ONNX_DATA_ROOT,
     OnnxFileExpectation,
@@ -33,7 +34,7 @@ OPERATOR_METADATA_PATH = (
 )
 OPERATOR_NOTES_PATH = Path(__file__).resolve().parents[1] / "docs" / "operator-notes.md"
 OPERATOR_NOTES_LINK = "docs/operator-notes.md"
-ONNX_VERSION_PATH = BACKEND_TEST_DATA_ROOT / VERSION_STAMP_NAME
+ONNX_VERSION_PATH = BACKEND_TEST_DATA_VERSION_PATH
 OFFICIAL_TEST_DIRECTORY = BACKEND_TEST_DATA_ROOT.name
 DOCS_REGEN_COMMAND = "UPDATE_REFS=1 pytest -q tests/test_official_onnx_files_docs.py::test_official_onnx_file_support_doc"
 

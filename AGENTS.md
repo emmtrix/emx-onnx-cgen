@@ -98,13 +98,13 @@ source of truth for CLI arguments:
 PYTHONPATH=src python -m emx_onnx_cgen <command_line from JSON>
 ```
 
-The official ONNX backend test models live in the gitignored
-`onnx-backend-test-data/` directory. pytest assembles it on startup from the
-installed onnx package (`tests/onnx_backend_test_data.py`): the `node/` tests
-are generated (onnx 1.23 no longer ships them), the other kinds are copied from
-the wheel. It requires the installed onnx version to match the `onnx==` pin in
+The official ONNX backend test models live in the generated, gitignored
+`onnx-backend-test-data/` directory (see its `README.md`). pytest assembles it
+on startup from the installed onnx package (`onnx-backend-test-data/generate.py`):
+the `node/` tests are generated (onnx 1.23 no longer ships them), the other
+kinds are copied from the wheel. It requires the installed onnx version to match the `onnx==` pin in
 `requirements-ci.txt`. To reproduce an official model's command line outside of
-pytest, build it first with `python tests/onnx_backend_test_data.py`.
+pytest, build it first with `python onnx-backend-test-data/generate.py`.
 
 Do not invoke verification via `python -m emx_onnx_cgen.cli ...`; use
 `python -m emx_onnx_cgen ...` or the `emx-onnx-cgen` entry point so the CLI

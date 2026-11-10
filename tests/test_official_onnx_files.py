@@ -12,12 +12,14 @@ from typing import Any, Callable
 import pytest
 
 from emx_onnx_cgen import cli
-from onnx_backend_test_data import BACKEND_TEST_DATA_ROOT
 
 EXPECTED_ERRORS_ROOT = Path(__file__).resolve().parent / "expected_errors"
 OFFICIAL_ONNX_PREFIX = "onnx-backend-test-data/"
 ORT_ARTIFACTS_ONNX_PREFIX = "emx-ort-test-artifacts-org/artifacts/onnxruntime/"
 LOCAL_REPO_ONNX_PREFIX = "tests/onnx/"
+# Built by onnx-backend-test-data/generate.py, which writes the version stamp last.
+BACKEND_TEST_DATA_ROOT = Path(__file__).resolve().parents[1] / "onnx-backend-test-data"
+BACKEND_TEST_DATA_VERSION_PATH = BACKEND_TEST_DATA_ROOT / ".onnx-version"
 ORT_ARTIFACTS_ONNX_DATA_ROOT = (
     Path(__file__).resolve().parents[1]
     / "emx-ort-test-artifacts-org"
@@ -442,11 +444,11 @@ def _maybe_init_emx_ort_test_artifacts_org() -> None:
 
 
 def _ensure_official_onnx_files_present(data_root: Path) -> None:
-    if not data_root.exists():
+    if not (data_root / BACKEND_TEST_DATA_VERSION_PATH.name).exists():
         pytest.skip(
             f"ONNX backend test data ({data_root.name}/) is unavailable. pytest "
             "generates it on startup from the installed onnx package, which must "
-            "match the onnx pin in requirements-ci.txt."
+            f"match the onnx pin in requirements-ci.txt; see {data_root.name}/README.md."
         )
 
 
