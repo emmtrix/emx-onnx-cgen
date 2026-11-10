@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_reduce_l1_do_not_keepdims_example model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "ReduceL1"
+  ],
+  "opset_version": 18,
+  "generated_checksum": "ebc90e39192cee5ad1f1f8d95d0b81549cf40988897465e3a8ac2587523e3648"
+}

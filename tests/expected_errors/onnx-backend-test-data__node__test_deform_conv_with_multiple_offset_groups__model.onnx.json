@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_deform_conv_with_multiple_offset_groups model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "DeformConv"
+  ],
+  "opset_version": 22,
+  "generated_checksum": "40b309933afe7c383fe245ac9b096272c8ab7d9fd17613f4e5e590e89b9618d9"
+}

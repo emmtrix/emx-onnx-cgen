@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_max_example model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Max"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "4d8d69505ca45fb0cfc208ecde42f91637248f4ccf9283222865cb1e686920e3"
+}

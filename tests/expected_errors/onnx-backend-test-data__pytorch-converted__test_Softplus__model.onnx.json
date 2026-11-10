@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/pytorch-converted/test_Softplus model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Softplus"
+  ],
+  "opset_version": 6,
+  "generated_checksum": "b10b986283563295c30c1f08f285e0e335138433499207bccb4ad6a511255f43"
+}

@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_mod_float_edge_cases_fmod_0_float16 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Mod"
+  ],
+  "opset_version": 28,
+  "generated_checksum": "84411d176100be9d5182221e19c0a28d362d2b86396329f892f1cc6900d29c6e"
+}

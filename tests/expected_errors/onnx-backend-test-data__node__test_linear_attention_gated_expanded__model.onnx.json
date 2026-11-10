@@ -1,0 +1,22 @@
+{
+  "error": "OK (max ULP 67)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_linear_attention_gated_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Constant",
+    "Shape",
+    "Concat",
+    "Reshape",
+    "Transpose",
+    "Div",
+    "ConstantOfShape",
+    "Squeeze",
+    "Cast",
+    "Sqrt",
+    "Reciprocal",
+    "Scan",
+    "CastLike"
+  ],
+  "opset_version": 27,
+  "generated_checksum": "b612ec4141dc5b3b63880b39dfac877bbd765f0843a945cbf0c49ec111e09f25"
+}

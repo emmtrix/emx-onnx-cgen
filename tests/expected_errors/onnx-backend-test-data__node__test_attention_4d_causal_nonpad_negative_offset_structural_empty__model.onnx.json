@@ -1,0 +1,10 @@
+{
+  "error": "Out of tolerance (max ULP 1064936129)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_attention_4d_causal_nonpad_negative_offset_structural_empty model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Attention"
+  ],
+  "opset_version": 24,
+  "generated_checksum": "58c9cf757220a98353b4ea77c6f142862d53d3724133a88d4064a50baf043027"
+}

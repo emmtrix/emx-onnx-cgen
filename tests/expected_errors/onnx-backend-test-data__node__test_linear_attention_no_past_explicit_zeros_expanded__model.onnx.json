@@ -1,0 +1,21 @@
+{
+  "error": "OK (max ULP 6)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_linear_attention_no_past_explicit_zeros_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Constant",
+    "Shape",
+    "Concat",
+    "Reshape",
+    "Transpose",
+    "Div",
+    "Cast",
+    "Squeeze",
+    "Sqrt",
+    "Reciprocal",
+    "Scan",
+    "CastLike"
+  ],
+  "opset_version": 27,
+  "generated_checksum": "923493e9005736a8558278b0e85bb9a4b6ba4051c0c18bbf1a8625ec8c416b43"
+}

@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_castlike_FLOAT8E4M3FNUZ_to_FLOAT model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "CastLike"
+  ],
+  "opset_version": 25,
+  "generated_checksum": "cf0a3cb18bed29e4a4c6b9c4941d3f808eea8dce0958c2e03bd2c9b9a9f6aaaa"
+}

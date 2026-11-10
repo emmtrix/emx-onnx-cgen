@@ -1,0 +1,16 @@
+{
+  "error": "OK (max ULP 2)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_sce_mean_no_weight_ii_3d_log_prob_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Constant",
+    "Reshape",
+    "Transpose",
+    "LogSoftmax",
+    "Shape",
+    "Identity",
+    "NegativeLogLikelihoodLoss"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "df2bab42629b7c9f69461f1681a309087ca8ee151311b8881093ef36fda9e702"
+}

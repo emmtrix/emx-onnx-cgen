@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_reversesequence_batch model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "ReverseSequence"
+  ],
+  "opset_version": 28,
+  "generated_checksum": "794fb18816970eba2f1b917cafb301e85367f7bcb4fe783d8d7974384a4c4b69"
+}

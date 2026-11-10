@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_training_dropout model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Dropout"
+  ],
+  "opset_version": 22,
+  "generated_checksum": "dfb412c9ed687a8b9a586f190a65cd22a113f96471a6e5ae5c345ed2335f4c0d"
+}

@@ -206,7 +206,7 @@ def test_import_if_with_sequence_construct_branches_keeps_if_node() -> None:
 
 
 def test_import_if_with_optional_sequence_branches_keeps_if_node() -> None:
-    model = onnx.load("onnx-org/onnx/backend/test/data/node/test_if_opt/model.onnx")
+    model = onnx.load("onnx-backend-test-data/node/test_if_opt/model.onnx")
 
     imported = import_onnx(model)
 

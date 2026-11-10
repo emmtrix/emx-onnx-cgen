@@ -1,0 +1,9 @@
+{
+  "error": "Unsupported op Attention (while lowering node_index=0, op_type=Attention, name=<unnamed>, inputs=[Q: tensor[dtype=float, shape=(2, 4, 4, 8), dim_params=(None, None, None, None)], K: tensor[dtype=float, shape=(2, 2, 6, 8), dim_params=(None, None, None, None)], V: tensor[dtype=float, shape=(2, 2, 6, 6), dim_params=(None, None, None, None)], attn_mask: tensor[dtype=bool, shape=(2, 4, 4, 6), dim_params=(None, None, None, None)]], outputs=[Y: tensor[dtype=float, shape=(2, 4, 4, 6), dim_params=(None, None, None, None)], <omitted>, <omitted>, qk_matmul_output: tensor[dtype=float, shape=(2, 4, 4, 6), dim_params=(None, None, None, None)]])",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_attention_local_window_gqa_rank4_mask model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Attention"
+  ],
+  "opset_version": 25
+}

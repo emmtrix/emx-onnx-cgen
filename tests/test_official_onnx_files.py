@@ -14,9 +14,12 @@ import pytest
 from emx_onnx_cgen import cli
 
 EXPECTED_ERRORS_ROOT = Path(__file__).resolve().parent / "expected_errors"
-OFFICIAL_ONNX_PREFIX = "onnx-org/onnx/backend/test/data/"
+OFFICIAL_ONNX_PREFIX = "onnx-backend-test-data/"
 ORT_ARTIFACTS_ONNX_PREFIX = "emx-ort-test-artifacts-org/artifacts/onnxruntime/"
 LOCAL_REPO_ONNX_PREFIX = "tests/onnx/"
+# Built by onnx-backend-test-data/generate.py, which writes the version stamp last.
+BACKEND_TEST_DATA_ROOT = Path(__file__).resolve().parents[1] / "onnx-backend-test-data"
+BACKEND_TEST_DATA_VERSION_PATH = BACKEND_TEST_DATA_ROOT / ".onnx-version"
 ORT_ARTIFACTS_ONNX_DATA_ROOT = (
     Path(__file__).resolve().parents[1]
     / "emx-ort-test-artifacts-org"
@@ -31,130 +34,130 @@ MODEL_EXTRA_VERIFY_ARGS = {
     "tests/onnx/micro_kws_m_qoperator_avg_pool.onnx": ("--replicate-ort-bugs",),
     "tests/onnx/micro_kws_m_qoperator_softmax.onnx": ("--replicate-ort-bugs",),
     "tests/onnx/micro_kws_m_static_qoperator.onnx": ("--replicate-ort-bugs",),
-    "onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx": (
+    "onnx-backend-test-data/node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx": (
         "--fp32-accumulation-strategy",
         "fp64",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx": (
+    "onnx-backend-test-data/node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx": (
         "--fp32-accumulation-strategy",
         "fp64",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight/model.onnx": (
+    "onnx-backend-test-data/node/test_sce_NCd1d2d3d4d5_mean_weight/model.onnx": (
         "--fp32-accumulation-strategy",
         "fp64",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_expanded/model.onnx": (
+    "onnx-backend-test-data/node/test_sce_NCd1d2d3d4d5_mean_weight_expanded/model.onnx": (
         "--fp32-accumulation-strategy",
         "fp64",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob/model.onnx": (
+    "onnx-backend-test-data/node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob/model.onnx": (
         "--fp32-accumulation-strategy",
         "fp64",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx": (
+    "onnx-backend-test-data/node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx": (
         "--fp32-accumulation-strategy",
         "fp64",
     ),
-    "onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated_strided/model.onnx": (
+    "onnx-backend-test-data/pytorch-converted/test_Conv3d_dilated_strided/model.onnx": (
         "--fp32-accumulation-strategy",
         "fp64",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_dft_inverse/model.onnx": (
+    "onnx-backend-test-data/node/test_dft_inverse/model.onnx": (
         "--atol-eps",
         "2",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_dft_inverse_opset19/model.onnx": (
+    "onnx-backend-test-data/node/test_dft_inverse_opset19/model.onnx": (
         "--atol-eps",
         "2",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx": (
+    "onnx-backend-test-data/node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx": (
         "--runtime",
         "onnx-reference",
         "--test-data-inputs-only",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_roialign_aligned_false/model.onnx": (
+    "onnx-backend-test-data/node/test_roialign_aligned_false/model.onnx": (
         "--runtime",
         "onnx-reference",
         "--test-data-inputs-only",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_roialign_aligned_true/model.onnx": (
+    "onnx-backend-test-data/node/test_roialign_aligned_true/model.onnx": (
         "--runtime",
         "onnx-reference",
         "--test-data-inputs-only",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_constant/model.onnx": (
+    "onnx-backend-test-data/node/test_constant/model.onnx": (
         "--runtime",
         "onnx-reference",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_back/model.onnx": (
+    "onnx-backend-test-data/node/test_sequence_insert_at_back/model.onnx": (
         "--sequence-element-shape",
         "sequence=[<=4]",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_front/model.onnx": (
+    "onnx-backend-test-data/node/test_sequence_insert_at_front/model.onnx": (
         "--sequence-element-shape",
         "sequence=[<=4]",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_identity_sequence/model.onnx": (
+    "onnx-backend-test-data/node/test_identity_sequence/model.onnx": (
         "--sequence-element-shape",
         "x=[1,1,2,2]",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor/model.onnx": (
+    "onnx-backend-test-data/node/test_sequence_map_add_1_sequence_1_tensor/model.onnx": (
         "--sequence-element-shape",
         "x0=[10]",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx": (
+    "onnx-backend-test-data/node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx": (
         "--sequence-element-shape",
         "x0=[10]",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences/model.onnx": (
+    "onnx-backend-test-data/node/test_sequence_map_add_2_sequences/model.onnx": (
         "--sequence-element-shape",
         "x0=[<=6]",
         "--sequence-element-shape",
         "x1=[<=6]",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences_expanded/model.onnx": (
+    "onnx-backend-test-data/node/test_sequence_map_add_2_sequences_expanded/model.onnx": (
         "--sequence-element-shape",
         "x0=[<=6]",
         "--sequence-element-shape",
         "x1=[<=6]",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes/model.onnx": (
+    "onnx-backend-test-data/node/test_sequence_map_extract_shapes/model.onnx": (
         "--sequence-element-shape",
         "in_seq=[<=40,<=30,3]",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes_expanded/model.onnx": (
+    "onnx-backend-test-data/node/test_sequence_map_extract_shapes_expanded/model.onnx": (
         "--sequence-element-shape",
         "in_seq=[<=40,<=30,3]",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence/model.onnx": (
+    "onnx-backend-test-data/node/test_sequence_map_identity_1_sequence/model.onnx": (
         "--sequence-element-shape",
         "x=[10]",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_expanded/model.onnx": (
+    "onnx-backend-test-data/node/test_sequence_map_identity_1_sequence_expanded/model.onnx": (
         "--sequence-element-shape",
         "x=[10]",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx": (
+    "onnx-backend-test-data/node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx": (
         "--sequence-element-shape",
         "x0=[<=9]",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx": (
+    "onnx-backend-test-data/node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx": (
         "--sequence-element-shape",
         "x0=[<=9]",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences/model.onnx": (
+    "onnx-backend-test-data/node/test_sequence_map_identity_2_sequences/model.onnx": (
         "--sequence-element-shape",
         "x0=[<=9]",
         "--sequence-element-shape",
         "x1=[<=8]",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences_expanded/model.onnx": (
+    "onnx-backend-test-data/node/test_sequence_map_identity_2_sequences_expanded/model.onnx": (
         "--sequence-element-shape",
         "x0=[<=9]",
         "--sequence-element-shape",
         "x1=[<=8]",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_gridsample_bicubic/model.onnx": (
+    "onnx-backend-test-data/node/test_gridsample_bicubic/model.onnx": (
         "--runtime",
         "onnx-reference",
         "--test-data-inputs-only",
@@ -162,11 +165,11 @@ MODEL_EXTRA_VERIFY_ARGS = {
     "emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gridsample_test/gridsample_mode_bicubic_run0/model.onnx": (
         "--test-data-inputs-only",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_affine_grid_3d/model.onnx": (
+    "onnx-backend-test-data/node/test_affine_grid_3d/model.onnx": (
         "--fp32-accumulation-strategy",
         "fp64",
     ),
-    "onnx-org/onnx/backend/test/data/node/test_affine_grid_3d_expanded/model.onnx": (
+    "onnx-backend-test-data/node/test_affine_grid_3d_expanded/model.onnx": (
         "--fp32-accumulation-strategy",
         "fp64",
     ),
@@ -254,23 +257,7 @@ def _repo_root() -> Path:
 
 
 def _official_data_root() -> Path:
-    return _repo_root() / "onnx-org" / "onnx" / "backend" / "test" / "data"
-
-
-@cache
-def _official_onnx_repo_paths_set() -> frozenset[str]:
-    return frozenset(_official_onnx_file_paths())
-
-
-@cache
-def _missing_official_onnx_paths() -> tuple[str, ...]:
-    repo_root = _repo_root()
-    missing = [
-        path
-        for path in _official_onnx_repo_paths_set()
-        if not (repo_root / path).exists()
-    ]
-    return tuple(sorted(missing))
+    return BACKEND_TEST_DATA_ROOT
 
 
 def _normalize_official_path(path: str) -> str:
@@ -438,34 +425,6 @@ def _collect_onnx_files(data_root: Path) -> list[str]:
     )[:ONNX_FILE_LIMIT]
 
 
-def _maybe_init_onnx_org() -> None:
-    auto_init = os.getenv("ONNX_ORG_AUTO_INIT", "1").strip().lower()
-    if auto_init in {"0", "false", "no", "off"}:
-        return
-    repo_root = Path(__file__).resolve().parents[1]
-    if shutil.which("git") is None:
-        return
-    subprocess.run(
-        ["git", "submodule", "update", "--init", "--recursive", "onnx-org"],
-        cwd=repo_root,
-        check=False,
-    )
-    lfs_probe = subprocess.run(
-        ["git", "lfs", "version"],
-        cwd=repo_root,
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-    if lfs_probe.returncode != 0:
-        return
-    subprocess.run(
-        ["git", "lfs", "pull", "--include", "onnx/backend/test/data/**"],
-        cwd=repo_root / "onnx-org",
-        check=False,
-    )
-
-
 def _maybe_init_emx_ort_test_artifacts_org() -> None:
     repo_root = Path(__file__).resolve().parents[1]
     if shutil.which("git") is None:
@@ -485,27 +444,11 @@ def _maybe_init_emx_ort_test_artifacts_org() -> None:
 
 
 def _ensure_official_onnx_files_present(data_root: Path) -> None:
-    if not data_root.exists():
-        _maybe_init_onnx_org()
-        _missing_official_onnx_paths.cache_clear()
-    if not data_root.exists():
+    if not (data_root / BACKEND_TEST_DATA_VERSION_PATH.name).exists():
         pytest.skip(
-            "onnx-org test data is unavailable. Initialize the onnx-org submodule "
-            "and fetch its data files or set ONNX_ORG_AUTO_INIT=0 to skip auto-init."
-        )
-    missing = _missing_official_onnx_paths()
-    if missing:
-        _maybe_init_onnx_org()
-        _missing_official_onnx_paths.cache_clear()
-        missing = _missing_official_onnx_paths()
-        if not missing:
-            return
-        preview = ", ".join(missing[:5])
-        suffix = "..." if len(missing) > 5 else ""
-        pytest.skip(
-            "onnx-org test data is incomplete; missing files include: "
-            f"{preview}{suffix}. Initialize the submodule and fetch any LFS data or "
-            "set ONNX_ORG_AUTO_INIT=0 to skip auto-init."
+            f"ONNX backend test data ({data_root.name}/) is unavailable. pytest "
+            "generates it on startup from the installed onnx package, which must "
+            f"match the onnx pin in requirements-ci.txt; see {data_root.name}/README.md."
         )
 
 

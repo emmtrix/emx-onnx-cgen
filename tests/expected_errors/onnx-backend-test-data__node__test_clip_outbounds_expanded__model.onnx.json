@@ -1,0 +1,11 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_clip_outbounds_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Less",
+    "Where"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "8e40d0185540cb6406a66f21538957ef35ef56dc40e7e7707dcb60da269000fb"
+}

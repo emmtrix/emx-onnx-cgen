@@ -7282,7 +7282,7 @@ def test_lower_sequence_construct() -> None:
 def test_compile_prunes_unused_sequence_empty_state_from_sequence_map() -> None:
     model = onnx.load(
         PROJECT_ROOT
-        / "onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences/model.onnx"
+        / "onnx-backend-test-data/node/test_sequence_map_add_2_sequences/model.onnx"
     )
     generated = Compiler(
         CompilerOptions(
@@ -7298,7 +7298,7 @@ def test_compile_prunes_unused_sequence_empty_state_from_sequence_map() -> None:
 def test_compile_reduce_l2_empty_set_expanded_recovers_passthrough_shape() -> None:
     model = onnx.load(
         PROJECT_ROOT
-        / "onnx-org/onnx/backend/test/data/node/test_reduce_l2_empty_set_expanded/model.onnx"
+        / "onnx-backend-test-data/node/test_reduce_l2_empty_set_expanded/model.onnx"
     )
     generated = Compiler(CompilerOptions()).compile(model)
     assert "node1_reducesum" in generated
@@ -7308,7 +7308,7 @@ def test_compile_reduce_l2_empty_set_expanded_recovers_passthrough_shape() -> No
 def test_compile_reduce_log_sum_exp_expanded_recovers_passthrough_shape() -> None:
     model = onnx.load(
         PROJECT_ROOT
-        / "onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_do_not_keepdims_example_expanded/model.onnx"
+        / "onnx-backend-test-data/node/test_reduce_log_sum_exp_do_not_keepdims_example_expanded/model.onnx"
     )
     generated = Compiler(CompilerOptions()).compile(model)
     assert "node2_reducesum" in generated

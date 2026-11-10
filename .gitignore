@@ -10,3 +10,7 @@ src/emx_onnx_cgen/_version.py
 /tmp/
 /test/
 /.codex-temp/
+# Generated, see onnx-backend-test-data/README.md
+/onnx-backend-test-data/*
+!/onnx-backend-test-data/README.md
+!/onnx-backend-test-data/generate.py

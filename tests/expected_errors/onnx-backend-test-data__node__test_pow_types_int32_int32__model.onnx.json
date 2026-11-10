@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_pow_types_int32_int32 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Pow"
+  ],
+  "opset_version": 15,
+  "generated_checksum": "4cb7360541e133473d27c59dda32c6179cd6fe1a00dcbb14cd783cde8456f8a4"
+}

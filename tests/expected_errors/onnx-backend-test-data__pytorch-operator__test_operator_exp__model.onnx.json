@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/pytorch-operator/test_operator_exp model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Exp"
+  ],
+  "opset_version": 6,
+  "generated_checksum": "947410cb36cd264486cc9c067484424031975eb7c63fbef12a4528d842baec22"
+}

@@ -1,0 +1,14 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_celu_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Constant",
+    "CastLike",
+    "Div",
+    "Elu",
+    "Mul"
+  ],
+  "opset_version": 28,
+  "generated_checksum": "23432bf798867829d5104871e274d50c666e98edf5443bb055f7be4f30d99fae"
+}

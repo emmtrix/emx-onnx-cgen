@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_bitshift_right_int64 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "BitShift"
+  ],
+  "opset_version": 28,
+  "generated_checksum": "241d3d6fe3d539c4cb9a158442ba72479104f853cdd90ccee2895e2841bca495"
+}

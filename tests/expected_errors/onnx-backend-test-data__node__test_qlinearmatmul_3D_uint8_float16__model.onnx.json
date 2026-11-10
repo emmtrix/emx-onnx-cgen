@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_qlinearmatmul_3D_uint8_float16 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "QLinearMatMul"
+  ],
+  "opset_version": 21,
+  "generated_checksum": "785f9b792755d6c3bf8724e3b38c057f248d4c967fb986058e59fe00bd2c2bf7"
+}

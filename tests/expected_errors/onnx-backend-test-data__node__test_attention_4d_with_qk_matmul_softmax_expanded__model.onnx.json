@@ -1,0 +1,31 @@
+{
+  "error": "OK (max ULP 3)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_attention_4d_with_qk_matmul_softmax_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Shape",
+    "Identity",
+    "Cast",
+    "Sqrt",
+    "Constant",
+    "Div",
+    "Concat",
+    "Equal",
+    "Not",
+    "Mod",
+    "And",
+    "Where",
+    "Unsqueeze",
+    "Expand",
+    "Reshape",
+    "Transpose",
+    "Mul",
+    "MatMul",
+    "Add",
+    "Softmax",
+    "ReduceMax",
+    "CastLike"
+  ],
+  "opset_version": 23,
+  "generated_checksum": "0b21f9a0580cd76f4d848bc7fc3b07e56806b5fb7b0f63dc72b9152c57c615a8"
+}

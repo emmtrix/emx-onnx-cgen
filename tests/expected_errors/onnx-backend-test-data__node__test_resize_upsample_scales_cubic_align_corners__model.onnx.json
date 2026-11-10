@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_resize_upsample_scales_cubic_align_corners model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Resize"
+  ],
+  "opset_version": 19,
+  "generated_checksum": "f8d35a82b98de8d9038c263837632926dbfc9621543daa02627362681cf1263b"
+}

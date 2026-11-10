@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_xor2d model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Xor"
+  ],
+  "opset_version": 7,
+  "generated_checksum": "bf66c76ccbe83f699927a4d3d297b606be3dee81254279c6ba9d289a926dcb6d"
+}

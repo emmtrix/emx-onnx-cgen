@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_wrap_pad model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Pad"
+  ],
+  "opset_version": 25,
+  "generated_checksum": "f98f189d8ef3158632a3a145a438ab55e471eb96ab19e50e07f6a522c048e813"
+}

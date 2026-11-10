@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_gather_0 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Gather"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "a573f9dac60d62d9e46904f04543f721dc909f9fb8f116e46029c653d97d55d7"
+}

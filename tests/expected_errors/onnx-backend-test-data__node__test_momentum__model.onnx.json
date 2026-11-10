@@ -1,0 +1,9 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_momentum model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "ai.onnx.preview.training.Momentum"
+  ],
+  "generated_checksum": "2860c474cd15691e9d19b78833027ac0688f90ad2728a46583782689c629679a"
+}

@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_image_decoder_decode_png_rgb model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "ImageDecoder"
+  ],
+  "opset_version": 20,
+  "generated_checksum": "bba00a3b45ca7f551db46535590d8e57e53d8960620fc5ead0dbbc6f7e7c32bf"
+}

@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 2)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_lppool_2d_strides model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "LpPool"
+  ],
+  "opset_version": 22,
+  "generated_checksum": "f7d97684d3a0206623924126e79b41fbc621024591261262a2225646cac6d36e"
+}

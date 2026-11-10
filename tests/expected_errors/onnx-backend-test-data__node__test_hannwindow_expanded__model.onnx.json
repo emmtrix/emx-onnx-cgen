@@ -1,0 +1,17 @@
+{
+  "error": "OK (max ULP 3)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_hannwindow_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Constant",
+    "Cast",
+    "Sub",
+    "Mul",
+    "Add",
+    "Div",
+    "Range",
+    "Cos"
+  ],
+  "opset_version": 17,
+  "generated_checksum": "7843a196d2ffc51ddefe90ab46b03bad92adb5c53137fded01a687457afbdb1e"
+}

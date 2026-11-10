@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_averagepool_2d_precomputed_strides model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "AveragePool"
+  ],
+  "opset_version": 22,
+  "generated_checksum": "066b0d043b8c5ad41d6ea77fdedf2199198ebc4d9ddeda4b2e08dcd2922d9bfc"
+}

@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Cast"
+  ],
+  "opset_version": 25,
+  "generated_checksum": "babc1079acedded82ffca1e49ce015b80bcac69ca3dbbb2449bf1a4941759854"
+}

@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_unique_bfloat16_sorted_without_axis model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Unique"
+  ],
+  "opset_version": 28,
+  "generated_checksum": "3a2cb468aca2e813fd826f4f6b1d95d8f19481b09c932e6975da1f8daee9a586"
+}

@@ -1,0 +1,11 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_hardswish_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "HardSigmoid",
+    "Mul"
+  ],
+  "opset_version": 22,
+  "generated_checksum": "70ea5708c81fb24f3591f64605b2946c19504c2eca44a2af3680eb595c38ea8b"
+}

@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_min_int32 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Min"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "a0fdefc7410a71c2fb3af4889711ef4a533fa239ae46a4915de5432b94dd3945"
+}

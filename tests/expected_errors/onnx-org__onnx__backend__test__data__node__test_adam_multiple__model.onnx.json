@@ -1,9 +1,0 @@
-{
-  "error": "OK (max ULP 1)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_adam_multiple model.onnx --test-data-dir test_data_set_0",
-  "verification_mode": "Data/Data",
-  "operators": [
-    "ai.onnx.preview.training.Adam"
-  ],
-  "generated_checksum": "15be33bbe16b1a3b826f86df93422e19788a2478021fe1aaa4ff745fc716a9c8"
-}

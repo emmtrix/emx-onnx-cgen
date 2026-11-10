@@ -1,0 +1,12 @@
+{
+  "error": "OK (non-deterministic output)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_bernoulli_double_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "RandomUniformLike",
+    "Greater",
+    "Cast"
+  ],
+  "opset_version": 22,
+  "generated_checksum": "0c6d165d9ae5daf5c15b6e46b367c7aeec4e8ef7eb2a56160b5fdf79d4fa6b20"
+}

@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_einsum_transpose_bfloat16 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Einsum"
+  ],
+  "opset_version": 28,
+  "generated_checksum": "72ca68089d6ac0f6f813e0d87dee0ef748d8f69bdec0deb0e8eda5c9a8a46063"
+}

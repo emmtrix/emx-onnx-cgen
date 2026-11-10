@@ -1,0 +1,32 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_attention_3d_diff_heads_sizes_scaled_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Shape",
+    "Constant",
+    "Concat",
+    "Reshape",
+    "Transpose",
+    "Cast",
+    "Sqrt",
+    "Div",
+    "Identity",
+    "ConstantOfShape",
+    "Equal",
+    "Not",
+    "Mod",
+    "And",
+    "Where",
+    "Unsqueeze",
+    "Expand",
+    "Mul",
+    "MatMul",
+    "Add",
+    "Softmax",
+    "ReduceMax",
+    "CastLike"
+  ],
+  "opset_version": 23,
+  "generated_checksum": "5c18c479c10ea3a5bfc12445de354945a85482496d7ad91382822dc280d9be59"
+}

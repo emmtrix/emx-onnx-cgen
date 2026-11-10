@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_mod_float64_mixed_sign_fmod_0 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Mod"
+  ],
+  "opset_version": 28,
+  "generated_checksum": "4e5189af8700088b5f72f74dac44b921a1883e76c708606c228a307b788527f2"
+}

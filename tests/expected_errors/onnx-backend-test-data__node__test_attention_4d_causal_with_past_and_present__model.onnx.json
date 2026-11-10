@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_attention_4d_causal_with_past_and_present model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Attention"
+  ],
+  "opset_version": 24,
+  "generated_checksum": "8db5fa6f1ddf950619fa459f1bca9001bbc340890fd75153328e1737cdcf8ee4"
+}

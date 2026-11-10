@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/pytorch-converted/test_Conv2d_depthwise_padded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Conv"
+  ],
+  "opset_version": 6,
+  "generated_checksum": "c55f9b44de4e1896e0721cc4379bd18c85f558db72033d3481fef810cc2cc077"
+}

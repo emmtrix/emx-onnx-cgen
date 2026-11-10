@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_gelu_default_1 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Gelu"
+  ],
+  "opset_version": 20,
+  "generated_checksum": "cd6f211a1b6e0923c6c967189047077e1dde71dbff19a3b5e084a3ef7c0e741e"
+}

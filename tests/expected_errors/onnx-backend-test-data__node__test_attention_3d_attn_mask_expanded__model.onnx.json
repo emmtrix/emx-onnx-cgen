@@ -1,0 +1,31 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_attention_3d_attn_mask_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Shape",
+    "Constant",
+    "Concat",
+    "Reshape",
+    "Transpose",
+    "Cast",
+    "Sqrt",
+    "Div",
+    "Identity",
+    "Equal",
+    "Not",
+    "Mod",
+    "And",
+    "Where",
+    "Unsqueeze",
+    "Expand",
+    "Mul",
+    "MatMul",
+    "Add",
+    "Softmax",
+    "ReduceMax",
+    "CastLike"
+  ],
+  "opset_version": 23,
+  "generated_checksum": "b47ca0c43f95b39e23f4cfda02bd33f7d7dbfd3f27a3d19e28c8220026dfd2ff"
+}

@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_argmax_no_keepdims_random model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "ArgMax"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "08f1be8e3eaa850effb750ec22f3a96e2cd350657154b6ed701fde0b17f7739a"
+}

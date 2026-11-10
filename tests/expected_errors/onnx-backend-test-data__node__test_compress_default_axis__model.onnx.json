@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_compress_default_axis model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Compress"
+  ],
+  "opset_version": 28,
+  "generated_checksum": "42147b0c615dc05eb9ecce65f4e1c4706fe8c605109c35d8e51b62bec544cd57"
+}

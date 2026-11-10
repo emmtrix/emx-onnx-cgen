@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_cumsum_2d_int32 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "CumSum"
+  ],
+  "opset_version": 14,
+  "generated_checksum": "04514772608a88b5366b92dd6f1f6fb7e7da727575cbad982907f667599eff10"
+}

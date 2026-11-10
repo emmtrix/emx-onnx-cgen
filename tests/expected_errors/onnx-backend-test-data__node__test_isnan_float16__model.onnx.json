@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_isnan_float16 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "IsNaN"
+  ],
+  "opset_version": 20,
+  "generated_checksum": "e326d2947a6893535a275b04a40a4f1266053e02ccf8953bef0fc82f5e0800ee"
+}

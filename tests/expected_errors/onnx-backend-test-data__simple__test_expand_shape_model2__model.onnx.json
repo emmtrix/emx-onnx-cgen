@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/simple/test_expand_shape_model2 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Expand"
+  ],
+  "opset_version": 9,
+  "generated_checksum": "3eb27321a2bb23d7eeb55f05db88b85f007a19dfacddb2d4421fbe0257a15398"
+}

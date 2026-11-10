@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_einsum_scalar model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Einsum"
+  ],
+  "opset_version": 28,
+  "generated_checksum": "a878395bfb1d0709f335a5b32115545b04dfc6fc10a3d21386d949a65576596d"
+}

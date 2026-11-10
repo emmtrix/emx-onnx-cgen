@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 13)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_gridsample_bicubic_align_corners_0_additional_1 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "GridSample"
+  ],
+  "opset_version": 22,
+  "generated_checksum": "3e95107fd783a0170194461d83132fb3fb1c9d213ebb0200786b20fb2af2f46b"
+}

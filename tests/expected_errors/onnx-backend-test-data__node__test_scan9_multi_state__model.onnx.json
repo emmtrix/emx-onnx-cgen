@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_scan9_multi_state model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Scan"
+  ],
+  "opset_version": 9,
+  "generated_checksum": "0afdfe473b2ea38e049486072b097eee154d7debcc6940dc9b9adea7c006af90"
+}

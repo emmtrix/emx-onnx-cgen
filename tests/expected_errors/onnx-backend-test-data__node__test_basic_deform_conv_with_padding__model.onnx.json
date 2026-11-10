@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_basic_deform_conv_with_padding model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "DeformConv"
+  ],
+  "opset_version": 22,
+  "generated_checksum": "6a3ff6e396a4763308f8e1900215103e48c19726aea1092a48c641fdf1c475a4"
+}

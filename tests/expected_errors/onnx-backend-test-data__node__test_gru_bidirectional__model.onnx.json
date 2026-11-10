@@ -1,0 +1,9 @@
+{
+  "error": "Unsupported GRU direction b'bidirectional' (while lowering node_index=0, op_type=GRU, name=<unnamed>, inputs=[X: tensor[dtype=float, shape=(3, 1, 2), dim_params=(None, None, None)], W: tensor[dtype=float, shape=(2, 15, 2), dim_params=(None, None, None)], R: tensor[dtype=float, shape=(2, 15, 5), dim_params=(None, None, None)]], outputs=[Y: tensor[dtype=float, shape=(3, 2, 1, 5), dim_params=(None, None, None, None)], Y_h: tensor[dtype=float, shape=(2, 1, 5), dim_params=(None, None, None)]])",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_gru_bidirectional model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "GRU"
+  ],
+  "opset_version": 22
+}

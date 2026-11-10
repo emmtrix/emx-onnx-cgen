@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_tensorscatter_circular model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "TensorScatter"
+  ],
+  "opset_version": 24,
+  "generated_checksum": "666ffdc57d39f69895cf17ce1e8cc3e3372a430b2aca5f525b3700f918990755"
+}

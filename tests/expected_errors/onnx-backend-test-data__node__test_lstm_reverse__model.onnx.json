@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_lstm_reverse model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "LSTM"
+  ],
+  "opset_version": 22,
+  "generated_checksum": "f1fc4e8bdd7a2e5fd373832e2dec10c40bd3731fea4467ee4cd89d5a125779a0"
+}
