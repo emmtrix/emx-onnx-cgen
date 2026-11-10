@@ -1,0 +1,15 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_averagepool_2d_ceil_last_window_starts_on_pad model.onnx --test-data-dir test_data_set_0 --runtime onnx-reference --test-data-inputs-only",
+  "extra_cli_args": [
+    "--runtime",
+    "onnx-reference",
+    "--test-data-inputs-only"
+  ],
+  "verification_mode": "Data/ONNXRef",
+  "operators": [
+    "AveragePool"
+  ],
+  "opset_version": 22,
+  "generated_checksum": "5861aadecf33ff19b182bbe2730166f95f68c38e55fef5161c35075b5fb59a3c"
+}

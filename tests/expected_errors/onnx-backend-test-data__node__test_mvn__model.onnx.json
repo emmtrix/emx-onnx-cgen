@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 3)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_mvn model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "MeanVarianceNormalization"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "770d13153cde8d124212c9c5653d6f648d3916af3d90b87857207042cb4fbfeb"
+}

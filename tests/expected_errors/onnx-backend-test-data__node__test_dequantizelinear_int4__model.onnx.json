@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_dequantizelinear_int4 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "DequantizeLinear"
+  ],
+  "opset_version": 28,
+  "generated_checksum": "0426b0708e90354149befe732a21c1cfeb1bb82bafdf3a8023e56afb5196c547"
+}

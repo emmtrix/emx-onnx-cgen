@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_tfidfvectorizer_tf_onlybigrams_levelempty model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "TfIdfVectorizer"
+  ],
+  "opset_version": 9,
+  "generated_checksum": "07db68ffa5f0ace5b0530cb8af2c8740677c708f4118e91d750cededd032d341"
+}

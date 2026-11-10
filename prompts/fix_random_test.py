@@ -12,6 +12,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = REPO_ROOT / "src"
 sys.path.insert(0, str(REPO_ROOT))
 sys.path.insert(0, str(SRC_ROOT))
+sys.path.insert(0, str(REPO_ROOT / "tests"))
 
 from tests.test_official_onnx_files import (  # noqa: E402
     EXPECTED_ERRORS_ROOT,

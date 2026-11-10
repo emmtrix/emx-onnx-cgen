@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/pytorch-operator/test_operator_reduced_mean model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "ReduceMean"
+  ],
+  "opset_version": 6,
+  "generated_checksum": "0fc60b748a87b015eaebc309e1563de900dc279409f3bd0d65844e6a30ebf384"
+}

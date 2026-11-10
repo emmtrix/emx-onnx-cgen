@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_lstm_with_initial_bias model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "LSTM"
+  ],
+  "opset_version": 22,
+  "generated_checksum": "f0cae08f9d46ffa8d4a9d3224043aa9c1fb836ad5089d3b526ddfd0f0d78a46e"
+}

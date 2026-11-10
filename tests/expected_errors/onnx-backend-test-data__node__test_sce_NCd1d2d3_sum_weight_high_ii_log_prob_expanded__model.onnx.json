@@ -1,0 +1,16 @@
+{
+  "error": "OK (max ULP 2)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Constant",
+    "Reshape",
+    "Transpose",
+    "LogSoftmax",
+    "Shape",
+    "Identity",
+    "NegativeLogLikelihoodLoss"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "430dcb21b68d0126bc69dca91dcf1175784735223acfbd9a41e9828681d97426"
+}

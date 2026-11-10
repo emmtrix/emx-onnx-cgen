@@ -760,7 +760,7 @@ def test_codegen_golden_constant_string() -> None:
 
 def test_codegen_golden_loop_range_official_model() -> None:
     model = _load_official_onnx_model(
-        "onnx-org/onnx/backend/test/data/node/test_range_float_type_positive_delta_expanded/model.onnx"
+        "onnx-backend-test-data/node/test_range_float_type_positive_delta_expanded/model.onnx"
     )
     compiler = Compiler(CompilerOptions(model_name="loop_range_float_model"))
     generated = compiler.compile(model)
@@ -770,7 +770,7 @@ def test_codegen_golden_loop_range_official_model() -> None:
 
 def test_codegen_loop11_emits_runtime_loop() -> None:
     model = _load_official_onnx_model(
-        "onnx-org/onnx/backend/test/data/node/test_loop11/model.onnx"
+        "onnx-backend-test-data/node/test_loop11/model.onnx"
     )
     compiler = Compiler(CompilerOptions(model_name="loop11_model"))
     generated = compiler.compile(model)
@@ -780,7 +780,7 @@ def test_codegen_loop11_emits_runtime_loop() -> None:
 
 def test_codegen_loop13_seq_emits_runtime_loop() -> None:
     model = _load_official_onnx_model(
-        "onnx-org/onnx/backend/test/data/node/test_loop13_seq/model.onnx"
+        "onnx-backend-test-data/node/test_loop13_seq/model.onnx"
     )
     compiler = Compiler(CompilerOptions(model_name="loop13_seq_model"))
     generated = compiler.compile(model)
@@ -790,7 +790,7 @@ def test_codegen_loop13_seq_emits_runtime_loop() -> None:
 
 def test_codegen_loop_sequence_map_uses_runtime_tensor_shape_for_copy() -> None:
     model = _load_official_onnx_model(
-        "onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx"
+        "onnx-backend-test-data/node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx"
     )
     compiler = Compiler(
         CompilerOptions(

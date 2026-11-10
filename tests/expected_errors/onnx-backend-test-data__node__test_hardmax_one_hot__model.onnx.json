@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_hardmax_one_hot model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Hardmax"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "35b5d21cc7136468362e2bfe29846805e5f78859b697e16b551e80ffb788e033"
+}

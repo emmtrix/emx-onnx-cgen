@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_isinf model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "IsInf"
+  ],
+  "opset_version": 20,
+  "generated_checksum": "e2e462f81c21cf4372502990bbdc15d4cf7c018687a7f9fe7ed8196f4b63b430"
+}

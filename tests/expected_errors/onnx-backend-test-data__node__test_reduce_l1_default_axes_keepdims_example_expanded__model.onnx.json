@@ -1,0 +1,11 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_reduce_l1_default_axes_keepdims_example_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Abs",
+    "ReduceSum"
+  ],
+  "opset_version": 18,
+  "generated_checksum": "d116dfac0864281d25a5fca3f8056453ff4ee5de388535f3b74136bbae7f14b1"
+}

@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_or3d model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Or"
+  ],
+  "opset_version": 7,
+  "generated_checksum": "dd965a96f662ff81ac964f09778a3c110b5a6557a06a317a44d154845a81e3a6"
+}

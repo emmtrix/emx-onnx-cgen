@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_onehot_without_axis model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "OneHot"
+  ],
+  "opset_version": 28,
+  "generated_checksum": "7614f9916242c17111cb2e4b6dbb48d6f1e7f37b705bc741295afd678fe218f6"
+}

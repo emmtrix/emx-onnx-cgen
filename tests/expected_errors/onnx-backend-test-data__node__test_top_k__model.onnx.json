@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0, max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_top_k model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "TopK"
+  ],
+  "opset_version": 24,
+  "generated_checksum": "e9246acd9641f6a19862762e9580397c7817513afe2a1bffc3cfd54a37e2a4d1"
+}

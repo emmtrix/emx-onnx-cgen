@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_optional_get_element_optional_sequence model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "OptionalGetElement"
+  ],
+  "opset_version": 28,
+  "generated_checksum": "7bfcfc34346c5e68777d76f3810dc2bd120d906a6910c9d5864ab21e893865d8"
+}

@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0, max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_dynamicquantizelinear model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "DynamicQuantizeLinear"
+  ],
+  "opset_version": 11,
+  "generated_checksum": "9ed99293949f914d4cf8a504e28bbf25de9362fc3d386409e05f0221ba19f0d8"
+}

@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_string_split_basic model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "StringSplit"
+  ],
+  "opset_version": 20,
+  "generated_checksum": "82cd16a51f2414d148d7b48eb60929515f5e051efac29865b7632d4d37cfe91a"
+}

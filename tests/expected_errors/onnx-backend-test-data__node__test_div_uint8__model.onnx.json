@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_div_uint8 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Div"
+  ],
+  "opset_version": 14,
+  "generated_checksum": "b0c52cf75b54c41a5f248b457b4b3fc31dba68205831bd48034c0c2abb827ab5"
+}

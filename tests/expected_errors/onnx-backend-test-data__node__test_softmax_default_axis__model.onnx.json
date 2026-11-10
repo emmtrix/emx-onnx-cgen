@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_softmax_default_axis model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Softmax"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "c883f30278dadf9fd0b7876cb9a983d5e00a27b1eac18ebb110a47532f522f0d"
+}

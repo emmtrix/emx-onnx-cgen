@@ -1,0 +1,14 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_nllloss_NCd1d2d3d4d5_mean_weight model.onnx --test-data-dir test_data_set_0 --fp32-accumulation-strategy fp64",
+  "extra_cli_args": [
+    "--fp32-accumulation-strategy",
+    "fp64"
+  ],
+  "verification_mode": "Data/Data",
+  "operators": [
+    "NegativeLogLikelihoodLoss"
+  ],
+  "opset_version": 22,
+  "generated_checksum": "fb28b151cba1b2d03cd953b0039e436fe02809a3577ca2d4b13d3e5e329f12d5"
+}

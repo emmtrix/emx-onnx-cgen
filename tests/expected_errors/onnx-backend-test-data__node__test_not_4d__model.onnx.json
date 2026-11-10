@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_not_4d model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Not"
+  ],
+  "opset_version": 1,
+  "generated_checksum": "e8969971a30cc9e3469e12f89fc0d5bf7c4690784229a873d9dc94aa849639e3"
+}

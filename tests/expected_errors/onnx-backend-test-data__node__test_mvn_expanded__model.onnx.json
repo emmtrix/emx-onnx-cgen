@@ -1,0 +1,16 @@
+{
+  "error": "OK (max ULP 2)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_mvn_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Constant",
+    "ReduceMean",
+    "Pow",
+    "Sub",
+    "Sqrt",
+    "Add",
+    "Div"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "930b59a38cd39d8fc142ad8c8f51d0fe977ad72765dc37f5b51d308bab70882d"
+}

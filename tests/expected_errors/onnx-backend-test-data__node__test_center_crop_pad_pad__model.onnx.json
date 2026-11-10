@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_center_crop_pad_pad model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "CenterCropPad"
+  ],
+  "opset_version": 18,
+  "generated_checksum": "ba71066a88aa2707a294d8b6a543b3d5bf126f8eff15eb0d5d370b46a0d5586d"
+}

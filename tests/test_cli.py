@@ -212,11 +212,7 @@ def test_cli_verify_requires_shape_hint_for_ragged_sequence_inputs() -> None:
             "--model-base-dir",
             str(
                 PROJECT_ROOT
-                / "onnx-org"
-                / "onnx"
-                / "backend"
-                / "test"
-                / "data"
+                / "onnx-backend-test-data"
                 / "node"
                 / "test_sequence_insert_at_back"
             ),
@@ -241,11 +237,7 @@ def test_cli_verify_rejects_implicit_runtime_fallback_for_normalized_test_inputs
             "--model-base-dir",
             str(
                 PROJECT_ROOT
-                / "onnx-org"
-                / "onnx"
-                / "backend"
-                / "test"
-                / "data"
+                / "onnx-backend-test-data"
                 / "node"
                 / "test_sequence_map_add_2_sequences"
             ),
@@ -270,11 +262,7 @@ def test_cli_verify_accepts_ragged_sequence_inputs_with_shape_hints() -> None:
             "--model-base-dir",
             str(
                 PROJECT_ROOT
-                / "onnx-org"
-                / "onnx"
-                / "backend"
-                / "test"
-                / "data"
+                / "onnx-backend-test-data"
                 / "node"
                 / "test_sequence_map_add_2_sequences"
             ),
@@ -301,11 +289,7 @@ def test_cli_verify_accepts_loop_optional_sequence_scalar_default() -> None:
             "--model-base-dir",
             str(
                 PROJECT_ROOT
-                / "onnx-org"
-                / "onnx"
-                / "backend"
-                / "test"
-                / "data"
+                / "onnx-backend-test-data"
                 / "node"
                 / "test_loop16_seq_none"
             ),

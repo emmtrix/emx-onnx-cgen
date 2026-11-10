@@ -1,0 +1,14 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_sequence_insert_at_back model.onnx --test-data-dir test_data_set_0 --sequence-element-shape 'sequence=[<=4]'",
+  "extra_cli_args": [
+    "--sequence-element-shape",
+    "sequence=[<=4]"
+  ],
+  "verification_mode": "Data/Data",
+  "operators": [
+    "SequenceInsert"
+  ],
+  "opset_version": 11,
+  "generated_checksum": "c3058e8d748c85dd38d8ea51e2d6cac44d1b6335b22014c725a356258aebe627"
+}

@@ -13,7 +13,7 @@ from emx_onnx_cgen import cli
 from emx_onnx_cgen.explicit_padding import make_padding_explicit
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-NODE_TEST_ROOT = REPO_ROOT / "onnx-org" / "onnx" / "backend" / "test" / "data" / "node"
+NODE_TEST_ROOT = REPO_ROOT / "onnx-backend-test-data" / "node"
 EXPECTED_ERRORS_ROOT = REPO_ROOT / "tests" / "expected_errors"
 NODE_TEST_PREFIXES = (
     "test_basic_conv",
@@ -210,7 +210,7 @@ def _node_test_names() -> list[str]:
 
 def _expected_result(name: str) -> str:
     expectation = EXPECTED_ERRORS_ROOT / (
-        f"onnx-org__onnx__backend__test__data__node__{name}__model.onnx.json"
+        f"onnx-backend-test-data__node__{name}__model.onnx.json"
     )
     if not expectation.is_file():
         return ""

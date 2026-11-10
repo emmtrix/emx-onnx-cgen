@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/pytorch-converted/test_MaxPool1d_stride_padding_dilation model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "MaxPool"
+  ],
+  "opset_version": 12,
+  "generated_checksum": "93c051c382ab67f51c32e311c20b4f53dfef54e84bceae1fd9a9862a4c76cb9d"
+}

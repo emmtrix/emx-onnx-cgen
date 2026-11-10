@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_scatter_elements_without_axis model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "ScatterElements"
+  ],
+  "opset_version": 18,
+  "generated_checksum": "667a6094d1670cd76c948e4d916b3cdeef884cd40d8569963ba86df519e32960"
+}

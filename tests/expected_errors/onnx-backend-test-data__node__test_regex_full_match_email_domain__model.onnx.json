@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_regex_full_match_email_domain model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "RegexFullMatch"
+  ],
+  "opset_version": 20,
+  "generated_checksum": "68a5a80495a6c7fb1070bf98abd2791916f8094944cbd11550e8474a85b3d0a3"
+}

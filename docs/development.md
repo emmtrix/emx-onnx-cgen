@@ -21,7 +21,7 @@ The project is a Python package with a CLI:
 - Package sources live under `src/` (import root is `src/emx_onnx_cgen`).
 - Templates are shipped as package data (Jinja2 templates).
 
-The repository also contains submodules used for tests and reference material (for example official ONNX backend test data and ONNX Runtime-derived artifacts).
+The repository also contains submodules used for tests and reference material (for example the ONNX operator specs and ONNX Runtime-derived artifacts).
 
 ---
 
@@ -206,12 +206,18 @@ In CI (PRs), the test workflow runs with `UPDATE_REFS=1` and may auto-commit upd
 
 ---
 
-## Submodules (onnx-org / emx-ort-test-artifacts-org)
+## Test data (onnx-backend-test-data / emx-ort-test-artifacts-org)
 
-Some tests require data from submodules:
+Some tests require data that is not checked into this repository:
 
-* Official ONNX backend test data (may be stored via Git LFS in the upstream project).
-* Additional ONNX Runtime-derived artifact models under `emx-ort-test-artifacts-org/artifacts/onnxruntime`.
+* Official ONNX backend test data in `onnx-backend-test-data/` (gitignored). pytest assembles it on
+  startup from the installed onnx package (`tests/onnx_backend_test_data.py`): the `node/` tests are
+  generated from `onnx.backend.test.case.node` (onnx 1.23 no longer ships them), the other kinds are
+  copied from the wheel. The installed onnx must match the `onnx==` pin in `requirements-ci.txt`;
+  otherwise pytest warns and skips the official tests. A `.onnx-version` stamp triggers a rebuild
+  when the pin changes. Run `python tests/onnx_backend_test_data.py` to build it without pytest.
+* Additional ONNX Runtime-derived artifact models under `emx-ort-test-artifacts-org/artifacts/onnxruntime`
+  (submodule).
 
 CI initializes submodules recursively. Locally, you can do the same:
 
@@ -222,18 +228,8 @@ git submodule update --init --recursive
 
 ### Auto-init behavior
 
-The test suite may attempt to initialize certain submodules automatically if:
-
-* `git` is available, and
-* auto-init is enabled via environment.
-
-If you want to skip auto-init behavior for the official ONNX data, set:
-
-```bash
-export ONNX_ORG_AUTO_INIT=0
-```
-
-(When disabled and data is missing, the relevant tests will be skipped.)
+The test suite initializes the `emx-ort-test-artifacts-org` submodule automatically if `git` is
+available. When the data is missing, the relevant tests are skipped.
 
 ---
 

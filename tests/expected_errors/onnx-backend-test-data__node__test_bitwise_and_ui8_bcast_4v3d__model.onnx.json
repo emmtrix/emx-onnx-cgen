@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_bitwise_and_ui8_bcast_4v3d model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "BitwiseAnd"
+  ],
+  "opset_version": 18,
+  "generated_checksum": "0828d5c9cb213be7367f340e0e4043e55381fb5813f9ddd1c4a7d716161a1919"
+}

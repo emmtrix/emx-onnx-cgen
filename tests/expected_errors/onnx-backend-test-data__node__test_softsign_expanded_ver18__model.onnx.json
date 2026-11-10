@@ -1,0 +1,14 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_softsign_expanded_ver18 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Constant",
+    "CastLike",
+    "Abs",
+    "Add",
+    "Div"
+  ],
+  "opset_version": 18,
+  "generated_checksum": "c1541b17bcfaabc5772595d59cb3ef8a1473158f22c03a674f5ad303e304cada"
+}

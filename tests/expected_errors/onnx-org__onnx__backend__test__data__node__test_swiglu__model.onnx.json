@@ -1,9 +1,0 @@
-{
-  "error": "Unsupported op ai.onnx.SwiGLU",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_swiglu model.onnx --test-data-dir test_data_set_0",
-  "verification_mode": "Data/Data",
-  "operators": [
-    "SwiGLU"
-  ],
-  "opset_version": 28
-}

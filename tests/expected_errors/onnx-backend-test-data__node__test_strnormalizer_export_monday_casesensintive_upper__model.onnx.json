@@ -1,0 +1,10 @@
+{
+  "error": "OK (no numeric comparisons)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_strnormalizer_export_monday_casesensintive_upper model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "StringNormalizer"
+  ],
+  "opset_version": 10,
+  "generated_checksum": "dbbfb930630294bb328d41207ba49e220cbd20a08db544e527722591d96bab85"
+}

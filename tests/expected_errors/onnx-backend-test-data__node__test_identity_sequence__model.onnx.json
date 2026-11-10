@@ -1,0 +1,14 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_identity_sequence model.onnx --test-data-dir test_data_set_0 --sequence-element-shape 'x=[1,1,2,2]'",
+  "extra_cli_args": [
+    "--sequence-element-shape",
+    "x=[1,1,2,2]"
+  ],
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Identity"
+  ],
+  "opset_version": 25,
+  "generated_checksum": "554b70b9c4f5e66e94d7458a53ef647e03344425d63816c036ae95fa0e29bdb5"
+}

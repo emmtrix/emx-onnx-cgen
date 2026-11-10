@@ -1,0 +1,24 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_flexattention_prob_mod_expanded_ver26 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Shape",
+    "Div",
+    "Constant",
+    "Unsqueeze",
+    "Concat",
+    "Expand",
+    "Reshape",
+    "Gather",
+    "Cast",
+    "Sqrt",
+    "Identity",
+    "Mul",
+    "Transpose",
+    "MatMul",
+    "Softmax"
+  ],
+  "opset_version": 26,
+  "generated_checksum": "0b1508ed49d2b139485b0d1f978e2c3aa018321c589b1bfd6518e48ec928bf31"
+}

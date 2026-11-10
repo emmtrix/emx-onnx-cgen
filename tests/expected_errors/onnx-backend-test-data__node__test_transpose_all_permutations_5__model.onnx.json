@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_transpose_all_permutations_5 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Transpose"
+  ],
+  "opset_version": 25,
+  "generated_checksum": "6d9686931be478fc95e523c612e4dfb0b9e191ae7ab2bea673e3ab6ea0c87d11"
+}

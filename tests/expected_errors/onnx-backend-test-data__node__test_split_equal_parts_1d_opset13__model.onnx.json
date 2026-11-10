@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_split_equal_parts_1d_opset13 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Split"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "5fadc86dcd0b8ca428a40783f6c887da758b44a7ad3740fe24a368687caa7745"
+}

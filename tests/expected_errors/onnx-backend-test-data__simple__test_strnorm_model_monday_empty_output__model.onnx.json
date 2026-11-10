@@ -1,0 +1,10 @@
+{
+  "error": "OK (no numeric comparisons)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/simple/test_strnorm_model_monday_empty_output model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "StringNormalizer"
+  ],
+  "opset_version": 10,
+  "generated_checksum": "844c51c38238ac1a97aa5e3c4294db4ed5c586bc296fde716de2b3d0e1c0425a"
+}

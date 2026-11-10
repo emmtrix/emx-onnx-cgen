@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_selu_example model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Selu"
+  ],
+  "opset_version": 22,
+  "generated_checksum": "124903e9e2c7f28179c7f03ef938d7ad22d75281e1959239bf72f17d2a698d52"
+}

@@ -1,0 +1,17 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_sequence_map_extract_shapes_expanded model.onnx --test-data-dir test_data_set_0 --sequence-element-shape 'in_seq=[<=40,<=30,3]'",
+  "extra_cli_args": [
+    "--sequence-element-shape",
+    "in_seq=[<=40,<=30,3]"
+  ],
+  "verification_mode": "Data/Data",
+  "operators": [
+    "SequenceLength",
+    "Constant",
+    "SequenceEmpty",
+    "Loop"
+  ],
+  "opset_version": 17,
+  "generated_checksum": "ea7556fc49aed81486c74f943fee4404a01fd85bbbf47bd1b296217b0b31b5dd"
+}

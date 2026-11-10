@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_resize_upsample_scales_linear model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Resize"
+  ],
+  "opset_version": 19,
+  "generated_checksum": "1dfa8383d9fd313415c9987cc2b5499661a5d04f3e1a2d4d0a1973fdfd96656f"
+}

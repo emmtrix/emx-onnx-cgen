@@ -1,0 +1,11 @@
+{
+  "error": "OK (max ULP 1)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_swiglu_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Swish",
+    "Mul"
+  ],
+  "opset_version": 28,
+  "generated_checksum": "f6618e81bda05726d1d89cabef339b5724e544edb9acd77da7d5fa20bf168cf6"
+}

@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_hannwindow_symmetric model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "HannWindow"
+  ],
+  "opset_version": 17,
+  "generated_checksum": "95a83ba1a513be2aef9cc9e18ea16b435c9b3d2c305ccc682076ad85f3da719a"
+}

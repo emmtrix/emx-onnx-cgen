@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_unsqueeze_three_axes model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Unsqueeze"
+  ],
+  "opset_version": 25,
+  "generated_checksum": "5802ace14cab3bacc902dae8931c9827434e31a22b1ab7777b9e22676fd1d70a"
+}

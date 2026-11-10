@@ -1,0 +1,15 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_softmax_default_axis_expanded_ver18 model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Constant",
+    "ReduceMax",
+    "Sub",
+    "Exp",
+    "ReduceSum",
+    "Div"
+  ],
+  "opset_version": 18,
+  "generated_checksum": "91a1bd90f90b014e8cc1d064eb1a8150bd210a483d5dcbd2afef07e423e1bdd6"
+}

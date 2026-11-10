@@ -1,0 +1,11 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_clip_default_int8_max_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Less",
+    "Where"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "ad95af215719f4409553826ad909546736eca636512e8150f4a89f4b06bdff06"
+}

@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_tril_neg model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Trilu"
+  ],
+  "opset_version": 14,
+  "generated_checksum": "bc9432e468e6f0bcb67fbcdad16cb3712dab60ab68d73ebdaff37455fabbb324"
+}

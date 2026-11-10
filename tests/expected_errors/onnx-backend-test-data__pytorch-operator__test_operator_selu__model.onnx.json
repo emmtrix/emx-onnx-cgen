@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/pytorch-operator/test_operator_selu model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Selu"
+  ],
+  "opset_version": 6,
+  "generated_checksum": "bcc5865d085c1822032e4ca9549c3903fac0b417b0cf8e1da9e18b830cef34fc"
+}

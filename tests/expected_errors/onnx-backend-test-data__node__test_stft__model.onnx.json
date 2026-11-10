@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 15)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_stft model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "STFT"
+  ],
+  "opset_version": 17,
+  "generated_checksum": "2a97b0fe150b4c2e4f54d1444f6b027c29185b579851ceecbfcbee047000b08d"
+}

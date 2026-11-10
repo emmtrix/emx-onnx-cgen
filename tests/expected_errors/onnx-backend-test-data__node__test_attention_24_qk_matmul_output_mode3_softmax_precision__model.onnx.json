@@ -1,0 +1,10 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_attention_24_qk_matmul_output_mode3_softmax_precision model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "Attention"
+  ],
+  "opset_version": 24,
+  "generated_checksum": "28a9ad7358b89c5beae7fc908d82489905f5d3f6a9dd39f8e11a50c1e17f4c9b"
+}

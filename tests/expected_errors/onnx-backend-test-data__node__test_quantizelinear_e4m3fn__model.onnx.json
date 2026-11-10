@@ -1,0 +1,10 @@
+{
+  "error": "OK (max abs diff 0)",
+  "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_quantizelinear_e4m3fn model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data/Data",
+  "operators": [
+    "QuantizeLinear"
+  ],
+  "opset_version": 28,
+  "generated_checksum": "812e74c07558ba88898847ae080254db883028b0d1a52da7995c89487e4ab9c9"
+}
