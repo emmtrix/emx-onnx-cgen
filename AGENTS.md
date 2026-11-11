@@ -362,9 +362,13 @@ for (idx_t idx = 0; idx < N * 3 * 5; ++idx)
 ## Creating a Release
 
 Releases are published on GitHub and use `vMAJOR.MINOR.PATCH` tags (e.g. `v1.3.4`).
-Pushing the tag triggers the `release`, `linux-release`, and `windows-release`
-workflows, which build and attach the binary assets
-(`emx-onnx-cgen-linux-amd64.tar.gz`, `emx-onnx-cgen-windows-amd64.zip`).
+Publishing the release triggers two workflows:
+* `release` publishes the wheel to PyPI and attaches its SBOM.
+* `release-bundles` runs `linux-release` and `windows-release`, then attaches
+  * the binary assets `emx-onnx-cgen-linux-amd64.tar.gz` and
+    `emx-onnx-cgen-windows-amd64.zip`,
+  * the combined `emx-onnx-cgen-bundles.tar.gz`,
+  * an SBOM (`*.cdx.json`) for each of them.
 
 Steps:
 
@@ -399,7 +403,7 @@ Steps:
    gh release create vX.Y.Z --title "vX.Y.Z" --notes-file <notes.md>
    ```
 6. **Verify the asset builds** were triggered: `gh run list --limit 5` should show
-   the three release workflows in progress for the tag.
+   the `release` and `release-bundles` workflows in progress for the tag.
 
 ## Agent Instructions (for automated assistants)
 
@@ -465,6 +469,12 @@ When adding support for a new operator:
 4. **Runtime evaluator:** implement the op in `src/onnx2c/runtime/evaluator.py` for verification/constant folding.
 5. **Tests:** add at least one unit test and one ORT comparison test.
 6. **Reference updates:** refresh `tests/expected_errors/**.json` and regenerate `OFFICIAL_ONNX_FILE_SUPPORT*.md` via `UPDATE_REFS=1 pytest -q`.
+7. **Golden C file:** every operator marked ✅ in `SUPPORT_OPS.md` needs one;
+   `tests/test_golden_operators.py` fails otherwise. Either add a hand-written case
+   to `OP_GOLDEN_CASES` in `tests/test_golden_ops.py`, or run
+   `UPDATE_REFS=1 pytest -q tests/test_golden_operators.py`. That picks a verified
+   ONNX file for the operator (`tests/golden/operators/manifest.json`) and writes
+   `tests/golden/operators/<operator>.c`.
 
 ## Maintaining this document (AGENTS.md)
 

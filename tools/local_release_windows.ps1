@@ -58,24 +58,19 @@ if (-not (Get-Command $PythonExe -ErrorAction SilentlyContinue)) {
     throw "Python executable not found in PATH: $PythonExe"
 }
 
-$pythonCommand = @($PythonExe)
-$pythonVersion = (& $PythonExe -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')").Trim()
-if ($pythonVersion -ne "3.11") {
-    $fallbackPython311 = Join-Path $env:LOCALAPPDATA "Programs\Python\Python311\python.exe"
-    if (Test-Path $fallbackPython311) {
-        $fallbackVersion = (& $fallbackPython311 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')").Trim()
-        if ($fallbackVersion -eq "3.11") {
-            Write-Warning "Configured Python is $pythonVersion. Falling back to $fallbackPython311 to match windows-release workflow."
-            $pythonCommand = @($fallbackPython311)
-        }
-        else {
-            throw "Python 3.11 is required for local Windows release builds. Current Python is $pythonVersion and fallback at '$fallbackPython311' is $fallbackVersion. Pass a Python 3.11 interpreter via -PythonExe."
-        }
-    }
-    else {
-        throw "Python 3.11 is required for local Windows release builds. Current Python is $pythonVersion. Pass a Python 3.11 interpreter via -PythonExe."
-    }
+# Like windows-release.yml: build with the pinned python-build-standalone CPython
+# (tools/release_python.json); $PythonExe only runs the download script.
+$releasePythonDir = Join-Path $repoRoot "build/release-python"
+$releaseVenv = Join-Path $repoRoot "build/release-venv"
+$releasePython = (& $PythonExe tools/fetch_release_python.py --platform windows-amd64 --dest $releasePythonDir)
+if ($LASTEXITCODE -ne 0) {
+    throw "Downloading the release Python failed with exit code ${LASTEXITCODE}."
 }
+if (Test-Path $releaseVenv) {
+    Remove-Item $releaseVenv -Recurse -Force
+}
+Invoke-CheckedCommand -Description "Create release virtual environment" -Command @($releasePython.Trim(), "-m", "venv", $releaseVenv)
+$pythonCommand = @(Join-Path $releaseVenv "Scripts/python.exe")
 
 function New-PythonCommand {
     param(
@@ -129,10 +124,12 @@ try {
     Invoke-CheckedCommand -Description "Generate SBOM" -Command (New-PythonCommand @(
         "tools/generate_sbom.py", "bundle",
         "--workpath", "build/emx-onnx-cgen",
+        "--dist", "dist/emx-onnx-cgen",
         "--version", $version,
         "--platform", "windows-amd64",
         "--artifact", $OutputZip,
-        "--output", $outputSbom
+        "--output", $outputSbom,
+        "--python-build", "tools/release_python.json"
     ))
 }
 finally {

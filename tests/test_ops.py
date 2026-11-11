@@ -7457,6 +7457,69 @@ def test_lower_matmulinteger_with_zero_points() -> None:
     assert op.input1_zero_shape == ()
 
 
+def _make_qgemm_model(k: int, bias: int | None) -> onnx.ModelProto:
+    """int8 QGemm (com.microsoft) with a [2, k] input, a constant [k, 3] weight and an optional bias."""
+    input_info = helper.make_tensor_value_info("a", TensorProto.INT8, [2, k])
+    output = helper.make_tensor_value_info("y", TensorProto.INT8, [2, 3])
+    initializers = [
+        helper.make_tensor("a_scale", TensorProto.FLOAT, dims=[], vals=[0.02]),
+        helper.make_tensor("a_zero_point", TensorProto.INT8, dims=[], vals=[-3]),
+        numpy_helper.from_array(np.ones((k, 3), dtype=np.int8), name="b"),
+        helper.make_tensor("b_scale", TensorProto.FLOAT, dims=[], vals=[0.01]),
+        helper.make_tensor("b_zero_point", TensorProto.INT8, dims=[], vals=[0]),
+        helper.make_tensor("y_scale", TensorProto.FLOAT, dims=[], vals=[0.5]),
+        helper.make_tensor("y_zero_point", TensorProto.INT8, dims=[], vals=[1]),
+    ]
+    if bias is not None:
+        initializers.append(
+            numpy_helper.from_array(np.full((3,), bias, dtype=np.int32), name="c")
+        )
+    node = helper.make_node(
+        "QGemm",
+        inputs=[
+            "a",
+            "a_scale",
+            "a_zero_point",
+            "b",
+            "b_scale",
+            "b_zero_point",
+            "c" if bias is not None else "",
+            "y_scale",
+            "y_zero_point",
+        ],
+        outputs=[output.name],
+        domain="com.microsoft",
+    )
+    graph = helper.make_graph(
+        [node], "qgemm_graph", [input_info], [output], initializer=initializers
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[
+            helper.make_operatorsetid("", 13),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+    return model
+
+
+@pytest.mark.parametrize(
+    ("k", "bias", "acc_type"),
+    [
+        (640, 1000, "int32_t"),
+        (33_025, None, "int32_t"),
+        (33_026, None, "int64_t"),
+        (33_000, 2**30, "int64_t"),
+    ],
+)
+def test_lower_qgemm_accumulator_type(k: int, bias: int | None, acc_type: str) -> None:
+    graph = import_onnx(_make_qgemm_model(k, bias))
+    op = get_lowering("QGemm")(graph, graph.nodes[0])
+    assert op.acc_type == acc_type
+
+
 def test_lower_pad_dynamic_axes_input() -> None:
     input_info = helper.make_tensor_value_info("input", TensorProto.FLOAT, [2, 3])
     pads_info = helper.make_tensor_value_info("pads", TensorProto.INT64, [4])

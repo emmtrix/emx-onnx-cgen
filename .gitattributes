@@ -1,2 +1,5 @@
 *.sh text eol=lf
 *.onnx binary
+# Vendored sources stay byte-identical to upstream on every checkout, so both
+# release bundles ship (and their SBOMs hash) the same file.
+src/emx_onnx_cgen/third_party/** -text

@@ -4,6 +4,7 @@ import importlib.metadata
 import importlib.util
 import json
 import os
+import shutil
 import sys
 from pathlib import Path
 
@@ -12,18 +13,20 @@ import pytest
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
-def _load_generator():
+def _load_tool(name: str):
     spec = importlib.util.spec_from_file_location(
-        "generate_sbom", PROJECT_ROOT / "tools" / "generate_sbom.py"
+        name, PROJECT_ROOT / "tools" / f"{name}.py"
     )
     module = importlib.util.module_from_spec(spec)
-    # dataclasses resolve string annotations through sys.modules.
+    # dataclasses resolve string annotations through sys.modules, and
+    # generate_sbom imports its sibling fetch_release_python by name.
     sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
 
 
-sbom = _load_generator()
+fetch = _load_tool("fetch_release_python")
+sbom = _load_tool("generate_sbom")
 
 
 def _distribution_file(name: str, relative_path: str) -> Path:
@@ -73,7 +76,7 @@ def bundle(tmp_path: Path):
     return workpath
 
 
-def _bundle_bom(workpath: Path):
+def _bundle_bom(workpath: Path, **options):
     return sbom.bundle_bom(
         workpath=workpath,
         version="1.2.3",
@@ -81,7 +84,138 @@ def _bundle_bom(workpath: Path):
         rpm_resolver_factory=lambda registry: None,
         # Stands in for PyInstaller, which the test environment may not have.
         pyinstaller_origin=_distribution_file("markupsafe", "markupsafe/__init__.py"),
+        **options,
     )
+
+
+def _python_build_config(tmp_path: Path, url_template: str, sha256: str) -> Path:
+    config = {
+        "distribution": "python-build-standalone",
+        "release": "20990101",
+        "python_version": sys.version.split()[0],
+        "variant": "install_only_stripped",
+        "url_template": url_template,
+        "platforms": {
+            "test-platform": {
+                "target": "x86_64-test",
+                "sha256": sha256,
+                "libraries": {"bzip2": "9.8.7", "libffi": "1.2.3"},
+            }
+        },
+    }
+    path = tmp_path / "release_python.json"
+    path.write_text(json.dumps(config), encoding="utf-8")
+    return path
+
+
+def test_bundle_bom_reports_the_pinned_python_build(bundle: Path, tmp_path) -> None:
+    toc = bundle / "COLLECT-00.toc"
+    # Extension modules of the interpreter; only their names matter here.
+    stdlib_file = os.__file__
+    entries = [
+        ("lib-dynload/_bz2.so", stdlib_file, "EXTENSION"),
+        ("lib-dynload/_ssl.so", stdlib_file, "EXTENSION"),
+    ]
+    text = toc.read_text(encoding="utf-8")
+    toc.write_text(text.replace("[", "[" + repr(entries)[1:-1] + ", ", 1))
+    config = _python_build_config(
+        tmp_path,
+        "https://example.invalid/{release}/{python_version}-{target}",
+        "ab" * 32,
+    )
+
+    bom, _ = _bundle_bom(
+        bundle, python_build=sbom.PythonBuild.load(config, "test-platform")
+    )
+
+    components = {component["name"]: component for component in bom["components"]}
+    cpython = components["CPython"]
+    assert cpython["supplier"]["name"] == "python-build-standalone"
+    distribution = next(
+        ref for ref in cpython["externalReferences"] if ref["type"] == "distribution"
+    )
+    assert distribution["url"].endswith(
+        f"/20990101/{sys.version.split()[0]}-x86_64-test"
+    )
+    assert distribution["hashes"] == [{"alg": "SHA-256", "content": "ab" * 32}]
+
+    def source(component):
+        return {p["name"]: p["value"] for p in component["properties"]}[
+            "emx-onnx-cgen:version-source"
+        ]
+
+    assert components["bzip2"]["version"] == "9.8.7"
+    assert source(components["bzip2"]) == "tools/release_python.json"
+    assert "libffi" not in components  # _ctypes is not bundled
+    assert source(components["OpenSSL"]) == "runtime"
+    dependencies = {entry["ref"]: entry["dependsOn"] for entry in bom["dependencies"]}
+    assert components["bzip2"]["bom-ref"] in dependencies[cpython["bom-ref"]]
+
+
+def test_python_build_rejects_another_interpreter(tmp_path: Path) -> None:
+    config = _python_build_config(tmp_path, "https://example.invalid/x", "00" * 32)
+    data = json.loads(config.read_text(encoding="utf-8"))
+    data["python_version"] = "2.7.18"
+    config.write_text(json.dumps(data), encoding="utf-8")
+
+    with pytest.raises(sbom.SbomError, match="pins 2.7.18"):
+        sbom.PythonBuild.load(config, "test-platform").check_interpreter()
+
+
+def test_release_python_config_covers_both_release_platforms() -> None:
+    config = fetch.load_config()
+
+    assert set(config["platforms"]) == {"linux-amd64", "windows-amd64"}
+    for platform, entry in config["platforms"].items():
+        url = fetch.archive_url(config, platform)
+        assert url.startswith(
+            "https://github.com/astral-sh/python-build-standalone/releases/download/"
+        )
+        assert f"cpython-{config['python_version']}+{config['release']}-" in url
+        assert entry["target"] in url
+        assert len(entry["sha256"]) == 64
+
+
+def _python_archive(tmp_path: Path) -> Path:
+    import tarfile
+
+    payload = tmp_path / "payload" / "python" / "bin" / "python3"
+    payload.parent.mkdir(parents=True)
+    payload.write_text("#!/bin/sh\n", encoding="utf-8")
+    archive = tmp_path / "served" / "cpython.tar.gz"
+    archive.parent.mkdir()
+    with tarfile.open(archive, "w:gz") as tar:
+        tar.add(tmp_path / "payload" / "python", arcname="python")
+    return archive
+
+
+def test_fetch_release_python_verifies_and_unpacks(tmp_path: Path) -> None:
+    archive = _python_archive(tmp_path)
+    config = json.loads(
+        _python_build_config(
+            tmp_path,
+            archive.parent.as_uri() + "/cpython.tar.gz",
+            fetch.sha256_of(archive),
+        ).read_text(encoding="utf-8")
+    )
+
+    executable = fetch.fetch(config, "test-platform", tmp_path / "dest")
+
+    assert executable == tmp_path / "dest" / "python" / "bin" / "python3"
+    assert executable.is_file()
+
+
+def test_fetch_release_python_rejects_a_wrong_hash(tmp_path: Path) -> None:
+    archive = _python_archive(tmp_path)
+    config = json.loads(
+        _python_build_config(
+            tmp_path, archive.parent.as_uri() + "/cpython.tar.gz", "00" * 32
+        ).read_text(encoding="utf-8")
+    )
+
+    with pytest.raises(fetch.FetchError, match="SHA-256 mismatch"):
+        fetch.fetch(config, "test-platform", tmp_path / "dest")
+    assert not (tmp_path / "dest" / "python").exists()
 
 
 def test_bundle_bom_attributes_every_bundled_file(bundle: Path) -> None:
@@ -221,3 +355,173 @@ def test_wheel_bom_lists_the_runtime_closure() -> None:
     names = {component["name"].lower() for component in bom["components"]}
     assert {"stb_image", "numpy", "onnx", "jinja2", "markupsafe"} <= names
     assert "onnxruntime" not in names  # only an optional (verify) dependency
+
+
+def test_combined_bom_merges_the_platform_bundles(bundle: Path, monkeypatch) -> None:
+    linux, _ = sbom.bundle_bom(
+        workpath=bundle,
+        version="1.2.3",
+        platform="linux-amd64",
+        rpm_resolver_factory=lambda registry: None,
+        pyinstaller_origin=_distribution_file("markupsafe", "markupsafe/__init__.py"),
+    )
+    windows = json.loads(json.dumps(linux))
+    for prop in windows["metadata"]["properties"]:
+        if prop["name"] == "emx-onnx-cgen:platform":
+            prop["value"] = "windows-amd64"
+    windows["components"].append(
+        {
+            "type": "library",
+            "bom-ref": "pkg:generic/only-windows@1",
+            "name": "only-windows",
+        }
+    )
+    windows["dependencies"].append(
+        {"ref": "pkg:generic/only-windows@1", "dependsOn": []}
+    )
+
+    monkeypatch.setenv("SOURCE_DATE_EPOCH", "1700000000")
+    combined = sbom.combined_bom(inputs=[windows, linux], version="1.2.3")
+
+    def platforms(component):
+        return sorted(
+            prop["value"]
+            for prop in component.get("properties", ())
+            if prop["name"] == "emx-onnx-cgen:platform"
+        )
+
+    components = {c["name"]: c for c in combined["components"]}
+    assert len(components) == len(linux["components"]) + 1
+    assert platforms(components["Jinja2"]) == ["linux-amd64", "windows-amd64"]
+    assert platforms(components["only-windows"]) == ["windows-amd64"]
+    names = {prop["name"] for prop in components["Jinja2"]["properties"]}
+    assert {
+        "emx-onnx-cgen:bundled-files:linux-amd64",
+        "emx-onnx-cgen:bundled-files:windows-amd64",
+    } <= names
+    assert "emx-onnx-cgen:bundled-files" not in names
+    assert [p["value"] for p in combined["metadata"]["properties"]] == [
+        "multi-platform-bundle",
+        "linux-amd64",
+        "windows-amd64",
+    ]
+    assert json.dumps(combined) == json.dumps(
+        sbom.combined_bom(inputs=[linux, windows], version="1.2.3")
+    )
+
+
+def test_combined_bom_rejects_inconsistent_inputs(bundle: Path) -> None:
+    linux, _ = _bundle_bom(bundle)
+    for prop in linux["metadata"]["properties"]:
+        if prop["name"] == "emx-onnx-cgen:platform":
+            prop["value"] = "linux-amd64"
+    windows = json.loads(json.dumps(linux))
+    for prop in windows["metadata"]["properties"]:
+        if prop["name"] == "emx-onnx-cgen:platform":
+            prop["value"] = "windows-amd64"
+
+    with pytest.raises(sbom.SbomError, match="expected 9.9.9"):
+        sbom.combined_bom(inputs=[linux, windows], version="9.9.9")
+
+    stb = next(c for c in windows["components"] if c["name"] == "stb_image")
+    stb["hashes"] = [{"alg": "SHA-256", "content": "00" * 32}]
+    with pytest.raises(sbom.SbomError, match="stb_image@2.28 differs"):
+        sbom.combined_bom(inputs=[linux, windows])
+
+
+verify = _load_tool("verify_bundle")
+
+
+def _bundle_dir(tmp_path: Path) -> Path:
+    """A bundle directory matching the TOC of the ``bundle`` fixture."""
+    dist = tmp_path / "dist" / "emx-onnx-cgen"
+    internal = dist / "_internal"
+    (internal / "emx_onnx_cgen" / "third_party").mkdir(parents=True)
+    (dist / "emx-onnx-cgen.exe").write_bytes(b"bootloader")
+    (internal / "base_library.zip").write_bytes(b"stdlib")
+    stb = PROJECT_ROOT / "src" / "emx_onnx_cgen" / "third_party" / "stb_image.h"
+    (internal / "emx_onnx_cgen" / "third_party" / "stb_image.h").write_bytes(
+        stb.read_bytes()
+    )
+    (internal / "libmystery.so").write_bytes(b"mystery")
+    (internal / "stray.txt").write_bytes(b"not in any TOC")
+    return dist
+
+
+def test_bundle_bom_lists_every_file_with_its_hash(bundle: Path, tmp_path) -> None:
+    dist = _bundle_dir(tmp_path)
+
+    bom, unresolved = _bundle_bom(bundle, dist=dist)
+
+    owners = {
+        entry["name"]: component["name"]
+        for component in [bom["metadata"]["component"], *bom["components"]]
+        for entry in component.get("components", ())
+    }
+    assert owners == {
+        "emx-onnx-cgen.exe": "emx-onnx-cgen",
+        "_internal/base_library.zip": "CPython",
+        "_internal/emx_onnx_cgen/third_party/stb_image.h": "stb_image",
+        "_internal/libmystery.so": "libmystery.so",
+        "_internal/stray.txt": "_internal/stray.txt",
+    }
+    assert "_internal/stray.txt" in {item.destination for item in unresolved}
+    assert verify.verify(bom, dist) == []
+
+    (dist / "_internal" / "base_library.zip").write_bytes(b"changed")
+    (dist / "_internal" / "new.dll").write_bytes(b"new")
+    (dist / "emx-onnx-cgen.exe").unlink()
+    assert verify.verify(bom, dist) == [
+        "_internal/base_library.zip: SHA-256 differs from the SBOM",
+        "emx-onnx-cgen.exe: missing",
+        "_internal/new.dll: not listed in the SBOM",
+    ]
+
+
+def test_bundle_bom_records_symlinks_with_their_target(bundle: Path, tmp_path) -> None:
+    dist = _bundle_dir(tmp_path)
+    link = dist / "_internal" / "libmystery.so.1"
+    try:
+        link.symlink_to("libmystery.so")
+    except OSError:
+        pytest.skip("creating symlinks is not permitted here")
+
+    bom, _ = _bundle_bom(bundle, dist=dist)
+
+    mystery = next(c for c in bom["components"] if c["name"] == "libmystery.so")
+    entry = next(e for e in mystery["components"] if e["name"].endswith(".so.1"))
+    assert "hashes" not in entry
+    assert entry["properties"] == [
+        {"name": "emx-onnx-cgen:symlink-target", "value": "libmystery.so"}
+    ]
+    assert verify.verify(bom, dist) == []
+
+
+def test_combined_bom_prefixes_files_with_the_platform(bundle: Path, tmp_path) -> None:
+    dist = _bundle_dir(tmp_path)
+    boms = []
+    for platform in ("linux-amd64", "windows-amd64"):
+        bom, _ = sbom.bundle_bom(
+            workpath=bundle,
+            version="1.2.3",
+            platform=platform,
+            rpm_resolver_factory=lambda registry: None,
+            pyinstaller_origin=_distribution_file(
+                "markupsafe", "markupsafe/__init__.py"
+            ),
+            dist=dist,
+        )
+        boms.append(bom)
+
+    combined = sbom.combined_bom(inputs=boms)
+
+    stb = next(c for c in combined["components"] if c["name"] == "stb_image")
+    assert sorted(entry["name"] for entry in stb["components"]) == [
+        "linux-amd64/_internal/emx_onnx_cgen/third_party/stb_image.h",
+        "windows-amd64/_internal/emx_onnx_cgen/third_party/stb_image.h",
+    ]
+    root = tmp_path / "combined"
+    for platform in ("linux-amd64", "windows-amd64"):
+        shutil.copytree(dist, root / platform)
+    assert verify.verify(combined, root) == []
+    assert verify.verify(combined, dist, prefix="linux-amd64") == []

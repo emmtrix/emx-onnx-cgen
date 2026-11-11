@@ -90,6 +90,28 @@ Both scripts produce the same archive names used by the release workflows:
 - `emx-onnx-cgen-linux-amd64.tar.gz`
 - `emx-onnx-cgen-windows-amd64.zip`
 
+The release also ships `emx-onnx-cgen-bundles.tar.gz`, which has both bundles
+below `emx-onnx-cgen/linux-amd64/` and `emx-onnx-cgen/windows-amd64/`. They need
+separate directories because both have an `_internal/` with platform-specific
+files of the same name. To build it from the two local archives, do what
+`release-bundles.yml` does: an SBOM without the archive hash goes into the
+archive, and one with the hash goes next to it.
+
+```bash
+export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
+inputs="--input emx-onnx-cgen-linux-amd64.cdx.json --input emx-onnx-cgen-windows-amd64.cdx.json"
+python tools/generate_sbom.py combine $inputs --output emx-onnx-cgen.cdx.json
+python tools/combine_release_bundles.py --linux emx-onnx-cgen-linux-amd64.tar.gz \
+  --windows emx-onnx-cgen-windows-amd64.zip --sbom emx-onnx-cgen.cdx.json \
+  --output emx-onnx-cgen-bundles.tar.gz
+python tools/generate_sbom.py combine $inputs \
+  --artifact emx-onnx-cgen-bundles.tar.gz --output emx-onnx-cgen-bundles.cdx.json
+```
+
+The Linux bundle contains symlinks. The combined archive keeps them, so unpack it
+with a tool that supports symlinks (GNU tar or bsdtar on Linux). Extracting it on
+Windows can drop them.
+
 Required at runtime (both `compile` and `verify`):
 
 - `onnx`
@@ -204,6 +226,17 @@ UPDATE_REFS=1 pytest -q --maxfail=10
 
 In CI (PRs), the test workflow runs with `UPDATE_REFS=1` and may auto-commit updated references to the PR branch (for branches in the same repo).
 
+Every operator marked supported in `SUPPORT_OPS.md` has at least one golden C file,
+which `tests/test_golden_operators.py` enforces:
+* Operators that a hand-written case in `OP_GOLDEN_CASES`
+  (`tests/test_golden_ops.py`) uses are covered there.
+* Every other one has an entry in `tests/golden/operators/manifest.json`: a verified
+  ONNX file from the test corpus, compiled into `tests/golden/operators/<operator>.c`.
+
+With `UPDATE_REFS=1`, the test rewrites the manifest and these files. For each
+operator it picks the verified file with the fewest operators, then the smallest
+one; this needs the test data.
+
 ---
 
 ## Test data (onnx-backend-test-data / emx-ort-test-artifacts-org)
@@ -265,14 +298,48 @@ The repository contains GitHub workflows that build release bundles using **PyIn
 * Linux (container-based build)
 * Windows
 
-These workflows install `requirements-ci.txt`, install `pyinstaller`, run `tools/pyinstaller_build.py`, and package the resulting bundle as a release asset.
+These workflows set up the release Python, install `requirements-ci.txt` and `pyinstaller` into it, run `tools/pyinstaller_build.py`, and package the resulting bundle as a release asset.
+Because the build environment also contains the test tooling, `tools/pyinstaller_build.py`
+excludes modules that only optional code paths import (`EXCLUDED_MODULES`, e.g. `pytest`
+via `sympy.testing`), so they do not end up in the bundle or its SBOM.
+
+### Release Python
+
+Both bundles are built with the same CPython build from
+[python-build-standalone](https://github.com/astral-sh/python-build-standalone),
+so that they ship the same interpreter version and the same versions of the
+libraries compiled into it (OpenSSL, SQLite, xz, …). Expat and zlib still differ:
+python-build-standalone uses CPython's bundled Expat and zlib-ng on Windows, and
+its own builds on Linux. `tools/release_python.json` pins the release, the
+CPython version and the SHA-256 of each platform's archive. The `install_only_stripped`
+variant is used because the unstripped `libpython` on Linux is about four times larger.
+`tools/fetch_release_python.py` downloads the archive, checks the hash and unpacks it.
+The workflows then create a virtual environment from it.
+
+Choosing the version: use the newest CPython minor version that still gets bugfix
+releases. Only those get binary installers on python.org, and python-build-standalone
+follows the same schedule. Every dependency in `requirements-ci.txt` also needs wheels
+for it. Move on to the next minor version before the current one becomes security-only.
+
+To update it:
+
+1. Pick a python-build-standalone release and take the SHA-256 of
+   `cpython-<version>+<release>-<target>-install_only_stripped.tar.gz` for both
+   targets from its `SHA256SUMS`.
+2. Update `libraries`. These are the versions of libraries that CPython cannot
+   report at runtime, and the SBOM takes them from this table:
+   * Linux: the `version` entries of `pythonbuild/downloads.json` at the release tag.
+   * Windows: `bzip2` and `xz` come from `downloads.json` as well. `libffi` comes from
+     the `cpython-source-deps` commit that `cpython-windows/build.py` checks out
+     (the `AC_INIT` line of its `configure.ac`).
+3. Build both bundles (`tools/local_release_*.sh/.ps1`).
 
 ### Software bill of materials (SBOM)
 
 `tools/generate_sbom.py` writes a CycloneDX 1.6 JSON SBOM for each release
 asset. The release workflows attach it to the GitHub release next to the asset
-(`emx-onnx-cgen-<platform>.cdx.json`, and `emx-onnx-cgen-wheel.cdx.json` for
-the PyPI wheel).
+(`emx-onnx-cgen-<platform>.cdx.json`, `emx-onnx-cgen-bundles.cdx.json` for the
+combined archive, and `emx-onnx-cgen-wheel.cdx.json` for the PyPI wheel).
 
 * **Bundles** (`bundle` mode, run right after PyInstaller with the same
   interpreter). The script reads PyInstaller's build records
@@ -284,14 +351,43 @@ the PyPI wheel).
   3. PyInstaller's bootloader and loader.
   4. The Microsoft C/C++ runtime DLLs.
   5. On Linux, the rpm package that owns the file in the manylinux container.
-  6. The CPython installation. A python.org build also gets its embedded
-     OpenSSL, SQLite, Expat and zlib versions.
+  6. The CPython installation, together with the libraries compiled into the
+     bundled interpreter and extension modules. Their versions come from the
+     running interpreter where CPython reports them (OpenSSL, SQLite, Expat,
+     zlib/zlib-ng, mpdecimal, zstd). Otherwise they come from the `libraries`
+     table in `tools/release_python.json`, which the release workflows pass with
+     `--python-build`; this covers bzip2, xz, libffi, uuid, ncurses and libedit.
 
   A file with no known origin is still listed as a `file` component with its
   hashes, and the script prints a warning.
+
+  With `--dist` (the bundle directory PyInstaller wrote), every file of the
+  bundle is also listed as a nested `file` component of the component it belongs
+  to:
+  * Each entry has the file's path relative to the bundle directory and its
+    SHA-256. A symlink has an `emx-onnx-cgen:symlink-target` property instead.
+  * The executable is listed under emx-onnx-cgen itself. It holds PyInstaller's
+    bootloader and the pure-Python modules of every component, which therefore
+    have no file of their own.
+  * Their bom-refs start with `bundle-file:`.
+
+  `tools/verify_bundle.py` checks an unpacked bundle against these entries.
+  `release-bundles.yml` runs it on all three archives before attaching them.
 * **Wheel** (`wheel` mode). The script runs in a fresh virtual environment into
   which the published wheel was installed. The SBOM lists the runtime
   dependency closure in the versions pip resolved there.
+* **Combined archive** (`combine` mode). The script merges the two platform
+  bundle SBOMs; `release-bundles.yml` builds both bundles in one run.
+  * A component found in both bundles appears once, with one
+    `emx-onnx-cgen:platform` property per platform. Properties whose value depends
+    on the platform, such as `emx-onnx-cgen:bundled-files`, get the platform as a
+    suffix. File paths get the platform directory as a prefix
+    (`linux-amd64/_internal/…`), relative to the archive's `emx-onnx-cgen/`.
+  * A component with the same bom-ref but other content in the two SBOMs is an
+    error, because it means the bundles do not ship the same thing. Such a
+    difference showed up for `stb_image.h`, which the Windows checkout converted
+    to CRLF line endings. `.gitattributes` now keeps `third_party/` byte-identical
+    on every checkout.
 
 Known limitations:
 
@@ -307,7 +403,7 @@ automatically):
 python tools/pyinstaller_build.py
 tar -czf emx-onnx-cgen-linux-amd64.tar.gz -C dist emx-onnx-cgen
 python tools/generate_sbom.py bundle --workpath build/emx-onnx-cgen \
-  --version "$(python -m setuptools_scm)" --platform linux-amd64 \
+  --dist dist/emx-onnx-cgen --version "$(python -m setuptools_scm)" --platform linux-amd64 \
   --artifact emx-onnx-cgen-linux-amd64.tar.gz --output emx-onnx-cgen-linux-amd64.cdx.json
 ```
 

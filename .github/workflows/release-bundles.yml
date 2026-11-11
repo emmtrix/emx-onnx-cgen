@@ -1,0 +1,96 @@
+name: release-bundles
+
+# Builds both platform bundles in one run from the same commit, combines them
+# into emx-onnx-cgen-bundles.tar.gz with one SBOM, and attaches all of them to
+# the GitHub release.
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  linux:
+    uses: ./.github/workflows/linux-release.yml
+
+  windows:
+    uses: ./.github/workflows/windows-release.yml
+
+  combine:
+    needs: [linux, windows]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Download platform bundles
+        uses: actions/download-artifact@v4
+        with:
+          pattern: emx-onnx-cgen-*-amd64
+          merge-multiple: true
+
+      # The SBOM inside the archive lists every file with its hash; only the one
+      # next to the archive can also hold the archive's own hash. The commit time
+      # keeps the inner SBOM, and with it the archive, reproducible.
+      - name: Combine bundles
+        run: |
+          export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
+          python -m pip install packaging
+          release=()
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            release=(--release-tag "${GITHUB_REF_NAME}")
+          fi
+          inputs=(
+            --input emx-onnx-cgen-linux-amd64.cdx.json
+            --input emx-onnx-cgen-windows-amd64.cdx.json
+          )
+          python tools/generate_sbom.py combine "${inputs[@]}" \
+            --output emx-onnx-cgen.cdx.json "${release[@]}"
+          python tools/combine_release_bundles.py \
+            --linux emx-onnx-cgen-linux-amd64.tar.gz \
+            --windows emx-onnx-cgen-windows-amd64.zip \
+            --sbom emx-onnx-cgen.cdx.json \
+            --output emx-onnx-cgen-bundles.tar.gz
+          python tools/generate_sbom.py combine "${inputs[@]}" \
+            --artifact emx-onnx-cgen-bundles.tar.gz \
+            --output emx-onnx-cgen-bundles.cdx.json "${release[@]}"
+
+      - name: Verify unpacked bundles against their SBOMs
+        run: |
+          mkdir -p check/linux check/windows check/combined
+          tar -xzf emx-onnx-cgen-linux-amd64.tar.gz -C check/linux
+          python tools/verify_bundle.py --sbom emx-onnx-cgen-linux-amd64.cdx.json \
+            --root check/linux/emx-onnx-cgen
+          unzip -q emx-onnx-cgen-windows-amd64.zip -d check/windows
+          python tools/verify_bundle.py --sbom emx-onnx-cgen-windows-amd64.cdx.json \
+            --root check/windows
+          tar -xzf emx-onnx-cgen-bundles.tar.gz -C check/combined
+          python tools/verify_bundle.py \
+            --sbom check/combined/emx-onnx-cgen/emx-onnx-cgen.cdx.json \
+            --root check/combined/emx-onnx-cgen
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: emx-onnx-cgen-bundles
+          path: |
+            emx-onnx-cgen-bundles.tar.gz
+            emx-onnx-cgen-bundles.cdx.json
+
+      - name: Upload release assets
+        if: ${{ github.event_name == 'release' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            emx-onnx-cgen-linux-amd64.tar.gz
+            emx-onnx-cgen-linux-amd64.cdx.json
+            emx-onnx-cgen-windows-amd64.zip
+            emx-onnx-cgen-windows-amd64.cdx.json
+            emx-onnx-cgen-bundles.tar.gz
+            emx-onnx-cgen-bundles.cdx.json

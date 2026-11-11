@@ -1,0 +1,30 @@
+{
+  "distribution": "python-build-standalone",
+  "release": "20261110",
+  "python_version": "3.14.10",
+  "variant": "install_only_stripped",
+  "url_template": "https://github.com/astral-sh/python-build-standalone/releases/download/{release}/cpython-{python_version}+{release}-{target}-{variant}.tar.gz",
+  "platforms": {
+    "linux-amd64": {
+      "target": "x86_64-unknown-linux-gnu",
+      "sha256": "c2ff2e97422f5d3896a16e0317fd212ba977bbf2688d93a6f7a03d817506bd30",
+      "libraries": {
+        "bzip2": "1.0.8",
+        "libedit": "20260512-3.1",
+        "libffi": "3.8.0",
+        "ncurses": "6.5",
+        "uuid": "1.0.3",
+        "xz": "5.8.4"
+      }
+    },
+    "windows-amd64": {
+      "target": "x86_64-pc-windows-msvc",
+      "sha256": "32b6cf90a03e2bc15fda8d2ab7ff78c4870f138887d612932650ce764efaab8f",
+      "libraries": {
+        "bzip2": "1.0.8",
+        "libffi": "3.4.4",
+        "xz": "5.8.4"
+      }
+    }
+  }
+}
