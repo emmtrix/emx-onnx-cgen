@@ -57,8 +57,8 @@ static inline float ref_scalar_f32_minimum(float a, float b) {
     return fminf(a, b);
 }
 
-static inline double ref_scalar_f64_nearbyint(double a) {
-    return nearbyint(a);
+static inline float ref_scalar_f32_nearbyint(float a) {
+    return nearbyintf(a);
 }
 
 /*
@@ -96,7 +96,7 @@ EMX_NODE_FN void node0_qlinearconv(const uint8_t input0[1][1][7][7], const float
                         float scaled = ((float)acc) * scale;
                         scaled = ref_scalar_f32_maximum(scaled, (float)(0 - (int32_t)(output_zero_point[0])));
                         scaled = ref_scalar_f32_minimum(scaled, (float)(UINT8_MAX - (int32_t)(output_zero_point[0])));
-                        output[n][oc_global][od0][od1] = (uint8_t)((int32_t)ref_scalar_f64_nearbyint(scaled) + (int32_t)(output_zero_point[0]));
+                        output[n][oc_global][od0][od1] = (uint8_t)((int32_t)ref_scalar_f32_nearbyint(scaled) + (int32_t)(output_zero_point[0]));
                     }
                 }
             }
