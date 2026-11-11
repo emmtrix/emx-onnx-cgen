@@ -267,6 +267,50 @@ The repository contains GitHub workflows that build release bundles using **PyIn
 
 These workflows install `requirements-ci.txt`, install `pyinstaller`, run `tools/pyinstaller_build.py`, and package the resulting bundle as a release asset.
 
+### Software bill of materials (SBOM)
+
+`tools/generate_sbom.py` writes a CycloneDX 1.6 JSON SBOM for each release
+asset. The release workflows attach it to the GitHub release next to the asset
+(`emx-onnx-cgen-<platform>.cdx.json`, and `emx-onnx-cgen-wheel.cdx.json` for
+the PyPI wheel).
+
+* **Bundles** (`bundle` mode, run right after PyInstaller with the same
+  interpreter). The script reads PyInstaller's build records
+  (`build/emx-onnx-cgen/*.toc`) and attributes every bundled file to its
+  origin. It tries these sources in order:
+  1. emx-onnx-cgen itself (`src/`), or a source vendored into it
+     (`third_party/stb_image.h`).
+  2. An installed Python distribution, found through its `RECORD`.
+  3. PyInstaller's bootloader and loader.
+  4. The Microsoft C/C++ runtime DLLs.
+  5. On Linux, the rpm package that owns the file in the manylinux container.
+  6. The CPython installation. A python.org build also gets its embedded
+     OpenSSL, SQLite, Expat and zlib versions.
+
+  A file with no known origin is still listed as a `file` component with its
+  hashes, and the script prints a warning.
+* **Wheel** (`wheel` mode). The script runs in a fresh virtual environment into
+  which the published wheel was installed. The SBOM lists the runtime
+  dependency closure in the versions pip resolved there.
+
+Known limitations:
+
+* Native libraries that a Python wheel vendors are reported as part of that
+  wheel, not as separate components. Examples are OpenBLAS inside `numpy` and
+  libjpeg/libwebp inside `pillow`.
+* Python package licenses are taken as declared in the package metadata.
+
+To create an SBOM for a local bundle (`tools/local_release_*.sh/.ps1` do this
+automatically):
+
+```bash
+python tools/pyinstaller_build.py
+tar -czf emx-onnx-cgen-linux-amd64.tar.gz -C dist emx-onnx-cgen
+python tools/generate_sbom.py bundle --workpath build/emx-onnx-cgen \
+  --version "$(python -m setuptools_scm)" --platform linux-amd64 \
+  --artifact emx-onnx-cgen-linux-amd64.tar.gz --output emx-onnx-cgen-linux-amd64.cdx.json
+```
+
 ---
 
 ## Contribution guidelines (summary)
