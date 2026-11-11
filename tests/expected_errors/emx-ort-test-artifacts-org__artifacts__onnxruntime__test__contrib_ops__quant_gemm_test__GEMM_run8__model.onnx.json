@@ -1,9 +1,9 @@
 {
-  "error": "OK (max ULP 1)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/quant_gemm_test/GEMM_run8 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft.QGemm"
   ],
-  "generated_checksum": "293ea541cec408c4304047c1e3d60f555308290daaeddd1507e5897c37086ba2"
+  "generated_checksum": "eae494e6257db65c9bb1c5a5f3b9ebb838f959f1f595c09ce0ce9ccf671d6f8e"
 }
