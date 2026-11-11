@@ -362,9 +362,13 @@ for (idx_t idx = 0; idx < N * 3 * 5; ++idx)
 ## Creating a Release
 
 Releases are published on GitHub and use `vMAJOR.MINOR.PATCH` tags (e.g. `v1.3.4`).
-Pushing the tag triggers the `release`, `linux-release`, and `windows-release`
-workflows, which build and attach the binary assets
-(`emx-onnx-cgen-linux-amd64.tar.gz`, `emx-onnx-cgen-windows-amd64.zip`).
+Publishing the release triggers two workflows:
+* `release` publishes the wheel to PyPI and attaches its SBOM.
+* `release-bundles` runs `linux-release` and `windows-release`, then attaches
+  * the binary assets `emx-onnx-cgen-linux-amd64.tar.gz` and
+    `emx-onnx-cgen-windows-amd64.zip`,
+  * the combined `emx-onnx-cgen-bundles.tar.gz`,
+  * an SBOM (`*.cdx.json`) for each of them.
 
 Steps:
 
@@ -399,7 +403,7 @@ Steps:
    gh release create vX.Y.Z --title "vX.Y.Z" --notes-file <notes.md>
    ```
 6. **Verify the asset builds** were triggered: `gh run list --limit 5` should show
-   the three release workflows in progress for the tag.
+   the `release` and `release-bundles` workflows in progress for the tag.
 
 ## Agent Instructions (for automated assistants)
 

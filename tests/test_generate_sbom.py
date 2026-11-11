@@ -354,3 +354,75 @@ def test_wheel_bom_lists_the_runtime_closure() -> None:
     names = {component["name"].lower() for component in bom["components"]}
     assert {"stb_image", "numpy", "onnx", "jinja2", "markupsafe"} <= names
     assert "onnxruntime" not in names  # only an optional (verify) dependency
+
+
+def test_combined_bom_merges_the_platform_bundles(bundle: Path, monkeypatch) -> None:
+    linux, _ = sbom.bundle_bom(
+        workpath=bundle,
+        version="1.2.3",
+        platform="linux-amd64",
+        rpm_resolver_factory=lambda registry: None,
+        pyinstaller_origin=_distribution_file("markupsafe", "markupsafe/__init__.py"),
+    )
+    windows = json.loads(json.dumps(linux))
+    for prop in windows["metadata"]["properties"]:
+        if prop["name"] == "emx-onnx-cgen:platform":
+            prop["value"] = "windows-amd64"
+    windows["components"].append(
+        {
+            "type": "library",
+            "bom-ref": "pkg:generic/only-windows@1",
+            "name": "only-windows",
+        }
+    )
+    windows["dependencies"].append(
+        {"ref": "pkg:generic/only-windows@1", "dependsOn": []}
+    )
+
+    monkeypatch.setenv("SOURCE_DATE_EPOCH", "1700000000")
+    combined = sbom.combined_bom(inputs=[windows, linux], version="1.2.3")
+
+    def platforms(component):
+        return sorted(
+            prop["value"]
+            for prop in component.get("properties", ())
+            if prop["name"] == "emx-onnx-cgen:platform"
+        )
+
+    components = {c["name"]: c for c in combined["components"]}
+    assert len(components) == len(linux["components"]) + 1
+    assert platforms(components["Jinja2"]) == ["linux-amd64", "windows-amd64"]
+    assert platforms(components["only-windows"]) == ["windows-amd64"]
+    names = {prop["name"] for prop in components["Jinja2"]["properties"]}
+    assert {
+        "emx-onnx-cgen:bundled-files:linux-amd64",
+        "emx-onnx-cgen:bundled-files:windows-amd64",
+    } <= names
+    assert "emx-onnx-cgen:bundled-files" not in names
+    assert [p["value"] for p in combined["metadata"]["properties"]] == [
+        "multi-platform-bundle",
+        "linux-amd64",
+        "windows-amd64",
+    ]
+    assert json.dumps(combined) == json.dumps(
+        sbom.combined_bom(inputs=[linux, windows], version="1.2.3")
+    )
+
+
+def test_combined_bom_rejects_inconsistent_inputs(bundle: Path) -> None:
+    linux, _ = _bundle_bom(bundle)
+    for prop in linux["metadata"]["properties"]:
+        if prop["name"] == "emx-onnx-cgen:platform":
+            prop["value"] = "linux-amd64"
+    windows = json.loads(json.dumps(linux))
+    for prop in windows["metadata"]["properties"]:
+        if prop["name"] == "emx-onnx-cgen:platform":
+            prop["value"] = "windows-amd64"
+
+    with pytest.raises(sbom.SbomError, match="expected 9.9.9"):
+        sbom.combined_bom(inputs=[linux, windows], version="9.9.9")
+
+    stb = next(c for c in windows["components"] if c["name"] == "stb_image")
+    stb["hashes"] = [{"alg": "SHA-256", "content": "00" * 32}]
+    with pytest.raises(sbom.SbomError, match="stb_image@2.28 differs"):
+        sbom.combined_bom(inputs=[linux, windows])

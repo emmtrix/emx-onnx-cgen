@@ -90,6 +90,23 @@ Both scripts produce the same archive names used by the release workflows:
 - `emx-onnx-cgen-linux-amd64.tar.gz`
 - `emx-onnx-cgen-windows-amd64.zip`
 
+The release also ships `emx-onnx-cgen-bundles.tar.gz`, which has both bundles
+below `emx-onnx-cgen/linux-amd64/` and `emx-onnx-cgen/windows-amd64/`. They need
+separate directories because both have an `_internal/` with platform-specific
+files of the same name. To build it from the two local archives:
+
+```bash
+python tools/combine_release_bundles.py --linux emx-onnx-cgen-linux-amd64.tar.gz \
+  --windows emx-onnx-cgen-windows-amd64.zip --output emx-onnx-cgen-bundles.tar.gz
+python tools/generate_sbom.py combine --input emx-onnx-cgen-linux-amd64.cdx.json \
+  --input emx-onnx-cgen-windows-amd64.cdx.json \
+  --artifact emx-onnx-cgen-bundles.tar.gz --output emx-onnx-cgen-bundles.cdx.json
+```
+
+The Linux bundle contains symlinks. The combined archive keeps them, so unpack it
+with a tool that supports symlinks (GNU tar or bsdtar on Linux). Extracting it on
+Windows can drop them.
+
 Required at runtime (both `compile` and `verify`):
 
 - `onnx`
@@ -305,8 +322,8 @@ To update it:
 
 `tools/generate_sbom.py` writes a CycloneDX 1.6 JSON SBOM for each release
 asset. The release workflows attach it to the GitHub release next to the asset
-(`emx-onnx-cgen-<platform>.cdx.json`, and `emx-onnx-cgen-wheel.cdx.json` for
-the PyPI wheel).
+(`emx-onnx-cgen-<platform>.cdx.json`, `emx-onnx-cgen-bundles.cdx.json` for the
+combined archive, and `emx-onnx-cgen-wheel.cdx.json` for the PyPI wheel).
 
 * **Bundles** (`bundle` mode, run right after PyInstaller with the same
   interpreter). The script reads PyInstaller's build records
@@ -330,6 +347,17 @@ the PyPI wheel).
 * **Wheel** (`wheel` mode). The script runs in a fresh virtual environment into
   which the published wheel was installed. The SBOM lists the runtime
   dependency closure in the versions pip resolved there.
+* **Combined archive** (`combine` mode). The script merges the two platform
+  bundle SBOMs; `release-bundles.yml` builds both bundles in one run.
+  * A component found in both bundles appears once, with one
+    `emx-onnx-cgen:platform` property per platform. Properties whose value depends
+    on the platform, such as `emx-onnx-cgen:bundled-files`, get the platform as a
+    suffix.
+  * A component with the same bom-ref but other content in the two SBOMs is an
+    error, because it means the bundles do not ship the same thing. Such a
+    difference showed up for `stb_image.h`, which the Windows checkout converted
+    to CRLF line endings. `.gitattributes` now keeps `third_party/` byte-identical
+    on every checkout.
 
 Known limitations:
 

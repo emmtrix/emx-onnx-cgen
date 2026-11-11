@@ -1,14 +1,10 @@
 name: linux-release
 
+# Builds the Linux bundle and its SBOM as a workflow artifact. release-bundles.yml
+# calls it for each release and attaches the result to the GitHub release.
 on:
   workflow_dispatch:
-    inputs:
-      upload:
-        description: "Upload release asset"
-        required: false
-        default: "false"
-  release:
-    types: [published]
+  workflow_call:
 
 jobs:
   build-linux-bundle:
@@ -19,7 +15,7 @@ jobs:
       # Created by the "Set up release Python" step.
       PYTHON_BIN: /opt/release-venv/bin/python
     permissions:
-      contents: write
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -68,18 +64,9 @@ jobs:
             "${release[@]}"
 
       - name: Upload workflow artifact
-        if: ${{ github.event_name == 'workflow_dispatch' }}
         uses: actions/upload-artifact@v4
         with:
           name: emx-onnx-cgen-linux-amd64
           path: |
-            emx-onnx-cgen-linux-amd64.tar.gz
-            emx-onnx-cgen-linux-amd64.cdx.json
-
-      - name: Upload release asset
-        if: ${{ github.event_name == 'release' }}
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
             emx-onnx-cgen-linux-amd64.tar.gz
             emx-onnx-cgen-linux-amd64.cdx.json
