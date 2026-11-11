@@ -469,6 +469,12 @@ When adding support for a new operator:
 4. **Runtime evaluator:** implement the op in `src/onnx2c/runtime/evaluator.py` for verification/constant folding.
 5. **Tests:** add at least one unit test and one ORT comparison test.
 6. **Reference updates:** refresh `tests/expected_errors/**.json` and regenerate `OFFICIAL_ONNX_FILE_SUPPORT*.md` via `UPDATE_REFS=1 pytest -q`.
+7. **Golden C file:** every operator marked ✅ in `SUPPORT_OPS.md` needs one;
+   `tests/test_golden_operators.py` fails otherwise. Either add a hand-written case
+   to `OP_GOLDEN_CASES` in `tests/test_golden_ops.py`, or run
+   `UPDATE_REFS=1 pytest -q tests/test_golden_operators.py`. That picks a verified
+   ONNX file for the operator (`tests/golden/operators/manifest.json`) and writes
+   `tests/golden/operators/<operator>.c`.
 
 ## Maintaining this document (AGENTS.md)
 

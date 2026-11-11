@@ -226,6 +226,17 @@ UPDATE_REFS=1 pytest -q --maxfail=10
 
 In CI (PRs), the test workflow runs with `UPDATE_REFS=1` and may auto-commit updated references to the PR branch (for branches in the same repo).
 
+Every operator marked supported in `SUPPORT_OPS.md` has at least one golden C file,
+which `tests/test_golden_operators.py` enforces:
+* Operators that a hand-written case in `OP_GOLDEN_CASES`
+  (`tests/test_golden_ops.py`) uses are covered there.
+* Every other one has an entry in `tests/golden/operators/manifest.json`: a verified
+  ONNX file from the test corpus, compiled into `tests/golden/operators/<operator>.c`.
+
+With `UPDATE_REFS=1`, the test rewrites the manifest and these files. For each
+operator it picks the verified file with the fewest operators, then the smallest
+one; this needs the test data.
+
 ---
 
 ## Test data (onnx-backend-test-data / emx-ort-test-artifacts-org)
