@@ -7,9 +7,6 @@ on:
   workflow_dispatch:
   release:
     types: [published]
-  # TEMPORARY: test run on the PR branch; workflow_dispatch needs the file on main.
-  push:
-    branches: [release/combined-bundle]
 
 jobs:
   linux:
