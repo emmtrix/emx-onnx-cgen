@@ -60,20 +60,22 @@
  *   transB: 0
  */
 EMX_NODE_FN void node0_node1(const uint8_t input_a[2][40], const float a_scale[1], const uint8_t a_zero_point[1], const int8_t input_b[40][2], const float b_scale[1], const int8_t b_zero_point[1], float output[2][2]) {
-    const double a_scale_val = (double)a_scale[0];
+    const float a_scale_val = (float)a_scale[0];
     const int32_t a_zero = (int32_t)a_zero_point[0];
+    const float b_scale_val = (float)b_scale[0];
     for (idx_t i = 0; i < 2; ++i) {
+        int32_t acc[2];
         for (idx_t j = 0; j < 2; ++j) {
-            const double b_scale_val = (double)b_scale[0];
-            const int32_t b_zero = (int32_t)b_zero_point[0];
-            int64_t acc = 0;
-            for (idx_t k = 0; k < 40; ++k) {
-                const int32_t a_val = (int32_t)input_a[i][k];
-                const int32_t b_val = (int32_t)input_b[k][j];
-                acc += (int64_t)(a_val - a_zero) * (int64_t)(b_val - b_zero);
+            acc[j] = 0;
+        }
+        for (idx_t k = 0; k < 40; ++k) {
+            const int32_t a_val = (int32_t)input_a[i][k] - a_zero;
+            for (idx_t j = 0; j < 2; ++j) {
+                acc[j] += a_val * ((int32_t)input_b[k][j] - (int32_t)b_zero_point[0]);
             }
-            double result = 1.2624273300170898 * a_scale_val * b_scale_val * (double)acc;
-            output[i][j] = (float)result;
+        }
+        for (idx_t j = 0; j < 2; ++j) {
+            output[i][j] = (float)(1.26242733f * a_scale_val * b_scale_val * (float)acc[j]);
         }
     }
 }
