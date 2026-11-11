@@ -123,6 +123,17 @@ try {
 
     Compress-Archive -Path dist/emx-onnx-cgen/* -DestinationPath $OutputZip
     Write-Host "Windows release bundle created: $repoRoot/$OutputZip"
+
+    $outputSbom = $OutputZip -replace '\.zip$', '.cdx.json'
+    $version = (& $pythonCommand[0] -m setuptools_scm).Trim()
+    Invoke-CheckedCommand -Description "Generate SBOM" -Command (New-PythonCommand @(
+        "tools/generate_sbom.py", "bundle",
+        "--workpath", "build/emx-onnx-cgen",
+        "--version", $version,
+        "--platform", "windows-amd64",
+        "--artifact", $OutputZip,
+        "--output", $outputSbom
+    ))
 }
 finally {
     if (Test-Path $tempRequirements) {

@@ -5,6 +5,7 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 image="quay.io/pypa/manylinux_2_28_x86_64"
 python_bin="/usr/bin/python3.11"
 output_archive="${OUTPUT_ARCHIVE:-emx-onnx-cgen-linux-amd64.tar.gz}"
+output_sbom="${output_archive%.tar.gz}.cdx.json"
 
 if ! command -v docker >/dev/null 2>&1; then
   echo "error: docker is required for local Linux release builds." >&2
@@ -17,6 +18,7 @@ docker run --rm \
   -w /workspace \
   -e PYTHON_BIN="${python_bin}" \
   -e OUTPUT_ARCHIVE="${output_archive}" \
+  -e OUTPUT_SBOM="${output_sbom}" \
   "${image}" \
   /bin/bash -lc '
     set -euo pipefail
@@ -49,6 +51,15 @@ docker run --rm \
       "${PYTHON_BIN}" tools/pyinstaller_build.py
       tar -czf "${OUTPUT_ARCHIVE}" -C dist emx-onnx-cgen
     fi
+
+    git config --global --add safe.directory /workspace
+    "${PYTHON_BIN}" tools/generate_sbom.py bundle \
+      --workpath build/emx-onnx-cgen \
+      --version "$("${PYTHON_BIN}" -m setuptools_scm)" \
+      --platform linux-amd64 \
+      --artifact "${OUTPUT_ARCHIVE}" \
+      --output "${OUTPUT_SBOM}"
   '
 
 echo "Linux release bundle created: ${repo_root}/${output_archive}"
+echo "SBOM created: ${repo_root}/${output_sbom}"
