@@ -1,15 +1,16 @@
 name: windows-release
 
+# Builds the Windows bundle and its SBOM as a workflow artifact. release-bundles.yml
+# calls it for each release and attaches the result to the GitHub release.
 on:
   workflow_dispatch:
-  release:
-    types: [published]
+  workflow_call:
 
 jobs:
   build-windows-bundle:
     runs-on: windows-latest
     permissions:
-      contents: write
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -49,6 +50,7 @@ jobs:
           }
           python tools/generate_sbom.py bundle `
             --workpath build/emx-onnx-cgen `
+            --dist dist/emx-onnx-cgen `
             --platform windows-amd64 `
             --artifact emx-onnx-cgen-windows-amd64.zip `
             --output emx-onnx-cgen-windows-amd64.cdx.json `
@@ -57,18 +59,9 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Upload workflow artifact
-        if: ${{ github.event_name == 'workflow_dispatch' }}
         uses: actions/upload-artifact@v4
         with:
           name: emx-onnx-cgen-windows-amd64
           path: |
-            emx-onnx-cgen-windows-amd64.zip
-            emx-onnx-cgen-windows-amd64.cdx.json
-
-      - name: Upload release asset
-        if: ${{ github.event_name == 'release' }}
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
             emx-onnx-cgen-windows-amd64.zip
             emx-onnx-cgen-windows-amd64.cdx.json

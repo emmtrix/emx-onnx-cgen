@@ -170,7 +170,23 @@ Every release asset comes with a [CycloneDX](https://cyclonedx.org/) 1.6 SBOM
 | --- | --- |
 | `emx-onnx-cgen-linux-amd64.tar.gz` | `emx-onnx-cgen-linux-amd64.cdx.json` |
 | `emx-onnx-cgen-windows-amd64.zip` | `emx-onnx-cgen-windows-amd64.cdx.json` |
+| `emx-onnx-cgen-bundles.tar.gz` (both bundles) | `emx-onnx-cgen-bundles.cdx.json` |
 | PyPI wheel | `emx-onnx-cgen-wheel.cdx.json` |
+
+`emx-onnx-cgen-bundles.tar.gz` contains both bundles of the same build, in
+`emx-onnx-cgen/linux-amd64/` and `emx-onnx-cgen/windows-amd64/`. Its SBOM
+lists each component once, together with the platforms that ship it.
+
+The bundle SBOMs list every file of the bundle with its SHA-256, under the
+component it belongs to. The combined archive also carries its SBOM inside, as
+`emx-onnx-cgen/emx-onnx-cgen.cdx.json`. Only the SBOM next to the archive holds
+the archive's own hash; the one inside cannot.
+[`tools/verify_bundle.py`](tools/verify_bundle.py) checks an unpacked bundle
+against its SBOM. It needs only the Python standard library:
+
+```bash
+python tools/verify_bundle.py --sbom emx-onnx-cgen/emx-onnx-cgen.cdx.json --root emx-onnx-cgen
+```
 
 Both bundles are built with the same CPython build from
 [python-build-standalone](https://github.com/astral-sh/python-build-standalone),
@@ -180,8 +196,9 @@ The bundle SBOMs list everything the bundle contains:
 - the CPython interpreter and the libraries compiled into it, such as OpenSSL
 - the Microsoft C/C++ runtime on Windows
 - the system libraries (as rpm packages) on Linux
-- the vendored `stb_image` The asset's
-SHA-256/SHA-512 hashes are part of the SBOM. See
+- the vendored `stb_image`
+
+The asset's SHA-256/SHA-512 hashes are part of the SBOM. See
 [`docs/development.md`](docs/development.md#software-bill-of-materials-sbom)
 for how they are generated.
 

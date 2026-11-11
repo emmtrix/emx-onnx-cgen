@@ -17,6 +17,11 @@ Two kinds of release assets are described:
     environment into which the wheel was installed; the runtime dependencies are
     reported in the versions pip resolved there.
 
+``combine``
+    The archive with all platform bundles (``tools/combine_release_bundles.py``),
+    merged from the platform bundle SBOMs. Each component appears once, with the
+    platforms it was found in.
+
 Examples::
 
     python tools/generate_sbom.py bundle --workpath build/emx-onnx-cgen \\
@@ -44,7 +49,7 @@ import sys
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Callable, Iterable, Iterator, Protocol
 
 from packaging.requirements import Requirement
@@ -100,6 +105,8 @@ class Component:
     external_references: tuple[dict, ...] = ()
     properties: tuple[tuple[str, str], ...] = ()
     depends_on: set[str] = field(default_factory=set)
+    # The component's files in the bundle, as nested "file" components.
+    files: tuple[dict, ...] = ()
 
     def to_json(self) -> dict:
         data: dict = {"type": self.type, "bom-ref": self.bom_ref}
@@ -127,6 +134,8 @@ class Component:
             data["properties"] = [
                 {"name": name, "value": value} for name, value in self.properties
             ]
+        if self.files:
+            data["components"] = list(self.files)
         return data
 
 
@@ -1056,6 +1065,82 @@ def _pyinstaller_loader_origin() -> Path:
     return Path(PyInstaller.loader.__file__).resolve().with_name("pyimod01_archive.py")
 
 
+# bom-ref prefix of the file components that list the bundle's files.
+BUNDLE_FILE_PREFIX = "bundle-file:"
+# TOC entries that PyInstaller writes as files of their own; the others go into
+# the PYZ archive inside the executable.
+_FILE_TYPECODES = frozenset({"EXTENSION", "BINARY", "DATA", "DEPENDENCY", "EXECUTABLE"})
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1 << 20), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _bundle_file(relative: str, path: Path) -> dict:
+    """The file component of one file in the bundle directory."""
+    entry: dict = {
+        "type": "file",
+        "bom-ref": f"{BUNDLE_FILE_PREFIX}{relative}",
+        "name": relative,
+    }
+    if path.is_symlink():
+        entry["properties"] = [
+            {
+                "name": f"{PROPERTY_PREFIX}:symlink-target",
+                "value": os.readlink(path).replace(os.sep, "/"),
+            }
+        ]
+    else:
+        entry["hashes"] = [{"alg": "SHA-256", "content": _sha256(path)}]
+    return entry
+
+
+def _destination_of(relative: str, owners: dict[str, str]) -> str | None:
+    """The TOC destination of a file in the bundle directory.
+
+    The executable sits at the top of the bundle, everything else in its
+    contents directory (``_internal/``), relative to which TOC destinations are.
+    """
+    if relative in owners:
+        return relative
+    inner = relative.split("/", 1)[-1]
+    return inner if inner in owners else None
+
+
+def _attach_bundle_files(
+    dist: Path,
+    owners: dict[str, str],
+    registry: Registry,
+    unknown: UnknownFileResolver,
+) -> None:
+    """List every file of the bundle directory, with its hash, under its owner."""
+    if not dist.is_dir():
+        raise SbomError(f"Bundle directory {dist} does not exist.")
+    files: dict[str, list[dict]] = {}
+    for path in sorted(dist.rglob("*")):
+        if path.is_dir() and not path.is_symlink():
+            continue
+        relative = path.relative_to(dist).as_posix()
+        destination = _destination_of(relative, owners)
+        if destination is None and path.is_symlink():
+            # A link to another bundled file belongs to the target's component.
+            target = (PurePosixPath(relative).parent / os.readlink(path)).as_posix()
+            destination = _destination_of(
+                os.path.normpath(target).replace(os.sep, "/"), owners
+            )
+        if destination is None:
+            owner = unknown.resolve(BundledFile(relative, path, "DATA")).bom_ref
+        else:
+            owner = owners[destination]
+        files.setdefault(owner, []).append(_bundle_file(relative, path))
+    for owner, entries in files.items():
+        registry.components[owner].files = tuple(entries)
+
+
 def bundle_bom(
     *,
     workpath: Path,
@@ -1069,8 +1154,14 @@ def bundle_bom(
     ),
     pyinstaller_origin: Path | None = None,
     python_build: PythonBuild | None = None,
+    dist: Path | None = None,
 ) -> tuple[dict, list[BundledFile]]:
-    """The SBOM of a PyInstaller bundle and the files without a known origin."""
+    """The SBOM of a PyInstaller bundle and the files without a known origin.
+
+    With ``dist`` (the bundle directory PyInstaller wrote), every file in it is
+    listed with its SHA-256 under the component it belongs to, so that an
+    unpacked bundle can be checked against the SBOM.
+    """
     bundled_files = read_bundled_files(workpath)
     _check_interpreter(bundled_files)
     if python_build is not None:
@@ -1104,9 +1195,18 @@ def bundle_bom(
     ]
 
     file_counts: dict[str, int] = {}
+    owners: dict[str, str] = {}
     for bundled in bundled_files:
         ref = attributor.resolve(bundled).bom_ref
         file_counts[ref] = file_counts.get(ref, 0) + 1
+        if bundled.typecode in _FILE_TYPECODES:
+            # The executable is emx-onnx-cgen itself: PyInstaller's bootloader
+            # with the pure-Python modules of every component packed inside.
+            owners[bundled.destination.replace(os.sep, "/")] = (
+                project.bom_ref if bundled.typecode == "EXECUTABLE" else ref
+            )
+    if dist is not None:
+        _attach_bundle_files(dist, owners, registry, unknown)
     cpython.add_embedded_libraries()
     for ref, count in file_counts.items():
         registry.components[ref].properties += (
@@ -1183,6 +1283,188 @@ def wheel_bom(*, artifact: Path | None = None, download_url: str | None = None) 
     )
 
 
+# Properties whose value depends on the platform bundle a component was found in.
+_PLATFORM_PROPERTIES = frozenset(
+    {f"{PROPERTY_PREFIX}:bundled-files", f"{PROPERTY_PREFIX}:python-build"}
+)
+
+
+def _component_from_json(data: dict) -> Component:
+    references = list(data.get("externalReferences", ()))
+    website = None
+    if references and references[0]["type"] == "website":
+        website = references.pop(0)["url"]
+    return Component(
+        bom_ref=data["bom-ref"],
+        type=data["type"],
+        name=data["name"],
+        version=data.get("version"),
+        purl=data.get("purl"),
+        cpe=data.get("cpe"),
+        supplier=data.get("supplier"),
+        licenses=tuple(data.get("licenses", ())),
+        description=data.get("description"),
+        website=website,
+        hashes=tuple(data.get("hashes", ())),
+        external_references=tuple(references),
+        properties=tuple(
+            (prop["name"], prop["value"]) for prop in data.get("properties", ())
+        ),
+        files=tuple(data.get("components", ())),
+    )
+
+
+def _platform_file(entry: dict, platform: str) -> dict:
+    """A bundle file component, with its path relative to the combined archive."""
+    entry = dict(entry)
+    entry["name"] = f"{platform}/{entry['name']}"
+    entry["bom-ref"] = f"{BUNDLE_FILE_PREFIX}{entry['name']}"
+    return entry
+
+
+def _unique(items: Iterable) -> tuple:
+    seen: dict[str, object] = {}
+    for item in items:
+        seen.setdefault(json.dumps(item, sort_keys=True), item)
+    return tuple(seen.values())
+
+
+def _platform_properties(
+    properties: Iterable[tuple[str, str]], platform: str
+) -> tuple[tuple[str, str], ...]:
+    """Tag platform-dependent properties and record the platform itself."""
+    return (
+        *(
+            (f"{name}:{platform}" if name in _PLATFORM_PROPERTIES else name, value)
+            for name, value in properties
+        ),
+        (f"{PROPERTY_PREFIX}:platform", platform),
+    )
+
+
+def _merge_component(merged: Component, other: Component) -> None:
+    """Fold the same component, found in another platform bundle, into ``merged``."""
+
+    def identity(component: Component) -> dict:
+        data = component.to_json()
+        for merged_field in ("properties", "externalReferences", "components"):
+            data.pop(merged_field, None)
+        return data
+
+    if identity(merged) != identity(other):
+        raise SbomError(
+            f"Component {merged.bom_ref} differs between the platform SBOMs; "
+            "they must come from the same release build."
+        )
+    merged.properties = _unique(merged.properties + other.properties)
+    merged.external_references = _unique(
+        merged.external_references + other.external_references
+    )
+    merged.depends_on |= other.depends_on
+    merged.files += other.files
+
+
+def _bom_property(bom: dict, name: str) -> str | None:
+    return next(
+        (
+            prop["value"]
+            for prop in bom["metadata"].get("properties", ())
+            if prop["name"] == f"{PROPERTY_PREFIX}:{name}"
+        ),
+        None,
+    )
+
+
+def combined_bom(
+    *,
+    inputs: Iterable[dict],
+    version: str | None = None,
+    artifact: Path | None = None,
+    download_url: str | None = None,
+) -> dict:
+    """The SBOM of an archive that holds several platform bundles.
+
+    Each component appears once. It carries an ``emx-onnx-cgen:platform``
+    property for every bundle it was found in, and platform-dependent
+    properties get the platform as a suffix.
+    """
+    bundles: dict[str, dict] = {}
+    for bom in inputs:
+        platform = _bom_property(bom, "platform")
+        if _bom_property(bom, "artifact-kind") != "pyinstaller-bundle" or not platform:
+            raise SbomError("Only platform bundle SBOMs can be combined.")
+        if platform in bundles:
+            raise SbomError(f"Two SBOMs for platform {platform}.")
+        bundles[platform] = bom
+    if not bundles:
+        raise SbomError("No SBOMs to combine.")
+    versions = {bom["metadata"]["component"]["version"] for bom in bundles.values()}
+    if len(versions) != 1 or (version is not None and versions != {version}):
+        expected = f" (expected {version})" if version else ""
+        raise SbomError(
+            f"The platform SBOMs describe versions {sorted(versions)}{expected}."
+        )
+
+    registry = Registry()
+    project = registry.add(_project_component(versions.pop()))
+    for platform, bom in sorted(bundles.items()):
+        dependencies = {
+            entry["ref"]: set(entry.get("dependsOn", ()))
+            for entry in bom["dependencies"]
+        }
+        for data in (bom["metadata"]["component"], *bom["components"]):
+            component = _component_from_json(data)
+            component.properties = _platform_properties(component.properties, platform)
+            component.depends_on = dependencies.get(component.bom_ref, set())
+            component.files = tuple(
+                _platform_file(entry, platform) for entry in component.files
+            )
+            if component.bom_ref == project.bom_ref:
+                project.properties = _unique(project.properties + component.properties)
+                project.depends_on |= component.depends_on
+                project.files += component.files
+            elif component.bom_ref in registry.components:
+                _merge_component(registry.components[component.bom_ref], component)
+            else:
+                registry.add(component)
+    return build_bom(
+        registry=registry,
+        project=project,
+        artifact=artifact,
+        download_url=download_url,
+        properties=(
+            (f"{PROPERTY_PREFIX}:artifact-kind", "multi-platform-bundle"),
+            *(
+                (f"{PROPERTY_PREFIX}:platform", platform)
+                for platform in sorted(bundles)
+            ),
+        ),
+    )
+
+
+def _release_identity(args: argparse.Namespace) -> tuple[str | None, str | None]:
+    """The version and the asset's download URL from --version/--release-tag."""
+    version, download_url = args.version, args.download_url
+    if args.release_tag:
+        version = args.release_tag.removeprefix("v")
+        if download_url is None and args.artifact is not None:
+            download_url = (
+                f"{PROJECT_REPOSITORY}/releases/download/"
+                f"{args.release_tag}/{args.artifact.name}"
+            )
+    return version, download_url
+
+
+def _add_identity_arguments(parser: argparse.ArgumentParser, *, required: bool) -> None:
+    identity = parser.add_mutually_exclusive_group(required=required)
+    identity.add_argument("--version", help="emx-onnx-cgen version")
+    identity.add_argument(
+        "--release-tag",
+        help="GitHub release tag (e.g. v1.4.2); sets the version and the asset's "
+        "download URL",
+    )
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     subparsers = parser.add_subparsers(dest="kind", required=True)
@@ -1193,14 +1475,14 @@ def main(argv: list[str] | None = None) -> int:
         required=True,
         help="PyInstaller work directory of the bundle, e.g. build/emx-onnx-cgen",
     )
-    identity = bundle.add_mutually_exclusive_group(required=True)
-    identity.add_argument("--version", help="emx-onnx-cgen version")
-    identity.add_argument(
-        "--release-tag",
-        help="GitHub release tag (e.g. v1.4.2); sets the version and the asset's "
-        "download URL",
-    )
+    _add_identity_arguments(bundle, required=True)
     bundle.add_argument("--platform", required=True, help="e.g. linux-amd64")
+    bundle.add_argument(
+        "--dist",
+        type=Path,
+        help="Bundle directory PyInstaller wrote, e.g. dist/emx-onnx-cgen; lists "
+        "every file in it with its SHA-256",
+    )
     bundle.add_argument(
         "--python-build",
         type=Path,
@@ -1208,7 +1490,18 @@ def main(argv: list[str] | None = None) -> int:
         "(tools/release_python.json, as used by the release workflows)",
     )
     wheel = subparsers.add_parser("wheel", help="SBOM of the installed wheel")
-    for subparser in (bundle, wheel):
+    combine = subparsers.add_parser(
+        "combine", help="SBOM of an archive holding several platform bundles"
+    )
+    combine.add_argument(
+        "--input",
+        type=Path,
+        action="append",
+        required=True,
+        help="SBOM of one platform bundle (repeat for each platform)",
+    )
+    _add_identity_arguments(combine, required=False)
+    for subparser in (bundle, wheel, combine):
         subparser.add_argument(
             "--artifact", type=Path, help="Release asset described (for its hashes)"
         )
@@ -1217,15 +1510,18 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     try:
-        if args.kind == "bundle":
-            version, download_url = args.version, args.download_url
-            if args.release_tag:
-                version = args.release_tag.removeprefix("v")
-                if download_url is None and args.artifact is not None:
-                    download_url = (
-                        f"{PROJECT_REPOSITORY}/releases/download/"
-                        f"{args.release_tag}/{args.artifact.name}"
-                    )
+        if args.kind == "combine":
+            version, download_url = _release_identity(args)
+            bom = combined_bom(
+                inputs=[
+                    json.loads(path.read_text(encoding="utf-8")) for path in args.input
+                ],
+                version=version,
+                artifact=args.artifact,
+                download_url=download_url,
+            )
+        elif args.kind == "bundle":
+            version, download_url = _release_identity(args)
             bom, unresolved = bundle_bom(
                 workpath=args.workpath,
                 version=version,
@@ -1237,6 +1533,7 @@ def main(argv: list[str] | None = None) -> int:
                     if args.python_build
                     else None
                 ),
+                dist=args.dist,
             )
             for bundled in unresolved:
                 print(
