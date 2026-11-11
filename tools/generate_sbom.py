@@ -17,6 +17,11 @@ Two kinds of release assets are described:
     environment into which the wheel was installed; the runtime dependencies are
     reported in the versions pip resolved there.
 
+``combine``
+    The archive with all platform bundles (``tools/combine_release_bundles.py``),
+    merged from the platform bundle SBOMs. Each component appears once, with the
+    platforms it was found in.
+
 Examples::
 
     python tools/generate_sbom.py bundle --workpath build/emx-onnx-cgen \\
@@ -44,7 +49,7 @@ import sys
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Callable, Iterable, Iterator, Protocol
 
 from packaging.requirements import Requirement
@@ -54,6 +59,9 @@ try:
     import tomllib
 except ModuleNotFoundError:  # Python 3.10: only the dependency graph gets coarser.
     tomllib = None
+
+# A sibling script in tools/, which is sys.path[0] when this script runs.
+import fetch_release_python  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PROJECT_NAME = "emx-onnx-cgen"
@@ -94,8 +102,11 @@ class Component:
     description: str | None = None
     website: str | None = None
     hashes: tuple[dict, ...] = ()
+    external_references: tuple[dict, ...] = ()
     properties: tuple[tuple[str, str], ...] = ()
     depends_on: set[str] = field(default_factory=set)
+    # The component's files in the bundle, as nested "file" components.
+    files: tuple[dict, ...] = ()
 
     def to_json(self) -> dict:
         data: dict = {"type": self.type, "bom-ref": self.bom_ref}
@@ -114,12 +125,17 @@ class Component:
             data["cpe"] = self.cpe
         if self.purl:
             data["purl"] = self.purl
+        references = list(self.external_references)
         if self.website:
-            data["externalReferences"] = [{"type": "website", "url": self.website}]
+            references.insert(0, {"type": "website", "url": self.website})
+        if references:
+            data["externalReferences"] = references
         if self.properties:
             data["properties"] = [
                 {"name": name, "value": value} for name, value in self.properties
             ]
+        if self.files:
+            data["components"] = list(self.files)
         return data
 
 
@@ -577,68 +593,208 @@ class RpmResolver:
         )
 
 
-def _openssl_version() -> str:
+@dataclass(frozen=True)
+class PythonBuild:
+    """The pinned CPython build of the release bundles (tools/release_python.json).
+
+    The release workflows build both bundles with this python-build-standalone
+    release. It records the archive and the versions of the libraries compiled
+    into it that CPython cannot report at runtime.
+    """
+
+    distribution: str
+    release: str
+    python_version: str
+    target: str
+    archive_url: str
+    archive_sha256: str
+    libraries: dict[str, str]
+
+    @classmethod
+    def load(cls, path: Path, platform: str) -> PythonBuild:
+        with path.open(encoding="utf-8") as handle:
+            config = json.load(handle)
+        try:
+            url = fetch_release_python.archive_url(config, platform)
+        except fetch_release_python.FetchError as error:
+            raise SbomError(f"{path}: {error}") from None
+        entry = config["platforms"][platform]
+        return cls(
+            distribution=config["distribution"],
+            release=config["release"],
+            python_version=config["python_version"],
+            target=entry["target"],
+            archive_url=url,
+            archive_sha256=entry["sha256"],
+            libraries=dict(entry.get("libraries", {})),
+        )
+
+    def check_interpreter(self) -> None:
+        running = sys.version.split()[0]
+        if running != self.python_version:
+            raise SbomError(
+                f"The bundle was built with CPython {running}, but the Python build "
+                f"pins {self.python_version}. Build with tools/fetch_release_python.py."
+            )
+
+
+def _openssl_version() -> str | None:
     import ssl
 
     return ssl.OPENSSL_VERSION.split()[1]
 
 
-def _sqlite_version() -> str:
+def _sqlite_version() -> str | None:
     import sqlite3
 
     return sqlite3.sqlite_version
 
 
-def _expat_version() -> str:
+def _expat_version() -> str | None:
     import pyexpat
 
     return pyexpat.EXPAT_VERSION.removeprefix("expat_")
 
 
-def _zlib_version() -> str:
+def _zlib_version() -> str | None:
     import zlib
 
-    return zlib.ZLIB_RUNTIME_VERSION
+    # A zlib-ng build reports a zlib-compatible version such as "1.3.1.zlib-ng".
+    return None if hasattr(zlib, "ZLIBNG_VERSION") else zlib.ZLIB_RUNTIME_VERSION
+
+
+def _zlib_ng_version() -> str | None:
+    import zlib
+
+    return getattr(zlib, "ZLIBNG_VERSION", None)
+
+
+def _mpdecimal_version() -> str | None:
+    import _decimal
+
+    return _decimal.__libmpdec_version__
+
+
+def _zstd_version() -> str | None:
+    import _zstd
+
+    return _zstd.zstd_version
 
 
 @dataclass(frozen=True)
 class _EmbeddedLibrary:
-    """A library compiled into the modules of a python.org CPython build."""
+    """A library compiled into CPython or into one of its extension modules.
 
-    module: str
+    The version comes from the running interpreter when CPython exposes it,
+    otherwise from the libraries table of the pinned Python build.
+    """
+
+    modules: tuple[str, ...]
     name: str
-    cpe_product: str
-    version: Callable[[], str]
+    cpe_product: str | None
     license_expression: Callable[[str], str]
+    runtime_version: Callable[[], str | None] | None = None
+
+    @property
+    def key(self) -> str:
+        return self.name.lower()
 
 
 _EMBEDDED_LIBRARIES = (
     _EmbeddedLibrary(
-        "_ssl",
+        ("_ssl", "_hashlib"),
         "OpenSSL",
         "openssl:openssl",
-        _openssl_version,
         lambda version: "Apache-2.0" if int(version.split(".")[0]) >= 3 else "OpenSSL",
+        _openssl_version,
     ),
     _EmbeddedLibrary(
-        "_sqlite3", "SQLite", "sqlite:sqlite", _sqlite_version, lambda _: "blessing"
+        ("_sqlite3",), "SQLite", "sqlite:sqlite", lambda _: "blessing", _sqlite_version
     ),
     _EmbeddedLibrary(
-        "pyexpat", "Expat", "libexpat_project:libexpat", _expat_version, lambda _: "MIT"
+        ("pyexpat",),
+        "Expat",
+        "libexpat_project:libexpat",
+        lambda _: "MIT",
+        _expat_version,
     ),
-    _EmbeddedLibrary("zlib", "zlib", "zlib:zlib", _zlib_version, lambda _: "Zlib"),
+    _EmbeddedLibrary(("zlib",), "zlib", "zlib:zlib", lambda _: "Zlib", _zlib_version),
+    _EmbeddedLibrary(
+        ("zlib",), "zlib-ng", "zlib-ng:zlib-ng", lambda _: "Zlib", _zlib_ng_version
+    ),
+    _EmbeddedLibrary(
+        ("_decimal",),
+        "mpdecimal",
+        "bytereef:mpdecimal",
+        lambda _: "BSD-2-Clause",
+        _mpdecimal_version,
+    ),
+    _EmbeddedLibrary(
+        ("_zstd",),
+        "zstd",
+        "facebook:zstandard",
+        lambda _: "BSD-3-Clause OR GPL-2.0-only",
+        _zstd_version,
+    ),
+    _EmbeddedLibrary(("_bz2",), "bzip2", "bzip:bzip2", lambda _: "bzip2-1.0.6"),
+    _EmbeddedLibrary(("_lzma",), "xz", "tukaani:xz", lambda _: "0BSD"),
+    _EmbeddedLibrary(("_ctypes",), "libffi", "libffi_project:libffi", lambda _: "MIT"),
+    _EmbeddedLibrary(("_uuid",), "uuid", None, lambda _: "BSD-3-Clause"),
+    _EmbeddedLibrary(
+        ("_curses", "_curses_panel", "readline"),
+        "ncurses",
+        "gnu:ncurses",
+        lambda _: "X11",
+    ),
+    _EmbeddedLibrary(
+        ("readline",), "libedit", "libedit_project:libedit", lambda _: "BSD-3-Clause"
+    ),
 )
 
 
 class CPythonResolver:
     """Files of the CPython installation the bundle was built with."""
 
-    def __init__(self, registry: Registry, *, report_embedded_libraries: bool) -> None:
+    def __init__(
+        self,
+        registry: Registry,
+        *,
+        report_embedded_libraries: bool,
+        python_build: PythonBuild | None = None,
+    ) -> None:
         self._registry = registry
         self._report_embedded_libraries = report_embedded_libraries
+        self._python_build = python_build
         self._prefix = _path_key(sys.base_prefix)
         self._modules: set[str] = set()
         version = sys.version.split()[0]
+        supplier = {
+            "name": "Python Software Foundation",
+            "url": ["https://www.python.org"],
+        }
+        references: tuple[dict, ...] = ()
+        properties: tuple[tuple[str, str], ...] = ()
+        if python_build is not None:
+            supplier = {
+                "name": python_build.distribution,
+                "url": ["https://github.com/astral-sh/python-build-standalone"],
+            }
+            references = (
+                {
+                    "type": "distribution",
+                    "url": python_build.archive_url,
+                    "hashes": [
+                        {"alg": "SHA-256", "content": python_build.archive_sha256}
+                    ],
+                },
+            )
+            properties = (
+                (
+                    f"{PROPERTY_PREFIX}:python-build",
+                    f"{python_build.distribution} {python_build.release} "
+                    f"{python_build.target}",
+                ),
+            )
         self.component = Component(
             bom_ref=f"pkg:generic/python@{version}",
             type="application",
@@ -646,12 +802,11 @@ class CPythonResolver:
             version=version,
             purl=f"pkg:generic/python@{version}",
             cpe=f"cpe:2.3:a:python:python:{version}:*:*:*:*:*:*:*",
-            supplier={
-                "name": "Python Software Foundation",
-                "url": ["https://www.python.org"],
-            },
+            supplier=supplier,
             licenses=({"expression": "PSF-2.0"},),
             website="https://www.python.org",
+            external_references=references,
+            properties=properties,
         )
 
     def resolve(self, bundled: BundledFile) -> Component | None:
@@ -659,6 +814,23 @@ class CPythonResolver:
             return None
         self._modules.add(Path(bundled.destination).name.split(".", 1)[0])
         return self._registry.add(self.component)
+
+    def _library_version(self, library: _EmbeddedLibrary) -> tuple[str, str] | None:
+        """The library's version and where it was taken from, if known."""
+        if library.runtime_version is not None:
+            try:
+                version = library.runtime_version()
+            except ImportError:
+                return None
+            return (version, "runtime") if version else None
+        if (
+            self._python_build is not None
+            and library.key in self._python_build.libraries
+        ):
+            return self._python_build.libraries[
+                library.key
+            ], "tools/release_python.json"
+        return None
 
     def add_embedded_libraries(self) -> None:
         """Report the libraries compiled into the bundled CPython modules."""
@@ -669,23 +841,29 @@ class CPythonResolver:
             return
         modules = self._modules | set(sys.builtin_module_names)
         for library in _EMBEDDED_LIBRARIES:
-            if library.module not in modules:
+            if modules.isdisjoint(library.modules):
                 continue
-            try:
-                version = library.version()
-            except ImportError:
+            found = self._library_version(library)
+            if found is None:
                 continue
-            product = library.name.lower()
+            version, source = found
             embedded = self._registry.add(
                 Component(
-                    bom_ref=f"pkg:generic/{product}@{version}",
+                    bom_ref=f"pkg:generic/{library.key}@{version}",
                     type="library",
                     name=library.name,
                     version=version,
-                    purl=f"pkg:generic/{product}@{version}",
-                    cpe=f"cpe:2.3:a:{library.cpe_product}:{version}:*:*:*:*:*:*:*",
+                    purl=f"pkg:generic/{library.key}@{version}",
+                    cpe=(
+                        f"cpe:2.3:a:{library.cpe_product}:{version}:*:*:*:*:*:*:*"
+                        if library.cpe_product
+                        else None
+                    ),
                     licenses=({"expression": library.license_expression(version)},),
-                    properties=((f"{PROPERTY_PREFIX}:embedded-in", "CPython"),),
+                    properties=(
+                        (f"{PROPERTY_PREFIX}:embedded-in", "CPython"),
+                        (f"{PROPERTY_PREFIX}:version-source", source),
+                    ),
                 )
             )
             self.component.depends_on.add(embedded.bom_ref)
@@ -887,6 +1065,82 @@ def _pyinstaller_loader_origin() -> Path:
     return Path(PyInstaller.loader.__file__).resolve().with_name("pyimod01_archive.py")
 
 
+# bom-ref prefix of the file components that list the bundle's files.
+BUNDLE_FILE_PREFIX = "bundle-file:"
+# TOC entries that PyInstaller writes as files of their own; the others go into
+# the PYZ archive inside the executable.
+_FILE_TYPECODES = frozenset({"EXTENSION", "BINARY", "DATA", "DEPENDENCY", "EXECUTABLE"})
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1 << 20), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _bundle_file(relative: str, path: Path) -> dict:
+    """The file component of one file in the bundle directory."""
+    entry: dict = {
+        "type": "file",
+        "bom-ref": f"{BUNDLE_FILE_PREFIX}{relative}",
+        "name": relative,
+    }
+    if path.is_symlink():
+        entry["properties"] = [
+            {
+                "name": f"{PROPERTY_PREFIX}:symlink-target",
+                "value": os.readlink(path).replace(os.sep, "/"),
+            }
+        ]
+    else:
+        entry["hashes"] = [{"alg": "SHA-256", "content": _sha256(path)}]
+    return entry
+
+
+def _destination_of(relative: str, owners: dict[str, str]) -> str | None:
+    """The TOC destination of a file in the bundle directory.
+
+    The executable sits at the top of the bundle, everything else in its
+    contents directory (``_internal/``), relative to which TOC destinations are.
+    """
+    if relative in owners:
+        return relative
+    inner = relative.split("/", 1)[-1]
+    return inner if inner in owners else None
+
+
+def _attach_bundle_files(
+    dist: Path,
+    owners: dict[str, str],
+    registry: Registry,
+    unknown: UnknownFileResolver,
+) -> None:
+    """List every file of the bundle directory, with its hash, under its owner."""
+    if not dist.is_dir():
+        raise SbomError(f"Bundle directory {dist} does not exist.")
+    files: dict[str, list[dict]] = {}
+    for path in sorted(dist.rglob("*")):
+        if path.is_dir() and not path.is_symlink():
+            continue
+        relative = path.relative_to(dist).as_posix()
+        destination = _destination_of(relative, owners)
+        if destination is None and path.is_symlink():
+            # A link to another bundled file belongs to the target's component.
+            target = (PurePosixPath(relative).parent / os.readlink(path)).as_posix()
+            destination = _destination_of(
+                os.path.normpath(target).replace(os.sep, "/"), owners
+            )
+        if destination is None:
+            owner = unknown.resolve(BundledFile(relative, path, "DATA")).bom_ref
+        else:
+            owner = owners[destination]
+        files.setdefault(owner, []).append(_bundle_file(relative, path))
+    for owner, entries in files.items():
+        registry.components[owner].files = tuple(entries)
+
+
 def bundle_bom(
     *,
     workpath: Path,
@@ -899,17 +1153,30 @@ def bundle_bom(
         RpmResolver.from_system
     ),
     pyinstaller_origin: Path | None = None,
+    python_build: PythonBuild | None = None,
+    dist: Path | None = None,
 ) -> tuple[dict, list[BundledFile]]:
-    """The SBOM of a PyInstaller bundle and the files without a known origin."""
+    """The SBOM of a PyInstaller bundle and the files without a known origin.
+
+    With ``dist`` (the bundle directory PyInstaller wrote), every file in it is
+    listed with its SHA-256 under the component it belongs to, so that an
+    unpacked bundle can be checked against the SBOM.
+    """
     bundled_files = read_bundled_files(workpath)
     _check_interpreter(bundled_files)
+    if python_build is not None:
+        python_build.check_interpreter()
     registry = Registry()
     project = registry.add(_project_component(version))
     distributions = DistributionResolver(registry)
     rpm = rpm_resolver_factory(registry)
     # A distribution-packaged interpreter links the system libraries, which rpm
-    # reports; a python.org build carries its own copies.
-    cpython = CPythonResolver(registry, report_embedded_libraries=rpm is None)
+    # reports; python.org and python-build-standalone builds carry their own copies.
+    cpython = CPythonResolver(
+        registry,
+        report_embedded_libraries=rpm is None or python_build is not None,
+        python_build=python_build,
+    )
     unknown = UnknownFileResolver(registry)
     attributor = Attributor(unknown)
     attributor.resolvers += [
@@ -928,9 +1195,18 @@ def bundle_bom(
     ]
 
     file_counts: dict[str, int] = {}
+    owners: dict[str, str] = {}
     for bundled in bundled_files:
         ref = attributor.resolve(bundled).bom_ref
         file_counts[ref] = file_counts.get(ref, 0) + 1
+        if bundled.typecode in _FILE_TYPECODES:
+            # The executable is emx-onnx-cgen itself: PyInstaller's bootloader
+            # with the pure-Python modules of every component packed inside.
+            owners[bundled.destination.replace(os.sep, "/")] = (
+                project.bom_ref if bundled.typecode == "EXECUTABLE" else ref
+            )
+    if dist is not None:
+        _attach_bundle_files(dist, owners, registry, unknown)
     cpython.add_embedded_libraries()
     for ref, count in file_counts.items():
         registry.components[ref].properties += (
@@ -1007,6 +1283,188 @@ def wheel_bom(*, artifact: Path | None = None, download_url: str | None = None) 
     )
 
 
+# Properties whose value depends on the platform bundle a component was found in.
+_PLATFORM_PROPERTIES = frozenset(
+    {f"{PROPERTY_PREFIX}:bundled-files", f"{PROPERTY_PREFIX}:python-build"}
+)
+
+
+def _component_from_json(data: dict) -> Component:
+    references = list(data.get("externalReferences", ()))
+    website = None
+    if references and references[0]["type"] == "website":
+        website = references.pop(0)["url"]
+    return Component(
+        bom_ref=data["bom-ref"],
+        type=data["type"],
+        name=data["name"],
+        version=data.get("version"),
+        purl=data.get("purl"),
+        cpe=data.get("cpe"),
+        supplier=data.get("supplier"),
+        licenses=tuple(data.get("licenses", ())),
+        description=data.get("description"),
+        website=website,
+        hashes=tuple(data.get("hashes", ())),
+        external_references=tuple(references),
+        properties=tuple(
+            (prop["name"], prop["value"]) for prop in data.get("properties", ())
+        ),
+        files=tuple(data.get("components", ())),
+    )
+
+
+def _platform_file(entry: dict, platform: str) -> dict:
+    """A bundle file component, with its path relative to the combined archive."""
+    entry = dict(entry)
+    entry["name"] = f"{platform}/{entry['name']}"
+    entry["bom-ref"] = f"{BUNDLE_FILE_PREFIX}{entry['name']}"
+    return entry
+
+
+def _unique(items: Iterable) -> tuple:
+    seen: dict[str, object] = {}
+    for item in items:
+        seen.setdefault(json.dumps(item, sort_keys=True), item)
+    return tuple(seen.values())
+
+
+def _platform_properties(
+    properties: Iterable[tuple[str, str]], platform: str
+) -> tuple[tuple[str, str], ...]:
+    """Tag platform-dependent properties and record the platform itself."""
+    return (
+        *(
+            (f"{name}:{platform}" if name in _PLATFORM_PROPERTIES else name, value)
+            for name, value in properties
+        ),
+        (f"{PROPERTY_PREFIX}:platform", platform),
+    )
+
+
+def _merge_component(merged: Component, other: Component) -> None:
+    """Fold the same component, found in another platform bundle, into ``merged``."""
+
+    def identity(component: Component) -> dict:
+        data = component.to_json()
+        for merged_field in ("properties", "externalReferences", "components"):
+            data.pop(merged_field, None)
+        return data
+
+    if identity(merged) != identity(other):
+        raise SbomError(
+            f"Component {merged.bom_ref} differs between the platform SBOMs; "
+            "they must come from the same release build."
+        )
+    merged.properties = _unique(merged.properties + other.properties)
+    merged.external_references = _unique(
+        merged.external_references + other.external_references
+    )
+    merged.depends_on |= other.depends_on
+    merged.files += other.files
+
+
+def _bom_property(bom: dict, name: str) -> str | None:
+    return next(
+        (
+            prop["value"]
+            for prop in bom["metadata"].get("properties", ())
+            if prop["name"] == f"{PROPERTY_PREFIX}:{name}"
+        ),
+        None,
+    )
+
+
+def combined_bom(
+    *,
+    inputs: Iterable[dict],
+    version: str | None = None,
+    artifact: Path | None = None,
+    download_url: str | None = None,
+) -> dict:
+    """The SBOM of an archive that holds several platform bundles.
+
+    Each component appears once. It carries an ``emx-onnx-cgen:platform``
+    property for every bundle it was found in, and platform-dependent
+    properties get the platform as a suffix.
+    """
+    bundles: dict[str, dict] = {}
+    for bom in inputs:
+        platform = _bom_property(bom, "platform")
+        if _bom_property(bom, "artifact-kind") != "pyinstaller-bundle" or not platform:
+            raise SbomError("Only platform bundle SBOMs can be combined.")
+        if platform in bundles:
+            raise SbomError(f"Two SBOMs for platform {platform}.")
+        bundles[platform] = bom
+    if not bundles:
+        raise SbomError("No SBOMs to combine.")
+    versions = {bom["metadata"]["component"]["version"] for bom in bundles.values()}
+    if len(versions) != 1 or (version is not None and versions != {version}):
+        expected = f" (expected {version})" if version else ""
+        raise SbomError(
+            f"The platform SBOMs describe versions {sorted(versions)}{expected}."
+        )
+
+    registry = Registry()
+    project = registry.add(_project_component(versions.pop()))
+    for platform, bom in sorted(bundles.items()):
+        dependencies = {
+            entry["ref"]: set(entry.get("dependsOn", ()))
+            for entry in bom["dependencies"]
+        }
+        for data in (bom["metadata"]["component"], *bom["components"]):
+            component = _component_from_json(data)
+            component.properties = _platform_properties(component.properties, platform)
+            component.depends_on = dependencies.get(component.bom_ref, set())
+            component.files = tuple(
+                _platform_file(entry, platform) for entry in component.files
+            )
+            if component.bom_ref == project.bom_ref:
+                project.properties = _unique(project.properties + component.properties)
+                project.depends_on |= component.depends_on
+                project.files += component.files
+            elif component.bom_ref in registry.components:
+                _merge_component(registry.components[component.bom_ref], component)
+            else:
+                registry.add(component)
+    return build_bom(
+        registry=registry,
+        project=project,
+        artifact=artifact,
+        download_url=download_url,
+        properties=(
+            (f"{PROPERTY_PREFIX}:artifact-kind", "multi-platform-bundle"),
+            *(
+                (f"{PROPERTY_PREFIX}:platform", platform)
+                for platform in sorted(bundles)
+            ),
+        ),
+    )
+
+
+def _release_identity(args: argparse.Namespace) -> tuple[str | None, str | None]:
+    """The version and the asset's download URL from --version/--release-tag."""
+    version, download_url = args.version, args.download_url
+    if args.release_tag:
+        version = args.release_tag.removeprefix("v")
+        if download_url is None and args.artifact is not None:
+            download_url = (
+                f"{PROJECT_REPOSITORY}/releases/download/"
+                f"{args.release_tag}/{args.artifact.name}"
+            )
+    return version, download_url
+
+
+def _add_identity_arguments(parser: argparse.ArgumentParser, *, required: bool) -> None:
+    identity = parser.add_mutually_exclusive_group(required=required)
+    identity.add_argument("--version", help="emx-onnx-cgen version")
+    identity.add_argument(
+        "--release-tag",
+        help="GitHub release tag (e.g. v1.4.2); sets the version and the asset's "
+        "download URL",
+    )
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     subparsers = parser.add_subparsers(dest="kind", required=True)
@@ -1017,16 +1475,33 @@ def main(argv: list[str] | None = None) -> int:
         required=True,
         help="PyInstaller work directory of the bundle, e.g. build/emx-onnx-cgen",
     )
-    identity = bundle.add_mutually_exclusive_group(required=True)
-    identity.add_argument("--version", help="emx-onnx-cgen version")
-    identity.add_argument(
-        "--release-tag",
-        help="GitHub release tag (e.g. v1.4.2); sets the version and the asset's "
-        "download URL",
-    )
+    _add_identity_arguments(bundle, required=True)
     bundle.add_argument("--platform", required=True, help="e.g. linux-amd64")
+    bundle.add_argument(
+        "--dist",
+        type=Path,
+        help="Bundle directory PyInstaller wrote, e.g. dist/emx-onnx-cgen; lists "
+        "every file in it with its SHA-256",
+    )
+    bundle.add_argument(
+        "--python-build",
+        type=Path,
+        help="Pinned CPython build the bundle was made with "
+        "(tools/release_python.json, as used by the release workflows)",
+    )
     wheel = subparsers.add_parser("wheel", help="SBOM of the installed wheel")
-    for subparser in (bundle, wheel):
+    combine = subparsers.add_parser(
+        "combine", help="SBOM of an archive holding several platform bundles"
+    )
+    combine.add_argument(
+        "--input",
+        type=Path,
+        action="append",
+        required=True,
+        help="SBOM of one platform bundle (repeat for each platform)",
+    )
+    _add_identity_arguments(combine, required=False)
+    for subparser in (bundle, wheel, combine):
         subparser.add_argument(
             "--artifact", type=Path, help="Release asset described (for its hashes)"
         )
@@ -1035,21 +1510,30 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     try:
-        if args.kind == "bundle":
-            version, download_url = args.version, args.download_url
-            if args.release_tag:
-                version = args.release_tag.removeprefix("v")
-                if download_url is None and args.artifact is not None:
-                    download_url = (
-                        f"{PROJECT_REPOSITORY}/releases/download/"
-                        f"{args.release_tag}/{args.artifact.name}"
-                    )
+        if args.kind == "combine":
+            version, download_url = _release_identity(args)
+            bom = combined_bom(
+                inputs=[
+                    json.loads(path.read_text(encoding="utf-8")) for path in args.input
+                ],
+                version=version,
+                artifact=args.artifact,
+                download_url=download_url,
+            )
+        elif args.kind == "bundle":
+            version, download_url = _release_identity(args)
             bom, unresolved = bundle_bom(
                 workpath=args.workpath,
                 version=version,
                 platform=args.platform,
                 artifact=args.artifact,
                 download_url=download_url,
+                python_build=(
+                    PythonBuild.load(args.python_build, args.platform)
+                    if args.python_build
+                    else None
+                ),
+                dist=args.dist,
             )
             for bundled in unresolved:
                 print(
