@@ -4816,6 +4816,9 @@ class QLinearConvOp(ConvLikeOpBase):
     output_zero_shape: tuple[int, ...]
     weight_scale_per_channel: bool
     weight_zero_per_channel: bool
+    # float32 x_scale * w_scale[oc] / y_scale per output channel, folded at codegen time when all
+    # three scales are initializers; None keeps the runtime computation.
+    requant_scale_table: tuple[float, ...] | None = None
 
     def required_includes(self, ctx: OpContext) -> set[str]:
         return {"#include <math.h>"}
@@ -4932,6 +4935,14 @@ class QLinearConvOp(ConvLikeOpBase):
             if self.weight_zero_per_channel
             else f"{params['weight_zero_point']}[0]"
         )
+        tables = []
+        requant_scale_table = None
+        if self.requant_scale_table is not None and compute_dtype == ScalarType.F32:
+            requant_scale_table = f"{op_name}_requant_scale"
+            values = ", ".join(f"{value.hex()}f" for value in self.requant_scale_table)
+            tables.append(
+                f"static const float {requant_scale_table}[{self.out_channels}] = {{{values}}};"
+            )
         rendered = (
             state.templates["qlinear_conv"]
             .render(
@@ -4997,10 +5008,13 @@ class QLinearConvOp(ConvLikeOpBase):
                 max_literal=self.dtype.max_literal,
                 round_dtype=compute_dtype,
                 compute_dtype=compute_dtype,
+                requant_scale_table=requant_scale_table,
             )
             .rstrip()
         )
-        return emitter.with_node_comment(model, ctx.op_index, rendered)
+        return emitter.with_node_comment(
+            model, ctx.op_index, "\n".join([*tables, rendered])
+        )
 
 
 @dataclass(frozen=True)
