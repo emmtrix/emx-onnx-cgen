@@ -55,6 +55,9 @@ try:
 except ModuleNotFoundError:  # Python 3.10: only the dependency graph gets coarser.
     tomllib = None
 
+# A sibling script in tools/, which is sys.path[0] when this script runs.
+import fetch_release_python  # noqa: E402
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PROJECT_NAME = "emx-onnx-cgen"
 PROJECT_PACKAGE = "emx_onnx_cgen"
@@ -94,6 +97,7 @@ class Component:
     description: str | None = None
     website: str | None = None
     hashes: tuple[dict, ...] = ()
+    external_references: tuple[dict, ...] = ()
     properties: tuple[tuple[str, str], ...] = ()
     depends_on: set[str] = field(default_factory=set)
 
@@ -114,8 +118,11 @@ class Component:
             data["cpe"] = self.cpe
         if self.purl:
             data["purl"] = self.purl
+        references = list(self.external_references)
         if self.website:
-            data["externalReferences"] = [{"type": "website", "url": self.website}]
+            references.insert(0, {"type": "website", "url": self.website})
+        if references:
+            data["externalReferences"] = references
         if self.properties:
             data["properties"] = [
                 {"name": name, "value": value} for name, value in self.properties
@@ -577,68 +584,208 @@ class RpmResolver:
         )
 
 
-def _openssl_version() -> str:
+@dataclass(frozen=True)
+class PythonBuild:
+    """The pinned CPython build of the release bundles (tools/release_python.json).
+
+    The release workflows build both bundles with this python-build-standalone
+    release. It records the archive and the versions of the libraries compiled
+    into it that CPython cannot report at runtime.
+    """
+
+    distribution: str
+    release: str
+    python_version: str
+    target: str
+    archive_url: str
+    archive_sha256: str
+    libraries: dict[str, str]
+
+    @classmethod
+    def load(cls, path: Path, platform: str) -> PythonBuild:
+        with path.open(encoding="utf-8") as handle:
+            config = json.load(handle)
+        try:
+            url = fetch_release_python.archive_url(config, platform)
+        except fetch_release_python.FetchError as error:
+            raise SbomError(f"{path}: {error}") from None
+        entry = config["platforms"][platform]
+        return cls(
+            distribution=config["distribution"],
+            release=config["release"],
+            python_version=config["python_version"],
+            target=entry["target"],
+            archive_url=url,
+            archive_sha256=entry["sha256"],
+            libraries=dict(entry.get("libraries", {})),
+        )
+
+    def check_interpreter(self) -> None:
+        running = sys.version.split()[0]
+        if running != self.python_version:
+            raise SbomError(
+                f"The bundle was built with CPython {running}, but the Python build "
+                f"pins {self.python_version}. Build with tools/fetch_release_python.py."
+            )
+
+
+def _openssl_version() -> str | None:
     import ssl
 
     return ssl.OPENSSL_VERSION.split()[1]
 
 
-def _sqlite_version() -> str:
+def _sqlite_version() -> str | None:
     import sqlite3
 
     return sqlite3.sqlite_version
 
 
-def _expat_version() -> str:
+def _expat_version() -> str | None:
     import pyexpat
 
     return pyexpat.EXPAT_VERSION.removeprefix("expat_")
 
 
-def _zlib_version() -> str:
+def _zlib_version() -> str | None:
     import zlib
 
-    return zlib.ZLIB_RUNTIME_VERSION
+    # A zlib-ng build reports a zlib-compatible version such as "1.3.1.zlib-ng".
+    return None if hasattr(zlib, "ZLIBNG_VERSION") else zlib.ZLIB_RUNTIME_VERSION
+
+
+def _zlib_ng_version() -> str | None:
+    import zlib
+
+    return getattr(zlib, "ZLIBNG_VERSION", None)
+
+
+def _mpdecimal_version() -> str | None:
+    import _decimal
+
+    return _decimal.__libmpdec_version__
+
+
+def _zstd_version() -> str | None:
+    import _zstd
+
+    return _zstd.zstd_version
 
 
 @dataclass(frozen=True)
 class _EmbeddedLibrary:
-    """A library compiled into the modules of a python.org CPython build."""
+    """A library compiled into CPython or into one of its extension modules.
 
-    module: str
+    The version comes from the running interpreter when CPython exposes it,
+    otherwise from the libraries table of the pinned Python build.
+    """
+
+    modules: tuple[str, ...]
     name: str
-    cpe_product: str
-    version: Callable[[], str]
+    cpe_product: str | None
     license_expression: Callable[[str], str]
+    runtime_version: Callable[[], str | None] | None = None
+
+    @property
+    def key(self) -> str:
+        return self.name.lower()
 
 
 _EMBEDDED_LIBRARIES = (
     _EmbeddedLibrary(
-        "_ssl",
+        ("_ssl", "_hashlib"),
         "OpenSSL",
         "openssl:openssl",
-        _openssl_version,
         lambda version: "Apache-2.0" if int(version.split(".")[0]) >= 3 else "OpenSSL",
+        _openssl_version,
     ),
     _EmbeddedLibrary(
-        "_sqlite3", "SQLite", "sqlite:sqlite", _sqlite_version, lambda _: "blessing"
+        ("_sqlite3",), "SQLite", "sqlite:sqlite", lambda _: "blessing", _sqlite_version
     ),
     _EmbeddedLibrary(
-        "pyexpat", "Expat", "libexpat_project:libexpat", _expat_version, lambda _: "MIT"
+        ("pyexpat",),
+        "Expat",
+        "libexpat_project:libexpat",
+        lambda _: "MIT",
+        _expat_version,
     ),
-    _EmbeddedLibrary("zlib", "zlib", "zlib:zlib", _zlib_version, lambda _: "Zlib"),
+    _EmbeddedLibrary(("zlib",), "zlib", "zlib:zlib", lambda _: "Zlib", _zlib_version),
+    _EmbeddedLibrary(
+        ("zlib",), "zlib-ng", "zlib-ng:zlib-ng", lambda _: "Zlib", _zlib_ng_version
+    ),
+    _EmbeddedLibrary(
+        ("_decimal",),
+        "mpdecimal",
+        "bytereef:mpdecimal",
+        lambda _: "BSD-2-Clause",
+        _mpdecimal_version,
+    ),
+    _EmbeddedLibrary(
+        ("_zstd",),
+        "zstd",
+        "facebook:zstandard",
+        lambda _: "BSD-3-Clause OR GPL-2.0-only",
+        _zstd_version,
+    ),
+    _EmbeddedLibrary(("_bz2",), "bzip2", "bzip:bzip2", lambda _: "bzip2-1.0.6"),
+    _EmbeddedLibrary(("_lzma",), "xz", "tukaani:xz", lambda _: "0BSD"),
+    _EmbeddedLibrary(("_ctypes",), "libffi", "libffi_project:libffi", lambda _: "MIT"),
+    _EmbeddedLibrary(("_uuid",), "uuid", None, lambda _: "BSD-3-Clause"),
+    _EmbeddedLibrary(
+        ("_curses", "_curses_panel", "readline"),
+        "ncurses",
+        "gnu:ncurses",
+        lambda _: "X11",
+    ),
+    _EmbeddedLibrary(
+        ("readline",), "libedit", "libedit_project:libedit", lambda _: "BSD-3-Clause"
+    ),
 )
 
 
 class CPythonResolver:
     """Files of the CPython installation the bundle was built with."""
 
-    def __init__(self, registry: Registry, *, report_embedded_libraries: bool) -> None:
+    def __init__(
+        self,
+        registry: Registry,
+        *,
+        report_embedded_libraries: bool,
+        python_build: PythonBuild | None = None,
+    ) -> None:
         self._registry = registry
         self._report_embedded_libraries = report_embedded_libraries
+        self._python_build = python_build
         self._prefix = _path_key(sys.base_prefix)
         self._modules: set[str] = set()
         version = sys.version.split()[0]
+        supplier = {
+            "name": "Python Software Foundation",
+            "url": ["https://www.python.org"],
+        }
+        references: tuple[dict, ...] = ()
+        properties: tuple[tuple[str, str], ...] = ()
+        if python_build is not None:
+            supplier = {
+                "name": python_build.distribution,
+                "url": ["https://github.com/astral-sh/python-build-standalone"],
+            }
+            references = (
+                {
+                    "type": "distribution",
+                    "url": python_build.archive_url,
+                    "hashes": [
+                        {"alg": "SHA-256", "content": python_build.archive_sha256}
+                    ],
+                },
+            )
+            properties = (
+                (
+                    f"{PROPERTY_PREFIX}:python-build",
+                    f"{python_build.distribution} {python_build.release} "
+                    f"{python_build.target}",
+                ),
+            )
         self.component = Component(
             bom_ref=f"pkg:generic/python@{version}",
             type="application",
@@ -646,12 +793,11 @@ class CPythonResolver:
             version=version,
             purl=f"pkg:generic/python@{version}",
             cpe=f"cpe:2.3:a:python:python:{version}:*:*:*:*:*:*:*",
-            supplier={
-                "name": "Python Software Foundation",
-                "url": ["https://www.python.org"],
-            },
+            supplier=supplier,
             licenses=({"expression": "PSF-2.0"},),
             website="https://www.python.org",
+            external_references=references,
+            properties=properties,
         )
 
     def resolve(self, bundled: BundledFile) -> Component | None:
@@ -659,6 +805,23 @@ class CPythonResolver:
             return None
         self._modules.add(Path(bundled.destination).name.split(".", 1)[0])
         return self._registry.add(self.component)
+
+    def _library_version(self, library: _EmbeddedLibrary) -> tuple[str, str] | None:
+        """The library's version and where it was taken from, if known."""
+        if library.runtime_version is not None:
+            try:
+                version = library.runtime_version()
+            except ImportError:
+                return None
+            return (version, "runtime") if version else None
+        if (
+            self._python_build is not None
+            and library.key in self._python_build.libraries
+        ):
+            return self._python_build.libraries[
+                library.key
+            ], "tools/release_python.json"
+        return None
 
     def add_embedded_libraries(self) -> None:
         """Report the libraries compiled into the bundled CPython modules."""
@@ -669,23 +832,29 @@ class CPythonResolver:
             return
         modules = self._modules | set(sys.builtin_module_names)
         for library in _EMBEDDED_LIBRARIES:
-            if library.module not in modules:
+            if modules.isdisjoint(library.modules):
                 continue
-            try:
-                version = library.version()
-            except ImportError:
+            found = self._library_version(library)
+            if found is None:
                 continue
-            product = library.name.lower()
+            version, source = found
             embedded = self._registry.add(
                 Component(
-                    bom_ref=f"pkg:generic/{product}@{version}",
+                    bom_ref=f"pkg:generic/{library.key}@{version}",
                     type="library",
                     name=library.name,
                     version=version,
-                    purl=f"pkg:generic/{product}@{version}",
-                    cpe=f"cpe:2.3:a:{library.cpe_product}:{version}:*:*:*:*:*:*:*",
+                    purl=f"pkg:generic/{library.key}@{version}",
+                    cpe=(
+                        f"cpe:2.3:a:{library.cpe_product}:{version}:*:*:*:*:*:*:*"
+                        if library.cpe_product
+                        else None
+                    ),
                     licenses=({"expression": library.license_expression(version)},),
-                    properties=((f"{PROPERTY_PREFIX}:embedded-in", "CPython"),),
+                    properties=(
+                        (f"{PROPERTY_PREFIX}:embedded-in", "CPython"),
+                        (f"{PROPERTY_PREFIX}:version-source", source),
+                    ),
                 )
             )
             self.component.depends_on.add(embedded.bom_ref)
@@ -899,17 +1068,24 @@ def bundle_bom(
         RpmResolver.from_system
     ),
     pyinstaller_origin: Path | None = None,
+    python_build: PythonBuild | None = None,
 ) -> tuple[dict, list[BundledFile]]:
     """The SBOM of a PyInstaller bundle and the files without a known origin."""
     bundled_files = read_bundled_files(workpath)
     _check_interpreter(bundled_files)
+    if python_build is not None:
+        python_build.check_interpreter()
     registry = Registry()
     project = registry.add(_project_component(version))
     distributions = DistributionResolver(registry)
     rpm = rpm_resolver_factory(registry)
     # A distribution-packaged interpreter links the system libraries, which rpm
-    # reports; a python.org build carries its own copies.
-    cpython = CPythonResolver(registry, report_embedded_libraries=rpm is None)
+    # reports; python.org and python-build-standalone builds carry their own copies.
+    cpython = CPythonResolver(
+        registry,
+        report_embedded_libraries=rpm is None or python_build is not None,
+        python_build=python_build,
+    )
     unknown = UnknownFileResolver(registry)
     attributor = Attributor(unknown)
     attributor.resolvers += [
@@ -1025,6 +1201,12 @@ def main(argv: list[str] | None = None) -> int:
         "download URL",
     )
     bundle.add_argument("--platform", required=True, help="e.g. linux-amd64")
+    bundle.add_argument(
+        "--python-build",
+        type=Path,
+        help="Pinned CPython build the bundle was made with "
+        "(tools/release_python.json, as used by the release workflows)",
+    )
     wheel = subparsers.add_parser("wheel", help="SBOM of the installed wheel")
     for subparser in (bundle, wheel):
         subparser.add_argument(
@@ -1050,6 +1232,11 @@ def main(argv: list[str] | None = None) -> int:
                 platform=args.platform,
                 artifact=args.artifact,
                 download_url=download_url,
+                python_build=(
+                    PythonBuild.load(args.python_build, args.platform)
+                    if args.python_build
+                    else None
+                ),
             )
             for bundled in unresolved:
                 print(
