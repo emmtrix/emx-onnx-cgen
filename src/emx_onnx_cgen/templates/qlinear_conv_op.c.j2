@@ -3,10 +3,14 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         for (idx_t g = 0; g < {{ group }}; ++g) {
             for (idx_t oc = 0; oc < {{ group_out_channels }}; ++oc) {
                 const idx_t oc_global = g * {{ group_out_channels }} + oc;
+{% if requant_scale_table %}
+                const {{ compute_type }} scale = {{ requant_scale_table }}[oc_global];
+{% else %}
                 const {{ compute_type }} scale =
                     (({{ compute_type }}){{ input_scale_expr }}) *
                     (({{ compute_type }}){{ weight_scale_expr }}) /
                     (({{ compute_type }}){{ output_scale_expr }});
+{% endif %}
                 {% for dim in range(spatial_rank) %}
                 for (idx_t {{ out_indices[dim] }} = 0; {{ out_indices[dim] }} < {{ out_spatial[dim] }}; ++{{ out_indices[dim] }}) {
                 {% endfor %}
