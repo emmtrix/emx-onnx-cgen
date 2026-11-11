@@ -266,6 +266,9 @@ The repository contains GitHub workflows that build release bundles using **PyIn
 * Windows
 
 These workflows install `requirements-ci.txt`, install `pyinstaller`, run `tools/pyinstaller_build.py`, and package the resulting bundle as a release asset.
+Because the build environment also contains the test tooling, `tools/pyinstaller_build.py`
+excludes modules that only optional code paths import (`EXCLUDED_MODULES`, e.g. `pytest`
+via `sympy.testing`), so they do not end up in the bundle or its SBOM.
 
 ### Software bill of materials (SBOM)
 
