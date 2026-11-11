@@ -265,7 +265,38 @@ The repository contains GitHub workflows that build release bundles using **PyIn
 * Linux (container-based build)
 * Windows
 
-These workflows install `requirements-ci.txt`, install `pyinstaller`, run `tools/pyinstaller_build.py`, and package the resulting bundle as a release asset.
+These workflows set up the release Python, install `requirements-ci.txt` and `pyinstaller` into it, run `tools/pyinstaller_build.py`, and package the resulting bundle as a release asset.
+
+### Release Python
+
+Both bundles are built with the same CPython build from
+[python-build-standalone](https://github.com/astral-sh/python-build-standalone),
+so that they ship the same interpreter version and the same versions of the
+libraries compiled into it (OpenSSL, SQLite, xz, …). Expat and zlib still differ:
+python-build-standalone uses CPython's bundled Expat and zlib-ng on Windows, and
+its own builds on Linux. `tools/release_python.json` pins the release, the
+CPython version and the SHA-256 of each platform's archive. The `install_only_stripped`
+variant is used because the unstripped `libpython` on Linux is about four times larger.
+`tools/fetch_release_python.py` downloads the archive, checks the hash and unpacks it.
+The workflows then create a virtual environment from it.
+
+Choosing the version: use the newest CPython minor version that still gets bugfix
+releases. Only those get binary installers on python.org, and python-build-standalone
+follows the same schedule. Every dependency in `requirements-ci.txt` also needs wheels
+for it. Move on to the next minor version before the current one becomes security-only.
+
+To update it:
+
+1. Pick a python-build-standalone release and take the SHA-256 of
+   `cpython-<version>+<release>-<target>-install_only_stripped.tar.gz` for both
+   targets from its `SHA256SUMS`.
+2. Update `libraries`. These are the versions of libraries that CPython cannot
+   report at runtime, and the SBOM takes them from this table:
+   * Linux: the `version` entries of `pythonbuild/downloads.json` at the release tag.
+   * Windows: `bzip2` and `xz` come from `downloads.json` as well. `libffi` comes from
+     the `cpython-source-deps` commit that `cpython-windows/build.py` checks out
+     (the `AC_INIT` line of its `configure.ac`).
+3. Build both bundles (`tools/local_release_*.sh/.ps1`).
 Because the build environment also contains the test tooling, `tools/pyinstaller_build.py`
 excludes modules that only optional code paths import (`EXCLUDED_MODULES`, e.g. `pytest`
 via `sympy.testing`), so they do not end up in the bundle or its SBOM.
@@ -287,8 +318,12 @@ the PyPI wheel).
   3. PyInstaller's bootloader and loader.
   4. The Microsoft C/C++ runtime DLLs.
   5. On Linux, the rpm package that owns the file in the manylinux container.
-  6. The CPython installation. A python.org build also gets its embedded
-     OpenSSL, SQLite, Expat and zlib versions.
+  6. The CPython installation, together with the libraries compiled into the
+     bundled interpreter and extension modules. Their versions come from the
+     running interpreter where CPython reports them (OpenSSL, SQLite, Expat,
+     zlib/zlib-ng, mpdecimal, zstd). Otherwise they come from the `libraries`
+     table in `tools/release_python.json`, which the release workflows pass with
+     `--python-build`; this covers bzip2, xz, libffi, uuid, ncurses and libedit.
 
   A file with no known origin is still listed as a `file` component with its
   hashes, and the script prints a warning.

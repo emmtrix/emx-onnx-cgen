@@ -172,9 +172,15 @@ Every release asset comes with a [CycloneDX](https://cyclonedx.org/) 1.6 SBOM
 | `emx-onnx-cgen-windows-amd64.zip` | `emx-onnx-cgen-windows-amd64.cdx.json` |
 | PyPI wheel | `emx-onnx-cgen-wheel.cdx.json` |
 
-The bundle SBOMs list everything the bundle contains: the Python packages,
-the CPython interpreter, the Microsoft C/C++ runtime on Windows, the system
-libraries (as rpm packages) on Linux, and the vendored `stb_image`. The asset's
+Both bundles are built with the same CPython build from
+[python-build-standalone](https://github.com/astral-sh/python-build-standalone),
+pinned in [`tools/release_python.json`](tools/release_python.json).
+The bundle SBOMs list everything the bundle contains:
+- the Python packages
+- the CPython interpreter and the libraries compiled into it, such as OpenSSL
+- the Microsoft C/C++ runtime on Windows
+- the system libraries (as rpm packages) on Linux
+- the vendored `stb_image` The asset's
 SHA-256/SHA-512 hashes are part of the SBOM. See
 [`docs/development.md`](docs/development.md#software-bill-of-materials-sbom)
 for how they are generated.
