@@ -124,6 +124,7 @@ try {
     Invoke-CheckedCommand -Description "Generate SBOM" -Command (New-PythonCommand @(
         "tools/generate_sbom.py", "bundle",
         "--workpath", "build/emx-onnx-cgen",
+        "--dist", "dist/emx-onnx-cgen",
         "--version", $version,
         "--platform", "windows-amd64",
         "--artifact", $OutputZip,

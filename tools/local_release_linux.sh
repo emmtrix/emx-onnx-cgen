@@ -53,6 +53,7 @@ docker run --rm \
     fi
     "${PYTHON_BIN}" tools/generate_sbom.py bundle \
       --workpath build/emx-onnx-cgen \
+      --dist dist/emx-onnx-cgen \
       --version "${RELEASE_VERSION}" \
       --platform linux-amd64 \
       --artifact "${OUTPUT_ARCHIVE}" \

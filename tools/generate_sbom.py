@@ -49,7 +49,7 @@ import sys
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Callable, Iterable, Iterator, Protocol
 
 from packaging.requirements import Requirement
@@ -105,6 +105,8 @@ class Component:
     external_references: tuple[dict, ...] = ()
     properties: tuple[tuple[str, str], ...] = ()
     depends_on: set[str] = field(default_factory=set)
+    # The component's files in the bundle, as nested "file" components.
+    files: tuple[dict, ...] = ()
 
     def to_json(self) -> dict:
         data: dict = {"type": self.type, "bom-ref": self.bom_ref}
@@ -132,6 +134,8 @@ class Component:
             data["properties"] = [
                 {"name": name, "value": value} for name, value in self.properties
             ]
+        if self.files:
+            data["components"] = list(self.files)
         return data
 
 
@@ -1061,6 +1065,82 @@ def _pyinstaller_loader_origin() -> Path:
     return Path(PyInstaller.loader.__file__).resolve().with_name("pyimod01_archive.py")
 
 
+# bom-ref prefix of the file components that list the bundle's files.
+BUNDLE_FILE_PREFIX = "bundle-file:"
+# TOC entries that PyInstaller writes as files of their own; the others go into
+# the PYZ archive inside the executable.
+_FILE_TYPECODES = frozenset({"EXTENSION", "BINARY", "DATA", "DEPENDENCY", "EXECUTABLE"})
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1 << 20), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _bundle_file(relative: str, path: Path) -> dict:
+    """The file component of one file in the bundle directory."""
+    entry: dict = {
+        "type": "file",
+        "bom-ref": f"{BUNDLE_FILE_PREFIX}{relative}",
+        "name": relative,
+    }
+    if path.is_symlink():
+        entry["properties"] = [
+            {
+                "name": f"{PROPERTY_PREFIX}:symlink-target",
+                "value": os.readlink(path).replace(os.sep, "/"),
+            }
+        ]
+    else:
+        entry["hashes"] = [{"alg": "SHA-256", "content": _sha256(path)}]
+    return entry
+
+
+def _destination_of(relative: str, owners: dict[str, str]) -> str | None:
+    """The TOC destination of a file in the bundle directory.
+
+    The executable sits at the top of the bundle, everything else in its
+    contents directory (``_internal/``), relative to which TOC destinations are.
+    """
+    if relative in owners:
+        return relative
+    inner = relative.split("/", 1)[-1]
+    return inner if inner in owners else None
+
+
+def _attach_bundle_files(
+    dist: Path,
+    owners: dict[str, str],
+    registry: Registry,
+    unknown: UnknownFileResolver,
+) -> None:
+    """List every file of the bundle directory, with its hash, under its owner."""
+    if not dist.is_dir():
+        raise SbomError(f"Bundle directory {dist} does not exist.")
+    files: dict[str, list[dict]] = {}
+    for path in sorted(dist.rglob("*")):
+        if path.is_dir() and not path.is_symlink():
+            continue
+        relative = path.relative_to(dist).as_posix()
+        destination = _destination_of(relative, owners)
+        if destination is None and path.is_symlink():
+            # A link to another bundled file belongs to the target's component.
+            target = (PurePosixPath(relative).parent / os.readlink(path)).as_posix()
+            destination = _destination_of(
+                os.path.normpath(target).replace(os.sep, "/"), owners
+            )
+        if destination is None:
+            owner = unknown.resolve(BundledFile(relative, path, "DATA")).bom_ref
+        else:
+            owner = owners[destination]
+        files.setdefault(owner, []).append(_bundle_file(relative, path))
+    for owner, entries in files.items():
+        registry.components[owner].files = tuple(entries)
+
+
 def bundle_bom(
     *,
     workpath: Path,
@@ -1074,8 +1154,14 @@ def bundle_bom(
     ),
     pyinstaller_origin: Path | None = None,
     python_build: PythonBuild | None = None,
+    dist: Path | None = None,
 ) -> tuple[dict, list[BundledFile]]:
-    """The SBOM of a PyInstaller bundle and the files without a known origin."""
+    """The SBOM of a PyInstaller bundle and the files without a known origin.
+
+    With ``dist`` (the bundle directory PyInstaller wrote), every file in it is
+    listed with its SHA-256 under the component it belongs to, so that an
+    unpacked bundle can be checked against the SBOM.
+    """
     bundled_files = read_bundled_files(workpath)
     _check_interpreter(bundled_files)
     if python_build is not None:
@@ -1109,9 +1195,18 @@ def bundle_bom(
     ]
 
     file_counts: dict[str, int] = {}
+    owners: dict[str, str] = {}
     for bundled in bundled_files:
         ref = attributor.resolve(bundled).bom_ref
         file_counts[ref] = file_counts.get(ref, 0) + 1
+        if bundled.typecode in _FILE_TYPECODES:
+            # The executable is emx-onnx-cgen itself: PyInstaller's bootloader
+            # with the pure-Python modules of every component packed inside.
+            owners[bundled.destination.replace(os.sep, "/")] = (
+                project.bom_ref if bundled.typecode == "EXECUTABLE" else ref
+            )
+    if dist is not None:
+        _attach_bundle_files(dist, owners, registry, unknown)
     cpython.add_embedded_libraries()
     for ref, count in file_counts.items():
         registry.components[ref].properties += (
@@ -1215,7 +1310,16 @@ def _component_from_json(data: dict) -> Component:
         properties=tuple(
             (prop["name"], prop["value"]) for prop in data.get("properties", ())
         ),
+        files=tuple(data.get("components", ())),
     )
+
+
+def _platform_file(entry: dict, platform: str) -> dict:
+    """A bundle file component, with its path relative to the combined archive."""
+    entry = dict(entry)
+    entry["name"] = f"{platform}/{entry['name']}"
+    entry["bom-ref"] = f"{BUNDLE_FILE_PREFIX}{entry['name']}"
+    return entry
 
 
 def _unique(items: Iterable) -> tuple:
@@ -1243,8 +1347,8 @@ def _merge_component(merged: Component, other: Component) -> None:
 
     def identity(component: Component) -> dict:
         data = component.to_json()
-        data.pop("properties", None)
-        data.pop("externalReferences", None)
+        for merged_field in ("properties", "externalReferences", "components"):
+            data.pop(merged_field, None)
         return data
 
     if identity(merged) != identity(other):
@@ -1257,6 +1361,7 @@ def _merge_component(merged: Component, other: Component) -> None:
         merged.external_references + other.external_references
     )
     merged.depends_on |= other.depends_on
+    merged.files += other.files
 
 
 def _bom_property(bom: dict, name: str) -> str | None:
@@ -1311,9 +1416,13 @@ def combined_bom(
             component = _component_from_json(data)
             component.properties = _platform_properties(component.properties, platform)
             component.depends_on = dependencies.get(component.bom_ref, set())
+            component.files = tuple(
+                _platform_file(entry, platform) for entry in component.files
+            )
             if component.bom_ref == project.bom_ref:
                 project.properties = _unique(project.properties + component.properties)
                 project.depends_on |= component.depends_on
+                project.files += component.files
             elif component.bom_ref in registry.components:
                 _merge_component(registry.components[component.bom_ref], component)
             else:
@@ -1369,6 +1478,12 @@ def main(argv: list[str] | None = None) -> int:
     _add_identity_arguments(bundle, required=True)
     bundle.add_argument("--platform", required=True, help="e.g. linux-amd64")
     bundle.add_argument(
+        "--dist",
+        type=Path,
+        help="Bundle directory PyInstaller wrote, e.g. dist/emx-onnx-cgen; lists "
+        "every file in it with its SHA-256",
+    )
+    bundle.add_argument(
         "--python-build",
         type=Path,
         help="Pinned CPython build the bundle was made with "
@@ -1418,6 +1533,7 @@ def main(argv: list[str] | None = None) -> int:
                     if args.python_build
                     else None
                 ),
+                dist=args.dist,
             )
             for bundled in unresolved:
                 print(

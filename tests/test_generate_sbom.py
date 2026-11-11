@@ -4,6 +4,7 @@ import importlib.metadata
 import importlib.util
 import json
 import os
+import shutil
 import sys
 from pathlib import Path
 
@@ -426,3 +427,101 @@ def test_combined_bom_rejects_inconsistent_inputs(bundle: Path) -> None:
     stb["hashes"] = [{"alg": "SHA-256", "content": "00" * 32}]
     with pytest.raises(sbom.SbomError, match="stb_image@2.28 differs"):
         sbom.combined_bom(inputs=[linux, windows])
+
+
+verify = _load_tool("verify_bundle")
+
+
+def _bundle_dir(tmp_path: Path) -> Path:
+    """A bundle directory matching the TOC of the ``bundle`` fixture."""
+    dist = tmp_path / "dist" / "emx-onnx-cgen"
+    internal = dist / "_internal"
+    (internal / "emx_onnx_cgen" / "third_party").mkdir(parents=True)
+    (dist / "emx-onnx-cgen.exe").write_bytes(b"bootloader")
+    (internal / "base_library.zip").write_bytes(b"stdlib")
+    stb = PROJECT_ROOT / "src" / "emx_onnx_cgen" / "third_party" / "stb_image.h"
+    (internal / "emx_onnx_cgen" / "third_party" / "stb_image.h").write_bytes(
+        stb.read_bytes()
+    )
+    (internal / "libmystery.so").write_bytes(b"mystery")
+    (internal / "stray.txt").write_bytes(b"not in any TOC")
+    return dist
+
+
+def test_bundle_bom_lists_every_file_with_its_hash(bundle: Path, tmp_path) -> None:
+    dist = _bundle_dir(tmp_path)
+
+    bom, unresolved = _bundle_bom(bundle, dist=dist)
+
+    owners = {
+        entry["name"]: component["name"]
+        for component in [bom["metadata"]["component"], *bom["components"]]
+        for entry in component.get("components", ())
+    }
+    assert owners == {
+        "emx-onnx-cgen.exe": "emx-onnx-cgen",
+        "_internal/base_library.zip": "CPython",
+        "_internal/emx_onnx_cgen/third_party/stb_image.h": "stb_image",
+        "_internal/libmystery.so": "libmystery.so",
+        "_internal/stray.txt": "_internal/stray.txt",
+    }
+    assert "_internal/stray.txt" in {item.destination for item in unresolved}
+    assert verify.verify(bom, dist) == []
+
+    (dist / "_internal" / "base_library.zip").write_bytes(b"changed")
+    (dist / "_internal" / "new.dll").write_bytes(b"new")
+    (dist / "emx-onnx-cgen.exe").unlink()
+    assert verify.verify(bom, dist) == [
+        "_internal/base_library.zip: SHA-256 differs from the SBOM",
+        "emx-onnx-cgen.exe: missing",
+        "_internal/new.dll: not listed in the SBOM",
+    ]
+
+
+def test_bundle_bom_records_symlinks_with_their_target(bundle: Path, tmp_path) -> None:
+    dist = _bundle_dir(tmp_path)
+    link = dist / "_internal" / "libmystery.so.1"
+    try:
+        link.symlink_to("libmystery.so")
+    except OSError:
+        pytest.skip("creating symlinks is not permitted here")
+
+    bom, _ = _bundle_bom(bundle, dist=dist)
+
+    mystery = next(c for c in bom["components"] if c["name"] == "libmystery.so")
+    entry = next(e for e in mystery["components"] if e["name"].endswith(".so.1"))
+    assert "hashes" not in entry
+    assert entry["properties"] == [
+        {"name": "emx-onnx-cgen:symlink-target", "value": "libmystery.so"}
+    ]
+    assert verify.verify(bom, dist) == []
+
+
+def test_combined_bom_prefixes_files_with_the_platform(bundle: Path, tmp_path) -> None:
+    dist = _bundle_dir(tmp_path)
+    boms = []
+    for platform in ("linux-amd64", "windows-amd64"):
+        bom, _ = sbom.bundle_bom(
+            workpath=bundle,
+            version="1.2.3",
+            platform=platform,
+            rpm_resolver_factory=lambda registry: None,
+            pyinstaller_origin=_distribution_file(
+                "markupsafe", "markupsafe/__init__.py"
+            ),
+            dist=dist,
+        )
+        boms.append(bom)
+
+    combined = sbom.combined_bom(inputs=boms)
+
+    stb = next(c for c in combined["components"] if c["name"] == "stb_image")
+    assert sorted(entry["name"] for entry in stb["components"]) == [
+        "linux-amd64/_internal/emx_onnx_cgen/third_party/stb_image.h",
+        "windows-amd64/_internal/emx_onnx_cgen/third_party/stb_image.h",
+    ]
+    root = tmp_path / "combined"
+    for platform in ("linux-amd64", "windows-amd64"):
+        shutil.copytree(dist, root / platform)
+    assert verify.verify(combined, root) == []
+    assert verify.verify(combined, dist, prefix="linux-amd64") == []

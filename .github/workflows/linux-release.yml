@@ -57,6 +57,7 @@ jobs:
           fi
           "$PYTHON_BIN" tools/generate_sbom.py bundle \
             --workpath build/emx-onnx-cgen \
+            --dist dist/emx-onnx-cgen \
             --platform linux-amd64 \
             --artifact emx-onnx-cgen-linux-amd64.tar.gz \
             --output emx-onnx-cgen-linux-amd64.cdx.json \

@@ -4,8 +4,9 @@
 The archive holds every platform bundle in its own directory::
 
     emx-onnx-cgen/
-      linux-amd64/     emx-onnx-cgen, _internal/
-      windows-amd64/   emx-onnx-cgen.exe, _internal/
+      emx-onnx-cgen.cdx.json   SBOM with the hash of every file (--sbom)
+      linux-amd64/             emx-onnx-cgen, _internal/
+      windows-amd64/           emx-onnx-cgen.exe, _internal/
 
 The bundles cannot share one directory: both have an ``_internal/`` with
 platform-specific files of the same name (``base_library.zip``, the numpy
@@ -30,6 +31,7 @@ from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 
 TOP_DIRECTORY = "emx-onnx-cgen"
+SBOM_NAME = "emx-onnx-cgen.cdx.json"
 # 1980-01-01, the earliest timestamp a zip archive can hold.
 DEFAULT_EPOCH = 315532800
 
@@ -112,10 +114,28 @@ def _with_parent_directories(members: list[Member]) -> list[Member]:
     return members + [Member(path, tarfile.DIRTYPE, 0o755) for path in directories]
 
 
-def combine(bundles: dict[str, list[Member]], output: Path, epoch: int) -> None:
-    """Write the platform bundles below ``emx-onnx-cgen/<platform>/``."""
+def combine(
+    bundles: dict[str, list[Member]],
+    output: Path,
+    epoch: int,
+    sbom: bytes | None = None,
+) -> None:
+    """Write the platform bundles below ``emx-onnx-cgen/<platform>/``.
+
+    ``sbom`` goes to ``emx-onnx-cgen/emx-onnx-cgen.cdx.json``. It lists the
+    files of the bundles with their hashes, so it can describe the archive's
+    content from inside; only the SBOM next to the archive can hold the
+    archive's own hash.
+    """
     directory = Member(PurePosixPath(), tarfile.DIRTYPE, 0o755)
     entries = [(PurePosixPath(TOP_DIRECTORY), directory)]
+    if sbom is not None:
+        entries.append(
+            (
+                PurePosixPath(TOP_DIRECTORY, SBOM_NAME),
+                Member(PurePosixPath(SBOM_NAME), tarfile.REGTYPE, 0o644, sbom),
+            )
+        )
     for platform, members in bundles.items():
         root = PurePosixPath(TOP_DIRECTORY, platform)
         entries.append((root, directory))
@@ -147,6 +167,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--windows", type=Path, required=True, help="windows-amd64 .zip"
     )
+    parser.add_argument(
+        "--sbom",
+        type=Path,
+        help=f"SBOM to put into the archive as {TOP_DIRECTORY}/{SBOM_NAME} "
+        "(generate_sbom.py combine without --artifact)",
+    )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
     epoch = int(os.environ.get("SOURCE_DATE_EPOCH", DEFAULT_EPOCH))
@@ -155,7 +181,8 @@ def main(argv: list[str] | None = None) -> int:
             "linux-amd64": _tar_members(args.linux, TOP_DIRECTORY),
             "windows-amd64": _zip_members(args.windows),
         }
-        combine(bundles, args.output, epoch)
+        sbom = args.sbom.read_bytes() if args.sbom else None
+        combine(bundles, args.output, epoch, sbom)
     except (CombineError, tarfile.TarError, zipfile.BadZipFile) as error:
         print(f"error: {error}", file=sys.stderr)
         return 1

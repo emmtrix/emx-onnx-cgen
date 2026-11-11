@@ -106,3 +106,25 @@ def test_combined_archive_rejects_paths_outside_the_bundle(tmp_path: Path) -> No
 
     with pytest.raises(combine.CombineError, match="unsafe member path"):
         combine._zip_members(bundle)
+
+
+def test_combined_archive_carries_the_sbom(tmp_path: Path) -> None:
+    sbom = tmp_path / "inner.cdx.json"
+    sbom.write_text('{"bomFormat": "CycloneDX"}', encoding="utf-8")
+    output = tmp_path / "all.tar.gz"
+    combine.main(
+        [
+            "--linux",
+            str(_linux_bundle(tmp_path / "linux.tar.gz")),
+            "--windows",
+            str(_windows_bundle(tmp_path / "windows.zip")),
+            "--sbom",
+            str(sbom),
+            "--output",
+            str(output),
+        ]
+    )
+
+    with tarfile.open(output) as tar:
+        member = tar.extractfile("emx-onnx-cgen/emx-onnx-cgen.cdx.json")
+        assert member.read() == sbom.read_bytes()

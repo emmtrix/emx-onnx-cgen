@@ -93,13 +93,18 @@ Both scripts produce the same archive names used by the release workflows:
 The release also ships `emx-onnx-cgen-bundles.tar.gz`, which has both bundles
 below `emx-onnx-cgen/linux-amd64/` and `emx-onnx-cgen/windows-amd64/`. They need
 separate directories because both have an `_internal/` with platform-specific
-files of the same name. To build it from the two local archives:
+files of the same name. To build it from the two local archives, do what
+`release-bundles.yml` does: an SBOM without the archive hash goes into the
+archive, and one with the hash goes next to it.
 
 ```bash
+export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct)"
+inputs="--input emx-onnx-cgen-linux-amd64.cdx.json --input emx-onnx-cgen-windows-amd64.cdx.json"
+python tools/generate_sbom.py combine $inputs --output emx-onnx-cgen.cdx.json
 python tools/combine_release_bundles.py --linux emx-onnx-cgen-linux-amd64.tar.gz \
-  --windows emx-onnx-cgen-windows-amd64.zip --output emx-onnx-cgen-bundles.tar.gz
-python tools/generate_sbom.py combine --input emx-onnx-cgen-linux-amd64.cdx.json \
-  --input emx-onnx-cgen-windows-amd64.cdx.json \
+  --windows emx-onnx-cgen-windows-amd64.zip --sbom emx-onnx-cgen.cdx.json \
+  --output emx-onnx-cgen-bundles.tar.gz
+python tools/generate_sbom.py combine $inputs \
   --artifact emx-onnx-cgen-bundles.tar.gz --output emx-onnx-cgen-bundles.cdx.json
 ```
 
@@ -344,6 +349,19 @@ combined archive, and `emx-onnx-cgen-wheel.cdx.json` for the PyPI wheel).
 
   A file with no known origin is still listed as a `file` component with its
   hashes, and the script prints a warning.
+
+  With `--dist` (the bundle directory PyInstaller wrote), every file of the
+  bundle is also listed as a nested `file` component of the component it belongs
+  to:
+  * Each entry has the file's path relative to the bundle directory and its
+    SHA-256. A symlink has an `emx-onnx-cgen:symlink-target` property instead.
+  * The executable is listed under emx-onnx-cgen itself. It holds PyInstaller's
+    bootloader and the pure-Python modules of every component, which therefore
+    have no file of their own.
+  * Their bom-refs start with `bundle-file:`.
+
+  `tools/verify_bundle.py` checks an unpacked bundle against these entries.
+  `release-bundles.yml` runs it on all three archives before attaching them.
 * **Wheel** (`wheel` mode). The script runs in a fresh virtual environment into
   which the published wheel was installed. The SBOM lists the runtime
   dependency closure in the versions pip resolved there.
@@ -352,7 +370,8 @@ combined archive, and `emx-onnx-cgen-wheel.cdx.json` for the PyPI wheel).
   * A component found in both bundles appears once, with one
     `emx-onnx-cgen:platform` property per platform. Properties whose value depends
     on the platform, such as `emx-onnx-cgen:bundled-files`, get the platform as a
-    suffix.
+    suffix. File paths get the platform directory as a prefix
+    (`linux-amd64/_internal/…`), relative to the archive's `emx-onnx-cgen/`.
   * A component with the same bom-ref but other content in the two SBOMs is an
     error, because it means the bundles do not ship the same thing. Such a
     difference showed up for `stb_image.h`, which the Windows checkout converted
@@ -373,7 +392,7 @@ automatically):
 python tools/pyinstaller_build.py
 tar -czf emx-onnx-cgen-linux-amd64.tar.gz -C dist emx-onnx-cgen
 python tools/generate_sbom.py bundle --workpath build/emx-onnx-cgen \
-  --version "$(python -m setuptools_scm)" --platform linux-amd64 \
+  --dist dist/emx-onnx-cgen --version "$(python -m setuptools_scm)" --platform linux-amd64 \
   --artifact emx-onnx-cgen-linux-amd64.tar.gz --output emx-onnx-cgen-linux-amd64.cdx.json
 ```
 

@@ -50,6 +50,7 @@ jobs:
           }
           python tools/generate_sbom.py bundle `
             --workpath build/emx-onnx-cgen `
+            --dist dist/emx-onnx-cgen `
             --platform windows-amd64 `
             --artifact emx-onnx-cgen-windows-amd64.zip `
             --output emx-onnx-cgen-windows-amd64.cdx.json `
