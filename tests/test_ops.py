@@ -64,6 +64,7 @@ from emx_onnx_cgen.lowering import load_lowering_registry
 from emx_onnx_cgen.lowering.registry import get_lowering
 from emx_onnx_cgen.onnx_import import import_onnx
 from emx_onnx_cgen.sequence_shape_hints import parse_sequence_element_shape_hints
+from emx_onnx_cgen.ops import apply_binary_op, binary_op_symbol
 from emx_onnx_cgen.testbench import decode_testbench_array
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -10384,3 +10385,64 @@ def test_qmoe_matches_onnxruntime() -> None:
             rtol=1e-3,
             atol=0.05,
         )
+
+
+_BITSHIFT_DTYPES = {
+    np.int8: ScalarType.I8,
+    np.int16: ScalarType.I16,
+    np.int32: ScalarType.I32,
+    np.int64: ScalarType.I64,
+    np.uint8: ScalarType.U8,
+    np.uint32: ScalarType.U32,
+    np.uint64: ScalarType.U64,
+}
+
+
+def _bitshift_operands(dtype: type) -> tuple[np.ndarray, np.ndarray]:
+    info = np.iinfo(dtype)
+    bits = info.bits
+    values = [1, 3, info.max, info.min, 0x55]
+    shifts = [0, 1, bits - 1, bits, bits + 3]
+    if info.min < 0:
+        values += [-1, -7, -128]
+        shifts += [-1, -bits, 2]
+    x = np.array([v for v in values for _ in shifts], dtype=dtype)
+    y = np.array([s for _ in values for s in shifts], dtype=dtype)
+    return x, y
+
+
+@pytest.mark.parametrize("direction", ["LEFT", "RIGHT"])
+@pytest.mark.parametrize("dtype", _BITSHIFT_DTYPES, ids=lambda d: np.dtype(d).name)
+def test_bitshift_28_out_of_range_shifts_match_reference(
+    dtype: type, direction: str
+) -> None:
+    """Negative shifts and shifts >= bit width are defined by BitShift-28 but UB in C."""
+    if onnx.defs.onnx_opset_version() < 28:
+        pytest.skip("BitShift-28 needs onnx >= 1.23")
+    x, y = _bitshift_operands(dtype)
+    elem_type = helper.np_dtype_to_tensor_dtype(np.dtype(dtype))
+    graph = helper.make_graph(
+        [helper.make_node("BitShift", ["x", "y"], ["z"], direction=direction)],
+        "bitshift_graph",
+        [
+            helper.make_tensor_value_info("x", elem_type, list(x.shape)),
+            helper.make_tensor_value_info("y", elem_type, list(y.shape)),
+        ],
+        [helper.make_tensor_value_info("z", elem_type, list(x.shape))],
+    )
+    model = helper.make_model(graph, opset_imports=[helper.make_opsetid("", 28)])
+    model.ir_version = 11
+    (expected,) = ReferenceEvaluator(model).run(None, {"x": x, "y": y})
+
+    function = (
+        ScalarFunction.BITWISE_LEFT_SHIFT
+        if direction == "LEFT"
+        else ScalarFunction.BITWISE_RIGHT_SHIFT
+    )
+    op_spec = binary_op_symbol(function, dtype=_BITSHIFT_DTYPES[dtype])
+    assert op_spec is not None
+    np.testing.assert_array_equal(apply_binary_op(op_spec, x, y), expected)
+
+    payload = _compile_and_run_testbench(model, testbench_inputs={"x": x, "y": y})
+    output = decode_testbench_array(payload["outputs"]["z"]["data"], np.dtype(dtype))
+    np.testing.assert_array_equal(output.reshape(expected.shape), expected)

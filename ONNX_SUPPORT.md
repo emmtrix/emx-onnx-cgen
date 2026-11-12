@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1969 / 2033, 96.9% | 1.23.2 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1973 / 2033, 97.0% | 1.23.2 |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4313 / 4324, 99.7% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 15 / 15, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-backend-test-data`
 
-Coverage 1969 / 2033 ONNX files (96.9%).
+Coverage 1973 / 2033 ONNX files (97.0%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -347,9 +347,9 @@ Coverage 1969 / 2033 ONNX files (96.9%).
 | node/test_bitcast_uint32_to_int32/model.onnx | 26 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_left_int16/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_left_int32/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_bitshift_left_int32_negative_shift/model.onnx | 28 | Data/Data | ❌ | Out of tolerance (max abs diff 4) |
+| node/test_bitshift_left_int32_negative_shift/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_left_int32_overflow/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_bitshift_left_int32_shift_ge_width/model.onnx | 28 | Data/Data | ❌ | Out of tolerance (max abs diff 16) |
+| node/test_bitshift_left_int32_shift_ge_width/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_left_int64/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_left_int8/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_left_int8_negative_shift/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
@@ -362,8 +362,8 @@ Coverage 1969 / 2033 ONNX files (96.9%).
 | node/test_bitshift_right_int16/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_right_int32/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_right_int32_negative_input/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_bitshift_right_int32_negative_shift/model.onnx | 28 | Data/Data | ❌ | Out of tolerance (max abs diff 4) |
-| node/test_bitshift_right_int32_shift_ge_width/model.onnx | 28 | Data/Data | ❌ | Out of tolerance (max abs diff 7) |
+| node/test_bitshift_right_int32_negative_shift/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_bitshift_right_int32_shift_ge_width/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_right_int64/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_right_int8/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_right_int8_negative_input/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |

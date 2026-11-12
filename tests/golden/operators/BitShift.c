@@ -26,6 +26,7 @@
  */
 
 #include <stdint.h>
+#include <limits.h>
 
 #ifndef idx_t
 #define idx_t int32_t
@@ -47,6 +48,13 @@
 #define EMX_SEQUENCE_MAX_LEN 32
 #endif
 
+static inline int8_t ref_scalar_i8_bitwise_left_shift(int8_t a, int8_t b) {
+    if (b < 0 || b >= 8) {
+        return 0;
+    }
+    return (int8_t)((uint32_t)a << b);
+}
+
 /*
  * Node 0:
  * OpType: BitShift
@@ -58,7 +66,7 @@
  */
 EMX_NODE_FN void node0_bitshift(const int8_t input0[3], const int8_t input1[3], int8_t output[3]) {
     for (idx_t i0 = 0; i0 < 3; ++i0) {
-        output[i0] = input0[i0] << input1[i0];
+        output[i0] = ref_scalar_i8_bitwise_left_shift(input0[i0], input1[i0]);
     }
 }
 
