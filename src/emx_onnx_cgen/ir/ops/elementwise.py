@@ -194,6 +194,7 @@ class BinaryOp(ElementwiseOpBase):
 
 
 _POW_BASE_DTYPES = {
+    ScalarType.BF16,
     ScalarType.F16,
     ScalarType.F32,
     ScalarType.F64,
@@ -201,6 +202,7 @@ _POW_BASE_DTYPES = {
     ScalarType.I64,
 }
 _POW_EXPONENT_DTYPES = {
+    ScalarType.BF16,
     ScalarType.F16,
     ScalarType.F32,
     ScalarType.F64,

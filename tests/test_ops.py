@@ -10406,11 +10406,11 @@ def test_qmoe_matches_onnxruntime() -> None:
 
 
 @pytest.mark.parametrize(
-    "op_type", ["Add", "Sub", "Mul", "Div", "Sqrt", "Exp", "Neg", "Abs", "Floor"]
+    "op_type", ["Add", "Sub", "Mul", "Div", "Sqrt", "Exp", "Neg", "Abs", "Floor", "Pow"]
 )
 def test_bfloat16_elementwise_matches_reference(op_type: str) -> None:
     """bfloat16 elementwise ops, fed and read back through float32 Casts."""
-    binary = op_type in {"Add", "Sub", "Mul", "Div"}
+    binary = op_type in {"Add", "Sub", "Mul", "Div", "Pow"}
     inputs = ["x", "y"] if binary else ["x"]
     nodes = [
         helper.make_node("Cast", [name], [f"{name}_bf16"], to=TensorProto.BFLOAT16)
@@ -10439,7 +10439,7 @@ def test_bfloat16_elementwise_matches_reference(op_type: str) -> None:
         ).astype(np.float32)
         for name in inputs
     }
-    if op_type == "Sqrt":
+    if op_type in {"Sqrt", "Pow"}:
         feeds["x"] = np.abs(feeds["x"])
     (expected,) = ReferenceEvaluator(model).run(None, feeds)
 
