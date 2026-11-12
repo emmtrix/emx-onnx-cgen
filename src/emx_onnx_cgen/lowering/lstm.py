@@ -154,7 +154,6 @@ def _expect_shape(name: str, shape: tuple[int, ...], expected: tuple[int, ...]) 
         )
 
 
-
 def resolve_lstm_spec(graph: Graph, node: Node) -> LstmSpec:
     if len(node.inputs) < 3 or len(node.inputs) > 8:
         raise UnsupportedOpError("LSTM expects between 3 and 8 inputs")

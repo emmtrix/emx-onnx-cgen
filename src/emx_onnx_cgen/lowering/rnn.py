@@ -147,7 +147,6 @@ def _expect_shape(name: str, shape: tuple[int, ...], expected: tuple[int, ...]) 
         )
 
 
-
 def resolve_rnn_spec(graph: Graph, node: Node) -> RnnSpec:
     if len(node.inputs) < 3 or len(node.inputs) > 6:
         raise UnsupportedOpError("RNN expects between 3 and 6 inputs")
