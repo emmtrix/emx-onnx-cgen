@@ -59,9 +59,9 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     H_next[b][h] = h_new;
                     {% if output_y %}
                     {% if layout == 0 %}
-                    {{ output_y }}[step][dir][b][h] = h_new;
+                    {{ output_y }}[t][dir][b][h] = h_new;
                     {% else %}
-                    {{ output_y }}[b][step][dir][h] = h_new;
+                    {{ output_y }}[b][t][dir][h] = h_new;
                     {% endif %}
                     {% endif %}
                 }

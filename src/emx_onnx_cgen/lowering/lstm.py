@@ -8,6 +8,7 @@ from shared.scalar_types import ScalarType
 from ..errors import UnsupportedOpError
 from ..ir.model import Graph, Node
 from .common import node_dtype, optional_name, value_dtype, value_shape
+from .recurrent_direction import resolve_direction
 from .registry import register_lowering
 
 if TYPE_CHECKING:
@@ -87,14 +88,6 @@ def _normalize_activation_names(values: Iterable[object]) -> list[str]:
     return names
 
 
-def _normalize_direction(value: object) -> str:
-    if isinstance(value, bytes):
-        return value.decode("utf-8")
-    if isinstance(value, str):
-        return value
-    raise UnsupportedOpError("LSTM direction must be a string")
-
-
 def _resolve_activation_params(
     activations: Sequence[str],
     activation_alpha: Sequence[float] | None,
@@ -161,18 +154,6 @@ def _expect_shape(name: str, shape: tuple[int, ...], expected: tuple[int, ...]) 
         )
 
 
-def _validate_direction(direction: str, num_directions: int) -> None:
-    if direction == "bidirectional" and num_directions != 2:
-        raise UnsupportedOpError(
-            "LSTM expects num_directions=2 for bidirectional models"
-        )
-    if direction in {"forward", "reverse"} and num_directions != 1:
-        raise UnsupportedOpError(
-            "LSTM expects num_directions=1 for forward/reverse models"
-        )
-    if direction not in {"forward", "reverse", "bidirectional"}:
-        raise UnsupportedOpError(f"Unsupported LSTM direction {direction}")
-
 
 def resolve_lstm_spec(graph: Graph, node: Node) -> LstmSpec:
     if len(node.inputs) < 3 or len(node.inputs) > 8:
@@ -228,8 +209,7 @@ def resolve_lstm_spec(graph: Graph, node: Node) -> LstmSpec:
         hidden_size = w_shape[1] // 4
     else:
         hidden_size = int(hidden_size_attr)
-    direction = _normalize_direction(node.attrs.get("direction", "forward"))
-    _validate_direction(direction, num_directions)
+    direction = resolve_direction(node, num_directions)
     expected_w_shape = (num_directions, 4 * hidden_size, input_size)
     _expect_shape(input_w, w_shape, expected_w_shape)
     r_shape = value_shape(graph, input_r, node)
