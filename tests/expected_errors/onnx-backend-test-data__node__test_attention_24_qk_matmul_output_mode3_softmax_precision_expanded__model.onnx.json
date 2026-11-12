@@ -1,5 +1,5 @@
 {
-  "error": "Code generation requires static shapes. Reason: tensor 'Attention_test_attention_24_qk_matmul_output_mode3_softmax_precision_expanded_function_AttnBias' has dynamic dimensions ('unk__0', 'unk__1'). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes.",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_attention_24_qk_matmul_output_mode3_softmax_precision_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
@@ -28,5 +28,6 @@
     "Softmax",
     "ReduceMax"
   ],
-  "opset_version": 24
+  "opset_version": 24,
+  "generated_checksum": "733c824b596f00d323e56b0bfdaa987df1baac0330ebd681854a3e7dc13a78da"
 }
