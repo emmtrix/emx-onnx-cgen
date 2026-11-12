@@ -193,9 +193,17 @@ _Bool model_load(const char *path) {
 }
 
 void model(const float X[restrict 2][3][4], const float Y[restrict 2][3][4], const float Z[restrict 2][3][4], float out[restrict 2][3][4]) {
+#ifdef EMX_LARGE_TEMPS_ON_STACK
+    float tmp0_seq_1[EMX_SEQUENCE_MAX_LEN][2][3][4];
+#else
     static float tmp0_seq_1[EMX_SEQUENCE_MAX_LEN][2][3][4];
+#endif
     idx_t tmp0_seq_1__count = 0;
+#ifdef EMX_LARGE_TEMPS_ON_STACK
+    float tmp1_seq_2[EMX_SEQUENCE_MAX_LEN][2][3][4];
+#else
     static float tmp1_seq_2[EMX_SEQUENCE_MAX_LEN][2][3][4];
+#endif
     idx_t tmp1_seq_2__count = 0;
     node0_sequenceconstruct(X, Y, Z, tmp0_seq_1, &tmp0_seq_1__count);
     node1_sequenceerase(tmp0_seq_1, tmp0_seq_1__count, weight1_pos_erase, tmp1_seq_2, &tmp1_seq_2__count);

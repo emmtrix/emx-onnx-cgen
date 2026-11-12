@@ -371,13 +371,13 @@ static int testbench_run(const char *input_path) {
     _Bool {{ input.optional_flag_name }} = {{ "1" if input.optional_present else "0" }};
 {% endif %}
 {% if input.is_sequence %}
-    {{ input.storage }}{{ input.c_type }} {{ input.name }}{{ input.array_suffix }};
+{{ input.declaration }}
     idx_t {{ input.count_name }} = {{ input.count_value }};
 {% for dim in input.sequence_dim_arrays %}
     idx_t {{ dim.name }}[EMX_SEQUENCE_MAX_LEN] = {0};
 {% endfor %}
 {% else %}
-    {{ input.storage }}{{ input.c_type }} {{ input.name }}{{ input.array_suffix }};
+{{ input.declaration }}
 {% endif %}
 {% endfor %}
 
@@ -392,13 +392,13 @@ static int testbench_run(const char *input_path) {
 
 {% for output in outputs %}
 {% if output.is_sequence %}
-    {{ output.storage }}{{ output.c_type }} {{ output.name }}{{ output.array_suffix }};
+{{ output.declaration }}
     idx_t {{ output.count_name }} = 0;
 {% for dim in output.sequence_dim_arrays %}
     idx_t {{ dim.name }}[EMX_SEQUENCE_MAX_LEN] = {0};
 {% endfor %}
 {% else %}
-    {{ output.storage }}{{ output.c_type }} {{ output.name }}{{ output.array_suffix }};
+{{ output.declaration }}
 {% endif %}
 {% if output.optional_flag_name %}
     _Bool {{ output.optional_flag_name }} = 0;

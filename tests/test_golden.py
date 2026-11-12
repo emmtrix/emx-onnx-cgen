@@ -692,6 +692,93 @@ def test_large_temp_threshold_zero_disables_heap() -> None:
     assert "    float tmp0_tmp[1][257];" in stack_generated
 
 
+def _make_dynamic_large_temp_model() -> onnx.ModelProto:
+    shape: list[str | int] = ["N", 257]
+    graph = helper.make_graph(
+        [
+            helper.make_node("Relu", inputs=["a"], outputs=["tmp"]),
+            helper.make_node("Relu", inputs=["tmp"], outputs=["out"]),
+        ],
+        "dynamic_large_temp_graph",
+        [helper.make_tensor_value_info("a", TensorProto.FLOAT, shape)],
+        [helper.make_tensor_value_info("out", TensorProto.FLOAT, shape)],
+    )
+    model = helper.make_model(graph, opset_imports=[helper.make_operatorsetid("", 13)])
+    model.ir_version = 7
+    return model
+
+
+def _make_sequence_temp_model() -> onnx.ModelProto:
+    graph = helper.make_graph(
+        [
+            helper.make_node("SequenceConstruct", inputs=["x", "x"], outputs=["seq"]),
+            helper.make_node("SequenceAt", inputs=["seq", "index"], outputs=["y"]),
+        ],
+        "sequence_temp_graph",
+        [helper.make_tensor_value_info("x", TensorProto.FLOAT, [2, 3])],
+        [helper.make_tensor_value_info("y", TensorProto.FLOAT, [2, 3])],
+        initializer=[helper.make_tensor("index", TensorProto.INT64, [], [0])],
+    )
+    model = helper.make_model(graph, opset_imports=[helper.make_operatorsetid("", 13)])
+    model.ir_version = 7
+    return model
+
+
+def _select_large_temp_variant(source: str, *, on_stack: bool) -> str:
+    """Resolve the EMX_LARGE_TEMPS_ON_STACK conditionals like the C preprocessor."""
+    kept: list[str] = []
+    active: list[bool] = []
+    for line in source.splitlines():
+        if line in {
+            "#ifdef EMX_LARGE_TEMPS_ON_STACK",
+            "#ifndef EMX_LARGE_TEMPS_ON_STACK",
+        }:
+            active.append(on_stack == line.startswith("#ifdef"))
+        elif active and line == "#else":
+            active[-1] = not active[-1]
+        elif active and line == "#endif":
+            active.pop()
+        elif all(active):
+            kept.append(line)
+    return "\n".join(kept)
+
+
+def _without_threshold_traces(source: str) -> str:
+    return "\n".join(
+        line
+        for line in source.splitlines()
+        if "large_temp_threshold:" not in line and line != "#include <stdlib.h>"
+    )
+
+
+@pytest.mark.parametrize(
+    ("make_model", "threshold"),
+    [
+        (_make_large_temp_model, 1024),
+        (_make_dynamic_large_temp_model, 1024),
+        (_make_sequence_temp_model, 100),
+    ],
+    ids=["heap", "heap_vla", "static_sequence"],
+)
+def test_large_temps_on_stack_macro_matches_threshold_zero(
+    make_model: Callable[[], onnx.ModelProto], threshold: int
+) -> None:
+    model = make_model()
+    thresholded = Compiler(
+        CompilerOptions(emit_testbench=True, large_temp_threshold_bytes=threshold)
+    ).compile(model)
+    unbounded = Compiler(
+        CompilerOptions(emit_testbench=True, large_temp_threshold_bytes=0)
+    ).compile(model)
+
+    assert "EMX_LARGE_TEMPS_ON_STACK" in thresholded
+    assert "EMX_LARGE_TEMPS_ON_STACK" not in unbounded
+    assert _without_threshold_traces(
+        _select_large_temp_variant(thresholded, on_stack=True)
+    ) == _without_threshold_traces(unbounded)
+    assert ("malloc(" in thresholded) or ("static float" in thresholded)
+
+
 def test_mul_add_matches_onnxruntime() -> None:
     model = _make_mul_add_model()
     input_a = np.random.rand(2, 3).astype(np.float32)
