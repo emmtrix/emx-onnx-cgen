@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1977 / 2033, 97.2% | 1.23.2 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1978 / 2033, 97.3% | 1.23.2 |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4313 / 4324, 99.7% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 15 / 15, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-backend-test-data`
 
-Coverage 1977 / 2033 ONNX files (97.2%).
+Coverage 1978 / 2033 ONNX files (97.3%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1763,7 +1763,7 @@ Coverage 1977 / 2033 ONNX files (97.2%).
 | node/test_softsign_example_expanded_ver18/model.onnx | 18 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_softsign_expanded_ver18/model.onnx | 18 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_spacetodepth/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_spacetodepth_crd_mode_example/model.onnx | 28 | Data/Data | ❌ | Out of tolerance (max ULP 16777216) |
+| node/test_spacetodepth_crd_mode_example/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_spacetodepth_crd_mode_example_expanded/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_spacetodepth_dcr_mode_example/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_spacetodepth_dcr_mode_example_expanded/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |
