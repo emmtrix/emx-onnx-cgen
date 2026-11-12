@@ -471,7 +471,11 @@ def _find_test_data_dir(model_path: Path) -> Path | None:
     test_data_dir = model_path.parent / "test_data_set_0"
     if not test_data_dir.exists():
         return None
-    if not list(test_data_dir.glob("input_*.pb")):
+    # Models without inputs still ship reference outputs; verify against those
+    # instead of a runtime that may not load the model.
+    if not list(test_data_dir.glob("input_*.pb")) and not list(
+        test_data_dir.glob("output_*.pb")
+    ):
         return None
     return test_data_dir
 

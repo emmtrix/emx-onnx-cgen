@@ -793,3 +793,53 @@ def test_first_exact_mismatch_detects_string_values() -> None:
         "tuesday",
         "wednesday",
     )
+
+
+def _write_tensor(path: Path, array: np.ndarray) -> None:
+    path.write_bytes(numpy_helper.from_array(array).SerializeToString())
+
+
+def _constant_model(*, with_input: bool) -> onnx.ModelProto:
+    inputs = (
+        [helper.make_tensor_value_info("x", TensorProto.FLOAT, [2])]
+        if with_input
+        else []
+    )
+    node = (
+        helper.make_node("Identity", ["x"], ["y"])
+        if with_input
+        else helper.make_node(
+            "Constant",
+            [],
+            ["y"],
+            value=numpy_helper.from_array(np.ones(2, np.float32)),
+        )
+    )
+    graph = helper.make_graph(
+        [node],
+        "g",
+        inputs,
+        [helper.make_tensor_value_info("y", TensorProto.FLOAT, [2])],
+    )
+    return helper.make_model(graph, opset_imports=[helper.make_opsetid("", 13)])
+
+
+def test_load_test_data_inputs_accepts_outputs_only_dir_for_model_without_inputs(
+    tmp_path: Path,
+) -> None:
+    _write_tensor(tmp_path / "output_0.pb", np.ones(2, np.float32))
+
+    inputs, _, _, _ = cli._load_test_data_inputs(
+        _constant_model(with_input=False), tmp_path
+    )
+
+    assert inputs == {}
+
+
+def test_load_test_data_inputs_still_requires_inputs_for_model_with_inputs(
+    tmp_path: Path,
+) -> None:
+    _write_tensor(tmp_path / "output_0.pb", np.ones(2, np.float32))
+
+    with pytest.raises(cli.CodegenError, match="No input_\*.pb files found"):
+        cli._load_test_data_inputs(_constant_model(with_input=True), tmp_path)
