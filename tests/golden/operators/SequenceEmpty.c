@@ -234,13 +234,29 @@ _Bool model_load(const char *path) {
 }
 
 void model(int out_dim_0, const float X[restrict 2][3][4], const float Y[restrict 1][3][4], const float Z[restrict 3][3][4], float out[restrict out_dim_0][3][4]) {
+#ifdef EMX_LARGE_TEMPS_ON_STACK
+    float tmp0_Seq_empty[EMX_SEQUENCE_MAX_LEN][3][3][4];
+#else
     static float tmp0_Seq_empty[EMX_SEQUENCE_MAX_LEN][3][3][4];
+#endif
     idx_t tmp0_Seq_empty__count = 0;
+#ifdef EMX_LARGE_TEMPS_ON_STACK
+    float tmp1_Seq_1[EMX_SEQUENCE_MAX_LEN][3][3][4];
+#else
     static float tmp1_Seq_1[EMX_SEQUENCE_MAX_LEN][3][3][4];
+#endif
     idx_t tmp1_Seq_1__count = 0;
+#ifdef EMX_LARGE_TEMPS_ON_STACK
+    float tmp2_Seq_2[EMX_SEQUENCE_MAX_LEN][3][3][4];
+#else
     static float tmp2_Seq_2[EMX_SEQUENCE_MAX_LEN][3][3][4];
+#endif
     idx_t tmp2_Seq_2__count = 0;
+#ifdef EMX_LARGE_TEMPS_ON_STACK
+    float tmp3_Seq_3[EMX_SEQUENCE_MAX_LEN][3][3][4];
+#else
     static float tmp3_Seq_3[EMX_SEQUENCE_MAX_LEN][3][3][4];
+#endif
     idx_t tmp3_Seq_3__count = 0;
     node0_sequenceempty(out_dim_0, tmp0_Seq_empty, &tmp0_Seq_empty__count);
     node1_sequenceinsert(out_dim_0, tmp0_Seq_empty, tmp0_Seq_empty__count, X, tmp1_Seq_1, &tmp1_Seq_1__count);
