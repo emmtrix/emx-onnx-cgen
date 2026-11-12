@@ -28,12 +28,36 @@ def _ensure_scale_dtype(dtype: ScalarType, label: str) -> None:
         raise UnsupportedOpError(f"QGemm {label} must be float16/float/double")
 
 
+def _fold_zero_points(
+    graph: Graph, a_zero_name: str, b_name: str, b_zero_name: str, trans_b: int
+) -> tuple[int, ...] | None:
+    """-a_zp * sum_k B[k][j] when b_zero_point is a constant all-zero initializer.
+
+    sum((a - a_zp) * b) = sum(a * b) - a_zp * sum(b); the second term is a per-column constant.
+    """
+    inits = [
+        _find_initializer(graph, name) for name in (a_zero_name, b_name, b_zero_name)
+    ]
+    if any(init is None for init in inits):
+        return None
+    a_zero, b, b_zero = (init.data for init in inits)  # type: ignore[union-attr]
+    if b_zero.any():
+        return None
+    b_kj = b.T if trans_b else b
+    folded = -int(a_zero.reshape(-1)[0]) * b_kj.astype(np.int64).sum(axis=0)
+    if np.abs(folded).max(initial=0) >= 2**31:
+        return None
+    return tuple(int(value) for value in folded)
+
+
 def _accumulator_type(graph: Graph, k: int, c_name: str | None) -> str:
     """int32_t when the accumulator cannot overflow it, int64_t otherwise.
 
     Each product (a - a_zp) * (b - b_zp) of 8-bit operands is at most 255 * 255 in magnitude, so the
     sum stays within int32 while k * 255 * 255 plus the largest bias magnitude does. A bias that is
-    not a constant initializer is unbounded and keeps int64.
+    not a constant initializer is unbounded and keeps int64. The bound also holds with folded zero
+    points: after p steps the accumulator is bias + sum_{k<p} (a - a_zp) * b - a_zp * sum_{k>=p} b,
+    again k terms of at most 255 * 255 each.
     """
     c_bound = 0
     if c_name is not None:
@@ -159,6 +183,9 @@ def lower_qgemm(graph: Graph, node: Node) -> QGemmOp:
     if expected_output_dtype != output_dtype:
         output_dtype = expected_output_dtype
 
+    zp_folded = _fold_zero_points(
+        graph, node.inputs[2], node.inputs[3], node.inputs[5], trans_b
+    )
     lowered = QGemmOp(
         input_a=node.inputs[0],
         a_scale=node.inputs[1],
@@ -187,6 +214,7 @@ def lower_qgemm(graph: Graph, node: Node) -> QGemmOp:
         y_scale_shape=y_scale_shape_resolved,
         y_zero_shape=y_zero_shape_resolved,
         b_scale_per_column=b_scale_per_column,
+        zp_folded=zp_folded,
         acc_type=_accumulator_type(graph, k_left, input_c_name),
     )
 

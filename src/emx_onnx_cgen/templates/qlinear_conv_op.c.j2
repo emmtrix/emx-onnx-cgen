@@ -14,9 +14,16 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                 {% for dim in range(spatial_rank) %}
                 for (idx_t {{ out_indices[dim] }} = 0; {{ out_indices[dim] }} < {{ out_spatial[dim] }}; ++{{ out_indices[dim] }}) {
                 {% endfor %}
+                    {% if folded_bias and bias %}
+                    int32_t acc = 0;
+                    acc += {{ folded_bias }}[oc_global];
+                    {% elif folded_bias %}
+                    int32_t acc = {{ folded_bias }}[oc_global];
+                    {% else %}
                     int32_t acc = 0;
                     {% if bias %}
                     acc += {{ bias }}[oc_global];
+                    {% endif %}
                     {% endif %}
                     for (idx_t ic = 0; ic < {{ group_in_channels }}; ++ic) {
                         const idx_t ic_global = g * {{ group_in_channels }} + ic;
@@ -29,8 +36,8 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% if true in bounds_checks %}
                             if ({% for dim in range(spatial_rank) if bounds_checks[dim] %}{{ in_indices[dim] }} >= 0 && {{ in_indices[dim] }} < {{ in_spatial[dim] }}{% if not loop.last %} && {% endif %}{% endfor %}) {
 {% endif %}
-                                const int32_t input_value = (int32_t){{ input0 }}[n][ic_global]{% for dim in range(spatial_rank) %}[{{ in_indices[dim] }}]{% endfor %} - (int32_t)({{ input_zero_expr }});
-                                const int32_t weight_value = (int32_t){{ weights }}[oc_global][ic]{% for dim in range(spatial_rank) %}[{{ kernel_indices[dim] }}]{% endfor %} - (int32_t)({{ weight_zero_expr }});
+                                const int32_t input_value = (int32_t){{ input0 }}[n][ic_global]{% for dim in range(spatial_rank) %}[{{ in_indices[dim] }}]{% endfor %}{% if not folded_bias %} - (int32_t)({{ input_zero_expr }}){% endif %};
+                                const int32_t weight_value = (int32_t){{ weights }}[oc_global][ic]{% for dim in range(spatial_rank) %}[{{ kernel_indices[dim] }}]{% endfor %}{% if not weight_zero_is_zero %} - (int32_t)({{ weight_zero_expr }}){% endif %};
                                 acc += input_value * weight_value;
 {% if true in bounds_checks %}
                             }

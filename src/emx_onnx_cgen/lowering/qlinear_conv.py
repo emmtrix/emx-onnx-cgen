@@ -40,6 +40,45 @@ def _resolve_weight_quant_shape(
     )
 
 
+def _fold_zero_points(
+    graph: Graph,
+    input_zero_name: str,
+    weight_name: str,
+    weight_zero_name: str,
+    bias_name: str | None,
+    out_channels: int,
+    padded: bool,
+) -> tuple[bool, tuple[int, ...] | None]:
+    """(w_zero_point is all zero, folded bias) from constant initializers.
+
+    sum((x - x_zp) * (w - w_zp)) = sum(x * (w - w_zp)) - x_zp * sum(w - w_zp). The second term is a
+    per-channel constant only when every tap is accumulated, i.e. no padding tap is skipped, or when
+    x_zp is 0.
+    """
+    w_zero = _find_initializer(graph, weight_zero_name)
+    if w_zero is None:
+        return False, None
+    w_zp = np.broadcast_to(w_zero.data.reshape(-1), (out_channels,)).astype(np.int64)
+    weight_zero_is_zero = not w_zp.any()
+    x_zero = _find_initializer(graph, input_zero_name)
+    weights = _find_initializer(graph, weight_name)
+    bias = _find_initializer(graph, bias_name) if bias_name is not None else None
+    if x_zero is None or weights is None or (bias_name is not None and bias is None):
+        return weight_zero_is_zero, None
+    x_zp = int(x_zero.data.reshape(-1)[0])
+    if padded and x_zp != 0:
+        return weight_zero_is_zero, None
+    w = weights.data.astype(np.int64).reshape(out_channels, -1)
+    folded = (
+        bias.data.astype(np.int64)
+        if bias is not None
+        else np.zeros(out_channels, np.int64)
+    ) - x_zp * (w - w_zp[:, None]).sum(axis=1)
+    if np.abs(folded).max(initial=0) >= 2**31:
+        return weight_zero_is_zero, None
+    return weight_zero_is_zero, tuple(int(value) for value in folded)
+
+
 def _requant_scale_table(
     graph: Graph,
     input_scale_name: str,
@@ -151,6 +190,15 @@ def lower_qlinear_conv(graph: Graph, node: Node) -> QLinearConvOp:
         if _value_dtype(graph, bias_name, node) != ScalarType.I32:
             raise UnsupportedOpError("QLinearConv bias must have int32 dtype")
 
+    weight_zero_is_zero, folded_bias = _fold_zero_points(
+        graph,
+        input_zero_name,
+        weight_name,
+        weight_zero_name,
+        bias_name,
+        spec.out_channels,
+        padded=any(spec.pads),
+    )
     lowered = QLinearConvOp(
         input0=input_name,
         input_scale=input_scale_name,
@@ -187,6 +235,8 @@ def lower_qlinear_conv(graph: Graph, node: Node) -> QLinearConvOp:
         output_zero_shape=output_zero_shape,
         weight_scale_per_channel=weight_scale_per_channel,
         weight_zero_per_channel=weight_zero_per_channel,
+        weight_zero_is_zero=weight_zero_is_zero,
+        folded_bias=folded_bias,
         requant_scale_table=_requant_scale_table(
             graph,
             input_scale_name,
