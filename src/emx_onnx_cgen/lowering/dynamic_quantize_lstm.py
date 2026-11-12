@@ -12,10 +12,9 @@ from .lstm import (
     ACTIVATION_KIND_BY_NAME,
     LstmSpec,
     _resolve_activations,
-    _validate_direction,
     _expect_shape,
-    _normalize_direction,
 )
+from .recurrent_direction import resolve_direction
 from .registry import register_lowering
 
 if TYPE_CHECKING:
@@ -131,8 +130,7 @@ def resolve_dynamic_quantize_lstm_spec(
     else:
         hidden_size = int(hidden_size_attr)
 
-    direction = _normalize_direction(node.attrs.get("direction", "forward"))
-    _validate_direction(direction, num_directions)
+    direction = resolve_direction(node, num_directions)
 
     expected_w_shape = (num_directions, input_size, 4 * hidden_size)
     _expect_shape(input_w, w_shape, expected_w_shape)

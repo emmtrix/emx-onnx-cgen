@@ -2907,6 +2907,7 @@ class SpaceToDepthOp(RenderableOpBase):
     input0: str
     output: str
     blocksize: int
+    mode: str
 
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
@@ -2949,6 +2950,7 @@ class SpaceToDepthOp(RenderableOpBase):
                 out_h=output_dims[2],
                 out_w=output_dims[3],
                 blocksize=self.blocksize,
+                mode=self.mode,
             )
             .rstrip()
         )

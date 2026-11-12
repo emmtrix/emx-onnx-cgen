@@ -12,7 +12,6 @@ from shared.scalar_types import ScalarType
 
 from .errors import UnsupportedOpError
 
-
 _NP_ERF = getattr(np, "erf", None)
 if _NP_ERF is None:
     _NP_ERF = np.vectorize(math.erf, otypes=[float])
@@ -228,16 +227,38 @@ COMPARE_SPECS = {
     ScalarFunction.LE: BinaryOpSpec("<=", OperatorKind.INFIX, np.less_equal),
 }
 
+
+def _shift_operands(
+    x: np.ndarray, y: np.ndarray
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """(x, in-range shift amount, in-range mask) with the shift range of BitShift-28."""
+    x, y = np.broadcast_arrays(np.asarray(x), np.asarray(y))
+    amount = y.astype(np.int64)
+    in_range = (amount >= 0) & (amount < x.dtype.itemsize * 8)
+    return x, np.where(in_range, amount, 0).astype(x.dtype), in_range
+
+
+def _onnx_left_shift(x: np.ndarray, y: np.ndarray) -> np.ndarray:
+    x, amount, in_range = _shift_operands(x, y)
+    return np.where(in_range, np.left_shift(x, amount), 0).astype(x.dtype)
+
+
+def _onnx_right_shift(x: np.ndarray, y: np.ndarray) -> np.ndarray:
+    x, amount, in_range = _shift_operands(x, y)
+    sign_fill = (x < 0).astype(x.dtype) * x.dtype.type(-1) if x.dtype.kind == "i" else 0
+    return np.where(in_range, np.right_shift(x, amount), sign_fill).astype(x.dtype)
+
+
 BINARY_SPECS_INT = {
     ScalarFunction.ADD: BinaryOpSpec("+", OperatorKind.INFIX, np.add),
     ScalarFunction.BITWISE_AND: BinaryOpSpec("&", OperatorKind.INFIX, np.bitwise_and),
     ScalarFunction.BITWISE_OR: BinaryOpSpec("|", OperatorKind.INFIX, np.bitwise_or),
     ScalarFunction.BITWISE_XOR: BinaryOpSpec("^", OperatorKind.INFIX, np.bitwise_xor),
     ScalarFunction.BITWISE_LEFT_SHIFT: BinaryOpSpec(
-        "<<", OperatorKind.INFIX, np.left_shift
+        "<<", OperatorKind.INFIX, _onnx_left_shift
     ),
     ScalarFunction.BITWISE_RIGHT_SHIFT: BinaryOpSpec(
-        ">>", OperatorKind.INFIX, np.right_shift
+        ">>", OperatorKind.INFIX, _onnx_right_shift
     ),
     ScalarFunction.DIV: BinaryOpSpec("/", OperatorKind.INFIX, np.floor_divide),
     ScalarFunction.FMOD: BinaryOpSpec("%", OperatorKind.INFIX, np.fmod),

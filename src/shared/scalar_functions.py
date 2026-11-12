@@ -1816,6 +1816,51 @@ def _int_div(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     return _GeneratedScalar(lines=lines, deps=set(), includes=set())
 
 
+def _shift_out_of_range(dtype_info: _ScalarTypeInfo) -> str:
+    # ONNX BitShift-28 defines shifts by a negative amount or by >= bit width; in C they are UB.
+    if dtype_info.is_signed:
+        return f"b < 0 || b >= {dtype_info.bits}"
+    return f"b >= {dtype_info.bits}"
+
+
+def _shift_word_type(dtype_info: _ScalarTypeInfo) -> str:
+    """Unsigned type a shift is evaluated in: no UB on overflow and no int promotion."""
+    return "uint64_t" if dtype_info.bits == 64 else "uint32_t"
+
+
+def _int_left_shift(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
+    c_type = dtype_info.c_type
+    lines = [
+        f"static inline {c_type} {dtype_info.prefix}bitwise_left_shift({c_type} a, {c_type} b) {{",
+        f"    if ({_shift_out_of_range(dtype_info)}) {{",
+        "        return 0;",
+        "    }",
+        f"    return ({c_type})(({_shift_word_type(dtype_info)})a << b);",
+        "}",
+    ]
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+
+
+def _int_right_shift(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
+    c_type = dtype_info.c_type
+    if dtype_info.is_signed:
+        # Arithmetic shift without relying on the implementation-defined >> of negative values.
+        out_of_range = "a < 0 ? -1 : 0"
+        in_range = f"a < 0 ? ({c_type})~(~a >> b) : ({c_type})(a >> b)"
+    else:
+        out_of_range = "0"
+        in_range = f"({c_type})(a >> b)"
+    lines = [
+        f"static inline {c_type} {dtype_info.prefix}bitwise_right_shift({c_type} a, {c_type} b) {{",
+        f"    if ({_shift_out_of_range(dtype_info)}) {{",
+        f"        return {out_of_range};",
+        "    }",
+        f"    return {in_range};",
+        "}",
+    ]
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+
+
 def _int_fmod(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     expr = _cast_value("a % b", dtype_info)
     lines = [
@@ -2039,8 +2084,8 @@ _INT_OP_DISPATCH: Mapping[str, Callable[[_ScalarTypeInfo], _GeneratedScalar]] = 
     "bitwise_and": _int_binary_op_handler("bitwise_and", "&"),
     "bitwise_or": _int_binary_op_handler("bitwise_or", "|"),
     "bitwise_xor": _int_binary_op_handler("bitwise_xor", "^"),
-    "bitwise_left_shift": _int_binary_op_handler("bitwise_left_shift", "<<"),
-    "bitwise_right_shift": _int_binary_op_handler("bitwise_right_shift", ">>"),
+    "bitwise_left_shift": _int_left_shift,
+    "bitwise_right_shift": _int_right_shift,
     "bitwise_not": lambda dtype_info: _int_unary_op(dtype_info, "bitwise_not", "~a"),
     "div": _int_div,
     "maximum": _int_simple_binary_handler("maximum", "a > b ? a : b"),

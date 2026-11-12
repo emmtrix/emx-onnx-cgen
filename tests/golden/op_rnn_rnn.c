@@ -89,7 +89,7 @@ EMX_NODE_FN void node0_rnn(const float input_x[1][1][2], const float input_w[1][
                     }
                     float h_new = ref_scalar_f32_tanh(sum);
                     H_next[b][h] = h_new;
-                    output_y[step][dir][b][h] = h_new;
+                    output_y[t][dir][b][h] = h_new;
                 }
                 for (int h = 0; h < 3; ++h) {
                     H_prev[b][h] = H_next[b][h];
