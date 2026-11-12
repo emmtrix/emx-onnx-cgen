@@ -18,6 +18,17 @@ def _blocksize(node: Node) -> int:
     return blocksize
 
 
+def _mode(node: Node) -> str:
+    """DCR or CRD; SpaceToDepth has the attribute since opset 28."""
+    mode_attr = node.attrs.get("mode", "DCR")
+    mode = mode_attr.decode() if isinstance(mode_attr, bytes) else str(mode_attr)
+    if mode not in {"DCR", "CRD"}:
+        raise UnsupportedOpError(
+            f"{node.op_type} only supports mode DCR or CRD, got {mode}"
+        )
+    return mode
+
+
 @register_lowering("DepthToSpace")
 def lower_depth_to_space(graph: Graph, node: Node) -> DepthToSpaceOp:
     if len(node.inputs) != 1 or len(node.outputs) != 1:
@@ -34,13 +45,7 @@ def lower_depth_to_space(graph: Graph, node: Node) -> DepthToSpaceOp:
             f"got {input_dtype.onnx_name} and {output_dtype.onnx_name}"
         )
     blocksize = _blocksize(node)
-    mode_attr = node.attrs.get("mode", "DCR")
-    if isinstance(mode_attr, bytes):
-        mode = mode_attr.decode()
-    else:
-        mode = str(mode_attr)
-    if mode not in {"DCR", "CRD"}:
-        raise UnsupportedOpError("DepthToSpace only supports mode DCR or CRD")
+    mode = _mode(node)
     n, c, h, w = input_shape
     if c % (blocksize * blocksize) != 0:
         raise ShapeInferenceError(
@@ -101,4 +106,5 @@ def lower_space_to_depth(graph: Graph, node: Node) -> SpaceToDepthOp:
         input0=node.inputs[0],
         output=node.outputs[0],
         blocksize=blocksize,
+        mode=_mode(node),
     )

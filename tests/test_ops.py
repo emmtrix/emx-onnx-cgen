@@ -7383,11 +7383,29 @@ def test_lower_depth_space_ops_keep_only_explicit_attrs() -> None:
     space_graph = import_onnx(space_to_depth_model)
     space_op = lower_space_to_depth(space_graph, space_graph.nodes[0])
     assert space_op.blocksize == 2
+    assert space_op.mode == "DCR"
     assert {item.name for item in fields(type(space_op))} == {
         "input0",
         "output",
         "blocksize",
+        "mode",
     }
+
+
+@pytest.mark.parametrize("blocksize", [2, 3])
+@pytest.mark.parametrize("mode", ["DCR", "CRD"])
+def test_space_to_depth_28_modes_match_reference(mode: str, blocksize: int) -> None:
+    if onnx.defs.onnx_opset_version() < 28:
+        pytest.skip("SpaceToDepth mode needs onnx >= 1.23")
+    model = _make_operator_model(
+        op_type="SpaceToDepth",
+        input_shapes=[[2, 3, 2 * blocksize, 3 * blocksize]],
+        output_shape=[2, 3 * blocksize * blocksize, 2, 3],
+        dtype=TensorProto.FLOAT,
+        attrs={"blocksize": blocksize, "mode": mode},
+        opset=28,
+    )
+    _run_reference_testbench_compare(model)
 
 
 def test_lower_convinteger_per_channel_zero_point() -> None:
