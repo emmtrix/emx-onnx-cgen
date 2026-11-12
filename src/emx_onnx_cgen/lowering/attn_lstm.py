@@ -9,9 +9,9 @@ from .common import node_dtype, optional_name, value_dtype, value_shape
 from .lstm import (
     DEFAULT_ACTIVATIONS,
     _normalize_activation_names,
-    _normalize_direction,
     _resolve_activation_params,
 )
+from .recurrent_direction import resolve_direction
 from .registry import register_lowering
 
 
@@ -136,13 +136,7 @@ def lower_attn_lstm(graph: Graph, node: Node) -> AttnLSTMOp:
             f"AttnLSTM input size {total_input_size} < attn_ctx_size {attn_ctx_size}"
         )
 
-    direction = _normalize_direction(node.attrs.get("direction", "forward"))
-    if direction not in {"forward", "reverse", "bidirectional"}:
-        raise UnsupportedOpError(f"AttnLSTM unsupported direction: {direction}")
-    if direction == "bidirectional" and num_directions != 2:
-        raise UnsupportedOpError("AttnLSTM bidirectional requires num_directions=2")
-    if direction in {"forward", "reverse"} and num_directions != 1:
-        raise UnsupportedOpError("AttnLSTM forward/reverse requires num_directions=1")
+    direction = resolve_direction(node, num_directions)
 
     # Activations
     activations_attr = node.attrs.get("activations")

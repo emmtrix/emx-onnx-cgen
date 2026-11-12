@@ -112,7 +112,7 @@ EMX_NODE_FN void node0_lstm(const float input_x[1][1][2], const float input_w[1]
                     float h_new = o_gate * ref_scalar_f32_tanh(c_new);
                     C_next[b][h] = c_new;
                     H_next[b][h] = h_new;
-                    output_y[step][dir][b][h] = h_new;
+                    output_y[t][dir][b][h] = h_new;
                 }
                 for (int h = 0; h < 3; ++h) {
                     C_prev[b][h] = C_next[b][h];
