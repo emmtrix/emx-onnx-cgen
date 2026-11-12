@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1978 / 2033, 97.3% | 1.23.2 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1979 / 2033, 97.3% | 1.23.2 |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4313 / 4324, 99.7% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 15 / 15, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-backend-test-data`
 
-Coverage 1978 / 2033 ONNX files (97.3%).
+Coverage 1979 / 2033 ONNX files (97.3%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -594,7 +594,7 @@ Coverage 1978 / 2033 ONNX files (97.3%).
 | node/test_ceil_example/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_celu/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_celu_bfloat16/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_celu_bfloat16_expanded/model.onnx | 28 | Data/Data | ❌ | Unsupported op Div (while lowering node_index=1, op_type=Div, name=&lt;unnamed&gt;, inputs=[X: tensor[dtype=bfloat16, shape=(5,), dim_params=(None,)], Celu_test_celu_bfloat16_expanded_function_AlphaCast: tensor[dtype=bfloat16, shape=()]], outputs=[Celu_test_celu_bfloat16_expanded_function_XScaled: tensor[dtype=bfloat16, shape=(5,), dim_params=(None,)]]) |
+| node/test_celu_bfloat16_expanded/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_celu_expanded/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_celu_float16/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_celu_float16_expanded/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |

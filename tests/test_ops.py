@@ -10405,6 +10405,51 @@ def test_qmoe_matches_onnxruntime() -> None:
         )
 
 
+@pytest.mark.parametrize(
+    "op_type", ["Add", "Sub", "Mul", "Div", "Sqrt", "Exp", "Neg", "Abs", "Floor", "Pow"]
+)
+def test_bfloat16_elementwise_matches_reference(op_type: str) -> None:
+    """bfloat16 elementwise ops, fed and read back through float32 Casts."""
+    binary = op_type in {"Add", "Sub", "Mul", "Div", "Pow"}
+    inputs = ["x", "y"] if binary else ["x"]
+    nodes = [
+        helper.make_node("Cast", [name], [f"{name}_bf16"], to=TensorProto.BFLOAT16)
+        for name in inputs
+    ]
+    nodes.append(
+        helper.make_node(op_type, [f"{name}_bf16" for name in inputs], ["z_bf16"])
+    )
+    nodes.append(helper.make_node("Cast", ["z_bf16"], ["z"], to=TensorProto.FLOAT))
+    shape = [2, 4]
+    graph = helper.make_graph(
+        nodes,
+        "bfloat16_elementwise_graph",
+        [
+            helper.make_tensor_value_info(name, TensorProto.FLOAT, shape)
+            for name in inputs
+        ],
+        [helper.make_tensor_value_info("z", TensorProto.FLOAT, shape)],
+    )
+    model = helper.make_model(graph, opset_imports=[helper.make_opsetid("", 21)])
+    model.ir_version = 10
+    rng = np.random.default_rng(0)
+    feeds = {
+        name: (
+            rng.uniform(0.25, 4.0, size=shape) * rng.choice([-1, 1], size=shape)
+        ).astype(np.float32)
+        for name in inputs
+    }
+    if op_type in {"Sqrt", "Pow"}:
+        feeds["x"] = np.abs(feeds["x"])
+    (expected,) = ReferenceEvaluator(model).run(None, feeds)
+
+    payload = _compile_and_run_testbench(model, testbench_inputs=feeds)
+    output = decode_testbench_array(
+        payload["outputs"]["z"]["data"], np.dtype(np.float32)
+    )
+    np.testing.assert_array_equal(output.reshape(expected.shape), expected)
+
+
 _BITSHIFT_DTYPES = {
     np.int8: ScalarType.I8,
     np.int16: ScalarType.I16,
