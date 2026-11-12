@@ -1763,7 +1763,7 @@ Coverage 1977 / 2033 ONNX files (97.2%).
 | node/test_softsign_example_expanded_ver18/model.onnx | 18 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_softsign_expanded_ver18/model.onnx | 18 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_spacetodepth/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_spacetodepth_crd_mode_example/model.onnx | 28 | Data/Data | ❌ | Out of tolerance (max ULP 16777216) |
+| node/test_spacetodepth_crd_mode_example/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_spacetodepth_crd_mode_example_expanded/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_spacetodepth_dcr_mode_example/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_spacetodepth_dcr_mode_example_expanded/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |
