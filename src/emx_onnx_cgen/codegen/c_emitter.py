@@ -199,6 +199,9 @@ def _format_c_indentation(source: str, *, indent: str = "    ") -> str:
         if not stripped:
             formatted_lines.append("")
             continue
+        if stripped.startswith("#"):
+            formatted_lines.append(stripped)
+            continue
         if stripped.startswith("}"):
             indent_level = max(indent_level - 1, 0)
         formatted_lines.append(f"{indent * indent_level}{stripped}")
@@ -239,6 +242,10 @@ _LSTM_ACTIVATION_SPECS: dict[int, tuple[ScalarFunction, int]] = {
     9: (ScalarFunction.SOFTSIGN, 0),
     10: (ScalarFunction.SOFTPLUS, 0),
 }
+
+# Defining this macro when compiling the generated code puts every buffer that
+# --large-temp-threshold moves to the heap or to static storage back on the stack.
+LARGE_TEMPS_ON_STACK_MACRO = "EMX_LARGE_TEMPS_ON_STACK"
 
 _C_IDENTIFIER_RE = re.compile(r"[^a-zA-Z0-9_]")
 _C_KEYWORDS = {
@@ -2424,22 +2431,22 @@ class CEmitter:
                     dim_names,
                     dtype=temp.dtype,
                 )
-                storage = (
-                    "static "
-                    if not dim_names
-                    and self._exceeds_temp_threshold(
-                        self._buffer_size_bytes(
-                            temp.shape,
-                            temp.dtype,
-                            dim_names=dim_names,
-                            is_sequence=temp.is_sequence,
+                declaration = f"{c_type} {temp.name}[EMX_SEQUENCE_MAX_LEN]{suffix};"
+                if not dim_names and self._exceeds_temp_threshold(
+                    self._buffer_size_bytes(
+                        temp.shape,
+                        temp.dtype,
+                        dim_names=dim_names,
+                        is_sequence=temp.is_sequence,
+                    )
+                ):
+                    lines.extend(
+                        self._large_temp_alternatives(
+                            [declaration], [f"static {declaration}"]
                         )
                     )
-                    else ""
-                )
-                lines.append(
-                    f"    {storage}{c_type} {temp.name}[EMX_SEQUENCE_MAX_LEN]{suffix};"
-                )
+                else:
+                    lines.append(f"    {declaration}")
                 lines.append(f"    idx_t {temp.name}__count = 0;")
                 for axis in self._sequence_dynamic_axes(temp.name):
                     lines.append(
@@ -2447,21 +2454,18 @@ class CEmitter:
                         f"idx_t {self._sequence_dim_array_name(temp.name, axis)}"
                         "[EMX_SEQUENCE_MAX_LEN] = {0};"
                     )
-            elif self._temp_buffer_uses_heap(temp, dim_names):
-                lines.extend(
-                    f"    {line}"
-                    for line in self._heap_temp_buffer_lines(temp, dim_names)
-                )
-                heap_temp_names.append(temp.name)
             else:
-                storage = ""
-                if not dim_names and self._exceeds_temp_threshold(
-                    self._temp_buffer_size_bytes(temp)
-                ):
-                    storage = "static "
-                lines.append(
-                    f"    {storage}{c_type} {temp.name}{self._param_array_suffix(temp.shape, dim_names, dtype=temp.dtype)};"
-                )
+                declaration = f"{c_type} {temp.name}{self._param_array_suffix(temp.shape, dim_names, dtype=temp.dtype)};"
+                if self._temp_buffer_uses_heap(temp, dim_names):
+                    lines.extend(
+                        self._large_temp_alternatives(
+                            [declaration],
+                            self._heap_temp_buffer_lines(temp, dim_names),
+                        )
+                    )
+                    heap_temp_names.append(temp.name)
+                else:
+                    lines.append(f"    {declaration}")
         sequence_temp_count_names = {
             f"{temp.name}__count" for temp in temp_buffers if temp.is_sequence
         }
@@ -2574,8 +2578,10 @@ class CEmitter:
             args = [*dim_order, *op_args]
             call = ", ".join(args)
             lines.append(f"    {op_name}({call});")
-        for temp_name in reversed(heap_temp_names):
-            lines.append(f"    free({temp_name});")
+        if heap_temp_names:
+            lines.append(f"#ifndef {LARGE_TEMPS_ON_STACK_MACRO}")
+            lines.extend(f"    free({name});" for name in reversed(heap_temp_names))
+            lines.append("#endif")
         lines.append("}")
         return "\n".join(lines)
 
@@ -2701,32 +2707,40 @@ class CEmitter:
             element_count *= 32
         return element_count * dtype.np_dtype.itemsize
 
-    def _local_array_storage(
+    def _local_array_declaration(
         self,
+        declaration: str,
         shape: tuple[int, ...],
         dtype: ScalarType,
         *,
-        dim_names: Mapping[int, CodegenDim] | None = None,
         is_sequence: bool = False,
     ) -> str:
-        if dim_names:
-            return ""
-        if self._exceeds_temp_threshold(
-            self._buffer_size_bytes(
-                shape,
-                dtype,
-                dim_names=dim_names,
-                is_sequence=is_sequence,
-            )
+        if not self._exceeds_temp_threshold(
+            self._buffer_size_bytes(shape, dtype, is_sequence=is_sequence)
         ):
-            return "static "
-        return ""
+            return f"    {declaration};"
+        return "\n".join(
+            self._large_temp_alternatives(
+                [f"{declaration};"], [f"static {declaration};"]
+            )
+        )
 
     @staticmethod
-    def _temp_buffer_size_bytes(temp: TempBuffer) -> int:
-        return CEmitter._buffer_size_bytes(
-            temp.shape, temp.dtype, is_sequence=temp.is_sequence
-        )
+    def _large_temp_alternatives(
+        stack_lines: Sequence[str], large_lines: Sequence[str]
+    ) -> list[str]:
+        """Both storage variants of a buffer above ``--large-temp-threshold``.
+
+        Defining ``EMX_LARGE_TEMPS_ON_STACK`` when compiling the generated code selects the
+        stack variant, i.e. the code ``--large-temp-threshold 0`` would have generated.
+        """
+        return [
+            f"#ifdef {LARGE_TEMPS_ON_STACK_MACRO}",
+            *(f"    {line}" for line in stack_lines),
+            "#else",
+            *(f"    {line}" for line in large_lines),
+            "#endif",
+        ]
 
     def _exceeds_temp_threshold(self, size_bytes: int) -> bool:
         """Return whether a buffer of ``size_bytes`` counts as "large".
@@ -2781,8 +2795,8 @@ class CEmitter:
         return [
             f"{decl} = {alloc};",
             f"if ({temp.name} == NULL) {{",
-            "        return;",
-            "    }",
+            "    return;",
+            "}",
         ]
 
     def _temp_buffers(
@@ -4016,7 +4030,8 @@ class CEmitter:
                 if is_sequence_input
                 else self._array_suffix(concrete_codegen_shape, dtype)
             )
-            input_storage = self._local_array_storage(
+            input_declaration = self._local_array_declaration(
+                f"{dtype.c_type} {name}{input_array_suffix}",
                 concrete_codegen_shape,
                 dtype,
                 is_sequence=is_sequence_input,
@@ -4057,7 +4072,7 @@ class CEmitter:
                     else (),
                     "count_name": f"{name}__count",
                     "count_value": loop_shape[0] if is_sequence_input else 1,
-                    "storage": input_storage,
+                    "declaration": input_declaration,
                     "sequence_dim_arrays": tuple(
                         {
                             "axis": axis,
@@ -4116,7 +4131,8 @@ class CEmitter:
                 if is_sequence_output
                 else self._array_suffix(concrete_codegen_shape, dtype)
             )
-            output_storage = self._local_array_storage(
+            output_declaration = self._local_array_declaration(
+                f"{dtype.c_type} {name}{output_array_suffix}",
                 concrete_codegen_shape,
                 dtype,
                 is_sequence=is_sequence_output,
@@ -4144,7 +4160,7 @@ class CEmitter:
                     "is_sequence": is_sequence_output,
                     "count_name": f"{name}__count",
                     "optional_flag_name": optional_flag,
-                    "storage": output_storage,
+                    "declaration": output_declaration,
                     "sequence_dim_arrays": tuple(
                         {
                             "axis": axis,

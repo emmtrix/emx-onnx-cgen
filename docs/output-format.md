@@ -449,6 +449,23 @@ Large temporaries:
   temporaries stay on the stack. Buffers with static shapes become fixed-size
   local arrays, while buffers with dynamic dimensions become C99 variable-length
   arrays. This avoids `malloc`/`free` at the cost of higher stack usage.
+- The same applies to sequence temporaries and testbench input/output buffers
+  above the threshold, which are declared `static` instead of being
+  heap-allocated.
+- Every buffer moved off the stack is emitted together with its stack variant:
+
+  ```c
+  #ifdef EMX_LARGE_TEMPS_ON_STACK
+      float tmp0_tmp[1][257];
+  #else
+      float (*tmp0_tmp)[257] = malloc(sizeof(*tmp0_tmp) * 1);
+      ...
+  #endif
+  ```
+
+  Defining `EMX_LARGE_TEMPS_ON_STACK` when compiling the generated code
+  therefore yields the code `--large-temp-threshold 0` would generate, without
+  regenerating it.
 
 ## String Tensors
 
