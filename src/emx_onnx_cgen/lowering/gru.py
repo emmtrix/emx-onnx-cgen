@@ -8,6 +8,7 @@ from shared.scalar_types import ScalarType
 from ..errors import UnsupportedOpError
 from ..ir.model import Graph, Node
 from .common import node_dtype, optional_name, value_dtype, value_shape
+from .recurrent_direction import resolve_direction
 from .registry import register_lowering
 
 if TYPE_CHECKING:
@@ -148,18 +149,6 @@ def _expect_shape(name: str, shape: tuple[int, ...], expected: tuple[int, ...]) 
         )
 
 
-def _validate_direction(direction: str, num_directions: int) -> None:
-    if direction == "bidirectional" and num_directions != 2:
-        raise UnsupportedOpError(
-            "GRU expects num_directions=2 for bidirectional models"
-        )
-    if direction in {"forward", "reverse"} and num_directions != 1:
-        raise UnsupportedOpError(
-            "GRU expects num_directions=1 for forward/reverse models"
-        )
-    if direction not in {"forward", "reverse", "bidirectional"}:
-        raise UnsupportedOpError(f"Unsupported GRU direction {direction}")
-
 
 def resolve_gru_spec(graph: Graph, node: Node) -> GruSpec:
     if len(node.inputs) < 3 or len(node.inputs) > 6:
@@ -208,8 +197,7 @@ def resolve_gru_spec(graph: Graph, node: Node) -> GruSpec:
         hidden_size = w_shape[1] // 3
     else:
         hidden_size = int(hidden_size_attr)
-    direction = str(node.attrs.get("direction", "forward"))
-    _validate_direction(direction, num_directions)
+    direction = resolve_direction(node, num_directions)
     expected_w_shape = (num_directions, 3 * hidden_size, input_size)
     _expect_shape(input_w, w_shape, expected_w_shape)
     r_shape = value_shape(graph, input_r, node)

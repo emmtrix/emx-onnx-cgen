@@ -207,7 +207,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     C_next[b][h] = c_new;
                     H_next[b][h] = h_new;
                     {% if output_y %}
-                    {{ output_y }}[step][dir][b][h] = h_new;
+                    {{ output_y }}[t][dir][b][h] = h_new;
                     {% endif %}
                 }
                 for (int h = 0; h < {{ hidden_size }}; ++h) {

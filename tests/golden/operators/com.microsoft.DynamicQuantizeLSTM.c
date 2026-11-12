@@ -179,7 +179,7 @@ EMX_NODE_FN void node0_node1(const float input_x[1][1][2], const int8_t input_w[
                     float h_new = o_gate * ref_scalar_f32_tanh(c_new);
                     C_next[b][h] = c_new;
                     H_next[b][h] = h_new;
-                    output_y[step][dir][b][h] = h_new;
+                    output_y[t][dir][b][h] = h_new;
                 }
                 for (int h = 0; h < 16; ++h) {
                     C_prev[b][h] = C_next[b][h];
