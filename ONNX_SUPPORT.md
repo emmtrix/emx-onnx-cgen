@@ -5606,7 +5606,7 @@ Coverage 4313 / 4324 ONNX files (99.7%).
 | test/contrib_ops/quant_gemm_test/GEMM_run113/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMM_run114/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quant_gemm_test/GEMM_run115/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/quant_gemm_test/GEMM_run116/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run116/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/quant_gemm_test/GEMM_run117/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMM_run118/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quant_gemm_test/GEMM_run119/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
@@ -5619,7 +5619,7 @@ Coverage 4313 / 4324 ONNX files (99.7%).
 | test/contrib_ops/quant_gemm_test/GEMM_run125/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMM_run126/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quant_gemm_test/GEMM_run127/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/quant_gemm_test/GEMM_run128/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMM_run128/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quant_gemm_test/GEMM_run129/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMM_run13/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMM_run130/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
@@ -5672,7 +5672,7 @@ Coverage 4313 / 4324 ONNX files (99.7%).
 | test/contrib_ops/quant_gemm_test/GEMM_run173/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMM_run174/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quant_gemm_test/GEMM_run175/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/quant_gemm_test/GEMM_run176/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMM_run176/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/quant_gemm_test/GEMM_run177/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMM_run178/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quant_gemm_test/GEMM_run179/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
@@ -5743,7 +5743,7 @@ Coverage 4313 / 4324 ONNX files (99.7%).
 | test/contrib_ops/quant_gemm_test/GEMM_run65/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMM_run66/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quant_gemm_test/GEMM_run67/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/quant_gemm_test/GEMM_run68/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMM_run68/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/quant_gemm_test/GEMM_run69/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMM_run7/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMM_run70/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
@@ -5756,7 +5756,7 @@ Coverage 4313 / 4324 ONNX files (99.7%).
 | test/contrib_ops/quant_gemm_test/GEMM_run77/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMM_run78/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quant_gemm_test/GEMM_run79/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/quant_gemm_test/GEMM_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMM_run8/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quant_gemm_test/GEMM_run80/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quant_gemm_test/GEMM_run81/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMM_run82/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
@@ -5838,7 +5838,7 @@ Coverage 4313 / 4324 ONNX files (99.7%).
 | test/contrib_ops/quant_gemm_test/GEMV_run15/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run150/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run151/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/quant_gemm_test/GEMV_run152/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run152/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/quant_gemm_test/GEMV_run153/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run154/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run155/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
@@ -5898,7 +5898,7 @@ Coverage 4313 / 4324 ONNX files (99.7%).
 | test/contrib_ops/quant_gemm_test/GEMV_run203/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run204/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run205/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/quant_gemm_test/GEMV_run206/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run206/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run207/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run208/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run209/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
@@ -5911,7 +5911,7 @@ Coverage 4313 / 4324 ONNX files (99.7%).
 | test/contrib_ops/quant_gemm_test/GEMV_run215/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run216/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run217/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/quant_gemm_test/GEMV_run218/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/quant_gemm_test/GEMV_run218/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/quant_gemm_test/GEMV_run219/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run22/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run220/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
@@ -5942,9 +5942,9 @@ Coverage 4313 / 4324 ONNX files (99.7%).
 | test/contrib_ops/quant_gemm_test/GEMV_run243/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run244/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/quant_gemm_test/GEMV_run245/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/quant_gemm_test/GEMV_run246/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run246/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/quant_gemm_test/GEMV_run247/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/quant_gemm_test/GEMV_run248/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run248/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/quant_gemm_test/GEMV_run249/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run25/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run250/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
@@ -5955,21 +5955,21 @@ Coverage 4313 / 4324 ONNX files (99.7%).
 | test/contrib_ops/quant_gemm_test/GEMV_run255/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run256/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/quant_gemm_test/GEMV_run257/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/quant_gemm_test/GEMV_run258/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run258/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/quant_gemm_test/GEMV_run259/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run26/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run260/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/quant_gemm_test/GEMV_run261/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run262/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/quant_gemm_test/GEMV_run263/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/quant_gemm_test/GEMV_run264/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run264/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/quant_gemm_test/GEMV_run265/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/quant_gemm_test/GEMV_run266/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run266/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/quant_gemm_test/GEMV_run267/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run268/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/quant_gemm_test/GEMV_run269/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run27/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/quant_gemm_test/GEMV_run270/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
+| test/contrib_ops/quant_gemm_test/GEMV_run270/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/quant_gemm_test/GEMV_run271/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run272/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/quant_gemm_test/GEMV_run273/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
@@ -5984,9 +5984,9 @@ Coverage 4313 / 4324 ONNX files (99.7%).
 | test/contrib_ops/quant_gemm_test/GEMV_run281/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run282/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
 | test/contrib_ops/quant_gemm_test/GEMV_run283/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/quant_gemm_test/GEMV_run284/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run284/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/quant_gemm_test/GEMV_run285/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
-| test/contrib_ops/quant_gemm_test/GEMV_run286/model.onnx |  | Data/Data | ✅ | OK (max ULP 1) |
+| test/contrib_ops/quant_gemm_test/GEMV_run286/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/quant_gemm_test/GEMV_run287/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run29/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
 | test/contrib_ops/quant_gemm_test/GEMV_run3/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |

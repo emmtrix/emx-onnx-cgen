@@ -50,6 +50,24 @@ def _fold_zero_points(
     return tuple(int(value) for value in folded)
 
 
+def _accumulator_type(graph: Graph, k: int, c_name: str | None) -> str:
+    """int32_t when the accumulator cannot overflow it, int64_t otherwise.
+
+    Each product (a - a_zp) * (b - b_zp) of 8-bit operands is at most 255 * 255 in magnitude, so the
+    sum stays within int32 while k * 255 * 255 plus the largest bias magnitude does. A bias that is
+    not a constant initializer is unbounded and keeps int64. The bound also holds with folded zero
+    points: after p steps the accumulator is bias + sum_{k<p} (a - a_zp) * b - a_zp * sum_{k>=p} b,
+    again k terms of at most 255 * 255 each.
+    """
+    c_bound = 0
+    if c_name is not None:
+        init = _find_initializer(graph, c_name)
+        if init is None:
+            return "int64_t"
+        c_bound = int(np.abs(np.asarray(init.data, dtype=np.int64)).max(initial=0))
+    return "int32_t" if k * 255 * 255 + c_bound <= 2**31 - 1 else "int64_t"
+
+
 @register_lowering("QGemm")
 def lower_qgemm(graph: Graph, node: Node) -> QGemmOp:
     if len(node.inputs) != 9 or len(node.outputs) != 1:
@@ -197,6 +215,7 @@ def lower_qgemm(graph: Graph, node: Node) -> QGemmOp:
         y_zero_shape=y_zero_shape_resolved,
         b_scale_per_column=b_scale_per_column,
         zp_folded=zp_folded,
+        acc_type=_accumulator_type(graph, k_left, input_c_name),
     )
 
     if isinstance(graph, GraphContext):

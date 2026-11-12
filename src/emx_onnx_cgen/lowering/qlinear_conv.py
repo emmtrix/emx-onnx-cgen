@@ -79,6 +79,30 @@ def _fold_zero_points(
     return weight_zero_is_zero, tuple(int(value) for value in folded)
 
 
+def _requant_scale_table(
+    graph: Graph,
+    input_scale_name: str,
+    weight_scale_name: str,
+    output_scale_name: str,
+    out_channels: int,
+) -> tuple[float, ...] | None:
+    """float32 x_scale * w_scale[oc] / y_scale, evaluated like the runtime expression."""
+    inits = [
+        _find_initializer(graph, name)
+        for name in (input_scale_name, weight_scale_name, output_scale_name)
+    ]
+    if any(init is None for init in inits):
+        return None
+    x_scale, w_scale, y_scale = (init.data for init in inits)  # type: ignore[union-attr]
+    if np.float64 in {x_scale.dtype, w_scale.dtype, y_scale.dtype}:
+        return None
+    w_scale = np.broadcast_to(w_scale.astype(np.float32).reshape(-1), (out_channels,))
+    table = (np.float32(x_scale.reshape(-1)[0]) * w_scale) / np.float32(
+        y_scale.reshape(-1)[0]
+    )
+    return tuple(float(value) for value in table.astype(np.float32))
+
+
 @register_lowering("QLinearConv")
 def lower_qlinear_conv(graph: Graph, node: Node) -> QLinearConvOp:
     if len(node.inputs) not in {8, 9} or len(node.outputs) != 1:
@@ -213,6 +237,13 @@ def lower_qlinear_conv(graph: Graph, node: Node) -> QLinearConvOp:
         weight_zero_per_channel=weight_zero_per_channel,
         weight_zero_is_zero=weight_zero_is_zero,
         folded_bias=folded_bias,
+        requant_scale_table=_requant_scale_table(
+            graph,
+            input_scale_name,
+            weight_scale_name,
+            output_scale_name,
+            spec.out_channels,
+        ),
     )
     if isinstance(graph, GraphContext):
         graph.set_shape(
