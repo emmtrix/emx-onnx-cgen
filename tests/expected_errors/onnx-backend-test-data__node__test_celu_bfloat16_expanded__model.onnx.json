@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op Div (while lowering node_index=1, op_type=Div, name=<unnamed>, inputs=[X: tensor[dtype=bfloat16, shape=(5,), dim_params=(None,)], Celu_test_celu_bfloat16_expanded_function_AlphaCast: tensor[dtype=bfloat16, shape=()]], outputs=[Celu_test_celu_bfloat16_expanded_function_XScaled: tensor[dtype=bfloat16, shape=(5,), dim_params=(None,)]])",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_celu_bfloat16_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
@@ -9,5 +9,6 @@
     "Elu",
     "Mul"
   ],
-  "opset_version": 28
+  "opset_version": 28,
+  "generated_checksum": "4c45d6d3ceaa2002eaede6a5d06002bc6c3da7f202faf39eef4f475299af956c"
 }

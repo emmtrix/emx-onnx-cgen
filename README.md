@@ -17,7 +17,7 @@ It now targets **full standard ONNX opset 26 support** based on **ONNX v1.21.0**
 Key characteristics:
 
 - **Static, compile-time known memory layout** for parameters, activations, and temporaries — no allocator is needed to size buffers
-- **Optional allocation-free code generation** via `--large-temp-threshold 0` (by default, temporaries above 1024 bytes use `malloc`/`free` to avoid stack overflows)
+- **Optional allocation-free code generation** via `--large-temp-threshold 0` or, without regenerating, by compiling the generated code with `-DEMX_LARGE_TEMPS_ON_STACK` (by default, temporaries above 1024 bytes use `malloc`/`free` to avoid stack overflows)
 - **Deterministic control flow** (explicit loops, no hidden dispatch or callbacks)
 - **No OS dependencies**, using only standard C headers (for example, `stdint.h` and `stddef.h`)
 - **Single-threaded execution model**
@@ -83,7 +83,7 @@ Typical characteristics:
 
 * No file system or OS required.
 * All weights stored as `static const` arrays in flash/ROM.
-* Deterministic memory usage with no runtime allocation (combine with `--large-temp-threshold 0` so that temporaries stay on the stack and no `malloc`/`free` is emitted).
+* Deterministic memory usage with no runtime allocation (combine with `--large-temp-threshold 0` so that temporaries stay on the stack and no `malloc`/`free` is emitted, or define `EMX_LARGE_TEMPS_ON_STACK` when compiling the generated code).
 * Suitable for:
   * Microcontrollers
   * Safety-critical firmware
@@ -267,7 +267,7 @@ These options are accepted by both `compile` and `verify`:
 - `--verbose` / `-v`: Enable verbose logging (includes codegen timing).
 - `--truncate-weights-after`: Truncate inline weight initializers after `N` values and insert `...` placeholders.
 - `--large-weight-threshold`: Store weights in a binary file once the cumulative byte size exceeds this threshold (default: `102400`; set to `0` to disable).
-- `--large-temp-threshold`: Heap-allocate (via `malloc`/`free`) temporary buffers larger than this byte threshold; smaller buffers stay on the stack (default: `1024`; set to `0` to disable heap allocation and keep all temporaries on the stack). This applies to generated model temporaries and to generated testbench input/output buffers.
+- `--large-temp-threshold`: Move buffers larger than this byte threshold off the stack: model temporaries are heap-allocated (via `malloc`/`free`), sequence temporaries and testbench input/output buffers become `static`; smaller buffers stay on the stack (default: `1024`; set to `0` to keep all buffers on the stack). The generated code keeps the stack variant of every such buffer behind `#ifdef EMX_LARGE_TEMPS_ON_STACK`, so compiling it with `-DEMX_LARGE_TEMPS_ON_STACK` has the same effect as `--large-temp-threshold 0`.
 - `--restrict-arrays` / `--no-restrict-arrays`: Enable or disable `restrict` qualifiers on generated array parameters.
 - `--fp32-accumulation-strategy`: Accumulation strategy for float32 inputs (`simple` uses float32, `fp64` uses double; default: `simple`).
 - `--fp16-accumulation-strategy`: Accumulation strategy for float16 inputs (`simple` uses float16, `fp32` uses float; default: `fp32`).

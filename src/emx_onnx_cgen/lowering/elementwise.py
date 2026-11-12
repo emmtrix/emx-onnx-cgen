@@ -292,8 +292,10 @@ def lower_shrink(graph: Graph, node: Node) -> UnaryOp:
     if len(node.inputs) != 1 or len(node.outputs) != 1:
         raise UnsupportedOpError("Shrink must have 1 input and 1 output")
     dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
-    if not dtype.is_float:
-        raise UnsupportedOpError("Shrink only supports floating-point inputs")
+    if not (dtype.is_float or dtype.is_integer):
+        raise UnsupportedOpError(
+            "Shrink only supports floating-point and integer inputs"
+        )
     bias = float(node.attrs.get("bias", 0.0))
     lambd = float(node.attrs.get("lambd", 0.5))
     return UnaryOp(

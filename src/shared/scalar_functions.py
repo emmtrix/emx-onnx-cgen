@@ -261,7 +261,7 @@ class ScalarFunction(str, Enum):
     SELU = _common_unary_from_f32_spec("selu")
     SGN = _bool_unary_from_f32_spec("sgn", supports_unsigned_int=False)
     SIGMOID = _common_unary_from_f32_spec("sigmoid")
-    SIGN = _bool_unary_from_f32_spec("sign", supports_unsigned_int=False)
+    SIGN = _bool_unary_from_f32_spec("sign")
     SILU = _common_unary_from_f32_spec("silu")
     SIN = _common_unary_from_f32_spec("sin")
     SINC = _common_unary_from_f32_spec("sinc")
@@ -1641,6 +1641,42 @@ _PARAMETERIZED_FLOAT_OPS: Mapping[
 }
 
 
+def _int_shrink(
+    dtype_info: _ScalarTypeInfo,
+    params: tuple[float, ...],
+    function_name: str,
+) -> _GeneratedScalar:
+    """Shrink on an integer tensor: compare and offset in double, truncate back like ONNX."""
+    if params and len(params) != 2:
+        raise ScalarFunctionError("shrink expects 2 parameters: bias, lambd")
+    bias_value = params[0] if params else 0.0
+    lambd_value = params[1] if params else 0.5
+    c_type = dtype_info.c_type
+    lines = [
+        f"static inline {c_type} {function_name}({c_type} a) {{",
+        f"    const double bias = {float(bias_value)!r};",
+        f"    const double lambd = {float(lambd_value)!r};",
+        "    const double value = (double)a;",
+        "    if (value < -lambd) {",
+        f"        return ({c_type})(value + bias);",
+        "    }",
+        "    if (value > lambd) {",
+        f"        return ({c_type})(value - bias);",
+        "    }",
+        "    return 0;",
+        "}",
+    ]
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+
+
+_PARAMETERIZED_INT_OPS: Mapping[
+    ScalarFunction,
+    Callable[[_ScalarTypeInfo, tuple[float, ...], str], _GeneratedScalar],
+] = {
+    ScalarFunction.SHRINK: _int_shrink,
+}
+
+
 def _float_from_ops(dtype_info: _ScalarTypeInfo, name: str) -> _GeneratedScalar:
     canonical_name = _normalize_op_name(name)
     if canonical_name != name:
@@ -1811,6 +1847,51 @@ def _int_div(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
         "        return 0;",
         "    }",
         f"    return {expr};",
+        "}",
+    ]
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+
+
+def _shift_out_of_range(dtype_info: _ScalarTypeInfo) -> str:
+    # ONNX BitShift-28 defines shifts by a negative amount or by >= bit width; in C they are UB.
+    if dtype_info.is_signed:
+        return f"b < 0 || b >= {dtype_info.bits}"
+    return f"b >= {dtype_info.bits}"
+
+
+def _shift_word_type(dtype_info: _ScalarTypeInfo) -> str:
+    """Unsigned type a shift is evaluated in: no UB on overflow and no int promotion."""
+    return "uint64_t" if dtype_info.bits == 64 else "uint32_t"
+
+
+def _int_left_shift(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
+    c_type = dtype_info.c_type
+    lines = [
+        f"static inline {c_type} {dtype_info.prefix}bitwise_left_shift({c_type} a, {c_type} b) {{",
+        f"    if ({_shift_out_of_range(dtype_info)}) {{",
+        "        return 0;",
+        "    }",
+        f"    return ({c_type})(({_shift_word_type(dtype_info)})a << b);",
+        "}",
+    ]
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+
+
+def _int_right_shift(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
+    c_type = dtype_info.c_type
+    if dtype_info.is_signed:
+        # Arithmetic shift without relying on the implementation-defined >> of negative values.
+        out_of_range = "a < 0 ? -1 : 0"
+        in_range = f"a < 0 ? ({c_type})~(~a >> b) : ({c_type})(a >> b)"
+    else:
+        out_of_range = "0"
+        in_range = f"({c_type})(a >> b)"
+    lines = [
+        f"static inline {c_type} {dtype_info.prefix}bitwise_right_shift({c_type} a, {c_type} b) {{",
+        f"    if ({_shift_out_of_range(dtype_info)}) {{",
+        f"        return {out_of_range};",
+        "    }",
+        f"    return {in_range};",
         "}",
     ]
     return _GeneratedScalar(lines=lines, deps=set(), includes=set())
@@ -2039,8 +2120,8 @@ _INT_OP_DISPATCH: Mapping[str, Callable[[_ScalarTypeInfo], _GeneratedScalar]] = 
     "bitwise_and": _int_binary_op_handler("bitwise_and", "&"),
     "bitwise_or": _int_binary_op_handler("bitwise_or", "|"),
     "bitwise_xor": _int_binary_op_handler("bitwise_xor", "^"),
-    "bitwise_left_shift": _int_binary_op_handler("bitwise_left_shift", "<<"),
-    "bitwise_right_shift": _int_binary_op_handler("bitwise_right_shift", ">>"),
+    "bitwise_left_shift": _int_left_shift,
+    "bitwise_right_shift": _int_right_shift,
     "bitwise_not": lambda dtype_info: _int_unary_op(dtype_info, "bitwise_not", "~a"),
     "div": _int_div,
     "maximum": _int_simple_binary_handler("maximum", "a > b ? a : b"),
@@ -2958,6 +3039,10 @@ def _generate_scalar(key: ScalarFunctionKey) -> _GeneratedScalar:
             generated = _float_from_ops(dtype_info, op_name)
     elif dtype_info.is_bool:
         generated = _bool_from_ops(op_name)
+    elif key.function in _PARAMETERIZED_INT_OPS:
+        generated = _PARAMETERIZED_INT_OPS[key.function](
+            dtype_info, key.params, _function_name_for_key(key)
+        )
     else:
         generated = _int_from_ops(dtype_info, op_name)
     includes = set(generated.includes)

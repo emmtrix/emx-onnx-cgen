@@ -12,7 +12,6 @@ from shared.scalar_types import ScalarType
 
 from .errors import UnsupportedOpError
 
-
 _NP_ERF = getattr(np, "erf", None)
 if _NP_ERF is None:
     _NP_ERF = np.vectorize(math.erf, otypes=[float])
@@ -129,6 +128,7 @@ def _unary_symbols_int(abs_func: str) -> dict:
         ScalarFunction.BITWISE_NOT: "bitwise_not",
         ScalarFunction.POSITIVE: "identity",
         ScalarFunction.NEG: "neg",
+        ScalarFunction.RELU: "relu",
         ScalarFunction.ROUND: "round",
         ScalarFunction.SIGN: "sign",
     }
@@ -140,9 +140,11 @@ UNARY_SYMBOLS_INT16 = UNARY_SYMBOLS_INT32
 UNARY_SYMBOLS_INT8 = UNARY_SYMBOLS_INT32
 
 UNARY_SYMBOLS_UINT = {
+    ScalarFunction.ABS: "abs",
     ScalarFunction.BITWISE_NOT: "bitwise_not",
     ScalarFunction.POSITIVE: "identity",
     ScalarFunction.ROUND: "round",
+    ScalarFunction.SIGN: "sign",
 }
 
 UNARY_SYMBOLS_DOUBLE = {
@@ -228,16 +230,38 @@ COMPARE_SPECS = {
     ScalarFunction.LE: BinaryOpSpec("<=", OperatorKind.INFIX, np.less_equal),
 }
 
+
+def _shift_operands(
+    x: np.ndarray, y: np.ndarray
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """(x, in-range shift amount, in-range mask) with the shift range of BitShift-28."""
+    x, y = np.broadcast_arrays(np.asarray(x), np.asarray(y))
+    amount = y.astype(np.int64)
+    in_range = (amount >= 0) & (amount < x.dtype.itemsize * 8)
+    return x, np.where(in_range, amount, 0).astype(x.dtype), in_range
+
+
+def _onnx_left_shift(x: np.ndarray, y: np.ndarray) -> np.ndarray:
+    x, amount, in_range = _shift_operands(x, y)
+    return np.where(in_range, np.left_shift(x, amount), 0).astype(x.dtype)
+
+
+def _onnx_right_shift(x: np.ndarray, y: np.ndarray) -> np.ndarray:
+    x, amount, in_range = _shift_operands(x, y)
+    sign_fill = (x < 0).astype(x.dtype) * x.dtype.type(-1) if x.dtype.kind == "i" else 0
+    return np.where(in_range, np.right_shift(x, amount), sign_fill).astype(x.dtype)
+
+
 BINARY_SPECS_INT = {
     ScalarFunction.ADD: BinaryOpSpec("+", OperatorKind.INFIX, np.add),
     ScalarFunction.BITWISE_AND: BinaryOpSpec("&", OperatorKind.INFIX, np.bitwise_and),
     ScalarFunction.BITWISE_OR: BinaryOpSpec("|", OperatorKind.INFIX, np.bitwise_or),
     ScalarFunction.BITWISE_XOR: BinaryOpSpec("^", OperatorKind.INFIX, np.bitwise_xor),
     ScalarFunction.BITWISE_LEFT_SHIFT: BinaryOpSpec(
-        "<<", OperatorKind.INFIX, np.left_shift
+        "<<", OperatorKind.INFIX, _onnx_left_shift
     ),
     ScalarFunction.BITWISE_RIGHT_SHIFT: BinaryOpSpec(
-        ">>", OperatorKind.INFIX, np.right_shift
+        ">>", OperatorKind.INFIX, _onnx_right_shift
     ),
     ScalarFunction.DIV: BinaryOpSpec("/", OperatorKind.INFIX, np.floor_divide),
     ScalarFunction.FMOD: BinaryOpSpec("%", OperatorKind.INFIX, np.fmod),
@@ -245,6 +269,11 @@ BINARY_SPECS_INT = {
     ScalarFunction.MAXIMUM: BinaryOpSpec("maximum", OperatorKind.FUNC, np.maximum),
     ScalarFunction.MINIMUM: BinaryOpSpec("minimum", OperatorKind.FUNC, np.minimum),
     ScalarFunction.POW: BinaryOpSpec("pow", OperatorKind.FUNC, np.power),
+    ScalarFunction.PRELU: BinaryOpSpec(
+        "({left} > 0 ? {left} : {right} * {left})",
+        OperatorKind.EXPR,
+        lambda left, right: np.where(left > 0, left, right * left),
+    ),
     ScalarFunction.SUB: BinaryOpSpec("-", OperatorKind.INFIX, np.subtract),
     ScalarFunction.MUL: BinaryOpSpec("*", OperatorKind.INFIX, np.multiply),
 }
@@ -304,6 +333,7 @@ UNARY_SYMBOLS_BY_DTYPE = {
     ScalarType.F64: UNARY_SYMBOLS_DOUBLE,
     ScalarType.F32: UNARY_SYMBOLS_FLOAT,
     ScalarType.F16: UNARY_SYMBOLS_FLOAT,
+    ScalarType.BF16: UNARY_SYMBOLS_FLOAT,
 }
 
 BINARY_SPECS_BY_DTYPE = {
@@ -319,6 +349,7 @@ BINARY_SPECS_BY_DTYPE = {
     ScalarType.F64: BINARY_SPECS_DOUBLE,
     ScalarType.F32: BINARY_SPECS_FLOAT,
     ScalarType.F16: BINARY_SPECS_FLOAT,
+    ScalarType.BF16: BINARY_SPECS_FLOAT,
 }
 
 UNARY_APPLY_FUNCS = {

@@ -64,6 +64,7 @@ from emx_onnx_cgen.lowering import load_lowering_registry
 from emx_onnx_cgen.lowering.registry import get_lowering
 from emx_onnx_cgen.onnx_import import import_onnx
 from emx_onnx_cgen.sequence_shape_hints import parse_sequence_element_shape_hints
+from emx_onnx_cgen.ops import apply_binary_op, binary_op_symbol
 from emx_onnx_cgen.testbench import decode_testbench_array
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -7383,11 +7384,29 @@ def test_lower_depth_space_ops_keep_only_explicit_attrs() -> None:
     space_graph = import_onnx(space_to_depth_model)
     space_op = lower_space_to_depth(space_graph, space_graph.nodes[0])
     assert space_op.blocksize == 2
+    assert space_op.mode == "DCR"
     assert {item.name for item in fields(type(space_op))} == {
         "input0",
         "output",
         "blocksize",
+        "mode",
     }
+
+
+@pytest.mark.parametrize("blocksize", [2, 3])
+@pytest.mark.parametrize("mode", ["DCR", "CRD"])
+def test_space_to_depth_28_modes_match_reference(mode: str, blocksize: int) -> None:
+    if onnx.defs.onnx_opset_version() < 28:
+        pytest.skip("SpaceToDepth mode needs onnx >= 1.23")
+    model = _make_operator_model(
+        op_type="SpaceToDepth",
+        input_shapes=[[2, 3, 2 * blocksize, 3 * blocksize]],
+        output_shape=[2, 3 * blocksize * blocksize, 2, 3],
+        dtype=TensorProto.FLOAT,
+        attrs={"blocksize": blocksize, "mode": mode},
+        opset=28,
+    )
+    _run_reference_testbench_compare(model)
 
 
 def test_lower_convinteger_per_channel_zero_point() -> None:
@@ -10384,3 +10403,163 @@ def test_qmoe_matches_onnxruntime() -> None:
             rtol=1e-3,
             atol=0.05,
         )
+
+
+@pytest.mark.parametrize(
+    "op_type", ["Add", "Sub", "Mul", "Div", "Sqrt", "Exp", "Neg", "Abs", "Floor", "Pow"]
+)
+def test_bfloat16_elementwise_matches_reference(op_type: str) -> None:
+    """bfloat16 elementwise ops, fed and read back through float32 Casts."""
+    binary = op_type in {"Add", "Sub", "Mul", "Div", "Pow"}
+    inputs = ["x", "y"] if binary else ["x"]
+    nodes = [
+        helper.make_node("Cast", [name], [f"{name}_bf16"], to=TensorProto.BFLOAT16)
+        for name in inputs
+    ]
+    nodes.append(
+        helper.make_node(op_type, [f"{name}_bf16" for name in inputs], ["z_bf16"])
+    )
+    nodes.append(helper.make_node("Cast", ["z_bf16"], ["z"], to=TensorProto.FLOAT))
+    shape = [2, 4]
+    graph = helper.make_graph(
+        nodes,
+        "bfloat16_elementwise_graph",
+        [
+            helper.make_tensor_value_info(name, TensorProto.FLOAT, shape)
+            for name in inputs
+        ],
+        [helper.make_tensor_value_info("z", TensorProto.FLOAT, shape)],
+    )
+    model = helper.make_model(graph, opset_imports=[helper.make_opsetid("", 21)])
+    model.ir_version = 10
+    rng = np.random.default_rng(0)
+    feeds = {
+        name: (
+            rng.uniform(0.25, 4.0, size=shape) * rng.choice([-1, 1], size=shape)
+        ).astype(np.float32)
+        for name in inputs
+    }
+    if op_type in {"Sqrt", "Pow"}:
+        feeds["x"] = np.abs(feeds["x"])
+    (expected,) = ReferenceEvaluator(model).run(None, feeds)
+
+    payload = _compile_and_run_testbench(model, testbench_inputs=feeds)
+    output = decode_testbench_array(
+        payload["outputs"]["z"]["data"], np.dtype(np.float32)
+    )
+    np.testing.assert_array_equal(output.reshape(expected.shape), expected)
+
+
+_BITSHIFT_DTYPES = {
+    np.int8: ScalarType.I8,
+    np.int16: ScalarType.I16,
+    np.int32: ScalarType.I32,
+    np.int64: ScalarType.I64,
+    np.uint8: ScalarType.U8,
+    np.uint32: ScalarType.U32,
+    np.uint64: ScalarType.U64,
+}
+
+
+def _bitshift_operands(dtype: type) -> tuple[np.ndarray, np.ndarray]:
+    info = np.iinfo(dtype)
+    bits = info.bits
+    values = [1, 3, info.max, info.min, 0x55]
+    shifts = [0, 1, bits - 1, bits, bits + 3]
+    if info.min < 0:
+        values += [-1, -7, -128]
+        shifts += [-1, -bits, 2]
+    x = np.array([v for v in values for _ in shifts], dtype=dtype)
+    y = np.array([s for _ in values for s in shifts], dtype=dtype)
+    return x, y
+
+
+@pytest.mark.parametrize("direction", ["LEFT", "RIGHT"])
+@pytest.mark.parametrize("dtype", _BITSHIFT_DTYPES, ids=lambda d: np.dtype(d).name)
+def test_bitshift_28_out_of_range_shifts_match_reference(
+    dtype: type, direction: str
+) -> None:
+    """Negative shifts and shifts >= bit width are defined by BitShift-28 but UB in C."""
+    if onnx.defs.onnx_opset_version() < 28:
+        pytest.skip("BitShift-28 needs onnx >= 1.23")
+    x, y = _bitshift_operands(dtype)
+    elem_type = helper.np_dtype_to_tensor_dtype(np.dtype(dtype))
+    graph = helper.make_graph(
+        [helper.make_node("BitShift", ["x", "y"], ["z"], direction=direction)],
+        "bitshift_graph",
+        [
+            helper.make_tensor_value_info("x", elem_type, list(x.shape)),
+            helper.make_tensor_value_info("y", elem_type, list(y.shape)),
+        ],
+        [helper.make_tensor_value_info("z", elem_type, list(x.shape))],
+    )
+    model = helper.make_model(graph, opset_imports=[helper.make_opsetid("", 28)])
+    model.ir_version = 11
+    (expected,) = ReferenceEvaluator(model).run(None, {"x": x, "y": y})
+
+    function = (
+        ScalarFunction.BITWISE_LEFT_SHIFT
+        if direction == "LEFT"
+        else ScalarFunction.BITWISE_RIGHT_SHIFT
+    )
+    op_spec = binary_op_symbol(function, dtype=_BITSHIFT_DTYPES[dtype])
+    assert op_spec is not None
+    np.testing.assert_array_equal(apply_binary_op(op_spec, x, y), expected)
+
+    payload = _compile_and_run_testbench(model, testbench_inputs={"x": x, "y": y})
+    output = decode_testbench_array(payload["outputs"]["z"]["data"], np.dtype(dtype))
+    np.testing.assert_array_equal(output.reshape(expected.shape), expected)
+
+
+_INT_ELEMENTWISE_GAP_CASES = [
+    *(
+        (op, dtype)
+        for op in ("Abs", "Sign")
+        for dtype in ("uint8", "uint16", "uint32", "uint64")
+    ),
+    *(("Relu", dtype) for dtype in ("int8", "int16", "int32", "int64")),
+    *(("PRelu", dtype) for dtype in ("int32", "int64", "uint32", "uint64")),
+    *(
+        ("Shrink", dtype)
+        for dtype in (
+            "int8",
+            "int16",
+            "int32",
+            "int64",
+            "uint8",
+            "uint16",
+            "uint32",
+            "uint64",
+        )
+    ),
+]
+
+
+@pytest.mark.parametrize(("op_type", "dtype_name"), _INT_ELEMENTWISE_GAP_CASES)
+def test_integer_elementwise_matches_reference(op_type: str, dtype_name: str) -> None:
+    dtype = np.dtype(dtype_name)
+    elem_type = helper.np_dtype_to_tensor_dtype(dtype)
+    rng = np.random.default_rng(0)
+    low = 0 if dtype.kind == "u" else -9
+    x = rng.integers(low, 10, size=[3, 4]).astype(dtype)
+    feeds = {"x": x}
+    inputs = [helper.make_tensor_value_info("x", elem_type, [3, 4])]
+    attrs: dict[str, object] = {}
+    if op_type == "PRelu":
+        feeds["slope"] = rng.integers(0, 4, size=[4]).astype(dtype)
+        inputs.append(helper.make_tensor_value_info("slope", elem_type, [4]))
+    if op_type == "Shrink":
+        attrs = {"bias": 1.5, "lambd": 2.0}
+    graph = helper.make_graph(
+        [helper.make_node(op_type, list(feeds), ["y"], **attrs)],
+        "integer_elementwise_graph",
+        inputs,
+        [helper.make_tensor_value_info("y", elem_type, [3, 4])],
+    )
+    model = helper.make_model(graph, opset_imports=[helper.make_opsetid("", 21)])
+    model.ir_version = 10
+    (expected,) = ReferenceEvaluator(model).run(None, feeds)
+
+    payload = _compile_and_run_testbench(model, testbench_inputs=feeds)
+    output = decode_testbench_array(payload["outputs"]["y"]["data"], dtype)
+    np.testing.assert_array_equal(output.reshape(expected.shape), expected)

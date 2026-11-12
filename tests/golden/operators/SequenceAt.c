@@ -139,7 +139,11 @@ _Bool model_load(const char *path) {
 }
 
 void model(const double X[restrict 2][3][4], double out[restrict 3][4]) {
+#ifdef EMX_LARGE_TEMPS_ON_STACK
+    double tmp0_seq_1[EMX_SEQUENCE_MAX_LEN][3][4];
+#else
     static double tmp0_seq_1[EMX_SEQUENCE_MAX_LEN][3][4];
+#endif
     idx_t tmp0_seq_1__count = 0;
     node0_splittosequence(X, tmp0_seq_1, &tmp0_seq_1__count);
     node1_sequenceat(tmp0_seq_1, tmp0_seq_1__count, weight1_pos_at, out);

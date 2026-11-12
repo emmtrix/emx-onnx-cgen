@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1969 / 2033, 96.9% | 1.23.2 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1979 / 2033, 97.3% | 1.23.2 |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4313 / 4324, 99.7% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 15 / 15, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-backend-test-data`
 
-Coverage 1969 / 2033 ONNX files (96.9%).
+Coverage 1979 / 2033 ONNX files (97.3%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -347,9 +347,9 @@ Coverage 1969 / 2033 ONNX files (96.9%).
 | node/test_bitcast_uint32_to_int32/model.onnx | 26 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_left_int16/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_left_int32/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_bitshift_left_int32_negative_shift/model.onnx | 28 | Data/Data | ❌ | Out of tolerance (max abs diff 4) |
+| node/test_bitshift_left_int32_negative_shift/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_left_int32_overflow/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_bitshift_left_int32_shift_ge_width/model.onnx | 28 | Data/Data | ❌ | Out of tolerance (max abs diff 16) |
+| node/test_bitshift_left_int32_shift_ge_width/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_left_int64/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_left_int8/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_left_int8_negative_shift/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
@@ -362,8 +362,8 @@ Coverage 1969 / 2033 ONNX files (96.9%).
 | node/test_bitshift_right_int16/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_right_int32/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_right_int32_negative_input/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_bitshift_right_int32_negative_shift/model.onnx | 28 | Data/Data | ❌ | Out of tolerance (max abs diff 4) |
-| node/test_bitshift_right_int32_shift_ge_width/model.onnx | 28 | Data/Data | ❌ | Out of tolerance (max abs diff 7) |
+| node/test_bitshift_right_int32_negative_shift/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_bitshift_right_int32_shift_ge_width/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_right_int64/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_right_int8/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_bitshift_right_int8_negative_input/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
@@ -594,7 +594,7 @@ Coverage 1969 / 2033 ONNX files (96.9%).
 | node/test_ceil_example/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_celu/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_celu_bfloat16/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_celu_bfloat16_expanded/model.onnx | 28 | Data/Data | ❌ | Unsupported op Div (while lowering node_index=1, op_type=Div, name=&lt;unnamed&gt;, inputs=[X: tensor[dtype=bfloat16, shape=(5,), dim_params=(None,)], Celu_test_celu_bfloat16_expanded_function_AlphaCast: tensor[dtype=bfloat16, shape=()]], outputs=[Celu_test_celu_bfloat16_expanded_function_XScaled: tensor[dtype=bfloat16, shape=(5,), dim_params=(None,)]]) |
+| node/test_celu_bfloat16_expanded/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_celu_expanded/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_celu_float16/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_celu_float16_expanded/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |
@@ -903,9 +903,9 @@ Coverage 1969 / 2033 ONNX files (96.9%).
 | node/test_group_normalization_example/model.onnx | 21 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_group_normalization_example_expanded/model.onnx | 21 | Data/Data | ✅ | OK (max ULP 1) |
 | node/test_gru_batchwise/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_gru_bidirectional/model.onnx | 22 | Data/Data | ❌ | Unsupported GRU direction b'bidirectional' (while lowering node_index=0, op_type=GRU, name=&lt;unnamed&gt;, inputs=[X: tensor[dtype=float, shape=(3, 1, 2), dim_params=(None, None, None)], W: tensor[dtype=float, shape=(2, 15, 2), dim_params=(None, None, None)], R: tensor[dtype=float, shape=(2, 15, 5), dim_params=(None, None, None)]], outputs=[Y: tensor[dtype=float, shape=(3, 2, 1, 5), dim_params=(None, None, None, None)], Y_h: tensor[dtype=float, shape=(2, 1, 5), dim_params=(None, None, None)]]) |
+| node/test_gru_bidirectional/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_gru_defaults/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_gru_reverse/model.onnx | 22 | Data/Data | ❌ | Unsupported GRU direction b'reverse' (while lowering node_index=0, op_type=GRU, name=&lt;unnamed&gt;, inputs=[X: tensor[dtype=float, shape=(3, 1, 2), dim_params=(None, None, None)], W: tensor[dtype=float, shape=(1, 15, 2), dim_params=(None, None, None)], R: tensor[dtype=float, shape=(1, 15, 5), dim_params=(None, None, None)]], outputs=[Y: tensor[dtype=float, shape=(3, 1, 1, 5), dim_params=(None, None, None, None)], Y_h: tensor[dtype=float, shape=(1, 1, 5), dim_params=(None, None, None)]]) |
+| node/test_gru_reverse/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_gru_seq_length/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_gru_with_initial_bias/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_hammingwindow/model.onnx | 17 | Data/Data | ✅ | OK (max ULP 0) |
@@ -1715,9 +1715,9 @@ Coverage 1969 / 2033 ONNX files (96.9%).
 | node/test_sigmoid_example/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_sign/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_simple_rnn_batchwise/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_simple_rnn_bidirectional/model.onnx | 22 | Data/Data | ❌ | Unsupported RNN direction b'bidirectional' (while lowering node_index=0, op_type=RNN, name=&lt;unnamed&gt;, inputs=[X: tensor[dtype=float, shape=(3, 1, 2), dim_params=(None, None, None)], W: tensor[dtype=float, shape=(2, 4, 2), dim_params=(None, None, None)], R: tensor[dtype=float, shape=(2, 4, 4), dim_params=(None, None, None)]], outputs=[&lt;omitted&gt;, Y_h: tensor[dtype=float, shape=(2, 1, 4), dim_params=(None, None, None)]]) |
+| node/test_simple_rnn_bidirectional/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_simple_rnn_defaults/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_simple_rnn_reverse/model.onnx | 22 | Data/Data | ❌ | Unsupported RNN direction b'reverse' (while lowering node_index=0, op_type=RNN, name=&lt;unnamed&gt;, inputs=[X: tensor[dtype=float, shape=(3, 1, 2), dim_params=(None, None, None)], W: tensor[dtype=float, shape=(1, 4, 2), dim_params=(None, None, None)], R: tensor[dtype=float, shape=(1, 4, 4), dim_params=(None, None, None)]], outputs=[&lt;omitted&gt;, Y_h: tensor[dtype=float, shape=(1, 1, 4), dim_params=(None, None, None)]]) |
+| node/test_simple_rnn_reverse/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_simple_rnn_with_initial_bias/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_sin/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_sin_example/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
@@ -1763,7 +1763,7 @@ Coverage 1969 / 2033 ONNX files (96.9%).
 | node/test_softsign_example_expanded_ver18/model.onnx | 18 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_softsign_expanded_ver18/model.onnx | 18 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_spacetodepth/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_spacetodepth_crd_mode_example/model.onnx | 28 | Data/Data | ❌ | Out of tolerance (max ULP 16777216) |
+| node/test_spacetodepth_crd_mode_example/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_spacetodepth_crd_mode_example_expanded/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_spacetodepth_dcr_mode_example/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_spacetodepth_dcr_mode_example_expanded/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |

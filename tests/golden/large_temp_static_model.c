@@ -96,11 +96,17 @@ _Bool large_temp_static_model_load(const char *path) {
 }
 
 void large_temp_static_model(const float a[restrict 1][257], const float b[restrict 1][257], float out[restrict 1][257]) {
+#ifdef EMX_LARGE_TEMPS_ON_STACK
+    float tmp0_tmp[1][257];
+#else
     float (*tmp0_tmp)[257] = malloc(sizeof(*tmp0_tmp) * 1);
     if (tmp0_tmp == NULL) {
-            return;
-        }
+        return;
+    }
+#endif
     node0_add(a, b, tmp0_tmp);
     node1_relu(tmp0_tmp, out);
+#ifndef EMX_LARGE_TEMPS_ON_STACK
     free(tmp0_tmp);
+#endif
 }

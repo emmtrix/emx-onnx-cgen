@@ -1,10 +1,10 @@
 {
-  "error": "Out of tolerance (max abs diff 16)",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_bitshift_left_int32_shift_ge_width model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "BitShift"
   ],
   "opset_version": 28,
-  "generated_checksum": "3bd4e4e6116ed73ba6e8378dece10bd15315e40e5dff193d59b738434391227a"
+  "generated_checksum": "8c9d1db5a997e7eb8e1b5f86a66d4e34bd4b0be6bf4e5ba9f354f32a5a5659e5"
 }

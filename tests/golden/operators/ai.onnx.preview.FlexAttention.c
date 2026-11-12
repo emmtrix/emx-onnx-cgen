@@ -739,34 +739,58 @@ void model(const float Q[restrict 2][4][8][16], const float K[restrict 2][4][6][
     int64_t tmp2__flexattn_0_QNumHeads[1];
     int64_t tmp3__flexattn_0_KVNumHeads[1];
     int64_t tmp4__flexattn_0_KVRepeat[1];
+#ifdef EMX_LARGE_TEMPS_ON_STACK
+    float tmp5__flexattn_0_KUnsqueezed[2][4][1][6][16];
+#else
     float (*tmp5__flexattn_0_KUnsqueezed)[4][1][6][16] = malloc(sizeof(*tmp5__flexattn_0_KUnsqueezed) * 2);
     if (tmp5__flexattn_0_KUnsqueezed == NULL) {
-            return;
-        }
+        return;
+    }
+#endif
     int64_t tmp6__flexattn_0_KHeadSize1D[1];
     int64_t tmp7__flexattn_0_KExpandShape[5];
+#ifdef EMX_LARGE_TEMPS_ON_STACK
+    float tmp8__flexattn_0_KExpanded[2][4][1][6][16];
+#else
     float (*tmp8__flexattn_0_KExpanded)[4][1][6][16] = malloc(sizeof(*tmp8__flexattn_0_KExpanded) * 2);
     if (tmp8__flexattn_0_KExpanded == NULL) {
-            return;
-        }
+        return;
+    }
+#endif
+#ifdef EMX_LARGE_TEMPS_ON_STACK
+    float tmp9__flexattn_0_KAligned[2][4][6][16];
+#else
     float (*tmp9__flexattn_0_KAligned)[4][6][16] = malloc(sizeof(*tmp9__flexattn_0_KAligned) * 2);
     if (tmp9__flexattn_0_KAligned == NULL) {
-            return;
-        }
+        return;
+    }
+#endif
+#ifdef EMX_LARGE_TEMPS_ON_STACK
+    float tmp10__flexattn_0_VUnsqueezed[2][4][1][6][16];
+#else
     float (*tmp10__flexattn_0_VUnsqueezed)[4][1][6][16] = malloc(sizeof(*tmp10__flexattn_0_VUnsqueezed) * 2);
     if (tmp10__flexattn_0_VUnsqueezed == NULL) {
-            return;
-        }
+        return;
+    }
+#endif
     int64_t tmp11__flexattn_0_VHeadSize1D[1];
     int64_t tmp12__flexattn_0_VExpandShape[5];
+#ifdef EMX_LARGE_TEMPS_ON_STACK
+    float tmp13__flexattn_0_VExpanded[2][4][1][6][16];
+#else
     float (*tmp13__flexattn_0_VExpanded)[4][1][6][16] = malloc(sizeof(*tmp13__flexattn_0_VExpanded) * 2);
     if (tmp13__flexattn_0_VExpanded == NULL) {
-            return;
-        }
+        return;
+    }
+#endif
+#ifdef EMX_LARGE_TEMPS_ON_STACK
+    float tmp14__flexattn_0_VAligned[2][4][6][16];
+#else
     float (*tmp14__flexattn_0_VAligned)[4][6][16] = malloc(sizeof(*tmp14__flexattn_0_VAligned) * 2);
     if (tmp14__flexattn_0_VAligned == NULL) {
-            return;
-        }
+        return;
+    }
+#endif
     int64_t tmp15__flexattn_0_QShapeAll[4];
     int64_t tmp16__flexattn_0_QKHeadSize[1];
     float tmp17__flexattn_0_QKHeadSizeF[1];
@@ -775,38 +799,70 @@ void model(const float Q[restrict 2][4][8][16], const float K[restrict 2][4][6][
     float tmp20__flexattn_0_ScaleFactorF32[1];
     float tmp21__flexattn_0_ScaleFactorSqrtF32[1];
     float tmp22__flexattn_0_ScaleFactorSqrt[1];
+#ifdef EMX_LARGE_TEMPS_ON_STACK
+    float tmp23__flexattn_0_QScaled[2][4][8][16];
+#else
     float (*tmp23__flexattn_0_QScaled)[4][8][16] = malloc(sizeof(*tmp23__flexattn_0_QScaled) * 2);
     if (tmp23__flexattn_0_QScaled == NULL) {
-            return;
-        }
+        return;
+    }
+#endif
+#ifdef EMX_LARGE_TEMPS_ON_STACK
+    float tmp24__flexattn_0_KScaled[2][4][6][16];
+#else
     float (*tmp24__flexattn_0_KScaled)[4][6][16] = malloc(sizeof(*tmp24__flexattn_0_KScaled) * 2);
     if (tmp24__flexattn_0_KScaled == NULL) {
-            return;
-        }
+        return;
+    }
+#endif
+#ifdef EMX_LARGE_TEMPS_ON_STACK
+    float tmp25__flexattn_0_KTranspose[2][4][16][6];
+#else
     float (*tmp25__flexattn_0_KTranspose)[4][16][6] = malloc(sizeof(*tmp25__flexattn_0_KTranspose) * 2);
     if (tmp25__flexattn_0_KTranspose == NULL) {
-            return;
-        }
+        return;
+    }
+#endif
+#ifdef EMX_LARGE_TEMPS_ON_STACK
+    float tmp26__flexattn_0_Score[2][4][8][6];
+#else
     float (*tmp26__flexattn_0_Score)[4][8][6] = malloc(sizeof(*tmp26__flexattn_0_Score) * 2);
     if (tmp26__flexattn_0_Score == NULL) {
-            return;
-        }
+        return;
+    }
+#endif
+#ifdef EMX_LARGE_TEMPS_ON_STACK
+    float tmp27__flexattn_0_SoftmaxCast[2][4][8][6];
+#else
     float (*tmp27__flexattn_0_SoftmaxCast)[4][8][6] = malloc(sizeof(*tmp27__flexattn_0_SoftmaxCast) * 2);
     if (tmp27__flexattn_0_SoftmaxCast == NULL) {
-            return;
-        }
+        return;
+    }
+#endif
+#ifdef EMX_LARGE_TEMPS_ON_STACK
+    float tmp28__flexattn_0_ScoreAfterScoreMod[2][4][8][6];
+#else
     float (*tmp28__flexattn_0_ScoreAfterScoreMod)[4][8][6] = malloc(sizeof(*tmp28__flexattn_0_ScoreAfterScoreMod) * 2);
     if (tmp28__flexattn_0_ScoreAfterScoreMod == NULL) {
-            return;
-        }
+        return;
+    }
+#endif
+#ifdef EMX_LARGE_TEMPS_ON_STACK
+    float tmp29__flexattn_0_Prob[2][4][8][6];
+#else
     float (*tmp29__flexattn_0_Prob)[4][8][6] = malloc(sizeof(*tmp29__flexattn_0_Prob) * 2);
     if (tmp29__flexattn_0_Prob == NULL) {
-            return;
-        }
+        return;
+    }
+#endif
+#ifdef EMX_LARGE_TEMPS_ON_STACK
+    float tmp30__flexattn_0_ProbAfterProbMod[2][4][8][6];
+#else
     float (*tmp30__flexattn_0_ProbAfterProbMod)[4][8][6] = malloc(sizeof(*tmp30__flexattn_0_ProbAfterProbMod) * 2);
     if (tmp30__flexattn_0_ProbAfterProbMod == NULL) {
-            return;
-        }
+        return;
+    }
+#endif
     node0_shape(Q, tmp0__flexattn_0_BatchSize);
     node1_shape(K, tmp1__flexattn_0_KVSeqLen);
     node2_shape(Q, tmp2__flexattn_0_QNumHeads);
@@ -839,6 +895,7 @@ void model(const float Q[restrict 2][4][8][16], const float K[restrict 2][4][6][
     node29_softmax(tmp28__flexattn_0_ScoreAfterScoreMod, tmp29__flexattn_0_Prob);
     node30_identity(tmp29__flexattn_0_Prob, tmp30__flexattn_0_ProbAfterProbMod);
     node31_matmul(tmp30__flexattn_0_ProbAfterProbMod, tmp14__flexattn_0_VAligned, Y);
+#ifndef EMX_LARGE_TEMPS_ON_STACK
     free(tmp30__flexattn_0_ProbAfterProbMod);
     free(tmp29__flexattn_0_Prob);
     free(tmp28__flexattn_0_ScoreAfterScoreMod);
@@ -853,4 +910,5 @@ void model(const float Q[restrict 2][4][8][16], const float K[restrict 2][4][6][
     free(tmp9__flexattn_0_KAligned);
     free(tmp8__flexattn_0_KExpanded);
     free(tmp5__flexattn_0_KUnsqueezed);
+#endif
 }
