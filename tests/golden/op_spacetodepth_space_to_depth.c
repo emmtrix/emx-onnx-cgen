@@ -58,16 +58,15 @@
  */
 EMX_NODE_FN void node0_spacetodepth(const float input0[1][1][4][4], float output[1][4][2][2]) {
     for (idx_t n = 0; n < 1; ++n) {
-        for (idx_t c_out = 0; c_out < 4; ++c_out) {
-            idx_t c_in = c_out % 1;
-            idx_t temp = c_out / 1;
-            idx_t offset_h = temp / 2;
-            idx_t offset_w = temp % 2;
-            for (idx_t h_out = 0; h_out < 2; ++h_out) {
-                idx_t h_in = h_out * 2 + offset_h;
-                for (idx_t w_out = 0; w_out < 2; ++w_out) {
-                    idx_t w_in = w_out * 2 + offset_w;
-                    output[n][c_out][h_out][w_out] = input0[n][c_in][h_in][w_in];
+        for (idx_t c_in = 0; c_in < 1; ++c_in) {
+            for (idx_t offset_h = 0; offset_h < 2; ++offset_h) {
+                for (idx_t offset_w = 0; offset_w < 2; ++offset_w) {
+                    idx_t c_out = (offset_h * 2 + offset_w) * 1 + c_in;
+                    for (idx_t h_out = 0; h_out < 2; ++h_out) {
+                        for (idx_t w_out = 0; w_out < 2; ++w_out) {
+                            output[n][c_out][h_out][w_out] = input0[n][c_in][h_out * 2 + offset_h][w_out * 2 + offset_w];
+                        }
+                    }
                 }
             }
         }
