@@ -10464,3 +10464,57 @@ def test_bitshift_28_out_of_range_shifts_match_reference(
     payload = _compile_and_run_testbench(model, testbench_inputs={"x": x, "y": y})
     output = decode_testbench_array(payload["outputs"]["z"]["data"], np.dtype(dtype))
     np.testing.assert_array_equal(output.reshape(expected.shape), expected)
+
+
+_INT_ELEMENTWISE_GAP_CASES = [
+    *(
+        (op, dtype)
+        for op in ("Abs", "Sign")
+        for dtype in ("uint8", "uint16", "uint32", "uint64")
+    ),
+    *(("Relu", dtype) for dtype in ("int8", "int16", "int32", "int64")),
+    *(("PRelu", dtype) for dtype in ("int32", "int64", "uint32", "uint64")),
+    *(
+        ("Shrink", dtype)
+        for dtype in (
+            "int8",
+            "int16",
+            "int32",
+            "int64",
+            "uint8",
+            "uint16",
+            "uint32",
+            "uint64",
+        )
+    ),
+]
+
+
+@pytest.mark.parametrize(("op_type", "dtype_name"), _INT_ELEMENTWISE_GAP_CASES)
+def test_integer_elementwise_matches_reference(op_type: str, dtype_name: str) -> None:
+    dtype = np.dtype(dtype_name)
+    elem_type = helper.np_dtype_to_tensor_dtype(dtype)
+    rng = np.random.default_rng(0)
+    low = 0 if dtype.kind == "u" else -9
+    x = rng.integers(low, 10, size=[3, 4]).astype(dtype)
+    feeds = {"x": x}
+    inputs = [helper.make_tensor_value_info("x", elem_type, [3, 4])]
+    attrs: dict[str, object] = {}
+    if op_type == "PRelu":
+        feeds["slope"] = rng.integers(0, 4, size=[4]).astype(dtype)
+        inputs.append(helper.make_tensor_value_info("slope", elem_type, [4]))
+    if op_type == "Shrink":
+        attrs = {"bias": 1.5, "lambd": 2.0}
+    graph = helper.make_graph(
+        [helper.make_node(op_type, list(feeds), ["y"], **attrs)],
+        "integer_elementwise_graph",
+        inputs,
+        [helper.make_tensor_value_info("y", elem_type, [3, 4])],
+    )
+    model = helper.make_model(graph, opset_imports=[helper.make_opsetid("", 21)])
+    model.ir_version = 10
+    (expected,) = ReferenceEvaluator(model).run(None, feeds)
+
+    payload = _compile_and_run_testbench(model, testbench_inputs=feeds)
+    output = decode_testbench_array(payload["outputs"]["y"]["data"], dtype)
+    np.testing.assert_array_equal(output.reshape(expected.shape), expected)

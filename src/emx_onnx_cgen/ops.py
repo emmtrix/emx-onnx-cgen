@@ -128,6 +128,7 @@ def _unary_symbols_int(abs_func: str) -> dict:
         ScalarFunction.BITWISE_NOT: "bitwise_not",
         ScalarFunction.POSITIVE: "identity",
         ScalarFunction.NEG: "neg",
+        ScalarFunction.RELU: "relu",
         ScalarFunction.ROUND: "round",
         ScalarFunction.SIGN: "sign",
     }
@@ -139,9 +140,11 @@ UNARY_SYMBOLS_INT16 = UNARY_SYMBOLS_INT32
 UNARY_SYMBOLS_INT8 = UNARY_SYMBOLS_INT32
 
 UNARY_SYMBOLS_UINT = {
+    ScalarFunction.ABS: "abs",
     ScalarFunction.BITWISE_NOT: "bitwise_not",
     ScalarFunction.POSITIVE: "identity",
     ScalarFunction.ROUND: "round",
+    ScalarFunction.SIGN: "sign",
 }
 
 UNARY_SYMBOLS_DOUBLE = {
@@ -266,6 +269,11 @@ BINARY_SPECS_INT = {
     ScalarFunction.MAXIMUM: BinaryOpSpec("maximum", OperatorKind.FUNC, np.maximum),
     ScalarFunction.MINIMUM: BinaryOpSpec("minimum", OperatorKind.FUNC, np.minimum),
     ScalarFunction.POW: BinaryOpSpec("pow", OperatorKind.FUNC, np.power),
+    ScalarFunction.PRELU: BinaryOpSpec(
+        "({left} > 0 ? {left} : {right} * {left})",
+        OperatorKind.EXPR,
+        lambda left, right: np.where(left > 0, left, right * left),
+    ),
     ScalarFunction.SUB: BinaryOpSpec("-", OperatorKind.INFIX, np.subtract),
     ScalarFunction.MUL: BinaryOpSpec("*", OperatorKind.INFIX, np.multiply),
 }

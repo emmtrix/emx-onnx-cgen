@@ -261,7 +261,7 @@ class ScalarFunction(str, Enum):
     SELU = _common_unary_from_f32_spec("selu")
     SGN = _bool_unary_from_f32_spec("sgn", supports_unsigned_int=False)
     SIGMOID = _common_unary_from_f32_spec("sigmoid")
-    SIGN = _bool_unary_from_f32_spec("sign", supports_unsigned_int=False)
+    SIGN = _bool_unary_from_f32_spec("sign")
     SILU = _common_unary_from_f32_spec("silu")
     SIN = _common_unary_from_f32_spec("sin")
     SINC = _common_unary_from_f32_spec("sinc")
@@ -1641,6 +1641,42 @@ _PARAMETERIZED_FLOAT_OPS: Mapping[
 }
 
 
+def _int_shrink(
+    dtype_info: _ScalarTypeInfo,
+    params: tuple[float, ...],
+    function_name: str,
+) -> _GeneratedScalar:
+    """Shrink on an integer tensor: compare and offset in double, truncate back like ONNX."""
+    if params and len(params) != 2:
+        raise ScalarFunctionError("shrink expects 2 parameters: bias, lambd")
+    bias_value = params[0] if params else 0.0
+    lambd_value = params[1] if params else 0.5
+    c_type = dtype_info.c_type
+    lines = [
+        f"static inline {c_type} {function_name}({c_type} a) {{",
+        f"    const double bias = {float(bias_value)!r};",
+        f"    const double lambd = {float(lambd_value)!r};",
+        "    const double value = (double)a;",
+        "    if (value < -lambd) {",
+        f"        return ({c_type})(value + bias);",
+        "    }",
+        "    if (value > lambd) {",
+        f"        return ({c_type})(value - bias);",
+        "    }",
+        "    return 0;",
+        "}",
+    ]
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+
+
+_PARAMETERIZED_INT_OPS: Mapping[
+    ScalarFunction,
+    Callable[[_ScalarTypeInfo, tuple[float, ...], str], _GeneratedScalar],
+] = {
+    ScalarFunction.SHRINK: _int_shrink,
+}
+
+
 def _float_from_ops(dtype_info: _ScalarTypeInfo, name: str) -> _GeneratedScalar:
     canonical_name = _normalize_op_name(name)
     if canonical_name != name:
@@ -3003,6 +3039,10 @@ def _generate_scalar(key: ScalarFunctionKey) -> _GeneratedScalar:
             generated = _float_from_ops(dtype_info, op_name)
     elif dtype_info.is_bool:
         generated = _bool_from_ops(op_name)
+    elif key.function in _PARAMETERIZED_INT_OPS:
+        generated = _PARAMETERIZED_INT_OPS[key.function](
+            dtype_info, key.params, _function_name_for_key(key)
+        )
     else:
         generated = _int_from_ops(dtype_info, op_name)
     includes = set(generated.includes)
