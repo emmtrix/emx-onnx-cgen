@@ -56,56 +56,26 @@
  * Attrs: n/a
  */
 EMX_NODE_FN void node0_node1(const float input0[2], float y[2], int64_t inverse_indices[2], int64_t counts[2]) {
-    float *input_flat = (float *)input0;
-    float *y_flat = (float *)y;
-    int64_t indices_local[2];
-    int64_t *indices_flat = indices_local;
-    int64_t *inverse_flat = (int64_t *)inverse_indices;
-    int64_t *counts_flat = (int64_t *)counts;
     idx_t unique_count = 0;
+    /* Without an axis ONNX defines Unique on the flattened input. */
+    const float *input_flat = (const float *)input0;
     for (idx_t i = 0; i < 2; ++i) {
         idx_t found = -1;
         for (idx_t u = 0; u < unique_count; ++u) {
-            if (y_flat[u] == input_flat[i]) {
+            if (y[u] == input_flat[i]) {
                 found = u;
                 break;
             }
         }
         if (found >= 0) {
-            inverse_flat[i] = found;
-            counts_flat[found] += 1;
+            inverse_indices[i] = found;
+            counts[found] += 1;
             continue;
         }
-        y_flat[unique_count] = input_flat[i];
-        indices_flat[unique_count] = i;
-        counts_flat[unique_count] = 1;
-        inverse_flat[i] = unique_count;
+        y[unique_count] = input_flat[i];
+        counts[unique_count] = 1;
+        inverse_indices[i] = unique_count;
         unique_count += 1;
-    }
-    if (0 != 0) {
-        for (idx_t i = 0; i < unique_count; ++i) {
-            for (idx_t j = i + 1; j < unique_count; ++j) {
-                if (y_flat[j] < y_flat[i]) {
-                    float y_tmp = y_flat[i];
-                    y_flat[i] = y_flat[j];
-                    y_flat[j] = y_tmp;
-                    int64_t idx_tmp = indices_flat[i];
-                    indices_flat[i] = indices_flat[j];
-                    indices_flat[j] = idx_tmp;
-                    int64_t count_tmp = counts_flat[i];
-                    counts_flat[i] = counts_flat[j];
-                    counts_flat[j] = count_tmp;
-                }
-            }
-        }
-        for (idx_t i = 0; i < 2; ++i) {
-            for (idx_t u = 0; u < unique_count; ++u) {
-                if (y_flat[u] == input_flat[i]) {
-                    inverse_flat[i] = u;
-                    break;
-                }
-            }
-        }
     }
 }
 

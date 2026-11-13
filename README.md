@@ -403,6 +403,14 @@ Caveats:
   graph-wide and stay consistent by construction; the risk is mainly the
   positional form on unnamed (`?`) axes.
 
+**Data-dependent output lengths:** an output whose length depends on the input
+*values* (e.g. the unique count of `Unique`, declared as an unknown axis) is
+emitted as a buffer of the static upper bound plus an `idx_t *<output>__dim_<axis>`
+parameter that receives the actual length at runtime; see
+[docs/output-format.md](docs/output-format.md#data-dependent-tensor-output-lengths).
+This works for graph outputs; a node that consumes such a tensor inside the
+graph is rejected.
+
 ### "Code generation requires explicit ragged-sequence bounds"
 
 A sequence input with variable element shapes needs explicit per-axis maxima.

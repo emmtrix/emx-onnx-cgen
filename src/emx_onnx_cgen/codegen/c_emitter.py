@@ -32,6 +32,7 @@ from ..ir.op_base import (
     OpBase,
     CodegenDim,
     EmitContext,
+    runtime_dim_name,
 )
 from ..ir.op_context import OpContext
 from ..ir.model import SequenceType, TensorType, ValueType
@@ -829,6 +830,32 @@ class CEmitter:
             self._sequence_dim_array_name(name, axis)
             for axis in self._sequence_dynamic_axes(name)
         ]
+
+    @staticmethod
+    def _runtime_index_expr(bounds: Sequence[str], loop_vars: Sequence[str]) -> str:
+        """Row-major linear index of ``loop_vars`` within ``bounds`` (C exprs)."""
+        expr = loop_vars[0]
+        for bound, var in zip(bounds[1:], loop_vars[1:]):
+            expr = f"({expr}) * {bound} + {var}"
+        return expr
+
+    @staticmethod
+    def _runtime_output_dims(ops: Sequence[OpBase]) -> dict[str, tuple[int, ...]]:
+        """Axes per tensor whose valid extent a kernel reports at runtime."""
+        runtime_dims: dict[str, list[int]] = {}
+        for op in ops:
+            for name, axis in op.runtime_output_dims():
+                runtime_dims.setdefault(name, []).append(axis)
+        for op in ops:
+            for name in op.input_names:
+                if name in runtime_dims:
+                    raise CodegenError(
+                        f"{op.kind} consumes '{name}', whose length is only known "
+                        "at runtime. Data-dependent output lengths are supported "
+                        "for graph outputs only. Hint: export the model with a "
+                        "static shape for this tensor."
+                    )
+        return {name: tuple(axes) for name, axes in runtime_dims.items()}
 
     def _derived(self, op: OpBase, key: str) -> object:
         if self._emit_state is None:
@@ -2471,6 +2498,15 @@ class CEmitter:
         sequence_temp_count_names = {
             f"{temp.name}__count" for temp in temp_buffers if temp.is_sequence
         }
+        temp_runtime_dim_names = {
+            runtime_dim_name(name, axis)
+            for name, axes in self._runtime_output_dims(resolved_ops).items()
+            if name not in model.output_names
+            for axis in axes
+        }
+        lines.extend(
+            f"    idx_t {dim_name} = 0;" for dim_name in sorted(temp_runtime_dim_names)
+        )
         for index, op in enumerate(resolved_ops):
             op_name = self._op_function_name(model, index)
             op_args = list(op.call_args())
@@ -2577,6 +2613,9 @@ class CEmitter:
                 for arg_index, arg in enumerate(op_args):
                     if arg in output_count_names and arg in sequence_temp_count_names:
                         op_args[arg_index] = f"&{arg}"
+            op_args = [
+                f"&{arg}" if arg in temp_runtime_dim_names else arg for arg in op_args
+            ]
             args = [*dim_order, *op_args]
             call = ", ".join(args)
             lines.append(f"    {op_name}({call});")
@@ -2598,6 +2637,7 @@ class CEmitter:
         params: list[str] = []
         optional_flags = self._optional_input_flag_map(model)
         output_optional_flags = self._optional_output_flag_map(model)
+        runtime_dims = self._runtime_output_dims(model.ops)
         if dim_order:
             params.extend(self._format_dim_args(dim_order))
         for index, (name, shape, dtype, value_type) in enumerate(
@@ -2663,6 +2703,10 @@ class CEmitter:
             params.append(
                 f"{dtype.c_type} {name}"
                 f"{self._param_array_suffix(shape, output_dim_names.get(index), use_restrict=True, dtype=dtype)}"
+            )
+            params.extend(
+                f"idx_t *{runtime_dim_name(name, axis)}"
+                for axis in runtime_dims.get(name, ())
             )
         return ", ".join(params)
 
@@ -4066,12 +4110,14 @@ class CEmitter:
                     "optional_flag_name": optional_flag,
                     "optional_present": optional_present,
                     "is_sequence": is_sequence_input,
-                    "runtime_dim_reads": tuple(
-                        {"axis": axis, "name": dim_ref.name}
-                        for axis, dim_ref in sorted((dim_names or {}).items())
-                    )
-                    if not is_sequence_input
-                    else (),
+                    "runtime_dim_reads": (
+                        tuple(
+                            {"axis": axis, "name": dim_ref.name}
+                            for axis, dim_ref in sorted((dim_names or {}).items())
+                        )
+                        if not is_sequence_input
+                        else ()
+                    ),
                     "count_name": f"{name}__count",
                     "count_value": loop_shape[0] if is_sequence_input else 1,
                     "declaration": input_declaration,
@@ -4086,6 +4132,7 @@ class CEmitter:
                 }
             )
         outputs = []
+        runtime_dims = self._runtime_output_dims(model.ops)
         for index, (name, shape, dtype, value_type, optional_flag) in enumerate(
             zip(
                 model.output_names,
@@ -4128,6 +4175,12 @@ class CEmitter:
             if is_sequence_output:
                 loop_shape = (32, *loop_shape)
             output_loop_vars = self._loop_vars(loop_shape)
+            runtime_axes = () if is_sequence_output else runtime_dims.get(name, ())
+            # A runtime extent bounds the printed region of a max-sized buffer.
+            loop_bounds = tuple(
+                runtime_dim_name(name, axis) if axis in runtime_axes else str(dim)
+                for axis, dim in enumerate(loop_shape)
+            )
             output_array_suffix = (
                 f"[EMX_SEQUENCE_MAX_LEN]{self._array_suffix(concrete_codegen_shape, dtype)}"
                 if is_sequence_output
@@ -4146,12 +4199,29 @@ class CEmitter:
                     "shape_literal": ",".join(
                         str(dim) for dim in concrete_codegen_shape
                     ),
+                    "shape_format": ",".join(
+                        "%d" if axis in runtime_axes else str(dim)
+                        for axis, dim in enumerate(concrete_codegen_shape)
+                    ),
+                    "shape_args": "".join(
+                        f", (int){runtime_dim_name(name, axis)}"
+                        for axis in runtime_axes
+                    ),
+                    "runtime_dims": tuple(
+                        {"axis": axis, "name": runtime_dim_name(name, axis)}
+                        for axis in runtime_axes
+                    ),
+                    "loop_bounds": loop_bounds,
                     "count": self._element_count(concrete_codegen_shape),
                     "array_suffix": output_array_suffix,
                     "array_index_expr": "".join(f"[{var}]" for var in output_loop_vars),
                     "loop_vars": output_loop_vars,
                     "rank": len(loop_shape),
-                    "index_expr": self._index_expr(loop_shape, output_loop_vars),
+                    "index_expr": (
+                        self._runtime_index_expr(loop_bounds, output_loop_vars)
+                        if runtime_axes
+                        else self._index_expr(loop_shape, output_loop_vars)
+                    ),
                     "dtype": dtype,
                     "is_string": dtype == ScalarType.STRING,
                     "c_type": dtype.c_type,

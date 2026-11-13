@@ -92,6 +92,32 @@ def _value_requires_explicit_shape_concretization(
     return None
 
 
+def _drop_bounded_output_dims(
+    variable_dim_outputs: dict[int, dict[int, str]], lowered: LoweredModel
+) -> dict[int, dict[int, str]]:
+    """Drop output dim params that an op with runtime output dims resolved.
+
+    Such ops (e.g. Unique) size their outputs to a static upper bound and
+    report the data-dependent extent through ``<output>__dim_<axis>``; the
+    declared dim param must not become a caller-supplied VLA extent.
+    """
+    bounded_outputs = {
+        name
+        for op in lowered.ops
+        if op.runtime_output_dims()
+        for name in op.output_names
+    }
+    result: dict[int, dict[int, str]] = {}
+    for index, dims in variable_dim_outputs.items():
+        name = lowered.output_names[index]
+        shape = lowered.output_shapes[index]
+        if name in bounded_outputs:
+            dims = {axis: param for axis, param in dims.items() if shape[axis] < 0}
+        if dims:
+            result[index] = dims
+    return result
+
+
 @dataclass(frozen=True)
 class CompilerOptions:
     template_dir: Path | None = None
@@ -224,7 +250,9 @@ class Compiler:
                 return Compiler._CompileContext(
                     lowered=lowered,
                     variable_dim_inputs=variable_dim_inputs,
-                    variable_dim_outputs=variable_dim_outputs,
+                    variable_dim_outputs=_drop_bounded_output_dims(
+                        variable_dim_outputs, lowered
+                    ),
                 )
             raise UnsupportedOpError(
                 "Code generation requires static shapes. "
@@ -241,7 +269,9 @@ class Compiler:
         return Compiler._CompileContext(
             lowered=lowered,
             variable_dim_inputs=variable_dim_inputs,
-            variable_dim_outputs=variable_dim_outputs,
+            variable_dim_outputs=_drop_bounded_output_dims(
+                variable_dim_outputs, lowered
+            ),
         )
 
     def _ragged_sequence_input_requirement_reason(

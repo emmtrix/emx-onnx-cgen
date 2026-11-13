@@ -20,6 +20,7 @@ from ..op_base import (
     GatherLikeOpBase,
     RenderableOpBase,
     ShapeLikeOpBase,
+    runtime_dim_name,
 )
 from ..op_context import OpContext
 
@@ -4009,6 +4010,9 @@ class UniqueOp(RenderableOpBase):
     counts: str
     axis: int | None
     sorted: bool
+    # Y, indices and counts have a data-dependent length: they are sized to
+    # the input length along the unique axis and the kernel reports the count.
+    bounded_count: bool = False
 
     def infer_types(self, ctx: OpContext) -> None:
         input_dtype = ctx.dtype(self.input0)
@@ -4026,61 +4030,93 @@ class UniqueOp(RenderableOpBase):
                     f"{self.kind} output {name} must be int64, got {output_dtype.onnx_name}"
                 )
 
+    def runtime_output_dims(self) -> tuple[tuple[str, int], ...]:
+        if not self.bounded_count:
+            return ()
+        unique_axis = 0 if self.axis is None else self.axis
+        dims = [(self.y, unique_axis)]
+        if self.indices is not None:
+            dims.append((self.indices, 0))
+        dims.append((self.counts, 0))
+        return tuple(dims)
+
     def infer_shapes(self, ctx: OpContext) -> None:
         input_shape = ctx.shape(self.input0)
-        y_shape = ctx.shape(self.y)
-        indices_shape = ctx.shape(self.indices) if self.indices else None
-        inverse_shape = ctx.shape(self.inverse_indices)
-        counts_shape = ctx.shape(self.counts)
-        if indices_shape is not None and len(indices_shape) != 1:
-            raise ShapeInferenceError(f"{self.kind} indices output must be rank-1")
-        if len(counts_shape) != 1:
-            raise ShapeInferenceError(f"{self.kind} counts output must be rank-1")
         if self.axis is None:
-            if len(y_shape) != 1:
-                raise ShapeInferenceError(f"{self.kind} Y output must be rank-1")
-            if len(inverse_shape) != 1:
+            source_length = _shape_product(input_shape)
+        else:
+            rank = len(input_shape)
+            if self.axis < 0 or self.axis >= rank:
                 raise ShapeInferenceError(
-                    f"{self.kind} inverse_indices output must be rank-1"
+                    f"{self.kind} axis {self.axis} out of range for rank {rank}"
                 )
-            if inverse_shape[0] != _shape_product(input_shape):
+            source_length = input_shape[self.axis]
+        if any(dim < 0 for dim in input_shape):
+            raise ShapeInferenceError(
+                f"{self.kind} needs a static input shape, got {input_shape}. "
+                "Hint: pin dynamic input dimensions with --input-dim."
+            )
+        unique_axis = 0 if self.axis is None else self.axis
+        y_rank = 1 if self.axis is None else len(input_shape)
+        declared = self._declared_unique_lengths(ctx, unique_axis, y_rank)
+        if self.bounded_count:
+            # The unique count is data dependent: size the outputs to the
+            # upper bound, the kernel reports the valid extent at runtime.
+            unique_length = source_length
+        else:
+            unique_length = declared[0]
+        if any(length != unique_length for length in declared):
+            raise ShapeInferenceError(
+                f"{self.kind} Y/indices/counts lengths must match, got {declared}"
+            )
+        if unique_length > source_length:
+            raise ShapeInferenceError(
+                f"{self.kind} unique count {unique_length} exceeds the input "
+                f"length {source_length}"
+            )
+        if self.axis is None:
+            y_shape: tuple[int, ...] = (unique_length,)
+        else:
+            y_shape = (
+                *input_shape[: self.axis],
+                unique_length,
+                *input_shape[self.axis + 1 :],
+            )
+        declared_y_shape = ctx.shape(self.y)
+        for dim_index, (declared_dim, dim) in enumerate(zip(declared_y_shape, y_shape)):
+            if dim_index != unique_axis and declared_dim >= 0 and declared_dim != dim:
                 raise ShapeInferenceError(
-                    f"{self.kind} inverse_indices length must be {_shape_product(input_shape)}, got {inverse_shape[0]}"
+                    f"{self.kind} Y output shape must match input outside axis "
+                    f"{unique_axis}, got {declared_y_shape} for input {input_shape}"
                 )
-            if indices_shape is not None and (
-                y_shape[0] != indices_shape[0] or y_shape[0] != counts_shape[0]
-            ):
-                raise ShapeInferenceError(
-                    f"{self.kind} Y/indices/counts lengths must match, got {y_shape[0]}, {indices_shape[0]}, {counts_shape[0]}"
-                )
-            return None
-        axis = self.axis
-        rank = len(input_shape)
-        if axis < 0 or axis >= rank:
+        inverse_shape = ctx.shape(self.inverse_indices)
+        if len(inverse_shape) != 1 or inverse_shape[0] not in (-1, source_length):
             raise ShapeInferenceError(
-                f"{self.kind} axis {axis} out of range for rank {rank}"
+                f"{self.kind} inverse_indices must have shape ({source_length},), "
+                f"got {inverse_shape}"
             )
-        if len(y_shape) != rank:
+        ctx.set_shape(self.y, y_shape)
+        if self.indices is not None:
+            ctx.set_shape(self.indices, (unique_length,))
+        ctx.set_shape(self.counts, (unique_length,))
+        ctx.set_shape(self.inverse_indices, (source_length,))
+
+    def _declared_unique_lengths(
+        self, ctx: OpContext, unique_axis: int, y_rank: int
+    ) -> tuple[int, ...]:
+        """Static unique-axis lengths declared on Y, indices and counts."""
+        y_shape = ctx.shape(self.y)
+        if len(y_shape) != y_rank:
             raise ShapeInferenceError(
-                f"{self.kind} Y output rank must be {rank}, got {len(y_shape)}"
+                f"{self.kind} Y output rank must be {y_rank}, got {len(y_shape)}"
             )
-        for dim_index, (in_dim, out_dim) in enumerate(zip(input_shape, y_shape)):
-            if dim_index == axis:
-                continue
-            if in_dim != out_dim:
-                raise ShapeInferenceError(
-                    f"{self.kind} Y output shape must match input outside axis {axis}, got {y_shape} for input {input_shape}"
-                )
-        if indices_shape is not None and (
-            indices_shape[0] != y_shape[axis] or counts_shape[0] != y_shape[axis]
-        ):
-            raise ShapeInferenceError(
-                f"{self.kind} indices/counts length must match Y axis {axis} size {y_shape[axis]}"
-            )
-        if len(inverse_shape) != 1 or inverse_shape[0] != input_shape[axis]:
-            raise ShapeInferenceError(
-                f"{self.kind} inverse_indices length must be input axis {axis} size {input_shape[axis]}"
-            )
+        lengths = [y_shape[unique_axis]]
+        for name in filter(None, (self.indices, self.counts)):
+            shape = ctx.shape(name)
+            if len(shape) != 1:
+                raise ShapeInferenceError(f"{self.kind} output {name} must be rank-1")
+            lengths.append(shape[0])
+        return tuple(length for length in lengths if length >= 0)
 
     def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
         state = emitter.require_emit_state()
@@ -4137,14 +4173,22 @@ class UniqueOp(RenderableOpBase):
                 (params["counts"], counts_dtype.c_type, counts_suffix, False),
             ]
         )
-        param_decls = emitter.build_param_decls(param_decl_entries)
-        indices_local_size = CEmitterCompat.element_count_expr(
-            (input_shape[self.axis],) if self.axis is not None else input_shape
+        param_keys = {self.y: "y", self.indices: "indices", self.counts: "counts"}
+        runtime_dims = [
+            runtime_dim_name(params[param_keys[name]], axis)
+            for name, axis in self.runtime_output_dims()
+        ]
+        param_decl_entries.extend(
+            (runtime_dim, "idx_t *", "", False) for runtime_dim in runtime_dims
         )
+        param_decls = emitter.build_param_decls(param_decl_entries)
+        input_shape_exprs = CEmitterCompat.shape_dim_exprs(
+            input_shape, emitter.dim_names_for(self.input0)
+        )
+        slice_vars = [f"d{index}" for index in range(len(input_shape))]
         rendered = (
             state.templates["unique"]
             .render(
-                model_name=model.name,
                 op_name=op_name,
                 params=param_decls,
                 dim_args=dim_args,
@@ -4154,30 +4198,22 @@ class UniqueOp(RenderableOpBase):
                 has_indices_output=self.indices is not None,
                 inverse_indices=params["inverse_indices"],
                 counts=params["counts"],
-                input_shape=CEmitterCompat.shape_dim_exprs(
-                    input_shape, emitter.dim_names_for(self.input0)
-                ),
-                y_shape=CEmitterCompat.shape_dim_exprs(
-                    y_shape, emitter.dim_names_for(self.y)
-                ),
-                input_rank=len(input_shape),
+                input_shape=input_shape_exprs,
+                slice_vars=slice_vars,
+                slice_dims=[
+                    (var, extent)
+                    for index, (var, extent) in enumerate(
+                        zip(slice_vars, input_shape_exprs)
+                    )
+                    if index != self.axis
+                ],
                 axis=-1 if self.axis is None else self.axis,
                 flat_size=CEmitterCompat.element_count_expr(input_shape),
-                axis_dim=(0 if self.axis is None else input_shape[self.axis]),
+                axis_dim=(0 if self.axis is None else input_shape_exprs[self.axis]),
                 y_axis_dim=(y_shape[0] if self.axis is None else y_shape[self.axis]),
-                outer=(
-                    0
-                    if self.axis is None
-                    else CEmitterCompat.element_count_expr(input_shape[: self.axis])
-                ),
-                inner=(
-                    0
-                    if self.axis is None
-                    else CEmitterCompat.element_count_expr(input_shape[self.axis + 1 :])
-                ),
                 sorted_output=1 if self.sorted else 0,
                 input_c_type=input_dtype.c_type,
-                indices_local_size=indices_local_size,
+                runtime_dims=runtime_dims,
             )
             .rstrip()
         )
