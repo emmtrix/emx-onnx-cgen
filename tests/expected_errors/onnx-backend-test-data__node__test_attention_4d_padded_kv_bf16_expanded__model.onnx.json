@@ -1,5 +1,5 @@
 {
-  "error": "Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_padded_kv_bf16_expanded_function_AttnBias' has dynamic dimensions ('unk__0', 'unk__1', 'unk__2', 'unk__3'). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes.",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_attention_4d_padded_kv_bf16_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
@@ -31,5 +31,6 @@
     "Softmax",
     "ReduceMax"
   ],
-  "opset_version": 24
+  "opset_version": 24,
+  "generated_checksum": "7658ebe11a8e2f335da5311c2902a8aac9d960ac1603d6bfc12e0c77683e41b9"
 }
