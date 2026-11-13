@@ -1,10 +1,10 @@
 {
-  "error": "OK (max ULP 3)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_attention_4d_diff_heads_sizes model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "Attention"
   ],
   "opset_version": 23,
-  "generated_checksum": "c913d8d3863924eec60c154b95e68629205749cb7fa338eafebf458fa21c39eb"
+  "generated_checksum": "bd50f88ea4f0a00f445782cb5a7fa3923c7404e9d9944171b484abf82fcc5bb0"
 }

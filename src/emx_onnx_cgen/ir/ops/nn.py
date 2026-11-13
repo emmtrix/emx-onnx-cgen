@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 
+import numpy as np
+
 from shared.scalar_functions import ScalarFunction
 from shared.scalar_types import ScalarType
 
@@ -2543,12 +2545,10 @@ class AttentionOp(RenderableOpBase):
     output_rank: int
     mask_shape: tuple[int, ...] | None
     mask_is_bool: bool
-    mask_rank: int | None
-    mask_broadcast_batch: bool
-    mask_broadcast_heads: bool
-    mask_broadcast_q_seq: bool
-    mask_q_seq: int | None
     mask_kv_seq: int | None
+    left_window_size: int
+    right_window_size: int
+    softmax_dtype: ScalarType
     head_group_size: int
     dtype: ScalarType
 
@@ -2657,6 +2657,17 @@ class AttentionOp(RenderableOpBase):
             else ""
         )
         mask_c_type = "bool" if self.mask_is_bool else c_type
+        # The reference (NumPy) accumulates 16-bit float matmuls in float32
+        # and rounds each product matrix back to T1.
+        acc_dtype = (
+            ScalarType.F32
+            if self.dtype in {ScalarType.F16, ScalarType.BF16}
+            else emitter.accumulation_dtype(self.dtype)
+        )
+        acc_cast = "" if acc_dtype == self.dtype else f"({acc_dtype.c_type})"
+        out_cast = "" if acc_dtype == self.dtype else f"({c_type})"
+        # As in the reference, Q and K are each scaled by sqrt(scale) in T1.
+        sqrt_scale = float(self.dtype.np_dtype.type(np.sqrt(np.float64(self.scale))))
         param_decls = emitter.build_param_decls(
             [
                 (params["input_q"], c_type, input_q_suffix, True),
@@ -2756,7 +2767,7 @@ class AttentionOp(RenderableOpBase):
                 nonpad_c_type=ScalarType.I64.c_type,
                 zero_literal=zero_literal,
                 min_literal=min_literal,
-                scale_literal=emitter.format_floating(self.scale, self.dtype),
+                sqrt_scale_literal=emitter.format_floating(sqrt_scale, self.dtype),
                 softcap_literal=emitter.format_floating(self.softcap, self.dtype),
                 one_literal=emitter.format_literal(self.dtype, 1),
                 dtype=self.dtype,
@@ -2779,14 +2790,25 @@ class AttentionOp(RenderableOpBase):
                 q_hidden_size=self.q_hidden_size,
                 k_hidden_size=self.k_hidden_size,
                 v_hidden_size=self.v_hidden_size,
-                has_attn_mask=int(self.input_attn_mask is not None),
-                mask_rank=self.mask_rank or 0,
                 mask_is_bool=int(self.mask_is_bool),
-                mask_broadcast_batch=int(self.mask_broadcast_batch),
-                mask_broadcast_heads=int(self.mask_broadcast_heads),
-                mask_broadcast_q_seq=int(self.mask_broadcast_q_seq),
-                mask_q_seq=self.mask_q_seq or 0,
+                mask_index=self._mask_index(),
                 mask_kv_seq=self.mask_kv_seq or 0,
+                left_window_size=self.left_window_size,
+                right_window_size=self.right_window_size,
+                softmax_dtype=self.softmax_dtype,
+                acc_type=acc_dtype.c_type,
+                acc_zero_literal=emitter.format_literal(acc_dtype, 0),
+                acc_cast=acc_cast,
+                out_cast=out_cast,
+                softmax_c_type=self.softmax_dtype.c_type,
+                softmax_cast=(
+                    ""
+                    if self.softmax_dtype == self.dtype
+                    else f"({self.softmax_dtype.c_type})"
+                ),
+                probs_cast="" if self.softmax_dtype == self.dtype else f"({c_type})",
+                softmax_zero_literal=self.softmax_dtype.zero_literal,
+                softmax_one_literal=emitter.format_literal(self.softmax_dtype, 1),
                 input_q_suffix=input_q_suffix,
                 input_k_suffix=input_k_suffix,
                 input_v_suffix=input_v_suffix,
@@ -2802,6 +2824,17 @@ class AttentionOp(RenderableOpBase):
             .rstrip()
         )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def _mask_index(self) -> str:
+        """Right-aligned broadcast index of attn_mask into (b, h, qi, ki)."""
+        if self.mask_shape is None:
+            return ""
+        loop_vars = ("b", "h", "qi")[4 - len(self.mask_shape) :]
+        indices = [
+            "0" if dim == 1 else var
+            for dim, var in zip(self.mask_shape[:-1], loop_vars)
+        ]
+        return "".join(f"[{index}]" for index in (*indices, "ki"))
 
     def computed_output_shape(self, emitter: "Emitter") -> tuple[int, ...]:
         if self.output_rank == 3:

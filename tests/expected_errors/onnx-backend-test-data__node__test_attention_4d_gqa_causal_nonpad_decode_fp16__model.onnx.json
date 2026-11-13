@@ -1,10 +1,10 @@
 {
-  "error": "Out of tolerance (max ULP 3155)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_attention_4d_gqa_causal_nonpad_decode_fp16 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "Attention"
   ],
   "opset_version": 24,
-  "generated_checksum": "d1c0e4966f9a76e738afc159255312c9a61869cba0fb6313066bbe57057ce70d"
+  "generated_checksum": "2ce3d175956fccc849adb94b0638935b8fe452660a25a430f8f13235f904df1d"
 }
