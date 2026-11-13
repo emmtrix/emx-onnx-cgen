@@ -13,6 +13,11 @@ from ..errors import ShapeInferenceError, UnsupportedOpError
 from .op_context import OpContext
 
 
+def runtime_dim_name(name: str, axis: int) -> str:
+    """C name of the runtime extent of ``name`` along ``axis`` (``idx_t``)."""
+    return f"{name}__dim_{axis}"
+
+
 class Emitter(Protocol):
     def emit_generic_op(self, op: "OpBase", ctx: "EmitContext") -> str: ...
     def require_emit_state(self): ...
@@ -113,8 +118,24 @@ class OpBase(ABC):
             return value[0]
         return None
 
+    def runtime_output_dims(self) -> tuple[tuple[str, int], ...]:
+        """``(output, axis)`` pairs whose extent the kernel writes at runtime.
+
+        The output buffer is sized to the static upper bound along ``axis``
+        (data-dependent sizes such as the unique count of ``Unique``); the
+        kernel stores the valid extent through ``idx_t *<output>__dim_<axis>``.
+        """
+        return ()
+
     def call_args(self) -> tuple[str, ...]:
-        return self.input_names + self.output_names
+        return (
+            self.input_names
+            + self.output_names
+            + tuple(
+                runtime_dim_name(name, axis)
+                for name, axis in self.runtime_output_dims()
+            )
+        )
 
     def __getattr__(self, name: str) -> str:
         if name == "kind":

@@ -8,9 +8,9 @@
  *   fp16_accumulation_strategy: fp32
  *   large_temp_threshold: 1024
  *   large_weight_threshold: 102400
- * Model checksum (sha256): 000593d2dfbc504c23815d494c65769c41a8a7ed81fef947861b8a63a2b88e27
+ * Model checksum (sha256): 1d1a5f6c3d2170da62f43973e6902be784356b246ed59448ad3155ba13c15201
  * Model name: model
- * Graph name: test_unique_bfloat16_sorted_without_axis
+ * Graph name: test_unique_sorted_without_axis
  * Inputs: 1 Outputs: 4 Nodes: 1 Initializers: 0
  * IR version: 14
  * Model version: n/a
@@ -53,60 +53,57 @@
  * Name: n/a
  * Inputs: X
  * Outputs: Y, indices, inverse_indices, counts
- * Attrs:
- *   sorted: 1
+ * Attrs: n/a
  */
-EMX_NODE_FN void node0_unique(const __bf16 input0[6], __bf16 y[4], int64_t indices[4], int64_t inverse_indices[6], int64_t counts[4]) {
-    __bf16 *input_flat = (__bf16 *)input0;
-    __bf16 *y_flat = (__bf16 *)y;
-    int64_t *indices_flat = (int64_t *)indices;
-    int64_t *inverse_flat = (int64_t *)inverse_indices;
-    int64_t *counts_flat = (int64_t *)counts;
+EMX_NODE_FN void node0_unique(const float input0[6], float y[6], int64_t indices[6], int64_t inverse_indices[6], int64_t counts[6], idx_t * y__dim_0, idx_t * indices__dim_0, idx_t * counts__dim_0) {
     idx_t unique_count = 0;
+    /* Without an axis ONNX defines Unique on the flattened input. */
+    const float *input_flat = (const float *)input0;
     for (idx_t i = 0; i < 6; ++i) {
         idx_t found = -1;
         for (idx_t u = 0; u < unique_count; ++u) {
-            if (y_flat[u] == input_flat[i]) {
+            if (y[u] == input_flat[i]) {
                 found = u;
                 break;
             }
         }
         if (found >= 0) {
-            inverse_flat[i] = found;
-            counts_flat[found] += 1;
+            inverse_indices[i] = found;
+            counts[found] += 1;
             continue;
         }
-        y_flat[unique_count] = input_flat[i];
-        indices_flat[unique_count] = i;
-        counts_flat[unique_count] = 1;
-        inverse_flat[i] = unique_count;
+        y[unique_count] = input_flat[i];
+        indices[unique_count] = i;
+        counts[unique_count] = 1;
+        inverse_indices[i] = unique_count;
         unique_count += 1;
     }
-    if (1 != 0) {
-        for (idx_t i = 0; i < unique_count; ++i) {
-            for (idx_t j = i + 1; j < unique_count; ++j) {
-                if (y_flat[j] < y_flat[i]) {
-                    __bf16 y_tmp = y_flat[i];
-                    y_flat[i] = y_flat[j];
-                    y_flat[j] = y_tmp;
-                    int64_t idx_tmp = indices_flat[i];
-                    indices_flat[i] = indices_flat[j];
-                    indices_flat[j] = idx_tmp;
-                    int64_t count_tmp = counts_flat[i];
-                    counts_flat[i] = counts_flat[j];
-                    counts_flat[j] = count_tmp;
-                }
-            }
-        }
-        for (idx_t i = 0; i < 6; ++i) {
-            for (idx_t u = 0; u < unique_count; ++u) {
-                if (y_flat[u] == input_flat[i]) {
-                    inverse_flat[i] = u;
-                    break;
-                }
+    for (idx_t i = 0; i < unique_count; ++i) {
+        for (idx_t j = i + 1; j < unique_count; ++j) {
+            if (y[j] < y[i]) {
+                float y_tmp = y[i];
+                y[i] = y[j];
+                y[j] = y_tmp;
+                int64_t idx_tmp = indices[i];
+                indices[i] = indices[j];
+                indices[j] = idx_tmp;
+                int64_t count_tmp = counts[i];
+                counts[i] = counts[j];
+                counts[j] = count_tmp;
             }
         }
     }
+    for (idx_t i = 0; i < 6; ++i) {
+        for (idx_t u = 0; u < unique_count; ++u) {
+            if (y[u] == input_flat[i]) {
+                inverse_indices[i] = u;
+                break;
+            }
+        }
+    }
+    *y__dim_0 = unique_count;
+    *indices__dim_0 = unique_count;
+    *counts__dim_0 = unique_count;
 }
 
 _Bool model_load(const char *path) {
@@ -114,6 +111,6 @@ _Bool model_load(const char *path) {
     return 1;
 }
 
-void model(const __bf16 X[restrict 6], __bf16 Y[restrict 4], int64_t indices[restrict 4], int64_t inverse_indices[restrict 6], int64_t counts[restrict 4]) {
-    node0_unique(X, Y, indices, inverse_indices, counts);
+void model(const float X[restrict 6], float Y[restrict 6], idx_t *Y__dim_0, int64_t indices[restrict 6], idx_t *indices__dim_0, int64_t inverse_indices[restrict 6], int64_t counts[restrict 6], idx_t *counts__dim_0) {
+    node0_unique(X, Y, indices, inverse_indices, counts, Y__dim_0, indices__dim_0, counts__dim_0);
 }
