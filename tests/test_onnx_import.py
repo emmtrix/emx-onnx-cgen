@@ -8,7 +8,7 @@ from shared.scalar_types import ScalarType
 
 from emx_onnx_cgen.onnx_import import (
     import_onnx,
-    _fold_constant_of_shape_inputs,
+    _fold_shape_operand_inputs,
     _maybe_infer_shapes,
     prepare_onnx_model,
 )
@@ -510,13 +510,54 @@ def test_fold_constant_of_shape_resolves_computed_shape() -> None:
     model.ir_version = 10
 
     model = _maybe_infer_shapes(model)
-    model, folded = _fold_constant_of_shape_inputs(model)
+    model, folded = _fold_shape_operand_inputs(model)
     assert folded
     model = _maybe_infer_shapes(model)
 
     resolved = {value_info.name: value_info for value_info in model.graph.value_info}
     resolved.update({out.name: out for out in model.graph.output})
     assert _static_shape(resolved["state"]) == (4, 4)
+
+
+def test_prepare_onnx_model_folds_range_and_pad_operands() -> None:
+    # The expanded Attention function builds its causal mask with a Range over
+    # Gather(Concat(Shape...)) and pads its mask bias with Sub(Shape, Shape);
+    # ONNX shape inference leaves both outputs dynamic.
+    q = helper.make_tensor_value_info("q", TensorProto.FLOAT, [4, 8])
+    k = helper.make_tensor_value_info("k", TensorProto.FLOAT, [6, 8])
+    mask = helper.make_tensor_value_info("mask", TensorProto.FLOAT, [4, 4])
+    rows = helper.make_tensor_value_info("rows", TensorProto.INT64, None)
+    padded = helper.make_tensor_value_info("padded", TensorProto.FLOAT, None)
+    initializers = [
+        helper.make_tensor("zero", TensorProto.INT64, [], [0]),
+        helper.make_tensor("one", TensorProto.INT64, [], [1]),
+        helper.make_tensor("zeros3", TensorProto.INT64, [3], [0, 0, 0]),
+    ]
+    nodes = [
+        helper.make_node("Shape", ["q"], ["q_len"], start=0, end=1),
+        helper.make_node("Shape", ["k"], ["k_len"], start=0, end=1),
+        helper.make_node("Concat", ["q_len", "k_len"], ["bias_shape"], axis=0),
+        helper.make_node("Gather", ["bias_shape", "zero"], ["seq_len"]),
+        helper.make_node("Range", ["zero", "seq_len", "one"], ["rows"]),
+        helper.make_node("Shape", ["mask"], ["mask_len"], start=1, end=2),
+        helper.make_node("Sub", ["k_len", "mask_len"], ["pad_len"]),
+        helper.make_node("Concat", ["zeros3", "pad_len"], ["pads"], axis=0),
+        helper.make_node("Pad", ["mask", "pads"], ["padded"]),
+    ]
+    graph = helper.make_graph(
+        nodes, "fold_graph", [q, k, mask], [rows, padded], initializer=initializers
+    )
+    model = helper.make_model(graph, opset_imports=[helper.make_opsetid("", 21)])
+    model.ir_version = 10
+
+    prepared = prepare_onnx_model(model)
+
+    shapes = {
+        value_info.name: _static_shape(value_info)
+        for value_info in (*prepared.graph.value_info, *prepared.graph.output)
+    }
+    assert shapes["rows"] == (4,)
+    assert shapes["padded"] == (4, 6)
 
 
 def _make_scan_model(opset: int) -> onnx.ModelProto:

@@ -8,10 +8,10 @@
  *   fp16_accumulation_strategy: fp32
  *   large_temp_threshold: 1024
  *   large_weight_threshold: 102400
- * Model checksum (sha256): a2c20298e69f2f9a111cdfa5ea5eeb59671b06c1583bcd3db835ba785a2909f5
+ * Model checksum (sha256): 1511557c3a7d8a06b1df8b23920f9cb2ce6dc181790bcfcd0eb32af50f05da4d
  * Model name: model
  * Graph name: test_flexattention
- * Inputs: 3 Outputs: 1 Nodes: 34 Initializers: 3
+ * Inputs: 3 Outputs: 1 Nodes: 30 Initializers: 5
  * IR version: 13
  * Model version: n/a
  * Domain: n/a
@@ -29,7 +29,6 @@
 #include <stdlib.h>
 #include <math.h>
 #include <float.h>
-#include <limits.h>
 #include <string.h>
 
 #ifndef idx_t
@@ -52,49 +51,66 @@
 #define EMX_SEQUENCE_MAX_LEN 32
 #endif
 
-extern const int64_t weight1__flexattn_0_axis2[1];
-extern const int64_t weight2__flexattn_0_idx3head[1];
-extern const float weight3__flexattn_0_onef[1];
+extern const int64_t weight1__flexattn_0_kexpanded_folded_input_1[5];
+extern const int64_t weight2__flexattn_0_vexpanded_folded_input_1[5];
+extern const int64_t weight3__flexattn_0_axis2[1];
+extern const int64_t weight4__flexattn_0_idx3head[1];
+extern const float weight5__flexattn_0_onef[1];
 
 /*
  * Weight 1:
- * Name: weight1__flexattn_0_axis2
- * Shape: (1,)
- * Elements: 1
+ * Name: weight1__flexattn_0_kexpanded_folded_input_1
+ * Shape: (5,)
+ * Elements: 5
  * Dtype: int64
  */
-const EMX_UNUSED int64_t weight1__flexattn_0_axis2[1] = {
-    2LL
+const EMX_UNUSED int64_t weight1__flexattn_0_kexpanded_folded_input_1[5] = {
+    2LL, 4LL, 1LL, 6LL, 16LL
 };
 
 /*
  * Weight 2:
- * Name: weight2__flexattn_0_idx3head
- * Shape: []
- * Elements: 1
+ * Name: weight2__flexattn_0_vexpanded_folded_input_1
+ * Shape: (5,)
+ * Elements: 5
  * Dtype: int64
  */
-const EMX_UNUSED int64_t weight2__flexattn_0_idx3head[1] = {
-    3LL
+const EMX_UNUSED int64_t weight2__flexattn_0_vexpanded_folded_input_1[5] = {
+    2LL, 4LL, 1LL, 6LL, 16LL
 };
 
 /*
  * Weight 3:
- * Name: weight3__flexattn_0_onef
+ * Name: weight3__flexattn_0_axis2
+ * Shape: (1,)
+ * Elements: 1
+ * Dtype: int64
+ */
+const EMX_UNUSED int64_t weight3__flexattn_0_axis2[1] = {
+    2LL
+};
+
+/*
+ * Weight 4:
+ * Name: weight4__flexattn_0_idx3head
+ * Shape: []
+ * Elements: 1
+ * Dtype: int64
+ */
+const EMX_UNUSED int64_t weight4__flexattn_0_idx3head[1] = {
+    3LL
+};
+
+/*
+ * Weight 5:
+ * Name: weight5__flexattn_0_onef
  * Shape: []
  * Elements: 1
  * Dtype: float
  */
-const EMX_UNUSED float weight3__flexattn_0_onef[1] = {
+const EMX_UNUSED float weight5__flexattn_0_onef[1] = {
     0x1.000000p+0f
 };
-
-static inline int64_t ref_scalar_i64_div(int64_t a, int64_t b) {
-    if (b == 0) {
-        return 0;
-    }
-    return a / b;
-}
 
 static inline float ref_scalar_f32_sqrt(float a) {
     return sqrtf(a);
@@ -118,87 +134,13 @@ static inline float ref_scalar_f32_exp(float a) {
 
 /*
  * Node 0:
- * OpType: Shape
- * Name: n/a
- * Inputs: Q
- * Outputs: _flexattn_0_BatchSize
- * Attrs:
- *   end: 1
- *   start: 0
- */
-EMX_NODE_FN void node0_shape(const float input0[2][4][8][16], int64_t output[1]) {
-    (void)input0;
-    output[0] = 2LL;
-}
-
-/*
- * Node 1:
- * OpType: Shape
- * Name: n/a
- * Inputs: K
- * Outputs: _flexattn_0_KVSeqLen
- * Attrs:
- *   end: -1
- *   start: -2
- */
-EMX_NODE_FN void node1_shape(const float input0[2][4][6][16], int64_t output[1]) {
-    (void)input0;
-    output[0] = 6LL;
-}
-
-/*
- * Node 2:
- * OpType: Shape
- * Name: n/a
- * Inputs: Q
- * Outputs: _flexattn_0_QNumHeads
- * Attrs:
- *   end: 2
- *   start: 1
- */
-EMX_NODE_FN void node2_shape(const float input0[2][4][8][16], int64_t output[1]) {
-    (void)input0;
-    output[0] = 4LL;
-}
-
-/*
- * Node 3:
- * OpType: Shape
- * Name: n/a
- * Inputs: K
- * Outputs: _flexattn_0_KVNumHeads
- * Attrs:
- *   end: 2
- *   start: 1
- */
-EMX_NODE_FN void node3_shape(const float input0[2][4][6][16], int64_t output[1]) {
-    (void)input0;
-    output[0] = 4LL;
-}
-
-/*
- * Node 4:
- * OpType: Div
- * Name: n/a
- * Inputs: _flexattn_0_QNumHeads, _flexattn_0_KVNumHeads
- * Outputs: _flexattn_0_KVRepeat
- * Attrs: n/a
- */
-EMX_NODE_FN void node4_div(const int64_t input0[1], const int64_t input1[1], int64_t output[1]) {
-    for (idx_t i0 = 0; i0 < 1; ++i0) {
-        output[i0] = ref_scalar_i64_div(input0[0], input1[0]);
-    }
-}
-
-/*
- * Node 5:
  * OpType: Unsqueeze
  * Name: n/a
  * Inputs: K, _flexattn_0_Axis2
  * Outputs: _flexattn_0_KUnsqueezed
  * Attrs: n/a
  */
-EMX_NODE_FN void node5_unsqueeze(const float input0[2][4][6][16], float output[2][4][1][6][16]) {
+EMX_NODE_FN void node0_unsqueeze(const float input0[2][4][6][16], float output[2][4][1][6][16]) {
     const float *input0_data = (const float *)input0;
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 4; ++i1) {
@@ -207,6 +149,115 @@ EMX_NODE_FN void node5_unsqueeze(const float input0[2][4][6][16], float output[2
                     for (idx_t i4 = 0; i4 < 16; ++i4) {
                         output[i0][i1][i2][i3][i4] = input0_data[((((i0 * 4 + i1) * 1 + i2) * 6 + i3) * 16 + i4)];
                     }
+                }
+            }
+        }
+    }
+}
+
+/*
+ * Node 1:
+ * OpType: Expand
+ * Name: n/a
+ * Inputs: _flexattn_0_KUnsqueezed, _flexattn_0_KExpanded_folded_input_1
+ * Outputs: _flexattn_0_KExpanded
+ * Attrs: n/a
+ */
+EMX_NODE_FN void node1_expand(const float input0[2][4][1][6][16], float output[2][4][1][6][16]) {
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 4; ++i1) {
+            for (idx_t i2 = 0; i2 < 1; ++i2) {
+                for (idx_t i3 = 0; i3 < 6; ++i3) {
+                    for (idx_t i4 = 0; i4 < 16; ++i4) {
+                        output[i0][i1][i2][i3][i4] = input0[i0][i1][0][i3][i4];
+                    }
+                }
+            }
+        }
+    }
+}
+
+/*
+ * Node 2:
+ * OpType: Reshape
+ * Name: n/a
+ * Inputs: _flexattn_0_KExpanded, _flexattn_0_KAlignedShape
+ * Outputs: _flexattn_0_KAligned
+ * Attrs: n/a
+ */
+EMX_NODE_FN void node2_reshape(const float input0[2][4][1][6][16], float output[2][4][6][16]) {
+    const float *input0_data = (const float *)input0;
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 4; ++i1) {
+            for (idx_t i2 = 0; i2 < 6; ++i2) {
+                for (idx_t i3 = 0; i3 < 16; ++i3) {
+                    output[i0][i1][i2][i3] = input0_data[(((i0 * 4 + i1) * 6 + i2) * 16 + i3)];
+                }
+            }
+        }
+    }
+}
+
+/*
+ * Node 3:
+ * OpType: Unsqueeze
+ * Name: n/a
+ * Inputs: V, _flexattn_0_Axis2
+ * Outputs: _flexattn_0_VUnsqueezed
+ * Attrs: n/a
+ */
+EMX_NODE_FN void node3_unsqueeze(const float input0[2][4][6][16], float output[2][4][1][6][16]) {
+    const float *input0_data = (const float *)input0;
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 4; ++i1) {
+            for (idx_t i2 = 0; i2 < 1; ++i2) {
+                for (idx_t i3 = 0; i3 < 6; ++i3) {
+                    for (idx_t i4 = 0; i4 < 16; ++i4) {
+                        output[i0][i1][i2][i3][i4] = input0_data[((((i0 * 4 + i1) * 1 + i2) * 6 + i3) * 16 + i4)];
+                    }
+                }
+            }
+        }
+    }
+}
+
+/*
+ * Node 4:
+ * OpType: Expand
+ * Name: n/a
+ * Inputs: _flexattn_0_VUnsqueezed, _flexattn_0_VExpanded_folded_input_1
+ * Outputs: _flexattn_0_VExpanded
+ * Attrs: n/a
+ */
+EMX_NODE_FN void node4_expand(const float input0[2][4][1][6][16], float output[2][4][1][6][16]) {
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 4; ++i1) {
+            for (idx_t i2 = 0; i2 < 1; ++i2) {
+                for (idx_t i3 = 0; i3 < 6; ++i3) {
+                    for (idx_t i4 = 0; i4 < 16; ++i4) {
+                        output[i0][i1][i2][i3][i4] = input0[i0][i1][0][i3][i4];
+                    }
+                }
+            }
+        }
+    }
+}
+
+/*
+ * Node 5:
+ * OpType: Reshape
+ * Name: n/a
+ * Inputs: _flexattn_0_VExpanded, _flexattn_0_VAlignedShape
+ * Outputs: _flexattn_0_VAligned
+ * Attrs: n/a
+ */
+EMX_NODE_FN void node5_reshape(const float input0[2][4][1][6][16], float output[2][4][6][16]) {
+    const float *input0_data = (const float *)input0;
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 4; ++i1) {
+            for (idx_t i2 = 0; i2 < 6; ++i2) {
+                for (idx_t i3 = 0; i3 < 16; ++i3) {
+                    output[i0][i1][i2][i3] = input0_data[(((i0 * 4 + i1) * 6 + i2) * 16 + i3)];
                 }
             }
         }
@@ -217,204 +268,11 @@ EMX_NODE_FN void node5_unsqueeze(const float input0[2][4][6][16], float output[2
  * Node 6:
  * OpType: Shape
  * Name: n/a
- * Inputs: K
- * Outputs: _flexattn_0_KHeadSize1D
- * Attrs:
- *   end: 4
- *   start: 3
- */
-EMX_NODE_FN void node6_shape(const float input0[2][4][6][16], int64_t output[1]) {
-    (void)input0;
-    output[0] = 16LL;
-}
-
-/*
- * Node 7:
- * OpType: Concat
- * Name: n/a
- * Inputs: _flexattn_0_BatchSize, _flexattn_0_KVNumHeads, _flexattn_0_KVRepeat, _flexattn_0_KVSeqLen, _flexattn_0_KHeadSize1D
- * Outputs: _flexattn_0_KExpandShape
- * Attrs:
- *   axis: 0
- */
-EMX_NODE_FN void node7_concat(const int64_t input_0[1], const int64_t input_1[1], const int64_t input_2[1], const int64_t input_3[1], const int64_t input_4[1], int64_t output[5]) {
-    for (idx_t i0 = 0; i0 < 1; ++i0) {
-        output[i0] = input_0[i0];
-    }
-    for (idx_t i0 = 0; i0 < 1; ++i0) {
-        output[i0 + 1] = input_1[i0];
-    }
-    for (idx_t i0 = 0; i0 < 1; ++i0) {
-        output[i0 + 2] = input_2[i0];
-    }
-    for (idx_t i0 = 0; i0 < 1; ++i0) {
-        output[i0 + 3] = input_3[i0];
-    }
-    for (idx_t i0 = 0; i0 < 1; ++i0) {
-        output[i0 + 4] = input_4[i0];
-    }
-}
-
-/*
- * Node 8:
- * OpType: Expand
- * Name: n/a
- * Inputs: _flexattn_0_KUnsqueezed, _flexattn_0_KExpandShape
- * Outputs: _flexattn_0_KExpanded
- * Attrs: n/a
- */
-EMX_NODE_FN void node8_expand(const float input0[2][4][1][6][16], float output[2][4][1][6][16]) {
-    for (idx_t i0 = 0; i0 < 2; ++i0) {
-        for (idx_t i1 = 0; i1 < 4; ++i1) {
-            for (idx_t i2 = 0; i2 < 1; ++i2) {
-                for (idx_t i3 = 0; i3 < 6; ++i3) {
-                    for (idx_t i4 = 0; i4 < 16; ++i4) {
-                        output[i0][i1][i2][i3][i4] = input0[i0][i1][0][i3][i4];
-                    }
-                }
-            }
-        }
-    }
-}
-
-/*
- * Node 9:
- * OpType: Reshape
- * Name: n/a
- * Inputs: _flexattn_0_KExpanded, _flexattn_0_KAlignedShape
- * Outputs: _flexattn_0_KAligned
- * Attrs: n/a
- */
-EMX_NODE_FN void node9_reshape(const float input0[2][4][1][6][16], float output[2][4][6][16]) {
-    const float *input0_data = (const float *)input0;
-    for (idx_t i0 = 0; i0 < 2; ++i0) {
-        for (idx_t i1 = 0; i1 < 4; ++i1) {
-            for (idx_t i2 = 0; i2 < 6; ++i2) {
-                for (idx_t i3 = 0; i3 < 16; ++i3) {
-                    output[i0][i1][i2][i3] = input0_data[(((i0 * 4 + i1) * 6 + i2) * 16 + i3)];
-                }
-            }
-        }
-    }
-}
-
-/*
- * Node 10:
- * OpType: Unsqueeze
- * Name: n/a
- * Inputs: V, _flexattn_0_Axis2
- * Outputs: _flexattn_0_VUnsqueezed
- * Attrs: n/a
- */
-EMX_NODE_FN void node10_unsqueeze(const float input0[2][4][6][16], float output[2][4][1][6][16]) {
-    const float *input0_data = (const float *)input0;
-    for (idx_t i0 = 0; i0 < 2; ++i0) {
-        for (idx_t i1 = 0; i1 < 4; ++i1) {
-            for (idx_t i2 = 0; i2 < 1; ++i2) {
-                for (idx_t i3 = 0; i3 < 6; ++i3) {
-                    for (idx_t i4 = 0; i4 < 16; ++i4) {
-                        output[i0][i1][i2][i3][i4] = input0_data[((((i0 * 4 + i1) * 1 + i2) * 6 + i3) * 16 + i4)];
-                    }
-                }
-            }
-        }
-    }
-}
-
-/*
- * Node 11:
- * OpType: Shape
- * Name: n/a
- * Inputs: V
- * Outputs: _flexattn_0_VHeadSize1D
- * Attrs:
- *   end: 4
- *   start: 3
- */
-EMX_NODE_FN void node11_shape(const float input0[2][4][6][16], int64_t output[1]) {
-    (void)input0;
-    output[0] = 16LL;
-}
-
-/*
- * Node 12:
- * OpType: Concat
- * Name: n/a
- * Inputs: _flexattn_0_BatchSize, _flexattn_0_KVNumHeads, _flexattn_0_KVRepeat, _flexattn_0_KVSeqLen, _flexattn_0_VHeadSize1D
- * Outputs: _flexattn_0_VExpandShape
- * Attrs:
- *   axis: 0
- */
-EMX_NODE_FN void node12_concat(const int64_t input_0[1], const int64_t input_1[1], const int64_t input_2[1], const int64_t input_3[1], const int64_t input_4[1], int64_t output[5]) {
-    for (idx_t i0 = 0; i0 < 1; ++i0) {
-        output[i0] = input_0[i0];
-    }
-    for (idx_t i0 = 0; i0 < 1; ++i0) {
-        output[i0 + 1] = input_1[i0];
-    }
-    for (idx_t i0 = 0; i0 < 1; ++i0) {
-        output[i0 + 2] = input_2[i0];
-    }
-    for (idx_t i0 = 0; i0 < 1; ++i0) {
-        output[i0 + 3] = input_3[i0];
-    }
-    for (idx_t i0 = 0; i0 < 1; ++i0) {
-        output[i0 + 4] = input_4[i0];
-    }
-}
-
-/*
- * Node 13:
- * OpType: Expand
- * Name: n/a
- * Inputs: _flexattn_0_VUnsqueezed, _flexattn_0_VExpandShape
- * Outputs: _flexattn_0_VExpanded
- * Attrs: n/a
- */
-EMX_NODE_FN void node13_expand(const float input0[2][4][1][6][16], float output[2][4][1][6][16]) {
-    for (idx_t i0 = 0; i0 < 2; ++i0) {
-        for (idx_t i1 = 0; i1 < 4; ++i1) {
-            for (idx_t i2 = 0; i2 < 1; ++i2) {
-                for (idx_t i3 = 0; i3 < 6; ++i3) {
-                    for (idx_t i4 = 0; i4 < 16; ++i4) {
-                        output[i0][i1][i2][i3][i4] = input0[i0][i1][0][i3][i4];
-                    }
-                }
-            }
-        }
-    }
-}
-
-/*
- * Node 14:
- * OpType: Reshape
- * Name: n/a
- * Inputs: _flexattn_0_VExpanded, _flexattn_0_VAlignedShape
- * Outputs: _flexattn_0_VAligned
- * Attrs: n/a
- */
-EMX_NODE_FN void node14_reshape(const float input0[2][4][1][6][16], float output[2][4][6][16]) {
-    const float *input0_data = (const float *)input0;
-    for (idx_t i0 = 0; i0 < 2; ++i0) {
-        for (idx_t i1 = 0; i1 < 4; ++i1) {
-            for (idx_t i2 = 0; i2 < 6; ++i2) {
-                for (idx_t i3 = 0; i3 < 16; ++i3) {
-                    output[i0][i1][i2][i3] = input0_data[(((i0 * 4 + i1) * 6 + i2) * 16 + i3)];
-                }
-            }
-        }
-    }
-}
-
-/*
- * Node 15:
- * OpType: Shape
- * Name: n/a
  * Inputs: Q
  * Outputs: _flexattn_0_QShapeAll
  * Attrs: n/a
  */
-EMX_NODE_FN void node15_shape(const float input0[2][4][8][16], int64_t output[4]) {
+EMX_NODE_FN void node6_shape(const float input0[2][4][8][16], int64_t output[4]) {
     (void)input0;
     output[0] = 2LL;
     output[1] = 4LL;
@@ -423,7 +281,7 @@ EMX_NODE_FN void node15_shape(const float input0[2][4][8][16], int64_t output[4]
 }
 
 /*
- * Node 16:
+ * Node 7:
  * OpType: Gather
  * Name: n/a
  * Inputs: _flexattn_0_QShapeAll, _flexattn_0_Idx3Head
@@ -431,7 +289,7 @@ EMX_NODE_FN void node15_shape(const float input0[2][4][8][16], int64_t output[4]
  * Attrs:
  *   axis: 0
  */
-EMX_NODE_FN void node16_gather(const int64_t data[4], const int64_t indices[1], int64_t output[1]) {
+EMX_NODE_FN void node7_gather(const int64_t data[4], const int64_t indices[1], int64_t output[1]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         idx_t gather_index = indices[0];
         if (gather_index < 0) {
@@ -442,7 +300,7 @@ EMX_NODE_FN void node16_gather(const int64_t data[4], const int64_t indices[1], 
 }
 
 /*
- * Node 17:
+ * Node 8:
  * OpType: Cast
  * Name: n/a
  * Inputs: _flexattn_0_QKHeadSize
@@ -450,70 +308,70 @@ EMX_NODE_FN void node16_gather(const int64_t data[4], const int64_t indices[1], 
  * Attrs:
  *   to: 1
  */
-EMX_NODE_FN void node17_cast(const int64_t input0[1], float output[1]) {
+EMX_NODE_FN void node8_cast(const int64_t input0[1], float output[1]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         output[i0] = (float)input0[i0];
     }
 }
 
 /*
- * Node 18:
+ * Node 9:
  * OpType: Sqrt
  * Name: n/a
  * Inputs: _flexattn_0_QKHeadSizeF
  * Outputs: _flexattn_0_SqrtHeadSize
  * Attrs: n/a
  */
-EMX_NODE_FN void node18_sqrt(const float input0[1], float output[1]) {
+EMX_NODE_FN void node9_sqrt(const float input0[1], float output[1]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         output[i0] = ref_scalar_f32_sqrt(input0[i0]);
     }
 }
 
 /*
- * Node 19:
+ * Node 10:
  * OpType: Div
  * Name: n/a
  * Inputs: _flexattn_0_OneF, _flexattn_0_SqrtHeadSize
  * Outputs: _flexattn_0_CalculatedScale
  * Attrs: n/a
  */
-EMX_NODE_FN void node19_div(const float input0[1], const float input1[1], float output[1]) {
+EMX_NODE_FN void node10_div(const float input0[1], const float input1[1], float output[1]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         output[i0] = ref_scalar_f32_div(input0[0], input1[0]);
     }
 }
 
 /*
- * Node 20:
+ * Node 11:
  * OpType: Identity
  * Name: n/a
  * Inputs: _flexattn_0_CalculatedScale
  * Outputs: _flexattn_0_ScaleFactorF32
  * Attrs: n/a
  */
-EMX_NODE_FN void node20_identity(const float input0[1], float output[1]) {
+EMX_NODE_FN void node11_identity(const float input0[1], float output[1]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         output[i0] = input0[i0];
     }
 }
 
 /*
- * Node 21:
+ * Node 12:
  * OpType: Sqrt
  * Name: n/a
  * Inputs: _flexattn_0_ScaleFactorF32
  * Outputs: _flexattn_0_ScaleFactorSqrtF32
  * Attrs: n/a
  */
-EMX_NODE_FN void node21_sqrt(const float input0[1], float output[1]) {
+EMX_NODE_FN void node12_sqrt(const float input0[1], float output[1]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         output[i0] = ref_scalar_f32_sqrt(input0[i0]);
     }
 }
 
 /*
- * Node 22:
+ * Node 13:
  * OpType: Cast
  * Name: n/a
  * Inputs: _flexattn_0_ScaleFactorSqrtF32
@@ -521,21 +379,21 @@ EMX_NODE_FN void node21_sqrt(const float input0[1], float output[1]) {
  * Attrs:
  *   to: 1
  */
-EMX_NODE_FN void node22_cast(const float input0[1], float output[1]) {
+EMX_NODE_FN void node13_cast(const float input0[1], float output[1]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         output[i0] = (float)input0[i0];
     }
 }
 
 /*
- * Node 23:
+ * Node 14:
  * OpType: Mul
  * Name: n/a
  * Inputs: Q, _flexattn_0_ScaleFactorSqrt
  * Outputs: _flexattn_0_QScaled
  * Attrs: n/a
  */
-EMX_NODE_FN void node23_mul(const float input0[2][4][8][16], const float input1[1], float output[2][4][8][16]) {
+EMX_NODE_FN void node14_mul(const float input0[2][4][8][16], const float input1[1], float output[2][4][8][16]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 4; ++i1) {
             for (idx_t i2 = 0; i2 < 8; ++i2) {
@@ -548,14 +406,14 @@ EMX_NODE_FN void node23_mul(const float input0[2][4][8][16], const float input1[
 }
 
 /*
- * Node 24:
+ * Node 15:
  * OpType: Mul
  * Name: n/a
  * Inputs: _flexattn_0_KAligned, _flexattn_0_ScaleFactorSqrt
  * Outputs: _flexattn_0_KScaled
  * Attrs: n/a
  */
-EMX_NODE_FN void node24_mul(const float input0[2][4][6][16], const float input1[1], float output[2][4][6][16]) {
+EMX_NODE_FN void node15_mul(const float input0[2][4][6][16], const float input1[1], float output[2][4][6][16]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 4; ++i1) {
             for (idx_t i2 = 0; i2 < 6; ++i2) {
@@ -568,7 +426,7 @@ EMX_NODE_FN void node24_mul(const float input0[2][4][6][16], const float input1[
 }
 
 /*
- * Node 25:
+ * Node 16:
  * OpType: Transpose
  * Name: n/a
  * Inputs: _flexattn_0_KScaled
@@ -576,7 +434,7 @@ EMX_NODE_FN void node24_mul(const float input0[2][4][6][16], const float input1[
  * Attrs:
  *   perm: [0, 1, 3, 2]
  */
-EMX_NODE_FN void node25_transpose(const float input0[2][4][6][16], float output[2][4][16][6]) {
+EMX_NODE_FN void node16_transpose(const float input0[2][4][6][16], float output[2][4][16][6]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 4; ++i1) {
             for (idx_t i2 = 0; i2 < 16; ++i2) {
@@ -589,14 +447,14 @@ EMX_NODE_FN void node25_transpose(const float input0[2][4][6][16], float output[
 }
 
 /*
- * Node 26:
+ * Node 17:
  * OpType: MatMul
  * Name: n/a
  * Inputs: _flexattn_0_QScaled, _flexattn_0_KTranspose
  * Outputs: _flexattn_0_Score
  * Attrs: n/a
  */
-EMX_NODE_FN void node26_matmul(const float input0[2][4][8][16], const float input1[2][4][16][6], float output[2][4][8][6]) {
+EMX_NODE_FN void node17_matmul(const float input0[2][4][8][16], const float input1[2][4][16][6], float output[2][4][8][6]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 4; ++i1) {
             for (idx_t i2 = 0; i2 < 8; ++i2) {
@@ -613,7 +471,7 @@ EMX_NODE_FN void node26_matmul(const float input0[2][4][8][16], const float inpu
 }
 
 /*
- * Node 27:
+ * Node 18:
  * OpType: Cast
  * Name: n/a
  * Inputs: _flexattn_0_Score
@@ -621,7 +479,7 @@ EMX_NODE_FN void node26_matmul(const float input0[2][4][8][16], const float inpu
  * Attrs:
  *   to: 1
  */
-EMX_NODE_FN void node27_cast(const float input0[2][4][8][6], float output[2][4][8][6]) {
+EMX_NODE_FN void node18_cast(const float input0[2][4][8][6], float output[2][4][8][6]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 4; ++i1) {
             for (idx_t i2 = 0; i2 < 8; ++i2) {
@@ -634,14 +492,14 @@ EMX_NODE_FN void node27_cast(const float input0[2][4][8][6], float output[2][4][
 }
 
 /*
- * Node 28:
+ * Node 19:
  * OpType: Identity
  * Name: n/a
  * Inputs: _flexattn_0_SoftmaxCast
  * Outputs: _flexattn_0_ScoreAfterScoreMod
  * Attrs: n/a
  */
-EMX_NODE_FN void node28_identity(const float input0[2][4][8][6], float output[2][4][8][6]) {
+EMX_NODE_FN void node19_identity(const float input0[2][4][8][6], float output[2][4][8][6]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 4; ++i1) {
             for (idx_t i2 = 0; i2 < 8; ++i2) {
@@ -654,7 +512,7 @@ EMX_NODE_FN void node28_identity(const float input0[2][4][8][6], float output[2]
 }
 
 /*
- * Node 29:
+ * Node 20:
  * OpType: Softmax
  * Name: n/a
  * Inputs: _flexattn_0_ScoreAfterScoreMod
@@ -662,7 +520,7 @@ EMX_NODE_FN void node28_identity(const float input0[2][4][8][6], float output[2]
  * Attrs:
  *   axis: 3
  */
-EMX_NODE_FN void node29_softmax(const float input0[2][4][8][6], float output[2][4][8][6]) {
+EMX_NODE_FN void node20_softmax(const float input0[2][4][8][6], float output[2][4][8][6]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 4; ++i1) {
             for (idx_t i2 = 0; i2 < 8; ++i2) {
@@ -685,14 +543,14 @@ EMX_NODE_FN void node29_softmax(const float input0[2][4][8][6], float output[2][
 }
 
 /*
- * Node 30:
+ * Node 21:
  * OpType: Identity
  * Name: n/a
  * Inputs: _flexattn_0_Prob
  * Outputs: _flexattn_0_ProbAfterProbMod
  * Attrs: n/a
  */
-EMX_NODE_FN void node30_identity(const float input0[2][4][8][6], float output[2][4][8][6]) {
+EMX_NODE_FN void node21_identity(const float input0[2][4][8][6], float output[2][4][8][6]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 4; ++i1) {
             for (idx_t i2 = 0; i2 < 8; ++i2) {
@@ -705,14 +563,14 @@ EMX_NODE_FN void node30_identity(const float input0[2][4][8][6], float output[2]
 }
 
 /*
- * Node 31:
+ * Node 22:
  * OpType: MatMul
  * Name: n/a
  * Inputs: _flexattn_0_ProbAfterProbMod, _flexattn_0_VAligned
  * Outputs: Y
  * Attrs: n/a
  */
-EMX_NODE_FN void node31_matmul(const float input0[2][4][8][6], const float input1[2][4][6][16], float output[2][4][8][16]) {
+EMX_NODE_FN void node22_matmul(const float input0[2][4][8][6], const float input1[2][4][6][16], float output[2][4][8][16]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 4; ++i1) {
             for (idx_t i2 = 0; i2 < 8; ++i2) {
@@ -734,181 +592,163 @@ _Bool model_load(const char *path) {
 }
 
 void model(const float Q[restrict 2][4][8][16], const float K[restrict 2][4][6][16], const float V[restrict 2][4][6][16], float Y[restrict 2][4][8][16]) {
-    int64_t tmp0__flexattn_0_BatchSize[1];
-    int64_t tmp1__flexattn_0_KVSeqLen[1];
-    int64_t tmp2__flexattn_0_QNumHeads[1];
-    int64_t tmp3__flexattn_0_KVNumHeads[1];
-    int64_t tmp4__flexattn_0_KVRepeat[1];
 #ifdef EMX_LARGE_TEMPS_ON_STACK
-    float tmp5__flexattn_0_KUnsqueezed[2][4][1][6][16];
+    float tmp0__flexattn_0_KUnsqueezed[2][4][1][6][16];
 #else
-    float (*tmp5__flexattn_0_KUnsqueezed)[4][1][6][16] = malloc(sizeof(*tmp5__flexattn_0_KUnsqueezed) * 2);
-    if (tmp5__flexattn_0_KUnsqueezed == NULL) {
-        return;
-    }
-#endif
-    int64_t tmp6__flexattn_0_KHeadSize1D[1];
-    int64_t tmp7__flexattn_0_KExpandShape[5];
-#ifdef EMX_LARGE_TEMPS_ON_STACK
-    float tmp8__flexattn_0_KExpanded[2][4][1][6][16];
-#else
-    float (*tmp8__flexattn_0_KExpanded)[4][1][6][16] = malloc(sizeof(*tmp8__flexattn_0_KExpanded) * 2);
-    if (tmp8__flexattn_0_KExpanded == NULL) {
+    float (*tmp0__flexattn_0_KUnsqueezed)[4][1][6][16] = malloc(sizeof(*tmp0__flexattn_0_KUnsqueezed) * 2);
+    if (tmp0__flexattn_0_KUnsqueezed == NULL) {
         return;
     }
 #endif
 #ifdef EMX_LARGE_TEMPS_ON_STACK
-    float tmp9__flexattn_0_KAligned[2][4][6][16];
+    float tmp1__flexattn_0_KExpanded[2][4][1][6][16];
 #else
-    float (*tmp9__flexattn_0_KAligned)[4][6][16] = malloc(sizeof(*tmp9__flexattn_0_KAligned) * 2);
-    if (tmp9__flexattn_0_KAligned == NULL) {
+    float (*tmp1__flexattn_0_KExpanded)[4][1][6][16] = malloc(sizeof(*tmp1__flexattn_0_KExpanded) * 2);
+    if (tmp1__flexattn_0_KExpanded == NULL) {
         return;
     }
 #endif
 #ifdef EMX_LARGE_TEMPS_ON_STACK
-    float tmp10__flexattn_0_VUnsqueezed[2][4][1][6][16];
+    float tmp2__flexattn_0_KAligned[2][4][6][16];
 #else
-    float (*tmp10__flexattn_0_VUnsqueezed)[4][1][6][16] = malloc(sizeof(*tmp10__flexattn_0_VUnsqueezed) * 2);
-    if (tmp10__flexattn_0_VUnsqueezed == NULL) {
-        return;
-    }
-#endif
-    int64_t tmp11__flexattn_0_VHeadSize1D[1];
-    int64_t tmp12__flexattn_0_VExpandShape[5];
-#ifdef EMX_LARGE_TEMPS_ON_STACK
-    float tmp13__flexattn_0_VExpanded[2][4][1][6][16];
-#else
-    float (*tmp13__flexattn_0_VExpanded)[4][1][6][16] = malloc(sizeof(*tmp13__flexattn_0_VExpanded) * 2);
-    if (tmp13__flexattn_0_VExpanded == NULL) {
+    float (*tmp2__flexattn_0_KAligned)[4][6][16] = malloc(sizeof(*tmp2__flexattn_0_KAligned) * 2);
+    if (tmp2__flexattn_0_KAligned == NULL) {
         return;
     }
 #endif
 #ifdef EMX_LARGE_TEMPS_ON_STACK
-    float tmp14__flexattn_0_VAligned[2][4][6][16];
+    float tmp3__flexattn_0_VUnsqueezed[2][4][1][6][16];
 #else
-    float (*tmp14__flexattn_0_VAligned)[4][6][16] = malloc(sizeof(*tmp14__flexattn_0_VAligned) * 2);
-    if (tmp14__flexattn_0_VAligned == NULL) {
-        return;
-    }
-#endif
-    int64_t tmp15__flexattn_0_QShapeAll[4];
-    int64_t tmp16__flexattn_0_QKHeadSize[1];
-    float tmp17__flexattn_0_QKHeadSizeF[1];
-    float tmp18__flexattn_0_SqrtHeadSize[1];
-    float tmp19__flexattn_0_CalculatedScale[1];
-    float tmp20__flexattn_0_ScaleFactorF32[1];
-    float tmp21__flexattn_0_ScaleFactorSqrtF32[1];
-    float tmp22__flexattn_0_ScaleFactorSqrt[1];
-#ifdef EMX_LARGE_TEMPS_ON_STACK
-    float tmp23__flexattn_0_QScaled[2][4][8][16];
-#else
-    float (*tmp23__flexattn_0_QScaled)[4][8][16] = malloc(sizeof(*tmp23__flexattn_0_QScaled) * 2);
-    if (tmp23__flexattn_0_QScaled == NULL) {
+    float (*tmp3__flexattn_0_VUnsqueezed)[4][1][6][16] = malloc(sizeof(*tmp3__flexattn_0_VUnsqueezed) * 2);
+    if (tmp3__flexattn_0_VUnsqueezed == NULL) {
         return;
     }
 #endif
 #ifdef EMX_LARGE_TEMPS_ON_STACK
-    float tmp24__flexattn_0_KScaled[2][4][6][16];
+    float tmp4__flexattn_0_VExpanded[2][4][1][6][16];
 #else
-    float (*tmp24__flexattn_0_KScaled)[4][6][16] = malloc(sizeof(*tmp24__flexattn_0_KScaled) * 2);
-    if (tmp24__flexattn_0_KScaled == NULL) {
+    float (*tmp4__flexattn_0_VExpanded)[4][1][6][16] = malloc(sizeof(*tmp4__flexattn_0_VExpanded) * 2);
+    if (tmp4__flexattn_0_VExpanded == NULL) {
         return;
     }
 #endif
 #ifdef EMX_LARGE_TEMPS_ON_STACK
-    float tmp25__flexattn_0_KTranspose[2][4][16][6];
+    float tmp5__flexattn_0_VAligned[2][4][6][16];
 #else
-    float (*tmp25__flexattn_0_KTranspose)[4][16][6] = malloc(sizeof(*tmp25__flexattn_0_KTranspose) * 2);
-    if (tmp25__flexattn_0_KTranspose == NULL) {
+    float (*tmp5__flexattn_0_VAligned)[4][6][16] = malloc(sizeof(*tmp5__flexattn_0_VAligned) * 2);
+    if (tmp5__flexattn_0_VAligned == NULL) {
+        return;
+    }
+#endif
+    int64_t tmp6__flexattn_0_QShapeAll[4];
+    int64_t tmp7__flexattn_0_QKHeadSize[1];
+    float tmp8__flexattn_0_QKHeadSizeF[1];
+    float tmp9__flexattn_0_SqrtHeadSize[1];
+    float tmp10__flexattn_0_CalculatedScale[1];
+    float tmp11__flexattn_0_ScaleFactorF32[1];
+    float tmp12__flexattn_0_ScaleFactorSqrtF32[1];
+    float tmp13__flexattn_0_ScaleFactorSqrt[1];
+#ifdef EMX_LARGE_TEMPS_ON_STACK
+    float tmp14__flexattn_0_QScaled[2][4][8][16];
+#else
+    float (*tmp14__flexattn_0_QScaled)[4][8][16] = malloc(sizeof(*tmp14__flexattn_0_QScaled) * 2);
+    if (tmp14__flexattn_0_QScaled == NULL) {
         return;
     }
 #endif
 #ifdef EMX_LARGE_TEMPS_ON_STACK
-    float tmp26__flexattn_0_Score[2][4][8][6];
+    float tmp15__flexattn_0_KScaled[2][4][6][16];
 #else
-    float (*tmp26__flexattn_0_Score)[4][8][6] = malloc(sizeof(*tmp26__flexattn_0_Score) * 2);
-    if (tmp26__flexattn_0_Score == NULL) {
+    float (*tmp15__flexattn_0_KScaled)[4][6][16] = malloc(sizeof(*tmp15__flexattn_0_KScaled) * 2);
+    if (tmp15__flexattn_0_KScaled == NULL) {
         return;
     }
 #endif
 #ifdef EMX_LARGE_TEMPS_ON_STACK
-    float tmp27__flexattn_0_SoftmaxCast[2][4][8][6];
+    float tmp16__flexattn_0_KTranspose[2][4][16][6];
 #else
-    float (*tmp27__flexattn_0_SoftmaxCast)[4][8][6] = malloc(sizeof(*tmp27__flexattn_0_SoftmaxCast) * 2);
-    if (tmp27__flexattn_0_SoftmaxCast == NULL) {
+    float (*tmp16__flexattn_0_KTranspose)[4][16][6] = malloc(sizeof(*tmp16__flexattn_0_KTranspose) * 2);
+    if (tmp16__flexattn_0_KTranspose == NULL) {
         return;
     }
 #endif
 #ifdef EMX_LARGE_TEMPS_ON_STACK
-    float tmp28__flexattn_0_ScoreAfterScoreMod[2][4][8][6];
+    float tmp17__flexattn_0_Score[2][4][8][6];
 #else
-    float (*tmp28__flexattn_0_ScoreAfterScoreMod)[4][8][6] = malloc(sizeof(*tmp28__flexattn_0_ScoreAfterScoreMod) * 2);
-    if (tmp28__flexattn_0_ScoreAfterScoreMod == NULL) {
+    float (*tmp17__flexattn_0_Score)[4][8][6] = malloc(sizeof(*tmp17__flexattn_0_Score) * 2);
+    if (tmp17__flexattn_0_Score == NULL) {
         return;
     }
 #endif
 #ifdef EMX_LARGE_TEMPS_ON_STACK
-    float tmp29__flexattn_0_Prob[2][4][8][6];
+    float tmp18__flexattn_0_SoftmaxCast[2][4][8][6];
 #else
-    float (*tmp29__flexattn_0_Prob)[4][8][6] = malloc(sizeof(*tmp29__flexattn_0_Prob) * 2);
-    if (tmp29__flexattn_0_Prob == NULL) {
+    float (*tmp18__flexattn_0_SoftmaxCast)[4][8][6] = malloc(sizeof(*tmp18__flexattn_0_SoftmaxCast) * 2);
+    if (tmp18__flexattn_0_SoftmaxCast == NULL) {
         return;
     }
 #endif
 #ifdef EMX_LARGE_TEMPS_ON_STACK
-    float tmp30__flexattn_0_ProbAfterProbMod[2][4][8][6];
+    float tmp19__flexattn_0_ScoreAfterScoreMod[2][4][8][6];
 #else
-    float (*tmp30__flexattn_0_ProbAfterProbMod)[4][8][6] = malloc(sizeof(*tmp30__flexattn_0_ProbAfterProbMod) * 2);
-    if (tmp30__flexattn_0_ProbAfterProbMod == NULL) {
+    float (*tmp19__flexattn_0_ScoreAfterScoreMod)[4][8][6] = malloc(sizeof(*tmp19__flexattn_0_ScoreAfterScoreMod) * 2);
+    if (tmp19__flexattn_0_ScoreAfterScoreMod == NULL) {
         return;
     }
 #endif
-    node0_shape(Q, tmp0__flexattn_0_BatchSize);
-    node1_shape(K, tmp1__flexattn_0_KVSeqLen);
-    node2_shape(Q, tmp2__flexattn_0_QNumHeads);
-    node3_shape(K, tmp3__flexattn_0_KVNumHeads);
-    node4_div(tmp2__flexattn_0_QNumHeads, tmp3__flexattn_0_KVNumHeads, tmp4__flexattn_0_KVRepeat);
-    node5_unsqueeze(K, tmp5__flexattn_0_KUnsqueezed);
-    node6_shape(K, tmp6__flexattn_0_KHeadSize1D);
-    node7_concat(tmp0__flexattn_0_BatchSize, tmp3__flexattn_0_KVNumHeads, tmp4__flexattn_0_KVRepeat, tmp1__flexattn_0_KVSeqLen, tmp6__flexattn_0_KHeadSize1D, tmp7__flexattn_0_KExpandShape);
-    node8_expand(tmp5__flexattn_0_KUnsqueezed, tmp8__flexattn_0_KExpanded);
-    node9_reshape(tmp8__flexattn_0_KExpanded, tmp9__flexattn_0_KAligned);
-    node10_unsqueeze(V, tmp10__flexattn_0_VUnsqueezed);
-    node11_shape(V, tmp11__flexattn_0_VHeadSize1D);
-    node12_concat(tmp0__flexattn_0_BatchSize, tmp3__flexattn_0_KVNumHeads, tmp4__flexattn_0_KVRepeat, tmp1__flexattn_0_KVSeqLen, tmp11__flexattn_0_VHeadSize1D, tmp12__flexattn_0_VExpandShape);
-    node13_expand(tmp10__flexattn_0_VUnsqueezed, tmp13__flexattn_0_VExpanded);
-    node14_reshape(tmp13__flexattn_0_VExpanded, tmp14__flexattn_0_VAligned);
-    node15_shape(Q, tmp15__flexattn_0_QShapeAll);
-    node16_gather(tmp15__flexattn_0_QShapeAll, weight2__flexattn_0_idx3head, tmp16__flexattn_0_QKHeadSize);
-    node17_cast(tmp16__flexattn_0_QKHeadSize, tmp17__flexattn_0_QKHeadSizeF);
-    node18_sqrt(tmp17__flexattn_0_QKHeadSizeF, tmp18__flexattn_0_SqrtHeadSize);
-    node19_div(weight3__flexattn_0_onef, tmp18__flexattn_0_SqrtHeadSize, tmp19__flexattn_0_CalculatedScale);
-    node20_identity(tmp19__flexattn_0_CalculatedScale, tmp20__flexattn_0_ScaleFactorF32);
-    node21_sqrt(tmp20__flexattn_0_ScaleFactorF32, tmp21__flexattn_0_ScaleFactorSqrtF32);
-    node22_cast(tmp21__flexattn_0_ScaleFactorSqrtF32, tmp22__flexattn_0_ScaleFactorSqrt);
-    node23_mul(Q, tmp22__flexattn_0_ScaleFactorSqrt, tmp23__flexattn_0_QScaled);
-    node24_mul(tmp9__flexattn_0_KAligned, tmp22__flexattn_0_ScaleFactorSqrt, tmp24__flexattn_0_KScaled);
-    node25_transpose(tmp24__flexattn_0_KScaled, tmp25__flexattn_0_KTranspose);
-    node26_matmul(tmp23__flexattn_0_QScaled, tmp25__flexattn_0_KTranspose, tmp26__flexattn_0_Score);
-    node27_cast(tmp26__flexattn_0_Score, tmp27__flexattn_0_SoftmaxCast);
-    node28_identity(tmp27__flexattn_0_SoftmaxCast, tmp28__flexattn_0_ScoreAfterScoreMod);
-    node29_softmax(tmp28__flexattn_0_ScoreAfterScoreMod, tmp29__flexattn_0_Prob);
-    node30_identity(tmp29__flexattn_0_Prob, tmp30__flexattn_0_ProbAfterProbMod);
-    node31_matmul(tmp30__flexattn_0_ProbAfterProbMod, tmp14__flexattn_0_VAligned, Y);
+#ifdef EMX_LARGE_TEMPS_ON_STACK
+    float tmp20__flexattn_0_Prob[2][4][8][6];
+#else
+    float (*tmp20__flexattn_0_Prob)[4][8][6] = malloc(sizeof(*tmp20__flexattn_0_Prob) * 2);
+    if (tmp20__flexattn_0_Prob == NULL) {
+        return;
+    }
+#endif
+#ifdef EMX_LARGE_TEMPS_ON_STACK
+    float tmp21__flexattn_0_ProbAfterProbMod[2][4][8][6];
+#else
+    float (*tmp21__flexattn_0_ProbAfterProbMod)[4][8][6] = malloc(sizeof(*tmp21__flexattn_0_ProbAfterProbMod) * 2);
+    if (tmp21__flexattn_0_ProbAfterProbMod == NULL) {
+        return;
+    }
+#endif
+    node0_unsqueeze(K, tmp0__flexattn_0_KUnsqueezed);
+    node1_expand(tmp0__flexattn_0_KUnsqueezed, tmp1__flexattn_0_KExpanded);
+    node2_reshape(tmp1__flexattn_0_KExpanded, tmp2__flexattn_0_KAligned);
+    node3_unsqueeze(V, tmp3__flexattn_0_VUnsqueezed);
+    node4_expand(tmp3__flexattn_0_VUnsqueezed, tmp4__flexattn_0_VExpanded);
+    node5_reshape(tmp4__flexattn_0_VExpanded, tmp5__flexattn_0_VAligned);
+    node6_shape(Q, tmp6__flexattn_0_QShapeAll);
+    node7_gather(tmp6__flexattn_0_QShapeAll, weight4__flexattn_0_idx3head, tmp7__flexattn_0_QKHeadSize);
+    node8_cast(tmp7__flexattn_0_QKHeadSize, tmp8__flexattn_0_QKHeadSizeF);
+    node9_sqrt(tmp8__flexattn_0_QKHeadSizeF, tmp9__flexattn_0_SqrtHeadSize);
+    node10_div(weight5__flexattn_0_onef, tmp9__flexattn_0_SqrtHeadSize, tmp10__flexattn_0_CalculatedScale);
+    node11_identity(tmp10__flexattn_0_CalculatedScale, tmp11__flexattn_0_ScaleFactorF32);
+    node12_sqrt(tmp11__flexattn_0_ScaleFactorF32, tmp12__flexattn_0_ScaleFactorSqrtF32);
+    node13_cast(tmp12__flexattn_0_ScaleFactorSqrtF32, tmp13__flexattn_0_ScaleFactorSqrt);
+    node14_mul(Q, tmp13__flexattn_0_ScaleFactorSqrt, tmp14__flexattn_0_QScaled);
+    node15_mul(tmp2__flexattn_0_KAligned, tmp13__flexattn_0_ScaleFactorSqrt, tmp15__flexattn_0_KScaled);
+    node16_transpose(tmp15__flexattn_0_KScaled, tmp16__flexattn_0_KTranspose);
+    node17_matmul(tmp14__flexattn_0_QScaled, tmp16__flexattn_0_KTranspose, tmp17__flexattn_0_Score);
+    node18_cast(tmp17__flexattn_0_Score, tmp18__flexattn_0_SoftmaxCast);
+    node19_identity(tmp18__flexattn_0_SoftmaxCast, tmp19__flexattn_0_ScoreAfterScoreMod);
+    node20_softmax(tmp19__flexattn_0_ScoreAfterScoreMod, tmp20__flexattn_0_Prob);
+    node21_identity(tmp20__flexattn_0_Prob, tmp21__flexattn_0_ProbAfterProbMod);
+    node22_matmul(tmp21__flexattn_0_ProbAfterProbMod, tmp5__flexattn_0_VAligned, Y);
 #ifndef EMX_LARGE_TEMPS_ON_STACK
-    free(tmp30__flexattn_0_ProbAfterProbMod);
-    free(tmp29__flexattn_0_Prob);
-    free(tmp28__flexattn_0_ScoreAfterScoreMod);
-    free(tmp27__flexattn_0_SoftmaxCast);
-    free(tmp26__flexattn_0_Score);
-    free(tmp25__flexattn_0_KTranspose);
-    free(tmp24__flexattn_0_KScaled);
-    free(tmp23__flexattn_0_QScaled);
-    free(tmp14__flexattn_0_VAligned);
-    free(tmp13__flexattn_0_VExpanded);
-    free(tmp10__flexattn_0_VUnsqueezed);
-    free(tmp9__flexattn_0_KAligned);
-    free(tmp8__flexattn_0_KExpanded);
-    free(tmp5__flexattn_0_KUnsqueezed);
+    free(tmp21__flexattn_0_ProbAfterProbMod);
+    free(tmp20__flexattn_0_Prob);
+    free(tmp19__flexattn_0_ScoreAfterScoreMod);
+    free(tmp18__flexattn_0_SoftmaxCast);
+    free(tmp17__flexattn_0_Score);
+    free(tmp16__flexattn_0_KTranspose);
+    free(tmp15__flexattn_0_KScaled);
+    free(tmp14__flexattn_0_QScaled);
+    free(tmp5__flexattn_0_VAligned);
+    free(tmp4__flexattn_0_VExpanded);
+    free(tmp3__flexattn_0_VUnsqueezed);
+    free(tmp2__flexattn_0_KAligned);
+    free(tmp1__flexattn_0_KExpanded);
+    free(tmp0__flexattn_0_KUnsqueezed);
 #endif
 }

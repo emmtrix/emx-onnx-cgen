@@ -10565,6 +10565,49 @@ def test_integer_elementwise_matches_reference(op_type: str, dtype_name: str) ->
     np.testing.assert_array_equal(output.reshape(expected.shape), expected)
 
 
+@pytest.mark.parametrize(
+    "op_type",
+    [
+        "ReduceSum",
+        "ReduceMean",
+        "ReduceMax",
+        "ReduceMin",
+        "ReduceProd",
+        "ReduceL1",
+        "ReduceL2",
+        "ReduceLogSum",
+        "ReduceLogSumExp",
+        "ReduceSumSquare",
+    ],
+)
+def test_bfloat16_reduce_matches_reference(op_type: str) -> None:
+    """bfloat16 reductions, fed and read back through float32 Casts."""
+    graph = helper.make_graph(
+        [
+            helper.make_node("Cast", ["x"], ["x_bf16"], to=TensorProto.BFLOAT16),
+            helper.make_node(op_type, ["x_bf16", "axes"], ["y_bf16"], keepdims=1),
+            helper.make_node("Cast", ["y_bf16"], ["y"], to=TensorProto.FLOAT),
+        ],
+        "bfloat16_reduce_graph",
+        [helper.make_tensor_value_info("x", TensorProto.FLOAT, [2, 3, 4])],
+        [helper.make_tensor_value_info("y", TensorProto.FLOAT, [2, 1, 4])],
+        initializer=[helper.make_tensor("axes", TensorProto.INT64, [1], [1])],
+    )
+    model = helper.make_model(graph, opset_imports=[helper.make_opsetid("", 18)])
+    model.ir_version = 10
+    rng = np.random.default_rng(0)
+    feeds = {"x": rng.uniform(0.25, 2.0, size=[2, 3, 4]).astype(np.float32)}
+    (expected,) = ReferenceEvaluator(model).run(None, feeds)
+
+    payload = _compile_and_run_testbench(model, testbench_inputs=feeds)
+    output = decode_testbench_array(
+        payload["outputs"]["y"]["data"], np.dtype(np.float32)
+    )
+    # The reference accumulates step by step in bfloat16; the kernel's accumulator
+    # differs, so allow one bfloat16 ulp.
+    np.testing.assert_allclose(output.reshape(expected.shape), expected, rtol=2.0**-7)
+
+
 _ATTENTION_MASK_CASES = {
     "bidirectional_window": dict(attrs={"left_window_size": 1, "right_window_size": 2}),
     "causal_window_rank3_float_mask": dict(
