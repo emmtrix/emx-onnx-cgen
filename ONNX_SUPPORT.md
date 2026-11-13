@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 2005 / 2033, 98.6% | 1.23.2 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 2024 / 2033, 99.6% | 1.23.2 |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4313 / 4324, 99.7% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 15 / 15, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-backend-test-data`
 
-Coverage 2005 / 2033 ONNX files (98.6%).
+Coverage 2024 / 2033 ONNX files (99.6%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -120,15 +120,15 @@ Coverage 2005 / 2033 ONNX files (98.6%).
 | node/test_attention_23_fullymasked_qk_matmul_output_mode3_zero/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_23_fullymasked_qk_matmul_output_mode3_zero_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_24_fullymasked_qk_matmul_output_mode3_zero/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_24_fullymasked_qk_matmul_output_mode3_zero_expanded/model.onnx | 24 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_24_fullymasked_qk_matmul_output_mode3_zero_expanded_function_AttnBias' has dynamic dimensions ('unk__0', 'unk__1'). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_24_fullymasked_qk_matmul_output_mode3_zero_expanded/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_24_qk_matmul_output_mode3_softmax_precision/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_24_qk_matmul_output_mode3_softmax_precision_expanded/model.onnx | 24 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_24_qk_matmul_output_mode3_softmax_precision_expanded_function_AttnBias' has dynamic dimensions ('unk__0', 'unk__1'). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_24_qk_matmul_output_mode3_softmax_precision_expanded/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_3d/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_3d_attn_mask/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_3d_attn_mask_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_3d_causal/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_3d_causal_bf16/model.onnx | 23 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_attention_3d_causal_bf16_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_3d_causal_bf16_expanded_function_RangeRow' has dynamic dimensions ('unk__0',). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_3d_causal_bf16_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_attention_3d_causal_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_3d_diff_heads_sizes/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_3d_diff_heads_sizes_attn_mask/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
@@ -164,15 +164,15 @@ Coverage 2005 / 2033 ONNX files (98.6%).
 | node/test_attention_3d_transpose_verification/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_3d_transpose_verification_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_3d_with_past_and_present/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 4) |
-| node/test_attention_3d_with_past_and_present_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 4) |
+| node/test_attention_3d_with_past_and_present_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 5) |
 | node/test_attention_3d_with_past_and_present_qk_matmul/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 4) |
 | node/test_attention_3d_with_past_and_present_qk_matmul_bias/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 4) |
-| node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 4) |
-| node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 4) |
+| node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 5) |
+| node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 5) |
 | node/test_attention_3d_with_past_and_present_qk_matmul_softcap/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 5) |
 | node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 5) |
 | node/test_attention_3d_with_past_and_present_qk_matmul_softmax/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 4) |
-| node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 4) |
+| node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 5) |
 | node/test_attention_4d/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_attn_mask/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
 | node/test_attention_4d_attn_mask_3d/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
@@ -188,16 +188,16 @@ Coverage 2005 / 2033 ONNX files (98.6%).
 | node/test_attention_4d_attn_mask_bool_4d_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_attn_mask_bool_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_attn_mask_causal_bf16/model.onnx | 23 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_attention_4d_attn_mask_causal_bf16_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_attn_mask_causal_bf16_expanded_function_RangeRow' has dynamic dimensions ('unk__0',). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_4d_attn_mask_causal_bf16_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_attention_4d_attn_mask_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
 | node/test_attention_4d_causal/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_causal_bf16/model.onnx | 23 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_attention_4d_causal_bf16_expanded/model.onnx | 23 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_causal_bf16_expanded_function_RangeRow' has dynamic dimensions ('unk__0',). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_4d_causal_bf16_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_attention_4d_causal_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_causal_fp16/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_causal_fp16_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_causal_nonpad_attn_mask_composition/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_causal_nonpad_attn_mask_composition_expanded/model.onnx | 24 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_causal_nonpad_attn_mask_composition_expanded_function_AttnBias' has dynamic dimensions ('unk__0', 'unk__1', 'unk__2', 'unk__3'). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_4d_causal_nonpad_attn_mask_composition_expanded/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_causal_nonpad_batch_prefill/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_causal_nonpad_batch_prefill_expanded/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_causal_nonpad_continued_prefill/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 0) |
@@ -205,11 +205,11 @@ Coverage 2005 / 2033 ONNX files (98.6%).
 | node/test_attention_4d_causal_nonpad_negative_offset_structural_empty/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_causal_nonpad_negative_offset_structural_empty_expanded/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_causal_padded_kv_bf16/model.onnx | 24 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_attention_4d_causal_padded_kv_bf16_expanded/model.onnx | 24 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_causal_padded_kv_bf16_expanded_function_AttnBias' has dynamic dimensions ('unk__0', 'unk__1', 'unk__2', 'unk__3'). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_4d_causal_padded_kv_bf16_expanded/model.onnx | 24 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_attention_4d_causal_with_past_and_present/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_causal_with_past_and_present_expanded/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | 24 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_diff_heads_mask4d_padded_kv_expanded_function_AttnBias' has dynamic dimensions ('unk__0', 'unk__1', 'unk__2', 'unk__3'). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 3) |
 | node/test_attention_4d_diff_heads_sizes/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_diff_heads_sizes_attn_mask/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
@@ -221,11 +221,11 @@ Coverage 2005 / 2033 ONNX files (98.6%).
 | node/test_attention_4d_diff_heads_sizes_softcap/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 5) |
 | node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 5) |
 | node/test_attention_4d_diff_heads_with_past_and_present/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 5) |
-| node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 5) |
+| node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 6) |
 | node/test_attention_4d_diff_heads_with_past_and_present_mask3d/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
+| node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 4) |
 | node/test_attention_4d_diff_heads_with_past_and_present_mask4d/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
 | node/test_attention_4d_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_fp16/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_fp16_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
@@ -235,20 +235,20 @@ Coverage 2005 / 2033 ONNX files (98.6%).
 | node/test_attention_4d_gqa_causal/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_gqa_causal_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_gqa_causal_nonpad_decode/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_gqa_causal_nonpad_decode_expanded/model.onnx | 24 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_gqa_causal_nonpad_decode_expanded_function_RangeRow' has dynamic dimensions ('unk__0',). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_4d_gqa_causal_nonpad_decode_expanded/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_gqa_causal_nonpad_decode_fp16/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_gqa_causal_nonpad_decode_fp16_expanded/model.onnx | 24 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_gqa_causal_nonpad_decode_fp16_expanded_function_RangeRow' has dynamic dimensions ('unk__0',). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_4d_gqa_causal_nonpad_decode_fp16_expanded/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_gqa_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_gqa_scaled/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
 | node/test_attention_4d_gqa_scaled_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
 | node/test_attention_4d_gqa_softcap/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_gqa_softcap_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_gqa_with_past_and_present/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 7) |
-| node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 7) |
+| node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 5) |
 | node/test_attention_4d_gqa_with_past_and_present_fp16/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_padded_kv_bf16/model.onnx | 24 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_attention_4d_padded_kv_bf16_expanded/model.onnx | 24 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_4d_padded_kv_bf16_expanded_function_AttnBias' has dynamic dimensions ('unk__0', 'unk__1', 'unk__2', 'unk__3'). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_4d_padded_kv_bf16_expanded/model.onnx | 24 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_attention_4d_scaled/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_scaled_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_softcap/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
@@ -258,19 +258,19 @@ Coverage 2005 / 2033 ONNX files (98.6%).
 | node/test_attention_4d_softcap_neginf_mask_poison/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_softcap_neginf_mask_poison_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_with_past_and_present/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_4d_with_past_and_present_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_with_past_and_present_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
 | node/test_attention_4d_with_past_and_present_qk_matmul/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 2) |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 7) |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 6) |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 6) |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 7) |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 4) |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 5) |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 5) |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 2) |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 2) |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 5) |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 2) |
-| node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 2) |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
+| node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
 | node/test_attention_4d_with_qk_matmul/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_4d_with_qk_matmul_bias/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
 | node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
@@ -280,25 +280,25 @@ Coverage 2005 / 2033 ONNX files (98.6%).
 | node/test_attention_4d_with_qk_matmul_softmax/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
 | node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | 23 | Data/Data | ✅ | OK (max ULP 3) |
 | node/test_attention_bidirectional_window/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_bidirectional_window_expanded/model.onnx | 25 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_bidirectional_window_expanded_function_WinRangeRow' has dynamic dimensions ('unk__0',). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_bidirectional_window_expanded/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_causal_boolmask_nan_robustness/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_causal_boolmask_nan_robustness_expanded/model.onnx | 24 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_causal_boolmask_nan_robustness_expanded_function_AttnBias' has dynamic dimensions ('unk__0', 'unk__1'). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_causal_boolmask_nan_robustness_expanded/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_local_window/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_local_window_default/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_local_window_default_expanded/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_local_window_expanded/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_local_window_ext_cache_float16_mask/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_local_window_ext_cache_float16_mask_expanded/model.onnx | 25 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_local_window_ext_cache_float16_mask_expanded_function_AttnBias' has dynamic dimensions ('unk__0', 'unk__1'). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_local_window_ext_cache_float16_mask_expanded/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_local_window_ext_cache_rank2_mask/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_attention_local_window_ext_cache_rank2_mask_expanded/model.onnx | 25 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_local_window_ext_cache_rank2_mask_expanded_function_AttnBias' has dynamic dimensions ('unk__0', 'unk__1'). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_local_window_ext_cache_rank2_mask_expanded/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_local_window_ext_cache_rank3_head_mask/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_local_window_ext_cache_rank3_head_mask_expanded/model.onnx | 25 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_local_window_ext_cache_rank3_head_mask_expanded_function_AttnBias' has dynamic dimensions ('unk__0', 'unk__1', 'unk__2'). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_local_window_ext_cache_rank3_head_mask_expanded/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_local_window_ext_cache_rank4_batch_mask/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 3) |
-| node/test_attention_local_window_ext_cache_rank4_batch_mask_expanded/model.onnx | 25 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_local_window_ext_cache_rank4_batch_mask_expanded_function_AttnBias' has dynamic dimensions ('unk__0', 'unk__1', 'unk__2', 'unk__3'). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_local_window_ext_cache_rank4_batch_mask_expanded/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_local_window_gqa_rank4_mask/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_local_window_gqa_rank4_mask_expanded/model.onnx | 25 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_local_window_gqa_rank4_mask_expanded_function_AttnBias' has dynamic dimensions ('unk__0', 'unk__1', 'unk__2', 'unk__3'). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_local_window_gqa_rank4_mask_expanded/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_local_window_rank1_boolean_mask/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_attention_local_window_rank1_boolean_mask_expanded/model.onnx | 25 | Data/Data | ❌ | Code generation requires static shapes. Reason: tensor 'Attention_test_attention_local_window_rank1_boolean_mask_expanded_function_AttnBias' has dynamic dimensions ('unk__0',). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes. |
+| node/test_attention_local_window_rank1_boolean_mask_expanded/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_local_window_with_past/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_attention_local_window_with_past_expanded/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_1d_default/model.onnx | 22 | Data/Data | ✅ | OK (max ULP 0) |
