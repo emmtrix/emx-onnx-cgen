@@ -8,7 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 2033 / 2033, 100.0% | 1.23.2 |
-| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4358 / 4373, 99.7% | n/a |
+| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4360 / 4373, 99.7% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 15 / 15, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -2063,7 +2063,7 @@ Coverage 2033 / 2033 ONNX files (100.0%).
 
 Test directory: `emx-ort-test-artifacts-org/artifacts/onnxruntime`
 
-Coverage 4358 / 4373 ONNX files (99.7%).
+Coverage 4360 / 4373 ONNX files (99.7%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -4776,8 +4776,8 @@ Coverage 4358 / 4373 ONNX files (99.7%).
 | test/contrib_ops/matmul_integer_to_float_test/NoZeroPoint_NoBias_test_U8U8_run3/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/maxpool_mask_test/MaxPoolWithMask_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/moe_test/MoECpuTest_BasicSwiGLU_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/moe_test/MoETest_Gelu_run0/model.onnx |  | Data/Data | ❌ | MoE: only activation_type='swiglu' is supported, got 'gelu' (while lowering node_index=0, op_type=MoE, name=node1, inputs=[input: tensor[dtype=float, shape=(4, 8), dim_params=(None, None)], router_probs: tensor[dtype=float, shape=(4, 4), dim_params=(None, None)], fc1_experts_weights: tensor[dtype=float, shape=(4, 16, 8), dim_params=(None, None, None)], fc1_experts_bias: tensor[dtype=float, shape=(4, 16), dim_params=(None, None)], fc2_experts_weights: tensor[dtype=float, shape=(4, 8, 16), dim_params=(None, None, None)], fc2_experts_bias: tensor[dtype=float, shape=(4, 8), dim_params=(None, None)]], outputs=[output: tensor[dtype=float, shape=(4, 8), dim_params=(None, None)]]) |
-| test/contrib_ops/moe_test/MoETest_Relu_run0/model.onnx |  | Data/Data | ❌ | MoE: only activation_type='swiglu' is supported, got 'relu' (while lowering node_index=0, op_type=MoE, name=node1, inputs=[input: tensor[dtype=float, shape=(4, 8), dim_params=(None, None)], router_probs: tensor[dtype=float, shape=(4, 4), dim_params=(None, None)], fc1_experts_weights: tensor[dtype=float, shape=(4, 16, 8), dim_params=(None, None, None)], fc1_experts_bias: tensor[dtype=float, shape=(4, 16), dim_params=(None, None)], fc2_experts_weights: tensor[dtype=float, shape=(4, 8, 16), dim_params=(None, None, None)], fc2_experts_bias: tensor[dtype=float, shape=(4, 8), dim_params=(None, None)]], outputs=[output: tensor[dtype=float, shape=(4, 8), dim_params=(None, None)]]) |
+| test/contrib_ops/moe_test/MoETest_Gelu_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 2) |
+| test/contrib_ops/moe_test/MoETest_Relu_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 2) |
 | test/contrib_ops/moe_test/QMoETest_CPU_RouterWeights_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/moe_test/QMoETest_CPU_RouterWeights_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/multihead_attention_op_test/CrossAttentionWithPast_run0/model.onnx (--test-data-inputs-only) |  | Data/ORT | ✅ | OK (max ULP 0) |
