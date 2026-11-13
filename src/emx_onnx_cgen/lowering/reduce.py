@@ -433,25 +433,31 @@ def resolve_reduce_axes(
             raise ShapeInferenceError(
                 f"{node.op_type} output shape rank must not exceed input rank"
             )
-        return _ReduceSpec(
-            axes=None,
-            axes_input=axes_input_name,
-            axes_input_shape=axes_input_shape,
-            axes_input_dtype=axes_input_dtype,
-            keepdims=keepdims,
-            output_shape=output_shape,
-            reduce_count=None,
-        ), False
+        return (
+            _ReduceSpec(
+                axes=None,
+                axes_input=axes_input_name,
+                axes_input_shape=axes_input_shape,
+                axes_input_dtype=axes_input_dtype,
+                keepdims=keepdims,
+                output_shape=output_shape,
+                reduce_count=None,
+            ),
+            False,
+        )
     axes = normalize_reduce_axes(axes, input_shape, node)
-    return _ReduceSpec(
-        axes=axes,
-        axes_input=None,
-        axes_input_shape=None,
-        axes_input_dtype=None,
-        keepdims=keepdims,
-        output_shape=(),
-        reduce_count=None,
-    ), False
+    return (
+        _ReduceSpec(
+            axes=axes,
+            axes_input=None,
+            axes_input_shape=None,
+            axes_input_dtype=None,
+            keepdims=keepdims,
+            output_shape=(),
+            reduce_count=None,
+        ),
+        False,
+    )
 
 
 def _resolve_reduce_spec(graph: Graph, node: Node) -> _ReduceSpec | None:
@@ -516,6 +522,7 @@ def _resolve_reduce_spec(graph: Graph, node: Node) -> _ReduceSpec | None:
 
 def _reduce_dtype_supported(dtype: ScalarType) -> bool:
     return dtype in {
+        ScalarType.BF16,
         ScalarType.F16,
         ScalarType.F32,
         ScalarType.F64,
@@ -553,6 +560,7 @@ def lower_reduce(graph: Graph, node: Node) -> ReduceOp | ReshapeOp:
             f"{node.op_type} does not support dtype {op_dtype.onnx_name}"
         )
     if node.op_type in REDUCE_OUTPUTS_FLOAT_ONLY and op_dtype not in {
+        ScalarType.BF16,
         ScalarType.F16,
         ScalarType.F32,
         ScalarType.F64,
