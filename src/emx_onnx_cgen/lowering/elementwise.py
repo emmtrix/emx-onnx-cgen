@@ -4,7 +4,7 @@ from shared.scalar_functions import ScalarFunction, ScalarFunctionError
 from shared.scalar_types import ScalarType
 
 from ..ir.op_base import BroadcastingOpBase
-from ..ir.ops import BinaryOp, ClipOp, PowOp, UnaryOp
+from ..ir.ops import BinaryOp, ClipOp, PowOp, SwiGLUOp, UnaryOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.context import GraphContext
 from ..ir.model import Graph, Node
@@ -284,6 +284,24 @@ def lower_swish(graph: Graph, node: Node) -> UnaryOp:
         output=node.outputs[0],
         function=ScalarFunction.SWISH,
         params=(alpha,),
+    )
+
+
+@register_lowering("SwiGLU")
+def lower_swiglu(graph: Graph, node: Node) -> SwiGLUOp:
+    if len(node.inputs) != 2 or len(node.outputs) != 1:
+        raise UnsupportedOpError("SwiGLU must have 2 inputs and 1 output")
+    dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
+    if not dtype.is_float:
+        raise UnsupportedOpError("SwiGLU only supports floating-point inputs")
+    for key in node.attrs:
+        if key != "alpha":
+            raise UnsupportedOpError(f"SwiGLU does not support attribute {key}")
+    return SwiGLUOp(
+        input_a=node.inputs[0],
+        input_b=node.inputs[1],
+        output=node.outputs[0],
+        alpha=float(node.attrs.get("alpha", 1.0)),
     )
 
 
