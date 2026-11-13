@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1979 / 2033, 97.3% | 1.23.2 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1983 / 2033, 97.5% | 1.23.2 |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4313 / 4324, 99.7% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 15 / 15, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-backend-test-data`
 
-Coverage 1979 / 2033 ONNX files (97.3%).
+Coverage 1983 / 2033 ONNX files (97.5%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -656,7 +656,7 @@ Coverage 1979 / 2033 ONNX files (97.3%).
 | node/test_concat_3d_axis_negative_1/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_concat_3d_axis_negative_2/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_concat_3d_axis_negative_3/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_constant/model.onnx (--runtime onnx-reference) | 25 | Random/ONNXRef | ✅ | OK (max ULP 0) |
+| node/test_constant/model.onnx (--runtime onnx-reference) | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_constant_pad/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_constant_pad_axes/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_constant_pad_negative_axes/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
@@ -1276,10 +1276,10 @@ Coverage 1979 / 2033 ONNX files (97.3%).
 | node/test_optional_get_element_optional_tensor/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_optional_get_element_sequence/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_optional_get_element_tensor/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_optional_has_element_empty_no_input_name_optional_input/model.onnx | 28 | Random/ORT | ❌ | onnxruntime failed to run onnx-backend-test-data/node/test_optional_has_element_empty_no_input_name_optional_input/model.onnx: [ONNXRuntimeError] : 1 : FAIL : /onnxruntime_src/onnxruntime/core/graph/model.cc:192 onnxruntime::Model::Model(onnx::ModelProto&&, const onnxruntime::PathString&, const onnxruntime::IOnnxRuntimeOpSchemaRegistryList*, const onnxruntime::logging::Logger&, const onnxruntime::ModelOptions&) Unsupported model IR version: 14, max supported IR version: 13 |
-| node/test_optional_has_element_empty_no_input_name_tensor_input/model.onnx | 28 | Random/ORT | ❌ | onnxruntime failed to run onnx-backend-test-data/node/test_optional_has_element_empty_no_input_name_tensor_input/model.onnx: [ONNXRuntimeError] : 1 : FAIL : /onnxruntime_src/onnxruntime/core/graph/model.cc:192 onnxruntime::Model::Model(onnx::ModelProto&&, const onnxruntime::PathString&, const onnxruntime::IOnnxRuntimeOpSchemaRegistryList*, const onnxruntime::logging::Logger&, const onnxruntime::ModelOptions&) Unsupported model IR version: 14, max supported IR version: 13 |
-| node/test_optional_has_element_empty_no_input_optional_input/model.onnx | 28 | Random/ORT | ❌ | onnxruntime failed to run onnx-backend-test-data/node/test_optional_has_element_empty_no_input_optional_input/model.onnx: [ONNXRuntimeError] : 1 : FAIL : /onnxruntime_src/onnxruntime/core/graph/model.cc:192 onnxruntime::Model::Model(onnx::ModelProto&&, const onnxruntime::PathString&, const onnxruntime::IOnnxRuntimeOpSchemaRegistryList*, const onnxruntime::logging::Logger&, const onnxruntime::ModelOptions&) Unsupported model IR version: 14, max supported IR version: 13 |
-| node/test_optional_has_element_empty_no_input_tensor_input/model.onnx | 28 | Random/ORT | ❌ | onnxruntime failed to run onnx-backend-test-data/node/test_optional_has_element_empty_no_input_tensor_input/model.onnx: [ONNXRuntimeError] : 1 : FAIL : /onnxruntime_src/onnxruntime/core/graph/model.cc:192 onnxruntime::Model::Model(onnx::ModelProto&&, const onnxruntime::PathString&, const onnxruntime::IOnnxRuntimeOpSchemaRegistryList*, const onnxruntime::logging::Logger&, const onnxruntime::ModelOptions&) Unsupported model IR version: 14, max supported IR version: 13 |
+| node/test_optional_has_element_empty_no_input_name_optional_input/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_optional_has_element_empty_no_input_name_tensor_input/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_optional_has_element_empty_no_input_optional_input/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_optional_has_element_empty_no_input_tensor_input/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_optional_has_element_empty_optional_input/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_optional_has_element_optional_input/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_optional_has_element_tensor_input/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |

@@ -2867,8 +2867,6 @@ def _load_test_data_inputs(
         data_dir.glob("input_*.pb"),
         key=lambda path: int(path.stem.split("_")[-1]),
     )
-    if not input_files:
-        raise CodegenError(f"No input_*.pb files found in {data_dir}")
     initializer_names = {init.name for init in model.graph.initializer}
     initializer_names.update(
         sparse_init.name for sparse_init in model.graph.sparse_initializer
@@ -2878,6 +2876,8 @@ def _load_test_data_inputs(
         for value_info in model.graph.input
         if value_info.name not in initializer_names
     ]
+    if not input_files and model_inputs:
+        raise CodegenError(f"No input_*.pb files found in {data_dir}")
     if len(input_files) != len(model_inputs):
         raise CodegenError(
             "Test data input count does not match model inputs: "
