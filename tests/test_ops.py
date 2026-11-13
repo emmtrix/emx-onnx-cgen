@@ -28,7 +28,11 @@ from emx_onnx_cgen.ir.ops import (
     MultiInputBinaryOp,
 )
 from emx_onnx_cgen.compiler import Compiler, CompilerOptions
-from emx_onnx_cgen.errors import ShapeInferenceError, UnsupportedOpError
+from emx_onnx_cgen.errors import (
+    CodegenError,
+    ShapeInferenceError,
+    UnsupportedOpError,
+)
 from emx_onnx_cgen.ir.context import GraphContext
 from emx_onnx_cgen.ir.op_context import OpContext
 from emx_onnx_cgen.ir.ops import CompressOp, NonMaxSuppressionOp, NonZeroOp, ResizeOp
@@ -8042,6 +8046,94 @@ def test_unique_matches_onnxruntime_with_axis(case: str) -> None:
         output_data = decode_testbench_array(output_payload["data"], ort_output.dtype)
         output_data = output_data.reshape(ort_output.shape)
         np.testing.assert_array_equal(output_data, ort_output)
+
+
+_UNIQUE_DYNAMIC_CASES = {
+    "flat_sorted": ([2.0, 1.0, 1.0, 3.0, 4.0, 3.0], None, 1),
+    "flat_unsorted": ([2.0, 1.0, 1.0, 3.0, 4.0, 3.0], None, 0),
+    "flat_single_value": ([5.0, 5.0, 5.0], None, 1),
+    "axis1_3d": (
+        [[[1, 1], [0, 1], [2, 1], [0, 1]], [[1, 1], [0, 1], [2, 1], [0, 1]]],
+        1,
+        1,
+    ),
+    "negative_axis": ([[1.0, 0.0, 0.0], [1.0, 0.0, 0.0], [2.0, 3.0, 3.0]], -1, 1),
+}
+
+
+@pytest.mark.parametrize("case", sorted(_UNIQUE_DYNAMIC_CASES))
+def test_unique_with_data_dependent_output_lengths(case: str) -> None:
+    """Outputs declared with unknown length report their extent at runtime."""
+    values, axis, sorted_output = _UNIQUE_DYNAMIC_CASES[case]
+    data = np.array(values, dtype=np.float32)
+    if axis is None:
+        y_shape: list[int | None] = [None]
+    else:
+        y_shape = list(data.shape)
+        y_shape[axis] = None
+    model = _make_unique_model(
+        input_shape=list(data.shape),
+        output_shapes=(y_shape, [None], [None], [None]),
+        axis=axis,
+        sorted_output=sorted_output,
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    unique_axis = 0 if axis is None else axis % data.ndim
+    assert f"idx_t *y__dim_{unique_axis}" in generated
+    assert "idx_t *counts__dim_0" in generated
+    assert "inverse_indices__dim" not in generated
+
+    expected = _run_reference(model, {"in0": data})
+    payload = _compile_and_run_testbench(model, testbench_inputs={"in0": data})
+    for name, reference in expected.items():
+        output_payload = payload["outputs"][name]
+        assert output_payload["shape"] == list(reference.shape)
+        output = decode_testbench_array(output_payload["data"], reference.dtype)
+        np.testing.assert_array_equal(output.reshape(reference.shape), reference)
+
+
+def test_unique_data_dependent_unused_outputs_use_local_extents() -> None:
+    """Outputs that are neither graph outputs nor consumed get local extents."""
+    graph = helper.make_graph(
+        [
+            helper.make_node(
+                "Unique", ["in0"], ["y", "indices", "inverse_indices", "counts"]
+            )
+        ],
+        "unique_partial_outputs",
+        [helper.make_tensor_value_info("in0", TensorProto.FLOAT, [5])],
+        [helper.make_tensor_value_info("y", TensorProto.FLOAT, [None])],
+    )
+    model = helper.make_model(graph, opset_imports=[helper.make_opsetid("", 11)])
+    model.ir_version = 7
+    data = np.array([3.0, 1.0, 3.0, 2.0, 1.0], dtype=np.float32)
+
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "idx_t *y__dim_0" in generated
+    assert "&tmp" in generated
+
+    payload = _compile_and_run_testbench(model, testbench_inputs={"in0": data})
+    assert payload["outputs"]["y"]["shape"] == [3]
+    output = decode_testbench_array(payload["outputs"]["y"]["data"], np.float32)
+    np.testing.assert_array_equal(output, np.array([1.0, 2.0, 3.0], np.float32))
+
+
+def test_unique_data_dependent_output_rejects_internal_consumer() -> None:
+    graph = helper.make_graph(
+        [
+            helper.make_node(
+                "Unique", ["in0"], ["y", "indices", "inverse_indices", "counts"]
+            ),
+            helper.make_node("Relu", ["y"], ["out"]),
+        ],
+        "unique_consumed",
+        [helper.make_tensor_value_info("in0", TensorProto.FLOAT, [5])],
+        [helper.make_tensor_value_info("out", TensorProto.FLOAT, [None])],
+    )
+    model = helper.make_model(graph, opset_imports=[helper.make_opsetid("", 11)])
+    model.ir_version = 7
+    with pytest.raises(CodegenError, match="length is only known at runtime"):
+        Compiler(CompilerOptions()).compile(model)
 
 
 def test_nonzero_inference_stores_values_in_context() -> None:

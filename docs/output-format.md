@@ -300,6 +300,33 @@ Only the first `name__count` entries of the per-axis dim arrays are meaningful.
 The testbench JSON output includes `item_shapes` for sequence outputs so verify
 can compare the true per-item shapes instead of the padded max-sized storage.
 
+### Data-dependent tensor output lengths
+
+Some operators produce a tensor whose length along one axis depends on the input
+values, e.g. the number of unique elements of `Unique`. When the model declares
+that length as unknown, the output buffer is sized to the static upper bound
+(for `Unique` the input length along the unique axis) and the entrypoint gets
+one extra parameter per such axis, directly after the output:
+
+```c
+void model(const float X[restrict 2][4][2],
+           float Y[restrict 2][4][2], idx_t *Y__dim_1,
+           int64_t indices[restrict 4], idx_t *indices__dim_0,
+           int64_t inverse_indices[restrict 4],
+           int64_t counts[restrict 4], idx_t *counts__dim_0);
+```
+
+- The model writes the valid extent to `*<name>__dim_<axis>`; only the elements
+  below it along that axis are meaningful, the rest of the buffer is left
+  untouched.
+- Outputs whose length is known statically (here `inverse_indices`, or any
+  length the model declares) keep plain fixed-size arrays.
+- Such tensors are supported as graph outputs only. A node that consumes one
+  inside the graph fails with an error; export the model with a static shape
+  for that tensor instead.
+- The testbench JSON reports the runtime extent in `"shape"` and prints only the
+  valid region, so verify compares the true output shape.
+
 ### Static shapes: N-dimensional arrays
 
 For fully static shapes, tensors are represented as N-dimensional C arrays, e.g.:

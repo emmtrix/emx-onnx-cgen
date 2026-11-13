@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 2024 / 2033, 99.6% | 1.23.2 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 2030 / 2033, 99.9% | 1.23.2 |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4313 / 4324, 99.7% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 15 / 15, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-backend-test-data`
 
-Coverage 2024 / 2033 ONNX files (99.6%).
+Coverage 2030 / 2033 ONNX files (99.9%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1893,12 +1893,12 @@ Coverage 2024 / 2033 ONNX files (99.6%).
 | node/test_triu_square_neg/model.onnx | 14 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_triu_zero/model.onnx | 14 | Data/Data | ✅ | OK (max abs diff 0) |
 | node/test_unique_bfloat16_sorted_without_axis/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
-| node/test_unique_length_1/model.onnx | 28 | Data/Data | ❌ | Unique inverse_indices must have shape (1,) (while lowering node_index=0, op_type=Unique, name=&lt;unnamed&gt;, inputs=[X: tensor[dtype=int64, shape=(1,), dim_params=(None,)]], outputs=[Y: tensor[dtype=int64, shape=(-1,), dim_params=('unk__0',)], indices: tensor[dtype=int64, shape=(-1,), dim_params=('unk__1',)], inverse_indices: tensor[dtype=int64, shape=(-1,), dim_params=('unk__2',)], counts: tensor[dtype=int64, shape=(-1,), dim_params=('unk__3',)]]) |
-| node/test_unique_not_sorted_without_axis/model.onnx | 28 | Data/Data | ❌ | Unique inverse_indices must have shape (6,) (while lowering node_index=0, op_type=Unique, name=&lt;unnamed&gt;, inputs=[X: tensor[dtype=float, shape=(6,), dim_params=(None,)]], outputs=[Y: tensor[dtype=float, shape=(-1,), dim_params=('unk__0',)], indices: tensor[dtype=int64, shape=(-1,), dim_params=('unk__1',)], inverse_indices: tensor[dtype=int64, shape=(-1,), dim_params=('unk__2',)], counts: tensor[dtype=int64, shape=(-1,), dim_params=('unk__3',)]]) |
-| node/test_unique_sorted_with_axis/model.onnx | 28 | Data/Data | ❌ | Unique inverse_indices must have shape (3,) (while lowering node_index=0, op_type=Unique, name=&lt;unnamed&gt;, inputs=[X: tensor[dtype=float, shape=(3, 3), dim_params=(None, None)]], outputs=[Y: tensor[dtype=float, shape=(-1, 3), dim_params=('unk__0', None)], indices: tensor[dtype=int64, shape=(-1,), dim_params=('unk__1',)], inverse_indices: tensor[dtype=int64, shape=(-1,), dim_params=('unk__2',)], counts: tensor[dtype=int64, shape=(-1,), dim_params=('unk__3',)]]) |
-| node/test_unique_sorted_with_axis_3d/model.onnx | 28 | Data/Data | ❌ | Unique inverse_indices must have shape (4,) (while lowering node_index=0, op_type=Unique, name=&lt;unnamed&gt;, inputs=[X: tensor[dtype=float, shape=(2, 4, 2), dim_params=(None, None, None)]], outputs=[Y: tensor[dtype=float, shape=(2, -1, 2), dim_params=(None, 'unk__0', None)], indices: tensor[dtype=int64, shape=(-1,), dim_params=('unk__1',)], inverse_indices: tensor[dtype=int64, shape=(-1,), dim_params=('unk__2',)], counts: tensor[dtype=int64, shape=(-1,), dim_params=('unk__3',)]]) |
-| node/test_unique_sorted_with_negative_axis/model.onnx | 28 | Data/Data | ❌ | Unique inverse_indices must have shape (3,) (while lowering node_index=0, op_type=Unique, name=&lt;unnamed&gt;, inputs=[X: tensor[dtype=float, shape=(3, 3), dim_params=(None, None)]], outputs=[Y: tensor[dtype=float, shape=(3, -1), dim_params=(None, 'unk__0')], indices: tensor[dtype=int64, shape=(-1,), dim_params=('unk__1',)], inverse_indices: tensor[dtype=int64, shape=(-1,), dim_params=('unk__2',)], counts: tensor[dtype=int64, shape=(-1,), dim_params=('unk__3',)]]) |
-| node/test_unique_sorted_without_axis/model.onnx | 28 | Data/Data | ❌ | Unique inverse_indices must have shape (6,) (while lowering node_index=0, op_type=Unique, name=&lt;unnamed&gt;, inputs=[X: tensor[dtype=float, shape=(6,), dim_params=(None,)]], outputs=[Y: tensor[dtype=float, shape=(-1,), dim_params=('unk__0',)], indices: tensor[dtype=int64, shape=(-1,), dim_params=('unk__1',)], inverse_indices: tensor[dtype=int64, shape=(-1,), dim_params=('unk__2',)], counts: tensor[dtype=int64, shape=(-1,), dim_params=('unk__3',)]]) |
+| node/test_unique_length_1/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0) |
+| node/test_unique_not_sorted_without_axis/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0, max ULP 0) |
+| node/test_unique_sorted_with_axis/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0, max ULP 0) |
+| node/test_unique_sorted_with_axis_3d/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0, max ULP 0) |
+| node/test_unique_sorted_with_negative_axis/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0, max ULP 0) |
+| node/test_unique_sorted_without_axis/model.onnx | 28 | Data/Data | ✅ | OK (max abs diff 0, max ULP 0) |
 | node/test_unsqueeze_axis_0/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_unsqueeze_axis_1/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_unsqueeze_axis_2/model.onnx | 25 | Data/Data | ✅ | OK (max ULP 0) |

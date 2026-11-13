@@ -29,7 +29,6 @@ def lower_unique(graph: Graph, node: Node) -> UniqueOp:
 
     input_shape = value_shape(graph, input_name, node)
     y_shape = value_shape(graph, y_name, node)
-    inverse_shape = value_shape(graph, inverse_indices_name, node)
     counts_shape = value_shape(graph, counts_name, node)
     input_dtype = value_dtype(graph, input_name, node)
     y_dtype = value_dtype(graph, y_name, node)
@@ -61,45 +60,18 @@ def lower_unique(graph: Graph, node: Node) -> UniqueOp:
     axis: int | None = None
     if axis_attr is not None:
         axis = normalize_axis(int(axis_attr), input_shape, node)
-        if len(y_shape) != len(input_shape):
-            raise UnsupportedOpError(
-                f"{node.op_type} Y rank must match input rank when axis is set"
-            )
-        for dim_index, (input_dim, output_dim) in enumerate(zip(input_shape, y_shape)):
-            if dim_index == axis:
-                continue
-            if input_dim != output_dim:
-                raise UnsupportedOpError(
-                    f"{node.op_type} Y shape must match input outside axis {axis}"
-                )
-        expected = y_shape[axis]
-        if indices_shape is not None and (
-            indices_shape != (expected,) or counts_shape != (expected,)
-        ):
-            raise UnsupportedOpError(
-                f"{node.op_type} indices and counts must have shape ({expected},)"
-            )
-        if inverse_shape != (input_shape[axis],):
-            raise UnsupportedOpError(
-                f"{node.op_type} inverse_indices must have shape ({input_shape[axis]},)"
-            )
-    else:
-        if len(y_shape) != 1:
-            raise UnsupportedOpError(f"{node.op_type} Y output must be rank-1")
-        unique_count = y_shape[0]
-        if indices_shape is not None and (
-            indices_shape != (unique_count,) or counts_shape != (unique_count,)
-        ):
-            raise UnsupportedOpError(
-                f"{node.op_type} indices and counts must have shape ({unique_count},)"
-            )
-        element_count = 1
-        for dim in input_shape:
-            element_count *= dim
-        if inverse_shape != (element_count,):
-            raise UnsupportedOpError(
-                f"{node.op_type} inverse_indices must have shape ({element_count},)"
-            )
+    unique_axis = 0 if axis is None else axis
+    if len(y_shape) != (1 if axis is None else len(input_shape)):
+        raise UnsupportedOpError(
+            f"{node.op_type} Y rank must be "
+            + ("1 without axis" if axis is None else "the input rank with axis")
+        )
+    declared_lengths = [y_shape[unique_axis], counts_shape[0] if counts_shape else -1]
+    if indices_shape:
+        declared_lengths.append(indices_shape[0])
+    # Without any statically declared unique count, the outputs are sized to
+    # the upper bound and the kernel reports the count at runtime.
+    bounded_count = all(length < 0 for length in declared_lengths)
     return UniqueOp(
         input0=input_name,
         y=y_name,
@@ -108,4 +80,5 @@ def lower_unique(graph: Graph, node: Node) -> UniqueOp:
         counts=counts_name,
         axis=axis,
         sorted=sorted_attr,
+        bounded_count=bounded_count,
     )

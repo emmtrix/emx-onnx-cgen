@@ -413,7 +413,7 @@
       "model": "onnx-backend-test-data/node/test_triu/model.onnx"
     },
     "Unique": {
-      "model": "onnx-backend-test-data/node/test_unique_bfloat16_sorted_without_axis/model.onnx"
+      "model": "onnx-backend-test-data/node/test_unique_sorted_without_axis/model.onnx"
     },
     "Unsqueeze": {
       "model": "onnx-backend-test-data/node/test_unsqueeze_axis_0/model.onnx"

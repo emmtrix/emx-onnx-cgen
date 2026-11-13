@@ -141,4 +141,7 @@ if ({{ idx(input0, "a") }} != {{ idx(y, "u") }}) {
     }
 {% endif %}
 {% endif %}
+{% for runtime_dim in runtime_dims %}
+    *{{ runtime_dim }} = unique_count;
+{% endfor %}
 }

@@ -231,7 +231,7 @@ static void emx_json_print_string(const char *s) {
 
 static void testbench_print_json(
 {% for output in outputs %}
-    {{ output.c_type }} {{ output.name }}{{ output.array_suffix }}{% if output.is_sequence %}, idx_t {{ output.count_name }}{% for dim in output.sequence_dim_arrays %}, idx_t {{ dim.name }}[EMX_SEQUENCE_MAX_LEN]{% endfor %}{% endif %}{% if not loop.last %},
+    {{ output.c_type }} {{ output.name }}{{ output.array_suffix }}{% if output.is_sequence %}, idx_t {{ output.count_name }}{% for dim in output.sequence_dim_arrays %}, idx_t {{ dim.name }}[EMX_SEQUENCE_MAX_LEN]{% endfor %}{% endif %}{% for dim in output.runtime_dims %}, idx_t {{ dim.name }}{% endfor %}{% if not loop.last %},
 {% endif %}
 {% endfor %}
 ) {
@@ -261,11 +261,11 @@ static void testbench_print_json(
     }
     printf("], \"data\":\n      ");
 {% else %}
-    printf("    \"{{ output.json_name }}\": {\"shape\": [{{ output.shape_literal }}], \"data\":\n      ");
+    printf("    \"{{ output.json_name }}\": {\"shape\": [{{ output.shape_format }}], \"data\":\n      "{{ output.shape_args }});
 {% endif %}
     printf("[");
 {% for depth in range(output.rank) %}
-for (idx_t {{ output.loop_vars[depth] }} = 0; {{ output.loop_vars[depth] }} < {{ output.shape[depth] }}; ++{{ output.loop_vars[depth] }}) {
+for (idx_t {{ output.loop_vars[depth] }} = 0; {{ output.loop_vars[depth] }} < {{ output.loop_bounds[depth] }}; ++{{ output.loop_vars[depth] }}) {
     if ({{ output.loop_vars[depth] }}) {
 {% if depth == 0 %}
         printf(",\n      ");
@@ -296,7 +296,7 @@ printf("{{ output.print_format }}", {{ output.print_cast }}{{ output.name }}{{ o
 {% if testbench_output_format == "txt" %}
 static void testbench_print_txt(
 {% for output in outputs %}
-    {{ output.c_type }} {{ output.name }}{{ output.array_suffix }}{% if output.is_sequence %}, idx_t {{ output.count_name }}{% for dim in output.sequence_dim_arrays %}, idx_t {{ dim.name }}[EMX_SEQUENCE_MAX_LEN]{% endfor %}{% endif %}{% if not loop.last %},
+    {{ output.c_type }} {{ output.name }}{{ output.array_suffix }}{% if output.is_sequence %}, idx_t {{ output.count_name }}{% for dim in output.sequence_dim_arrays %}, idx_t {{ dim.name }}[EMX_SEQUENCE_MAX_LEN]{% endfor %}{% endif %}{% for dim in output.runtime_dims %}, idx_t {{ dim.name }}{% endfor %}{% if not loop.last %},
 {% endif %}
 {% endfor %}
 ) {
@@ -307,7 +307,7 @@ static void testbench_print_txt(
     printf("{{ output.json_name }}:\n");
 {% endif %}
 {% for depth in range(output.rank) %}
-for (idx_t {{ output.loop_vars[depth] }} = 0; {{ output.loop_vars[depth] }} < {{ output.shape[depth] }}; ++{{ output.loop_vars[depth] }}) {
+for (idx_t {{ output.loop_vars[depth] }} = 0; {{ output.loop_vars[depth] }} < {{ output.loop_bounds[depth] }}; ++{{ output.loop_vars[depth] }}) {
     if ({{ output.loop_vars[depth] }}) {
 {% if depth == 0 %}
         printf("\n");
@@ -341,13 +341,13 @@ printf("{{ output.print_format }}", {{ output.print_cast }}{{ output.name }}{{ o
 {% if testbench_output_format == "txt-emmtrix" %}
 static void testbench_print_txt_emmtrix(
 {% for output in outputs %}
-    {{ output.c_type }} {{ output.name }}{{ output.array_suffix }}{% if output.is_sequence %}, idx_t {{ output.count_name }}{% for dim in output.sequence_dim_arrays %}, idx_t {{ dim.name }}[EMX_SEQUENCE_MAX_LEN]{% endfor %}{% endif %}{% if not loop.last %},
+    {{ output.c_type }} {{ output.name }}{{ output.array_suffix }}{% if output.is_sequence %}, idx_t {{ output.count_name }}{% for dim in output.sequence_dim_arrays %}, idx_t {{ dim.name }}[EMX_SEQUENCE_MAX_LEN]{% endfor %}{% endif %}{% for dim in output.runtime_dims %}, idx_t {{ dim.name }}{% endfor %}{% if not loop.last %},
 {% endif %}
 {% endfor %}
 ) {
 {% for output in outputs %}
 {% for depth in range(output.rank) %}
-for (idx_t {{ output.loop_vars[depth] }} = 0; {{ output.loop_vars[depth] }} < {{ output.shape[depth] }}; ++{{ output.loop_vars[depth] }}) {
+for (idx_t {{ output.loop_vars[depth] }} = 0; {{ output.loop_vars[depth] }} < {{ output.loop_bounds[depth] }}; ++{{ output.loop_vars[depth] }}) {
 {% endfor %}
 {% if output.is_string %}
     printf("#ULP{{ testbench_emmtrix_ulp_tag }} %s[%zu] = %s\n", "{{ output.json_name }}", (size_t){{ output.index_expr }}, {{ output.name }}{{ output.array_index_expr }});
@@ -399,6 +399,9 @@ static int testbench_run(const char *input_path) {
 {% endfor %}
 {% else %}
 {{ output.declaration }}
+{% for dim in output.runtime_dims %}
+    idx_t {{ dim.name }} = 0;
+{% endfor %}
 {% endif %}
 {% if output.optional_flag_name %}
     _Bool {{ output.optional_flag_name }} = 0;
@@ -410,15 +413,15 @@ static int testbench_run(const char *input_path) {
     }
 
     timer_start();
-    {{ model_name }}({% for dim in dim_args %}{{ dim.name }}, {% endfor %}{% for input in inputs %}{{ input.name }}{% if input.is_sequence %}, {{ input.count_name }}{% for dim in input.sequence_dim_arrays %}, {{ dim.name }}{% endfor %}{% endif %}{% if input.optional_flag_name %}, {{ input.optional_flag_name }}{% endif %}, {% endfor %}{% for output in outputs %}{{ output.name }}{% if output.is_sequence %}, &{{ output.count_name }}{% for dim in output.sequence_dim_arrays %}, {{ dim.name }}{% endfor %}{% endif %}{% if output.optional_flag_name %}, &{{ output.optional_flag_name }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %});
+    {{ model_name }}({% for dim in dim_args %}{{ dim.name }}, {% endfor %}{% for input in inputs %}{{ input.name }}{% if input.is_sequence %}, {{ input.count_name }}{% for dim in input.sequence_dim_arrays %}, {{ dim.name }}{% endfor %}{% endif %}{% if input.optional_flag_name %}, {{ input.optional_flag_name }}{% endif %}, {% endfor %}{% for output in outputs %}{{ output.name }}{% for dim in output.runtime_dims %}, &{{ dim.name }}{% endfor %}{% if output.is_sequence %}, &{{ output.count_name }}{% for dim in output.sequence_dim_arrays %}, {{ dim.name }}{% endfor %}{% endif %}{% if output.optional_flag_name %}, &{{ output.optional_flag_name }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %});
     timer_stop();
 
 {% if testbench_output_format == "txt" %}
-    testbench_print_txt({% for output in outputs %}{{ output.name }}{% if output.is_sequence %}, {{ output.count_name }}{% for dim in output.sequence_dim_arrays %}, {{ dim.name }}{% endfor %}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %});
+    testbench_print_txt({% for output in outputs %}{{ output.name }}{% if output.is_sequence %}, {{ output.count_name }}{% for dim in output.sequence_dim_arrays %}, {{ dim.name }}{% endfor %}{% endif %}{% for dim in output.runtime_dims %}, {{ dim.name }}{% endfor %}{% if not loop.last %}, {% endif %}{% endfor %});
 {% elif testbench_output_format == "txt-emmtrix" %}
-    testbench_print_txt_emmtrix({% for output in outputs %}{{ output.name }}{% if output.is_sequence %}, {{ output.count_name }}{% for dim in output.sequence_dim_arrays %}, {{ dim.name }}{% endfor %}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %});
+    testbench_print_txt_emmtrix({% for output in outputs %}{{ output.name }}{% if output.is_sequence %}, {{ output.count_name }}{% for dim in output.sequence_dim_arrays %}, {{ dim.name }}{% endfor %}{% endif %}{% for dim in output.runtime_dims %}, {{ dim.name }}{% endfor %}{% if not loop.last %}, {% endif %}{% endfor %});
 {% else %}
-    testbench_print_json({% for output in outputs %}{{ output.name }}{% if output.is_sequence %}, {{ output.count_name }}{% for dim in output.sequence_dim_arrays %}, {{ dim.name }}{% endfor %}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %});
+    testbench_print_json({% for output in outputs %}{{ output.name }}{% if output.is_sequence %}, {{ output.count_name }}{% for dim in output.sequence_dim_arrays %}, {{ dim.name }}{% endfor %}{% endif %}{% for dim in output.runtime_dims %}, {{ dim.name }}{% endfor %}{% if not loop.last %}, {% endif %}{% endfor %});
 {% endif %}
     return 0;
 }
