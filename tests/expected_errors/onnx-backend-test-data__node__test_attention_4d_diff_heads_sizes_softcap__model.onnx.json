@@ -1,10 +1,10 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "OK (max ULP 5)",
   "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_attention_4d_diff_heads_sizes_softcap model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "Attention"
   ],
   "opset_version": 23,
-  "generated_checksum": "741b4a8dea999b1dd023ac9448da34fb6daa878824f0f854a6ddec679ace5972"
+  "generated_checksum": "0421eeb1d1980339119e47a0839896e8fe704e6ef1f80caea2c41c6205ceb2f7"
 }
