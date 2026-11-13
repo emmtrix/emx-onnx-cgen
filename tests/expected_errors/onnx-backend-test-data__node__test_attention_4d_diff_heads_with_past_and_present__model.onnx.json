@@ -1,10 +1,10 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "OK (max ULP 5)",
   "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_attention_4d_diff_heads_with_past_and_present model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "Attention"
   ],
   "opset_version": 23,
-  "generated_checksum": "66b8df31f77deb55bfdae8effe3f08805cd23eae05a60ff74db953715238eb49"
+  "generated_checksum": "4d330571b06bd69b7d5d668cb318b3029e36c19a4c46e5adbfc9624768659cf4"
 }

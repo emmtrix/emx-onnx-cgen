@@ -1,10 +1,10 @@
 {
-  "error": "OK (max ULP 3)",
+  "error": "OK (max ULP 2)",
   "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_attention_4d_with_past_and_present_qk_matmul_bias model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "Attention"
   ],
   "opset_version": 23,
-  "generated_checksum": "0c601718154e6e2ba748f8f92a61fd28a6ff3daa16a4c0b88f2fb13458373b5c"
+  "generated_checksum": "25121e671614f0437758eecabf45aabecec4a3e434656f8a81de55a97a65f203"
 }

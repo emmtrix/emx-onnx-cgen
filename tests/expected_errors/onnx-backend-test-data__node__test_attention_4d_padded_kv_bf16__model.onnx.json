@@ -1,10 +1,10 @@
 {
-  "error": "Out of tolerance (max abs diff 0.01171875)",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_attention_4d_padded_kv_bf16 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "Attention"
   ],
   "opset_version": 24,
-  "generated_checksum": "198eb3e6705c6c6caa5fe1a74eaf54a220b8e29fb4892abd81965099cb00e8ad"
+  "generated_checksum": "fbba2ad42e82ecfa1749327b4fa8b2becdcdedc0e0a6d2431fbf3ab8a328f592"
 }

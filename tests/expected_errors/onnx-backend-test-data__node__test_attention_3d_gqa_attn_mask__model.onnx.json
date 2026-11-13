@@ -1,10 +1,10 @@
 {
-  "error": "OK (max ULP 3)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_attention_3d_gqa_attn_mask model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "Attention"
   ],
   "opset_version": 23,
-  "generated_checksum": "aa5d9130103be15e4de637839ba4abea8d92401b785e56dd33ded322b1a7187d"
+  "generated_checksum": "e0f2e3466e2c52f32514ecb945176aa2ae4452d0d94b7da003549c16cb0aabbc"
 }

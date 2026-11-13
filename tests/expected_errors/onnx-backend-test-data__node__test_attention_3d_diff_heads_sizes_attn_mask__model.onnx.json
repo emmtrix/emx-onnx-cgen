@@ -1,10 +1,10 @@
 {
-  "error": "OK (max ULP 3)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_attention_3d_diff_heads_sizes_attn_mask model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "Attention"
   ],
   "opset_version": 23,
-  "generated_checksum": "c13affbc14fcbfaf093f8b301553662fffab6e7c0385d507323891be6cc66858"
+  "generated_checksum": "ccf3c757ca38084821bc6a43b778759d29f9e99fd8fb36a67235dc083aec53ce"
 }

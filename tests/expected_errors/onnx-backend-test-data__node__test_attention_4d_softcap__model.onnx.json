@@ -1,10 +1,10 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "OK (max ULP 3)",
   "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_attention_4d_softcap model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "Attention"
   ],
   "opset_version": 23,
-  "generated_checksum": "d3477cbee250dadcb91437d27ab00f89bc7c7270af07fdb57552138d0bb804fb"
+  "generated_checksum": "89dba9924c007b13d8311fe97728f0ec97f4de79752a55fb6c3c6e5acf2e7bc4"
 }
