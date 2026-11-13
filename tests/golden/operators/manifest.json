@@ -503,7 +503,7 @@
       "model": "emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/fused_matmul_op_test/DoubleTypeNoTranspose_run4/model.onnx"
     },
     "com.microsoft.GatherBlockQuantized": {
-      "model": "emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_4Bits_run1/model.onnx"
+      "model": "emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gather_block_quantized_op_test/GatherAxis0NoZeroPoints_2Bits_Uint8_run1/model.onnx"
     },
     "com.microsoft.GridSample": {
       "model": "emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/gridsample_test/gridsample_mode_bicubic_run0/model.onnx"
