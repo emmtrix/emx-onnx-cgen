@@ -4138,13 +4138,13 @@ class UniqueOp(RenderableOpBase):
             ]
         )
         param_decls = emitter.build_param_decls(param_decl_entries)
-        indices_local_size = CEmitterCompat.element_count_expr(
-            (input_shape[self.axis],) if self.axis is not None else input_shape
+        input_shape_exprs = CEmitterCompat.shape_dim_exprs(
+            input_shape, emitter.dim_names_for(self.input0)
         )
+        slice_vars = [f"d{index}" for index in range(len(input_shape))]
         rendered = (
             state.templates["unique"]
             .render(
-                model_name=model.name,
                 op_name=op_name,
                 params=param_decls,
                 dim_args=dim_args,
@@ -4154,30 +4154,21 @@ class UniqueOp(RenderableOpBase):
                 has_indices_output=self.indices is not None,
                 inverse_indices=params["inverse_indices"],
                 counts=params["counts"],
-                input_shape=CEmitterCompat.shape_dim_exprs(
-                    input_shape, emitter.dim_names_for(self.input0)
-                ),
-                y_shape=CEmitterCompat.shape_dim_exprs(
-                    y_shape, emitter.dim_names_for(self.y)
-                ),
-                input_rank=len(input_shape),
+                input_shape=input_shape_exprs,
+                slice_vars=slice_vars,
+                slice_dims=[
+                    (var, extent)
+                    for index, (var, extent) in enumerate(
+                        zip(slice_vars, input_shape_exprs)
+                    )
+                    if index != self.axis
+                ],
                 axis=-1 if self.axis is None else self.axis,
                 flat_size=CEmitterCompat.element_count_expr(input_shape),
-                axis_dim=(0 if self.axis is None else input_shape[self.axis]),
+                axis_dim=(0 if self.axis is None else input_shape_exprs[self.axis]),
                 y_axis_dim=(y_shape[0] if self.axis is None else y_shape[self.axis]),
-                outer=(
-                    0
-                    if self.axis is None
-                    else CEmitterCompat.element_count_expr(input_shape[: self.axis])
-                ),
-                inner=(
-                    0
-                    if self.axis is None
-                    else CEmitterCompat.element_count_expr(input_shape[self.axis + 1 :])
-                ),
                 sorted_output=1 if self.sorted else 0,
                 input_c_type=input_dtype.c_type,
-                indices_local_size=indices_local_size,
             )
             .rstrip()
         )

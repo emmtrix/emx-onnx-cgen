@@ -57,53 +57,48 @@
  *   sorted: 1
  */
 EMX_NODE_FN void node0_unique(const __bf16 input0[6], __bf16 y[4], int64_t indices[4], int64_t inverse_indices[6], int64_t counts[4]) {
-    __bf16 *input_flat = (__bf16 *)input0;
-    __bf16 *y_flat = (__bf16 *)y;
-    int64_t *indices_flat = (int64_t *)indices;
-    int64_t *inverse_flat = (int64_t *)inverse_indices;
-    int64_t *counts_flat = (int64_t *)counts;
     idx_t unique_count = 0;
+    /* Without an axis ONNX defines Unique on the flattened input. */
+    const __bf16 *input_flat = (const __bf16 *)input0;
     for (idx_t i = 0; i < 6; ++i) {
         idx_t found = -1;
         for (idx_t u = 0; u < unique_count; ++u) {
-            if (y_flat[u] == input_flat[i]) {
+            if (y[u] == input_flat[i]) {
                 found = u;
                 break;
             }
         }
         if (found >= 0) {
-            inverse_flat[i] = found;
-            counts_flat[found] += 1;
+            inverse_indices[i] = found;
+            counts[found] += 1;
             continue;
         }
-        y_flat[unique_count] = input_flat[i];
-        indices_flat[unique_count] = i;
-        counts_flat[unique_count] = 1;
-        inverse_flat[i] = unique_count;
+        y[unique_count] = input_flat[i];
+        indices[unique_count] = i;
+        counts[unique_count] = 1;
+        inverse_indices[i] = unique_count;
         unique_count += 1;
     }
-    if (1 != 0) {
-        for (idx_t i = 0; i < unique_count; ++i) {
-            for (idx_t j = i + 1; j < unique_count; ++j) {
-                if (y_flat[j] < y_flat[i]) {
-                    __bf16 y_tmp = y_flat[i];
-                    y_flat[i] = y_flat[j];
-                    y_flat[j] = y_tmp;
-                    int64_t idx_tmp = indices_flat[i];
-                    indices_flat[i] = indices_flat[j];
-                    indices_flat[j] = idx_tmp;
-                    int64_t count_tmp = counts_flat[i];
-                    counts_flat[i] = counts_flat[j];
-                    counts_flat[j] = count_tmp;
-                }
+    for (idx_t i = 0; i < unique_count; ++i) {
+        for (idx_t j = i + 1; j < unique_count; ++j) {
+            if (y[j] < y[i]) {
+                __bf16 y_tmp = y[i];
+                y[i] = y[j];
+                y[j] = y_tmp;
+                int64_t idx_tmp = indices[i];
+                indices[i] = indices[j];
+                indices[j] = idx_tmp;
+                int64_t count_tmp = counts[i];
+                counts[i] = counts[j];
+                counts[j] = count_tmp;
             }
         }
-        for (idx_t i = 0; i < 6; ++i) {
-            for (idx_t u = 0; u < unique_count; ++u) {
-                if (y_flat[u] == input_flat[i]) {
-                    inverse_flat[i] = u;
-                    break;
-                }
+    }
+    for (idx_t i = 0; i < 6; ++i) {
+        for (idx_t u = 0; u < unique_count; ++u) {
+            if (y[u] == input_flat[i]) {
+                inverse_indices[i] = u;
+                break;
             }
         }
     }

@@ -8001,17 +8001,35 @@ def test_unique_matches_onnxruntime_without_axis() -> None:
         np.testing.assert_array_equal(output_data, ort_output)
 
 
-def test_unique_matches_onnxruntime_with_axis() -> None:
-    model = _make_unique_model(
-        input_shape=[3, 3],
-        output_shapes=([2, 3], [2], [3], [2]),
-        dtype=TensorProto.FLOAT,
-        axis=0,
-        sorted_output=1,
-    )
-    data = np.array(
+_UNIQUE_AXIS_CASES = {
+    "2d_axis0": (
         [[1.0, 0.0, 0.0], [2.0, 0.0, 0.0], [1.0, 0.0, 0.0]],
-        dtype=np.float32,
+        0,
+        ([2, 3], [2], [3], [2]),
+    ),
+    "3d_axis1": (
+        [[[1, 1], [0, 1], [2, 1], [0, 1]], [[1, 1], [0, 1], [2, 1], [0, 1]]],
+        1,
+        ([2, 3, 2], [3], [4], [3]),
+    ),
+    "2d_negative_axis": (
+        [[1.0, 0.0, 0.0], [1.0, 0.0, 0.0], [2.0, 3.0, 3.0]],
+        -1,
+        ([3, 2], [2], [3], [2]),
+    ),
+}
+
+
+@pytest.mark.parametrize("case", sorted(_UNIQUE_AXIS_CASES))
+def test_unique_matches_onnxruntime_with_axis(case: str) -> None:
+    values, axis, output_shapes = _UNIQUE_AXIS_CASES[case]
+    data = np.array(values, dtype=np.float32)
+    model = _make_unique_model(
+        input_shape=list(data.shape),
+        output_shapes=output_shapes,
+        dtype=TensorProto.FLOAT,
+        axis=axis,
+        sorted_output=1,
     )
     payload = _compile_and_run_testbench(model, testbench_inputs={"in0": data})
     session = ort.InferenceSession(

@@ -1,155 +1,144 @@
+{#- idx(name, axis_var): `name` indexed with `axis_var` on the unique axis. -#}
+{% macro idx(name, axis_var) -%}
+{{ name }}{% for var in slice_vars %}[{{ axis_var if loop.index0 == axis else var }}]{% endfor %}
+{%- endmacro %}
+{#- slice_loop: runs the caller body for every element of one slice (all non-axis dims). -#}
+{% macro slice_loop(cond, indent) %}
+{% set depth = slice_dims | length %}
+{% for var, extent in slice_dims %}
+{{ indent }}{{ "    " * loop.index0 }}for (idx_t {{ var }} = 0; {% if cond %}{{ cond }} && {% endif %}{{ var }} < {{ extent }}; ++{{ var }}) {
+{% endfor %}
+{{ caller() | trim | indent(indent | length + 4 * depth, first=True) }}
+{% for _ in slice_dims %}
+{{ indent }}{{ "    " * (depth - loop.index) }}{{ "}" }}
+{% endfor %}
+{% endmacro %}
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-    {{ input_c_type }} *input_flat = ({{ input_c_type }} *){{ input0 }};
-    {{ input_c_type }} *y_flat = ({{ input_c_type }} *){{ y }};
-{% if has_indices_output %}
-    int64_t *indices_flat = (int64_t *){{ indices }};
-{% else %}
-    int64_t indices_local[{{ indices_local_size }}];
-    int64_t *indices_flat = indices_local;
-{% endif %}
-    int64_t *inverse_flat = (int64_t *){{ inverse_indices }};
-    int64_t *counts_flat = (int64_t *){{ counts }};
-{% if axis < 0 %}
     idx_t unique_count = 0;
+{% if axis < 0 %}
+    /* Without an axis ONNX defines Unique on the flattened input. */
+    const {{ input_c_type }} *input_flat = (const {{ input_c_type }} *){{ input0 }};
     for (idx_t i = 0; i < {{ flat_size }}; ++i) {
         idx_t found = -1;
         for (idx_t u = 0; u < unique_count; ++u) {
-            if (y_flat[u] == input_flat[i]) {
+            if ({{ y }}[u] == input_flat[i]) {
                 found = u;
                 break;
             }
         }
         if (found >= 0) {
-            inverse_flat[i] = found;
-            counts_flat[found] += 1;
+            {{ inverse_indices }}[i] = found;
+            {{ counts }}[found] += 1;
             continue;
         }
-        y_flat[unique_count] = input_flat[i];
-        indices_flat[unique_count] = i;
-        counts_flat[unique_count] = 1;
-        inverse_flat[i] = unique_count;
+        {{ y }}[unique_count] = input_flat[i];
+{% if has_indices_output %}
+        {{ indices }}[unique_count] = i;
+{% endif %}
+        {{ counts }}[unique_count] = 1;
+        {{ inverse_indices }}[i] = unique_count;
         unique_count += 1;
     }
-    if ({{ sorted_output }} != 0) {
-        for (idx_t i = 0; i < unique_count; ++i) {
-            for (idx_t j = i + 1; j < unique_count; ++j) {
-                if (y_flat[j] < y_flat[i]) {
-                    {{ input_c_type }} y_tmp = y_flat[i];
-                    y_flat[i] = y_flat[j];
-                    y_flat[j] = y_tmp;
-                    int64_t idx_tmp = indices_flat[i];
-                    indices_flat[i] = indices_flat[j];
-                    indices_flat[j] = idx_tmp;
-                    int64_t count_tmp = counts_flat[i];
-                    counts_flat[i] = counts_flat[j];
-                    counts_flat[j] = count_tmp;
-                }
-            }
-        }
-        for (idx_t i = 0; i < {{ flat_size }}; ++i) {
-            for (idx_t u = 0; u < unique_count; ++u) {
-                if (y_flat[u] == input_flat[i]) {
-                    inverse_flat[i] = u;
-                    break;
-                }
+{% if sorted_output %}
+    for (idx_t i = 0; i < unique_count; ++i) {
+        for (idx_t j = i + 1; j < unique_count; ++j) {
+            if ({{ y }}[j] < {{ y }}[i]) {
+                {{ input_c_type }} y_tmp = {{ y }}[i];
+                {{ y }}[i] = {{ y }}[j];
+                {{ y }}[j] = y_tmp;
+{% if has_indices_output %}
+                int64_t idx_tmp = {{ indices }}[i];
+                {{ indices }}[i] = {{ indices }}[j];
+                {{ indices }}[j] = idx_tmp;
+{% endif %}
+                int64_t count_tmp = {{ counts }}[i];
+                {{ counts }}[i] = {{ counts }}[j];
+                {{ counts }}[j] = count_tmp;
             }
         }
     }
+    for (idx_t i = 0; i < {{ flat_size }}; ++i) {
+        for (idx_t u = 0; u < unique_count; ++u) {
+            if ({{ y }}[u] == input_flat[i]) {
+                {{ inverse_indices }}[i] = u;
+                break;
+            }
+        }
+    }
+{% endif %}
 {% else %}
-    idx_t slice_size = {{ outer }} * {{ inner }};
-    idx_t unique_count = 0;
     for (idx_t a = 0; a < {{ axis_dim }}; ++a) {
         idx_t found = -1;
-        for (idx_t u = 0; u < unique_count; ++u) {
+        for (idx_t u = 0; found < 0 && u < unique_count; ++u) {
             int same = 1;
-            for (idx_t p = 0; p < slice_size; ++p) {
-                idx_t o = p / {{ inner }};
-                idx_t in = p % {{ inner }};
-                idx_t in_off_a = o * {{ axis_dim }} * {{ inner }} + a * {{ inner }} + in;
-                idx_t y_off_u = o * {{ y_axis_dim }} * {{ inner }} + u * {{ inner }} + in;
-                if (input_flat[in_off_a] != y_flat[y_off_u]) {
-                    same = 0;
-                    break;
-                }
-            }
+{% call slice_loop("same", "            ") %}
+if ({{ idx(input0, "a") }} != {{ idx(y, "u") }}) {
+    same = 0;
+}
+{% endcall %}
             if (same != 0) {
                 found = u;
-                break;
             }
         }
         if (found >= 0) {
-            inverse_flat[a] = found;
-            counts_flat[found] += 1;
+            {{ inverse_indices }}[a] = found;
+            {{ counts }}[found] += 1;
             continue;
         }
-        for (idx_t p = 0; p < slice_size; ++p) {
-            idx_t o = p / {{ inner }};
-            idx_t in = p % {{ inner }};
-            idx_t in_off_a = o * {{ axis_dim }} * {{ inner }} + a * {{ inner }} + in;
-            idx_t y_off_u = o * {{ y_axis_dim }} * {{ inner }} + unique_count * {{ inner }} + in;
-            y_flat[y_off_u] = input_flat[in_off_a];
-        }
-        indices_flat[unique_count] = a;
-        counts_flat[unique_count] = 1;
-        inverse_flat[a] = unique_count;
+{% call slice_loop("", "        ") %}
+{{ idx(y, "unique_count") }} = {{ idx(input0, "a") }};
+{% endcall %}
+{% if has_indices_output %}
+        {{ indices }}[unique_count] = a;
+{% endif %}
+        {{ counts }}[unique_count] = 1;
+        {{ inverse_indices }}[a] = unique_count;
         unique_count += 1;
     }
-    if ({{ sorted_output }} != 0) {
-        for (idx_t i = 0; i < unique_count; ++i) {
-            for (idx_t j = i + 1; j < unique_count; ++j) {
-                int cmp = 0;
-                for (idx_t p = 0; p < slice_size; ++p) {
-                    idx_t o = p / {{ inner }};
-                    idx_t in = p % {{ inner }};
-                    idx_t off_i = o * {{ y_axis_dim }} * {{ inner }} + i * {{ inner }} + in;
-                    idx_t off_j = o * {{ y_axis_dim }} * {{ inner }} + j * {{ inner }} + in;
-                    if (y_flat[off_j] < y_flat[off_i]) {
-                        cmp = -1;
-                        break;
-                    }
-                    if (y_flat[off_j] > y_flat[off_i]) {
-                        cmp = 1;
-                        break;
-                    }
-                }
-                if (cmp < 0) {
-                    for (idx_t p = 0; p < slice_size; ++p) {
-                        idx_t o = p / {{ inner }};
-                        idx_t in = p % {{ inner }};
-                        idx_t off_i = o * {{ y_axis_dim }} * {{ inner }} + i * {{ inner }} + in;
-                        idx_t off_j = o * {{ y_axis_dim }} * {{ inner }} + j * {{ inner }} + in;
-                        {{ input_c_type }} y_tmp = y_flat[off_i];
-                        y_flat[off_i] = y_flat[off_j];
-                        y_flat[off_j] = y_tmp;
-                    }
-                    int64_t idx_tmp = indices_flat[i];
-                    indices_flat[i] = indices_flat[j];
-                    indices_flat[j] = idx_tmp;
-                    int64_t count_tmp = counts_flat[i];
-                    counts_flat[i] = counts_flat[j];
-                    counts_flat[j] = count_tmp;
-                }
-            }
-        }
-        for (idx_t a = 0; a < {{ axis_dim }}; ++a) {
-            for (idx_t u = 0; u < unique_count; ++u) {
-                int same = 1;
-                for (idx_t p = 0; p < slice_size; ++p) {
-                    idx_t o = p / {{ inner }};
-                    idx_t in = p % {{ inner }};
-                    idx_t in_off_a = o * {{ axis_dim }} * {{ inner }} + a * {{ inner }} + in;
-                    idx_t y_off_u = o * {{ y_axis_dim }} * {{ inner }} + u * {{ inner }} + in;
-                    if (input_flat[in_off_a] != y_flat[y_off_u]) {
-                        same = 0;
-                        break;
-                    }
-                }
-                if (same != 0) {
-                    inverse_flat[a] = u;
-                    break;
-                }
+{% if sorted_output %}
+    /* Order the unique slices lexicographically (row-major over the slice). */
+    for (idx_t i = 0; i < unique_count; ++i) {
+        for (idx_t j = i + 1; j < unique_count; ++j) {
+            int cmp = 0;
+{% call slice_loop("cmp == 0", "            ") %}
+if ({{ idx(y, "j") }} < {{ idx(y, "i") }}) {
+    cmp = -1;
+} else if ({{ idx(y, "j") }} > {{ idx(y, "i") }}) {
+    cmp = 1;
+}
+{% endcall %}
+            if (cmp < 0) {
+{% call slice_loop("", "                ") %}
+{{ input_c_type }} y_tmp = {{ idx(y, "i") }};
+{{ idx(y, "i") }} = {{ idx(y, "j") }};
+{{ idx(y, "j") }} = y_tmp;
+{% endcall %}
+{% if has_indices_output %}
+                int64_t idx_tmp = {{ indices }}[i];
+                {{ indices }}[i] = {{ indices }}[j];
+                {{ indices }}[j] = idx_tmp;
+{% endif %}
+                int64_t count_tmp = {{ counts }}[i];
+                {{ counts }}[i] = {{ counts }}[j];
+                {{ counts }}[j] = count_tmp;
             }
         }
     }
+    for (idx_t a = 0; a < {{ axis_dim }}; ++a) {
+        int matched = 0;
+        for (idx_t u = 0; matched == 0 && u < unique_count; ++u) {
+            int same = 1;
+{% call slice_loop("same", "            ") %}
+if ({{ idx(input0, "a") }} != {{ idx(y, "u") }}) {
+    same = 0;
+}
+{% endcall %}
+            if (same != 0) {
+                {{ inverse_indices }}[a] = u;
+                matched = 1;
+            }
+        }
+    }
+{% endif %}
 {% endif %}
 }
