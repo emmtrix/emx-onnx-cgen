@@ -10681,3 +10681,55 @@ def test_attention_masks_match_reference(case: str, dtype: object) -> None:
         np.testing.assert_array_equal(output, expected)
     else:
         np.testing.assert_allclose(output, expected, rtol=1e-5, atol=1e-6)
+
+
+def _swiglu_model(
+    elem_type: int, shape_a: tuple[int, ...], shape_b: tuple[int, ...], **attrs: float
+) -> onnx.ModelProto:
+    graph = helper.make_graph(
+        [helper.make_node("SwiGLU", ["A", "B"], ["Y"], **attrs)],
+        "swiglu",
+        [
+            helper.make_tensor_value_info("A", elem_type, shape_a),
+            helper.make_tensor_value_info("B", elem_type, shape_b),
+        ],
+        [helper.make_tensor_value_info("Y", elem_type, None)],
+    )
+    model = helper.make_model(graph, opset_imports=[helper.make_opsetid("", 28)])
+    model.ir_version = 11
+    return model
+
+
+@pytest.mark.parametrize("alpha", [None, 1.702])
+@pytest.mark.parametrize("dtype", [np.float32, np.float16, np.float64, "bfloat16"])
+def test_swiglu_matches_reference(dtype: object, alpha: float | None) -> None:
+    """SwiGLU-28: Y = Swish_alpha(A) * B."""
+    if onnx.defs.onnx_opset_version() < 28:
+        pytest.skip("SwiGLU needs onnx >= 1.23")
+    import ml_dtypes
+
+    np_dtype = np.dtype(ml_dtypes.bfloat16 if dtype == "bfloat16" else dtype)
+    attrs = {} if alpha is None else {"alpha": alpha}
+    shape = (2, 3, 4)
+    model = _swiglu_model(
+        helper.np_dtype_to_tensor_dtype(np_dtype), shape, shape, **attrs
+    )
+    rng = np.random.default_rng(0)
+    feeds = {name: rng.uniform(-4.0, 4.0, size=shape).astype(np_dtype) for name in "AB"}
+    (expected,) = ReferenceEvaluator(model).run(None, feeds)
+
+    payload = _compile_and_run_testbench(model, testbench_inputs=feeds)
+    output = decode_testbench_array(payload["outputs"]["Y"]["data"], np_dtype)
+    output = output.reshape(expected.shape).astype(np.float64)
+    # The reference rounds every intermediate step to the 16-bit input dtype
+    # (up to ~0.9 ulp off the exact value), so allow a few ulp there.
+    rtol = {"bfloat16": 3 * 2.0**-7, "float16": 3 * 2.0**-10}.get(np_dtype.name, 1e-6)
+    np.testing.assert_allclose(output, expected.astype(np.float64), rtol=rtol, atol=0)
+
+
+def test_swiglu_rejects_broadcasting() -> None:
+    if onnx.defs.onnx_opset_version() < 28:
+        pytest.skip("SwiGLU needs onnx >= 1.23")
+    model = _swiglu_model(TensorProto.FLOAT, (2, 3), (1, 3))
+    with pytest.raises((ShapeInferenceError, onnx.shape_inference.InferenceError)):
+        Compiler().compile(model)
