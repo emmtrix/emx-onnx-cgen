@@ -1783,22 +1783,30 @@ def _expand_flexattention_nodes(
 
 # Integer ops whose result can be evaluated at compile time when all of their
 # inputs are themselves compile-time constants. This is intentionally limited to
-# the operators that show up in shape arithmetic (e.g. the decomposition of
-# LinearAttention into Shape/Div/Concat feeding a ConstantOfShape).
+# the operators that show up in shape arithmetic and in conditions on it (e.g.
+# the decomposition of LinearAttention into Shape/Div/Concat feeding a
+# ConstantOfShape, or the GQA head-count checks of the expanded Attention).
 _FOLDABLE_INT_OPS = frozenset(
     {
         "Add",
+        "And",
         "Cast",
         "Concat",
         "Constant",
         "Div",
         "Equal",
         "Gather",
+        "Greater",
+        "GreaterOrEqual",
+        "Less",
+        "LessOrEqual",
         "Max",
         "Min",
         "Mod",
         "Mul",
         "Neg",
+        "Not",
+        "Or",
         "Range",
         "Reshape",
         "Slice",
@@ -1809,6 +1817,7 @@ _FOLDABLE_INT_OPS = frozenset(
     }
 )
 _FOLD_MAX_ELEMS = 4096
+_MAX_SHAPE_FOLD_ROUNDS = 4
 
 
 def _static_shape_from_value_info(
@@ -1830,6 +1839,7 @@ class _ConstantFolder:
 
     def __init__(self, graph: onnx.GraphProto) -> None:
         self._init_map = {init.name: init for init in graph.initializer}
+        self.initializer_names = frozenset(self._init_map)
         self._node_by_output: dict[str, onnx.NodeProto] = {}
         for node in graph.node:
             for output in node.output:
@@ -1928,28 +1938,39 @@ class _ConstantFolder:
         return outputs
 
 
-def _fold_constant_of_shape_inputs(
+# Inputs that determine an op's output shape, per op type. ONNX shape inference
+# resolves the output statically once these are constant initializers.
+_SHAPE_OPERAND_INPUTS: dict[str, tuple[int, ...]] = {
+    "ConstantOfShape": (0,),
+    "Expand": (1,),
+    "Pad": (1, 3),
+    "Range": (0, 1, 2),
+    "Reshape": (1,),
+    "Slice": (1, 2, 3, 4),
+    "Tile": (1,),
+}
+
+
+def _fold_shape_operand_inputs(
     model: onnx.ModelProto,
 ) -> tuple[onnx.ModelProto, bool]:
-    """Resolve ConstantOfShape outputs whose shape is computed from constants.
+    """Resolve outputs whose shape operands are computed from constants.
 
     ONNX shape inference (even with data propagation) does not fold integer
-    arithmetic such as ``Div`` when computing a shape tensor, leaving the
-    ConstantOfShape output with unknown dimensions. That blocks downstream
-    static-shape code generation (e.g. the expanded LinearAttention reference
-    function builds its recurrent state via Shape/Div/Concat/ConstantOfShape).
-    Here we evaluate such shape inputs at import time and rewire the
-    ConstantOfShape node to a constant initializer so the regular shape
-    inference pass can resolve the output statically.
+    arithmetic such as ``Div``, ``Sub`` or ``Gather`` on shape tensors, leaving
+    e.g. the ConstantOfShape state of the expanded LinearAttention function, the
+    Pad-ed mask bias or the Range-based causal mask of the expanded Attention
+    function with unknown dimensions. That blocks static-shape code generation.
+    Here we evaluate the shape operands (see ``_SHAPE_OPERAND_INPUTS``) at import
+    time and rewire them to constant initializers so the regular shape inference
+    pass can resolve the outputs statically.
     """
 
     graph = model.graph
     targets: list[onnx.NodeProto] = []
     value_info_map = {value_info.name: value_info for value_info in graph.value_info}
     for node in graph.node:
-        if node.op_type != "ConstantOfShape" or len(node.input) != 1:
-            continue
-        if not node.input[0]:
+        if node.op_type not in _SHAPE_OPERAND_INPUTS or not node.output:
             continue
         output_info = value_info_map.get(node.output[0])
         if output_info is not None and _static_shape_from_value_info(output_info):
@@ -1966,31 +1987,39 @@ def _fold_constant_of_shape_inputs(
     existing_names.update(value_info.name for value_info in graph.input)
     changed = False
     resolved_outputs: set[str] = set()
-    for index, node in enumerate(targets):
-        values = folder.evaluate(node.input[0])
-        if values is None or values.ndim != 1:
-            continue
-        shape_values = [int(value) for value in values.reshape(-1)]
-        if any(value < 0 for value in shape_values):
-            continue
-        const_name = f"{node.output[0]}_folded_shape_{index}"
-        while const_name in existing_names:
-            const_name = f"_{const_name}"
-        existing_names.add(const_name)
-        graph.initializer.append(
-            numpy_helper.from_array(
-                np.array(shape_values, dtype=np.int64), name=const_name
-            )
-        )
-        node.input[0] = const_name
-        resolved_outputs.add(node.output[0])
-        changed = True
+    for node in targets:
+        for input_index in _SHAPE_OPERAND_INPUTS[node.op_type]:
+            if input_index >= len(node.input) or not node.input[input_index]:
+                continue
+            if node.input[input_index] in folder.initializer_names:
+                continue
+            values = folder.evaluate(node.input[input_index])
+            if values is None:
+                continue
+            if node.op_type == "ConstantOfShape" and (
+                values.ndim != 1 or (values < 0).any()
+            ):
+                continue
+            # ONNX shape inference rejects non-scalar Range operands, which
+            # would leave the output rank unknown; keep such operands dynamic
+            # so the later symbolic shape resolution still handles them.
+            if node.op_type == "Range" and values.ndim != 0:
+                continue
+            const_name = f"{node.output[0]}_folded_input_{input_index}"
+            while const_name in existing_names:
+                const_name = f"_{const_name}"
+            existing_names.add(const_name)
+            graph.initializer.append(numpy_helper.from_array(values, name=const_name))
+            node.input[input_index] = const_name
+            resolved_outputs.add(node.output[0])
+            changed = True
 
     if not changed:
         return model, False
-    # Drop the stale (dynamic) value_info for the rewired outputs so the next
-    # shape inference pass recomputes them from the folded constant shape rather
-    # than treating the leftover ``unk__N`` dim_params as already resolved.
+    # Drop the stale (dynamic) shapes of the rewired outputs, including graph
+    # outputs, so the next shape inference pass recomputes them from the folded
+    # constants rather than treating the leftover ``unk__N`` dim_params as
+    # already resolved.
     stale = [
         value_info
         for value_info in graph.value_info
@@ -1998,6 +2027,11 @@ def _fold_constant_of_shape_inputs(
     ]
     for value_info in stale:
         graph.value_info.remove(value_info)
+    for output in graph.output:
+        if output.name in resolved_outputs and not _static_shape_from_value_info(
+            output
+        ):
+            output.type.tensor_type.ClearField("shape")
     _prune_unused_nodes(graph)
     return model, True
 
@@ -2188,8 +2222,12 @@ def prepare_onnx_model(model: onnx.ModelProto) -> onnx.ModelProto:
     # leaves unresolved (e.g. the ConstantOfShape state built via Div in the
     # expanded LinearAttention function) before expanding any Scan nodes.
     prepared = _maybe_infer_shapes(prepared)
-    prepared, folded = _fold_constant_of_shape_inputs(prepared)
-    if folded:
+    # A folded operand can make further operands foldable (e.g. a Range over the
+    # length of a Pad-ed tensor), so repeat until nothing changes.
+    for _ in range(_MAX_SHAPE_FOLD_ROUNDS):
+        prepared, folded = _fold_shape_operand_inputs(prepared)
+        if not folded:
+            break
         prepared = _maybe_infer_shapes(prepared)
     prepared, _ = _expand_scan_nodes(prepared)
     prepared, _ = _expand_if_nodes(prepared)

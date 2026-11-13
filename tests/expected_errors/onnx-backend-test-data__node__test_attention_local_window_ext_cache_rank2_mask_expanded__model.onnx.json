@@ -1,5 +1,5 @@
 {
-  "error": "Code generation requires static shapes. Reason: tensor 'Attention_test_attention_local_window_ext_cache_rank2_mask_expanded_function_AttnBias' has dynamic dimensions ('unk__0', 'unk__1'). Hint: pin dynamic input dimensions with --input-dim (e.g. --input-dim batch=1) or export the model with static shapes.",
+  "error": "OK (max ULP 3)",
   "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_attention_local_window_ext_cache_rank2_mask_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
@@ -33,5 +33,6 @@
     "Softmax",
     "ReduceMax"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "19c1a3e4dc4ee212939fbfba0fc70645965db533ba6e64ab11f92144678b3164"
 }
