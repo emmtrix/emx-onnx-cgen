@@ -391,6 +391,9 @@
     "Sub": {
       "model": "onnx-backend-test-data/node/test_sub_example/model.onnx"
     },
+    "SwiGLU": {
+      "model": "onnx-backend-test-data/node/test_swiglu/model.onnx"
+    },
     "Swish": {
       "model": "onnx-backend-test-data/node/test_swish/model.onnx"
     },

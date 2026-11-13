@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported op ai.onnx.SwiGLU",
+  "error": "OK (max ULP 1)",
   "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_swiglu_alpha model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "SwiGLU"
   ],
-  "opset_version": 28
+  "opset_version": 28,
+  "generated_checksum": "103638693e17f3730651f176e8421d5a34eed0dd34796e995706dff1aab53dbf"
 }

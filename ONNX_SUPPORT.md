@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 2005 / 2033, 98.6% | 1.23.2 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 2008 / 2033, 98.8% | 1.23.2 |
 | [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4313 / 4324, 99.7% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 15 / 15, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-backend-test-data`
 
-Coverage 2005 / 2033 ONNX files (98.6%).
+Coverage 2008 / 2033 ONNX files (98.8%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1824,11 +1824,11 @@ Coverage 2005 / 2033 ONNX files (98.6%).
 | node/test_sum_example/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_sum_one_input/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_sum_two_inputs/model.onnx | 13 | Data/Data | ✅ | OK (max ULP 0) |
-| node/test_swiglu/model.onnx | 28 | Data/Data | ❌ | Unsupported op ai.onnx.SwiGLU |
-| node/test_swiglu_alpha/model.onnx | 28 | Data/Data | ❌ | Unsupported op ai.onnx.SwiGLU |
+| node/test_swiglu/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 1) |
+| node/test_swiglu_alpha/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 1) |
 | node/test_swiglu_alpha_expanded/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 1) |
 | node/test_swiglu_expanded/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 1) |
-| node/test_swiglu_float16/model.onnx | 28 | Data/Data | ❌ | Unsupported op ai.onnx.SwiGLU |
+| node/test_swiglu_float16/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_swiglu_float16_expanded/model.onnx | 28 | Data/Data | ✅ | OK (max ULP 0) |
 | node/test_swish/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 1) |
 | node/test_swish_expanded/model.onnx | 24 | Data/Data | ✅ | OK (max ULP 0) |

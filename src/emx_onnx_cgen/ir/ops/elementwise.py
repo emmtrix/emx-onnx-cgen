@@ -662,6 +662,83 @@ class UnaryOp(ElementwiseOpBase):
 
 
 @dataclass(frozen=True)
+class SwiGLUOp(ElementwiseOpBase):
+    """``Y = Swish_alpha(A) * B`` over two inputs of identical shape."""
+
+    __io_inputs__ = ("input_a", "input_b")
+    input_a: str
+    input_b: str
+    output: str
+    alpha: float
+
+    def required_includes(self, ctx: OpContext) -> set[str]:
+        return {"#include <math.h>"}
+
+    def _elementwise_inputs(self) -> tuple[str, ...]:
+        return (self.input_a, self.input_b)
+
+    def _elementwise_output(self) -> str:
+        return self.output
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        a_shape = ctx.shape(self.input_a)
+        b_shape = ctx.shape(self.input_b)
+        if a_shape != b_shape:
+            raise ShapeInferenceError(
+                f"SwiGLU requires inputs A and B to have identical shapes "
+                f"(no broadcasting), got {a_shape} and {b_shape}"
+            )
+        ctx.set_shape(self.output, a_shape)
+        return None
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        dtype = emitter.ctx_dtype(self.output)
+        shape_raw = emitter.ctx_shape(self.output)
+        params = emitter.shared_param_map(
+            [
+                ("input_a", self.input_a),
+                ("input_b", self.input_b),
+                ("output", self.output),
+            ]
+        )
+        dim_names = emitter.dim_names_for(self.output)
+        shape = CEmitterCompat.shape_dim_exprs(shape_raw, dim_names)
+        loop_vars = CEmitterCompat.loop_vars(shape_raw)
+        array_suffix = emitter.param_array_suffix(shape_raw, dim_names)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input_a"], dtype.c_type, array_suffix, True),
+                (params["input_b"], dtype.c_type, array_suffix, True),
+                (params["output"], dtype.c_type, array_suffix, False),
+            ]
+        )
+        index = "".join(f"[{var}]" for var in loop_vars)
+        swish_fn = emitter.scalar_fn(ScalarFunction.SWISH, dtype, params=(self.alpha,))
+        mul_fn = emitter.scalar_fn(ScalarFunction.MUL, dtype)
+        operator_expr = (
+            f"{mul_fn}({swish_fn}({params['input_a']}{index}), "
+            f"{params['input_b']}{index})"
+        )
+        rendered = (
+            state.templates["binary"]
+            .render(
+                op_name=emitter.op_function_name(model, ctx.op_index),
+                dim_args=emitter.dim_args_str(),
+                params=param_decls,
+                shape=shape,
+                loop_vars=loop_vars,
+                output=params["output"],
+                operator_kind=OperatorKind.EXPR.value,
+                operator_expr=operator_expr,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+
+@dataclass(frozen=True)
 class ClipOp(ElementwiseOpBase):
     __io_inputs__ = ("input0", "input_min", "input_max")
     input0: str
