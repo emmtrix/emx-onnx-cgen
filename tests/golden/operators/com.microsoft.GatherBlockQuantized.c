@@ -8,7 +8,7 @@
  *   fp16_accumulation_strategy: fp32
  *   large_temp_threshold: 1024
  *   large_weight_threshold: 102400
- * Model checksum (sha256): 748a1bd6c289fbda6e68dcb286520f8e11054b319f32514d6265d53d35b8e35a
+ * Model checksum (sha256): 47e1bf05d9338b97c79b5b0b7ee0b647cfec16d9a3204e7977eeb72759819e0f
  * Model name: model
  * Graph name: test
  * Inputs: 2 Outputs: 1 Nodes: 1 Initializers: 1
@@ -67,15 +67,15 @@ const EMX_UNUSED int32_t weight1_indices[1] = {
  * Inputs: data, indices, scales
  * Outputs: output
  * Attrs:
- *   bits: 4
+ *   bits: 2
  *   block_size: 16
  *   gather_axis: 0
  *   quantize_axis: 2
  */
-EMX_NODE_FN void node0_node1(const uint8_t data[2][3][2], const int32_t indices[1], const float scales[2][3][1], float output[1][3][4]) {
+EMX_NODE_FN void node0_node1(const uint8_t data[2][3][4], const int32_t indices[1], const float scales[2][3][1], float output[1][3][16]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         for (idx_t i1 = 0; i1 < 3; ++i1) {
-            for (idx_t i2 = 0; i2 < 4; ++i2) {
+            for (idx_t i2 = 0; i2 < 16; ++i2) {
                 idx_t gather_index = indices[i0];
                 if (gather_index < 0) {
                     gather_index += 2;
@@ -85,11 +85,11 @@ EMX_NODE_FN void node0_node1(const uint8_t data[2][3][2], const int32_t indices[
                 } else if (gather_index >= (idx_t)2) {
                     gather_index = (idx_t)(2) - 1;
                 }
-                idx_t packed_idx = i2 * 4 / 8;
-                idx_t bit_shift = (i2 * 4) % 8;
-                int quant_val = ((int)(unsigned char)data[gather_index][i1][packed_idx] >> bit_shift) & 15;
+                idx_t packed_idx = i2 * 2 / 8;
+                idx_t bit_shift = (i2 * 2) % 8;
+                int quant_val = ((int)(unsigned char)data[gather_index][i1][packed_idx] >> bit_shift) & 3;
                 idx_t block_idx = i2 / 16;
-                int zp = 8;
+                int zp = 2;
                 float scale = (float)scales[gather_index][i1][block_idx];
                 output[i0][i1][i2] = (float)((float)quant_val - (float)zp) * scale;
             }
@@ -102,6 +102,6 @@ _Bool model_load(const char *path) {
     return 1;
 }
 
-void model(const uint8_t data[restrict 2][3][2], const float scales[restrict 2][3][1], float output[restrict 1][3][4]) {
+void model(const uint8_t data[restrict 2][3][4], const float scales[restrict 2][3][1], float output[restrict 1][3][16]) {
     node0_node1(data, weight1_indices, scales, output);
 }
