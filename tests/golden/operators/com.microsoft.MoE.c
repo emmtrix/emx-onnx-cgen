@@ -27,6 +27,7 @@
 
 #include <stdint.h>
 #include <math.h>
+#include <float.h>
 
 #ifndef idx_t
 #define idx_t int32_t
@@ -48,6 +49,14 @@
 #define EMX_SEQUENCE_MAX_LEN 32
 #endif
 
+static inline float ref_scalar_f32_exp(float a) {
+    return expf(a);
+}
+
+static inline float ref_scalar_f32_maximum(float a, float b) {
+    return fmaxf(a, b);
+}
+
 /*
  * Node 0:
  * OpType: MoE
@@ -64,70 +73,83 @@
  *   use_sparse_mixer: 0
  */
 EMX_NODE_FN void node0_node1(const float input[2][4], const float router_probs[2][2], const float fc1_w[2][4][16], const float fc2_w[2][8][4], float output[2][4]) {
+    /* ORT reads expert weights as [E][out][in] in memory, whatever shape they
+    are declared with; view the [E, in, out] declarations accordingly. */
+    const float (*fc1_view)[16][4] = (const float (*)[16][4])fc1_w;
+    const float (*fc2_view)[4][8] = (const float (*)[4][8])fc2_w;
     for (int b = 0; b < 2; ++b) {
         for (int j = 0; j < 4; ++j) {
             output[b][j] = 0.0f;
         }
     }
     for (int b = 0; b < 2; ++b) {
-        /* Select top-1 experts */
+        /* Routing probabilities: softmax over the router logits. */
+        float max_logit = -INFINITY;
+        for (int e = 0; e < 2; ++e) {
+            max_logit = ref_scalar_f32_maximum(max_logit, router_probs[b][e]);
+        }
+        float probs[2];
+        float prob_sum = 0.0f;
+        for (int e = 0; e < 2; ++e) {
+            probs[e] = ref_scalar_f32_exp(router_probs[b][e] - max_logit);
+            prob_sum += probs[e];
+        }
+        for (int e = 0; e < 2; ++e) {
+            probs[e] = probs[e] / prob_sum;
+        }
+        /* Select the top-1 experts. */
         int selected_experts[1];
         float selected_weights[1];
-        {
-            /* Find top-k indices by router_probs[b] */
-            int chosen[1];
-            for (int ki = 0; ki < 1; ++ki) {
-                float best_val = -INFINITY;
-                int best_idx = 0;
-                for (int e = 0; e < 2; ++e) {
-                    int already = 0;
-                    for (int kj = 0; kj < ki; ++kj) {
-                        if (chosen[kj] == e) { already = 1; break; }
-                    }
-                    if (!already && (float)router_probs[b][e] > best_val) {
-                        best_val = (float)router_probs[b][e];
-                        best_idx = e;
+        float selected_sum = 0.0f;
+        for (int ki = 0; ki < 1; ++ki) {
+            float best_val = -INFINITY;
+            int best_idx = 0;
+            for (int e = 0; e < 2; ++e) {
+                int already = 0;
+                for (int kj = 0; kj < ki; ++kj) {
+                    if (selected_experts[kj] == e) {
+                        already = 1;
                     }
                 }
-                chosen[ki] = best_idx;
+                if (!already && probs[e] > best_val) {
+                    best_val = probs[e];
+                    best_idx = e;
+                }
             }
-            /* Compute normalized routing weights */
-            float weight_sum = 0.0f;
-            for (int ki = 0; ki < 1; ++ki) {
-                weight_sum += (float)router_probs[b][chosen[ki]];
-            }
-            for (int ki = 0; ki < 1; ++ki) {
-                selected_experts[ki] = chosen[ki];
-                selected_weights[ki] = (float)router_probs[b][chosen[ki]] / weight_sum;
-            }
+            selected_experts[ki] = best_idx;
+            selected_weights[ki] = best_val;
+            selected_sum += best_val;
+        }
+        for (int ki = 0; ki < 1; ++ki) {
+            selected_weights[ki] = selected_weights[ki] / selected_sum;
         }
         /* Process each selected expert */
         for (int ki = 0; ki < 1; ++ki) {
             int e = selected_experts[ki];
             float rw = selected_weights[ki];
-            /* fc1: input[b] @ fc1_w[e] → fc1_out[fc1_out_size] */
+            /* fc1: input[b] @ fc1_w[e] -> fc1_out[fc1_out_size] */
             float fc1_out[16];
             for (int k2 = 0; k2 < 16; ++k2) {
                 float acc = 0.0f;
                 for (int i = 0; i < 4; ++i) {
-                    acc += input[b][i] * fc1_w[e][i][k2];
+                    acc += input[b][i] * fc1_view[e][k2][i];
                 }
                 fc1_out[k2] = acc;
             }
-            /* SwiGLU: gate=fc1_out[:hidden], value=fc1_out[hidden:] */
-            float swiglu[8];
+            float hidden[8];
             for (int k2 = 0; k2 < 8; ++k2) {
-                float gate  = fc1_out[k2];
+                /* SwiGLU: gate = fc1_out[:inter], value = fc1_out[inter:] */
+                float gate = fc1_out[k2];
                 float value = fc1_out[8 + k2];
                 /* swiglu = silu(gate) * (value + beta) */
                 float sig = (float)1.0f / ((float)1.0f + expf(-gate));
-                swiglu[k2] = gate * sig * (value + 1.0f);
+                hidden[k2] = gate * sig * (value + 1.0f);
             }
-            /* fc2: swiglu @ fc2_w[e] → fc2_out[model_dim] */
+            /* fc2: hidden @ fc2_w[e] -> fc2_out[model_dim] */
             for (int j = 0; j < 4; ++j) {
                 float acc = 0.0f;
                 for (int k2 = 0; k2 < 8; ++k2) {
-                    acc += swiglu[k2] * fc2_w[e][k2][j];
+                    acc += hidden[k2] * fc2_view[e][j][k2];
                 }
                 output[b][j] += rw * acc;
             }

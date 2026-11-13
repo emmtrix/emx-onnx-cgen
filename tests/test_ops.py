@@ -10284,6 +10284,74 @@ def test_matmul_nbits_with_canonical_g_idx_compiles() -> None:
     assert generated
 
 
+_MOE_CASES = {
+    # activation, k, normalize_routing_weights, transposed weights
+    "relu_k1_transposed": ("relu", 1, 0, True),
+    "gelu_k2_normalized_transposed": ("gelu", 2, 1, True),
+    "silu_k2_legacy": ("silu", 2, 0, False),
+    "identity_k2_normalized_legacy": ("identity", 2, 1, False),
+}
+
+
+@pytest.mark.parametrize("case", sorted(_MOE_CASES))
+def test_moe_activations_match_onnxruntime(case: str) -> None:
+    """com.microsoft::MoE: activations, softmax routing and both weight layouts."""
+    activation, k, normalize, transposed = _MOE_CASES[case]
+    batch, hidden, inter, experts = 3, 4, 6, 3
+    fc1_shape = [experts, inter, hidden] if transposed else [experts, hidden, inter]
+    fc2_shape = [experts, hidden, inter] if transposed else [experts, inter, hidden]
+    shapes = {
+        "input": [batch, hidden],
+        "router_probs": [batch, experts],
+        "fc1_experts_weights": fc1_shape,
+        "fc1_experts_bias": [experts, inter],
+        "fc2_experts_weights": fc2_shape,
+        "fc2_experts_bias": [experts, hidden],
+    }
+    graph = helper.make_graph(
+        [
+            helper.make_node(
+                "MoE",
+                list(shapes),
+                ["output"],
+                domain="com.microsoft",
+                activation_type=activation,
+                k=k,
+                normalize_routing_weights=normalize,
+            )
+        ],
+        "moe_graph",
+        [
+            helper.make_tensor_value_info(name, TensorProto.FLOAT, shape)
+            for name, shape in shapes.items()
+        ],
+        [helper.make_tensor_value_info("output", TensorProto.FLOAT, [batch, hidden])],
+    )
+    model = helper.make_model(
+        graph,
+        opset_imports=[
+            helper.make_opsetid("", 17),
+            helper.make_opsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 8
+    rng = np.random.default_rng(3)
+    feeds = {
+        name: rng.uniform(-1.0, 1.0, size=shape).astype(np.float32)
+        for name, shape in shapes.items()
+    }
+    session = ort.InferenceSession(
+        model.SerializeToString(), providers=["CPUExecutionProvider"]
+    )
+    (expected,) = session.run(None, feeds)
+
+    payload = _compile_and_run_testbench(model, testbench_inputs=feeds)
+    output = decode_testbench_array(payload["outputs"]["output"]["data"], np.float32)
+    np.testing.assert_allclose(
+        output.reshape(expected.shape), expected, rtol=1e-5, atol=1e-6
+    )
+
+
 # ---------------------------------------------------------------------------
 # QMoE
 # ---------------------------------------------------------------------------

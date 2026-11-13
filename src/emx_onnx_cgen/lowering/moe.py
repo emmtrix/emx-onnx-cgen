@@ -6,6 +6,8 @@ from ..ir.ops import MoEOp
 from .common import node_dtype, optional_name, value_shape
 from .registry import register_lowering
 
+_MOE_ACTIVATIONS = frozenset({"swiglu", "relu", "gelu", "silu", "identity"})
+
 
 @register_lowering("MoE")
 def lower_moe(graph: Graph, node: Node) -> MoEOp:
@@ -42,12 +44,13 @@ def lower_moe(graph: Graph, node: Node) -> MoEOp:
     activation_type = node.attrs.get("activation_type", b"swiglu")
     if isinstance(activation_type, bytes):
         activation_type = activation_type.decode("utf-8")
-    if activation_type != "swiglu":
+    if activation_type not in _MOE_ACTIVATIONS:
         raise UnsupportedOpError(
-            f"MoE: only activation_type='swiglu' is supported, got '{activation_type}'"
+            f"MoE: activation_type '{activation_type}' is not supported "
+            f"(supported: {', '.join(sorted(_MOE_ACTIVATIONS))})"
         )
-    swiglu_fusion = int(node.attrs.get("swiglu_fusion", 0))
-    if swiglu_fusion != 1:
+    is_swiglu = activation_type == "swiglu"
+    if is_swiglu and int(node.attrs.get("swiglu_fusion", 0)) != 1:
         raise UnsupportedOpError("MoE: only swiglu_fusion=1 is supported")
     activation_beta = float(node.attrs.get("activation_beta", 0.0))
 
@@ -65,21 +68,40 @@ def lower_moe(graph: Graph, node: Node) -> MoEOp:
     num_experts = router_shape[1]
 
     fc1_shape = value_shape(graph, fc1_w_name, node)
-    if len(fc1_shape) != 3 or fc1_shape[0] != num_experts or fc1_shape[1] != model_dim:
-        raise UnsupportedOpError(
-            f"MoE: fc1_w must be [num_experts, model_dim, fc1_out_size], got {fc1_shape}"
-        )
-    fc1_out_size = fc1_shape[2]
-    fc2_in_size = fc1_out_size // 2  # SwiGLU splits fc1_out into gate + value
-
     fc2_shape = value_shape(graph, fc2_w_name, node)
     if (
-        len(fc2_shape) != 3
+        len(fc1_shape) != 3
+        or len(fc2_shape) != 3
+        or fc1_shape[0] != num_experts
         or fc2_shape[0] != num_experts
-        or fc2_shape[1] != fc2_in_size
     ):
         raise UnsupportedOpError(
-            f"MoE: fc2_w must be [num_experts, fc2_in_size={fc2_in_size}, model_dim], got {fc2_shape}"
+            f"MoE: expert weights must be rank 3 with {num_experts} experts, "
+            f"got fc1 {fc1_shape} and fc2 {fc2_shape}"
+        )
+    # ORT accepts expert weights declared as [E, in, out] or [E, out, in] and
+    # takes the sizes from where the hidden size sits ([E, in, out] wins when
+    # both fit), but always reads the memory as [E][out][in].
+    if fc1_shape[1] == model_dim and fc2_shape[2] == model_dim:
+        weights_out_in = False
+        fc1_out_size = fc1_shape[2]
+        fc2_weight_in = fc2_shape[1]
+    elif fc1_shape[2] == model_dim and fc2_shape[1] == model_dim:
+        weights_out_in = True
+        fc1_out_size = fc1_shape[1]
+        fc2_weight_in = fc2_shape[2]
+    else:
+        raise UnsupportedOpError(
+            f"MoE: expert weights must be [num_experts, {model_dim}, out] / "
+            f"[num_experts, in, {model_dim}] or their transposes, got fc1 "
+            f"{fc1_shape} and fc2 {fc2_shape}"
+        )
+    # SwiGLU splits fc1_out into gate and value halves.
+    fc2_in_size = fc1_out_size // 2 if is_swiglu else fc1_out_size
+    if fc2_weight_in != fc2_in_size:
+        raise UnsupportedOpError(
+            f"MoE: fc2 expects {fc2_in_size} inputs for activation "
+            f"'{activation_type}', got fc2 {fc2_shape}"
         )
 
     return MoEOp(
@@ -99,4 +121,6 @@ def lower_moe(graph: Graph, node: Node) -> MoEOp:
         normalize_routing_weights=normalize_routing_weights,
         activation_beta=activation_beta,
         dtype=op_dtype,
+        activation=activation_type,
+        weights_out_in=weights_out_in,
     )
