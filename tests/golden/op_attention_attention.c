@@ -70,28 +70,31 @@ static inline float ref_scalar_f32_exp(float a) {
  * Attrs: n/a
  */
 EMX_NODE_FN void node0_attention(const float input_q[1][2][3][4], const float input_k[1][2][5][4], const float input_v[1][2][5][4], float output[1][2][3][4]) {
-    const float scale = 0.5f;
+    const float sqrt_scale = 0.707106769f;
     const float softcap = 0.0f;
     for (int b = 0; b < 1; ++b) {
         for (int h = 0; h < 2; ++h) {
             int kv_head = h / 1;
             for (int qi = 0; qi < 3; ++qi) {
+                float q_scaled[4];
+                for (int d = 0; d < 4; ++d) {
+                    q_scaled[d] = input_q[b][h][qi][d] * sqrt_scale;
+                }
                 float scores[5];
-                float max_score = -INFINITY;
+                int row_attended = 0;
                 for (int ki = 0; ki < 5; ++ki) {
-                    float score = 0.0f;
+                    float qk_acc = 0.0f;
                     int k_index = ki - 0;
                     for (int d = 0; d < 4; ++d) {
-                        float q_val;
                         float k_val;
-                        q_val = input_q[b][h][qi][d];
                         k_val = input_k[b][kv_head][k_index][d];
-                        score += q_val * k_val;
+                        k_val = k_val * sqrt_scale;
+                        qk_acc += q_scaled[d] * k_val;
                     }
-                    score *= scale;
+                    float score = qk_acc;
                     float bias = 0.0f;
-                    if (0 && ki > qi + 0) {
-                        bias = -INFINITY;
+                    if (bias != -INFINITY) {
+                        row_attended = 1;
                     }
                     float score_softcap = score;
                     if (softcap != 0.0f) {
@@ -99,24 +102,32 @@ EMX_NODE_FN void node0_attention(const float input_q[1][2][3][4], const float in
                     }
                     float score_bias = score_softcap + bias;
                     scores[ki] = score_bias;
-                    max_score = ref_scalar_f32_maximum(max_score, score_bias);
+                }
+                float max_score = -INFINITY;
+                for (int ki = 0; ki < 5; ++ki) {
+                    max_score = ref_scalar_f32_maximum(max_score, scores[ki]);
+                }
+                if (max_score == -INFINITY) {
+                    max_score = 0.0f;
                 }
                 float weights[5];
                 float sum = 0.0f;
                 for (int ki = 0; ki < 5; ++ki) {
-                    float weight = 0.0f;
-                    if (max_score != -INFINITY) {
-                        weight = ref_scalar_f32_exp(scores[ki] - max_score);
-                    }
-                    weights[ki] = weight;
-                    sum += weight;
+                    weights[ki] = ref_scalar_f32_exp(scores[ki] - max_score);
+                    sum += weights[ki];
                 }
-                float inv_sum = sum == 0.0f ? 0.0f : (float)1.0f / sum;
+                if (sum == 0.0f) {
+                    sum = 1.0f;
+                }
+                /* A query row without any attendable key yields zeros. */
+                float probs[5];
+                for (int ki = 0; ki < 5; ++ki) {
+                    probs[ki] = row_attended ? (weights[ki] / sum) : 0.0f;
+                }
                 for (int vd = 0; vd < 4; ++vd) {
                     float acc = 0.0f;
                     for (int ki = 0; ki < 5; ++ki) {
-                        float weight = weights[ki] * inv_sum;
-                        acc += weight * input_v[b][kv_head][ki][vd];
+                        acc += probs[ki] * input_v[b][kv_head][ki][vd];
                     }
                     output[b][h][qi][vd] = acc;
                 }

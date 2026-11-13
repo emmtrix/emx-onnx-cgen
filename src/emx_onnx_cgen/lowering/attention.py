@@ -39,12 +39,10 @@ class AttentionSpec:
     output_rank: int
     mask_shape: tuple[int, ...] | None
     mask_is_bool: bool
-    mask_rank: int | None
-    mask_broadcast_batch: bool
-    mask_broadcast_heads: bool
-    mask_broadcast_q_seq: bool
-    mask_q_seq: int | None
     mask_kv_seq: int | None
+    left_window_size: int
+    right_window_size: int
+    softmax_dtype: ScalarType
     head_group_size: int
     has_attn_mask: bool
     has_past: bool
@@ -67,6 +65,8 @@ def resolve_attention_spec(
         "softmax_precision",
         "softcap",
         "qk_matmul_output_mode",
+        "left_window_size",
+        "right_window_size",
     }
     if set(node.attrs) - supported_attrs:
         raise UnsupportedOpError("Unsupported op Attention")
@@ -230,19 +230,11 @@ def resolve_attention_spec(
             )
     attn_mask_name = _optional_name(node.inputs, 3)
     mask_shape = None
-    mask_rank = None
-    mask_q_seq = None
     mask_kv_seq = None
     mask_is_bool = False
-    mask_broadcast_batch = False
-    mask_broadcast_heads = True
-    mask_broadcast_q_seq = False
     has_attn_mask = attn_mask_name is not None
     if has_attn_mask:
         mask_shape = _value_shape(graph, attn_mask_name, node)
-        mask_rank = len(mask_shape)
-        if mask_rank not in {2, 3, 4}:
-            raise ShapeInferenceError("Attention mask must be 2D/3D/4D")
         mask_dtype = _value_dtype(graph, attn_mask_name, node)
         if mask_dtype == ScalarType.BOOL:
             mask_is_bool = True
@@ -250,47 +242,7 @@ def resolve_attention_spec(
             raise UnsupportedOpError(
                 "Attention mask must be bool or match attention dtype"
             )
-        if mask_rank == 2:
-            mask_q_seq, mask_kv_seq = mask_shape
-            mask_broadcast_batch = True
-            mask_broadcast_heads = True
-            mask_broadcast_q_seq = mask_q_seq == 1
-            if mask_q_seq not in {1, q_seq}:
-                raise ShapeInferenceError(
-                    "Attention mask sequence length must match query length"
-                )
-        elif mask_rank == 3:
-            mask_batch, mask_q_seq, mask_kv_seq = mask_shape
-            mask_broadcast_batch = mask_batch == 1
-            mask_broadcast_heads = True
-            mask_broadcast_q_seq = mask_q_seq == 1
-            if mask_batch not in {1, batch}:
-                raise ShapeInferenceError(
-                    "Attention mask batch dimension must match batch size"
-                )
-            if mask_q_seq not in {1, q_seq}:
-                raise ShapeInferenceError(
-                    "Attention mask sequence length must match query length"
-                )
-        else:
-            mask_batch, mask_heads, mask_q_seq, mask_kv_seq = mask_shape
-            mask_broadcast_batch = mask_batch == 1
-            mask_broadcast_heads = mask_heads == 1
-            mask_broadcast_q_seq = mask_q_seq == 1
-            if mask_batch not in {1, batch}:
-                raise ShapeInferenceError(
-                    "Attention mask batch dimension must match batch size"
-                )
-            if mask_heads not in {1, q_heads}:
-                raise ShapeInferenceError(
-                    "Attention mask head dimension must match q_num_heads"
-                )
-            if mask_q_seq not in {1, q_seq}:
-                raise ShapeInferenceError(
-                    "Attention mask sequence length must match query length"
-                )
-        if mask_kv_seq is None:
-            raise ShapeInferenceError("Attention mask must include kv sequence")
+        mask_kv_seq = _validate_mask_shape(mask_shape, (batch, q_heads, q_seq))
         if mask_kv_seq > total_seq:
             raise ShapeInferenceError(
                 "Attention mask kv sequence length exceeds total sequence length"
@@ -318,6 +270,9 @@ def resolve_attention_spec(
     qk_matmul_output_mode = int(node.attrs.get("qk_matmul_output_mode", 0))
     if qk_matmul_output_mode not in {0, 1, 2, 3}:
         raise UnsupportedOpError("Unsupported op Attention")
+    left_window_size = _window_size(node, "left_window_size")
+    right_window_size = _window_size(node, "right_window_size")
+    softmax_dtype = _softmax_dtype(node, dtype)
     return AttentionSpec(
         batch=batch,
         q_heads=q_heads,
@@ -341,18 +296,68 @@ def resolve_attention_spec(
         output_rank=output_rank,
         mask_shape=mask_shape,
         mask_is_bool=mask_is_bool,
-        mask_rank=mask_rank,
-        mask_broadcast_batch=mask_broadcast_batch,
-        mask_broadcast_heads=mask_broadcast_heads,
-        mask_broadcast_q_seq=mask_broadcast_q_seq,
-        mask_q_seq=mask_q_seq,
         mask_kv_seq=mask_kv_seq,
+        left_window_size=left_window_size,
+        right_window_size=right_window_size,
+        softmax_dtype=softmax_dtype,
         head_group_size=head_group_size,
         has_attn_mask=has_attn_mask,
         has_past=has_past,
         has_present=has_present,
         has_nonpad=has_nonpad,
     )
+
+
+def _validate_mask_shape(
+    mask_shape: tuple[int, ...], leading_dims: tuple[int, int, int]
+) -> int:
+    """Check right-aligned broadcasting against (batch, heads, q_seq, kv).
+
+    A rank-3 mask is (heads, q_seq, kv) and a rank-1 mask is (kv,), as in
+    NumPy broadcasting. Returns the mask's kv length, which may be shorter
+    than the total sequence (the rest is masked out).
+    """
+    if not 1 <= len(mask_shape) <= 4:
+        raise ShapeInferenceError(
+            f"Attention mask must have rank 1 to 4, got shape {mask_shape}"
+        )
+    for mask_dim, target_dim in zip(reversed(mask_shape[:-1]), reversed(leading_dims)):
+        if mask_dim not in {1, target_dim}:
+            raise ShapeInferenceError(
+                f"Attention mask shape {mask_shape} is not broadcastable to "
+                f"{leading_dims + ('total_sequence_length',)}"
+            )
+    return mask_shape[-1]
+
+
+def _window_size(node: Node, name: str) -> int:
+    value = int(node.attrs.get(name, -1))
+    if value < -1:
+        raise UnsupportedOpError(
+            f"Attention {name} must be -1 or nonnegative, got {value}"
+        )
+    return value
+
+
+_SOFTMAX_PRECISION_DTYPES = {
+    1: ScalarType.F32,
+    10: ScalarType.F16,
+    11: ScalarType.F64,
+    16: ScalarType.BF16,
+}
+
+
+def _softmax_dtype(node: Node, dtype: ScalarType) -> ScalarType:
+    precision = node.attrs.get("softmax_precision")
+    if precision is None:
+        return dtype
+    softmax_dtype = _SOFTMAX_PRECISION_DTYPES.get(int(precision))
+    if softmax_dtype is None:
+        raise UnsupportedOpError(
+            f"Attention softmax_precision {precision} is not supported; "
+            "expected 1 (FLOAT), 10 (FLOAT16), 11 (DOUBLE) or 16 (BFLOAT16)"
+        )
+    return softmax_dtype
 
 
 def _is_ms_attention(node: Node) -> bool:
@@ -413,12 +418,10 @@ def lower_attention(graph: Graph, node: Node) -> AttentionOp:
         output_rank=spec.output_rank,
         mask_shape=spec.mask_shape,
         mask_is_bool=spec.mask_is_bool,
-        mask_rank=spec.mask_rank,
-        mask_broadcast_batch=spec.mask_broadcast_batch,
-        mask_broadcast_heads=spec.mask_broadcast_heads,
-        mask_broadcast_q_seq=spec.mask_broadcast_q_seq,
-        mask_q_seq=spec.mask_q_seq,
         mask_kv_seq=spec.mask_kv_seq,
+        left_window_size=spec.left_window_size,
+        right_window_size=spec.right_window_size,
+        softmax_dtype=spec.softmax_dtype,
         head_group_size=spec.head_group_size,
         dtype=op_dtype,
     )

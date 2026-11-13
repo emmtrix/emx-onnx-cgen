@@ -1,5 +1,5 @@
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-    const {{ c_type }} scale = {{ scale_literal }};
+    const {{ c_type }} sqrt_scale = {{ sqrt_scale_literal }};
     const {{ c_type }} softcap = {{ softcap_literal }};
     {% if output_present_key %}
     for (int b = 0; b < {{ batch }}; ++b) {
@@ -45,23 +45,33 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         }
     }
     {% endif %}
+    {% set uses_offset = is_causal or left_window_size >= 0 or right_window_size >= 0 %}
     for (int b = 0; b < {{ batch }}; ++b) {
+        {% if not uses_offset %}
+        {% elif input_nonpad_kv_seqlen and not input_past_key %}
+        /* External cache: the query block ends at the last valid key. */
+        const int64_t offset = {{ input_nonpad_kv_seqlen }}[b] - {{ q_seq }};
+        {% else %}
+        const int64_t offset = {{ past_seq }};
+        {% endif %}
         for (int h = 0; h < {{ q_heads }}; ++h) {
             int kv_head = h / {{ head_group_size }};
             for (int qi = 0; qi < {{ q_seq }}; ++qi) {
+                {{ c_type }} q_scaled[{{ qk_head_size }}];
+                for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                    {% if q_rank == 4 %}
+                    q_scaled[d] = {{ input_q }}[b][h][qi][d] * sqrt_scale;
+                    {% else %}
+                    q_scaled[d] = {{ input_q }}[b][qi][h * {{ qk_head_size }} + d] * sqrt_scale;
+                    {% endif %}
+                }
                 {{ c_type }} scores[{{ total_seq }}];
-                {{ c_type }} max_score = {{ min_literal }};
+                int row_attended = 0;
                 for (int ki = 0; ki < {{ total_seq }}; ++ki) {
-                    {{ c_type }} score = {{ zero_literal }};
+                    {{ acc_type }} qk_acc = {{ acc_zero_literal }};
                     int k_index = ki - {{ past_seq }};
                     for (int d = 0; d < {{ qk_head_size }}; ++d) {
-                        {{ c_type }} q_val;
                         {{ c_type }} k_val;
-                        {% if q_rank == 4 %}
-                        q_val = {{ input_q }}[b][h][qi][d];
-                        {% else %}
-                        q_val = {{ input_q }}[b][qi][h * {{ qk_head_size }} + d];
-                        {% endif %}
                         {% if input_past_key %}
                         if (ki < {{ past_seq }}) {
                             k_val = {{ input_past_key }}[b][kv_head][ki][d];
@@ -79,37 +89,35 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                         k_val = {{ input_k }}[b][k_index][kv_head * {{ qk_head_size }} + d];
                         {% endif %}
                         {% endif %}
-                        score += q_val * k_val;
+                        k_val = k_val * sqrt_scale;
+                        qk_acc += {{ acc_cast }}q_scaled[d] * {{ acc_cast }}k_val;
                     }
-                    score *= scale;
+                    {{ c_type }} score = {{ out_cast }}qk_acc;
                     {{ c_type }} bias = {{ zero_literal }};
                     {% if input_attn_mask %}
                     if (ki >= {{ mask_kv_seq }}) {
                         bias = {{ min_literal }};
                     } else {
-                        int mask_q = {{ '0' if mask_broadcast_q_seq else 'qi' }};
-                        {% if mask_rank == 2 %}
                         {% if mask_is_bool %}
-                        bias = {{ input_attn_mask }}[mask_q][ki] ? {{ zero_literal }} : {{ min_literal }};
+                        bias = {{ input_attn_mask }}{{ mask_index }} ? {{ zero_literal }} : {{ min_literal }};
                         {% else %}
-                        bias = {{ input_attn_mask }}[mask_q][ki];
+                        bias = {{ input_attn_mask }}{{ mask_index }};
                         {% endif %}
-                        {% elif mask_rank == 3 %}
-                        int mask_b = {{ '0' if mask_broadcast_batch else 'b' }};
-                        {% if mask_is_bool %}
-                        bias = {{ input_attn_mask }}[mask_b][mask_q][ki] ? {{ zero_literal }} : {{ min_literal }};
-                        {% else %}
-                        bias = {{ input_attn_mask }}[mask_b][mask_q][ki];
-                        {% endif %}
-                        {% else %}
-                        int mask_b = {{ '0' if mask_broadcast_batch else 'b' }};
-                        int mask_h = {{ '0' if mask_broadcast_heads else 'h' }};
-                        {% if mask_is_bool %}
-                        bias = {{ input_attn_mask }}[mask_b][mask_h][mask_q][ki] ? {{ zero_literal }} : {{ min_literal }};
-                        {% else %}
-                        bias = {{ input_attn_mask }}[mask_b][mask_h][mask_q][ki];
-                        {% endif %}
-                        {% endif %}
+                    }
+                    {% endif %}
+                    {% if is_causal %}
+                    if (ki > qi + offset) {
+                        bias = {{ min_literal }};
+                    }
+                    {% endif %}
+                    {% if left_window_size >= 0 %}
+                    if (qi + offset - ki > {{ left_window_size }}) {
+                        bias = {{ min_literal }};
+                    }
+                    {% endif %}
+                    {% if right_window_size >= 0 %}
+                    if (ki - (qi + offset) > {{ right_window_size }}) {
+                        bias = {{ min_literal }};
                     }
                     {% endif %}
                     {% if input_nonpad_kv_seqlen %}
@@ -117,8 +125,8 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                         bias = {{ min_literal }};
                     }
                     {% endif %}
-                    if ({{ is_causal }} && ki > qi + {{ past_seq }}) {
-                        bias = {{ min_literal }};
+                    if (bias != {{ min_literal }}) {
+                        row_attended = 1;
                     }
                     {{ c_type }} score_softcap = score;
                     if (softcap != {{ zero_literal }}) {
@@ -135,52 +143,58 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     }
                     {% endif %}
                     scores[ki] = score_bias;
-                    max_score = {{ scalar_fn(SF.MAXIMUM, dtype) }}(max_score, score_bias);
                 }
-                {{ c_type }} weights[{{ total_seq }}];
-                {{ c_type }} sum = {{ zero_literal }};
+                {{ softmax_c_type }} max_score = {{ min_literal }};
                 for (int ki = 0; ki < {{ total_seq }}; ++ki) {
-                    {{ c_type }} weight = {{ zero_literal }};
-                    if (max_score != {{ min_literal }}) {
-                        weight = {{ scalar_fn(SF.EXP, dtype) }}(scores[ki] - max_score);
-                    }
-                    weights[ki] = weight;
-                    sum += weight;
+                    max_score = {{ scalar_fn(SF.MAXIMUM, softmax_dtype) }}(max_score, {{ softmax_cast }}scores[ki]);
                 }
-                {{ c_type }} inv_sum = sum == {{ zero_literal }} ? {{ zero_literal }} : ({{ c_type }}){{ one_literal }} / sum;
-                {% if output_qk_matmul %}
-                if ({{ qk_matmul_output_mode }} == 3) {
-                    for (int ki = 0; ki < {{ total_seq }}; ++ki) {
-                        {{ output_qk_matmul }}[b][h][qi][ki] = weights[ki] * inv_sum;
-                    }
+                if (max_score == {{ min_literal }}) {
+                    max_score = {{ softmax_zero_literal }};
                 }
-                {% endif %}
+                {{ softmax_c_type }} weights[{{ total_seq }}];
+                {{ softmax_c_type }} sum = {{ softmax_zero_literal }};
+                for (int ki = 0; ki < {{ total_seq }}; ++ki) {
+                    weights[ki] = {{ scalar_fn(SF.EXP, softmax_dtype) }}({{ softmax_cast }}scores[ki] - max_score);
+                    sum += weights[ki];
+                }
+                if (sum == {{ softmax_zero_literal }}) {
+                    sum = {{ softmax_one_literal }};
+                }
+                /* A query row without any attendable key yields zeros. */
+                {{ c_type }} probs[{{ total_seq }}];
+                for (int ki = 0; ki < {{ total_seq }}; ++ki) {
+                    probs[ki] = row_attended ? {{ probs_cast }}(weights[ki] / sum) : {{ zero_literal }};
+                    {% if output_qk_matmul %}
+                    if ({{ qk_matmul_output_mode }} == 3) {
+                        {{ output_qk_matmul }}[b][h][qi][ki] = probs[ki];
+                    }
+                    {% endif %}
+                }
                 for (int vd = 0; vd < {{ v_head_size }}; ++vd) {
-                    {{ c_type }} acc = {{ zero_literal }};
+                    {{ acc_type }} acc = {{ acc_zero_literal }};
                     for (int ki = 0; ki < {{ total_seq }}; ++ki) {
-                        {{ c_type }} weight = weights[ki] * inv_sum;
                         {% if input_past_value %}
                         if (ki < {{ past_seq }}) {
-                            acc += weight * {{ input_past_value }}[b][kv_head][ki][vd];
+                            acc += {{ acc_cast }}probs[ki] * {{ acc_cast }}{{ input_past_value }}[b][kv_head][ki][vd];
                         } else {
                             {% if v_rank == 4 %}
-                            acc += weight * {{ input_v }}[b][kv_head][ki - {{ past_seq }}][vd];
+                            acc += {{ acc_cast }}probs[ki] * {{ acc_cast }}{{ input_v }}[b][kv_head][ki - {{ past_seq }}][vd];
                             {% else %}
-                            acc += weight * {{ input_v }}[b][ki - {{ past_seq }}][kv_head * {{ v_head_size }} + vd];
+                            acc += {{ acc_cast }}probs[ki] * {{ acc_cast }}{{ input_v }}[b][ki - {{ past_seq }}][kv_head * {{ v_head_size }} + vd];
                             {% endif %}
                         }
                         {% else %}
                         {% if v_rank == 4 %}
-                        acc += weight * {{ input_v }}[b][kv_head][ki][vd];
+                        acc += {{ acc_cast }}probs[ki] * {{ acc_cast }}{{ input_v }}[b][kv_head][ki][vd];
                         {% else %}
-                        acc += weight * {{ input_v }}[b][ki][kv_head * {{ v_head_size }} + vd];
+                        acc += {{ acc_cast }}probs[ki] * {{ acc_cast }}{{ input_v }}[b][ki][kv_head * {{ v_head_size }} + vd];
                         {% endif %}
                         {% endif %}
                     }
                     {% if output_rank == 4 %}
-                    {{ output }}[b][h][qi][vd] = acc;
+                    {{ output }}[b][h][qi][vd] = {{ out_cast }}acc;
                     {% else %}
-                    {{ output }}[b][qi][h * {{ v_head_size }} + vd] = acc;
+                    {{ output }}[b][qi][h * {{ v_head_size }} + vd] = {{ out_cast }}acc;
                     {% endif %}
                 }
             }

@@ -10563,3 +10563,78 @@ def test_integer_elementwise_matches_reference(op_type: str, dtype_name: str) ->
     payload = _compile_and_run_testbench(model, testbench_inputs=feeds)
     output = decode_testbench_array(payload["outputs"]["y"]["data"], dtype)
     np.testing.assert_array_equal(output.reshape(expected.shape), expected)
+
+
+_ATTENTION_MASK_CASES = {
+    "bidirectional_window": dict(attrs={"left_window_size": 1, "right_window_size": 2}),
+    "causal_window_rank3_float_mask": dict(
+        attrs={"is_causal": 1, "left_window_size": 2}, mask=((3, 4, 6), "float")
+    ),
+    # The reference only accepts a rank-1 mask with is_causal on its window path.
+    "causal_window_nonpad_rank1_bool_mask": dict(
+        attrs={"is_causal": 1, "left_window_size": 3},
+        mask=((6,), "bool"),
+        nonpad=[3, 6],
+    ),
+    "causal_window_nonpad_gqa": dict(
+        attrs={"is_causal": 1, "left_window_size": 1}, nonpad=[5, 6], kv_heads=1
+    ),
+}
+
+
+@pytest.mark.parametrize("dtype", [np.float32, "bfloat16"])
+@pytest.mark.parametrize("case", sorted(_ATTENTION_MASK_CASES))
+def test_attention_masks_match_reference(case: str, dtype: object) -> None:
+    """Attention-25: sliding window, nonpad causal offset, right-aligned masks."""
+    if onnx.defs.onnx_opset_version() < 25:
+        pytest.skip("Attention window attributes need onnx >= 1.23")
+    import ml_dtypes
+
+    spec = _ATTENTION_MASK_CASES[case]
+    np_dtype = ml_dtypes.bfloat16 if dtype == "bfloat16" else np.dtype(dtype)
+    elem_type = helper.np_dtype_to_tensor_dtype(np.dtype(np_dtype))
+    batch, q_heads, q_seq, kv_seq, head = 2, 3, 4, 6, 8
+    kv_heads = spec.get("kv_heads", q_heads)
+    rng = np.random.default_rng(0)
+    feeds = {
+        "Q": rng.standard_normal((batch, q_heads, q_seq, head)),
+        "K": rng.standard_normal((batch, kv_heads, kv_seq, head)),
+        "V": rng.standard_normal((batch, kv_heads, kv_seq, head)),
+    }
+    feeds = {name: value.astype(np_dtype) for name, value in feeds.items()}
+    input_names = ["Q", "K", "V"]
+    if "mask" in spec:
+        mask_shape, mask_kind = spec["mask"]
+        if mask_kind == "bool":
+            feeds["mask"] = rng.random(mask_shape) < 0.7
+        else:
+            feeds["mask"] = rng.standard_normal(mask_shape).astype(np_dtype)
+        input_names.append("mask")
+    if "nonpad" in spec:
+        feeds["nonpad"] = np.array(spec["nonpad"], dtype=np.int64)
+        input_names += [""] * (6 - len(input_names)) + ["nonpad"]
+    graph = helper.make_graph(
+        [helper.make_node("Attention", input_names, ["Y"], **spec["attrs"])],
+        "attention_masks",
+        [
+            helper.make_tensor_value_info(
+                name,
+                helper.np_dtype_to_tensor_dtype(feeds[name].dtype),
+                feeds[name].shape,
+            )
+            for name in input_names
+            if name
+        ],
+        [helper.make_tensor_value_info("Y", elem_type, (batch, q_heads, q_seq, head))],
+    )
+    model = helper.make_model(graph, opset_imports=[helper.make_opsetid("", 25)])
+    model.ir_version = 11
+    (expected,) = ReferenceEvaluator(model).run(None, feeds)
+
+    payload = _compile_and_run_testbench(model, testbench_inputs=feeds)
+    output = decode_testbench_array(payload["outputs"]["Y"]["data"], expected.dtype)
+    output = output.reshape(expected.shape)
+    if dtype == "bfloat16":
+        np.testing.assert_array_equal(output, expected)
+    else:
+        np.testing.assert_allclose(output, expected, rtol=1e-5, atol=1e-6)
