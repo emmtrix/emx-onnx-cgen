@@ -2000,6 +2000,11 @@ def _fold_shape_operand_inputs(
                 values.ndim != 1 or (values < 0).any()
             ):
                 continue
+            # ONNX shape inference rejects non-scalar Range operands, which
+            # would leave the output rank unknown; keep such operands dynamic
+            # so the later symbolic shape resolution still handles them.
+            if node.op_type == "Range" and values.ndim != 0:
+                continue
             const_name = f"{node.output[0]}_folded_input_{input_index}"
             while const_name in existing_names:
                 const_name = f"_{const_name}"
