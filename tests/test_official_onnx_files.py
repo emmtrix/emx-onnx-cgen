@@ -732,6 +732,29 @@ def test_ort_artifacts_onnx_expected_errors(
     )
 
 
+def test_ort_artifacts_expectations_match_pinned_artifacts() -> None:
+    """Every ORT artifact expectation must belong to a model of the pinned dataset.
+
+    Orphaned expectations mean the emx-ort-test-artifacts-org submodule pin
+    is older than the expectations (e.g. reverted by an unrelated commit).
+    """
+    data_root = ORT_ARTIFACTS_ONNX_DATA_ROOT
+    _ensure_ort_artifacts_onnx_files_present(data_root)
+    prefix = _encode_repo_relative_path(
+        data_root.relative_to(_repo_root()).as_posix() + "/"
+    )
+    orphans = sorted(
+        path.name
+        for path in EXPECTED_ERRORS_ROOT.glob(f"{prefix}*.json")
+        if not (_repo_root() / _repo_relative_path_from_expectation_file(path)).exists()
+    )
+    assert not orphans, (
+        f"{len(orphans)} ORT artifact expectation files have no model in the "
+        "pinned emx-ort-test-artifacts-org submodule (check the submodule pin), "
+        f"e.g. {orphans[:3]}"
+    )
+
+
 @pytest.mark.order(3)
 @pytest.mark.parametrize(
     "repo_relative_path",

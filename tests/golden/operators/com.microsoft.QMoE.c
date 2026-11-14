@@ -8,7 +8,7 @@
  *   fp16_accumulation_strategy: fp32
  *   large_temp_threshold: 1024
  *   large_weight_threshold: 102400
- * Model checksum (sha256): 323d1c3c39dd09ea81a502d91ac4332fe5eb9e676c3576d0993f966d278a0372
+ * Model checksum (sha256): fee7d622194f72da6b21d7fb4ad23849e50f902e5617832af08b9a4ec48f6033
  * Model name: model
  * Graph name: test
  * Inputs: 8 Outputs: 1 Nodes: 1 Initializers: 0
@@ -61,6 +61,7 @@
  *   expert_weight_bits: 8
  *   k: 2
  *   normalize_routing_weights: 0
+ *   quant_type: int
  *   swiglu_fusion: 1
  *   use_sparse_mixer: 0
  */
