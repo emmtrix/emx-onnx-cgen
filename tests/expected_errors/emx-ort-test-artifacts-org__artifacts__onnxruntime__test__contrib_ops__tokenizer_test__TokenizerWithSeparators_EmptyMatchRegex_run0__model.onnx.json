@@ -1,9 +1,9 @@
 {
-  "error": "Testbench execution failed: exit code 1",
+  "error": "OK (no numeric comparisons)",
   "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/tokenizer_test/TokenizerWithSeparators_EmptyMatchRegex_run0 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
     "com.microsoft.Tokenizer"
   ],
-  "generated_checksum": "e10ea7d7460c3283741fe0247c00047145a14f55126f8fbef9ee3fac48013eb1"
+  "generated_checksum": "254e47013f4b4d498a45fc8d778c075a104db475827f19d43b69669008c38d98"
 }

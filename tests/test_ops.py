@@ -6069,6 +6069,63 @@ def test_regex_full_match_matches_onnxruntime() -> None:
     np.testing.assert_array_equal(output_data, ort_output)
 
 
+_TOKENIZER_SEPARATOR_CASES = {
+    # Separators that match the empty string skip a character per match, so
+    # every token is shorter than mincharnum and the rows end up empty.
+    "empty_match": (["a*"], ["bbb"], 0),
+    "empty_match_multibyte": ([" ", "x*"], ["äö ü", "x"], 0),
+    "non_empty_regex": (["b+"], ["abba cbd", "b"], 3),
+}
+
+
+@pytest.mark.parametrize("case", sorted(_TOKENIZER_SEPARATOR_CASES))
+def test_tokenizer_separators_match_onnxruntime(case: str) -> None:
+    separators, values, max_tokens = _TOKENIZER_SEPARATOR_CASES[case]
+    node = helper.make_node(
+        "Tokenizer",
+        ["in0"],
+        ["out"],
+        domain="com.microsoft",
+        mark=0,
+        mincharnum=1,
+        pad_value="#",
+        separators=separators,
+    )
+    graph = helper.make_graph(
+        [node],
+        "tokenizer_graph",
+        [helper.make_tensor_value_info("in0", TensorProto.STRING, [len(values)])],
+        [
+            helper.make_tensor_value_info(
+                "out", TensorProto.STRING, [len(values), max_tokens]
+            )
+        ],
+    )
+    model = helper.make_model(
+        graph,
+        opset_imports=[
+            helper.make_operatorsetid("", 17),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 8
+    ort_inputs = np.array(values, dtype=object)
+    session = ort.InferenceSession(
+        model.SerializeToString(), providers=["CPUExecutionProvider"]
+    )
+    ort_output = session.run(None, {"in0": ort_inputs})[0]
+    assert ort_output.shape == (len(values), max_tokens)
+    payload = _compile_and_run_testbench(
+        model,
+        testbench_inputs={"in0": _encode_string_testbench_input(ort_inputs)},
+    )
+    output_payload = payload.get("outputs", {}).get("out")
+    assert output_payload is not None, "Missing output 'out'"
+    output_data = decode_testbench_array(output_payload["data"], ort_output.dtype)
+    output_data = output_data.reshape(ort_output.shape)
+    np.testing.assert_array_equal(output_data, ort_output)
+
+
 def _make_murmur_hash3_model(
     *,
     input_shape: list[int],

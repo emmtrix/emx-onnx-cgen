@@ -65,7 +65,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         emx_n_nxt_ = 0;
         for (idx_t emx_t_ = 0; emx_t_ < emx_n_cur_; ++emx_t_) {
             const char *emx_p_ = emx_cur_[emx_t_];
-            for (;;) {
+            while (*emx_p_ != '\0') {
 {% if mode == "sep_literal" %}
                 const char *emx_found_ = strstr(emx_p_, {{ patterns[idx] }});
                 int emx_matched_ = (emx_found_ != NULL);
@@ -101,7 +101,16 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     ++emx_n_nxt_;
                 }
                 if (emx_sep_len_ == 0) {
-                    ++emx_p_;
+                    /* Like ORT, skip the character at an empty match to make progress. */
+                    unsigned char emx_lead_ = (unsigned char)*emx_found_;
+                    size_t emx_skip_ = (emx_lead_ < 0x80u) ? (size_t)1 :
+                                       (emx_lead_ < 0xE0u) ? (size_t)2 :
+                                       (emx_lead_ < 0xF0u) ? (size_t)3 : (size_t)4;
+                    emx_p_ = emx_found_;
+                    while (emx_skip_ > 0 && *emx_p_ != '\0') {
+                        ++emx_p_;
+                        --emx_skip_;
+                    }
                 } else {
                     emx_p_ = emx_found_ + emx_sep_len_;
                 }
