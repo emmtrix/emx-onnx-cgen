@@ -8,7 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 2033 / 2033, 100.0% | 1.23.2 |
-| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4358 / 4373, 99.7% | n/a |
+| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4361 / 4373, 99.7% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 15 / 15, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -2063,7 +2063,7 @@ Coverage 2033 / 2033 ONNX files (100.0%).
 
 Test directory: `emx-ort-test-artifacts-org/artifacts/onnxruntime`
 
-Coverage 4358 / 4373 ONNX files (99.7%).
+Coverage 4361 / 4373 ONNX files (99.7%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -2134,8 +2134,8 @@ Coverage 4358 / 4373 ONNX files (99.7%).
 | test/contrib_ops/attention_op_test/AttentionUnidirectional_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/attention_op_test/AttentionWithNormFactor_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/attention_op_test/AttentionWithNormFactor_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
-| test/contrib_ops/attention_op_test/Attention_Mask1D_Fp32_B2_S64_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 1020241) |
-| test/contrib_ops/attention_op_test/Attention_Mask2D_Fp32_B2_S32_run0/model.onnx |  | Data/Data | ❌ | Out of tolerance (max ULP 980755) |
+| test/contrib_ops/attention_op_test/Attention_Mask1D_Fp32_B2_S64_run0/model.onnx (--atol-eps 16384) |  | Data/Data | ✅ | OK (max ULP 0) |
+| test/contrib_ops/attention_op_test/Attention_Mask2D_Fp32_B2_S32_run0/model.onnx (--atol-eps 16384) |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/attention_op_test/SharedPrepackedWeights_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/attention_op_test/SharedPrepackedWeights_run1/model.onnx |  | Data/Data | ✅ | OK (max ULP 2) |
 | test/contrib_ops/bifurcation_detector_op_test/BifurcationAndSuffixMatchCombined_run0/model.onnx |  | Data/Data | ✅ | OK (max abs diff 0) |
@@ -2803,7 +2803,7 @@ Coverage 4358 / 4373 ONNX files (99.7%).
 | test/contrib_ops/inverse_test/two_by_two_double_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/inverse_test/two_by_two_float16_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/inverse_test/two_by_two_float_run0/model.onnx |  | Data/Data | ✅ | OK (max ULP 0) |
-| test/contrib_ops/layer_norm_op_test/BERTLayerNorm_NoBias_run0/model.onnx (--test-data-inputs-only) | 17 | Data/ORT | ❌ | Out of tolerance (max ULP 3910) |
+| test/contrib_ops/layer_norm_op_test/BERTLayerNorm_NoBias_run0/model.onnx (--test-data-inputs-only --atol-eps 16) | 17 | Data/ORT | ✅ | OK (max ULP 0) |
 | test/contrib_ops/layer_norm_op_test/BERTLayerNorm_run0/model.onnx (--atol-eps 16) | 17 | Data/Data | ✅ | OK (max ULP 0) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm17_double_run0/model.onnx (--test-data-inputs-only) | 17 | Data/ORT | ✅ | OK (max ULP 0) |
 | test/contrib_ops/layer_norm_op_test/LayerNorm17_opset_run0/model.onnx (--test-data-inputs-only) | 17 | Data/ORT | ✅ | OK (max ULP 0) |
