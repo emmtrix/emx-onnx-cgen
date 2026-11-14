@@ -1,79 +1,102 @@
+{% set fc1_view = fc1_w if weights_out_in else "fc1_view" %}
+{% set fc2_view = fc2_w if weights_out_in else "fc2_view" %}
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% if not weights_out_in %}
+    /* ORT reads expert weights as [E][out][in] in memory, whatever shape they
+       are declared with; view the [E, in, out] declarations accordingly. */
+    const {{ c_type }} (*fc1_view)[{{ fc1_out_size }}][{{ model_dim }}] = (const {{ c_type }} (*)[{{ fc1_out_size }}][{{ model_dim }}]){{ fc1_w }};
+    const {{ c_type }} (*fc2_view)[{{ model_dim }}][{{ fc2_in_size }}] = (const {{ c_type }} (*)[{{ model_dim }}][{{ fc2_in_size }}]){{ fc2_w }};
+{% endif %}
     for (int b = 0; b < {{ batch }}; ++b) {
         for (int j = 0; j < {{ model_dim }}; ++j) {
             {{ output }}[b][j] = {{ zero_literal }};
         }
     }
     for (int b = 0; b < {{ batch }}; ++b) {
-        /* Select top-{{ k }} experts */
+        /* Routing probabilities: softmax over the router logits. */
+        {{ c_type }} max_logit = {{ min_literal }};
+        for (int e = 0; e < {{ num_experts }}; ++e) {
+            max_logit = {{ max_fn }}(max_logit, {{ router_probs }}[b][e]);
+        }
+        {{ c_type }} probs[{{ num_experts }}];
+        {{ c_type }} prob_sum = {{ zero_literal }};
+        for (int e = 0; e < {{ num_experts }}; ++e) {
+            probs[e] = {{ exp_fn }}({{ router_probs }}[b][e] - max_logit);
+            prob_sum += probs[e];
+        }
+        for (int e = 0; e < {{ num_experts }}; ++e) {
+            probs[e] = probs[e] / prob_sum;
+        }
+        /* Select the top-{{ k }} experts. */
         int selected_experts[{{ k }}];
         {{ c_type }} selected_weights[{{ k }}];
-        {
-            /* Find top-k indices by router_probs[b] */
-            int chosen[{{ k }}];
-            for (int ki = 0; ki < {{ k }}; ++ki) {
-                {{ c_type }} best_val = {{ min_literal }};
-                int best_idx = 0;
-                for (int e = 0; e < {{ num_experts }}; ++e) {
-                    int already = 0;
-                    for (int kj = 0; kj < ki; ++kj) {
-                        if (chosen[kj] == e) { already = 1; break; }
-                    }
-                    if (!already && ({{ c_type }}){{ router_probs }}[b][e] > best_val) {
-                        best_val = ({{ c_type }}){{ router_probs }}[b][e];
-                        best_idx = e;
+        {{ c_type }} selected_sum = {{ zero_literal }};
+        for (int ki = 0; ki < {{ k }}; ++ki) {
+            {{ c_type }} best_val = {{ min_literal }};
+            int best_idx = 0;
+            for (int e = 0; e < {{ num_experts }}; ++e) {
+                int already = 0;
+                for (int kj = 0; kj < ki; ++kj) {
+                    if (selected_experts[kj] == e) {
+                        already = 1;
                     }
                 }
-                chosen[ki] = best_idx;
+                if (!already && probs[e] > best_val) {
+                    best_val = probs[e];
+                    best_idx = e;
+                }
             }
-            /* Compute normalized routing weights */
-            {{ c_type }} weight_sum = {{ zero_literal }};
-            for (int ki = 0; ki < {{ k }}; ++ki) {
-                weight_sum += ({{ c_type }}){{ router_probs }}[b][chosen[ki]];
-            }
-            for (int ki = 0; ki < {{ k }}; ++ki) {
-                selected_experts[ki] = chosen[ki];
-                {% if normalize_routing_weights %}
-                selected_weights[ki] = ({{ c_type }}){{ router_probs }}[b][chosen[ki]] / weight_sum;
-                {% else %}
-                selected_weights[ki] = ({{ c_type }}){{ router_probs }}[b][chosen[ki]];
-                {% endif %}
-            }
+            selected_experts[ki] = best_idx;
+            selected_weights[ki] = best_val;
+            selected_sum += best_val;
         }
+{% if normalize_routing_weights %}
+        for (int ki = 0; ki < {{ k }}; ++ki) {
+            selected_weights[ki] = selected_weights[ki] / selected_sum;
+        }
+{% else %}
+        (void)selected_sum;
+{% endif %}
         /* Process each selected expert */
         for (int ki = 0; ki < {{ k }}; ++ki) {
             int e = selected_experts[ki];
             {{ c_type }} rw = selected_weights[ki];
-            /* fc1: input[b] @ fc1_w[e] → fc1_out[fc1_out_size] */
+            /* fc1: input[b] @ fc1_w[e] -> fc1_out[fc1_out_size] */
             {{ c_type }} fc1_out[{{ fc1_out_size }}];
             for (int k2 = 0; k2 < {{ fc1_out_size }}; ++k2) {
                 {{ c_type }} acc = {{ zero_literal }};
                 for (int i = 0; i < {{ model_dim }}; ++i) {
-                    acc += {{ input }}[b][i] * {{ fc1_w }}[e][i][k2];
+                    acc += {{ input }}[b][i] * {{ fc1_view }}[e][k2][i];
                 }
-                {% if fc1_bias %}
+{% if fc1_bias %}
                 acc += {{ fc1_bias }}[e][k2];
-                {% endif %}
+{% endif %}
                 fc1_out[k2] = acc;
             }
-            /* SwiGLU: gate=fc1_out[:hidden], value=fc1_out[hidden:] */
-            {{ c_type }} swiglu[{{ fc2_in_size }}];
+            {{ c_type }} hidden[{{ fc2_in_size }}];
             for (int k2 = 0; k2 < {{ fc2_in_size }}; ++k2) {
-                {{ c_type }} gate  = fc1_out[k2];
+{% if activation == "swiglu" %}
+                /* SwiGLU: gate = fc1_out[:inter], value = fc1_out[inter:] */
+                {{ c_type }} gate = fc1_out[k2];
                 {{ c_type }} value = fc1_out[{{ fc2_in_size }} + k2];
                 /* swiglu = silu(gate) * (value + beta) */
                 {{ c_type }} sig = ({{ c_type }})1.0f / (({{ c_type }})1.0f + expf(-gate));
-                swiglu[k2] = gate * sig * (value + {{ beta_literal }});
+                hidden[k2] = gate * sig * (value + {{ beta_literal }});
+{% elif activation_fn %}
+                hidden[k2] = {{ activation_fn }}(fc1_out[k2]);
+{% else %}
+                hidden[k2] = fc1_out[k2];
+{% endif %}
             }
-            /* fc2: swiglu @ fc2_w[e] → fc2_out[model_dim] */
+            /* fc2: hidden @ fc2_w[e] -> fc2_out[model_dim] */
             for (int j = 0; j < {{ model_dim }}; ++j) {
                 {{ c_type }} acc = {{ zero_literal }};
                 for (int k2 = 0; k2 < {{ fc2_in_size }}; ++k2) {
-                    acc += swiglu[k2] * {{ fc2_w }}[e][k2][j];
+                    acc += hidden[k2] * {{ fc2_view }}[e][j][k2];
                 }
-                {% if fc2_bias %}
+{% if fc2_bias %}
                 acc += {{ fc2_bias }}[e][j];
-                {% endif %}
+{% endif %}
                 {{ output }}[b][j] += rw * acc;
             }
         }

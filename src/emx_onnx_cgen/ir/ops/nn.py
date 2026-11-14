@@ -10786,6 +10786,17 @@ class MoEOp(RenderableOpBase):
     normalize_routing_weights: int
     activation_beta: float
     dtype: ScalarType
+    activation: str = "swiglu"
+    # Expert weights are declared as [E, out, in], the layout ORT reads them in;
+    # otherwise they are declared [E, in, out] and viewed as [E][out][in].
+    weights_out_in: bool = False
+
+    _ACTIVATION_FUNCTIONS = {
+        "relu": (ScalarFunction.RELU, ()),
+        # ORT's MoE uses the tanh approximation of GELU.
+        "gelu": (ScalarFunction.GELU_TANH, ()),
+        "silu": (ScalarFunction.SWISH, (1.0,)),
+    }
 
     def required_includes(self, ctx: OpContext) -> set[str]:
         return {"#include <math.h>"}
@@ -10798,6 +10809,12 @@ class MoEOp(RenderableOpBase):
         c_type = self.dtype.c_type
         zero_literal = self.dtype.zero_literal
         min_literal = self.dtype.min_literal
+        activation_fn = None
+        if self.activation in self._ACTIVATION_FUNCTIONS:
+            function, function_params = self._ACTIVATION_FUNCTIONS[self.activation]
+            activation_fn = emitter.scalar_fn(
+                function, self.dtype, params=function_params
+            )
 
         io_pairs = [
             ("input", self.input),
@@ -10876,6 +10893,11 @@ class MoEOp(RenderableOpBase):
                 fc1_out_size=self.fc1_out_size,
                 fc2_in_size=self.fc2_in_size,
                 normalize_routing_weights=self.normalize_routing_weights,
+                activation=self.activation,
+                activation_fn=activation_fn,
+                weights_out_in=self.weights_out_in,
+                exp_fn=emitter.scalar_fn(ScalarFunction.EXP, self.dtype),
+                max_fn=emitter.scalar_fn(ScalarFunction.MAXIMUM, self.dtype),
             )
             .rstrip()
         )
