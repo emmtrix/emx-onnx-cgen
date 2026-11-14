@@ -8,16 +8,9 @@ Aggregates non-success verification outcomes.
 | Error message | Count | Opset versions |
 | --- | --- | --- |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 8 |  |
-| Out of tolerance | 3 | 17 |
 | MoE: only activation_type='*' is supported, got '*' (while lowering node_index=0, op_type=MoE, name=node1, inputs=[input: tensor[dtype=float, shape=(4, 8), dim_params=(None, None)], router_probs: tensor[dtype=float, shape=(4, 4), dim_params=(None, None)], fc1_experts_weights: tensor[dtype=float, shape=(4, 16, 8), dim_params=(None, None, None)], fc1_experts_bias: tensor[dtype=float, shape=(4, 16), dim_params=(None, None)], fc2_experts_weights: tensor[dtype=float, shape=(4, 8, 16), dim_params=(None, None, None)], fc2_experts_bias: tensor[dtype=float, shape=(4, 8), dim_params=(None, None)]], outputs=[output: tensor[dtype=float, shape=(4, 8), dim_params=(None, None)]]) | 2 |  |
 | Output value mismatch for Y (got=hello, index=(0, 0), output=Y, reference=hello\x00world) | 1 |  |
 | Testbench execution failed: exit code 1 | 1 |  |
-
-## Error frequency by opset
-
-| Error message | Opset | Count |
-| --- | --- | --- |
-| Out of tolerance | 17 | 1 |
 
 ## Failing ONNX files
 
