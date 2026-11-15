@@ -24,5 +24,4 @@ Lists every ONNX file with a non-success verification outcome.
 | test/contrib_ops/math/matmul_sparse_test/TestCsr_run1/model.onnx |  | Data/Data | ❌ | Unsupported value type 'sparse_tensor_type' for 'A'. Hint: export the model with tensor inputs/outputs. |
 | test/contrib_ops/math/matmul_sparse_test/TestCsr_run2/model.onnx |  | Data/Data | ❌ | Unsupported value type 'sparse_tensor_type' for 'A'. Hint: export the model with tensor inputs/outputs. |
 | test/contrib_ops/math/matmul_sparse_test/TestCsr_run3/model.onnx |  | Data/Data | ❌ | Unsupported value type 'sparse_tensor_type' for 'A'. Hint: export the model with tensor inputs/outputs. |
-| test/contrib_ops/tokenizer_test/TokenizerWithSeparators_EmptyMatchRegex_run0/model.onnx |  | Data/Data | ❌ | Testbench execution failed: exit code 1 |
 | test/contrib_ops/tokenizer_test/Tokenizer_EmbeddedNullBytes_run0/model.onnx |  | Data/Data | ❌ | Output value mismatch for Y (got=hello, index=(0, 0), output=Y, reference=hello\x00world) |
