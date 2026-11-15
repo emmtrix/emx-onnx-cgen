@@ -7,7 +7,7 @@ Operators are marked supported when they appear in an ONNX file with a successfu
 
 The `Notes` column links to implementation notes in [`docs/operator-notes.md`](docs/operator-notes.md); the `Relevant CLI options` column lists CLI flags that specifically affect the operator's generated code. Both are maintained in [`docs/operator-metadata.json`](docs/operator-metadata.json).
 
-Supported operators: 265 / 266
+Supported operators: 266 / 266
 
 | Operator | Supported | Notes | Relevant CLI options |
 | --- | --- | --- | --- |
@@ -271,7 +271,7 @@ Supported operators: 265 / 266
 | com.microsoft.RotaryEmbedding | ✅ | [Notes](docs/operator-notes.md#attention-and-transformers) |  |
 | com.microsoft.SampleOp | ✅ |  |  |
 | com.microsoft.SkipLayerNormalization | ✅ |  | `--fp32-accumulation-strategy`, `--fp16-accumulation-strategy` |
-| com.microsoft.SparseToDenseMatMul | ❌ |  |  |
+| com.microsoft.SparseToDenseMatMul | ✅ |  |  |
 | com.microsoft.Tokenizer | ✅ |  |  |
 | com.microsoft.Trilu | ✅ |  |  |
 | com.microsoft.UnfoldTensor | ✅ |  |  |

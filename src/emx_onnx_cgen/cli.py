@@ -47,6 +47,7 @@ from .input_dim_overrides import (
     parse_input_dim_overrides,
 )
 from .onnxruntime_utils import make_deterministic_session_options
+from .sparse_inputs import coo_arrays, sparse_input_names
 from .sequence_shape_hints import (
     SequenceElementShapeHint,
     parse_sequence_element_shape_hints,
@@ -2409,6 +2410,21 @@ def _verify_model(
                     output_dtypes[value.name].np_dtype, copy=False
                 )
         else:
+            sparse_inputs = [
+                value_info.name
+                for value_info in model.graph.input
+                if value_info.type.WhichOneof("value") == "sparse_tensor_type"
+            ]
+            if sparse_inputs:
+                return (
+                    None,
+                    "Verifying sparse tensor inputs "
+                    f"({', '.join(sparse_inputs)}) needs reference outputs; "
+                    "pass --test-data-dir with output_*.pb files.",
+                    operators,
+                    opset_version,
+                    generated_checksum,
+                )
             runtime_name = args.runtime
             custom_domains = sorted(
                 {
@@ -2885,7 +2901,12 @@ def _load_test_data_inputs(
         )
     for value_info in model_inputs:
         value_kind = value_info.type.WhichOneof("value")
-        if value_kind not in {"tensor_type", "optional_type", "sequence_type"}:
+        if value_kind not in {
+            "tensor_type",
+            "optional_type",
+            "sequence_type",
+            "sparse_tensor_type",
+        }:
             LOGGER.warning(
                 "Skipping test data load for unsupported input %s (type %s).",
                 value_info.name,
@@ -2980,6 +3001,12 @@ def _load_test_data_inputs(
                         array = array.reshape(expected)
                         reshaped_tensor_inputs = True
             inputs[value_info.name] = array
+            continue
+        if value_kind == "sparse_tensor_type":
+            sparse = onnx.SparseTensorProto()
+            sparse.ParseFromString(path.read_bytes())
+            names = sparse_input_names(value_info.name)
+            inputs[names.values], inputs[names.indices] = coo_arrays(sparse)
             continue
         if value_kind == "sequence_type":
             elem_type = value_info.type.sequence_type.elem_type
