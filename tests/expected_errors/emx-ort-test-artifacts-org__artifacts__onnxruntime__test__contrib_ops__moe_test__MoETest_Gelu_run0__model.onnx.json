@@ -1,8 +1,12 @@
 {
-  "error": "MoE: only activation_type='swiglu' is supported, got 'gelu' (while lowering node_index=0, op_type=MoE, name=node1, inputs=[input: tensor[dtype=float, shape=(4, 8), dim_params=(None, None)], router_probs: tensor[dtype=float, shape=(4, 4), dim_params=(None, None)], fc1_experts_weights: tensor[dtype=float, shape=(4, 16, 8), dim_params=(None, None, None)], fc1_experts_bias: tensor[dtype=float, shape=(4, 16), dim_params=(None, None)], fc2_experts_weights: tensor[dtype=float, shape=(4, 8, 16), dim_params=(None, None, None)], fc2_experts_bias: tensor[dtype=float, shape=(4, 8), dim_params=(None, None)]], outputs=[output: tensor[dtype=float, shape=(4, 8), dim_params=(None, None)]])",
-  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/moe_test/MoETest_Gelu_run0 model.onnx --test-data-dir test_data_set_0",
-  "verification_mode": "Data/Data",
+  "error": "OK (max ULP 2)",
+  "command_line": "verify --model-base-dir emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/moe_test/MoETest_Gelu_run0 model.onnx --test-data-dir test_data_set_0 --test-data-inputs-only",
+  "extra_cli_args": [
+    "--test-data-inputs-only"
+  ],
+  "verification_mode": "Data/ORT",
   "operators": [
     "com.microsoft.MoE"
-  ]
+  ],
+  "generated_checksum": "74b549fde064c4e3d24de2fa278fdee3a17b537df62b8efdfd51eb9842fe5773"
 }
