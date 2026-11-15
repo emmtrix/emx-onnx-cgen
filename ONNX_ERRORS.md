@@ -9,7 +9,6 @@ Aggregates non-success verification outcomes.
 | --- | --- | --- |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 8 |  |
 | Output value mismatch for Y (got=hello, index=(0, 0), output=Y, reference=hello\x00world) | 1 |  |
-| Testbench execution failed: exit code 1 | 1 |  |
 
 ## Failing ONNX files
 
