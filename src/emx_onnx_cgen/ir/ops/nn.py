@@ -10888,6 +10888,93 @@ class MoEOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class SparseToDenseMatMulOp(RenderableOpBase):
+    """com.microsoft::SparseToDenseMatMul with A passed as COO values/indices."""
+
+    __io_inputs__ = ("values", "indices", "input_b")
+    __io_outputs__ = ("output",)
+    values: str
+    indices: str
+    input_b: str
+    output: str
+    m: int
+    k: int
+    n: int
+    trans_a: bool
+    trans_b: bool
+    alpha: float
+    dtype: ScalarType
+
+    def emit(self, emitter: "Emitter", ctx: "EmitContext") -> str:
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        params = emitter.shared_param_map(
+            [
+                ("values", self.values),
+                ("indices", self.indices),
+                ("input_b", self.input_b),
+                ("output", self.output),
+            ]
+        )
+
+        def _suffix(name: str) -> str:
+            return emitter.param_array_suffix(
+                emitter.ctx_shape(name), emitter.dim_names_for(name)
+            )
+
+        param_decls = emitter.build_param_decls(
+            [
+                (params["values"], self.dtype.c_type, _suffix(self.values), True),
+                (
+                    params["indices"],
+                    ScalarType.I64.c_type,
+                    _suffix(self.indices),
+                    True,
+                ),
+                (params["input_b"], self.dtype.c_type, _suffix(self.input_b), True),
+                (params["output"], self.dtype.c_type, _suffix(self.output), False),
+            ]
+        )
+        nnz = emitter.dim_names_for(self.values).get(0)
+        if nnz is None:
+            nnz = str(emitter.ctx_shape(self.values)[0])
+        scale = (
+            emitter.format_floating(self.alpha, self.dtype)
+            if self.alpha != 1.0
+            else None
+        )
+        rendered = (
+            state.templates["sparse_to_dense_matmul"]
+            .render(
+                op_name=op_name,
+                dim_args=emitter.dim_args_str(),
+                params=param_decls,
+                values=params["values"],
+                indices=params["indices"],
+                input_b=params["input_b"],
+                output=params["output"],
+                c_type=self.dtype.c_type,
+                zero_literal=self.dtype.zero_literal,
+                nnz=nnz,
+                m=self.m,
+                k=self.k,
+                n=self.n,
+                trans_a=self.trans_a,
+                trans_b=self.trans_b,
+                scale=scale,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    def c_op_outputs(
+        self, emitter: "Emitter"
+    ) -> tuple[tuple[str, tuple[int, ...], "ScalarType"], ...]:
+        return ((self.output, (self.m, self.n), self.dtype),)
+
+
+@dataclass(frozen=True)
 class QMoEOp(RenderableOpBase):
     """com.microsoft::QMoE contrib operator.
 

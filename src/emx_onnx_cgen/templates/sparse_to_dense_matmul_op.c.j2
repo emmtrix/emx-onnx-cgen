@@ -1,0 +1,29 @@
+{% set row_axis = 1 if trans_a else 0 %}
+{% set inner_axis = 0 if trans_a else 1 %}
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    for (idx_t i = 0; i < {{ m }}; ++i) {
+        for (idx_t j = 0; j < {{ n }}; ++j) {
+            {{ output }}[i][j] = {{ zero_literal }};
+        }
+    }
+    for (idx_t e = 0; e < {{ nnz }}; ++e) {
+        const int64_t row = {{ indices }}[e][{{ row_axis }}];
+        const int64_t inner = {{ indices }}[e][{{ inner_axis }}];
+        /* ORT rejects coordinates outside the dense shape; skip them. */
+        if (row < 0 || row >= {{ m }} || inner < 0 || inner >= {{ k }}) {
+            continue;
+        }
+{% if scale %}
+        const {{ c_type }} a_value = {{ values }}[e] * {{ scale }};
+{% else %}
+        const {{ c_type }} a_value = {{ values }}[e];
+{% endif %}
+        for (idx_t j = 0; j < {{ n }}; ++j) {
+{% if trans_b %}
+            {{ output }}[row][j] += a_value * {{ input_b }}[j][inner];
+{% else %}
+            {{ output }}[row][j] += a_value * {{ input_b }}[inner][j];
+{% endif %}
+        }
+    }
+}

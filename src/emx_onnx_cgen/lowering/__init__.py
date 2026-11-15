@@ -98,6 +98,7 @@ _LOWERING_MODULES = [
     "decoder_masked_mha",
     "moe",
     "qmoe",
+    "sparse_to_dense_matmul",
     "ngram_repeat_block",
     "negative_log_likelihood_loss",
     "non_max_suppression",

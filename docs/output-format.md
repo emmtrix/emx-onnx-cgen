@@ -255,7 +255,7 @@ representation in generated signatures:
 | `optional_type` | `optional(tensor(float))` | Supported for optional tensors; additional `_Bool <name>_present` parameter is added |
 | `sequence_type` | `sequence(tensor(float))` | Supported at model IO ABI as fixed-capacity arrays plus count (`EMX_SEQUENCE_MAX_LEN`, `<name>__count`) |
 | `map_type` | `map(string, tensor(float))` | Not supported |
-| `sparse_tensor_type` | `sparse_tensor(float)` | Not supported |
+| `sparse_tensor_type` | `sparse_tensor(float)` | Supported as graph inputs of `com.microsoft.SparseToDenseMatMul`; passed in COO form (see [Sparse tensor inputs](#sparse-tensor-inputs)) |
 | `opaque_type` | `opaque(...)` | Not supported |
 
 For sequence tensor IO, generated model entrypoints use a fixed-capacity ABI:
@@ -326,6 +326,30 @@ void model(const float X[restrict 2][4][2],
   for that tensor instead.
 - The testbench JSON reports the runtime extent in `"shape"` and prints only the
   valid region, so verify compares the true output shape.
+
+### Sparse tensor inputs
+
+A `sparse_tensor` graph input is passed in COO form: a values array, a
+coordinates array, and the number of stored entries as a runtime dimension
+`<name>_nnz` (like any other dynamic dimension, it comes first in the
+signature). For a `sparse_tensor(float, [9, 9])` input `A`:
+
+```c
+void model(int A_nnz, const float A_values[restrict A_nnz],
+           const int64_t A_indices[restrict A_nnz][2],
+           const float B[restrict 9][9], float X[restrict 9][9]);
+```
+
+- `A_indices[e]` holds the coordinates of `A_values[e]` in the dense tensor.
+  Entries may be unsorted; duplicate coordinates are summed.
+- Coordinates outside the dense shape are skipped (ONNX Runtime rejects them).
+- The rewrite happens before import, so only operators that take a sparse input
+  accept one (currently `com.microsoft.SparseToDenseMatMul`). Any other consumer,
+  a sparse graph output or a sparse input without a static dense shape fails
+  with an error.
+- `verify` reads sparse `input_*.pb` files (COO, including linearized indices)
+  and needs reference outputs from `--test-data-dir`, because the runtime
+  reference path does not feed sparse tensors.
 
 ### Static shapes: N-dimensional arrays
 

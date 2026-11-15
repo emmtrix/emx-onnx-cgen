@@ -586,6 +586,9 @@
     "com.microsoft.SkipLayerNormalization": {
       "model": "emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/skiplayernorm_op_test/SkipLayerNormBatch1_NoBeta_run0/model.onnx"
     },
+    "com.microsoft.SparseToDenseMatMul": {
+      "model": "emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/math/matmul_sparse_test/TestCoo_run0/model.onnx"
+    },
     "com.microsoft.Tokenizer": {
       "model": "emx-ort-test-artifacts-org/artifacts/onnxruntime/test/contrib_ops/tokenizer_test/Tokenizer_EmptyInput_run0/model.onnx"
     },
