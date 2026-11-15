@@ -8,7 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 2033 / 2033, 100.0% | 1.23.2 |
-| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4364 / 4373, 99.8% | n/a |
+| [ONNX Runtime artifact coverage](#onnx-runtime-artifact-coverage) | 4372 / 4373, 100.0% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 15 / 15, 100.0% | n/a |
 
 See [`ONNX_ERRORS.md`](ONNX_ERRORS.md) for the error histogram.
@@ -2063,7 +2063,7 @@ Coverage 2033 / 2033 ONNX files (100.0%).
 
 Test directory: `emx-ort-test-artifacts-org/artifacts/onnxruntime`
 
-Coverage 4364 / 4373 ONNX files (99.8%).
+Coverage 4372 / 4373 ONNX files (100.0%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
