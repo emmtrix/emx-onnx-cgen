@@ -12,6 +12,7 @@ from shared.scalar_types import ScalarType
 from .dtypes import scalar_type_from_onnx
 from .errors import ShapeInferenceError, UnsupportedOpError
 from .symbolic_shapes import infer_symbolic_shapes
+from .sparse_inputs import expand_sparse_inputs
 from .ir.model import (
     Graph,
     Initializer,
@@ -2216,6 +2217,7 @@ def prepare_onnx_model(model: onnx.ModelProto) -> onnx.ModelProto:
     prepared = onnx.ModelProto()
     prepared.CopyFrom(model)
     _canonicalize_ms_qdq_nodes(prepared)
+    prepared, _ = expand_sparse_inputs(prepared)
     prepared, _ = _expand_flexattention_nodes(prepared)
     # Scan unrolling slices its scan inputs, so it needs their static shapes up
     # front. Run shape inference and fold the integer shape arithmetic that ONNX

@@ -411,6 +411,11 @@ parameter that receives the actual length at runtime; see
 This works for graph outputs; a node that consumes such a tensor inside the
 graph is rejected.
 
+**Sparse tensor inputs:** a `sparse_tensor` graph input (currently for
+`com.microsoft.SparseToDenseMatMul`) is passed in COO form as `<name>_values`,
+`<name>_indices` and the entry count `<name>_nnz`; see
+[docs/output-format.md](docs/output-format.md#sparse-tensor-inputs).
+
 ### "Code generation requires explicit ragged-sequence bounds"
 
 A sequence input with variable element shapes needs explicit per-axis maxima.

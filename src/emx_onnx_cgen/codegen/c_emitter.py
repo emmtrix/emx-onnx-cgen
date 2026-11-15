@@ -1186,6 +1186,9 @@ class CEmitter:
                 ),
                 "moe": self._env.get_template("moe_op.c.j2"),
                 "qmoe": self._env.get_template("qmoe_op.c.j2"),
+                "sparse_to_dense_matmul": self._env.get_template(
+                    "sparse_to_dense_matmul_op.c.j2"
+                ),
                 "adam": self._env.get_template("adam_op.c.j2"),
                 "adagrad": self._env.get_template("adagrad_op.c.j2"),
                 "momentum": self._env.get_template("momentum_op.c.j2"),
