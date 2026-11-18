@@ -136,7 +136,8 @@ def _render_onnx_file_support_markdown(
     ort_artifact_expectations: list[OnnxFileExpectation],
     local_repo_expectations: list[OnnxFileExpectation],
 ) -> str:
-    onnx_version = ONNX_VERSION_PATH.read_text(encoding="utf-8").strip()
+    # The stamp is "<onnx version> rev<generator revision>".
+    onnx_version = ONNX_VERSION_PATH.read_text(encoding="utf-8").split()[0]
     official_supported_count = sum(
         1
         for expectation in official_expectations

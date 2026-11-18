@@ -10,7 +10,7 @@ must not be edited by hand.
 | --- | --- |
 | `node/` | Generated from `onnx.backend.test.case.node` (onnx 1.23 no longer ships these files, see onnx/onnx#7959) |
 | `light/`, `pytorch-converted/`, `pytorch-operator/`, `real/`, `simple/` | Copied from `onnx/backend/test/data` of the installed onnx wheel |
-| `.onnx-version` | Version stamp of the onnx package the data was built from |
+| `.onnx-version` | Stamp of the onnx version and generator revision the data was built with |
 
 ## Building
 
@@ -25,6 +25,11 @@ python onnx-backend-test-data/generate.py
 - The installed onnx version must match the `onnx==` pin in
   `requirements-ci.txt`. Otherwise nothing is generated, and pytest warns and
   skips the official tests.
-- The data is rebuilt whenever the pin and `.onnx-version` differ, i.e. after
-  an onnx upgrade. It takes about 10 s and is deterministic.
+- The data is rebuilt whenever `.onnx-version` does not match the pin and the
+  generator revision, i.e. after an onnx upgrade or a generator change. It
+  takes about 10 s.
+- The `node/` reference outputs are computed by numpy. `generate.py` computes
+  them in a child process restricted to numpy's baseline SIMD kernels and a
+  fixed single-threaded OpenBLAS core type, so that every x86 host writes the
+  same data. Otherwise the recorded ULP values differ between CI hosts.
 - To force a rebuild, delete `.onnx-version`.
