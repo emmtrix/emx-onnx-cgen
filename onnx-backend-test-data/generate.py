@@ -24,8 +24,10 @@ from __future__ import annotations
 
 import logging
 import os
+import platform
 import re
 import shutil
+import subprocess
 import sys
 import warnings
 from pathlib import Path
@@ -37,6 +39,9 @@ BACKEND_TEST_DATA_ROOT = Path(__file__).resolve().parent
 REPO_ROOT = BACKEND_TEST_DATA_ROOT.parent
 REQUIREMENTS_PATH = REPO_ROOT / "requirements-ci.txt"
 VERSION_STAMP_NAME = ".onnx-version"
+# Bump when the generated data changes for the same onnx version, so that
+# existing checkouts rebuild it.
+GENERATOR_REVISION = 2
 # Tracked files of this directory; every other entry is generated.
 TRACKED_NAMES = frozenset({"README.md", "generate.py", "__pycache__"})
 _ONNX_PIN = re.compile(r"^onnx==(?P<version>[^\s;#]+)", re.MULTILINE)
@@ -53,7 +58,11 @@ def _pinned_onnx_version() -> str:
     return match.group("version")
 
 
-def _stamped_version(root: Path) -> str | None:
+def _stamp_text(onnx_version: str) -> str:
+    return f"{onnx_version} rev{GENERATOR_REVISION}"
+
+
+def _read_stamp(root: Path) -> str | None:
     stamp = root / VERSION_STAMP_NAME
     if not stamp.exists():
         return None
@@ -103,6 +112,46 @@ def _generate_node_tests(target: Path) -> None:
     LOGGER.info("Generated %d ONNX node backend tests in %s", len(cases), target)
 
 
+def _host_independent_numpy_env() -> dict[str, str]:
+    """Environment that makes numpy compute the same results on every x86 host.
+
+    The node test reference outputs are computed by numpy (and its bundled
+    OpenBLAS for matmul). Both pick SIMD kernels for the host CPU at runtime,
+    so the outputs differ in the last bits between e.g. Intel and AMD CI hosts
+    and the recorded ULP values in the expectation files flip between runs.
+    Restricting numpy to its baseline kernels and OpenBLAS to one core type
+    and a single thread removes that dependency.
+    """
+    from numpy._core import _multiarray_umath as umath
+
+    env = dict(os.environ)
+    env.pop("NPY_ENABLE_CPU_FEATURES", None)
+    dispatched = [
+        feature
+        for feature in umath.__cpu_dispatch__
+        if umath.__cpu_features__.get(feature)
+    ]
+    if dispatched:
+        env["NPY_DISABLE_CPU_FEATURES"] = " ".join(dispatched)
+    else:
+        env.pop("NPY_DISABLE_CPU_FEATURES", None)
+    env["OPENBLAS_NUM_THREADS"] = "1"
+    is_x86 = platform.machine().lower() in {"x86_64", "amd64"}
+    if is_x86 and umath.__cpu_features__.get("AVX2"):
+        env["OPENBLAS_CORETYPE"] = "Haswell"
+    return env
+
+
+def _generate_node_tests_isolated(target: Path) -> None:
+    # The numpy settings are read when numpy is imported, which has already
+    # happened in this process (e.g. under pytest), so generate in a child.
+    subprocess.run(
+        [sys.executable, str(Path(__file__).resolve()), "--node-tests", str(target)],
+        check=True,
+        env=_host_independent_numpy_env(),
+    )
+
+
 def _copy_shipped_tests(target: Path) -> None:
     import onnx
 
@@ -138,7 +187,8 @@ def ensure_backend_test_data(root: Path = BACKEND_TEST_DATA_ROOT) -> None:
             f"onnx=={pinned_version} (see requirements-ci.txt); install it to "
             "generate the ONNX backend test data."
         )
-    if _stamped_version(root) == pinned_version:
+    stamp_text = _stamp_text(pinned_version)
+    if _read_stamp(root) == stamp_text:
         return
     # Build in a staging directory, move it into place and write the version
     # stamp last, so that an interrupted run is rebuilt on the next start.
@@ -147,17 +197,20 @@ def ensure_backend_test_data(root: Path = BACKEND_TEST_DATA_ROOT) -> None:
     staging.mkdir(parents=True)
     try:
         _copy_shipped_tests(staging)
-        _generate_node_tests(staging / "node")
+        _generate_node_tests_isolated(staging / "node")
         _remove_generated_entries(root, keep=staging)
         for entry in sorted(staging.iterdir()):
             entry.rename(root / entry.name)
-        (root / VERSION_STAMP_NAME).write_text(pinned_version + "\n", encoding="utf-8")
+        (root / VERSION_STAMP_NAME).write_text(stamp_text + "\n", encoding="utf-8")
     finally:
         shutil.rmtree(staging, ignore_errors=True)
 
 
 def main() -> int:
     logging.basicConfig(level=logging.INFO)
+    if sys.argv[1:2] == ["--node-tests"] and len(sys.argv) == 3:
+        _generate_node_tests(Path(sys.argv[2]))
+        return 0
     try:
         ensure_backend_test_data()
     except BackendTestDataError as error:
