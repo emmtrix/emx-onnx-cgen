@@ -714,7 +714,7 @@ def _float_reciprocal(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
 
 def _float_relu(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     zero = _float_literal(0.0, dtype_info)
-    return _simple_unary(dtype_info, "relu", f"a > {zero} ? a : {zero}")
+    return _simple_unary(dtype_info, "relu", f"a < {zero} ? {zero} : a")
 
 
 def _float_rsqrt(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
