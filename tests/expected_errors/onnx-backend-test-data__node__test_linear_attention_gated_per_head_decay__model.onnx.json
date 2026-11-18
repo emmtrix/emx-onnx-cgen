@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 33)",
+  "error": "OK (max ULP 1)",
   "command_line": "verify --model-base-dir onnx-backend-test-data/node/test_linear_attention_gated_per_head_decay model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data/Data",
   "operators": [
