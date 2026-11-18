@@ -7,6 +7,9 @@ protobuf>=6.33.5
 
 # Numerics
 numpy==2.4.6
+# Pinned: ml_dtypes 0.7 maps out-of-range float -> int2/int4 casts to 0 instead of
+#         wrapping, which changes the Cast/CastLike backend test reference outputs
+ml_dtypes==0.6.0
 
 # Symbolic shape inference (emx_onnx_cgen.symbolic_shapes)
 sympy==1.14.0
