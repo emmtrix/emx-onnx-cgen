@@ -6126,6 +6126,58 @@ def test_tokenizer_separators_match_onnxruntime(case: str) -> None:
     np.testing.assert_array_equal(output_data, ort_output)
 
 
+def _make_relu_nan_model(case: str) -> onnx.ModelProto:
+    elem_type = TensorProto.DOUBLE if case == "relu_f64" else TensorProto.FLOAT
+    if case == "fused_conv_relu":
+        # A 1x1 identity convolution, so the activation sees the input values.
+        node = helper.make_node(
+            "FusedConv", ["x", "w"], ["y"], domain="com.microsoft", activation="Relu"
+        )
+        initializers = [
+            numpy_helper.from_array(np.ones((1, 1, 1, 1), dtype=np.float32), "w")
+        ]
+        shape = [1, 1, 2, 3]
+    else:
+        node = helper.make_node("Relu", ["x"], ["y"])
+        initializers = []
+        shape = [2, 3]
+    graph = helper.make_graph(
+        [node],
+        "relu_nan",
+        [helper.make_tensor_value_info("x", elem_type, shape)],
+        [helper.make_tensor_value_info("y", elem_type, shape)],
+        initializer=initializers,
+    )
+    model = helper.make_model(
+        graph,
+        opset_imports=[
+            helper.make_operatorsetid("", 17),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 8
+    return model
+
+
+@pytest.mark.parametrize("case", ["relu_f32", "relu_f64", "fused_conv_relu"])
+def test_relu_propagates_nan_like_onnxruntime(case: str) -> None:
+    model = _make_relu_nan_model(case)
+    np_dtype = np.float64 if case == "relu_f64" else np.float32
+    shape = [dim.dim_value for dim in model.graph.input[0].type.tensor_type.shape.dim]
+    values = np.array([np.nan, -np.nan, -0.0, -1.5, 0.0, 2.5], dtype=np_dtype)
+    input_x = values.reshape(shape)
+    session = ort.InferenceSession(
+        model.SerializeToString(), providers=["CPUExecutionProvider"]
+    )
+    (ort_output,) = session.run(None, {"x": input_x})
+    assert np.isnan(ort_output.reshape(-1)[:2]).all()
+    payload = _compile_and_run_testbench(model, testbench_inputs={"x": input_x})
+    output_payload = payload.get("outputs", {}).get("y")
+    assert output_payload is not None, "Missing output 'y'"
+    output_data = decode_testbench_array(output_payload["data"], ort_output.dtype)
+    np.testing.assert_array_equal(output_data.reshape(ort_output.shape), ort_output)
+
+
 def _make_murmur_hash3_model(
     *,
     input_shape: list[int],
