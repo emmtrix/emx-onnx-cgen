@@ -14,3 +14,4 @@ src/emx_onnx_cgen/_version.py
 /onnx-backend-test-data/*
 !/onnx-backend-test-data/README.md
 !/onnx-backend-test-data/generate.py
+/local/
