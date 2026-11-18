@@ -80,7 +80,7 @@ EMX_NODE_FN void node0_node1(const float input0[1][1][3][3], const float weights
                                 }
                             }
                         }
-                        output[n][oc_global][od0][od1] = (float)(acc > 0.0f ? acc : 0.0f);
+                        output[n][oc_global][od0][od1] = (float)(acc < 0.0f ? 0.0f : acc);
                     }
                 }
             }

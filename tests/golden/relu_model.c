@@ -50,7 +50,7 @@
 #endif
 
 static inline float ref_scalar_f32_relu(float a) {
-    return a > 0.0f ? a : 0.0f;
+    return a < 0.0f ? 0.0f : a;
 }
 
 /*

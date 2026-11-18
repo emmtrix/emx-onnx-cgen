@@ -30,7 +30,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     acc += ({{ acc_type }}){{ z_input }}[n][oc_global]{% for dim in range(spatial_rank) %}[{{ out_indices[dim] }}]{% endfor %};
                     {% endif %}
                     {% if activation == "Relu" %}
-                    {{ output }}[n][oc_global]{% for dim in range(spatial_rank) %}[{{ out_indices[dim] }}]{% endfor %} = ({{ c_type }})(acc > {{ acc_zero_literal }} ? acc : {{ acc_zero_literal }});
+                    {{ output }}[n][oc_global]{% for dim in range(spatial_rank) %}[{{ out_indices[dim] }}]{% endfor %} = ({{ c_type }})(acc < {{ acc_zero_literal }} ? {{ acc_zero_literal }} : acc);
                     {% elif activation == "HardSigmoid" %}
                     {
                         {{ acc_type }} hs = {{ alpha_literal }} * acc + {{ beta_literal }};
