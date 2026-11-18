@@ -249,7 +249,7 @@ Some tests require data that is not checked into this repository:
   `onnx.backend.test.case.node` (onnx 1.23 no longer ships them), the other kinds are
   copied from the wheel. The installed onnx must match the `onnx==` pin in `requirements-ci.txt`;
   otherwise pytest warns and skips the official tests. A `.onnx-version` stamp triggers a rebuild
-  when the pin changes. Run `python onnx-backend-test-data/generate.py` to build it without pytest.
+  when the pin or the generator changes. Run `python onnx-backend-test-data/generate.py` to build it without pytest.
 * Additional ONNX Runtime-derived artifact models under `emx-ort-test-artifacts-org/artifacts/onnxruntime`
   (submodule).
 
