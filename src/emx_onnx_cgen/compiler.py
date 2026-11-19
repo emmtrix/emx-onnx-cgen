@@ -725,7 +725,9 @@ class Compiler:
                     continue
                 shape_product(value.type.shape)
 
-    def _collect_io_specs(self, graph: Graph) -> tuple[
+    def _collect_io_specs(
+        self, graph: Graph
+    ) -> tuple[
         tuple[str, ...],
         tuple[str | None, ...],
         tuple[tuple[int, ...], ...],
