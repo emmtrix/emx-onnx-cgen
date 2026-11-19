@@ -283,6 +283,56 @@ These options are accepted by both `compile` and `verify`:
   - **Resolving dynamic-shape problems:** if a model otherwise fails to generate static C because an input dimension is symbolic or unknown (`tensor 'X' has dynamic dimensions`), pinning that input makes it concrete and lets shape inference derive the dependent intermediate and output shapes. (This only helps for dimensions *derived from the input dimension*; shapes computed from runtime tensor *values*, e.g. `AffineGrid`'s `size`, are recovered separately and are unaffected by `--input-dim`.)
   - **Possible inconsistencies:** `--input-dim` only checks that the target is a dynamic input dimension; it does not validate that the chosen value is consistent with the rest of the graph. Contradictory or partial pinning can therefore make a model that previously stayed dynamic fail during shape inference or lowering — for example pinning two operands of an `Add` to incompatible extents (`--input-dim a:0=3 --input-dim b:0=5` → "Broadcasting mismatch"), or pinning only one of two axes that an operator requires to be equal. Such failures are reported as a normal error, not a crash. Named `dim_param`s are always pinned graph-wide, so `--input-dim batch=N` stays consistent by construction; the risk is mainly with the positional form on unnamed (`?`) axes.
 
+- `--state-pair INPUT=OUTPUT`: Short-circuit a graph input with a graph output of the same shape and dtype, e.g. a KV cache (`--state-pair past_k_0=new_k_0`). Repeatable or comma-separated; replaces the pairs from the model metadata key `emx_onnx_cgen.state_pairs` (same syntax). See [Persistent state (KV cache)](#persistent-state-kv-cache).
+- `--state-steps`: Number of consecutive model calls the testbench of a model with state pairs runs (default: `3`). Only affects the testbench.
+
+### Persistent state (KV cache)
+
+Step-wise models (e.g. a decoder step) take their state as a graph input and
+return the updated state as a graph output. With `--state-pair`, both share
+**one** buffer that persists across calls instead of being copied in and out on
+every call:
+
+```bash
+emx-onnx-cgen compile decoder_step.onnx decoder_step.c \
+  --state-pair past_k_0=new_k_0 --state-pair past_v_0=new_v_0
+```
+
+The paired input and output disappear from the entry point; a caller-owned
+state struct takes their place:
+
+```c
+typedef struct {
+    float past_k_0[4][128][24]; /* past_k_0 -> new_k_0 */
+    float past_v_0[4][128][24]; /* past_v_0 -> new_v_0 */
+} model_state;
+
+void model_state_reset(model_state *state); /* zero-fills the state */
+void model(model_state *restrict state, const int64_t pos[restrict 1], ...);
+```
+
+The caller decides where the state lives, e.g. in large slow memory instead of
+the small vector memory:
+
+```c
+static model_state state __attribute__((section(".bss.lmu")));
+
+model_state_reset(&state);              /* start of a sequence */
+for (int64_t pos = 0; pos < n; ++pos) {
+    model(&state, ...);                 /* reads and updates state.past_k_0 */
+}
+```
+
+The pairs are never inferred from names. The compiler checks that both sides
+have the same static shape and dtype, and that no node reads the old state
+after the new state was written (same-index elementwise updates and
+`TensorScatter` writing its own `past_cache` are fine). Otherwise it stops with
+an error naming the node; it never falls back to a copy. A `TensorScatter` on a
+state buffer only writes the updated rows (no full-cache copy). `verify` runs
+the original model `--state-steps` times, feeding the state outputs back as
+inputs, and compares every step against the generated code running on the
+shared buffer. Design notes: [`docs/state-aliasing.md`](docs/state-aliasing.md).
+
 ### `compile`
 
 ```bash

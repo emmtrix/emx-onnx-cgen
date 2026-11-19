@@ -55,6 +55,12 @@ from .sequence_shape_hints import (
 )
 from .testbench_output_format import parse_testbench_output_format
 from .testbench import decode_testbench_array
+from .ir.state import StatePair
+from .state_aliasing import (
+    STATE_PAIRS_METADATA_KEY,
+    parse_state_pairs,
+    resolve_state_pairs,
+)
 from .verification import worst_ulp_diff
 
 LOGGER = logging.getLogger(__name__)
@@ -163,7 +169,11 @@ def _infer_sequence_fixture_storage_shape(
 
 
 def _random_tensor_input(
-    shape: tuple[int, ...], dtype: ScalarType, rng: np.random.Generator
+    shape: tuple[int, ...],
+    dtype: ScalarType,
+    rng: np.random.Generator,
+    *,
+    non_negative_integers: bool = False,
 ) -> np.ndarray:
     resolved_shape = tuple(10 if dim < 0 else dim for dim in shape)
     np_dtype = dtype.np_dtype
@@ -176,7 +186,10 @@ def _random_tensor_input(
     if np.issubdtype(np_dtype, np.unsignedinteger):
         return rng.integers(0, 8, size=resolved_shape, dtype=np.uint64).astype(np_dtype)
     if np.issubdtype(np_dtype, np.integer):
-        return rng.integers(-4, 4, size=resolved_shape, dtype=np.int64).astype(np_dtype)
+        low = 0 if non_negative_integers else -4
+        return rng.integers(low, 4, size=resolved_shape, dtype=np.int64).astype(
+            np_dtype
+        )
     return np.zeros(resolved_shape, dtype=np_dtype)
 
 
@@ -196,6 +209,79 @@ def _generate_random_testbench_inputs(
             rng,
         )
     return generated_inputs, optional_inputs
+
+
+def _generate_random_state_testbench_inputs(
+    graph_inputs: Sequence[Any],
+    state_pairs: Sequence[StatePair],
+    steps: int,
+) -> tuple[dict[str, np.ndarray], dict[str, bool]]:
+    """Random inputs for a multi-step run of a model with state pairs.
+
+    State inputs get one initial value; every other input gets one value per
+    step (leading step axis). Integer step inputs are drawn from [0, 4) so
+    index-like inputs such as TensorScatter write positions stay valid.
+    """
+    rng = np.random.default_rng(0)
+    state_input_names = {pair.input_name for pair in state_pairs}
+    generated_inputs: dict[str, np.ndarray] = {}
+    optional_inputs: dict[str, bool] = {}
+    for value in graph_inputs:
+        if not isinstance(value.type, TensorType):
+            continue
+        shape = tuple(value.type.shape)
+        optional_inputs[value.name] = True
+        if value.name in state_input_names:
+            generated_inputs[value.name] = _random_tensor_input(
+                shape, value.type.dtype, rng
+            )
+            continue
+        generated_inputs[value.name] = np.stack(
+            [
+                _random_tensor_input(
+                    shape, value.type.dtype, rng, non_negative_integers=True
+                )
+                for _ in range(steps)
+            ]
+        )
+    return generated_inputs, optional_inputs
+
+
+def _run_reference_model(
+    run: Callable[[Any, dict[str, Any]], Sequence[Any]],
+    inputs: dict[str, Any],
+    output_names: Sequence[str],
+    state_pairs: Sequence[StatePair],
+    steps: int,
+) -> list[Any]:
+    """Run the reference once, or ``steps`` times feeding the state pairs.
+
+    With state pairs the reference model keeps its explicit inputs/outputs:
+    each step feeds the previous step's state outputs back as state inputs.
+    The result stacks every output over the steps (leading step axis), which
+    matches the layout of the multi-step testbench.
+    """
+    if not state_pairs:
+        return list(run(None, inputs))
+    state_feed = {pair.input_name: inputs[pair.input_name] for pair in state_pairs}
+    per_step: list[Sequence[Any]] = []
+    for step in range(steps):
+        feed = {
+            name: value[step]
+            for name, value in inputs.items()
+            if name not in state_feed
+        }
+        feed.update(state_feed)
+        outputs = run(None, feed)
+        by_name = dict(zip(output_names, outputs))
+        state_feed = {
+            pair.input_name: by_name[pair.output_name] for pair in state_pairs
+        }
+        per_step.append(outputs)
+    return [
+        np.stack([np.asarray(outputs[index]) for outputs in per_step])
+        for index in range(len(output_names))
+    ]
 
 
 def _env_flag(name: str) -> bool:
@@ -745,12 +831,16 @@ def _first_exact_mismatch(
             continue
         return (
             iterator.multi_index,
-            actual_scalar.item()
-            if isinstance(actual_scalar, np.generic)
-            else actual_scalar,
-            expected_scalar.item()
-            if isinstance(expected_scalar, np.generic)
-            else expected_scalar,
+            (
+                actual_scalar.item()
+                if isinstance(actual_scalar, np.generic)
+                else actual_scalar
+            ),
+            (
+                expected_scalar.item()
+                if isinstance(expected_scalar, np.generic)
+                else expected_scalar
+            ),
         )
     return None
 
@@ -1015,6 +1105,33 @@ def _build_parser() -> argparse.ArgumentParser:
             ),
         )
 
+    def add_state_pair_flags(subparser: argparse.ArgumentParser) -> None:
+        subparser.add_argument(
+            "--state-pair",
+            action="append",
+            default=[],
+            type=_parse_state_pair_arg,
+            metavar="INPUT=OUTPUT",
+            help=(
+                "Short-circuit a graph input with a graph output of the same "
+                "shape and dtype (e.g. a KV cache: --state-pair past_k_0=new_k_0). "
+                "Both share one buffer in a caller-owned <model>_state struct "
+                "that persists across calls; <model>_state_reset() clears it. "
+                "Repeatable, or comma-separated. Overrides the model metadata "
+                f"key {STATE_PAIRS_METADATA_KEY!r}."
+            ),
+        )
+        subparser.add_argument(
+            "--state-steps",
+            type=int,
+            default=3,
+            help=(
+                "Number of consecutive model calls the testbench runs for a "
+                "model with state pairs; the state is fed through the shared "
+                "buffer (default: 3). Only affects the testbench."
+            ),
+        )
+
     compile_parser = subparsers.add_parser(
         "compile", help="Compile an ONNX model into C source"
     )
@@ -1127,6 +1244,7 @@ def _build_parser() -> argparse.ArgumentParser:
     add_sequence_shape_hint_flag(compile_parser)
     add_input_dim_flag(compile_parser)
     add_image_decoder_libs_flag(compile_parser)
+    add_state_pair_flags(compile_parser)
 
     verify_parser = subparsers.add_parser(
         "verify",
@@ -1278,7 +1396,26 @@ def _build_parser() -> argparse.ArgumentParser:
     add_sequence_shape_hint_flag(verify_parser)
     add_input_dim_flag(verify_parser)
     add_image_decoder_libs_flag(verify_parser)
+    add_state_pair_flags(verify_parser)
     return parser
+
+
+def _parse_state_pair_arg(value: str) -> str:
+    try:
+        parse_state_pairs([value])
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(str(exc)) from exc
+    return value
+
+
+def _state_pairs(
+    args: argparse.Namespace, model: onnx.ModelProto
+) -> tuple[StatePair, ...]:
+    return resolve_state_pairs(getattr(args, "state_pair", None), model)
+
+
+def _state_steps(args: argparse.Namespace) -> int:
+    return int(getattr(args, "state_steps", 3))
 
 
 def _parse_image_decoder_libs_arg(value: str) -> tuple[str, ...]:
@@ -1447,6 +1584,8 @@ def _compile_model(
             truncate_weights_after=args.truncate_weights_after,
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,
+            state_pairs=_state_pairs(args, model),
+            testbench_steps=_state_steps(args),
             timings=timings,
         )
         compiler = Compiler(options)
@@ -1543,11 +1682,17 @@ def _compile_testbench_declarations(
         apply_input_dim_overrides(model, _input_dim_overrides(args))
     except ValueError as exc:
         raise CodegenError(str(exc)) from exc
+    try:
+        state_pairs = _state_pairs(args, model)
+    except CodegenError as exc:
+        active_reporter.step_fail(str(exc))
+        raise
     options = CompilerOptions(
         model_name=model_name,
         emit_testbench=False,
         command_line=args.command_line,
         model_checksum=None,
+        state_pairs=state_pairs,
         restrict_arrays=args.restrict_arrays,
         fp32_accumulation_strategy=args.fp32_accumulation_strategy,
         fp16_accumulation_strategy=args.fp16_accumulation_strategy,
@@ -1991,6 +2136,42 @@ def _verify_model(
     output_compare_names = set(original_output_names)
     timings: dict[str, float] = {}
     lowered_sequence_input_shapes: dict[str, tuple[int, ...]] = {}
+    state_steps = _state_steps(args)
+    try:
+        state_pairs = _state_pairs(args, model)
+    except CodegenError as exc:
+        return None, str(exc), operators, opset_version, None
+    if state_pairs:
+        unsupported = [
+            flag
+            for flag, enabled in (
+                ("--test-data-dir", args.test_data_dir is not None),
+                ("--per-node-accuracy", args.per_node_accuracy),
+            )
+            if enabled
+        ]
+        if unsupported:
+            return (
+                None,
+                f"{' and '.join(unsupported)} cannot be combined with state pairs; "
+                "the multi-step state verification uses generated random inputs.",
+                operators,
+                opset_version,
+                None,
+            )
+        if state_steps < 1:
+            return (
+                None,
+                f"--state-steps must be >= 1, got {state_steps}",
+                operators,
+                opset_version,
+                None,
+            )
+        active_reporter.note(
+            "State pairs: "
+            + ", ".join(pair.format() for pair in state_pairs)
+            + f" [{state_steps} steps]"
+        )
     try:
         active_reporter.info("")
         codegen_started = active_reporter.start_step("Generating C code")
@@ -2023,7 +2204,14 @@ def _verify_model(
             active_reporter.note(
                 "Ignoring test-data outputs by request; using runtime reference instead."
             )
-        if testbench_inputs is None:
+        if testbench_inputs is None and state_pairs:
+            testbench_inputs, testbench_optional_inputs = (
+                _generate_random_state_testbench_inputs(
+                    graph.inputs, state_pairs, state_steps
+                )
+            )
+            verification_mode.use_random_inputs()
+        elif testbench_inputs is None:
             testbench_inputs, testbench_optional_inputs = (
                 _generate_random_testbench_inputs(graph.inputs)
             )
@@ -2053,6 +2241,8 @@ def _verify_model(
             testbench_inputs=testbench_inputs,
             testbench_outputs=testbench_outputs,
             testbench_optional_inputs=testbench_optional_inputs,
+            state_pairs=state_pairs,
+            testbench_steps=state_steps,
             timings=timings,
         )
         compiler = Compiler(options)
@@ -2440,6 +2630,7 @@ def _verify_model(
                 )
                 runtime_name = "onnxruntime"
             verification_mode.use_runtime_reference(runtime_name)
+            reference_output_names = [value.name for value in graph.outputs]
             runtime_started = active_reporter.start_step(
                 f"  Running {runtime_name} [--runtime={args.runtime}]"
             )
@@ -2453,13 +2644,25 @@ def _verify_model(
                         sess_options=sess_options,
                         providers=["CPUExecutionProvider"],
                     )
-                    runtime_outputs_list = sess.run(None, inputs)
+                    runtime_outputs_list = _run_reference_model(
+                        sess.run,
+                        inputs,
+                        reference_output_names,
+                        state_pairs,
+                        state_steps,
+                    )
                 else:
                     from onnx.reference import ReferenceEvaluator
 
                     with deterministic_reference_runtime():
                         evaluator = ReferenceEvaluator(model)
-                        runtime_outputs_list = evaluator.run(None, inputs)
+                        runtime_outputs_list = _run_reference_model(
+                            evaluator.run,
+                            inputs,
+                            reference_output_names,
+                            state_pairs,
+                            state_steps,
+                        )
             except Exception as exc:
                 active_reporter.step_fail(str(exc))
                 message = str(exc)

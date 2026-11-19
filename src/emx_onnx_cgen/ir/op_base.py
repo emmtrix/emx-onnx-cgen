@@ -168,6 +168,16 @@ class OpBase(ABC):
     def infer_shapes(self, ctx: OpContext) -> None:
         return None
 
+    def in_place_inputs(self, ctx: OpContext, output_name: str) -> tuple[str, ...]:
+        """Return the inputs that may share their buffer with ``output_name``.
+
+        An input qualifies only if the kernel stays correct when that input
+        and the output are the same array, e.g. because each element is read
+        before the same element is written. State aliasing relies on this to
+        accept a node that both reads and writes a state buffer.
+        """
+        return ()
+
     def c_op_inputs(
         self, emitter: "Emitter"
     ) -> tuple[tuple[str, tuple[int, ...]], ...]:
@@ -267,6 +277,19 @@ class ElementwiseOpBase(RenderableOpBase):
 
     def _elementwise_compare(self) -> bool:
         return False
+
+    def in_place_inputs(self, ctx: OpContext, output_name: str) -> tuple[str, ...]:
+        # Elementwise kernels read every input element right before writing the
+        # output element of the same index; that only holds for inputs that are
+        # not broadcast.
+        if output_name != self._elementwise_output():
+            return ()
+        output_shape = ctx.shape(output_name)
+        return tuple(
+            name
+            for name in self._elementwise_inputs()
+            if name is not None and ctx.shape(name) == output_shape
+        )
 
     def _elementwise_data_inputs(self) -> tuple[str, ...]:
         inputs = self._elementwise_inputs()

@@ -42,6 +42,15 @@ static const {{ input.c_type }} {{ input.constant_name }}[] = {
 };
 {% endif %}
 {% endfor %}
+{% for state_input in state_inputs %}
+{% if state_input.constant_lines %}
+static const {{ state_input.c_type }} {{ state_input.constant_name }}[] = {
+{% for line in state_input.constant_lines %}
+{{ line }}
+{% endfor %}
+};
+{% endif %}
+{% endfor %}
 
 __attribute__((weak, noinline)) void timer_start(void) {}
 __attribute__((weak, noinline)) void timer_stop(void) {}
@@ -49,8 +58,10 @@ __attribute__((weak, noinline)) void timer_stop(void) {}
 {% set constant_inputs = inputs | selectattr('constant_name') | list %}
 {% set variable_inputs = inputs | rejectattr('constant_name') | list %}
 
-static void testbench_init_constant_input({% if not constant_inputs %}void{% else %}{% for input in constant_inputs %}{{ input.c_type }} {{ input.name }}{{ input.array_suffix }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}) {
-{% if not constant_inputs %}
+static void testbench_init_constant_input({% if state_steps %}idx_t step{% if constant_inputs %}, {% endif %}{% elif not constant_inputs %}void{% endif %}{% if constant_inputs %}{% for input in constant_inputs %}{{ input.c_type }} {{ input.name }}{{ input.array_suffix }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}) {
+{% if state_steps %}
+    (void)step;
+{% elif not constant_inputs %}
     (void)0;
 {% endif %}
 {% for input in inputs %}
@@ -59,7 +70,7 @@ static void testbench_init_constant_input({% if not constant_inputs %}void{% els
 {% if input.is_string %}
     memcpy({{ input.name }}, {{ input.constant_name }}, EMX_STRING_MAX_LEN * sizeof(char));
 {% else %}
-    {{ input.name }} = {{ input.constant_name }}[0];
+    {{ input.name }} = {{ input.constant_name }}[{% if state_steps %}step{% else %}0{% endif %}];
 {% endif %}
 {% else %}
 {% for depth in range(input.rank) %}
@@ -68,7 +79,7 @@ static void testbench_init_constant_input({% if not constant_inputs %}void{% els
 {% if input.is_string %}
         memcpy({{ input.name }}{{ input.array_index_expr }}, {{ input.constant_name }}{{ input.array_index_expr }}, EMX_STRING_MAX_LEN * sizeof(char));
 {% else %}
-        {{ input.name }}{{ input.array_index_expr }} = {{ input.constant_name }}[{{ input.index_expr }}];
+        {{ input.name }}{{ input.array_index_expr }} = {{ input.constant_name }}[{% if state_steps %}step * {{ input.count }} + {% endif %}{{ input.index_expr }}];
 {% endif %}
 {% for depth in range(input.rank - 1, -1, -1) %}
     }
@@ -78,6 +89,7 @@ static void testbench_init_constant_input({% if not constant_inputs %}void{% els
 {% endfor %}
 }
 
+{% if not state_steps %}
 static int testbench_read_input_file(
     const char *input_path{% for dim in dim_args %}, int *{{ dim.name }}__ptr{% endfor %}{% for input in variable_inputs %}, {{ input.c_type }} {{ input.name }}{{ input.array_suffix }}{% if input.is_sequence %}, idx_t *{{ input.count_name }}{% for dim in input.sequence_dim_arrays %}, idx_t {{ dim.name }}[EMX_SEQUENCE_MAX_LEN]{% endfor %}{% endif %}{% if input.optional_flag_name %}, _Bool *{{ input.optional_flag_name }}{% endif %}{% endfor %}
 ) {
@@ -178,6 +190,7 @@ static int testbench_read_input_file(
     return 0;
 {% endif %}
 }
+{% endif %}
 
 static void testbench_fill_random_input({% if not variable_inputs and not dim_args %}void{% else %}{% for dim in dim_args %}int {{ dim.name }}{% if not loop.last or variable_inputs %}, {% endif %}{% endfor %}{% for input in variable_inputs %}{{ input.c_type }} {{ input.name }}{{ input.array_suffix }}{% if input.is_sequence %}, idx_t {{ input.count_name }}{% for dim in input.sequence_dim_arrays %}, idx_t {{ dim.name }}[EMX_SEQUENCE_MAX_LEN]{% endfor %}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}) {
 {% if not variable_inputs and not dim_args %}
@@ -361,6 +374,65 @@ for (idx_t {{ output.loop_vars[depth] }} = 0; {{ output.loop_vars[depth] }} < {{
 }
 
 {% endif %}
+{% if state_steps %}
+static int testbench_run(const char *input_path) {
+    static {{ state_type }} testbench_state;
+{% for input in inputs %}
+{{ input.declaration }}
+{% endfor %}
+{% for output in step_outputs %}
+{{ output.declaration }}
+{% endfor %}
+{% for output in outputs %}
+{{ output.declaration }}
+{% endfor %}
+
+    (void)input_path;
+    if (!{{ model_name }}_load("{{ weight_data_filename }}")) {
+        return 1;
+    }
+    {{ state_reset }}(&testbench_state);
+{% for state_input in state_inputs %}
+{% if state_input.constant_name %}
+{% for depth in range(state_input.rank) %}
+    for (idx_t {{ state_input.loop_vars[depth] }} = 0; {{ state_input.loop_vars[depth] }} < {{ state_input.shape[depth] }}; ++{{ state_input.loop_vars[depth] }}) {
+{% endfor %}
+        testbench_state.{{ state_input.member }}{{ state_input.array_index_expr }} = {{ state_input.constant_name }}[{{ state_input.index_expr }}];
+{% for depth in range(state_input.rank) %}
+    }
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+    for (idx_t step = 0; step < {{ state_steps }}; ++step) {
+        testbench_init_constant_input(step{% for input in constant_inputs %}, {{ input.name }}{% endfor %});
+        testbench_fill_random_input({% for input in variable_inputs %}{{ input.name }}{% if not loop.last %}, {% endif %}{% endfor %});
+
+        timer_start();
+        {{ model_name }}(&testbench_state{% for input in inputs %}, {{ input.name }}{% endfor %}{% for output in step_outputs %}, {{ output.name }}{% endfor %});
+        timer_stop();
+
+{% for output in outputs %}
+{% for depth in range(1, output.rank) %}
+        for (idx_t {{ output.loop_vars[depth] }} = 0; {{ output.loop_vars[depth] }} < {{ output.shape[depth] }}; ++{{ output.loop_vars[depth] }}) {
+{% endfor %}
+            {{ output.name }}[step]{{ output.source_index_expr }} = {{ output.source }}{{ output.source_index_expr }};
+{% for depth in range(1, output.rank) %}
+        }
+{% endfor %}
+{% endfor %}
+    }
+
+{% if testbench_output_format == "txt" %}
+    testbench_print_txt({% for output in outputs %}{{ output.name }}{% if not loop.last %}, {% endif %}{% endfor %});
+{% elif testbench_output_format == "txt-emmtrix" %}
+    testbench_print_txt_emmtrix({% for output in outputs %}{{ output.name }}{% if not loop.last %}, {% endif %}{% endfor %});
+{% else %}
+    testbench_print_json({% for output in outputs %}{{ output.name }}{% if not loop.last %}, {% endif %}{% endfor %});
+{% endif %}
+    return 0;
+}
+{% else %}
 static int testbench_run(const char *input_path) {
 {% for dim in dim_args %}
     int {{ dim.name }} = {{ dim.value }};
@@ -425,6 +497,7 @@ static int testbench_run(const char *input_path) {
 {% endif %}
     return 0;
 }
+{% endif %}
 
 int main(int argc, char **argv) {
     const char *input_path = NULL;

@@ -1,4 +1,5 @@
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% if not in_place %}
 {% for dim in output_shape %}
 for (idx_t {{ output_loop_vars[loop.index0] }} = 0; {{ output_loop_vars[loop.index0] }} < {{ dim }}; ++{{ output_loop_vars[loop.index0] }}) {
 {% endfor %}
@@ -7,6 +8,7 @@ for (idx_t {{ output_loop_vars[loop.index0] }} = 0; {{ output_loop_vars[loop.ind
 }
 {% endfor %}
 
+{% endif %}
 {% if prefix_shape %}
 {% for dim in prefix_shape %}
 for (idx_t {{ prefix_loop_vars[loop.index0] }} = 0; {{ prefix_loop_vars[loop.index0] }} < {{ dim }}; ++{{ prefix_loop_vars[loop.index0] }}) {
