@@ -42,12 +42,24 @@ def index_input_bounds(
     """Exclusive upper bounds of graph inputs that ops use as indices.
 
     Test drivers draw such inputs from ``[0, bound)`` so that a random value
-    never addresses memory outside the buffer it indexes.
+    never addresses memory outside the buffer it indexes. A bound also holds
+    for the values an index is copied from (``Cast``, ``Reshape``, ...; see
+    :meth:`OpBase.value_source_inputs`), so it reaches the graph input behind
+    e.g. ``pos -> Cast -> write_indices``.
     """
-    graph_inputs = set(input_names)
     bounds: dict[str, int] = {}
-    for op in ops:
+
+    def tighten(name: str, bound: int) -> None:
+        bounds[name] = min(bound, bounds.get(name, bound))
+
+    # Consumers come after producers, so one reverse pass propagates bounds
+    # from every index use back to its sources.
+    for op in reversed(list(ops)):
         for name, bound in op.index_input_bounds(ctx).items():
-            if name in graph_inputs:
-                bounds[name] = min(bound, bounds.get(name, bound))
-    return bounds
+            tighten(name, bound)
+        output_bounds = [bounds[name] for name in op.output_names if name in bounds]
+        if output_bounds:
+            for source in op.value_source_inputs():
+                tighten(source, min(output_bounds))
+    graph_inputs = set(input_names)
+    return {name: bound for name, bound in bounds.items() if name in graph_inputs}

@@ -954,9 +954,7 @@ class CEmitter:
         return names
 
     def _build_name_map(self, model: LoweredModel) -> dict[str, str]:
-        used: set[str] = (
-            set(self._state_api_names(model)) if model.state_bindings else set()
-        )
+        used: set[str] = {_STATE_PARAM} if model.state_bindings else set()
         name_map: dict[str, str] = {}
         constant_names = {const.name for const in model.constants}
         names = [model.name]
@@ -975,6 +973,9 @@ class CEmitter:
             unique = self._ensure_unique_identifier(sanitized, used)
             name_map[name] = unique
             used.add(unique)
+            if name == model.name and model.state_bindings:
+                # The state API derives its names from the final model name.
+                used.update(self._state_api_names(unique))
         for index, const in enumerate(model.constants, start=1):
             if const.name in name_map:
                 continue
@@ -2805,17 +2806,16 @@ class CEmitter:
 
     @staticmethod
     def _state_type_name(model: LoweredModel) -> str:
-        return f"{model.name}_state"
+        return CEmitter._state_api_names(model.name)[0]
 
     @staticmethod
     def _state_reset_name(model: LoweredModel) -> str:
-        return f"{model.name}_state_reset"
+        return CEmitter._state_api_names(model.name)[1]
 
     @staticmethod
-    def _state_api_names(model: LoweredModel) -> tuple[str, ...]:
+    def _state_api_names(model_name: str) -> tuple[str, str]:
         """Identifiers of the state API; no model value may use them."""
-        model_name = CEmitter._sanitize_identifier(model.name)
-        return (_STATE_PARAM, f"{model_name}_state", f"{model_name}_state_reset")
+        return (f"{model_name}_state", f"{model_name}_state_reset")
 
     def _render_state_template(self, template_name: str, model: LoweredModel) -> str:
         members = [
@@ -4005,7 +4005,7 @@ class CEmitter:
                 for name, values in state_testbench.step_inputs.items()
             }
             initial_state_values = {
-                name: np.asarray(values).reshape(state_inputs[name].shape)
+                name: np.asarray(values)
                 for name, values in state_testbench.initial_state.items()
             }
             # The first step drives the shape handling shared with the
@@ -4454,6 +4454,12 @@ class CEmitter:
             step_var = unique_name(step_var)
             state_var = unique_name(state_var)
             steps = state_testbench.steps
+            inputs = [
+                self._with_testbench_loop_vars(
+                    entry, loop_vars_for(len(entry["shape"]))
+                )
+                for entry in inputs
+            ]
             step_outputs = [
                 output for output in outputs if output["name"] not in state_outputs
             ]
@@ -4533,16 +4539,26 @@ class CEmitter:
                 raise CodegenError(
                     f"Initial state {name!r} is not the input of a state pair"
                 )
+        state_shapes = {
+            binding.input_name: binding.shape for binding in model.state_bindings
+        }
+        for name, values in state_testbench.initial_state.items():
+            if tuple(np.shape(values)) != state_shapes[name]:
+                raise CodegenError(
+                    f"Initial state {name!r} needs shape "
+                    f"{list(state_shapes[name])}, got {list(np.shape(values))}"
+                )
+        input_shapes = dict(zip(model.input_names, model.input_shapes))
         for name, values in state_testbench.step_inputs.items():
-            if name in state_names or name not in model.input_names:
+            if name in state_names or name not in input_shapes:
                 raise CodegenError(
                     f"Step input {name!r} is not a non-state graph input"
                 )
-            shape = np.shape(values)
-            if not shape or shape[0] != steps:
+            expected = (steps, *input_shapes[name])
+            if tuple(np.shape(values)) != expected:
                 raise CodegenError(
-                    f"Step input {name!r} needs a leading step axis of length "
-                    f"{steps}, got shape {list(shape)}"
+                    f"Step input {name!r} needs shape {list(expected)} (steps "
+                    f"first), got {list(np.shape(values))}"
                 )
         reason = None
         if dim_order:
@@ -4560,6 +4576,18 @@ class CEmitter:
             raise CodegenError(
                 f"The testbench of a model with state pairs does not support {reason}"
             )
+
+    def _with_testbench_loop_vars(
+        self, entry: Mapping[str, object], loop_vars: tuple[str, ...]
+    ) -> dict[str, object]:
+        """Rename the loop variables of a testbench input description."""
+        shape = tuple(entry["shape"])
+        return {
+            **entry,
+            "loop_vars": loop_vars,
+            "array_index_expr": "".join(f"[{var}]" for var in loop_vars),
+            "index_expr": self._index_expr(shape, loop_vars),
+        }
 
     @staticmethod
     def _testbench_value_arrays(

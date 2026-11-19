@@ -55,7 +55,9 @@ op order) and is a pure function `LoweredModel -> LoweredModel`:
      `TensorScatter` (`past_cache -> output`).
 
    Ops before `W` may read the input freely, so the current Tiny export
-   `past*(1-onehot) + fresh*onehot` is legal, too.
+   `past*(1-onehot) + fresh*onehot` is legal, too. A state passed through
+   unchanged (`Identity(past) -> present`) becomes a no-op and is dropped
+   (`OpBase.elides_in_place`).
 3. **Rename.** Every op reference to the output is renamed to the input. The
    emitter then sees one value per state buffer; `LoweredModel.state_bindings`
    records the pairs.
@@ -111,7 +113,10 @@ The reference run keeps the original model with explicit inputs and outputs.
 - generates one initial state per pair and N sets of the other inputs.
   Integer inputs that an op uses as an unchecked index declare their valid
   range (`OpBase.index_input_bounds`, e.g. TensorScatter `write_indices` in
-  `[0, S - L]` for linear mode) and are drawn from it; other integers come
+  `[0, S - L]` for linear mode) and are drawn from it. The bound follows the
+  value back through ops that only copy values (`OpBase.value_source_inputs`:
+  Identity, Cast, Reshape incl. Squeeze/Unsqueeze/Flatten, Transpose, Expand),
+  e.g. to `pos` in `pos -> Cast -> write_indices`; other integers come
   from `[0, 4)`. The C testbench uses the same bounds when it fills inputs
   randomly (`compile --emit-testbench` without data);
 - runs the reference N times, feeding each step's state outputs back as state
@@ -120,7 +125,9 @@ The reference run keeps the original model with explicit inputs and outputs.
   into its state struct and calls the model N times through that buffer;
 - compares every output of every step (a leading step axis on both sides).
 
-The compiler receives these values as `CompilerOptions.state_testbench`
+`verify` lowers the model once (`Compiler.lower`) and reuses that context for
+the index bounds and the code generation. The compiler receives these values as
+`CompilerOptions.state_testbench`
 (`StateTestbenchData`: `steps`, `initial_state`, `step_inputs` with a leading
 step axis) instead of `testbench_inputs`. The testbench picks its own
 identifiers (step counter, state variable, collected outputs, loop indices)

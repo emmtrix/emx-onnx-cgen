@@ -471,7 +471,9 @@ When adding support for a new operator:
    `OpBase.in_place_input_fields`; state aliasing (`docs/state-aliasing.md`)
    only accepts a node that reads and writes a state buffer if it does. If an
    integer input is used as an index without a bounds check, declare its
-   valid range in `OpBase.index_input_bounds` so testbenches stay in bounds.
+   valid range in `OpBase.index_input_bounds` so testbenches stay in bounds;
+   ops that only copy values report their data input in
+   `OpBase.value_source_inputs` so such bounds reach the graph input.
 4. **Runtime evaluator:** implement the op in `src/onnx2c/runtime/evaluator.py` for verification/constant folding.
 5. **Tests:** add at least one unit test and one ORT comparison test.
 6. **Reference updates:** refresh `tests/expected_errors/**.json` and regenerate `OFFICIAL_ONNX_FILE_SUPPORT*.md` via `UPDATE_REFS=1 pytest -q`.

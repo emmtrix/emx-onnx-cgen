@@ -347,7 +347,7 @@ class Compiler:
 
     def index_input_bounds(self, model: onnx.ModelProto) -> dict[str, int]:
         """Exclusive upper bounds of graph inputs the model uses as indices."""
-        lowered = self._build_compile_context(model).lowered
+        lowered = self.lower(model).lowered
         return index_input_bounds(lowered.ops, lowered.op_context, lowered.input_names)
 
     def compile_testbench_declarations(self, model: onnx.ModelProto) -> str:
@@ -378,10 +378,19 @@ class Compiler:
             ),
         )
 
+    def lower(self, model: onnx.ModelProto) -> _CompileContext:
+        """Import and lower ``model`` without emitting code.
+
+        The result can be passed as ``context`` to :meth:`compile_with_weight_data`
+        of a compiler whose options differ only in emission settings
+        (testbench, output format, thresholds), so the model is lowered once.
+        """
+        return self._build_compile_context(model)
+
     def compile_with_weight_data(
-        self, model: onnx.ModelProto
+        self, model: onnx.ModelProto, *, context: _CompileContext | None = None
     ) -> tuple[str, bytes | None]:
-        ctx = self._build_compile_context(model)
+        ctx = context if context is not None else self._build_compile_context(model)
         generated = self._time_step(
             "emit_model",
             lambda: self._emitter.emit_model(

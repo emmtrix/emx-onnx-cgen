@@ -126,7 +126,15 @@ def apply_state_aliasing(
     ops = tuple(op.remap_names(rename) for op in model.ops)
     for source_op, target_op in zip(model.ops, ops):
         model.op_context.copy_derived(source_op, target_op)
-    return dataclasses.replace(model, ops=ops, state_bindings=bindings)
+    # A state that is passed through unchanged (Identity past -> present)
+    # needs no code once both names are one buffer.
+    kept = [index for index, op in enumerate(ops) if not op.elides_in_place()]
+    return dataclasses.replace(
+        model,
+        ops=tuple(ops[index] for index in kept),
+        node_infos=tuple(model.node_infos[index] for index in kept),
+        state_bindings=bindings,
+    )
 
 
 def _bind_pair(model: LoweredModel, pair: StatePair) -> StateBinding:

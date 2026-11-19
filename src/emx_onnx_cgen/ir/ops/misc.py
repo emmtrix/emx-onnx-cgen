@@ -113,6 +113,10 @@ class CastOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
+
+    def value_source_inputs(self) -> tuple[str, ...]:
+        return (self.input0,)
+
     saturate: bool = True
 
     def infer_types(self, ctx: OpContext) -> None:
@@ -1965,6 +1969,10 @@ class TransposeOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
+
+    def value_source_inputs(self) -> tuple[str, ...]:
+        return (self.input0,)
+
     perm: tuple[int, ...]
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
@@ -2033,6 +2041,9 @@ class ReshapeOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
+
+    def value_source_inputs(self) -> tuple[str, ...]:
+        return (self.input0,)
 
     def required_includes(self, ctx: OpContext) -> set[str]:
         return {"#include <string.h>"}
@@ -4588,6 +4599,9 @@ class ExpandOp(ShapeLikeOpBase):
     input0: str
     input_shape: str
     output: str
+
+    def value_source_inputs(self) -> tuple[str, ...]:
+        return (self.input0,)
 
     def _shape_data(self) -> str:
         return self.input0

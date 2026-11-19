@@ -10,6 +10,7 @@ from onnx import TensorProto, helper
 
 from emx_onnx_cgen import cli
 from emx_onnx_cgen.compiler import Compiler, CompilerOptions
+from emx_onnx_cgen.errors import CodegenError
 from emx_onnx_cgen.ir.state import StatePair
 from emx_onnx_cgen.state_aliasing import (
     STATE_PAIRS_METADATA_KEY,
@@ -555,3 +556,109 @@ def test_state_testbench_rejects_testbench_inputs() -> None:
             emit_testbench=True,
             testbench_inputs={"q": np.zeros((BATCH, 1, DIM), dtype=np.float32)},
         )
+
+
+def _make_cast_position_model(seq: int = 2) -> onnx.ModelProto:
+    """``pos`` reaches TensorScatter through Cast and Reshape."""
+    return _make_model(
+        [
+            helper.make_node("Cast", ["pos32"], ["pos64"], to=TensorProto.INT64),
+            helper.make_node("Reshape", ["pos64", "flat"], ["pos"]),
+            helper.make_node(
+                "TensorScatter", ["past", "row", "pos"], ["present"], axis=1
+            ),
+        ],
+        [
+            helper.make_tensor_value_info("past", TensorProto.FLOAT, [BATCH, seq, DIM]),
+            helper.make_tensor_value_info("row", TensorProto.FLOAT, [BATCH, 1, DIM]),
+            helper.make_tensor_value_info("pos32", TensorProto.INT32, [BATCH, 1]),
+        ],
+        [
+            helper.make_tensor_value_info(
+                "present", TensorProto.FLOAT, [BATCH, seq, DIM]
+            )
+        ],
+        [helper.make_tensor("flat", TensorProto.INT64, [1], [BATCH])],
+    )
+
+
+def test_index_bounds_follow_cast_and_reshape(tmp_path: Path) -> None:
+    model = _make_cast_position_model()
+    assert Compiler().index_input_bounds(model) == {"pos32": 2}
+    result = _run_verify(
+        model, tmp_path, "--state-pair", "past=present", "--state-steps", "6"
+    )
+    assert result.exit_code == 0, result.result
+
+
+@pytest.mark.parametrize(
+    ("state_testbench", "message"),
+    [
+        (
+            StateTestbenchData(
+                steps=2, step_inputs={"q": np.zeros((2, 3, 1, DIM), np.float32)}
+            ),
+            r"Step input 'q' needs shape \[2, 2, 1, 3\]",
+        ),
+        (
+            StateTestbenchData(
+                steps=2, initial_state={"past_k": np.zeros((SEQ, DIM), np.float32)}
+            ),
+            r"Initial state 'past_k' needs shape \[2, 8, 3\]",
+        ),
+        (
+            StateTestbenchData(
+                steps=2, initial_state={"q": np.zeros((1,), np.float32)}
+            ),
+            r"Initial state 'q' is not the input of a state pair",
+        ),
+    ],
+)
+def test_state_testbench_data_is_validated(state_testbench, message: str) -> None:
+    with pytest.raises(CodegenError, match=message):
+        _compile(
+            _make_kv_cache_model(),
+            "past_k=new_k",
+            emit_testbench=True,
+            state_testbench=state_testbench,
+        )
+
+
+def test_pass_through_state_emits_no_copy() -> None:
+    model = _make_model(
+        [
+            helper.make_node("Identity", ["past"], ["present"], name="keep"),
+            helper.make_node("ReduceSum", ["present"], ["total"], keepdims=0),
+        ],
+        [_cache_info("past")],
+        [_cache_info("present"), helper.make_tensor_value_info("total", 1, [])],
+    )
+    generated = _compile(model, "past=present")
+    assert "OpType: Identity" not in generated
+    assert "node0_reducesum(state->past, total);" in generated
+
+
+def test_state_testbench_helpers_avoid_loop_var_names(tmp_path: Path) -> None:
+    model = _make_kv_cache_model(pos_name="i0")
+    source = _compile(
+        model,
+        "past_k=new_k",
+        emit_testbench=True,
+        state_testbench=StateTestbenchData(
+            steps=2,
+            step_inputs={"i0": np.array([[0, 1], [2, 3]], dtype=np.int64)},
+        ),
+    )
+    result = _build_and_run(source, tmp_path)
+    assert result.returncode == 0, result
+
+
+def test_state_names_follow_model_name_remap() -> None:
+    model = _make_model(
+        [helper.make_node("Add", ["acc", "state_1_state"], ["acc_next"])],
+        [_cache_info("acc"), _cache_info("state_1_state")],
+        [_cache_info("acc_next")],
+    )
+    generated = _compile(model, "acc=acc_next", model_name="state")
+    assert "} state_1_state;" in generated
+    assert "const float state_1_state_1[restrict 2][8][3]" in generated

@@ -13,7 +13,7 @@ import subprocess
 import sys
 import tempfile
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from enum import Enum
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence, TextIO
@@ -55,7 +55,7 @@ from .sequence_shape_hints import (
 )
 from .testbench_output_format import parse_testbench_output_format
 from .testbench import StateTestbenchData, decode_testbench_array
-from .ir.state import StatePair
+from .ir.state import StatePair, index_input_bounds
 from .state_aliasing import (
     STATE_PAIRS_METADATA_KEY,
     parse_state_pair_args,
@@ -2224,27 +2224,8 @@ def _verify_model(
             active_reporter.note(
                 "Ignoring test-data outputs by request; using runtime reference instead."
             )
-        state_testbench: StateTestbenchData | None = None
         if state_pairs:
-            index_bounds = Compiler(
-                CompilerOptions(
-                    model_name=model_name,
-                    explicit_padding=args.explicit_padding,
-                    sequence_element_shapes=sequence_element_shapes,
-                    image_decoder_libs=args.image_decoder_libs,
-                    state_pairs=state_pairs,
-                )
-            ).index_input_bounds(model)
-            state_testbench = _generate_random_state_testbench(
-                graph.inputs, state_pairs, state_steps, index_bounds
-            )
-            # The reference run feeds the same values: the initial state plus
-            # the per-step arrays (leading step axis).
-            testbench_inputs = {
-                **state_testbench.initial_state,
-                **state_testbench.step_inputs,
-            }
-            testbench_optional_inputs = {name: True for name in testbench_inputs}
+            # Generated below, once the lowered model gives the index bounds.
             verification_mode.use_random_inputs()
         elif testbench_inputs is None:
             testbench_inputs, testbench_optional_inputs = (
@@ -2277,13 +2258,37 @@ def _verify_model(
             testbench_outputs=testbench_outputs,
             testbench_optional_inputs=testbench_optional_inputs,
             state_pairs=state_pairs,
-            state_testbench=state_testbench,
             timings=timings,
         )
+        # Lower once; the testbench options below only affect emission.
+        compile_ctx = Compiler(options).lower(model)
+        if state_pairs:
+            lowered = compile_ctx.lowered
+            state_testbench = _generate_random_state_testbench(
+                graph.inputs,
+                state_pairs,
+                state_steps,
+                index_input_bounds(
+                    lowered.ops, lowered.op_context, lowered.input_names
+                ),
+            )
+            # The reference run feeds the same values: the initial state plus
+            # the per-step arrays (leading step axis).
+            testbench_inputs = {
+                **state_testbench.initial_state,
+                **state_testbench.step_inputs,
+            }
+            testbench_optional_inputs = {name: True for name in testbench_inputs}
+            options = replace(
+                options,
+                state_testbench=state_testbench,
+                testbench_optional_inputs=testbench_optional_inputs,
+            )
         compiler = Compiler(options)
-        generated, weight_data = compiler.compile_with_weight_data(model)
+        generated, weight_data = compiler.compile_with_weight_data(
+            model, context=compile_ctx
+        )
         if testbench_inputs is not None:
-            compile_ctx = compiler._build_compile_context(model)
             lowered_sequence_input_shapes = {}
             for name, shape, value_type in zip(
                 compile_ctx.lowered.input_names,

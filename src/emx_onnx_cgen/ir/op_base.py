@@ -189,6 +189,19 @@ class OpBase(ABC):
         """
         return {}
 
+    def value_source_inputs(self) -> tuple[str, ...]:
+        """Return the inputs whose element values the outputs only copy.
+
+        Ops that move or convert values without computing new ones (Identity,
+        Reshape, Cast, ...) report their data input, so constraints on output
+        values (see :meth:`index_input_bounds`) also hold for that input.
+        """
+        return ()
+
+    def elides_in_place(self) -> bool:
+        """Whether the op is a no-op because its input and output are one buffer."""
+        return False
+
     def input_fields_reading(self, name: str) -> tuple[str, ...] | None:
         """Return the input fields that pass ``name`` to the kernel.
 
