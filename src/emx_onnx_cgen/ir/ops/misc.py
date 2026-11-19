@@ -1738,12 +1738,24 @@ class TensorScatterOp(RenderableOpBase):
         """Whether ``past_cache`` and ``output`` are one buffer (state aliasing)."""
         return self.past_cache == self.output
 
-    def in_place_inputs(self, ctx: OpContext, output_name: str) -> tuple[str, ...]:
+    def in_place_input_fields(
+        self, ctx: OpContext, output_name: str
+    ) -> tuple[str, ...]:
         # Only the scattered rows change, so updating the cache in place
-        # yields the same result as copy-then-scatter.
+        # yields the same result as copy-then-scatter. ``update`` is read
+        # while rows are written and therefore never qualifies.
         if output_name != self.output:
             return ()
-        return (self.past_cache,)
+        return ("past_cache",)
+
+    def index_input_bounds(self, ctx: OpContext) -> dict[str, int]:
+        if self.write_indices is None:
+            return {}
+        max_length = ctx.shape(self.past_cache)[self.axis]
+        update_length = ctx.shape(self.update)[self.axis]
+        if self.mode == "circular":
+            return {self.write_indices: max_length}
+        return {self.write_indices: max_length - update_length + 1}
 
     def call_args(self) -> tuple[str, ...]:
         args = super().call_args()

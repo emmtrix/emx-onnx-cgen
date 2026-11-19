@@ -1,8 +1,26 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
+from dataclasses import dataclass, field
 from typing import Any
 
 import numpy as np
+
+
+@dataclass(frozen=True)
+class StateTestbenchData:
+    """Values for the multi-step testbench of a model with state pairs.
+
+    The testbench resets the state, loads ``initial_state`` (per state input;
+    missing entries stay zero) and calls the model ``steps`` times. Every other
+    graph input takes its value of each call from ``step_inputs``, whose
+    arrays carry a leading axis of length ``steps``; inputs without an entry
+    are filled with random values.
+    """
+
+    steps: int
+    initial_state: Mapping[str, np.ndarray] = field(default_factory=dict)
+    step_inputs: Mapping[str, np.ndarray] = field(default_factory=dict)
 
 
 def _convert_hex_floats(value: Any) -> Any:

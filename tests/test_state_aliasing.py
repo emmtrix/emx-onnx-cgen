@@ -14,9 +14,11 @@ from emx_onnx_cgen.ir.state import StatePair
 from emx_onnx_cgen.state_aliasing import (
     STATE_PAIRS_METADATA_KEY,
     StateAliasingError,
+    parse_state_pair_args,
     parse_state_pairs,
     resolve_state_pairs,
 )
+from emx_onnx_cgen.testbench import StateTestbenchData
 from golden_utils import assert_golden
 
 GOLDEN_DIR = Path(__file__).parent / "golden"
@@ -43,13 +45,15 @@ def _cache_info(name: str, dtype: int = TensorProto.FLOAT) -> onnx.ValueInfoProt
     return helper.make_tensor_value_info(name, dtype, [BATCH, SEQ, DIM])
 
 
-def _make_kv_cache_model() -> onnx.ModelProto:
+def _make_kv_cache_model(
+    *, seq: int = SEQ, update: int = 1, pos_name: str = "pos"
+) -> onnx.ModelProto:
     """One decoder step: write the new key row, then attend over the cache."""
     return _make_model(
         [
             helper.make_node(
                 "TensorScatter",
-                ["past_k", "k_row", "pos"],
+                ["past_k", "k_row", pos_name],
                 ["new_k"],
                 axis=1,
                 name="write_cache",
@@ -58,14 +62,20 @@ def _make_kv_cache_model() -> onnx.ModelProto:
             helper.make_node("MatMul", ["q", "new_k_t"], ["scores"], name="attend"),
         ],
         [
-            _cache_info("past_k"),
-            helper.make_tensor_value_info("k_row", TensorProto.FLOAT, [BATCH, 1, DIM]),
-            helper.make_tensor_value_info("pos", TensorProto.INT64, [BATCH]),
+            helper.make_tensor_value_info(
+                "past_k", TensorProto.FLOAT, [BATCH, seq, DIM]
+            ),
+            helper.make_tensor_value_info(
+                "k_row", TensorProto.FLOAT, [BATCH, update, DIM]
+            ),
+            helper.make_tensor_value_info(pos_name, TensorProto.INT64, [BATCH]),
             helper.make_tensor_value_info("q", TensorProto.FLOAT, [BATCH, 1, DIM]),
         ],
         [
-            _cache_info("new_k"),
-            helper.make_tensor_value_info("scores", TensorProto.FLOAT, [BATCH, 1, SEQ]),
+            helper.make_tensor_value_info(
+                "new_k", TensorProto.FLOAT, [BATCH, seq, DIM]
+            ),
+            helper.make_tensor_value_info("scores", TensorProto.FLOAT, [BATCH, 1, seq]),
         ],
     )
 
@@ -175,15 +185,33 @@ def test_parse_state_pairs() -> None:
         parse_state_pairs(["a=c", "b=c"])
 
 
-def test_state_pairs_from_metadata_and_cli_override() -> None:
+def test_state_pairs_from_metadata_and_overrides() -> None:
     model = _make_kv_cache_model()
     onnx.helper.set_model_props(model, {STATE_PAIRS_METADATA_KEY: "past_k=new_k"})
     assert resolve_state_pairs(None, model) == (StatePair("past_k", "new_k"),)
-    assert resolve_state_pairs(["x=y"], model) == (StatePair("x", "y"),)
-    generated = Compiler(
-        CompilerOptions(state_pairs=resolve_state_pairs(None, model))
-    ).compile(model)
-    assert "model_state *restrict state" in generated
+    assert resolve_state_pairs((StatePair("x", "y"),), model) == (StatePair("x", "y"),)
+    assert resolve_state_pairs((), model) == ()
+    assert parse_state_pair_args(None) is None
+    assert parse_state_pair_args(["a=b"], disabled=True) == ()
+    # The compiler itself reads the metadata; () switches it off.
+    assert "model_state *restrict state" in Compiler().compile(model)
+    plain = Compiler(CompilerOptions(state_pairs=())).compile(model)
+    assert "model_state" not in plain
+
+
+def test_cli_no_state_pairs_ignores_metadata(tmp_path: Path) -> None:
+    model = _make_kv_cache_model()
+    onnx.helper.set_model_props(model, {STATE_PAIRS_METADATA_KEY: "past_k=new_k"})
+    model_path = tmp_path / "model.onnx"
+    onnx.save_model(model, model_path)
+    compiled = cli.run_cli_command(["compile", str(model_path), str(tmp_path / "a.c")])
+    assert compiled.exit_code == 0, compiled.result
+    assert "model_state *restrict state" in compiled.generated
+    plain = cli.run_cli_command(
+        ["compile", str(model_path), str(tmp_path / "b.c"), "--no-state-pairs"]
+    )
+    assert plain.exit_code == 0, plain.result
+    assert "model_state" not in plain.generated
 
 
 def test_tensor_scatter_state_drops_cache_copy() -> None:
@@ -214,13 +242,15 @@ def test_codegen_golden_tensor_scatter_state_testbench() -> None:
         "past_k=new_k",
         model_name="kv_cache_state_model",
         emit_testbench=True,
-        testbench_steps=steps,
-        testbench_inputs={
-            "past_k": np.zeros((BATCH, SEQ, DIM), dtype=np.float32),
-            "k_row": rng.uniform(-1, 1, (steps, BATCH, 1, DIM)).astype(np.float32),
-            "pos": np.array([[0, 1], [1, 2]], dtype=np.int64),
-            "q": rng.uniform(-1, 1, (steps, BATCH, 1, DIM)).astype(np.float32),
-        },
+        state_testbench=StateTestbenchData(
+            steps=steps,
+            initial_state={"past_k": np.zeros((BATCH, SEQ, DIM), dtype=np.float32)},
+            step_inputs={
+                "k_row": rng.uniform(-1, 1, (steps, BATCH, 1, DIM)).astype(np.float32),
+                "pos": np.array([[0, 1], [1, 2]], dtype=np.int64),
+                "q": rng.uniform(-1, 1, (steps, BATCH, 1, DIM)).astype(np.float32),
+            },
+        ),
     )
     assert_golden(generated, GOLDEN_DIR / "kv_cache_state_model_testbench.c")
 
@@ -406,3 +436,122 @@ def test_subgraph_references_count_as_reads() -> None:
     )
     assert {"past", "cond"} <= _subgraph_references([outer])
     assert _subgraph_references([1, "x", (outer,)]) >= {"past"}
+
+
+def _build_and_run(source: str, tmp_path: Path) -> subprocess.CompletedProcess:
+    compiler_cmd = cli._resolve_compiler(None)
+    if compiler_cmd is None:
+        pytest.skip("No C compiler available")
+    c_path = tmp_path / "testbench.c"
+    c_path.write_text(source, encoding="utf-8")
+    exe_path = tmp_path / "testbench"
+    subprocess.run(
+        [
+            *compiler_cmd,
+            "-std=c99",
+            "-Wall",
+            "-Werror",
+            str(c_path),
+            "-o",
+            str(exe_path),
+            "-lm",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return subprocess.run([str(exe_path)], capture_output=True, text=True, cwd=tmp_path)
+
+
+def test_state_testbench_avoids_model_value_names(tmp_path: Path) -> None:
+    # A step model with an input named like the testbench's own identifiers.
+    model = _make_kv_cache_model(pos_name="step")
+    source = _compile(
+        model,
+        "past_k=new_k",
+        emit_testbench=True,
+        state_testbench=StateTestbenchData(steps=3),
+    )
+    assert "for (idx_t step_1 = 0; step_1 < 3; ++step_1)" in source
+    result = _build_and_run(source, tmp_path)
+    assert result.returncode == 0, result
+
+
+def test_state_testbench_random_positions_stay_in_bounds(tmp_path: Path) -> None:
+    source = _compile(
+        _make_kv_cache_model(seq=4, update=2),
+        "past_k=new_k",
+        emit_testbench=True,
+        state_testbench=StateTestbenchData(steps=8),
+    )
+    # Linear TensorScatter: write_index + 2 rows must fit into 4 rows.
+    assert "(int64_t)(rng_next_u64() % 3ull)" in source
+    result = _build_and_run(source, tmp_path)
+    assert result.returncode == 0, result
+
+
+def test_short_cache_matches_onnxruntime(tmp_path: Path) -> None:
+    result = _run_verify(
+        _make_kv_cache_model(seq=4, update=2),
+        tmp_path,
+        "--state-pair",
+        "past_k=new_k",
+        "--state-steps",
+        "6",
+    )
+    assert result.exit_code == 0, result.result
+
+
+def test_tensor_scatter_write_index_bounds() -> None:
+    model = _make_kv_cache_model(seq=4, update=2)
+    assert Compiler().index_input_bounds(model) == {"pos": 3}
+    model.graph.node[0].attribute.append(helper.make_attribute("mode", "circular"))
+    assert Compiler().index_input_bounds(model) == {"pos": 4}
+
+
+def test_state_api_names_are_reserved() -> None:
+    model = _make_model(
+        [
+            helper.make_node("Add", ["acc", "model_state"], ["acc_next"]),
+        ],
+        [_cache_info("acc"), _cache_info("model_state")],
+        [_cache_info("acc_next")],
+    )
+    generated = _compile(model, "acc=acc_next")
+    assert "const float model_state_1[restrict 2][8][3]" in generated
+    assert "} model_state;" in generated
+
+
+def test_update_reading_the_state_is_not_in_place() -> None:
+    model = _make_model(
+        [
+            helper.make_node(
+                "TensorScatter",
+                ["past", "past", "pos"],
+                ["present"],
+                axis=1,
+                mode="circular",
+                name="self_scatter",
+            )
+        ],
+        [
+            _cache_info("past"),
+            helper.make_tensor_value_info("pos", TensorProto.INT64, [BATCH]),
+        ],
+        [_cache_info("present")],
+    )
+    with pytest.raises(
+        StateAliasingError,
+        match=r"node 0 \(TensorScatter 'self_scatter'\) reads 'past' while writing",
+    ):
+        _compile(model, "past=present")
+
+
+def test_state_testbench_rejects_testbench_inputs() -> None:
+    with pytest.raises(Exception, match="state_testbench"):
+        _compile(
+            _make_kv_cache_model(),
+            "past_k=new_k",
+            emit_testbench=True,
+            testbench_inputs={"q": np.zeros((BATCH, 1, DIM), dtype=np.float32)},
+        )

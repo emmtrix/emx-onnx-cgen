@@ -36,7 +36,8 @@ from ..ir.op_base import (
 )
 from ..ir.op_context import OpContext
 from ..ir.model import SequenceType, TensorType, ValueType
-from ..ir.state import StateBinding
+from ..ir.state import StateBinding, index_input_bounds
+from ..testbench import StateTestbenchData
 from ..ir.ops import (
     ArgReduceOp,
     ImageDecoderOp,
@@ -953,7 +954,9 @@ class CEmitter:
         return names
 
     def _build_name_map(self, model: LoweredModel) -> dict[str, str]:
-        used: set[str] = {_STATE_PARAM} if model.state_bindings else set()
+        used: set[str] = (
+            set(self._state_api_names(model)) if model.state_bindings else set()
+        )
         name_map: dict[str, str] = {}
         constant_names = {const.name for const in model.constants}
         names = [model.name]
@@ -1368,7 +1371,7 @@ class CEmitter:
         testbench_optional_inputs: Mapping[str, bool] | None = None,
         variable_dim_inputs: Mapping[int, Mapping[int, str]] | None = None,
         variable_dim_outputs: Mapping[int, Mapping[int, str]] | None = None,
-        testbench_steps: int = 1,
+        state_testbench: StateTestbenchData | None = None,
     ) -> str:
         original_model = model
         model, name_map = self._sanitize_model_names_with_map(model)
@@ -1475,7 +1478,7 @@ class CEmitter:
                 dim_order=dim_order,
                 dim_values=dim_values,
                 weight_data_filename=self._weight_data_filename(model),
-                testbench_steps=testbench_steps,
+                state_testbench=state_testbench,
             )
         scalar_functions = scalar_registry.render()
         scalar_include_lines = (
@@ -1501,7 +1504,9 @@ class CEmitter:
             if not line.startswith("#include ")
         ]
         testbench_math_include = set()
-        if emit_testbench and self._testbench_requires_math(model, testbench_inputs):
+        if emit_testbench and self._testbench_requires_math(
+            model, self._testbench_value_arrays(testbench_inputs, state_testbench)
+        ):
             testbench_math_include.add("#include <math.h>")
         includes = self._collect_includes(
             original_model,
@@ -1600,7 +1605,7 @@ class CEmitter:
         testbench_optional_inputs: Mapping[str, bool] | None = None,
         variable_dim_inputs: Mapping[int, Mapping[int, str]] | None = None,
         variable_dim_outputs: Mapping[int, Mapping[int, str]] | None = None,
-        testbench_steps: int = 1,
+        state_testbench: StateTestbenchData | None = None,
     ) -> tuple[str, str]:
         original_model = model
         model, name_map = self._sanitize_model_names_with_map(model)
@@ -1707,7 +1712,7 @@ class CEmitter:
                 dim_order=dim_order,
                 dim_values=dim_values,
                 weight_data_filename=self._weight_data_filename(model),
-                testbench_steps=testbench_steps,
+                state_testbench=state_testbench,
             )
         scalar_functions = scalar_registry.render()
         scalar_include_lines = (
@@ -1733,7 +1738,9 @@ class CEmitter:
             if not line.startswith("#include ")
         ]
         testbench_math_include = set()
-        if emit_testbench and self._testbench_requires_math(model, testbench_inputs):
+        if emit_testbench and self._testbench_requires_math(
+            model, self._testbench_value_arrays(testbench_inputs, state_testbench)
+        ):
             testbench_math_include.add("#include <math.h>")
         includes = self._collect_includes(
             original_model,
@@ -1842,7 +1849,7 @@ class CEmitter:
         testbench_optional_inputs: Mapping[str, bool] | None = None,
         variable_dim_inputs: Mapping[int, Mapping[int, str]] | None = None,
         variable_dim_outputs: Mapping[int, Mapping[int, str]] | None = None,
-        testbench_steps: int = 1,
+        state_testbench: StateTestbenchData | None = None,
     ) -> str:
         original_model = model
         model, name_map = self._sanitize_model_names_with_map(model)
@@ -1903,7 +1910,7 @@ class CEmitter:
             dim_order=dim_order,
             dim_values=dim_values,
             weight_data_filename=self._weight_data_filename(model),
-            testbench_steps=testbench_steps,
+            state_testbench=state_testbench,
         )
         if not rendered.endswith("\n"):
             rendered += "\n"
@@ -2804,52 +2811,45 @@ class CEmitter:
     def _state_reset_name(model: LoweredModel) -> str:
         return f"{model.name}_state_reset"
 
-    def _emit_state_struct(self, model: LoweredModel) -> str:
-        type_name = self._state_type_name(model)
-        lines = [
-            "/*",
-            " * Persistent model state: each member is one buffer shared by a",
-            " * graph input and a graph output (--state-pair INPUT=OUTPUT).",
-            f" * {model.name}() reads the input from it and writes the output",
-            " * back into it, so the value carries over to the next call.",
-            " * The caller owns the storage and decides where it is placed,",
-            " * e.g. in large slow memory via a section attribute or pragma:",
-            f' *   static {type_name} state __attribute__((section(".bss.lmu")));',
-            f" * Call {self._state_reset_name(model)}() at the start of a sequence.",
-            " */",
-            "typedef struct {",
+    @staticmethod
+    def _state_api_names(model: LoweredModel) -> tuple[str, ...]:
+        """Identifiers of the state API; no model value may use them."""
+        model_name = CEmitter._sanitize_identifier(model.name)
+        return (_STATE_PARAM, f"{model_name}_state", f"{model_name}_state_reset")
+
+    def _render_state_template(self, template_name: str, model: LoweredModel) -> str:
+        members = [
+            {
+                "name": binding.input_name,
+                "output_name": binding.output_name,
+                "c_type": binding.dtype.c_type,
+                "suffix": self._array_suffix(binding.shape, binding.dtype),
+                "shape": self._codegen_shape(binding.shape),
+                "loop_vars": self._loop_vars(self._codegen_shape(binding.shape)),
+                "zero": binding.dtype.zero_literal,
+            }
+            for binding in model.state_bindings
         ]
-        for binding in model.state_bindings:
-            lines.append(
-                f"    {binding.dtype.c_type} {binding.input_name}"
-                f"{self._array_suffix(binding.shape, binding.dtype)};"
-                f" /* {binding.input_name} -> {binding.output_name} */"
+        rendered = (
+            self._env.get_template(template_name)
+            .render(
+                model_name=model.name,
+                type_name=self._state_type_name(model),
+                reset_name=self._state_reset_name(model),
+                param=_STATE_PARAM,
+                members=members,
             )
-        lines.append(f"}} {type_name};")
-        return "\n".join(lines)
+            .rstrip()
+        )
+        return rendered
+
+    def _emit_state_struct(self, model: LoweredModel) -> str:
+        return self._render_state_template("state_struct.c.j2", model)
 
     def _emit_state_reset(self, model: LoweredModel) -> str:
-        lines = [
-            f"void {self._state_reset_name(model)}"
-            f"({self._state_type_name(model)} *{_STATE_PARAM}) {{"
-        ]
-        for binding in model.state_bindings:
-            shape = self._codegen_shape(binding.shape)
-            loop_vars = self._loop_vars(shape)
-            indent = "    "
-            for depth, (var, dim) in enumerate(zip(loop_vars, shape)):
-                lines.append(
-                    f"{indent * (depth + 1)}for (idx_t {var} = 0; {var} < {dim}; ++{var}) {{"
-                )
-            index = "".join(f"[{var}]" for var in loop_vars)
-            lines.append(
-                f"{indent * (len(shape) + 1)}{_STATE_PARAM}->{binding.input_name}{index}"
-                f" = {binding.dtype.zero_literal};"
-            )
-            for depth in range(len(shape) - 1, -1, -1):
-                lines.append(f"{indent * (depth + 1)}}}")
-        lines.append("}")
-        return "\n".join(lines)
+        return _format_c_indentation(
+            self._render_state_template("state_reset.c.j2", model)
+        )
 
     @staticmethod
     def _buffer_size_bytes(
@@ -3983,7 +3983,7 @@ class CEmitter:
         dim_order: Sequence[str],
         dim_values: Mapping[str, int],
         weight_data_filename: str,
-        testbench_steps: int = 1,
+        state_testbench: StateTestbenchData | None = None,
     ) -> str:
         scalar_registry = self._emit_state.scalar_registry
         state_inputs: dict[str, StateBinding] = {
@@ -3994,12 +3994,27 @@ class CEmitter:
         }
         step_input_values: dict[str, np.ndarray] = {}
         initial_state_values: dict[str, np.ndarray] = {}
+        index_bounds: dict[str, int] = {}
         if model.state_bindings:
-            self._check_state_testbench_model(model, dim_order, testbench_steps)
-            testbench_inputs, step_input_values, initial_state_values = (
-                self._split_state_testbench_inputs(
-                    model, testbench_inputs or {}, testbench_steps
-                )
+            state_testbench = state_testbench or StateTestbenchData(steps=1)
+            self._check_state_testbench_model(
+                model, dim_order, state_testbench, testbench_inputs
+            )
+            step_input_values = {
+                name: np.asarray(values)
+                for name, values in state_testbench.step_inputs.items()
+            }
+            initial_state_values = {
+                name: np.asarray(values).reshape(state_inputs[name].shape)
+                for name, values in state_testbench.initial_state.items()
+            }
+            # The first step drives the shape handling shared with the
+            # single-call testbench; all steps are emitted further below.
+            testbench_inputs = {
+                name: values[0] for name, values in step_input_values.items()
+            }
+            index_bounds = index_input_bounds(
+                model.ops, model.op_context, model.input_names
             )
 
         def concrete_shape_for_testbench(
@@ -4146,7 +4161,8 @@ class CEmitter:
                     rng_requires_i64 = True
                 else:
                     rng_requires_u64 = True
-                    rng_requires_i64 = True
+                    # The multi-step testbench draws bounded integers from u64.
+                    rng_requires_i64 = not model.state_bindings
             if dtype in {ScalarType.F16, ScalarType.BF16, ScalarType.F32}:
                 random_expr = "rng_next_float()"
             elif dtype == ScalarType.F64:
@@ -4158,6 +4174,11 @@ class CEmitter:
             elif dtype.is_typedef_float:
                 mask = "0x0F" if dtype.is_float4 else "0xFF"
                 random_expr = f"({dtype.c_type})(rng_next_i64() & {mask})"
+            elif model.state_bindings:
+                # Keep index-like inputs (e.g. TensorScatter write positions)
+                # inside the buffers they address.
+                random_bound = index_bounds.get(name, 4)
+                random_expr = f"({dtype.c_type})(rng_next_u64() % {random_bound}ull)"
             else:
                 random_expr = f"({dtype.c_type})rng_next_i64()"
             constant_name = None
@@ -4407,16 +4428,43 @@ class CEmitter:
             raise CodegenError(str(exc)) from exc
         step_outputs: list[dict[str, object]] = []
         state_testbench_inputs: list[dict[str, object]] = []
+        # Testbench-local identifiers must not shadow the model's values.
+        used_names = {
+            model.name,
+            *model.input_names,
+            *model.output_names,
+            *(str(entry["name"]) for entry in (*inputs, *outputs)),
+        }
+
+        def unique_name(base: str) -> str:
+            name = self._ensure_unique_identifier(base, used_names)
+            used_names.add(name)
+            return name
+
+        loop_var_names: list[str] = []
+
+        def loop_vars_for(rank: int) -> tuple[str, ...]:
+            while len(loop_var_names) < rank:
+                loop_var_names.append(unique_name(f"i{len(loop_var_names)}"))
+            return tuple(loop_var_names[:rank])
+
+        step_var = "step"
+        state_var = "testbench_state"
         if model.state_bindings:
+            step_var = unique_name(step_var)
+            state_var = unique_name(state_var)
+            steps = state_testbench.steps
             step_outputs = [
                 output for output in outputs if output["name"] not in state_outputs
             ]
             outputs = [
                 self._stacked_testbench_output(
                     output,
-                    testbench_steps,
+                    steps,
+                    name=unique_name(f"{output['name']}_steps"),
+                    loop_vars=loop_vars_for(len(output["shape"]) + 1),
                     source=(
-                        f"testbench_state.{state_outputs[output['name']].input_name}"
+                        f"{state_var}.{state_outputs[output['name']].input_name}"
                         if output["name"] in state_outputs
                         else str(output["name"])
                     ),
@@ -4425,12 +4473,19 @@ class CEmitter:
             ]
             state_testbench_inputs = [
                 self._state_testbench_input(
-                    binding, initial_state_values.get(binding.input_name)
+                    binding,
+                    initial_state_values.get(binding.input_name),
+                    constant_name=unique_name(
+                        f"{binding.input_name}_testbench_initial_state"
+                    ),
+                    loop_vars=loop_vars_for(len(self._codegen_shape(binding.shape))),
                 )
                 for binding in model.state_bindings
             ]
         rendered = testbench_template.render(
-            state_steps=testbench_steps if model.state_bindings else 0,
+            state_steps=state_testbench.steps if model.state_bindings else 0,
+            step_var=step_var,
+            state_var=state_var,
             state_type=self._state_type_name(model),
             state_reset=self._state_reset_name(model),
             state_inputs=state_testbench_inputs,
@@ -4458,10 +4513,37 @@ class CEmitter:
 
     @staticmethod
     def _check_state_testbench_model(
-        model: LoweredModel, dim_order: Sequence[str], steps: int
+        model: LoweredModel,
+        dim_order: Sequence[str],
+        state_testbench: StateTestbenchData,
+        testbench_inputs: Mapping[str, object] | None,
     ) -> None:
+        steps = state_testbench.steps
         if steps < 1:
             raise CodegenError(f"Testbench step count must be >= 1, got {steps}")
+        if testbench_inputs:
+            raise CodegenError(
+                "A model with state pairs takes its testbench values from "
+                "state_testbench (initial_state and step_inputs), not from "
+                "testbench_inputs"
+            )
+        state_names = {binding.input_name for binding in model.state_bindings}
+        for name in state_testbench.initial_state:
+            if name not in state_names:
+                raise CodegenError(
+                    f"Initial state {name!r} is not the input of a state pair"
+                )
+        for name, values in state_testbench.step_inputs.items():
+            if name in state_names or name not in model.input_names:
+                raise CodegenError(
+                    f"Step input {name!r} is not a non-state graph input"
+                )
+            shape = np.shape(values)
+            if not shape or shape[0] != steps:
+                raise CodegenError(
+                    f"Step input {name!r} needs a leading step axis of length "
+                    f"{steps}, got shape {list(shape)}"
+                )
         reason = None
         if dim_order:
             reason = f"dynamic dimensions {', '.join(dim_order)}"
@@ -4480,45 +4562,30 @@ class CEmitter:
             )
 
     @staticmethod
-    def _split_state_testbench_inputs(
-        model: LoweredModel,
-        testbench_inputs: Mapping[str, object],
-        steps: int,
-    ) -> tuple[dict[str, np.ndarray], dict[str, np.ndarray], dict[str, np.ndarray]]:
-        """Split stacked per-step inputs from the initial state values.
-
-        Returns the first-step values (they drive the shape handling shared
-        with the single-call testbench), all per-step values and the initial
-        state values.
-        """
-        state_shapes = {
-            binding.input_name: binding.shape for binding in model.state_bindings
+    def _testbench_value_arrays(
+        testbench_inputs: Mapping[str, object] | None,
+        state_testbench: StateTestbenchData | None,
+    ) -> Mapping[str, object] | None:
+        """All input values the testbench embeds (single-call or multi-step)."""
+        if state_testbench is None:
+            return testbench_inputs
+        return {
+            **(testbench_inputs or {}),
+            **state_testbench.step_inputs,
+            **state_testbench.initial_state,
         }
-        first_step: dict[str, np.ndarray] = {}
-        per_step: dict[str, np.ndarray] = {}
-        initial_state: dict[str, np.ndarray] = {}
-        for name, values in testbench_inputs.items():
-            array = np.asarray(values)
-            if name in state_shapes:
-                initial_state[name] = array.reshape(state_shapes[name])
-                continue
-            if array.ndim == 0 or array.shape[0] != steps:
-                raise CodegenError(
-                    f"Testbench input {name!r} of a model with state pairs needs "
-                    f"a leading step axis of length {steps}, got shape "
-                    f"{list(array.shape)}"
-                )
-            first_step[name] = array[0]
-            per_step[name] = array
-        return first_step, per_step, initial_state
 
     def _stacked_testbench_output(
-        self, output: Mapping[str, object], steps: int, *, source: str
+        self,
+        output: Mapping[str, object],
+        steps: int,
+        *,
+        name: str,
+        loop_vars: tuple[str, ...],
+        source: str,
     ) -> dict[str, object]:
         """Describe a ``[steps, ...]`` array collecting ``output`` of every step."""
         shape = (steps, *output["shape"])
-        loop_vars = self._loop_vars(shape)
-        name = f"{output['name']}_steps"
         array_suffix = f"[{steps}]{output['array_suffix']}"
         shape_literal = ",".join(
             part for part in (str(steps), str(output["shape_literal"])) if part
@@ -4543,14 +4610,18 @@ class CEmitter:
         }
 
     def _state_testbench_input(
-        self, binding: StateBinding, initial_values: np.ndarray | None
+        self,
+        binding: StateBinding,
+        initial_values: np.ndarray | None,
+        *,
+        constant_name: str,
+        loop_vars: tuple[str, ...],
     ) -> dict[str, object]:
         shape = self._codegen_shape(binding.shape)
-        loop_vars = self._loop_vars(shape)
-        constant_name = None
         constant_lines = None
-        if initial_values is not None:
-            constant_name = f"{binding.input_name}_testbench_initial_state"
+        if initial_values is None:
+            constant_name = None
+        else:
             flat_values = initial_values.reshape(-1).tolist()
             constant_lines = self._emit_initializer_lines(
                 [self._format_value(value, binding.dtype) for value in flat_values],

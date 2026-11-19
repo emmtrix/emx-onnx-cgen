@@ -168,15 +168,44 @@ class OpBase(ABC):
     def infer_shapes(self, ctx: OpContext) -> None:
         return None
 
-    def in_place_inputs(self, ctx: OpContext, output_name: str) -> tuple[str, ...]:
-        """Return the inputs that may share their buffer with ``output_name``.
+    def in_place_input_fields(
+        self, ctx: OpContext, output_name: str
+    ) -> tuple[str, ...]:
+        """Return the input fields that may share their buffer with ``output_name``.
 
-        An input qualifies only if the kernel stays correct when that input
-        and the output are the same array, e.g. because each element is read
-        before the same element is written. State aliasing relies on this to
-        accept a node that both reads and writes a state buffer.
+        A field (an entry of ``__io_inputs__``) qualifies only if the kernel
+        stays correct when the array passed for it and the output are the same
+        array, e.g. because each element is read before the same element is
+        written. State aliasing relies on this to accept a node that both
+        reads and writes a state buffer.
         """
         return ()
+
+    def index_input_bounds(self, ctx: OpContext) -> dict[str, int]:
+        """Return ``{input: n}`` for inputs whose values must lie in ``[0, n)``.
+
+        Only for inputs the kernel uses as indices without a bounds check, so
+        that test drivers can generate valid values.
+        """
+        return {}
+
+    def input_fields_reading(self, name: str) -> tuple[str, ...] | None:
+        """Return the input fields that pass ``name`` to the kernel.
+
+        ``None`` means ``name`` is an input that no declared field accounts for
+        (the op reports it through an overridden ``input_names``), so callers
+        must treat the slot as unknown.
+        """
+        input_fields, _ = _io_field_names(type(self))
+        fields = tuple(
+            field
+            for field in input_fields
+            if (value := getattr(self, field)) == name
+            or (isinstance(value, tuple) and name in value)
+        )
+        if not fields and name in self.input_names:
+            return None
+        return fields
 
     def c_op_inputs(
         self, emitter: "Emitter"
@@ -278,17 +307,21 @@ class ElementwiseOpBase(RenderableOpBase):
     def _elementwise_compare(self) -> bool:
         return False
 
-    def in_place_inputs(self, ctx: OpContext, output_name: str) -> tuple[str, ...]:
+    def in_place_input_fields(
+        self, ctx: OpContext, output_name: str
+    ) -> tuple[str, ...]:
         # Elementwise kernels read every input element right before writing the
         # output element of the same index; that only holds for inputs that are
         # not broadcast.
         if output_name != self._elementwise_output():
             return ()
         output_shape = ctx.shape(output_name)
+        input_fields, _ = _io_field_names(type(self))
         return tuple(
-            name
-            for name in self._elementwise_inputs()
-            if name is not None and ctx.shape(name) == output_shape
+            field
+            for field in input_fields
+            if isinstance(value := getattr(self, field), str)
+            and ctx.shape(value) == output_shape
         )
 
     def _elementwise_data_inputs(self) -> tuple[str, ...]:

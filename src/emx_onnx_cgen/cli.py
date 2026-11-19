@@ -54,10 +54,11 @@ from .sequence_shape_hints import (
     validate_runtime_shape,
 )
 from .testbench_output_format import parse_testbench_output_format
-from .testbench import decode_testbench_array
+from .testbench import StateTestbenchData, decode_testbench_array
 from .ir.state import StatePair
 from .state_aliasing import (
     STATE_PAIRS_METADATA_KEY,
+    parse_state_pair_args,
     parse_state_pairs,
     resolve_state_pairs,
 )
@@ -173,7 +174,7 @@ def _random_tensor_input(
     dtype: ScalarType,
     rng: np.random.Generator,
     *,
-    non_negative_integers: bool = False,
+    integer_range: tuple[int, int] = (-4, 4),
 ) -> np.ndarray:
     resolved_shape = tuple(10 if dim < 0 else dim for dim in shape)
     np_dtype = dtype.np_dtype
@@ -186,8 +187,7 @@ def _random_tensor_input(
     if np.issubdtype(np_dtype, np.unsignedinteger):
         return rng.integers(0, 8, size=resolved_shape, dtype=np.uint64).astype(np_dtype)
     if np.issubdtype(np_dtype, np.integer):
-        low = 0 if non_negative_integers else -4
-        return rng.integers(low, 4, size=resolved_shape, dtype=np.int64).astype(
+        return rng.integers(*integer_range, size=resolved_shape, dtype=np.int64).astype(
             np_dtype
         )
     return np.zeros(resolved_shape, dtype=np_dtype)
@@ -211,40 +211,44 @@ def _generate_random_testbench_inputs(
     return generated_inputs, optional_inputs
 
 
-def _generate_random_state_testbench_inputs(
+def _generate_random_state_testbench(
     graph_inputs: Sequence[Any],
     state_pairs: Sequence[StatePair],
     steps: int,
-) -> tuple[dict[str, np.ndarray], dict[str, bool]]:
-    """Random inputs for a multi-step run of a model with state pairs.
+    index_bounds: Mapping[str, int],
+) -> StateTestbenchData:
+    """Random values for a multi-step run of a model with state pairs.
 
     State inputs get one initial value; every other input gets one value per
-    step (leading step axis). Integer step inputs are drawn from [0, 4) so
-    index-like inputs such as TensorScatter write positions stay valid.
+    step. Integer step inputs are non-negative: inputs used as indices (e.g.
+    TensorScatter write positions) are drawn from their valid range
+    ``[0, index_bounds[name])``, all others from ``[0, 4)``.
     """
     rng = np.random.default_rng(0)
     state_input_names = {pair.input_name for pair in state_pairs}
-    generated_inputs: dict[str, np.ndarray] = {}
-    optional_inputs: dict[str, bool] = {}
+    initial_state: dict[str, np.ndarray] = {}
+    step_inputs: dict[str, np.ndarray] = {}
     for value in graph_inputs:
         if not isinstance(value.type, TensorType):
             continue
         shape = tuple(value.type.shape)
-        optional_inputs[value.name] = True
         if value.name in state_input_names:
-            generated_inputs[value.name] = _random_tensor_input(
+            initial_state[value.name] = _random_tensor_input(
                 shape, value.type.dtype, rng
             )
             continue
-        generated_inputs[value.name] = np.stack(
+        integer_range = (0, max(1, index_bounds.get(value.name, 4)))
+        step_inputs[value.name] = np.stack(
             [
                 _random_tensor_input(
-                    shape, value.type.dtype, rng, non_negative_integers=True
+                    shape, value.type.dtype, rng, integer_range=integer_range
                 )
                 for _ in range(steps)
             ]
         )
-    return generated_inputs, optional_inputs
+    return StateTestbenchData(
+        steps=steps, initial_state=initial_state, step_inputs=step_inputs
+    )
 
 
 def _run_reference_model(
@@ -1106,7 +1110,17 @@ def _build_parser() -> argparse.ArgumentParser:
         )
 
     def add_state_pair_flags(subparser: argparse.ArgumentParser) -> None:
-        subparser.add_argument(
+        state_group = subparser.add_mutually_exclusive_group()
+        state_group.add_argument(
+            "--no-state-pairs",
+            action="store_true",
+            help=(
+                "Ignore the state pairs declared in the model metadata key "
+                f"{STATE_PAIRS_METADATA_KEY!r} and keep separate input/output "
+                "buffers."
+            ),
+        )
+        state_group.add_argument(
             "--state-pair",
             action="append",
             default=[],
@@ -1411,7 +1425,11 @@ def _parse_state_pair_arg(value: str) -> str:
 def _state_pairs(
     args: argparse.Namespace, model: onnx.ModelProto
 ) -> tuple[StatePair, ...]:
-    return resolve_state_pairs(getattr(args, "state_pair", None), model)
+    requested = parse_state_pair_args(
+        getattr(args, "state_pair", None),
+        disabled=getattr(args, "no_state_pairs", False),
+    )
+    return resolve_state_pairs(requested, model)
 
 
 def _state_steps(args: argparse.Namespace) -> int:
@@ -1585,7 +1603,7 @@ def _compile_model(
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,
             state_pairs=_state_pairs(args, model),
-            testbench_steps=_state_steps(args),
+            state_testbench=StateTestbenchData(steps=_state_steps(args)),
             timings=timings,
         )
         compiler = Compiler(options)
@@ -2154,7 +2172,9 @@ def _verify_model(
             return (
                 None,
                 f"{' and '.join(unsupported)} cannot be combined with state pairs; "
-                "the multi-step state verification uses generated random inputs.",
+                "the multi-step state verification uses generated random inputs. "
+                "Hint: pass --no-state-pairs to verify with separate input/output "
+                "buffers.",
                 operators,
                 opset_version,
                 None,
@@ -2204,12 +2224,27 @@ def _verify_model(
             active_reporter.note(
                 "Ignoring test-data outputs by request; using runtime reference instead."
             )
-        if testbench_inputs is None and state_pairs:
-            testbench_inputs, testbench_optional_inputs = (
-                _generate_random_state_testbench_inputs(
-                    graph.inputs, state_pairs, state_steps
+        state_testbench: StateTestbenchData | None = None
+        if state_pairs:
+            index_bounds = Compiler(
+                CompilerOptions(
+                    model_name=model_name,
+                    explicit_padding=args.explicit_padding,
+                    sequence_element_shapes=sequence_element_shapes,
+                    image_decoder_libs=args.image_decoder_libs,
+                    state_pairs=state_pairs,
                 )
+            ).index_input_bounds(model)
+            state_testbench = _generate_random_state_testbench(
+                graph.inputs, state_pairs, state_steps, index_bounds
             )
+            # The reference run feeds the same values: the initial state plus
+            # the per-step arrays (leading step axis).
+            testbench_inputs = {
+                **state_testbench.initial_state,
+                **state_testbench.step_inputs,
+            }
+            testbench_optional_inputs = {name: True for name in testbench_inputs}
             verification_mode.use_random_inputs()
         elif testbench_inputs is None:
             testbench_inputs, testbench_optional_inputs = (
@@ -2238,11 +2273,11 @@ def _verify_model(
             truncate_weights_after=args.truncate_weights_after,
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,
-            testbench_inputs=testbench_inputs,
+            testbench_inputs=None if state_pairs else testbench_inputs,
             testbench_outputs=testbench_outputs,
             testbench_optional_inputs=testbench_optional_inputs,
             state_pairs=state_pairs,
-            testbench_steps=state_steps,
+            state_testbench=state_testbench,
             timings=timings,
         )
         compiler = Compiler(options)

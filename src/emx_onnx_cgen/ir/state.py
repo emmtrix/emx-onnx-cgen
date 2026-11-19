@@ -1,8 +1,14 @@
 from __future__ import annotations
 
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from shared.scalar_types import ScalarType
+
+if TYPE_CHECKING:
+    from .op_base import OpBase
+    from .op_context import OpContext
 
 
 @dataclass(frozen=True)
@@ -28,3 +34,20 @@ class StateBinding:
     output_name: str
     shape: tuple[int, ...]
     dtype: ScalarType
+
+
+def index_input_bounds(
+    ops: Iterable["OpBase"], ctx: "OpContext", input_names: Sequence[str]
+) -> dict[str, int]:
+    """Exclusive upper bounds of graph inputs that ops use as indices.
+
+    Test drivers draw such inputs from ``[0, bound)`` so that a random value
+    never addresses memory outside the buffer it indexes.
+    """
+    graph_inputs = set(input_names)
+    bounds: dict[str, int] = {}
+    for op in ops:
+        for name, bound in op.index_input_bounds(ctx).items():
+            if name in graph_inputs:
+                bounds[name] = min(bound, bounds.get(name, bound))
+    return bounds

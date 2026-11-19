@@ -284,6 +284,7 @@ These options are accepted by both `compile` and `verify`:
   - **Possible inconsistencies:** `--input-dim` only checks that the target is a dynamic input dimension; it does not validate that the chosen value is consistent with the rest of the graph. Contradictory or partial pinning can therefore make a model that previously stayed dynamic fail during shape inference or lowering — for example pinning two operands of an `Add` to incompatible extents (`--input-dim a:0=3 --input-dim b:0=5` → "Broadcasting mismatch"), or pinning only one of two axes that an operator requires to be equal. Such failures are reported as a normal error, not a crash. Named `dim_param`s are always pinned graph-wide, so `--input-dim batch=N` stays consistent by construction; the risk is mainly with the positional form on unnamed (`?`) axes.
 
 - `--state-pair INPUT=OUTPUT`: Short-circuit a graph input with a graph output of the same shape and dtype, e.g. a KV cache (`--state-pair past_k_0=new_k_0`). Repeatable or comma-separated; replaces the pairs from the model metadata key `emx_onnx_cgen.state_pairs` (same syntax). See [Persistent state (KV cache)](#persistent-state-kv-cache).
+- `--no-state-pairs`: Ignore the state pairs declared in the model metadata and keep separate input/output buffers.
 - `--state-steps`: Number of consecutive model calls the testbench of a model with state pairs runs (default: `3`). Only affects the testbench.
 
 ### Persistent state (KV cache)

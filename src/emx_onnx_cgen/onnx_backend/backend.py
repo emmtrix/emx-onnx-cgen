@@ -85,11 +85,14 @@ def _compile_model(
     if compiler is None:
         raise RuntimeError("No C compiler found (set CC environment variable).")
     image_decoder_libs = _image_decoder_libs()
+    # The backend runs single calls with explicit inputs and outputs, so it
+    # ignores state pairs declared in the model metadata.
     options = CompilerOptions(
         emit_testbench=True,
         testbench_output_format="json",
         sequence_element_shapes=sequence_element_shapes,
         image_decoder_libs=image_decoder_libs,
+        state_pairs=(),
     )
     generated = Compiler(options).compile(model)
     temp_dir = tempfile.TemporaryDirectory(prefix="emx_onnx_backend_")
@@ -137,7 +140,7 @@ def _build_backend_metadata(
 ) -> _BackendMetadata:
     graph = import_onnx(model)
     compiler = Compiler(
-        CompilerOptions(sequence_element_shapes=sequence_element_shapes)
+        CompilerOptions(sequence_element_shapes=sequence_element_shapes, state_pairs=())
     )
     compile_ctx = compiler._build_compile_context(model)
     _, input_dim_names, _, _ = compiler._emitter._build_variable_dim_names(

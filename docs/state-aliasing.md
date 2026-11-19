@@ -30,8 +30,12 @@ ONNX has no standard for state between calls:
 The user names the pairs: `--state-pair past_k_0=new_k_0` (repeatable or
 comma-separated), accepted by `compile` and `verify` alike (compile/verify
 parity), or the model metadata key `emx_onnx_cgen.state_pairs` with the same
-syntax. CLI pairs replace the metadata pairs. The compiler never infers pairs
-from name patterns: a wrong guess would silently change the ABI.
+syntax. The compiler reads the metadata itself (`CompilerOptions.state_pairs`
+is `None` by default), so every entry point yields the same ABI for a model;
+`--state-pair` replaces the metadata pairs and `--no-state-pairs`
+(`state_pairs=()`) ignores them. The ONNX backend always passes `()` because it
+runs single calls with explicit inputs and outputs. The compiler never infers
+pairs from name patterns: a wrong guess would silently change the ABI.
 
 ### Pass: `apply_state_aliasing` (`src/emx_onnx_cgen/state_aliasing.py`)
 
@@ -43,8 +47,10 @@ op order) and is a pure function `LoweredModel -> LoweredModel`:
 2. **Legality check.** Let `W` be the op that writes the output. With one
    buffer, `W` overwrites the input. So:
    - no op after `W` may read the input;
-   - `W` itself may read the input only if its kernel is in-place safe for
-     that input (`OpBase.in_place_inputs`). Today that is every same-index
+   - `W` itself may read the input only through input fields whose kernel
+     slot is in-place safe (`OpBase.in_place_input_fields`); a second slot
+     reading the same buffer (e.g. `TensorScatter(past, past, idx)`) is
+     rejected. Today the safe slots are every same-index
      elementwise op (input shape equal to the output shape, no broadcast) and
      `TensorScatter` (`past_cache -> output`).
 
@@ -102,16 +108,26 @@ only writes the updated rows (`tests/golden/kv_cache_state_model.c`).
 The reference run keeps the original model with explicit inputs and outputs.
 `verify --state-pair ... --state-steps N` (default 3):
 
-- generates one initial state per pair and N sets of the other inputs (integer
-  inputs are drawn from `[0, 4)` so write positions stay valid);
+- generates one initial state per pair and N sets of the other inputs.
+  Integer inputs that an op uses as an unchecked index declare their valid
+  range (`OpBase.index_input_bounds`, e.g. TensorScatter `write_indices` in
+  `[0, S - L]` for linear mode) and are drawn from it; other integers come
+  from `[0, 4)`. The C testbench uses the same bounds when it fills inputs
+  randomly (`compile --emit-testbench` without data);
 - runs the reference N times, feeding each step's state outputs back as state
   inputs;
 - the generated testbench calls `model_state_reset()`, loads the initial state
   into its state struct and calls the model N times through that buffer;
 - compares every output of every step (a leading step axis on both sides).
 
+The compiler receives these values as `CompilerOptions.state_testbench`
+(`StateTestbenchData`: `steps`, `initial_state`, `step_inputs` with a leading
+step axis) instead of `testbench_inputs`. The testbench picks its own
+identifiers (step counter, state variable, collected outputs, loop indices)
+so that they never clash with the model's value names.
+
 `--test-data-dir` and `--per-node-accuracy` are rejected together with state
-pairs.
+pairs (use `--no-state-pairs` for a model whose metadata declares pairs).
 
 ## Consequences
 

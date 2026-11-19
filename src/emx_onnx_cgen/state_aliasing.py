@@ -69,15 +69,26 @@ def state_pairs_from_metadata(model: onnx.ModelProto) -> tuple[StatePair, ...]:
 
 
 def resolve_state_pairs(
-    cli_values: Sequence[str] | None, model: onnx.ModelProto
+    requested: Sequence[StatePair] | None, model: onnx.ModelProto
 ) -> tuple[StatePair, ...]:
-    """Return the CLI pairs if any were given, else the model metadata pairs."""
-    if cli_values:
-        try:
-            return parse_state_pairs(cli_values)
-        except ValueError as exc:
-            raise StateAliasingError(str(exc)) from exc
+    """Return ``requested`` if given (``()`` disables state), else the metadata pairs."""
+    if requested is not None:
+        return tuple(requested)
     return state_pairs_from_metadata(model)
+
+
+def parse_state_pair_args(
+    values: Sequence[str] | None, *, disabled: bool = False
+) -> tuple[StatePair, ...] | None:
+    """Map CLI arguments to :func:`resolve_state_pairs`' ``requested``."""
+    if disabled:
+        return ()
+    if not values:
+        return None
+    try:
+        return parse_state_pairs(values)
+    except ValueError as exc:
+        raise StateAliasingError(str(exc)) from exc
 
 
 def _check_unique(pairs: Sequence[StatePair]) -> None:
@@ -106,8 +117,11 @@ def apply_state_aliasing(
     except ValueError as exc:
         raise StateAliasingError(str(exc)) from exc
     bindings = tuple(_bind_pair(model, pair) for pair in pairs)
+    subgraph_reads = tuple(
+        _subgraph_references(info.attrs.values()) for info in model.node_infos
+    )
     for binding in bindings:
-        _check_alias_legality(model, binding)
+        _check_alias_legality(model, binding, subgraph_reads)
     rename = {binding.output_name: binding.input_name for binding in bindings}
     ops = tuple(op.remap_names(rename) for op in model.ops)
     for source_op, target_op in zip(model.ops, ops):
@@ -180,13 +194,17 @@ def _bind_pair(model: LoweredModel, pair: StatePair) -> StateBinding:
     )
 
 
-def _check_alias_legality(model: LoweredModel, binding: StateBinding) -> None:
+def _check_alias_legality(
+    model: LoweredModel,
+    binding: StateBinding,
+    subgraph_reads: Sequence[set[str]],
+) -> None:
     """Reject a pair if the old state is read after the new state is written.
 
     With one buffer, the first write of the output overwrites the input. The
-    writing op itself may read the input only where it declares the pair
-    in-place safe (:meth:`OpBase.in_place_inputs`), e.g. a same-index
-    elementwise update or TensorScatter's ``past_cache``.
+    writing op itself may read the input only through input fields it
+    declares in-place safe (:meth:`OpBase.in_place_input_fields`), e.g. a
+    same-index elementwise update or TensorScatter's ``past_cache``.
     """
     label = f"State pair {binding.input_name}={binding.output_name}"
     writer_index = next(
@@ -202,9 +220,8 @@ def _check_alias_legality(model: LoweredModel, binding: StateBinding) -> None:
             f"{label}: output {binding.output_name!r} is not computed by any "
             "node, so it cannot share a buffer with the input"
         )
-    writer = model.ops[writer_index]
-    if _reads(model, writer_index, binding.input_name) and binding.input_name not in (
-        writer.in_place_inputs(model.op_context, binding.output_name)
+    if not _writer_reads_in_place(
+        model, writer_index, binding, subgraph_reads[writer_index]
     ):
         raise StateAliasingError(
             f"{label}: {_describe_node(model, writer_index)} reads "
@@ -215,7 +232,10 @@ def _check_alias_legality(model: LoweredModel, binding: StateBinding) -> None:
             "node; otherwise remove the pair to keep separate buffers."
         )
     for index in range(writer_index + 1, len(model.ops)):
-        if _reads(model, index, binding.input_name):
+        if (
+            binding.input_name in model.ops[index].input_names
+            or binding.input_name in subgraph_reads[index]
+        ):
             raise StateAliasingError(
                 f"{label}: {_describe_node(model, index)} reads "
                 f"{binding.input_name!r} after {_describe_node(model, writer_index)} "
@@ -227,11 +247,21 @@ def _check_alias_legality(model: LoweredModel, binding: StateBinding) -> None:
             )
 
 
-def _reads(model: LoweredModel, index: int, name: str) -> bool:
-    """Whether op ``index`` reads ``name``, directly or from a subgraph body."""
-    if name in model.ops[index].input_names:
-        return True
-    return name in _subgraph_references(model.node_infos[index].attrs.values())
+def _writer_reads_in_place(
+    model: LoweredModel,
+    writer_index: int,
+    binding: StateBinding,
+    subgraph_reads: set[str],
+) -> bool:
+    """Whether every read of the state input by its writer is in-place safe."""
+    if binding.input_name in subgraph_reads:
+        return False
+    writer = model.ops[writer_index]
+    reading_fields = writer.input_fields_reading(binding.input_name)
+    if reading_fields is None:
+        return False
+    safe_fields = writer.in_place_input_fields(model.op_context, binding.output_name)
+    return set(reading_fields) <= set(safe_fields)
 
 
 def _subgraph_references(values: Iterable[object]) -> set[str]:
