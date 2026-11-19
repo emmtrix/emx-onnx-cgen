@@ -925,6 +925,12 @@ class IdentityOp(ElementwiseOpBase):
     def required_includes(self, ctx: OpContext) -> set[str]:
         return {"#include <string.h>"}
 
+    def value_source_inputs(self) -> tuple[str, ...]:
+        return (self.input0,)
+
+    def elides_in_place(self) -> bool:
+        return self.input0 == self.output
+
     def _elementwise_inputs(self) -> tuple[str, ...]:
         return (self.input0,)
 

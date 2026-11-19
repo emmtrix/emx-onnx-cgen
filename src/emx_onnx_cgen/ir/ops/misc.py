@@ -113,6 +113,10 @@ class CastOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
+
+    def value_source_inputs(self) -> tuple[str, ...]:
+        return (self.input0,)
+
     saturate: bool = True
 
     def infer_types(self, ctx: OpContext) -> None:
@@ -1733,6 +1737,36 @@ class TensorScatterOp(RenderableOpBase):
     axis: int
     mode: str
 
+    @property
+    def in_place(self) -> bool:
+        """Whether ``past_cache`` and ``output`` are one buffer (state aliasing)."""
+        return self.past_cache == self.output
+
+    def in_place_input_fields(
+        self, ctx: OpContext, output_name: str
+    ) -> tuple[str, ...]:
+        # Only the scattered rows change, so updating the cache in place
+        # yields the same result as copy-then-scatter. ``update`` is read
+        # while rows are written and therefore never qualifies.
+        if output_name != self.output:
+            return ()
+        return ("past_cache",)
+
+    def index_input_bounds(self, ctx: OpContext) -> dict[str, int]:
+        if self.write_indices is None:
+            return {}
+        max_length = ctx.shape(self.past_cache)[self.axis]
+        update_length = ctx.shape(self.update)[self.axis]
+        if self.mode == "circular":
+            return {self.write_indices: max_length}
+        return {self.write_indices: max_length - update_length + 1}
+
+    def call_args(self) -> tuple[str, ...]:
+        args = super().call_args()
+        if self.in_place:
+            return args[1:]
+        return args
+
     def infer_types(self, ctx: OpContext) -> None:
         past_dtype = ctx.dtype(self.past_cache)
         update_dtype = ctx.dtype(self.update)
@@ -1811,6 +1845,8 @@ class TensorScatterOp(RenderableOpBase):
         ]
         if self.write_indices is not None:
             param_pairs.insert(2, ("write_indices", self.write_indices))
+        if self.in_place:
+            param_pairs = param_pairs[1:]
         params = emitter.shared_param_map(param_pairs)
         output_dim_names = emitter.dim_names_for(self.output)
         update_dim_names = emitter.dim_names_for(self.update)
@@ -1861,7 +1897,7 @@ class TensorScatterOp(RenderableOpBase):
         update_suffix = emitter.param_array_suffix(update_shape_tuple, update_dim_names)
         output_suffix = emitter.param_array_suffix(output_shape_tuple, output_dim_names)
         param_decls = [
-            (params["past_cache"], c_type, past_suffix, True),
+            (params.get("past_cache"), c_type, past_suffix, True),
             (params["update"], c_type, update_suffix, True),
         ]
         if self.write_indices is not None:
@@ -1885,7 +1921,8 @@ class TensorScatterOp(RenderableOpBase):
             .render(
                 model_name=model.name,
                 op_name=op_name,
-                past_cache=params["past_cache"],
+                past_cache=params.get("past_cache"),
+                in_place=self.in_place,
                 update=params["update"],
                 write_indices=(
                     params.get("write_indices") if self.write_indices else None
@@ -1932,6 +1969,10 @@ class TransposeOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
+
+    def value_source_inputs(self) -> tuple[str, ...]:
+        return (self.input0,)
+
     perm: tuple[int, ...]
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
@@ -2000,6 +2041,9 @@ class ReshapeOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
+
+    def value_source_inputs(self) -> tuple[str, ...]:
+        return (self.input0,)
 
     def required_includes(self, ctx: OpContext) -> set[str]:
         return {"#include <string.h>"}
@@ -4555,6 +4599,9 @@ class ExpandOp(ShapeLikeOpBase):
     input0: str
     input_shape: str
     output: str
+
+    def value_source_inputs(self) -> tuple[str, ...]:
+        return (self.input0,)
 
     def _shape_data(self) -> str:
         return self.input0

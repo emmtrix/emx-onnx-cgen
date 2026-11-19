@@ -466,6 +466,14 @@ When adding support for a new operator:
    (`python tools/onnx_op_spec.py <OpName>`, see Agent Instructions 12).
 2. **Lowering:** add a `register_lowering()` handler in `src/onnx2c/lowering/` that validates shapes/dtypes and returns a new op dataclass.
 3. **Codegen:** add a new op dataclass + rendering path in `src/onnx2c/codegen/c_emitter.py` and a matching template in `templates/`. The kernel indexes its arrays directly, without flat pointers (see "Generated kernels: index arrays directly").
+   If the kernel stays correct when an input field and the output are the
+   same buffer (each element is read before it is written), override
+   `OpBase.in_place_input_fields`; state aliasing (`docs/state-aliasing.md`)
+   only accepts a node that reads and writes a state buffer if it does. If an
+   integer input is used as an index without a bounds check, declare its
+   valid range in `OpBase.index_input_bounds` so testbenches stay in bounds;
+   ops that only copy values report their data input in
+   `OpBase.value_source_inputs` so such bounds reach the graph input.
 4. **Runtime evaluator:** implement the op in `src/onnx2c/runtime/evaluator.py` for verification/constant folding.
 5. **Tests:** add at least one unit test and one ORT comparison test.
 6. **Reference updates:** refresh `tests/expected_errors/**.json` and regenerate `OFFICIAL_ONNX_FILE_SUPPORT*.md` via `UPDATE_REFS=1 pytest -q`.

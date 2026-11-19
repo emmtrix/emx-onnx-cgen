@@ -45,6 +45,7 @@ from .ir.model import (
 )
 from .ir.op_base import OpBase
 from .ir.op_context import OpContext
+from .ir.state import StatePair, index_input_bounds
 from .lowering import load_lowering_registry
 from .lowering.common import ensure_supported_dtype, shape_product
 from .lowering.registry import get_lowering_registry
@@ -54,6 +55,8 @@ from .sequence_shape_hints import (
     SequenceElementShapeHint,
 )
 from .shape_inference_report import build_shape_inference_report
+from .testbench import StateTestbenchData
+from .state_aliasing import apply_state_aliasing, resolve_state_pairs
 
 # Keep this env var near the lowering loop so future shape-debug work can find it fast.
 _DEBUG_LOWERING_FAILURES_ENV = "EMX_DEBUG_LOWERING_FAILURES"
@@ -142,6 +145,13 @@ class CompilerOptions:
     image_decoder_libs: tuple[str, ...] = DEFAULT_IMAGE_DECODER_LIBS
     # Move the padding of Conv nodes into Pad nodes (see explicit_padding)
     explicit_padding: bool = False
+    # Graph input/output pairs that share one persistent state buffer.
+    # ``None`` takes them from the model metadata key
+    # ``emx_onnx_cgen.state_pairs``; ``()`` disables state aliasing.
+    state_pairs: tuple[StatePair, ...] | None = None
+    # Multi-step testbench of a model with state pairs (replaces
+    # testbench_inputs for such models); default: one call, random inputs.
+    state_testbench: StateTestbenchData | None = None
     # Developer-only switch: attach the failing lowering node with typed I/O context.
     debug_lowering_failures: bool = False
     timings: dict[str, float] | None = None
@@ -303,6 +313,7 @@ class Compiler:
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
                 testbench_output_format=self._options.testbench_output_format,
                 testbench_inputs=self._options.testbench_inputs,
+                state_testbench=self._options.state_testbench,
                 testbench_outputs=self._options.testbench_outputs,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
@@ -325,6 +336,7 @@ class Compiler:
             lambda: self._emitter.emit_testbench(
                 ctx.lowered,
                 testbench_inputs=self._options.testbench_inputs,
+                state_testbench=self._options.state_testbench,
                 testbench_outputs=self._options.testbench_outputs,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
                 testbench_output_format=self._options.testbench_output_format,
@@ -332,6 +344,11 @@ class Compiler:
                 variable_dim_outputs=ctx.variable_dim_outputs,
             ),
         )
+
+    def index_input_bounds(self, model: onnx.ModelProto) -> dict[str, int]:
+        """Exclusive upper bounds of graph inputs the model uses as indices."""
+        lowered = self.lower(model).lowered
+        return index_input_bounds(lowered.ops, lowered.op_context, lowered.input_names)
 
     def compile_testbench_declarations(self, model: onnx.ModelProto) -> str:
         ctx = self._build_compile_context(model)
@@ -354,16 +371,26 @@ class Compiler:
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
                 testbench_output_format=self._options.testbench_output_format,
                 testbench_inputs=self._options.testbench_inputs,
+                state_testbench=self._options.state_testbench,
                 testbench_outputs=self._options.testbench_outputs,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
             ),
         )
 
+    def lower(self, model: onnx.ModelProto) -> _CompileContext:
+        """Import and lower ``model`` without emitting code.
+
+        The result can be passed as ``context`` to :meth:`compile_with_weight_data`
+        of a compiler whose options differ only in emission settings
+        (testbench, output format, thresholds), so the model is lowered once.
+        """
+        return self._build_compile_context(model)
+
     def compile_with_weight_data(
-        self, model: onnx.ModelProto
+        self, model: onnx.ModelProto, *, context: _CompileContext | None = None
     ) -> tuple[str, bytes | None]:
-        ctx = self._build_compile_context(model)
+        ctx = context if context is not None else self._build_compile_context(model)
         generated = self._time_step(
             "emit_model",
             lambda: self._emitter.emit_model(
@@ -372,6 +399,7 @@ class Compiler:
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
                 testbench_output_format=self._options.testbench_output_format,
                 testbench_inputs=self._options.testbench_inputs,
+                state_testbench=self._options.state_testbench,
                 testbench_outputs=self._options.testbench_outputs,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
@@ -395,6 +423,7 @@ class Compiler:
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
                 testbench_output_format=self._options.testbench_output_format,
                 testbench_inputs=self._options.testbench_inputs,
+                state_testbench=self._options.state_testbench,
                 testbench_outputs=self._options.testbench_outputs,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
@@ -622,8 +651,9 @@ class Compiler:
         output_types = tuple(refreshed_output_types)
         output_shapes = tuple(refreshed_output_shapes)
         output_dtypes = tuple(refreshed_output_dtypes)
-        header = self._build_header(model, graph)
-        return LoweredModel(
+        state_pairs = resolve_state_pairs(self._options.state_pairs, model)
+        header = self._build_header(model, graph, state_pairs)
+        lowered = LoweredModel(
             name=self._options.model_name,
             input_names=input_names,
             input_optional_names=input_optional_names,
@@ -641,6 +671,7 @@ class Compiler:
             header=header,
             op_context=op_ctx,
         )
+        return apply_state_aliasing(lowered, state_pairs)
 
     def _materialize_initializer_outputs(self, graph: Graph) -> Graph:
         if graph.nodes:
@@ -1117,7 +1148,12 @@ class Compiler:
         kept_node_infos.reverse()
         return kept_ops, kept_node_infos
 
-    def _build_header(self, model: onnx.ModelProto, graph: Graph) -> ModelHeader:
+    def _build_header(
+        self,
+        model: onnx.ModelProto,
+        graph: Graph,
+        state_pairs: Sequence[StatePair] = (),
+    ) -> ModelHeader:
         metadata_props = tuple((prop.key, prop.value) for prop in model.metadata_props)
         opset_imports = tuple(
             (opset.domain, opset.version) for opset in model.opset_import
@@ -1137,6 +1173,10 @@ class Compiler:
                 self._options.fp16_accumulation_strategy,
             ),
         ]
+        if state_pairs:
+            codegen_settings.append(
+                ("state_pairs", ",".join(pair.format() for pair in state_pairs))
+            )
         if self._options.truncate_weights_after is not None:
             codegen_settings.append(
                 ("truncate_weights_after", str(self._options.truncate_weights_after))
