@@ -17,15 +17,18 @@ See ``docs/state-aliasing.md``.
 from __future__ import annotations
 
 import dataclasses
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 
 import onnx
+import sympy
 
 from shared.scalar_types import ScalarType
 
 from .codegen.c_emitter import LoweredModel
+from .dim_params import parse_dim_param
 from .errors import CodegenError
 from .ir.model import TensorType
+from .ir.ops import ConcatOp, ExpandOp, MatMulOp, ReshapeOp, ShapeOp, TransposeOp
 from .ir.state import StateBinding, StatePair
 
 STATE_PAIRS_METADATA_KEY = "emx_onnx_cgen.state_pairs"
@@ -103,12 +106,16 @@ def _check_unique(pairs: Sequence[StatePair]) -> None:
 
 
 def apply_state_aliasing(
-    model: LoweredModel, pairs: Sequence[StatePair]
+    model: LoweredModel,
+    pairs: Sequence[StatePair],
+    upper_bounds: Mapping[str, int] | None = None,
 ) -> LoweredModel:
     """Validate ``pairs`` and let each output share the buffer of its input.
 
     Every op that writes or reads the output is rewritten to use the input
-    name, so the emitter sees one value per state buffer.
+    name, so the emitter sees one value per state buffer. A growing pair
+    (``present = Concat(past, new)``, see :func:`_growing_binding`) keeps both
+    names; its Concat only writes the new rows.
     """
     if not pairs:
         return model
@@ -116,14 +123,29 @@ def apply_state_aliasing(
         _check_unique(pairs)
     except ValueError as exc:
         raise StateAliasingError(str(exc)) from exc
-    bindings = tuple(_bind_pair(model, pair) for pair in pairs)
+    bindings = tuple(_bind_pair(model, pair, upper_bounds or {}) for pair in pairs)
     subgraph_reads = tuple(
         _subgraph_references(info.attrs.values()) for info in model.node_infos
     )
+    growing_writers: set[int] = set()
     for binding in bindings:
-        _check_alias_legality(model, binding, subgraph_reads)
-    rename = {binding.output_name: binding.input_name for binding in bindings}
-    ops = tuple(op.remap_names(rename) for op in model.ops)
+        if binding.is_growing:
+            growing_writers.add(_check_growing_legality(model, binding))
+        else:
+            _check_alias_legality(model, binding, subgraph_reads)
+    rename = {
+        binding.output_name: binding.input_name
+        for binding in bindings
+        if not binding.is_growing
+    }
+    ops = tuple(
+        (
+            dataclasses.replace(op, in_place_prefix=True)
+            if index in growing_writers
+            else op
+        ).remap_names(rename)
+        for index, op in enumerate(model.ops)
+    )
     for source_op, target_op in zip(model.ops, ops):
         model.op_context.copy_derived(source_op, target_op)
     # A state that is passed through unchanged (Identity past -> present)
@@ -137,7 +159,9 @@ def apply_state_aliasing(
     )
 
 
-def _bind_pair(model: LoweredModel, pair: StatePair) -> StateBinding:
+def _bind_pair(
+    model: LoweredModel, pair: StatePair, upper_bounds: Mapping[str, int]
+) -> StateBinding:
     label = f"State pair {pair.format()}"
     if pair.input_name not in model.input_names:
         raise StateAliasingError(
@@ -178,6 +202,19 @@ def _bind_pair(model: LoweredModel, pair: StatePair) -> StateBinding:
             f"{output_dtype.onnx_name}. Hint: both sides of a state pair must "
             "have the same dtype; insert a Cast before the output."
         )
+    if input_shape != output_shape or input_type.dim_params != output_type.dim_params:
+        growing = _growing_binding(
+            label,
+            pair,
+            input_shape,
+            output_shape,
+            input_type,
+            output_type,
+            input_dtype,
+            upper_bounds,
+        )
+        if growing is not None:
+            return growing
     if input_shape != output_shape:
         raise StateAliasingError(
             f"{label}: shape mismatch, input {pair.input_name!r} has shape "
@@ -200,6 +237,137 @@ def _bind_pair(model: LoweredModel, pair: StatePair) -> StateBinding:
         shape=tuple(input_shape),
         dtype=input_dtype,
     )
+
+
+def _growing_binding(
+    label: str,
+    pair: StatePair,
+    input_shape: Sequence[int],
+    output_shape: Sequence[int],
+    input_type: TensorType,
+    output_type: TensorType,
+    dtype: ScalarType,
+    upper_bounds: Mapping[str, int],
+) -> StateBinding | None:
+    """A pair whose output is the input grown along one dynamic axis.
+
+    ``past[..., n, ...] -> present[..., n + k, ...]`` (a KV cache appended
+    with Concat) shares one buffer whose capacity on that axis is the upper
+    bound of ``n`` plus ``k``; the input is its first ``n`` rows, the output
+    its first ``n + k``. Returns ``None`` if the shapes do not have this form.
+    """
+
+    if len(input_shape) != len(output_shape):
+        return None
+    differing = [
+        axis
+        for axis in range(len(input_shape))
+        if input_shape[axis] != output_shape[axis]
+        or input_type.dim_params[axis] != output_type.dim_params[axis]
+    ]
+    if len(differing) != 1:
+        return None
+    axis = differing[0]
+    input_param = input_type.dim_params[axis]
+    output_param = output_type.dim_params[axis]
+    if not input_param or not output_param:
+        return None
+    length = parse_dim_param(input_param)
+    grown = parse_dim_param(output_param)
+    if not isinstance(length, sympy.Symbol) or grown is None:
+        return None
+    growth = sympy.expand(grown - length)
+    if not growth.is_Integer or int(growth) < 1:
+        return None
+    for other in range(len(input_shape)):
+        if other != axis and (input_shape[other] < 0 or input_type.dim_params[other]):
+            raise StateAliasingError(
+                f"{label}: a growing state may only be dynamic along the growing "
+                f"axis {axis}, but axis {other} of {pair.input_name!r} is dynamic "
+                f"({list(input_shape)}). Hint: pin it with --input-dim."
+            )
+    bound = upper_bounds.get(length.name)
+    if bound is None:
+        raise StateAliasingError(
+            f"{label}: {pair.output_name!r} grows {pair.input_name!r} along axis "
+            f"{axis} ({input_param} -> {output_param}); the state buffer needs a "
+            f"capacity. Hint: pass --input-dim '{length.name}<=N'."
+        )
+    if dtype == ScalarType.STRING:
+        raise StateAliasingError(f"{label}: string tensors are not supported")
+    storage = list(input_shape)
+    storage[axis] = bound + int(growth)
+    return StateBinding(
+        input_name=pair.input_name,
+        output_name=pair.output_name,
+        shape=tuple(storage),
+        dtype=dtype,
+        growth_axis=axis,
+        growth=int(growth),
+    )
+
+
+def _check_growing_legality(model: LoweredModel, binding: StateBinding) -> int:
+    """Index of the Concat that appends to a growing state; reject others.
+
+    The output must be ``Concat(input, new..., axis=growth_axis)`` and nothing
+    else may write it. The input stays readable everywhere: appending never
+    changes its rows.
+    """
+
+    label = f"State pair {binding.input_name}={binding.output_name}"
+    writers = [
+        index
+        for index, op in enumerate(model.ops)
+        if binding.output_name in op.output_names
+    ]
+    if len(writers) != 1:
+        raise StateAliasingError(
+            f"{label}: output {binding.output_name!r} must be written by exactly "
+            f"one node, found {len(writers)}"
+        )
+    writer_index = writers[0]
+    writer = model.ops[writer_index]
+    rank = len(binding.shape)
+    if not (
+        isinstance(writer, ConcatOp)
+        and writer.inputs
+        and writer.inputs[0] == binding.input_name
+        and binding.input_name not in writer.inputs[1:]
+        and writer.axis % rank == binding.growth_axis
+    ):
+        raise StateAliasingError(
+            f"{label}: {_describe_node(model, writer_index)} writes "
+            f"{binding.output_name!r}, but a growing state must be "
+            f"Concat({binding.input_name}, ..., axis={binding.growth_axis}) so "
+            "that only the new rows are written. Hint: export the cache update "
+            "as such a Concat, or pin the length with --input-dim."
+        )
+    for index, op in enumerate(model.ops):
+        if index != writer_index and binding.input_name in op.output_names:
+            raise StateAliasingError(
+                f"{label}: {_describe_node(model, index)} writes the state input "
+                f"{binding.input_name!r}"
+            )
+        reads_state = {binding.input_name, binding.output_name} & set(op.input_names)
+        if (
+            index != writer_index
+            and reads_state
+            and not isinstance(op, _CAPACITY_VIEW_READERS)
+        ):
+            raise StateAliasingError(
+                f"{label}: {_describe_node(model, index)} reads "
+                f"{', '.join(sorted(reads_state))}, which lives in a buffer of "
+                f"capacity {binding.shape[binding.growth_axis]} along axis "
+                f"{binding.growth_axis}; its kernel cannot read such a strided "
+                "view yet. Hint: remove the pair or pin the length with --input-dim."
+            )
+    return writer_index
+
+
+# Kernels that index their inputs with one subscript per axis, so a growing
+# state (declared with its capacity, read up to its length) is safe to read.
+_CAPACITY_VIEW_READERS = (ShapeOp, TransposeOp, ReshapeOp, ExpandOp, MatMulOp)
 
 
 def _check_alias_legality(

@@ -649,6 +649,16 @@ class ConcatOp(RenderableOpBase):
     inputs: tuple[str, ...]
     output: str
     axis: int
+    # Set by state aliasing for a growing state (KV cache): the first input
+    # is the valid prefix of the output buffer, so only the other parts are
+    # written and the first input is no parameter.
+    in_place_prefix: bool = False
+
+    def call_args(self) -> tuple[str, ...]:
+        args = super().call_args()
+        if self.in_place_prefix:
+            return args[1:]
+        return args
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         state = emitter.require_emit_state()
@@ -675,13 +685,14 @@ class ConcatOp(RenderableOpBase):
                 for shape, onnx_name in zip(input_shapes, self.inputs)
             ],
         )
+        first_part = 1 if self.in_place_prefix else 0
         copies = tuple(
             {
                 "part": part,
                 "target": f"{params['output']}{part.whole_index}",
                 "source": f"{name}{part.part_index}",
             }
-            for name, part in zip(input_names, parts)
+            for name, part in list(zip(input_names, parts))[first_part:]
             if part is not None
         )
         input_suffixes = tuple(
@@ -693,7 +704,9 @@ class ConcatOp(RenderableOpBase):
             [
                 *(
                     (name, c_type, suffix, True)
-                    for name, suffix in zip(input_names, input_suffixes)
+                    for name, suffix in list(zip(input_names, input_suffixes))[
+                        first_part:
+                    ]
                 ),
                 (params["output"], c_type, output_suffix, False),
             ]
@@ -2072,6 +2085,34 @@ class ReshapeOp(RenderableOpBase):
             ]
         )
         loop_vars = CEmitterCompat.loop_vars(output_shape_raw)
+        if any(dim.storage is not None for dim in input_dim_names.values()):
+            # The input is a view into a larger buffer (a growing state), so
+            # the flat view of the generic kernel would use wrong strides.
+            input_index = self.unit_axes_input_index(
+                CEmitterCompat.shape_dim_exprs(input_shape, input_dim_names),
+                output_shape,
+                loop_vars,
+            )
+            if input_index is None:
+                raise CodegenError(
+                    f"{self.kind} {self.output}: reading a growing state buffer "
+                    f"(input shape {input_shape}) is only supported when the "
+                    "reshape only inserts or removes axes of size 1"
+                )
+            rendered = (
+                state.templates["reshape_unit_axes"]
+                .render(
+                    op_name=op_name,
+                    input0=params["input0"],
+                    output=params["output"],
+                    params=param_decls,
+                    output_shape=output_shape,
+                    loop_vars=loop_vars,
+                    input_index=input_index,
+                )
+                .rstrip()
+            )
+            return emitter.with_node_comment(model, ctx.op_index, rendered)
         rendered = (
             state.templates["reshape"]
             .render(
@@ -2089,6 +2130,40 @@ class ReshapeOp(RenderableOpBase):
             .rstrip()
         )
         return emitter.with_node_comment(model, ctx.op_index, rendered)
+
+    @staticmethod
+    def unit_axes_input_index(
+        input_dims: tuple[int | str, ...],
+        output_dims: tuple[int | str, ...],
+        loop_vars: tuple[str, ...],
+    ) -> str | None:
+        """Input subscript of a reshape that only adds or drops size-1 axes.
+
+        The axes that are not 1 must appear in the same order with the same
+        extent (dynamic ones by name); each takes the loop variable of its
+        output axis, size-1 input axes take 0. ``None`` for other reshapes.
+        """
+
+        def unit(dim: int | str) -> bool:
+            return isinstance(dim, int) and dim == 1
+
+        output_axes = [axis for axis, dim in enumerate(output_dims) if not unit(dim)]
+        subscripts: list[str] = []
+        next_output = 0
+        for dim in input_dims:
+            if unit(dim):
+                subscripts.append("[0]")
+                continue
+            if next_output >= len(output_axes):
+                return None
+            output_axis = output_axes[next_output]
+            if str(output_dims[output_axis]) != str(dim):
+                return None
+            subscripts.append(f"[{loop_vars[output_axis]}]")
+            next_output += 1
+        if next_output != len(output_axes):
+            return None
+        return "".join(subscripts)
 
     def infer_shapes(self, ctx: OpContext) -> None:
         input_shape = ctx.shape(self.input0)

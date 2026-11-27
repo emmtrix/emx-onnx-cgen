@@ -642,11 +642,22 @@ class Compiler:
             if isinstance(original_type, TensorType):
                 inferred_shape = op_ctx.shape(value.name)
                 inferred_dtype = op_ctx.dtype(value.name)
+                # A dim that stays dynamic keeps its name (state pairs compare
+                # the names of growing dims, e.g. past vs. past + 1).
+                original_params = original_type.dim_params
                 refreshed_output_types.append(
                     TensorType(
                         dtype=inferred_dtype,
                         shape=inferred_shape,
-                        dim_params=(None,) * len(inferred_shape),
+                        dim_params=tuple(
+                            (
+                                original_params[axis]
+                                if dim < 0
+                                and len(original_params) == len(inferred_shape)
+                                else None
+                            )
+                            for axis, dim in enumerate(inferred_shape)
+                        ),
                         is_optional=original_type.is_optional,
                     )
                 )
@@ -679,7 +690,9 @@ class Compiler:
             header=header,
             op_context=op_ctx,
         )
-        return apply_state_aliasing(lowered, state_pairs)
+        return apply_state_aliasing(
+            lowered, state_pairs, self._options.dim_param_upper_bounds
+        )
 
     def _materialize_initializer_outputs(self, graph: Graph) -> Graph:
         if graph.nodes:
