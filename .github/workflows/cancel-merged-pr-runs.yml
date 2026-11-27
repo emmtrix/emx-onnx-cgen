@@ -1,0 +1,35 @@
+name: cancel-merged-pr-runs
+
+# When a pull request is merged, its remaining pull_request runs (tests,
+# python-compatibility, dependency-review) are superseded by the push run on
+# main. Cancel them to free the runners.
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  actions: write
+
+jobs:
+  cancel:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel the merged pull request's remaining runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          HEAD_REF: ${{ github.head_ref }}
+          SELF_RUN_ID: ${{ github.run_id }}
+        run: |
+          for status in queued in_progress waiting pending requested; do
+            gh run list --branch "$HEAD_REF" --event pull_request \
+              --status "$status" --limit 100 --json databaseId \
+              --jq '.[].databaseId'
+          done | sort -u | while read -r run_id; do
+            if [ "$run_id" = "$SELF_RUN_ID" ]; then
+              continue
+            fi
+            echo "Cancelling run $run_id"
+            gh run cancel "$run_id" || echo "Run $run_id could not be cancelled"
+          done
