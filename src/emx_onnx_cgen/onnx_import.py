@@ -11,7 +11,7 @@ from shared.scalar_types import ScalarType
 
 from .dtypes import scalar_type_from_onnx
 from .errors import ShapeInferenceError, UnsupportedOpError
-from .symbolic_shapes import infer_symbolic_shapes
+from .symbolic_shapes import infer_dim_param_shapes, infer_symbolic_shapes
 from .sparse_inputs import expand_sparse_inputs
 from .ir.model import (
     Graph,
@@ -2242,6 +2242,13 @@ def prepare_onnx_model(model: onnx.ModelProto) -> onnx.ModelProto:
     # concrete dims propagate to the remaining tensors.
     prepared, enriched = infer_symbolic_shapes(prepared)
     if enriched:
+        prepared = _maybe_infer_shapes(prepared)
+    # Keep named dynamic dimensions (e.g. `past_sequence_length + 1`) that ONNX
+    # inference loses when they travel through shape values into a Range.
+    for _ in range(_MAX_SHAPE_FOLD_ROUNDS):
+        prepared, named = infer_dim_param_shapes(prepared)
+        if not named:
+            break
         prepared = _maybe_infer_shapes(prepared)
     # Back-fill shapes that forward inference cannot reach (e.g. a Loop scan
     # output statically sized only via the declared graph output it feeds).

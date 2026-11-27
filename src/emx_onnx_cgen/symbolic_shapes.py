@@ -30,6 +30,8 @@ import onnx
 import sympy
 from onnx import helper, numpy_helper
 
+from .dim_params import parse_dim_param
+
 
 _MAX_DEPTH = 256
 
@@ -58,8 +60,21 @@ def _has_dynamic_dims(graph: onnx.GraphProto) -> bool:
 
 
 class _SymbolicEvaluator:
-    def __init__(self, graph: onnx.GraphProto) -> None:
+    """Evaluate shape arithmetic over a graph with sympy.
+
+    With ``dim_param_symbols``, every declared dimension whose ``dim_param`` is a
+    key of the mapping evaluates to that symbolic expression, so shapes of
+    graphs with named dynamic dimensions (``past_sequence_length``) stay
+    expressible. Without it only concrete declared shapes are used.
+    """
+
+    def __init__(
+        self,
+        graph: onnx.GraphProto,
+        dim_param_symbols: dict[str, sympy.Expr] | None = None,
+    ) -> None:
         self._graph = graph
+        self._dim_param_symbols = dim_param_symbols or {}
         self._initializers = {
             init.name: numpy_helper.to_array(init) for init in graph.initializer
         }
@@ -74,6 +89,12 @@ class _SymbolicEvaluator:
             shape = _static_shape(value_info)
             if shape is not None:
                 self._static_shapes[value_info.name] = shape
+        self._declared_symbolic_shapes: dict[str, tuple] = {}
+        if self._dim_param_symbols:
+            for value_info in (*graph.input, *graph.value_info, *graph.output):
+                shape = _declared_symbolic_shape(value_info, self._dim_param_symbols)
+                if shape is not None:
+                    self._declared_symbolic_shapes[value_info.name] = shape
         self._val_cache: dict[str, list | None] = {}
         self._shape_cache: dict[str, tuple | None] = {}
         self._symbol_count = 0
@@ -181,7 +202,61 @@ class _SymbolicEvaluator:
             return self._eval_split(node, name, depth)
         if op in {"Add", "Sub", "Mul", "Div", "Mod", "Max", "Min"}:
             return self._eval_binary(op, node, depth)
+        if op in {"Equal", "Less", "Greater"}:
+            return self._eval_comparison(op, node, depth)
+        if op == "Where":
+            return self._eval_where(node, depth)
         return None
+
+    def _eval_comparison(
+        self, op: str, node: onnx.NodeProto, depth: int
+    ) -> list | None:
+        """Compare shape values; only decided (true/false) results are kept.
+
+        Exporters guard shape vectors with e.g. ``Where(Equal(shape, -1), 1,
+        shape)``; with non-negative dimension symbols such a comparison is
+        decidable.
+        """
+
+        left = self.eval_value(node.input[0], depth + 1)
+        right = self.eval_value(node.input[1], depth + 1)
+        if left is None or right is None:
+            return None
+        if len(left) == 1 and len(right) != 1:
+            left = left * len(right)
+        if len(right) == 1 and len(left) != 1:
+            right = right * len(left)
+        if len(left) != len(right):
+            return None
+        compare = {"Equal": sympy.Eq, "Less": sympy.Lt, "Greater": sympy.Gt}[op]
+        results = []
+        for a, b in zip(left, right):
+            result = compare(a, b)
+            if result not in (sympy.true, sympy.false):
+                return None
+            results.append(result)
+        return results
+
+    def _eval_where(self, node: onnx.NodeProto, depth: int) -> list | None:
+        condition = self.eval_value(node.input[0], depth + 1)
+        when_true = self.eval_value(node.input[1], depth + 1)
+        when_false = self.eval_value(node.input[2], depth + 1)
+        if condition is None or when_true is None or when_false is None:
+            return None
+        length = max(len(condition), len(when_true), len(when_false))
+        parts = []
+        for part in (condition, when_true, when_false):
+            if len(part) == 1:
+                part = part * length
+            if len(part) != length:
+                return None
+            parts.append(part)
+        if any(flag not in (sympy.true, sympy.false) for flag in parts[0]):
+            return None
+        return [
+            true_value if flag == sympy.true else false_value
+            for flag, true_value, false_value in zip(*parts)
+        ]
 
     def _eval_gather(self, node: onnx.NodeProto, depth: int) -> list | None:
         data = self.eval_value(node.input[0], depth + 1)
@@ -298,6 +373,8 @@ class _SymbolicEvaluator:
                 result = self._eval_shape_node(node, depth)
             elif name in self._static_shapes:
                 result = tuple(sympy.Integer(d) for d in self._static_shapes[name])
+        if result is None:
+            result = self._declared_symbolic_shapes.get(name)
         self._shape_cache[name] = result
         return result
 
@@ -528,10 +605,47 @@ class _SymbolicEvaluator:
                 end_i = min(end_i, extent)
                 start_i = max(0, min(start_i, extent))
                 dims[axis] = sympy.Integer(max(0, end_i - start_i))
+            elif self._dim_param_symbols:
+                length = self._symbolic_slice_length(dim, start, end)
+                if length is None:
+                    return None
+                dims[axis] = length
             else:
                 # Symbolic crop: trust end - start (clamping is not modelled).
                 dims[axis] = sympy.simplify(end - start)
         return tuple(dims)
+
+    @staticmethod
+    def _symbolic_slice_length(dim, start, end):
+        """Length of ``dim[start:end]`` (step 1) for a symbolic ``dim``.
+
+        Bounds are clamped to ``[0, dim]`` like ONNX does; negative bounds count
+        from the end. Bounds beyond ``±2**62`` (models write ``INT64_MAX`` for
+        "to the end") mean the end or the start of the axis, since no real
+        dimension is that large. ``dim`` is a non-negative symbol, so sympy
+        decides the clamps it can prove and leaves the others as unevaluated
+        ``Min``/``Max``, which never match a dim_param and therefore keep the
+        dimension unknown. ``None`` means a symbolic bound that may be negative.
+        """
+
+        def clamp(bound):
+            if not bound.is_Integer:
+                if not bound.is_nonnegative:
+                    return None
+                return sympy.Min(bound, dim)
+            if int(bound) >= 2**62:
+                return dim
+            if int(bound) <= -(2**62):
+                return sympy.Integer(0)
+            value = sympy.Integer(int(bound))
+            if value < 0:
+                value = dim + value
+            return sympy.Min(sympy.Max(sympy.Integer(0), value), dim)
+
+        start_n, end_n = clamp(start), clamp(end)
+        if start_n is None or end_n is None:
+            return None
+        return sympy.expand(sympy.Max(sympy.Integer(0), end_n - start_n))
 
     def _eval_pad_shape(self, node: onnx.NodeProto, depth: int) -> tuple | None:
         shape = self.eval_shape(node.input[0], depth + 1)
@@ -672,3 +786,130 @@ def _maybe_set_dims(
             continue
         dim.ClearField("dim_param")
         dim.dim_value = value
+
+
+# -- named dynamic dimensions ------------------------------------------------
+
+
+def _declared_symbolic_shape(
+    value_info: onnx.ValueInfoProto, dim_param_symbols: dict[str, sympy.Expr]
+) -> tuple | None:
+    tensor_type = value_info.type.tensor_type
+    if not tensor_type.HasField("shape"):
+        return None
+    dims: list = []
+    for dim in tensor_type.shape.dim:
+        if dim.HasField("dim_value"):
+            dims.append(sympy.Integer(int(dim.dim_value)))
+        elif dim.dim_param in dim_param_symbols:
+            dims.append(dim_param_symbols[dim.dim_param])
+        else:
+            return None
+    return tuple(dims)
+
+
+def _interface_dim_params(graph: onnx.GraphProto) -> dict[str, sympy.Expr]:
+    params: dict[str, sympy.Expr] = {}
+    for value_info in (*graph.input, *graph.output):
+        tensor_type = value_info.type.tensor_type
+        if not tensor_type.HasField("shape"):
+            continue
+        for dim in tensor_type.shape.dim:
+            if dim.HasField("dim_value") or not dim.dim_param:
+                continue
+            expression = parse_dim_param(dim.dim_param)
+            if expression is not None:
+                params.setdefault(dim.dim_param, expression)
+    return params
+
+
+def infer_dim_param_shapes(model: onnx.ModelProto) -> tuple[onnx.ModelProto, bool]:
+    """Name unknown internal dimensions after the graph's interface dim_params.
+
+    ONNX shape inference loses a named dimension as soon as it travels through
+    tensor *values*, e.g. ``Range(0, Shape(attention_mask)[1], 1)`` for an
+    ``attention_mask`` of length ``past_sequence_length + 1``. This pass
+    evaluates such shape arithmetic with the graph's input/output dim_params as
+    symbols. An internal dimension that is currently unknown is set to the
+    dim_param whose expression it provably equals; dimensions that match no
+    interface dim_param stay unknown. Concrete dimensions are never changed and
+    no symbol is ever solved for a number.
+
+    Returns ``(model, changed)``.
+    """
+
+    graph = model.graph
+    dim_params = _interface_dim_params(graph)
+    if not dim_params:
+        return model, False
+    by_expression: dict[sympy.Expr, str] = {}
+    for name, expression in sorted(dim_params.items()):
+        by_expression.setdefault(sympy.expand(expression), name)
+    evaluator = _SymbolicEvaluator(graph, dim_param_symbols=dim_params)
+    changed = False
+    for value_info in (*graph.value_info, *graph.output):
+        tensor_type = value_info.type.tensor_type
+        if not tensor_type.HasField("shape"):
+            continue
+        dims = tensor_type.shape.dim
+        unknown = [
+            index
+            for index, dim in enumerate(dims)
+            if not dim.HasField("dim_value") and dim.dim_param not in dim_params
+        ]
+        if not unknown:
+            continue
+        inferred = evaluator.eval_shape(value_info.name)
+        if inferred is None or len(inferred) != len(dims):
+            continue
+        for index in unknown:
+            expression = sympy.expand(inferred[index])
+            if expression.is_Integer:
+                # A dimension can become concrete once the shape values that
+                # sized it were folded to constants after an earlier inference.
+                if int(expression) >= 0:
+                    dims[index].ClearField("dim_param")
+                    dims[index].dim_value = int(expression)
+                    changed = True
+                continue
+            name = by_expression.get(expression)
+            if name is not None:
+                dims[index].ClearField("dim_value")
+                dims[index].dim_param = name
+                changed = True
+    if changed:
+        _drop_stale_internal_shapes(graph, dim_params)
+    return model, changed
+
+
+def _drop_stale_internal_shapes(
+    graph: onnx.GraphProto, dim_params: dict[str, sympy.Expr]
+) -> None:
+    """Remove internal value_info that still carries unknown dimensions.
+
+    ONNX shape inference keeps an existing ``unk__N`` dimension instead of
+    replacing it with what it could infer now, so downstream tensors of a newly
+    named dimension would stay unknown. Dropping their value_info lets the next
+    inference pass recompute them; a dimension it still cannot infer becomes
+    ``unk__N`` again. Outputs of ops ONNX has no schema for (contrib or custom
+    ops) are kept, because inference could not recompute their type.
+    """
+
+    producers = {output: node for node in graph.node for output in node.output}
+    stale = []
+    for value_info in graph.value_info:
+        tensor_type = value_info.type.tensor_type
+        if not tensor_type.HasField("shape"):
+            continue
+        producer = producers.get(value_info.name)
+        if producer is None or not onnx.defs.has(
+            producer.op_type, producer.domain or ""
+        ):
+            continue
+        if any(
+            not dim.HasField("dim_value") and dim.dim_param not in dim_params
+            for dim in tensor_type.shape.dim
+        ):
+            stale.append(value_info)
+    for value_info in stale:
+        graph.value_info.remove(value_info)
