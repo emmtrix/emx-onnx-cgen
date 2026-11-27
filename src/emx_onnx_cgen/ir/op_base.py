@@ -890,7 +890,8 @@ class BroadcastingOpBase(RenderableOpBase):
         padded_shapes = [(1,) * (max_rank - len(shape)) + shape for shape in shapes]
         result: list[int] = []
         for dims in zip(*padded_shapes):
-            known_dims = {d for d in dims if d > 1}
+            # 0 is a size like any other (empty tensors); only 1 broadcasts.
+            known_dims = {d for d in dims if d >= 0 and d != 1}
             unknown_dims = [d for d in dims if d < 0]
             if len(known_dims) > 1:
                 raise ShapeInferenceError(

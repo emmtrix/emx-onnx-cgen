@@ -16,6 +16,7 @@ from jinja2 import (
     select_autoescape,
 )
 import numpy as np
+import sympy
 from onnx import GraphProto
 
 from ..errors import CodegenError, CompilerError
@@ -28,7 +29,12 @@ from .image_decoder_libs import (
 )
 from ..testbench_output_format import parse_testbench_output_format
 from ..sequence_shape_hints import SequenceElementShapeHint
-from .dim_spelling import derived_dim_size, is_derived_dim_text, spell_dim_params
+from .dim_spelling import (
+    DimSpelling,
+    derived_dim_size,
+    is_derived_dim_text,
+    spell_dim_params,
+)
 from ..ir.op_base import (
     OpBase,
     CodegenDim,
@@ -3720,23 +3726,29 @@ class CEmitter:
             for dims in (*variable_dim_inputs.values(), *variable_dim_outputs.values())
             for dim_name in dims.values()
         )
-        derived_names = {
-            spelling.text: spelling
-            for spelling in spellings.values()
-            if spelling.is_derived
-        }
+        # C text of each derived dim -> its spelling over the final names.
+        derived_names: dict[str, DimSpelling] = {}
 
         def _unique_dim_name(dim_name: str) -> str:
             if dim_name in dim_aliases:
                 return dim_aliases[dim_name]
             spelling = spellings.get(dim_name)
-            if spelling is not None and spelling.is_derived:
-                # Derived dims are C expressions of parameters, not parameters.
-                dim_aliases[dim_name] = spelling.text
-                return spelling.text
+            if spelling is not None and spelling.expression is not None:
+                # Derived dims are C expressions of parameters, not parameters;
+                # spell them with the parameters' final (de-duplicated) names.
+                renamed = spelling.expression.subs(
+                    {
+                        symbol: sympy.Symbol(_unique_dim_name(symbol.name))
+                        for symbol in spelling.expression.free_symbols
+                    }
+                )
+                derived = DimSpelling(f"({sympy.ccode(renamed)})", renamed)
+                derived_names[derived.text] = derived
+                dim_aliases[dim_name] = derived.text
+                return derived.text
             base_name = spelling.text if spelling is not None else dim_name
             if base_name in used_names:
-                base_name = f"{dim_name}_dim"
+                base_name = f"{base_name}_dim"
             candidate = base_name
             counter = 1
             while candidate in used_names:
