@@ -51,8 +51,12 @@ def lower_constant_of_shape(graph: Graph, node: Node) -> ConstantOfShapeOp:
     rank_unknown = output_shape == () and input_shape[0] > 0
     if not rank_unknown and input_shape[0] != len(output_shape):
         raise ShapeInferenceError("ConstantOfShape input length must match output rank")
-    for dim in output_shape:
-        if dim < 0:
+    # A dynamic output axis is fine once it is named: the fill loop runs to
+    # the runtime dimension and the shape input is not read.
+    output_dim_params = graph.find_value(node.outputs[0]).type.dim_params
+    for axis, dim in enumerate(output_shape):
+        named = axis < len(output_dim_params) and output_dim_params[axis]
+        if dim < 0 and not named:
             raise ShapeInferenceError(
                 f"ConstantOfShape output shape must be static, got {output_shape}"
             )

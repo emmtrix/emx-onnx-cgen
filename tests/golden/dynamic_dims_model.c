@@ -75,5 +75,8 @@ _Bool dynamic_dims_model_load(const char *path) {
 }
 
 void dynamic_dims_model(int N, int C, const float x[restrict N][C], float out[restrict N][C]) {
+    if (N < 0 || C < 0) {
+        return;
+    }
     node0_relu(N, C, x, out);
 }

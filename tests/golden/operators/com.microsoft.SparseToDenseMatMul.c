@@ -84,5 +84,8 @@ _Bool model_load(const char *path) {
 }
 
 void model(int A_nnz, const float A_values[restrict A_nnz], const int64_t A_indices[restrict A_nnz][2], const float B[restrict 9][9], float X[restrict 9][9]) {
+    if (A_nnz < 0) {
+        return;
+    }
     node0_node1(A_nnz, A_values, A_indices, B, X);
 }

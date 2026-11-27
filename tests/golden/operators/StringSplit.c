@@ -91,5 +91,8 @@ _Bool model_load(const char *path) {
 }
 
 void model(int unk__0, const char x[restrict 1][EMX_STRING_MAX_LEN], char substrings[restrict 1][unk__0][EMX_STRING_MAX_LEN], int64_t length[restrict 1]) {
+    if (unk__0 < 0) {
+        return;
+    }
     node0_stringsplit(unk__0, x, substrings, length);
 }

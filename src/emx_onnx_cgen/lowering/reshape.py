@@ -7,6 +7,7 @@ from ..ir.context import GraphContext
 from ..ir.model import Graph, Initializer, Node
 from ..ir.ops import ReshapeOp
 from .common import (
+    _shape_values_from_shape_node,
     resolve_int_list_from_value,
     value_dtype,
     value_shape as resolved_value_shape,
@@ -72,25 +73,6 @@ def _find_node_by_output(graph: Graph, name: str) -> Node | None:
         if name in node.outputs:
             return node
     return None
-
-
-def _shape_values_from_shape_node(
-    graph: Graph, shape_node: Node, node: Node
-) -> list[int]:
-    if len(shape_node.inputs) != 1 or len(shape_node.outputs) != 1:
-        raise UnsupportedOpError("Shape must have 1 input and 1 output")
-    source_shape = _value_shape(graph, shape_node.inputs[0], node)
-    start = int(shape_node.attrs.get("start", 0))
-    end = int(shape_node.attrs.get("end", len(source_shape)))
-    if start < 0:
-        start += len(source_shape)
-    if end < 0:
-        end += len(source_shape)
-    start = max(start, 0)
-    end = min(end, len(source_shape))
-    if start > end:
-        return []
-    return list(source_shape[start:end])
 
 
 def _shape_values_from_initializer(

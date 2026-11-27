@@ -86,5 +86,8 @@ _Bool model_load(const char *path) {
 }
 
 void model(int unk__0, const float X[restrict 2][3][4], const float Y[restrict 2][3][4], const float Z[restrict 2][3][4], float out[restrict 2][unk__0][4]) {
+    if (unk__0 < 0) {
+        return;
+    }
     node0_concatfromsequence(unk__0, X, Y, Z, out);
 }

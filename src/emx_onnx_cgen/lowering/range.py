@@ -75,7 +75,10 @@ def lower_range(graph: Graph, node: Node) -> RangeOp:
             )
     else:
         length = output_shape[0]
-        if length < 0:
+        output_dim_params = graph.find_value(node.outputs[0]).type.dim_params
+        # A named dynamic length is a runtime dimension; the kernel loops to it
+        # and never reads `limit` (start + i * delta only).
+        if length < 0 and not (output_dim_params and output_dim_params[0]):
             raise ShapeInferenceError("Range output length must be non-negative")
     return RangeOp(
         start=node.inputs[0],
