@@ -571,11 +571,16 @@ class ShapeLikeOpBase(RenderableOpBase):
             [("input0", self._shape_data()), ("output", self._shape_output())]
         )
         output_shape_raw = emitter.ctx_shape(self._shape_output())
-        output_shape = CEmitterCompat.codegen_shape(output_shape_raw)
+        output_dim_names = emitter.dim_names_for(self._shape_output())
+        output_shape = CEmitterCompat.shape_dim_exprs(
+            output_shape_raw, output_dim_names
+        )
         loop_vars = CEmitterCompat.loop_vars(output_shape_raw)
         input_shape = emitter.ctx_shape(self._shape_data())
-        input_suffix = emitter.param_array_suffix(input_shape)
-        output_suffix = emitter.param_array_suffix(output_shape_raw)
+        input_suffix = emitter.param_array_suffix(
+            input_shape, emitter.dim_names_for(self._shape_data())
+        )
+        output_suffix = emitter.param_array_suffix(output_shape_raw, output_dim_names)
         param_decls = emitter.build_param_decls(
             [
                 (params["input0"], c_type, input_suffix, True),
@@ -640,8 +645,8 @@ class ShapeLikeOpBase(RenderableOpBase):
         *,
         kind: str,
     ) -> tuple[int, ...]:
-        ShapeLikeOpBase._validate_static_dims(input_shape, kind)
-        ShapeLikeOpBase._validate_static_dims(target_shape, kind)
+        # Dynamic dims (-1) are runtime dimensions named by the values'
+        # dim_params; they broadcast like any dim that is not 1.
         output_rank = max(len(input_shape), len(target_shape))
         input_padded = (1,) * (output_rank - len(input_shape)) + input_shape
         target_padded = (1,) * (output_rank - len(target_shape)) + target_shape

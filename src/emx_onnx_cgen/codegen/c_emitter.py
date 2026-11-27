@@ -28,6 +28,7 @@ from .image_decoder_libs import (
 )
 from ..testbench_output_format import parse_testbench_output_format
 from ..sequence_shape_hints import SequenceElementShapeHint
+from .dim_spelling import derived_dim_size, is_derived_dim_text, spell_dim_params
 from ..ir.op_base import (
     OpBase,
     CodegenDim,
@@ -2489,6 +2490,12 @@ class CEmitter:
             output_dim_names=output_dim_names,
         )
         lines = [f"void {model.name}({signature}) {{"]
+        if dim_order:
+            # Runtime dims are array extents. Rejecting negative values also
+            # keeps compilers from diagnosing negative VLA bounds on paths
+            # they cannot rule out (gcc -Wstringop-overflow).
+            negative = " || ".join(f"{dim} < 0" for dim in dim_order)
+            lines.extend([f"    if ({negative}) {{", "        return;", "    }"])
         state_args = {
             binding.input_name: f"{_STATE_PARAM}->{binding.input_name}"
             for binding in model.state_bindings
@@ -3708,11 +3715,26 @@ class CEmitter:
         )
         used_names = set(reserved_names)
         dim_aliases: dict[str, str] = {}
+        spellings = spell_dim_params(
+            dim_name
+            for dims in (*variable_dim_inputs.values(), *variable_dim_outputs.values())
+            for dim_name in dims.values()
+        )
+        derived_names = {
+            spelling.text: spelling
+            for spelling in spellings.values()
+            if spelling.is_derived
+        }
 
         def _unique_dim_name(dim_name: str) -> str:
             if dim_name in dim_aliases:
                 return dim_aliases[dim_name]
-            base_name = dim_name
+            spelling = spellings.get(dim_name)
+            if spelling is not None and spelling.is_derived:
+                # Derived dims are C expressions of parameters, not parameters.
+                dim_aliases[dim_name] = spelling.text
+                return spelling.text
+            base_name = spelling.text if spelling is not None else dim_name
             if base_name in used_names:
                 base_name = f"{dim_name}_dim"
             candidate = base_name
@@ -3739,7 +3761,7 @@ class CEmitter:
             if key not in dim_vars:
                 dim_ref = CodegenDim(dim_name, expected_size)
                 dim_vars[key] = dim_ref
-                if dim_name not in dim_order:
+                if dim_name not in dim_order and dim_name not in derived_names:
                     dim_order.append(dim_name)
                 dim_values.setdefault(dim_name, expected_size)
             else:
@@ -3788,6 +3810,25 @@ class CEmitter:
             dim_names = _build_dim_names("output", index, shape, variable_dim_outputs)
             if dim_names:
                 output_dim_names[index] = dim_names
+
+        if derived_names:
+            # Size derived dims from the parameter sizes they are computed from.
+            parameter_sizes = {
+                name: size for name, size in dim_values.items() if name in dim_order
+            }
+
+            def _sized(dim_ref: CodegenDim) -> CodegenDim:
+                spelling = derived_names.get(dim_ref.name)
+                if spelling is None:
+                    return dim_ref
+                size = spelling.expected_size(parameter_sizes, dim_ref.expected_size)
+                dim_values[dim_ref.name] = size
+                return CodegenDim(dim_ref.name, size)
+
+            for per_tensor in (input_dim_names, output_dim_names):
+                for tensor_dims in per_tensor.values():
+                    for axis, dim_ref in tensor_dims.items():
+                        tensor_dims[axis] = _sized(dim_ref)
 
         return dim_order, input_dim_names, output_dim_names, dim_values
 
@@ -4032,7 +4073,13 @@ class CEmitter:
                         resolved.append(actual_dim)
                         continue
                 dim_ref = dim_names.get(axis)
-                if dim_ref is not None:
+                if dim_ref is not None and is_derived_dim_text(dim_ref.name):
+                    resolved.append(
+                        derived_dim_size(
+                            dim_ref.name, dim_values, dim_ref.expected_size
+                        )
+                    )
+                elif dim_ref is not None:
                     resolved.append(dim_values.get(dim_ref.name, dim_ref.expected_size))
                 elif dim < 0:
                     resolved.append(CodegenDim(f"dim_{axis}").expected_size)
@@ -4108,7 +4155,11 @@ class CEmitter:
             )
             input_file_shape = tuple(
                 (
-                    f"*{dim_names[axis].name}__ptr"
+                    (
+                        _derived_dim_read_local(name, axis)
+                        if is_derived_dim_text(dim_names[axis].name)
+                        else f"*{dim_names[axis].name}__ptr"
+                    )
                     if dim_names is not None and axis in dim_names
                     else concrete_codegen_shape[axis]
                 )
@@ -4277,7 +4328,12 @@ class CEmitter:
                     "is_sequence": is_sequence_input,
                     "runtime_dim_reads": (
                         tuple(
-                            {"axis": axis, "name": dim_ref.name}
+                            {
+                                "axis": axis,
+                                "name": dim_ref.name,
+                                "derived": is_derived_dim_text(dim_ref.name),
+                                "local": _derived_dim_read_local(name, axis),
+                            }
                             for axis, dim_ref in sorted((dim_names or {}).items())
                         )
                         if not is_sequence_input
@@ -5361,3 +5417,10 @@ def _format_multiline_value(value: str | None) -> list[str]:
         return ["  n/a"]
     lines = value.splitlines() or [""]
     return [f"  {line}" if line else "  " for line in lines]
+
+
+def _derived_dim_read_local(input_name: str, axis: int) -> str:
+    # A derived dim (e.g. `(n + 1)`) may depend on a parameter that a later
+    # input provides, so the testbench reads such an input with the extent
+    # stored in its own file header.
+    return f"{input_name}__rt{axis}"

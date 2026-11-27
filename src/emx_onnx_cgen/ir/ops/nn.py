@@ -8,7 +8,7 @@ import numpy as np
 from shared.scalar_functions import ScalarFunction
 from shared.scalar_types import ScalarType
 
-from ...errors import ShapeInferenceError, UnsupportedOpError
+from ...errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from ..axis_loops import AxisLoopNest
 from ..op_base import (
     CEmitterCompat,
@@ -234,7 +234,15 @@ class MatMulOp(MatMulLikeOpBase):
         )
         m = int(emitter.derived(self, "m"))
         n = int(emitter.derived(self, "n"))
-        k = int(emitter.derived(self, "k"))
+        k: int | str = int(emitter.derived(self, "k"))
+        if k < 0:
+            # A dynamic reduction length (e.g. attention over a growing KV
+            # cache) is the runtime dim of input0's last axis.
+            k = input0_dim_names.get(len(input0_shape) - 1) or ""
+            if not k:
+                raise CodegenError(
+                    f"MatMul {self.output}: dynamic reduction dimension has no name"
+                )
         rendered = (
             state.templates["matmul"]
             .render(

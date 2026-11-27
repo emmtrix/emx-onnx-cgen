@@ -95,8 +95,6 @@ def lower_unsqueeze(graph: Graph, node: Node) -> ReshapeOp:
     output_shape = _value_shape(graph, node.outputs[0], node)
     if value_has_dim_params(graph, node.outputs[0]):
         output_shape = ()
-    _validate_shape(input_shape, node, "input")
-    _validate_shape(output_shape, node, "output")
     input_dtype = _value_dtype(graph, node.inputs[0], node)
     output_dtype = _value_dtype(graph, node.outputs[0], node)
     if input_dtype != output_dtype:
@@ -106,6 +104,11 @@ def lower_unsqueeze(graph: Graph, node: Node) -> ReshapeOp:
         )
     axes = _resolve_axes(graph, node)
     if axes is None:
+        # Without constant axes the inserted axes are recovered by matching the
+        # input dims against the output dims, which needs static dims. With
+        # constant axes, dynamic dims simply move to their new position.
+        _validate_shape(input_shape, node, "input")
+        _validate_shape(output_shape, node, "output")
         if len(node.inputs) == 2:
             axes_dtype = _value_dtype(graph, node.inputs[1], node)
             if axes_dtype not in {ScalarType.I64, ScalarType.I32}:

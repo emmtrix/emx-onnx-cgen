@@ -150,6 +150,9 @@ static int testbench_read_input_file(
     if (*{{ input.optional_flag_name }}) {
 {% endif %}
 {% for dim_read in input.runtime_dim_reads %}
+{% if dim_read.derived %}
+    idx_t {{ dim_read.local }} = 0;
+{% endif %}
     {
         int32_t runtime_dim = 0;
         if (fread(&runtime_dim, sizeof(int32_t), 1, input_file) != 1) {
@@ -162,7 +165,11 @@ static int testbench_read_input_file(
             fclose(input_file);
             return 1;
         }
+{% if dim_read.derived %}
+        {{ dim_read.local }} = (idx_t)runtime_dim;
+{% else %}
         *{{ dim_read.name }}__ptr = runtime_dim;
+{% endif %}
     }
 {% endfor %}
 {% for depth in range(input.rank) %}

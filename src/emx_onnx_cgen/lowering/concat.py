@@ -48,7 +48,12 @@ def lower_concat(graph: Graph, node: Node) -> ConcatOp:
                         "Concat inputs must match on non-axis dimensions, "
                         f"got {input_shapes}"
                     )
-            axis_dim += shape[axis]
+            # A dynamic part (-1) makes the concatenated axis dynamic; the
+            # output's dim_param names it (e.g. past + 1 for a KV cache).
+            if axis_dim < 0 or shape[axis] < 0:
+                axis_dim = -1
+            else:
+                axis_dim += shape[axis]
         base_shape[axis] = axis_dim
         output_shape = tuple(base_shape)
         if isinstance(graph, GraphContext):
