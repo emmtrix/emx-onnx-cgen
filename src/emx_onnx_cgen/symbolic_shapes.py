@@ -890,14 +890,21 @@ def _drop_stale_internal_shapes(
     ONNX shape inference keeps an existing ``unk__N`` dimension instead of
     replacing it with what it could infer now, so downstream tensors of a newly
     named dimension would stay unknown. Dropping their value_info lets the next
-    inference pass recompute them; a dimension it still cannot infer simply
-    becomes unknown again.
+    inference pass recompute them; a dimension it still cannot infer becomes
+    ``unk__N`` again. Outputs of ops ONNX has no schema for (contrib or custom
+    ops) are kept, because inference could not recompute their type.
     """
 
+    producers = {output: node for node in graph.node for output in node.output}
     stale = []
     for value_info in graph.value_info:
         tensor_type = value_info.type.tensor_type
         if not tensor_type.HasField("shape"):
+            continue
+        producer = producers.get(value_info.name)
+        if producer is None or not onnx.defs.has(
+            producer.op_type, producer.domain or ""
+        ):
             continue
         if any(
             not dim.HasField("dim_value") and dim.dim_param not in dim_params

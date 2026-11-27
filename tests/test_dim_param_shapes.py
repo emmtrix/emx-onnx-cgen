@@ -244,3 +244,24 @@ def test_compile_keeps_dim_param_as_runtime_dimension(case: str) -> None:
 def test_verify_against_onnxruntime_for_two_lengths(case: str, tmp_path: Path) -> None:
     spec = _MODELS[case]
     verify_for_dims(spec.builder(), tmp_path, spec.dim_sets)
+
+
+def test_value_info_of_ops_without_schema_keeps_its_type() -> None:
+    # ONNX cannot re-infer a custom op, so naming another dim must not drop
+    # the custom output's value_info (and with it its element type).
+    model = _make_range_over_mask_length_model()
+    model.graph.node.append(
+        helper.make_node("Opaque", ["x"], ["custom"], domain="test.custom")
+    )
+    model.opset_import.append(helper.make_operatorsetid("test.custom", 1))
+    model.graph.value_info.append(
+        helper.make_tensor_value_info("custom", TensorProto.FLOAT, ["unk__9", 4])
+    )
+    model = shape_inference.infer_shapes(model, data_prop=True)
+
+    model, changed = infer_dim_param_shapes(model)
+
+    assert changed
+    custom = _value_info(model, "custom")
+    assert custom.type.tensor_type.elem_type == TensorProto.FLOAT
+    assert _dims(custom)[1] == 4
