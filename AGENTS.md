@@ -349,6 +349,10 @@ for (idx_t idx = 0; idx < N * 3 * 5; ++idx)
 ## Contribution Workflow
 
 * Keep PRs focused and small.
+* Every PR gets an agentic code review (e.g. `/code-review` in Claude Code)
+  before it is ready for human review. Until the review has run and its
+  findings are fixed or explicitly answered in the PR, the PR stays a draft
+  (`gh pr create --draft`); mark it ready with `gh pr ready` afterwards.
 * For any change affecting output C code:
 
   * include golden snapshot updates (if applicable)
@@ -457,6 +461,11 @@ When acting as an agent in this repo:
 14. Do not modify submodule contents or the installed onnx package.
 15. After creating or updating a pull request, re-check the PR title and
     description for accuracy and completeness.
+16. Open every pull request as a draft. Run an agentic code review of the
+    PR's diff, fix the findings (or explain in the PR why one is not fixed),
+    and only then mark it ready for review. Stacked PRs are reviewed one by
+    one. A PR that gets substantial new commits after the review is reviewed
+    again.
 
 ## Adding an operator (checklist)
 
