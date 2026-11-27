@@ -26,6 +26,8 @@ The pass is deliberately conservative:
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+
 import onnx
 import sympy
 from onnx import helper, numpy_helper
@@ -823,7 +825,9 @@ def _interface_dim_params(graph: onnx.GraphProto) -> dict[str, sympy.Expr]:
     return params
 
 
-def infer_dim_param_shapes(model: onnx.ModelProto) -> tuple[onnx.ModelProto, bool]:
+def infer_dim_param_shapes(
+    model: onnx.ModelProto, *, upper_bounds: Mapping[str, int] | None = None
+) -> tuple[onnx.ModelProto, bool]:
     """Name unknown internal dimensions after the graph's interface dim_params.
 
     ONNX shape inference loses a named dimension as soon as it travels through
@@ -834,6 +838,10 @@ def infer_dim_param_shapes(model: onnx.ModelProto) -> tuple[onnx.ModelProto, boo
     dim_param whose expression it provably equals; dimensions that match no
     interface dim_param stay unknown. Concrete dimensions are never changed and
     no symbol is ever solved for a number.
+
+    ``upper_bounds`` maps dim_param identifiers to their largest value
+    (``--input-dim NAME<=N``); with them, ``Min``/``Max`` terms such as the
+    length of a fixed-size table sliced to the current length can be decided.
 
     Returns ``(model, changed)``.
     """
@@ -846,6 +854,10 @@ def infer_dim_param_shapes(model: onnx.ModelProto) -> tuple[onnx.ModelProto, boo
     for name, expression in sorted(dim_params.items()):
         by_expression.setdefault(sympy.expand(expression), name)
     evaluator = _SymbolicEvaluator(graph, dim_param_symbols=dim_params)
+    bounds = {
+        sympy.Symbol(name, integer=True, nonnegative=True): int(bound)
+        for name, bound in (upper_bounds or {}).items()
+    }
     changed = False
     for value_info in (*graph.value_info, *graph.output):
         tensor_type = value_info.type.tensor_type
@@ -863,7 +875,7 @@ def infer_dim_param_shapes(model: onnx.ModelProto) -> tuple[onnx.ModelProto, boo
         if inferred is None or len(inferred) != len(dims):
             continue
         for index in unknown:
-            expression = sympy.expand(inferred[index])
+            expression = sympy.expand(_decide_min_max(inferred[index], bounds))
             if expression.is_Integer:
                 # A dimension can become concrete once the shape values that
                 # sized it were folded to constants after an earlier inference.
@@ -913,3 +925,75 @@ def _drop_stale_internal_shapes(
             stale.append(value_info)
     for value_info in stale:
         graph.value_info.remove(value_info)
+
+
+def _decide_min_max(expression: sympy.Expr, bounds: dict) -> sympy.Expr:
+    """Resolve the ``Min``/``Max`` terms whose order the symbol ranges prove.
+
+    Every symbol is a non-negative dimension, bounded above by ``bounds`` where
+    given. Terms whose order cannot be proven stay unevaluated.
+    """
+
+    if not expression.args:
+        return expression
+    args = [_decide_min_max(arg, bounds) for arg in expression.args]
+    if isinstance(expression, (sympy.Min, sympy.Max)):
+        keep_smaller = isinstance(expression, sympy.Min)
+        remaining: list = []
+        for candidate in args:
+            dominated = False
+            for other in list(remaining):
+                low, high = _linear_range(candidate - other, bounds)
+                if keep_smaller and low is not None and low >= 0:
+                    dominated = True  # candidate >= other: Min never picks it
+                elif keep_smaller and high is not None and high <= 0:
+                    remaining.remove(other)
+                elif not keep_smaller and high is not None and high <= 0:
+                    dominated = True  # candidate <= other: Max never picks it
+                elif not keep_smaller and low is not None and low >= 0:
+                    remaining.remove(other)
+                if dominated:
+                    break
+            if not dominated:
+                remaining.append(candidate)
+        if len(remaining) == 1:
+            return remaining[0]
+        return type(expression)(*remaining)
+    return expression.func(*args)
+
+
+def _linear_range(expression: sympy.Expr, bounds: dict) -> tuple:
+    """``(low, high)`` of a linear expression over the symbol ranges.
+
+    Symbols range over ``[0, bounds.get(symbol, inf)]``; ``None`` marks an
+    unbounded or undecidable side (non-linear terms).
+    """
+
+    expanded = sympy.expand(expression)
+    if expanded.is_Number:
+        return float(expanded), float(expanded)
+    try:
+        if not expanded.is_polynomial() or sympy.Poly(expanded).total_degree() > 1:
+            return None, None
+    except sympy.PolynomialError:
+        return None, None
+    low = high = 0.0
+    for term, coefficient in expanded.as_coefficients_dict().items():
+        if not coefficient.is_Number:
+            return None, None
+        value = float(coefficient)
+        if term == 1:
+            low += value
+            high += value
+            continue
+        if not isinstance(term, sympy.Symbol):
+            return None, None
+        upper = float(bounds[term]) if term in bounds else float("inf")
+        if value > 0:
+            high += value * upper
+        else:
+            low += value * upper
+    return (
+        None if low == float("-inf") else low,
+        None if high == float("inf") else high,
+    )
