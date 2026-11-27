@@ -398,6 +398,7 @@ class CEmitter:
         replicate_ort_bugs: bool = False,
         sequence_element_shapes: Mapping[str, SequenceElementShapeHint] | None = None,
         image_decoder_libs: tuple[str, ...] = DEFAULT_IMAGE_DECODER_LIBS,
+        dim_param_upper_bounds: Mapping[str, int] | None = None,
     ) -> None:
         loader = (
             FileSystemLoader(str(template_dir))
@@ -429,6 +430,9 @@ class CEmitter:
         self._replicate_ort_bugs = replicate_ort_bugs
         self._sequence_element_shapes = dict(sequence_element_shapes or {})
         self._image_decoder_libs = tuple(image_decoder_libs)
+        self._dim_param_upper_bounds = dict(dim_param_upper_bounds or {})
+        # C parameter name -> upper bound, set by _build_variable_dim_names.
+        self._dim_upper_bounds_by_c_name: dict[str, int] = {}
         self._emit_state: _EmitState | None = None
 
     def _setup_template_resolvers(
@@ -2499,9 +2503,18 @@ class CEmitter:
         if dim_order:
             # Runtime dims are array extents. Rejecting negative values also
             # keeps compilers from diagnosing negative VLA bounds on paths
-            # they cannot rule out (gcc -Wstringop-overflow).
-            negative = " || ".join(f"{dim} < 0" for dim in dim_order)
-            lines.extend([f"    if ({negative}) {{", "        return;", "    }"])
+            # they cannot rule out (gcc -Wstringop-overflow). A declared upper
+            # bound (--input-dim NAME<=N) was relied on by shape inference, so
+            # a larger value would index past fixed-size tables.
+            checks = []
+            for dim in dim_order:
+                checks.append(f"{dim} < 0")
+                bound = self._dim_upper_bounds_by_c_name.get(dim)
+                if bound is not None:
+                    checks.append(f"{dim} > {bound}")
+            lines.extend(
+                [f"    if ({' || '.join(checks)}) {{", "        return;", "    }"]
+            )
         state_args = {
             binding.input_name: f"{_STATE_PARAM}->{binding.input_name}"
             for binding in model.state_bindings
@@ -3823,6 +3836,11 @@ class CEmitter:
             if dim_names:
                 output_dim_names[index] = dim_names
 
+        self._dim_upper_bounds_by_c_name = {
+            dim_aliases[name]: bound
+            for name, bound in self._dim_param_upper_bounds.items()
+            if name in dim_aliases and dim_aliases[name] in dim_order
+        }
         if derived_names:
             # Size derived dims from the parameter sizes they are computed from.
             parameter_sizes = {

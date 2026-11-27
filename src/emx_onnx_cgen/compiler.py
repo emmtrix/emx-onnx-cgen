@@ -143,7 +143,7 @@ class CompilerOptions:
     replicate_ort_bugs: bool = False
     sequence_element_shapes: Mapping[str, SequenceElementShapeHint] | None = None
     # Upper bounds of dynamic dim_params (``--input-dim NAME<=N``); symbolic
-    # shape inference relies on them, the generated code assumes they hold.
+    # shape inference relies on them, the model function rejects larger values.
     dim_param_upper_bounds: Mapping[str, int] | None = None
     image_decoder_libs: tuple[str, ...] = DEFAULT_IMAGE_DECODER_LIBS
     # Move the padding of Conv nodes into Pad nodes (see explicit_padding)
@@ -196,6 +196,7 @@ class Compiler:
             replicate_ort_bugs=options.replicate_ort_bugs,
             sequence_element_shapes=options.sequence_element_shapes,
             image_decoder_libs=options.image_decoder_libs,
+            dim_param_upper_bounds=options.dim_param_upper_bounds,
         )
         load_lowering_registry()
 

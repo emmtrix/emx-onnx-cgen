@@ -23,6 +23,7 @@ from emx_onnx_cgen.compiler import Compiler, CompilerOptions
 from emx_onnx_cgen.dim_params import parse_dim_param
 from emx_onnx_cgen.symbolic_shapes import (
     _decide_min_max,
+    _linear_range,
     _SymbolicEvaluator,
     infer_dim_param_shapes,
 )
@@ -327,3 +328,14 @@ def test_value_info_of_ops_without_schema_keeps_its_type() -> None:
     custom = _value_info(model, "custom")
     assert custom.type.tensor_type.elem_type == TensorProto.FLOAT
     assert _dims(custom)[1] == 4
+
+
+def test_upper_bound_is_checked_at_runtime() -> None:
+    options = CompilerOptions(dim_param_upper_bounds={"n": 8})
+    generated = Compiler(options).compile(_make_table_prefix_model())
+    assert "    if (n < 0 || n > 8) {\n        return;\n    }" in generated
+
+
+def test_linear_range_of_a_constant() -> None:
+    # Min/Max arguments that differ by a constant must not crash sympy.Poly.
+    assert _linear_range(sympy.Integer(2), {}) == (2.0, 2.0)

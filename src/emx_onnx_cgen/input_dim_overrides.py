@@ -25,7 +25,7 @@ Override syntax (``--input-dim KEY=VALUE``):
 * ``<dim_param><=<int>`` -- keep the dimension dynamic but declare an upper
   bound, e.g. ``past_sequence_length<=32767``. Symbolic shape inference uses it
   to decide ``Min``/``Max`` shape arithmetic such as slicing a fixed-size table
-  to the current length; the generated code assumes the bound holds.
+  to the current length; the generated model function rejects larger values.
 
 Ordering and consequences:
 

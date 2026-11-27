@@ -28,16 +28,17 @@ parameter failed at several layers:
    for a number. Stale internal shapes are dropped so ONNX re-infers them.
 2. `--input-dim NAME<=N` declares an upper bound. `Min`/`Max` terms are
    decided by interval arithmetic over the bounded symbols. Compile and verify
-   accept the same option (compile/verify parity); the generated code assumes
-   the bound.
+   accept the same option (compile/verify parity); the generated model
+   function returns early for a value above the bound.
 3. In lowering, a shape value containing a dynamic dim is not a constant.
    Ops whose output shape is known by name do not need their shape operands
    (`Range` loops to the output length and never reads `limit`).
 4. `codegen/dim_spelling.py` spells every `dim_param` in C: identifiers are
    parameters; expressions of parameters are derived, written as the
    parenthesized expression and not passed separately; anything else is a
-   sanitized parameter. The model function returns early for a negative
-   runtime dimension, which also keeps gcc from diagnosing negative VLA bounds.
+   sanitized parameter (with `_dim` appended on a name collision). The model
+   function returns early for a negative runtime dimension, which also keeps
+   gcc from diagnosing negative VLA bounds.
 
 ## Alternatives considered
 

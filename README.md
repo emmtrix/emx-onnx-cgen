@@ -469,8 +469,9 @@ sliced to the current length, declare the largest size:
 emx-onnx-cgen compile model.onnx --input-dim batch_size=1 --input-dim sequence_length=1   --input-dim "past_sequence_length<=32767"
 ```
 
-The generated code assumes the bound holds (it returns early only for a
-negative dimension). See `docs/dynamic-dim-params.md` for the design.
+The generated code relies on the bound: the model function returns early
+without writing its outputs when a runtime dimension is negative or above its
+declared bound. See `docs/dynamic-dim-params.md` for the design.
 
 **Data-dependent output lengths:** an output whose length depends on the input
 *values* (e.g. the unique count of `Unique`, declared as an unknown axis) is

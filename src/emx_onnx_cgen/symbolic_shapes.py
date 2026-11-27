@@ -970,7 +970,12 @@ def _linear_range(expression: sympy.Expr, bounds: dict) -> tuple:
     """
 
     expanded = sympy.expand(expression)
-    if not expanded.is_polynomial() or sympy.Poly(expanded).total_degree() > 1:
+    if expanded.is_Number:
+        return float(expanded), float(expanded)
+    try:
+        if not expanded.is_polynomial() or sympy.Poly(expanded).total_degree() > 1:
+            return None, None
+    except sympy.PolynomialError:
         return None, None
     low = high = 0.0
     for term, coefficient in expanded.as_coefficients_dict().items():
