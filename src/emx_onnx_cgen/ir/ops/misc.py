@@ -2085,15 +2085,24 @@ class ReshapeOp(RenderableOpBase):
             ]
         )
         loop_vars = CEmitterCompat.loop_vars(output_shape_raw)
-        if any(dim.storage is not None for dim in input_dim_names.values()):
-            # The input is a view into a larger buffer (a growing state), so
-            # the flat view of the generic kernel would use wrong strides.
-            input_index = self.unit_axes_input_index(
+        # Unsqueeze/Squeeze-like reshapes index the input directly; the
+        # generic kernel needs ONNX's flattened view of the input.
+        input_index = (
+            self.unit_axes_input_index(
                 CEmitterCompat.shape_dim_exprs(input_shape, input_dim_names),
                 output_shape,
                 loop_vars,
             )
+            if input_shape
+            and output_shape_raw
+            and emitter.ctx_dtype(self.output) != ScalarType.STRING
+            else None
+        )
+        strided_input = any(dim.storage is not None for dim in input_dim_names.values())
+        if input_index is not None or strided_input:
             if input_index is None:
+                # A view into a larger buffer (a growing state): the flat view
+                # of the generic kernel would use wrong strides.
                 raise CodegenError(
                     f"{self.kind} {self.output}: reading a growing state buffer "
                     f"(input shape {input_shape}) is only supported when the "
@@ -2147,6 +2156,9 @@ class ReshapeOp(RenderableOpBase):
         def unit(dim: int | str) -> bool:
             return isinstance(dim, int) and dim == 1
 
+        # An unnamed dynamic dim (-1) cannot be matched to its output axis.
+        if any(isinstance(dim, int) and dim < 0 for dim in (*input_dims, *output_dims)):
+            return None
         output_axes = [axis for axis, dim in enumerate(output_dims) if not unit(dim)]
         subscripts: list[str] = []
         next_output = 0

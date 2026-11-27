@@ -141,13 +141,12 @@ static inline float ref_scalar_f32_exp(float a) {
  * Attrs: n/a
  */
 EMX_NODE_FN void node0_unsqueeze(const float input0[2][4][6][16], float output[2][4][1][6][16]) {
-    const float *input0_data = (const float *)input0;
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 4; ++i1) {
             for (idx_t i2 = 0; i2 < 1; ++i2) {
                 for (idx_t i3 = 0; i3 < 6; ++i3) {
                     for (idx_t i4 = 0; i4 < 16; ++i4) {
-                        output[i0][i1][i2][i3][i4] = input0_data[((((i0 * 4 + i1) * 1 + i2) * 6 + i3) * 16 + i4)];
+                        output[i0][i1][i2][i3][i4] = input0[i0][i1][i3][i4];
                     }
                 }
             }
@@ -186,12 +185,11 @@ EMX_NODE_FN void node1_expand(const float input0[2][4][1][6][16], float output[2
  * Attrs: n/a
  */
 EMX_NODE_FN void node2_reshape(const float input0[2][4][1][6][16], float output[2][4][6][16]) {
-    const float *input0_data = (const float *)input0;
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 4; ++i1) {
             for (idx_t i2 = 0; i2 < 6; ++i2) {
                 for (idx_t i3 = 0; i3 < 16; ++i3) {
-                    output[i0][i1][i2][i3] = input0_data[(((i0 * 4 + i1) * 6 + i2) * 16 + i3)];
+                    output[i0][i1][i2][i3] = input0[i0][i1][0][i2][i3];
                 }
             }
         }
@@ -207,13 +205,12 @@ EMX_NODE_FN void node2_reshape(const float input0[2][4][1][6][16], float output[
  * Attrs: n/a
  */
 EMX_NODE_FN void node3_unsqueeze(const float input0[2][4][6][16], float output[2][4][1][6][16]) {
-    const float *input0_data = (const float *)input0;
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 4; ++i1) {
             for (idx_t i2 = 0; i2 < 1; ++i2) {
                 for (idx_t i3 = 0; i3 < 6; ++i3) {
                     for (idx_t i4 = 0; i4 < 16; ++i4) {
-                        output[i0][i1][i2][i3][i4] = input0_data[((((i0 * 4 + i1) * 1 + i2) * 6 + i3) * 16 + i4)];
+                        output[i0][i1][i2][i3][i4] = input0[i0][i1][i3][i4];
                     }
                 }
             }
@@ -252,12 +249,11 @@ EMX_NODE_FN void node4_expand(const float input0[2][4][1][6][16], float output[2
  * Attrs: n/a
  */
 EMX_NODE_FN void node5_reshape(const float input0[2][4][1][6][16], float output[2][4][6][16]) {
-    const float *input0_data = (const float *)input0;
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 4; ++i1) {
             for (idx_t i2 = 0; i2 < 6; ++i2) {
                 for (idx_t i3 = 0; i3 < 16; ++i3) {
-                    output[i0][i1][i2][i3] = input0_data[(((i0 * 4 + i1) * 6 + i2) * 16 + i3)];
+                    output[i0][i1][i2][i3] = input0[i0][i1][0][i2][i3];
                 }
             }
         }
