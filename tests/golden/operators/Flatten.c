@@ -58,10 +58,9 @@
  *   axis: 1
  */
 EMX_NODE_FN void node0_flatten(const float input0[1], float output[1][1]) {
-    const float *input0_data = (const float *)input0;
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         for (idx_t i1 = 0; i1 < 1; ++i1) {
-            output[i0][i1] = input0_data[(i0 * 1 + i1)];
+            output[i0][i1] = input0[0];
         }
     }
 }

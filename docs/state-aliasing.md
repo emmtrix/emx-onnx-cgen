@@ -136,6 +136,46 @@ so that they never clash with the model's value names.
 `--test-data-dir` and `--per-node-accuracy` are rejected together with state
 pairs (use `--no-state-pairs` for a model whose metadata declares pairs).
 
+### Growing state (a KV cache appended with Concat)
+
+Many decoder exports (Qwen2.5, onnx-community) do not use a fixed-size cache.
+They append: `present = Concat(past, new, axis=2)` with `past[1, 2, n, 64]` and
+`present[1, 2, n + 1, 64]`, so the two shapes differ and `n` is dynamic. A
+plain shared buffer cannot work, because in the dense layout of
+`past[1][2][n][64]` head 1 starts at row `n` and would move by one row on
+every call.
+
+A pair whose shapes differ only on one dynamic axis, where the output's
+`dim_param` is the input's plus a constant (`n -> n + 1`), is a *growing* pair:
+
+- The buffer gets a fixed **capacity** on that axis, the upper bound of `n`
+  from `--input-dim n<=N` plus the growth; without a bound the pair is
+  rejected. `model_state` declares e.g. `float past_k_0[1][2][N + 1][64]`.
+- Both names stay (no renaming): the input is the first `n` rows of the
+  buffer, the output the first `n + 1`. Kernels declare the buffer with its
+  capacity (`CodegenDim.storage`) and loop to the logical length, which is
+  correct because kernels index arrays with one subscript per axis.
+- The writer must be `Concat(past, new..., axis=growth_axis)`; it only writes
+  the new rows (`ConcatOp.in_place_prefix`). The input may be read anywhere,
+  since appending never changes its rows.
+- Only kernels known to index their inputs directly may read the buffer
+  (Shape, Transpose, Expand, MatMul, and Reshape when it only adds or drops
+  size-1 axes, as Unsqueeze does; `_CAPACITY_VIEW_READERS`). The generic
+  Reshape kernel reads through a flat view with dense strides and would read
+  the wrong rows, so other readers are rejected with an error.
+- The caller passes the current length `n` as before and increments it after
+  each call; the model function rejects `n` above the bound.
+
+For the Qwen2.5-0.5B int8 decode step, all 48 K/V pairs become one state
+struct (`--input-dim "past_sequence_length<=255"`, capacity 256); greedy
+decoding through it is bit-identical, step by step, to the build without state
+pairs that copies the cache in and out.
+
+The multi-step testbench of `verify` does not support growing pairs yet,
+because the inputs change their shape from step to step (`attention_mask` has
+`n + 1` entries); `tests/test_growing_state.py` drives the generated code with
+its own C loop and compares every step with ONNX Runtime.
+
 ## Consequences
 
 - The KV cache exists once, in memory the caller chooses, and each step only
@@ -145,6 +185,6 @@ pairs (use `--no-state-pairs` for a model whose metadata declares pairs).
   pair.
 - A subgraph (`If`/`Loop` body) that captures the state input counts as a read
   by its node.
-- Limitations: static shapes only; tensor (non-string) state only; the
-  multi-step testbench supports neither dynamic dimensions nor sequence or
-  optional I/O.
+- Limitations: static shapes, except the growing axis of a growing pair;
+  tensor (non-string) state only; the multi-step testbench supports neither
+  dynamic dimensions (so no growing pairs) nor sequence or optional I/O.

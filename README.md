@@ -283,7 +283,7 @@ These options are accepted by both `compile` and `verify`:
   - **Resolving dynamic-shape problems:** if a model otherwise fails to generate static C because an input dimension is symbolic or unknown (`tensor 'X' has dynamic dimensions`), pinning that input makes it concrete and lets shape inference derive the dependent intermediate and output shapes. (This only helps for dimensions *derived from the input dimension*; shapes computed from runtime tensor *values*, e.g. `AffineGrid`'s `size`, are recovered separately and are unaffected by `--input-dim`.)
   - **Possible inconsistencies:** `--input-dim` only checks that the target is a dynamic input dimension; it does not validate that the chosen value is consistent with the rest of the graph. Contradictory or partial pinning can therefore make a model that previously stayed dynamic fail during shape inference or lowering — for example pinning two operands of an `Add` to incompatible extents (`--input-dim a:0=3 --input-dim b:0=5` → "Broadcasting mismatch"), or pinning only one of two axes that an operator requires to be equal. Such failures are reported as a normal error, not a crash. Named `dim_param`s are always pinned graph-wide, so `--input-dim batch=N` stays consistent by construction; the risk is mainly with the positional form on unnamed (`?`) axes.
 
-- `--state-pair INPUT=OUTPUT`: Short-circuit a graph input with a graph output of the same shape and dtype, e.g. a KV cache (`--state-pair past_k_0=new_k_0`). Repeatable or comma-separated; replaces the pairs from the model metadata key `emx_onnx_cgen.state_pairs` (same syntax). See [Persistent state (KV cache)](#persistent-state-kv-cache).
+- `--state-pair INPUT=OUTPUT`: Short-circuit a graph input with a graph output of the same shape and dtype, e.g. a KV cache (`--state-pair past_k_0=new_k_0`). A cache that grows by `Concat` (`past[..., n, ...] -> present[..., n + 1, ...]`) is supported too when `n` has an upper bound (`--input-dim n<=N`); its buffer then has capacity `N + 1`. Repeatable or comma-separated; replaces the pairs from the model metadata key `emx_onnx_cgen.state_pairs` (same syntax). See [Persistent state (KV cache)](#persistent-state-kv-cache).
 - `--no-state-pairs`: Ignore the state pairs declared in the model metadata and keep separate input/output buffers.
 - `--state-steps`: Number of consecutive model calls the testbench of a model with state pairs runs (default: `3`). Only affects the testbench.
 
@@ -311,6 +311,18 @@ typedef struct {
 void model_state_reset(model_state *state); /* zero-fills the state */
 void model(model_state *restrict state, const int64_t pos[restrict 1], ...);
 ```
+
+A cache that *grows* by one entry per call (`present = Concat(past, new)`, as in
+the Qwen2.5 ONNX exports) gets a buffer with a fixed capacity on the growing
+axis; give the length an upper bound:
+
+```bash
+emx-onnx-cgen compile model.onnx --input-dim batch_size=1 --input-dim sequence_length=1   --input-dim "past_sequence_length<=255"   --state-pair past_key_values.0.key=present.0.key ...
+```
+
+The caller passes the current length (`int past_sequence_length`) as before;
+the struct holds `float past_key_values_0_key[1][2][256][64]` and each call only
+writes the new row. See `docs/state-aliasing.md`.
 
 The caller decides where the state lives, e.g. in large slow memory instead of
 the small vector memory:
