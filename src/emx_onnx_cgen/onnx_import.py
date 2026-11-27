@@ -2213,7 +2213,11 @@ def _canonicalize_ms_qdq_graph(graph: onnx.GraphProto) -> None:
                 _canonicalize_ms_qdq_graph(sub_graph)
 
 
-def prepare_onnx_model(model: onnx.ModelProto) -> onnx.ModelProto:
+def prepare_onnx_model(
+    model: onnx.ModelProto,
+    *,
+    dim_param_upper_bounds: Mapping[str, int] | None = None,
+) -> onnx.ModelProto:
     prepared = onnx.ModelProto()
     prepared.CopyFrom(model)
     _canonicalize_ms_qdq_nodes(prepared)
@@ -2246,7 +2250,9 @@ def prepare_onnx_model(model: onnx.ModelProto) -> onnx.ModelProto:
     # Keep named dynamic dimensions (e.g. `past_sequence_length + 1`) that ONNX
     # inference loses when they travel through shape values into a Range.
     for _ in range(_MAX_SHAPE_FOLD_ROUNDS):
-        prepared, named = infer_dim_param_shapes(prepared)
+        prepared, named = infer_dim_param_shapes(
+            prepared, upper_bounds=dim_param_upper_bounds
+        )
         if not named:
             break
         prepared = _maybe_infer_shapes(prepared)
