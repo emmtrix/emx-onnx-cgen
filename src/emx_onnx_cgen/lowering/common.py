@@ -123,7 +123,12 @@ def _shape_values_from_shape_node(
     end = min(end, len(source_shape))
     if start > end:
         return []
-    return list(source_shape[start:end])
+    selected = list(source_shape[start:end])
+    # A dynamic dim is stored as -1; as a shape *value* it would read as a
+    # literal -1 (e.g. Range(0, -1, 1) of length 0, or "infer" in Reshape).
+    if any(dim < 0 for dim in selected):
+        return None
+    return selected
 
 
 def _shape_values_from_initializer(
@@ -839,6 +844,23 @@ def _resolve_value_shape_from_consumers(
     return None
 
 
+def _expand_shape(
+    input_shape: tuple[int, ...], target_shape: tuple[int, ...]
+) -> tuple[int, ...] | None:
+    rank = max(len(input_shape), len(target_shape))
+    padded_input = (1,) * (rank - len(input_shape)) + tuple(input_shape)
+    padded_target = (1,) * (rank - len(target_shape)) + tuple(target_shape)
+    result: list[int] = []
+    for input_dim, target_dim in zip(padded_input, padded_target):
+        if target_dim == 1 or input_dim == target_dim:
+            result.append(input_dim)
+        elif input_dim == 1:
+            result.append(target_dim)
+        else:
+            return None
+    return tuple(result)
+
+
 def _resolve_value_shape(
     graph: Graph | GraphContext,
     name: str,
@@ -970,7 +992,17 @@ def _resolve_value_shape(
                 raise UnsupportedOpError("Expand must have 2 inputs and 1 output")
             shape_values = _shape_values_from_input(graph, source_node.inputs[1], node)
             if shape_values is not None and all(dim >= 0 for dim in shape_values):
-                return tuple(shape_values)
+                # Expand broadcasts the input against the target, so a target
+                # dim of 1 keeps the input dim (which may be dynamic).
+                input_shape = _resolve_value_shape(
+                    graph, source_node.inputs[0], node, _visited=_visited
+                )
+                if input_shape is None:
+                    input_shape = graph.find_value(source_node.inputs[0]).type.shape
+                expanded = _expand_shape(input_shape, tuple(shape_values))
+                if expanded is not None and all(dim >= 0 for dim in expanded):
+                    return expanded
+                return None
             consumer_shape = _resolve_value_shape_from_consumers(
                 graph,
                 name,

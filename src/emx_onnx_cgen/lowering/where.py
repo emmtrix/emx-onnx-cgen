@@ -5,6 +5,7 @@ from shared.scalar_types import ScalarType
 from ..ir.ops import WhereOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
+from ..ir.op_base import BroadcastingOpBase
 from .common import value_dtype as _value_dtype
 from .common import value_shape as _value_shape
 from .registry import register_lowering
@@ -13,19 +14,13 @@ from .registry import register_lowering
 def _broadcast_shape(
     shapes: tuple[tuple[int, ...], ...], node: Node
 ) -> tuple[int, ...]:
-    if not shapes:
-        return ()
-    max_rank = max(len(shape) for shape in shapes)
-    padded = [(1,) * (max_rank - len(shape)) + shape for shape in shapes]
-    broadcast: list[int] = []
-    for dims in zip(*padded):
-        dim = max(dims)
-        if any(item not in (1, dim) for item in dims):
-            raise ShapeInferenceError(
-                f"{node.op_type} inputs must be broadcastable, got {shapes}"
-            )
-        broadcast.append(dim)
-    return tuple(broadcast)
+    # Shared broadcasting rules, which also accept named dynamic dims (-1).
+    try:
+        return BroadcastingOpBase.broadcast_shapes(*shapes)
+    except ShapeInferenceError as exc:
+        raise ShapeInferenceError(
+            f"{node.op_type} inputs must be broadcastable, got {shapes}"
+        ) from exc
 
 
 @register_lowering("Where")
