@@ -3154,7 +3154,7 @@ class SliceOp(RenderableOpBase):
                 (name_params["output"], c_type, output_suffix, False),
             ]
         )
-        input_dims = CEmitterCompat.codegen_shape(input_shape_raw)
+        input_dims = CEmitterCompat.shape_dim_exprs(input_shape_raw, input_dim_names)
         rendered = (
             state.templates["slice_dynamic"]
             .render(
@@ -3596,9 +3596,10 @@ class ConstantOfShapeOp(RenderableOpBase):
         input_shape = emitter.ctx_shape(self.input0)
         input_dtype = emitter.ctx_dtype(self.input0)
         output_dtype = emitter.ctx_dtype(self.output)
-        shape = CEmitterCompat.codegen_shape(output_shape_raw)
+        output_dim_names = emitter.dim_names_for(self.output)
+        shape = CEmitterCompat.shape_dim_exprs(output_shape_raw, output_dim_names)
         loop_vars = CEmitterCompat.loop_vars(output_shape_raw)
-        array_suffix = emitter.param_array_suffix(output_shape_raw)
+        array_suffix = emitter.param_array_suffix(output_shape_raw, output_dim_names)
         input_suffix = emitter.param_array_suffix(input_shape)
         param_decls = emitter.build_param_decls(
             [
@@ -3649,7 +3650,8 @@ class ShapeOp(RenderableOpBase):
         output_shape = emitter.ctx_shape(self.output)
         input_dtype = emitter.ctx_dtype(self.input0)
         output_dtype = emitter.ctx_dtype(self.output)
-        input_suffix = emitter.param_array_suffix(input_shape)
+        input_dim_names = emitter.dim_names_for(self.input0)
+        input_suffix = emitter.param_array_suffix(input_shape, input_dim_names)
         output_suffix = emitter.param_array_suffix(output_shape)
         param_decls = emitter.build_param_decls(
             [
@@ -3657,6 +3659,7 @@ class ShapeOp(RenderableOpBase):
                 (params["output"], output_dtype.c_type, output_suffix, False),
             ]
         )
+        input_dims = CEmitterCompat.shape_dim_exprs(input_shape, input_dim_names)
         rank = len(input_shape)
         start_index = 0 if self.start is None else self.start
         end_index = rank if self.end is None else self.end
@@ -3679,8 +3682,12 @@ class ShapeOp(RenderableOpBase):
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
                 values=[
-                    emitter.format_literal(output_dtype, value)
-                    for value in input_shape[start_index:end_index]
+                    (
+                        emitter.format_literal(output_dtype, value)
+                        if isinstance(value, int)
+                        else f"({output_dtype.c_type})({value})"
+                    )
+                    for value in input_dims[start_index:end_index]
                 ],
             )
             .rstrip()
@@ -5462,7 +5469,9 @@ class RangeOp(RenderableOpBase):
         )
         scalar_suffix = emitter.param_array_suffix(())
         output_shape = emitter.ctx_shape(self.output)
-        output_suffix = emitter.param_array_suffix(output_shape)
+        output_dim_names = emitter.dim_names_for(self.output)
+        output_suffix = emitter.param_array_suffix(output_shape, output_dim_names)
+        (length,) = CEmitterCompat.shape_dim_exprs(output_shape, output_dim_names)
         param_decls = emitter.build_param_decls(
             [
                 (params["start"], c_type, scalar_suffix, True),
@@ -5484,7 +5493,7 @@ class RangeOp(RenderableOpBase):
                 c_type=c_type,
                 input_suffix=scalar_suffix,
                 output_suffix=output_suffix,
-                length=output_shape[0],
+                length=length,
             )
             .rstrip()
         )

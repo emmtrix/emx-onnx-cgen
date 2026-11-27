@@ -234,6 +234,9 @@ _Bool model_load(const char *path) {
 }
 
 void model(int out_dim_0, const float X[restrict 2][3][4], const float Y[restrict 1][3][4], const float Z[restrict 3][3][4], float out[restrict out_dim_0][3][4]) {
+    if (out_dim_0 < 0) {
+        return;
+    }
 #ifdef EMX_LARGE_TEMPS_ON_STACK
     float tmp0_Seq_empty[EMX_SEQUENCE_MAX_LEN][3][3][4];
 #else

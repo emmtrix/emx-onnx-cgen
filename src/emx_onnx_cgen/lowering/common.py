@@ -109,7 +109,20 @@ def _find_consumers(graph: Graph | GraphContext, name: str) -> tuple[Node, ...]:
 
 def _shape_values_from_shape_node(
     graph: Graph | GraphContext, shape_node: Node, node: Node | None
+) -> list[int] | None:
+    selected = _shape_node_dims(graph, shape_node, node)
+    # A dynamic dim is stored as -1; as a shape *value* it would read as a
+    # literal -1 (e.g. Range(0, -1, 1) of length 0, or "infer" in Reshape).
+    if any(dim < 0 for dim in selected):
+        return None
+    return selected
+
+
+def _shape_node_dims(
+    graph: Graph | GraphContext, shape_node: Node, node: Node | None
 ) -> list[int]:
+    """The dims a Shape node selects, with -1 for dynamic dims."""
+
     if len(shape_node.inputs) != 1 or len(shape_node.outputs) != 1:
         raise UnsupportedOpError("Shape must have 1 input and 1 output")
     source_shape = value_shape(graph, shape_node.inputs[0], node)
@@ -199,6 +212,13 @@ def _gather_literal_values(
         node,
         _visited=_visited,
     )
+    from_dynamic_shape = False
+    data_producer = _find_node_by_output(graph, source_node.inputs[0])
+    if data is None and data_producer is not None and data_producer.op_type == "Shape":
+        # Gathering static elements of a partly dynamic shape (Shape(x)[1] of
+        # x[N, 1960]) stays resolvable; a gathered dynamic dim (-1) does not.
+        data = _shape_node_dims(graph, data_producer, node)
+        from_dynamic_shape = True
     if data is None or indices is None:
         return None
     axis_size = data_shape[0]
@@ -212,6 +232,8 @@ def _gather_literal_values(
         if index < 0:
             index += axis_size
         if index < 0 or index >= axis_size:
+            return None
+        if from_dynamic_shape and data[index] < 0:
             return None
         gathered.append(data[index])
     return gathered
@@ -839,6 +861,23 @@ def _resolve_value_shape_from_consumers(
     return None
 
 
+def _expand_shape(
+    input_shape: tuple[int, ...], target_shape: tuple[int, ...]
+) -> tuple[int, ...] | None:
+    rank = max(len(input_shape), len(target_shape))
+    padded_input = (1,) * (rank - len(input_shape)) + tuple(input_shape)
+    padded_target = (1,) * (rank - len(target_shape)) + tuple(target_shape)
+    result: list[int] = []
+    for input_dim, target_dim in zip(padded_input, padded_target):
+        if target_dim == 1 or input_dim == target_dim:
+            result.append(input_dim)
+        elif input_dim == 1:
+            result.append(target_dim)
+        else:
+            return None
+    return tuple(result)
+
+
 def _resolve_value_shape(
     graph: Graph | GraphContext,
     name: str,
@@ -970,7 +1009,17 @@ def _resolve_value_shape(
                 raise UnsupportedOpError("Expand must have 2 inputs and 1 output")
             shape_values = _shape_values_from_input(graph, source_node.inputs[1], node)
             if shape_values is not None and all(dim >= 0 for dim in shape_values):
-                return tuple(shape_values)
+                # Expand broadcasts the input against the target, so a target
+                # dim of 1 keeps the input dim (which may be dynamic).
+                input_shape = _resolve_value_shape(
+                    graph, source_node.inputs[0], node, _visited=_visited
+                )
+                if input_shape is None:
+                    input_shape = graph.find_value(source_node.inputs[0]).type.shape
+                expanded = _expand_shape(input_shape, tuple(shape_values))
+                if expanded is not None and all(dim >= 0 for dim in expanded):
+                    return expanded
+                return None
             consumer_shape = _resolve_value_shape_from_consumers(
                 graph,
                 name,
