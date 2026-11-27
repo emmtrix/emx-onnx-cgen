@@ -22,6 +22,10 @@ Override syntax (``--input-dim KEY=VALUE``):
 * ``<input>:<axis>=<int>`` -- fix a single axis positionally, e.g. ``images:0=1``.
   If that axis happens to carry a ``dim_param``, the parameter is pinned
   graph-wide as well.
+* ``<dim_param><=<int>`` -- keep the dimension dynamic but declare an upper
+  bound, e.g. ``past_sequence_length<=32767``. Symbolic shape inference uses it
+  to decide ``Min``/``Max`` shape arithmetic such as slicing a fixed-size table
+  to the current length; the generated code assumes the bound holds.
 
 Ordering and consequences:
 
@@ -42,7 +46,7 @@ Ordering and consequences:
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import onnx
 
@@ -82,9 +86,10 @@ class InputDimOverrides:
 
     by_param: dict[str, int]
     by_position: dict[tuple[str, int], int]
+    upper_bounds: dict[str, int] = field(default_factory=dict)
 
     def is_empty(self) -> bool:
-        return not self.by_param and not self.by_position
+        return not self.by_param and not self.by_position and not self.upper_bounds
 
 
 def parse_input_dim_overrides(specs: list[str] | tuple[str, ...]) -> InputDimOverrides:
@@ -92,7 +97,20 @@ def parse_input_dim_overrides(specs: list[str] | tuple[str, ...]) -> InputDimOve
 
     by_param: dict[str, int] = {}
     by_position: dict[tuple[str, int], int] = {}
+    upper_bounds: dict[str, int] = {}
     for spec in specs:
+        bound_key, bound_sep, bound_value = spec.partition("<=")
+        if bound_sep:
+            if not _PARAM_KEY_RE.match(bound_key) or not _VALUE_RE.match(bound_value):
+                raise ValueError(
+                    f"Invalid --input-dim {spec!r}: expected NAME<=VALUE with a "
+                    "dim parameter name and a positive integer "
+                    "(for example past_sequence_length<=2047)."
+                )
+            if bound_key in upper_bounds:
+                raise ValueError(f"Duplicate --input-dim bound for {bound_key}.")
+            upper_bounds[bound_key] = int(bound_value)
+            continue
         key, sep, raw_value = spec.partition("=")
         if not sep:
             raise ValueError(
@@ -125,7 +143,14 @@ def parse_input_dim_overrides(specs: list[str] | tuple[str, ...]) -> InputDimOve
             f"Invalid --input-dim {spec!r}: key must be a dim parameter name "
             "(batch) or an input position (images:0)."
         )
-    return InputDimOverrides(by_param=by_param, by_position=by_position)
+    for name in upper_bounds:
+        if name in by_param:
+            raise ValueError(
+                f"--input-dim {name} is both pinned and bounded; use one of them."
+            )
+    return InputDimOverrides(
+        by_param=by_param, by_position=by_position, upper_bounds=upper_bounds
+    )
 
 
 def _initializer_names(model: onnx.ModelProto) -> set[str]:
@@ -216,6 +241,14 @@ def apply_input_dim_overrides(
     dynamic_dims = collect_dynamic_input_dims(model)
     dynamic_params = {dim.dim_param for dim in dynamic_dims if dim.dim_param}
     dynamic_positions = {(dim.input_name, dim.axis) for dim in dynamic_dims}
+
+    for bounded_name, bound in overrides.upper_bounds.items():
+        uses_name = re.compile(rf"\b{re.escape(bounded_name)}\b")
+        if not any(uses_name.search(dim_param) for dim_param in dynamic_params):
+            raise ValueError(
+                f"--input-dim {bounded_name}<={bound}: no dynamic input dimension "
+                f"uses the parameter {bounded_name!r}."
+            )
 
     applied: list[AppliedInputDim] = []
 

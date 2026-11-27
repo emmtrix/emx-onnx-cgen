@@ -275,7 +275,7 @@ These options are accepted by both `compile` and `verify`:
 - `--replicate-ort-bugs`: Compatibility switch for verification/debugging. Enables emulation of known behavior differences of the ONNX Runtime version pinned in `requirements-ci.txt`.
 - `--sequence-element-shape`: Declare rank and per-axis maxima for sequence inputs with variable element shapes.
 - `--image-decoder-libs`: Comma-separated priority list of decoding libraries backing the `ImageDecoder` operator (default: `stb`). The generated C code detects the image format at runtime via magic bytes and dispatches to the decoder assigned to that format; the first listed library that supports a format wins. Known libraries: `stb` (bundled `stb_image.h`, emitted next to the generated C file; supports `bmp`, `jpeg`, `png`, `pnm`), `libjpeg-turbo` (`jpeg`, bit-exact with the ONNX reference outputs — stb's JPEG decoder is not), `libwebp` (`webp`), `libtiff` (`tiff`), and `openjpeg` (`jpeg2000`). Non-stb libraries require their system development packages and add linker flags to the build (for example `-ljpeg`); `verify` applies them automatically, `compile` reports them. Inputs in a format without a configured decoder produce a zero-filled output tensor at runtime.
-- `--input-dim`: Pin a dynamic input dimension to a fixed value so the generated code uses a static array extent instead of a runtime parameter. Repeatable. Use a dim-parameter name (`--input-dim batch=1`) to fix every axis carrying that name across the graph, or an input position (`--input-dim images:0=1`) to fix a single axis. The CLI prints the model's dynamic input dimensions as part of the model report; a fixed dimension is shown inline as `in0[0]=batch -> 4`.
+- `--input-dim`: Pin a dynamic input dimension to a fixed value so the generated code uses a static array extent instead of a runtime parameter. Repeatable. Use a dim-parameter name (`--input-dim batch=1`) to fix every axis carrying that name across the graph, or an input position (`--input-dim images:0=1`) to fix a single axis. `--input-dim NAME<=N` keeps a dimension dynamic but declares an upper bound (see [Dynamic shapes](#dynamic-shapes-and-shape-inference-failures)). The CLI prints the model's dynamic input dimensions as part of the model report; a fixed dimension is shown inline as `in0[0]=batch -> 4`.
 
   Pinning happens immediately after the model is loaded and **before shape inference**, so the fixed value propagates through the rest of the graph. This has three consequences worth knowing:
 
@@ -453,6 +453,24 @@ Caveats:
   extents reports a "Broadcasting mismatch"). Named `dim_param`s are pinned
   graph-wide and stay consistent by construction; the risk is mainly the
   positional form on unnamed (`?`) axes.
+
+**Named dimensions that pass through shape values:** decoder exports such as
+Qwen2.5 compute shapes from *values* (`Range(0, Shape(mask)[1])`,
+`Slice(x, 0, Shape(x)[1])`, `Where(shape == -1, 1, shape)` for `Expand`).
+ONNX shape inference loses the named dimension there; the compiler evaluates
+this shape arithmetic symbolically and keeps the input's `dim_param`, so such
+models compile with the dimension as a runtime parameter. A `dim_param` that is
+an expression of another one (`past_sequence_length + 1`) is no parameter of
+its own but the C expression `(past_sequence_length + 1)`. When the arithmetic
+contains a `Min`/`Max` that depends on the size, e.g. a 32768-row rotary table
+sliced to the current length, declare the largest size:
+
+```bash
+emx-onnx-cgen compile model.onnx --input-dim batch_size=1 --input-dim sequence_length=1   --input-dim "past_sequence_length<=32767"
+```
+
+The generated code assumes the bound holds (it returns early only for a
+negative dimension). See `docs/dynamic-dim-params.md` for the design.
 
 **Data-dependent output lengths:** an output whose length depends on the input
 *values* (e.g. the unique count of `Unique`, declared as an unknown axis) is

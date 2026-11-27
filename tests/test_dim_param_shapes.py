@@ -22,6 +22,7 @@ from dynamic_dim_verify import verify_for_dims
 from emx_onnx_cgen.compiler import Compiler, CompilerOptions
 from emx_onnx_cgen.dim_params import parse_dim_param
 from emx_onnx_cgen.symbolic_shapes import (
+    _decide_min_max,
     _SymbolicEvaluator,
     infer_dim_param_shapes,
 )
@@ -137,12 +138,38 @@ def _make_repeat_kv_model() -> onnx.ModelProto:
     return _make_model(nodes, [x], [y], initializers)
 
 
+def _make_table_prefix_model() -> onnx.ModelProto:
+    """``table[:Shape(x)[0]]``: Qwen's rotary cos/sin cache for the positions.
+
+    The prefix of a table with 8 rows has length ``Min(8, n)``; it is ``n``
+    only for ``n <= 8``, which needs ``--input-dim n<=8``.
+    """
+
+    x = helper.make_tensor_value_info("x", TensorProto.FLOAT, ["n", 4])
+    y = helper.make_tensor_value_info("y", TensorProto.FLOAT, ["n", 4])
+    table = np.arange(32, dtype=np.float32).reshape(8, 4)
+    initializers = [
+        numpy_helper.from_array(table, "table"),
+        numpy_helper.from_array(np.array(0, dtype=np.int64), "zero"),
+        numpy_helper.from_array(np.array([0], dtype=np.int64), "axis0"),
+    ]
+    nodes = [
+        helper.make_node("Shape", ["x"], ["x_shape"]),
+        helper.make_node("Gather", ["x_shape", "zero"], ["length"], axis=0),
+        helper.make_node("Unsqueeze", ["length", "axis0"], ["ends"]),
+        helper.make_node("Slice", ["table", "axis0", "ends", "axis0"], ["prefix"]),
+        helper.make_node("Add", ["x", "prefix"], ["y"]),
+    ]
+    return _make_model(nodes, [x], [y], initializers)
+
+
 @dataclass(frozen=True)
 class _Case:
     builder: Callable[[], onnx.ModelProto]
     tensor: str  # the internal tensor whose dim ONNX inference loses
     interface: str  # the dim_param it should get
     dim_sets: tuple[dict[str, int], ...]
+    upper_bounds: dict[str, int] | None = None
 
 
 _MODELS = {
@@ -159,6 +186,9 @@ _MODELS = {
         ({"n + 1": 3}, {"n + 1": 6}),
     ),
     "repeat_kv": _Case(_make_repeat_kv_model, "expanded", "n", ({"n": 2}, {"n": 5})),
+    "table_prefix": _Case(
+        _make_table_prefix_model, "prefix", "n", ({"n": 3}, {"n": 8}), {"n": 8}
+    ),
 }
 
 
@@ -176,12 +206,22 @@ def test_infer_dim_param_shapes_names_the_dimension(case: str) -> None:
     spec = _MODELS[case]
     model = shape_inference.infer_shapes(spec.builder(), data_prop=True)
 
-    model, changed = infer_dim_param_shapes(model)
+    model, changed = infer_dim_param_shapes(model, upper_bounds=spec.upper_bounds)
 
     assert changed
     dims = _dims(_value_info(model, spec.tensor))
     assert spec.interface in dims
     assert not any(_is_unknown(dim, {spec.interface}) for dim in dims)
+
+
+def test_table_prefix_needs_the_upper_bound() -> None:
+    model = shape_inference.infer_shapes(_make_table_prefix_model(), data_prop=True)
+    model, _ = infer_dim_param_shapes(model)
+    # The pass may drop the stale shape entirely; it must not name it n.
+    prefix_dims = [_dims(vi) for vi in model.graph.value_info if vi.name == "prefix"]
+    assert not prefix_dims or "n" not in prefix_dims[0]
+    with pytest.raises(Exception, match="requires static shapes"):
+        Compiler(CompilerOptions()).compile(_make_table_prefix_model())
 
 
 def test_downstream_shapes_are_recomputed_after_naming() -> None:
@@ -213,6 +253,23 @@ def test_unprovable_slice_length_stays_unknown() -> None:
 
 
 @pytest.mark.parametrize(
+    ("expression", "bounds", "expected"),
+    [
+        ("Min(8, n)", {"n": 8}, "n"),
+        ("Min(8, n)", {"n": 9}, "Min(8, n)"),
+        ("Min(8, n)", {}, "Min(8, n)"),
+        ("Max(0, n + 1)", {}, "n + 1"),
+        ("Min(8, n + 1)", {"n": 7}, "n + 1"),
+    ],
+)
+def test_decide_min_max(expression: str, bounds: dict, expected: str) -> None:
+    n = sympy.Symbol("n", integer=True, nonnegative=True)
+    parsed = sympy.sympify(expression, locals={"n": n})
+    decided = _decide_min_max(parsed, {n: bound for bound in bounds.values()})
+    assert str(decided) == expected
+
+
+@pytest.mark.parametrize(
     ("start", "end", "expected"),
     [
         (0, _INT64_MAX, "n + 1"),
@@ -236,14 +293,19 @@ def test_symbolic_slice_length(start: int, end: int, expected: str | None) -> No
 @pytest.mark.parametrize("case", sorted(_MODELS))
 def test_compile_keeps_dim_param_as_runtime_dimension(case: str) -> None:
     spec = _MODELS[case]
-    generated = Compiler(CompilerOptions()).compile(spec.builder())
+    options = CompilerOptions(dim_param_upper_bounds=spec.upper_bounds)
+    generated = Compiler(options).compile(spec.builder())
     assert "unk__" not in generated
 
 
 @pytest.mark.parametrize("case", sorted(_MODELS))
 def test_verify_against_onnxruntime_for_two_lengths(case: str, tmp_path: Path) -> None:
     spec = _MODELS[case]
-    verify_for_dims(spec.builder(), tmp_path, spec.dim_sets)
+    extra_args = [
+        f"--input-dim={name}<={bound}"
+        for name, bound in (spec.upper_bounds or {}).items()
+    ]
+    verify_for_dims(spec.builder(), tmp_path, spec.dim_sets, extra_args)
 
 
 def test_value_info_of_ops_without_schema_keeps_its_type() -> None:

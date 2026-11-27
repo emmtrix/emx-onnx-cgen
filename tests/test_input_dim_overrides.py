@@ -138,3 +138,39 @@ def test_apply_noop_without_overrides() -> None:
     model = _relu_model(input_dims=["batch", 3], output_dims=["batch", 3])
     assert apply_input_dim_overrides(model, parse_input_dim_overrides([])) == []
     assert _input_dims(model, "x") == ["batch", 3]
+
+
+def test_parse_upper_bound_form() -> None:
+    overrides = parse_input_dim_overrides(["past<=2047", "batch=1"])
+    assert overrides.upper_bounds == {"past": 2047}
+    assert overrides.by_param == {"batch": 1}
+    assert not overrides.is_empty()
+
+
+@pytest.mark.parametrize(
+    "specs",
+    [
+        ["past<=0"],
+        ["past<=x"],
+        ["p:0<=4"],
+        ["past<=4", "past<=5"],
+        ["past=4", "past<=5"],
+    ],
+)
+def test_parse_rejects_invalid_upper_bounds(specs: list[str]) -> None:
+    with pytest.raises(ValueError):
+        parse_input_dim_overrides(specs)
+
+
+def test_apply_upper_bound_keeps_dimension_dynamic() -> None:
+    # A bound may name a symbol inside an expression dim_param.
+    model = _relu_model(input_dims=["past + 1", 3], output_dims=["past + 1", 3])
+    applied = apply_input_dim_overrides(model, parse_input_dim_overrides(["past<=7"]))
+    assert applied == []
+    assert _input_dims(model, "x") == ["past + 1", 3]
+
+
+def test_apply_rejects_upper_bound_for_unknown_param() -> None:
+    model = _relu_model(input_dims=["past_len", 3], output_dims=["past_len", 3])
+    with pytest.raises(ValueError, match="no dynamic input dimension"):
+        apply_input_dim_overrides(model, parse_input_dim_overrides(["past<=7"]))

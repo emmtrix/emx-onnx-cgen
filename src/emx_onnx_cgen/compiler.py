@@ -142,6 +142,9 @@ class CompilerOptions:
     large_weight_threshold: int = 100 * 1024
     replicate_ort_bugs: bool = False
     sequence_element_shapes: Mapping[str, SequenceElementShapeHint] | None = None
+    # Upper bounds of dynamic dim_params (``--input-dim NAME<=N``); symbolic
+    # shape inference relies on them, the generated code assumes they hold.
+    dim_param_upper_bounds: Mapping[str, int] | None = None
     image_decoder_libs: tuple[str, ...] = DEFAULT_IMAGE_DECODER_LIBS
     # Move the padding of Conv nodes into Pad nodes (see explicit_padding)
     explicit_padding: bool = False
@@ -223,7 +226,11 @@ class Compiler:
 
     def _build_compile_context(self, model: onnx.ModelProto) -> _CompileContext:
         prepared_model = self._time_step(
-            "prepare_onnx_model", lambda: prepare_onnx_model(model)
+            "prepare_onnx_model",
+            lambda: prepare_onnx_model(
+                model,
+                dim_param_upper_bounds=self._options.dim_param_upper_bounds,
+            ),
         )
         if self._options.explicit_padding:
             prepared_model = self._time_step(

@@ -1587,6 +1587,7 @@ def _compile_model(
     try:
         separate_testbench = bool(args.testbench_file)
         options = CompilerOptions(
+            dim_param_upper_bounds=_input_dim_overrides(args).upper_bounds,
             model_name=model_name,
             emit_testbench=args.emit_testbench and not separate_testbench,
             testbench_output_format=args.testbench_output_format,
@@ -1706,6 +1707,7 @@ def _compile_testbench_declarations(
         active_reporter.step_fail(str(exc))
         raise
     options = CompilerOptions(
+        dim_param_upper_bounds=_input_dim_overrides(args).upper_bounds,
         model_name=model_name,
         emit_testbench=False,
         command_line=args.command_line,
@@ -2240,6 +2242,7 @@ def _verify_model(
                 "and running runtime backend for all node outputs."
             )
         options = CompilerOptions(
+            dim_param_upper_bounds=_input_dim_overrides(args).upper_bounds,
             model_name=model_name,
             emit_testbench=True,
             command_line=None,
