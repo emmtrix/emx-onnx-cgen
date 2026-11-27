@@ -202,14 +202,17 @@ def _bind_pair(
             f"{output_dtype.onnx_name}. Hint: both sides of a state pair must "
             "have the same dtype; insert a Cast before the output."
         )
-    if input_shape != output_shape or input_type.dim_params != output_type.dim_params:
+    # The lowered output types carry no dim_params; the graph values do.
+    input_params = _dim_params(model, pair.input_name, len(input_shape))
+    output_params = _dim_params(model, pair.output_name, len(output_shape))
+    if input_shape != output_shape or input_params != output_params:
         growing = _growing_binding(
             label,
             pair,
             input_shape,
             output_shape,
-            input_type,
-            output_type,
+            input_params,
+            output_params,
             input_dtype,
             upper_bounds,
         )
@@ -244,8 +247,8 @@ def _growing_binding(
     pair: StatePair,
     input_shape: Sequence[int],
     output_shape: Sequence[int],
-    input_type: TensorType,
-    output_type: TensorType,
+    input_params: Sequence[str | None],
+    output_params: Sequence[str | None],
     dtype: ScalarType,
     upper_bounds: Mapping[str, int],
 ) -> StateBinding | None:
@@ -263,13 +266,13 @@ def _growing_binding(
         axis
         for axis in range(len(input_shape))
         if input_shape[axis] != output_shape[axis]
-        or input_type.dim_params[axis] != output_type.dim_params[axis]
+        or input_params[axis] != output_params[axis]
     ]
     if len(differing) != 1:
         return None
     axis = differing[0]
-    input_param = input_type.dim_params[axis]
-    output_param = output_type.dim_params[axis]
+    input_param = input_params[axis]
+    output_param = output_params[axis]
     if not input_param or not output_param:
         return None
     length = parse_dim_param(input_param)
@@ -280,7 +283,7 @@ def _growing_binding(
     if not growth.is_Integer or int(growth) < 1:
         return None
     for other in range(len(input_shape)):
-        if other != axis and (input_shape[other] < 0 or input_type.dim_params[other]):
+        if other != axis and (input_shape[other] < 0 or input_params[other]):
             raise StateAliasingError(
                 f"{label}: a growing state may only be dynamic along the growing "
                 f"axis {axis}, but axis {other} of {pair.input_name!r} is dynamic "
@@ -353,7 +356,7 @@ def _check_growing_legality(model: LoweredModel, binding: StateBinding) -> int:
         if (
             index != writer_index
             and reads_state
-            and not isinstance(op, _CAPACITY_VIEW_READERS)
+            and not _reads_capacity_view(model, op)
         ):
             raise StateAliasingError(
                 f"{label}: {_describe_node(model, index)} reads "
@@ -367,7 +370,42 @@ def _check_growing_legality(model: LoweredModel, binding: StateBinding) -> int:
 
 # Kernels that index their inputs with one subscript per axis, so a growing
 # state (declared with its capacity, read up to its length) is safe to read.
+# ReshapeOp only qualifies when it adds or drops size-1 axes (its generic
+# kernel reads through a flat view with dense strides).
 _CAPACITY_VIEW_READERS = (ShapeOp, TransposeOp, ReshapeOp, ExpandOp, MatMulOp)
+
+
+def _reads_capacity_view(model: LoweredModel, op: object) -> bool:
+    if not isinstance(op, _CAPACITY_VIEW_READERS):
+        return False
+    if not isinstance(op, ReshapeOp):
+        return True
+    input_dims = _named_dims(model, op.input0)
+    output_dims = _named_dims(model, op.output)
+    loop_vars = tuple(f"i{axis}" for axis in range(len(output_dims)))
+    return (
+        ReshapeOp.unit_axes_input_index(input_dims, output_dims, loop_vars) is not None
+    )
+
+
+def _dim_params(model: LoweredModel, name: str, rank: int) -> tuple[str | None, ...]:
+    """The dim_params of graph value ``name``, padded to ``rank``."""
+    try:
+        value_type = model.op_context.graph.find_value(name).type
+    except KeyError:
+        return (None,) * rank
+    params = tuple(getattr(value_type, "dim_params", ()) or ())
+    if len(params) != rank:
+        return (None,) * rank
+    return params
+
+
+def _named_dims(model: LoweredModel, name: str) -> tuple[int | str, ...]:
+    shape = model.op_context.shape(name)
+    params = _dim_params(model, name, len(shape))
+    return tuple(
+        params[axis] or f"?{axis}" if dim < 0 else dim for axis, dim in enumerate(shape)
+    )
 
 
 def _check_alias_legality(

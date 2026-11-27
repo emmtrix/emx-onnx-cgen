@@ -3959,10 +3959,16 @@ class CEmitter:
             capacity = str(binding.shape[axis])
             for name in (binding.input_name, binding.output_name):
                 tensor_dims = dim_names.get(name, {})
-                if axis in tensor_dims:
-                    tensor_dims[axis] = dataclasses.replace(
-                        tensor_dims[axis], storage=capacity
+                if axis not in tensor_dims:
+                    # Without it the kernels would use dense strides.
+                    raise CodegenError(
+                        f"Growing state {binding.input_name}="
+                        f"{binding.output_name}: {name!r} has no runtime "
+                        f"dimension on its growing axis {axis}"
                     )
+                tensor_dims[axis] = dataclasses.replace(
+                    tensor_dims[axis], storage=capacity
+                )
         return dim_names
 
     @staticmethod

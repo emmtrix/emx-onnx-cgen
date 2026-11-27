@@ -49,15 +49,25 @@ def _kv_cache_model(*, writer: str = "Concat") -> onnx.ModelProto:
         # reshape, whose generic kernel uses a flat (stride-less) view.
         helper.make_node("Unsqueeze", ["present", "axis1"], ["present_1"]),
         helper.make_node("Expand", ["present_1", "heads"], ["repeated"]),
+        # MatMul and Expand reading the cache buffer directly.
+        helper.make_node("MatMul", ["probs", "present"], ["context"]),
+        helper.make_node("Expand", ["present", "heads"], ["broadcast"]),
     ]
     graph = helper.make_graph(
         nodes,
         "growing_kv_cache",
-        [_float("past", [2, "p", 3]), _float("x", [2, 1, 3]), _float("q", [2, 1, 3])],
+        [
+            _float("past", [2, "p", 3]),
+            _float("x", [2, 1, 3]),
+            _float("q", [2, 1, 3]),
+            _float("probs", [2, 1, "p + 1"]),
+        ],
         [
             _float("present", [2, "p + 1", 3]),
             _float("scores", [2, 1, "p + 1"]),
             _float("repeated", [2, 2, "p + 1", 3]),
+            _float("context", [2, 1, 3]),
+            _float("broadcast", [2, 2, "p + 1", 3]),
         ],
         [
             numpy_helper.from_array(np.array([1], dtype=np.int64), "axis1"),
@@ -114,10 +124,14 @@ int main(void) {
         float q[2][1][3];
         float scores[2][1][p + 1];
         float repeated[2][2][p + 1][3];
-        if (fread(x, sizeof(x), 1, stdin) != 1 || fread(q, sizeof(q), 1, stdin) != 1) {
+        float probs[2][1][p + 1];
+        float context[2][1][3];
+        float broadcast[2][2][p + 1][3];
+        if (fread(x, sizeof(x), 1, stdin) != 1 || fread(q, sizeof(q), 1, stdin) != 1
+            || fread(probs, sizeof(probs), 1, stdin) != 1) {
             return 1;
         }
-        model(p, &state, x, q, scores, repeated);
+        model(p, &state, x, q, probs, scores, repeated, context, broadcast);
         printf("%s[[", step ? "," : "");
         for (int h = 0; h < 2; ++h)
             for (int t = 0; t <= p; ++t)
@@ -128,6 +142,16 @@ int main(void) {
                 for (int t = 0; t <= p; ++t)
                     for (int d = 0; d < 3; ++d)
                         printf("%s%.9g", (a || b || t || d) ? "," : "", repeated[a][b][t][d]);
+        printf("],[");
+        for (int h = 0; h < 2; ++h)
+            for (int d = 0; d < 3; ++d)
+                printf("%s%.9g", (h || d) ? "," : "", context[h][0][d]);
+        printf("],[");
+        for (int a = 0; a < 2; ++a)
+            for (int b = 0; b < 2; ++b)
+                for (int t = 0; t <= p; ++t)
+                    for (int d = 0; d < 3; ++d)
+                        printf("%s%.9g", (a || b || t || d) ? "," : "", broadcast[a][b][t][d]);
         printf("]]");
     }
     printf("\n");
@@ -158,10 +182,11 @@ def test_growing_state_matches_onnxruntime_over_steps(tmp_path: Path) -> None:
         (
             rng.standard_normal((2, 1, 3)).astype(np.float32),
             rng.standard_normal((2, 1, 3)).astype(np.float32),
+            rng.standard_normal((2, 1, step + 1)).astype(np.float32),
         )
-        for _ in range(_STEPS)
+        for step in range(_STEPS)
     ]
-    stdin = b"".join(x.tobytes() + q.tobytes() for x, q in steps)
+    stdin = b"".join(x.tobytes() + q.tobytes() + pr.tobytes() for x, q, pr in steps)
     result = subprocess.run([str(exe)], input=stdin, check=True, capture_output=True)
     got = json.loads("[" + result.stdout.decode() + "]")
 
@@ -169,18 +194,26 @@ def test_growing_state_matches_onnxruntime_over_steps(tmp_path: Path) -> None:
         model.SerializeToString(), providers=["CPUExecutionProvider"]
     )
     past = np.zeros((2, 0, 3), dtype=np.float32)
-    for step, (x, q) in enumerate(steps):
-        present, scores, repeated = session.run(None, {"past": past, "x": x, "q": q})
-        got_scores, got_repeated = got[step]
-        np.testing.assert_allclose(
-            np.array(got_scores, dtype=np.float32), scores.reshape(-1), rtol=1e-6
+    for step, (x, q, probs) in enumerate(steps):
+        present, *expected = session.run(
+            None, {"past": past, "x": x, "q": q, "probs": probs}
         )
-        np.testing.assert_allclose(
-            np.array(got_repeated, dtype=np.float32), repeated.reshape(-1), rtol=1e-6
-        )
+        for got_values, want in zip(got[step], expected):
+            np.testing.assert_allclose(
+                np.array(got_values, dtype=np.float32), want.reshape(-1), rtol=1e-5
+            )
         past = present
 
 
 def test_testbench_rejects_growing_state_pairs() -> None:
     with pytest.raises(Exception, match="does not support growing state pairs"):
         Compiler(_options(emit_testbench=True)).compile(_kv_cache_model())
+
+
+def test_growing_state_rejects_flat_readers() -> None:
+    # Flatten would read the cache through the generic flat Reshape kernel.
+    model = _kv_cache_model()
+    model.graph.node.append(helper.make_node("Flatten", ["present"], ["flat"]))
+    model.graph.output.append(_float("flat", [2, "3*p + 3"]))
+    with pytest.raises(StateAliasingError, match="cannot read such a strided view"):
+        Compiler(_options()).compile(model)

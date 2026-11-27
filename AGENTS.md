@@ -478,7 +478,11 @@ When adding support for a new operator:
    If the kernel stays correct when an input field and the output are the
    same buffer (each element is read before it is written), override
    `OpBase.in_place_input_fields`; state aliasing (`docs/state-aliasing.md`)
-   only accepts a node that reads and writes a state buffer if it does. If an
+   only accepts a node that reads and writes a state buffer if it does. A
+   growing state (a KV cache appended with Concat) is a buffer declared with
+   its capacity and read up to its length; only ops listed in
+   `_CAPACITY_VIEW_READERS` (`state_aliasing.py`) may read it, so add a kernel
+   there once it indexes that input with one subscript per axis. If an
    integer input is used as an index without a bounds check, declare its
    valid range in `OpBase.index_input_bounds` so testbenches stay in bounds;
    ops that only copy values report their data input in
