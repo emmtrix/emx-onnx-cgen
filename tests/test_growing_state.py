@@ -207,7 +207,9 @@ def test_growing_state_matches_onnxruntime_over_steps(tmp_path: Path) -> None:
 
 
 def test_testbench_rejects_growing_state_pairs() -> None:
-    with pytest.raises(Exception, match="does not support growing state pairs"):
+    with pytest.raises(
+        Exception, match=r"does not support growing state pairs yet (past=present)"
+    ):
         Compiler(_options(emit_testbench=True)).compile(_kv_cache_model())
 
 

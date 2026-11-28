@@ -4688,17 +4688,17 @@ class CEmitter:
         state_testbench: StateTestbenchData,
         testbench_inputs: Mapping[str, object] | None,
     ) -> None:
+        # Report the ONNX names, not the C names.
+        original = self._ctx_name
         growing = [binding for binding in model.state_bindings if binding.is_growing]
         if growing:
             raise CodegenError(
                 "The testbench does not support growing state pairs yet "
-                f"({', '.join(f'{b.input_name}={b.output_name}' for b in growing)}): "
+                f"({', '.join(f'{original(b.input_name)}={original(b.output_name)}' for b in growing)}): "
                 "the inputs change their shape from step to step. Compile without "
                 "--emit-testbench and drive the model from your own loop, or "
                 "verify with --no-state-pairs."
             )
-        # Report the ONNX names, not the C names.
-        original = self._ctx_name
         steps = state_testbench.steps
         if steps < 1:
             raise CodegenError(f"Testbench step count must be >= 1, got {steps}")
