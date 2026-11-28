@@ -259,8 +259,10 @@ _LSTM_ACTIVATION_SPECS: dict[int, tuple[ScalarFunction, int]] = {
 LARGE_TEMPS_ON_STACK_MACRO = "EMX_LARGE_TEMPS_ON_STACK"
 
 # Where fixed-size tensor temporaries above --large-temp-threshold live.
-# Runtime-sized ones are always heap-allocated.
-LARGE_TEMP_STORAGE_CHOICES = ("static", "malloc")
+# Runtime-sized ones are always heap-allocated. "malloc-scoped" also places
+# every heap allocation right before the buffer's first use and its free right
+# after the last one, instead of holding all of them for the whole call.
+LARGE_TEMP_STORAGE_CHOICES = ("static", "malloc", "malloc-scoped")
 
 _C_IDENTIFIER_RE = re.compile(r"[^a-zA-Z0-9_]")
 _C_KEYWORDS = {
@@ -2596,6 +2598,9 @@ class CEmitter:
             if binding.is_growing
         }
         heap_temp_names: list[str] = []
+        scoped_heap = self._large_temp_storage == "malloc-scoped"
+        deferred_heap_temps: dict[str, tuple[TempBuffer, str]] = {}
+        calls: list[tuple[str, list[str]]] = []
         for temp in temp_buffers:
             c_type = temp.dtype.c_type
             dim_names = self.dim_names_for(temp.name)
@@ -2631,10 +2636,15 @@ class CEmitter:
             else:
                 declaration = f"{c_type} {temp.name}{self._param_array_suffix(temp.shape, dim_names, dtype=temp.dtype)};"
                 if self._temp_buffer_uses_heap(temp, dim_names):
+                    if scoped_heap:
+                        deferred_heap_temps[temp.name] = (temp, declaration)
+                        continue
                     lines.extend(
                         self._large_temp_alternatives(
                             [declaration],
-                            self._heap_temp_buffer_lines(temp, dim_names),
+                            self._heap_temp_buffer_lines(
+                                temp, dim_names, release=heap_temp_names
+                            ),
                         )
                     )
                     heap_temp_names.append(temp.name)
@@ -2769,8 +2779,8 @@ class CEmitter:
             ]
             op_args = [growing_state_args.get(arg, arg) for arg in op_args]
             args = [*dim_order, *op_args]
-            call = ", ".join(args)
-            lines.append(f"    {op_name}({call});")
+            calls.append((f"    {op_name}({', '.join(args)});", op_args))
+        lines.extend(self._scoped_heap_call_lines(calls, deferred_heap_temps))
         if heap_temp_names:
             lines.append(f"#ifndef {LARGE_TEMPS_ON_STACK_MACRO}")
             lines.extend(f"    free({name});" for name in reversed(heap_temp_names))
@@ -3036,12 +3046,12 @@ class CEmitter:
         """Large tensor temporaries allocated with ``malloc`` on every call.
 
         Runtime-sized ones always are; fixed-size ones only with
-        ``--large-temp-storage malloc``, otherwise they get static storage
+        ``--large-temp-storage malloc[-scoped]``, otherwise they get static storage
         (:meth:`_temp_buffer_is_static`) and need no allocator.
         """
         if temp.is_sequence:
             return False
-        if not dim_names and self._large_temp_storage != "malloc":
+        if not dim_names and self._large_temp_storage == "static":
             return False
         return self._exceeds_temp_threshold(
             self._buffer_size_bytes(
@@ -3064,11 +3074,63 @@ class CEmitter:
             self._buffer_size_bytes(temp.shape, temp.dtype)
         )
 
+    def _scoped_heap_call_lines(
+        self,
+        calls: Sequence[tuple[str, Sequence[str]]],
+        heap_temps: Mapping[str, tuple[TempBuffer, str]],
+    ) -> list[str]:
+        """The op calls, with each heap temporary live only across its uses.
+
+        A temporary is allocated right before the first call that passes it and
+        freed right after the last one. The model function only hands buffers
+        to op functions, which keep no pointer beyond the call, so the calls
+        that name a buffer are all of its uses.
+        """
+        first_use: dict[str, int] = {}
+        last_use: dict[str, int] = {}
+        for index, (_, args) in enumerate(calls):
+            for arg in args:
+                if arg in heap_temps:
+                    first_use.setdefault(arg, index)
+                    last_use[arg] = index
+        allocate_at: dict[int, list[str]] = {}
+        free_at: dict[int, list[str]] = {}
+        # Temporary order keeps the output deterministic within one call.
+        for name in heap_temps:
+            if name in first_use:
+                allocate_at.setdefault(first_use[name], []).append(name)
+                free_at.setdefault(last_use[name], []).append(name)
+        lines: list[str] = []
+        live: list[str] = []
+        for index, (call, _) in enumerate(calls):
+            for name in allocate_at.get(index, ()):
+                temp, declaration = heap_temps[name]
+                lines.extend(
+                    self._large_temp_alternatives(
+                        [declaration],
+                        self._heap_temp_buffer_lines(
+                            temp, self.dim_names_for(name), release=live
+                        ),
+                    )
+                )
+                live.append(name)
+            lines.append(call)
+            freed = free_at.get(index, ())
+            if freed:
+                lines.append(f"#ifndef {LARGE_TEMPS_ON_STACK_MACRO}")
+                lines.extend(f"    free({name});" for name in reversed(freed))
+                lines.append("#endif")
+                live = [name for name in live if name not in freed]
+        return lines
+
     def _heap_temp_buffer_lines(
         self,
         temp: TempBuffer,
         dim_names: Mapping[int, CodegenDim] | None = None,
+        *,
+        release: Sequence[str] = (),
     ) -> list[str]:
+        """Allocate ``temp``; on failure free ``release`` (already allocated)."""
         dim_names = dim_names or {}
         shape = self._codegen_shape(temp.shape)
         shape_exprs = [
@@ -3091,6 +3153,7 @@ class CEmitter:
         return [
             f"{decl} = {alloc};",
             f"if ({temp.name} == NULL) {{",
+            *(f"    free({name});" for name in reversed(release)),
             "    return;",
             "}",
         ]

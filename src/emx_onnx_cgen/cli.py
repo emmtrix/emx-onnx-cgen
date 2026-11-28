@@ -1250,9 +1250,12 @@ def _build_parser() -> argparse.ArgumentParser:
         default="static",
         help=(
             "Storage of fixed-size temporaries above --large-temp-threshold: "
-            "static (one buffer for the program's lifetime, no allocator) or "
+            "static (one buffer for the program's lifetime, no allocator), "
             "malloc (allocated and freed on every call, so the memory is only "
-            "taken while the model runs). Runtime-sized temporaries always use "
+            "taken while the model runs) or malloc-scoped (like malloc, but "
+            "each heap temporary, runtime-sized ones included, is allocated "
+            "right before its first use and freed right after its last one, "
+            "which lowers the peak). Runtime-sized temporaries always use "
             "malloc (default: static)"
         ),
     )
@@ -1343,9 +1346,12 @@ def _build_parser() -> argparse.ArgumentParser:
         default="static",
         help=(
             "Storage of fixed-size temporaries above --large-temp-threshold: "
-            "static (one buffer for the program's lifetime, no allocator) or "
+            "static (one buffer for the program's lifetime, no allocator), "
             "malloc (allocated and freed on every call, so the memory is only "
-            "taken while the model runs). Runtime-sized temporaries always use "
+            "taken while the model runs) or malloc-scoped (like malloc, but "
+            "each heap temporary, runtime-sized ones included, is allocated "
+            "right before its first use and freed right after its last one, "
+            "which lowers the peak). Runtime-sized temporaries always use "
             "malloc (default: static)"
         ),
     )

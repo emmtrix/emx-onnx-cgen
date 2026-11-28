@@ -748,6 +748,81 @@ def test_runtime_sized_large_temp_uses_heap() -> None:
     assert "static float tmp0_tmp" not in generated
 
 
+def _make_large_temp_chain_model(first_dim: str | int) -> onnx.ModelProto:
+    """a -> t1 -> t2 -> t3 -> out; t1 dies at node 1, t2 at node 2."""
+    shape: list[str | int] = [first_dim, 257]
+    graph = helper.make_graph(
+        [
+            helper.make_node("Relu", ["a"], ["t1"]),
+            helper.make_node("Neg", ["t1"], ["t2"]),
+            helper.make_node("Add", ["t2", "a"], ["t3"]),
+            helper.make_node("Relu", ["t3"], ["out"]),
+        ],
+        "large_temp_chain_graph",
+        [helper.make_tensor_value_info("a", TensorProto.FLOAT, shape)],
+        [helper.make_tensor_value_info("out", TensorProto.FLOAT, shape)],
+    )
+    model = helper.make_model(graph, opset_imports=[helper.make_operatorsetid("", 13)])
+    model.ir_version = 7
+    return model
+
+
+def _model_function_lines(source: str) -> list[str]:
+    start = source.index("\nvoid model(")
+    return source[start : source.index("\n}\n", start)].splitlines()
+
+
+@pytest.mark.parametrize("first_dim", [1, "N"], ids=["fixed", "runtime_sized"])
+def test_large_temp_storage_malloc_scoped_frees_after_last_use(
+    first_dim: str | int,
+) -> None:
+    generated = Compiler(CompilerOptions(large_temp_storage="malloc-scoped")).compile(
+        _make_large_temp_chain_model(first_dim)
+    )
+    lines = _model_function_lines(generated)
+
+    def line_of(prefix: str) -> int:
+        return next(i for i, line in enumerate(lines) if line.startswith(prefix))
+
+    count = "N" if first_dim == "N" else "1"
+    assert line_of("    node0_relu(") < line_of(
+        f"    float (*tmp1_t2)[257] = malloc(sizeof(*tmp1_t2) * {count});"
+    )
+    assert line_of("    node1_neg(") < line_of("    free(tmp0_t1);")
+    assert line_of("    free(tmp0_t1);") < line_of("    float (*tmp2_t3)[257]")
+    assert line_of("    node3_relu(") < line_of("    free(tmp2_t3);")
+    # A failed allocation releases only the buffers that are still live.
+    t3_failure = lines[line_of("    if (tmp2_t3 == NULL) {") :][:3]
+    assert t3_failure == [
+        "    if (tmp2_t3 == NULL) {",
+        "        free(tmp1_t2);",
+        "        return;",
+    ]
+
+
+def test_failed_heap_allocation_frees_earlier_temps() -> None:
+    lines = _model_function_lines(
+        Compiler(CompilerOptions()).compile(_make_large_temp_chain_model("N"))
+    )
+    start = lines.index("    if (tmp2_t3 == NULL) {")
+    assert lines[start : start + 4] == [
+        "    if (tmp2_t3 == NULL) {",
+        "        free(tmp1_t2);",
+        "        free(tmp0_t1);",
+        "        return;",
+    ]
+
+
+def test_large_temp_storage_malloc_scoped_matches_onnxruntime(tmp_path: Path) -> None:
+    model_path = tmp_path / "model.onnx"
+    onnx.save_model(_make_large_temp_chain_model(2), model_path)
+    verify = ["verify", str(model_path), "--temp-dir-root", str(tmp_path)]
+    for storage in ("malloc-scoped", "malloc"):
+        result = cli.run_cli_command([*verify, "--large-temp-storage", storage])
+        assert result.exit_code == 0, result.result
+        assert result.result.startswith("OK"), result.result
+
+
 def _make_sequence_temp_model() -> onnx.ModelProto:
     graph = helper.make_graph(
         [
@@ -844,6 +919,23 @@ def test_large_temps_on_stack_macro_matches_threshold_zero(
     ) == _without_threshold_traces(unbounded)
     # The model's own temporary, not the testbench's static buffers.
     assert large_declaration in thresholded
+
+
+def test_large_temps_on_stack_macro_with_malloc_scoped() -> None:
+    # The stack variant declares each temporary at its first use instead of at
+    # the top, so it has the lines of --large-temp-threshold 0 in another order.
+    model = _make_large_temp_chain_model("N")
+    scoped = Compiler(CompilerOptions(large_temp_storage="malloc-scoped")).compile(
+        model
+    )
+    unbounded = Compiler(CompilerOptions(large_temp_threshold_bytes=0)).compile(model)
+    on_stack = _without_threshold_traces(
+        _select_large_temp_variant(scoped, on_stack=True)
+    )
+    assert on_stack != _without_threshold_traces(unbounded)
+    assert sorted(on_stack.splitlines()) == sorted(
+        _without_threshold_traces(unbounded).splitlines()
+    )
 
 
 def test_mul_add_matches_onnxruntime() -> None:
