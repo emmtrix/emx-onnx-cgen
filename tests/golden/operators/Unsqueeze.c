@@ -57,12 +57,11 @@
  * Attrs: n/a
  */
 EMX_NODE_FN void node0_unsqueeze(const float input0[3][4][5], float output[1][3][4][5]) {
-    const float *input0_data = (const float *)input0;
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         for (idx_t i1 = 0; i1 < 3; ++i1) {
             for (idx_t i2 = 0; i2 < 4; ++i2) {
                 for (idx_t i3 = 0; i3 < 5; ++i3) {
-                    output[i0][i1][i2][i3] = input0_data[(((i0 * 3 + i1) * 4 + i2) * 5 + i3)];
+                    output[i0][i1][i2][i3] = input0[i1][i2][i3];
                 }
             }
         }

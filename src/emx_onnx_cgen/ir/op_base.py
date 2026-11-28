@@ -79,6 +79,10 @@ class EmitContext:
 class CodegenDim:
     name: str
     expected_size: int = 10
+    # Extent of the array declaration if it differs from the logical size
+    # ``name``, e.g. the capacity of a growing state buffer (loops run to
+    # ``name``, the array is declared with ``storage``).
+    storage: str | None = None
 
     def __str__(self) -> str:
         return self.name
