@@ -1238,8 +1238,9 @@ def _build_parser() -> argparse.ArgumentParser:
         dest="large_temp_threshold_bytes",
         help=(
             "Move temporary buffers larger than this byte threshold off the "
-            "stack: fixed-size ones become static, runtime-sized ones are "
-            "heap-allocated; smaller buffers stay on the stack (default: 1024; "
+            "stack: fixed-size ones become static (see --large-temp-storage), "
+            "runtime-sized ones are heap-allocated; smaller buffers stay on "
+            "the stack (default: 1024; "
             "set to 0 to keep all temporaries on the stack)"
         ),
     )
@@ -1330,8 +1331,9 @@ def _build_parser() -> argparse.ArgumentParser:
         dest="large_temp_threshold_bytes",
         help=(
             "Move temporary buffers larger than this byte threshold off the "
-            "stack: fixed-size ones become static, runtime-sized ones are "
-            "heap-allocated; smaller buffers stay on the stack (default: 1024; "
+            "stack: fixed-size ones become static (see --large-temp-storage), "
+            "runtime-sized ones are heap-allocated; smaller buffers stay on "
+            "the stack (default: 1024; "
             "set to 0 to keep all temporaries on the stack)"
         ),
     )
