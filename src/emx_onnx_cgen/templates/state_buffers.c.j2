@@ -1,0 +1,12 @@
+/*
+ * Persistent model state: each array is one buffer shared by a
+ * graph input and a graph output (--state-pair INPUT=OUTPUT).
+ * {{ model_name }}() reads the input from it and writes the output
+ * back into it, so the value carries over to the next call.
+ * Call {{ reset_name }}() at the start of a sequence.
+ * The arrays are ordinary globals; place them with the linker
+ * (e.g. -fdata-sections gives each one its own section).
+ */
+{% for member in members %}
+{{ storage }}{{ member.c_type }} {{ member.name }}{{ member.suffix }}; /* state: {{ member.input_label }} -> {{ member.output_label }} */
+{% endfor %}

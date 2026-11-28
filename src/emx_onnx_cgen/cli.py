@@ -1129,8 +1129,8 @@ def _build_parser() -> argparse.ArgumentParser:
             help=(
                 "Short-circuit a graph input with a graph output of the same "
                 "shape and dtype (e.g. a KV cache: --state-pair past_k_0=new_k_0). "
-                "Both share one buffer in a caller-owned <model>_state struct "
-                "that persists across calls; <model>_state_reset() clears it. "
+                "Both share one global buffer <model>_state_<INPUT> that persists "
+                "across calls; <model>_state_reset() clears it. "
                 "Repeatable, or comma-separated. Overrides the model metadata "
                 f"key {STATE_PAIRS_METADATA_KEY!r}."
             ),

@@ -2,8 +2,8 @@
 
 A state pair ``past -> present`` (e.g. a KV cache) declares that the value of
 graph output ``present`` becomes graph input ``past`` of the next call. The
-generated code then keeps both in ONE buffer that lives in a caller-owned
-state struct instead of copying the cache in and out on every call.
+generated code then keeps both in ONE global buffer instead of copying the
+cache in and out on every call.
 
 The pairs are always explicit (``--state-pair`` or the model metadata key
 :data:`STATE_PAIRS_METADATA_KEY`); they are never inferred from names.

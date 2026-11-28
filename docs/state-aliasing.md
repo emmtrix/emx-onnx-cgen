@@ -66,38 +66,50 @@ Any failed check raises `StateAliasingError` with the pair, node index, op type,
 node name, the offending names and shapes, and a hint. There is no silent
 fallback to a copy.
 
-### Storage: a caller-owned state struct
+### Storage: one global array per pair
 
 ```c
-typedef struct {
-    float past_k_0[4][128][24]; /* past_k_0 -> new_k_0 */
-    ...
-} model_state;
+float model_state_past_k_0[4][128][24]; /* state: past_k_0 -> new_k_0 */
+...
 
-void model_state_reset(model_state *state);            /* zero-fills */
-void model(model_state *restrict state, /* other inputs */, /* other outputs */);
+void model_state_reset(void);                    /* zero-fills */
+void model(/* other inputs */, /* other outputs */);
 ```
 
-The entry point loses the paired inputs/outputs and takes `model_state *`
-instead. Kernels receive `state->past_k_0` like any other array.
+The entry point loses the paired inputs/outputs. Each pair becomes a global
+array `<model>_state_<input>`: the `<model>_state_` prefix is shared with
+`<model>_state_reset()`, marks the array as state and keeps the buffers of
+several models in one program apart. The comment names the pair as given to
+`--state-pair`. Kernels receive `model_state_past_k_0` like any other array.
+
+The arrays have static storage, so a model with state pairs is **not
+reentrant**: one program runs one sequence of that model at a time, and calls
+must not overlap (threads, interrupts).
 
 Alternatives considered:
 
-- **One array parameter per pair.** As flexible for placement, but the
-  signature grows with the layer count (2 parameters per layer for Tiny) and
-  `reset` needs all of them again.
-- **A generated global/static with a section macro.** Placement would need a
-  compiler-specific hook (`__attribute__((section))` vs. TASKING
-  `#pragma section`), and the model would become non-reentrant (only one
-  sequence at a time).
+- **A caller-owned state struct** (`model_state *state` as first parameter;
+  the first version of this feature). It allows several independent sequences
+  and placement through the struct definition. It was dropped because it is
+  the only struct in the generated code and the generated code does not aim
+  at reentrancy: large fixed-size sequence temporaries and the Tokenizer
+  buffers already have static storage.
+- **One array parameter per pair.** Flexible for placement, but the
+  signature grows with the layer count (2 parameters per layer for Tiny, 48
+  for Qwen2.5-0.5B) and `reset` needs all of them again.
 
-The struct keeps the ABI to one handle, lets the caller decide placement with
-the toolchain's own mechanism (section attribute, pragma, linker script, or a
-heap buffer), and allows several independent sequences (one struct each). It
-requires static state shapes, which a fixed-size cache has anyway.
+The arrays are placed like any other global with the toolchain's own
+mechanism: a linker script that selects their sections (with
+`-fdata-sections` each array has its own section `.bss.<model>_state_<input>`).
+The generated definitions carry no section attribute or pragma; a toolchain
+that cannot select single variables in the linker has to place the whole
+object file of the model. The arrays require static state shapes, which a
+fixed-size cache has anyway.
 
-`model_state_reset()` zero-fills every member; the caller can also write
-initial values directly into the struct.
+`model_state_reset()` zero-fills every array; the caller can also write
+initial values into them directly. A state input whose array name is taken
+(e.g. an input `reset` against `<model>_state_reset`) gets a numeric suffix;
+a state input that has the name of the model is rejected.
 
 ### TensorScatter in place
 
@@ -122,7 +134,7 @@ The reference run keeps the original model with explicit inputs and outputs.
 - runs the reference N times, feeding each step's state outputs back as state
   inputs;
 - the generated testbench calls `model_state_reset()`, loads the initial state
-  into its state struct and calls the model N times through that buffer;
+  into the state arrays and calls the model N times through them;
 - compares every output of every step (a leading step axis on both sides).
 
 `verify` lowers the model once (`Compiler.lower`) and reuses that context for
