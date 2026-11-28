@@ -1059,11 +1059,10 @@ class CEmitter:
             header=model.header,
             op_context=model.op_context,
             state_bindings=tuple(
-                StateBinding(
+                dataclasses.replace(
+                    binding,
                     input_name=name_map.get(binding.input_name, binding.input_name),
                     output_name=name_map.get(binding.output_name, binding.output_name),
-                    shape=binding.shape,
-                    dtype=binding.dtype,
                 )
                 for binding in model.state_bindings
             ),
@@ -1311,6 +1310,9 @@ class CEmitter:
                 "tensor_scatter": self._env.get_template("tensor_scatter_op.c.j2"),
                 "transpose": self._env.get_template("transpose_op.c.j2"),
                 "reshape": self._env.get_template("reshape_op.c.j2"),
+                "reshape_unit_axes": self._env.get_template(
+                    "reshape_unit_axes_op.c.j2"
+                ),
                 "identity": self._env.get_template("identity_op.c.j2"),
                 "bernoulli": self._env.get_template("bernoulli_op.c.j2"),
                 "random_uniform": self._env.get_template("random_uniform_op.c.j2"),
@@ -2576,6 +2578,12 @@ class CEmitter:
             lines.extend(
                 [f"    if ({' || '.join(checks)}) {{", "        return;", "    }"]
             )
+        # A growing state's output is the same buffer (more valid rows).
+        growing_state_args = {
+            binding.output_name: binding.input_name
+            for binding in model.state_bindings
+            if binding.is_growing
+        }
         heap_temp_names: list[str] = []
         for temp in temp_buffers:
             c_type = temp.dtype.c_type
@@ -2748,6 +2756,7 @@ class CEmitter:
             op_args = [
                 f"&{arg}" if arg in temp_runtime_dim_names else arg for arg in op_args
             ]
+            op_args = [growing_state_args.get(arg, arg) for arg in op_args]
             args = [*dim_order, *op_args]
             call = ", ".join(args)
             lines.append(f"    {op_name}({call});")
@@ -3723,6 +3732,8 @@ class CEmitter:
 
     @staticmethod
     def _dim_expr(dim: int | CodegenDim) -> str:
+        if isinstance(dim, CodegenDim) and dim.storage is not None:
+            return dim.storage
         return str(dim)
 
     @staticmethod
@@ -4025,6 +4036,25 @@ class CEmitter:
                 name_map.get(value.name, value.name) if name_map else value.name
             )
             dim_names.setdefault(mapped_name, {}).update(tensor_dim_names)
+        for binding in model.state_bindings:
+            if not binding.is_growing:
+                continue
+            # Both ends of a growing state are the one buffer: declare its
+            # capacity, keep the logical length as loop bound.
+            axis = binding.growth_axis
+            capacity = str(binding.shape[axis])
+            for name in (binding.input_name, binding.output_name):
+                tensor_dims = dim_names.get(name, {})
+                if axis not in tensor_dims:
+                    # Without it the kernels would use dense strides.
+                    raise CodegenError(
+                        f"Growing state {binding.input_name}="
+                        f"{binding.output_name}: {name!r} has no runtime "
+                        f"dimension on its growing axis {axis}"
+                    )
+                tensor_dims[axis] = dataclasses.replace(
+                    tensor_dims[axis], storage=capacity
+                )
         return dim_names
 
     @staticmethod
@@ -4694,6 +4724,15 @@ class CEmitter:
     ) -> None:
         # Report the ONNX names, not the C names.
         original = self._ctx_name
+        growing = [binding for binding in model.state_bindings if binding.is_growing]
+        if growing:
+            raise CodegenError(
+                "The testbench does not support growing state pairs yet "
+                f"({', '.join(f'{original(b.input_name)}={original(b.output_name)}' for b in growing)}): "
+                "the inputs change their shape from step to step. Compile without "
+                "--emit-testbench and drive the model from your own loop, or "
+                "verify with --no-state-pairs."
+            )
         steps = state_testbench.steps
         if steps < 1:
             raise CodegenError(f"Testbench step count must be >= 1, got {steps}")

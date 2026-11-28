@@ -28,12 +28,23 @@ class StateBinding:
 
     After state aliasing, every op refers to the buffer by ``input_name``;
     ``output_name`` only remains as the name of the graph output.
+
+    A *growing* pair (a KV cache appended with ``Concat``) keeps both names:
+    the input is the first ``n`` rows of the buffer along ``growth_axis`` and
+    the output the first ``n + growth`` rows. ``shape`` is then the storage
+    shape with the capacity on ``growth_axis``.
     """
 
     input_name: str
     output_name: str
     shape: tuple[int, ...]
     dtype: ScalarType
+    growth_axis: int | None = None
+    growth: int = 0
+
+    @property
+    def is_growing(self) -> bool:
+        return self.growth_axis is not None
 
 
 def index_input_bounds(

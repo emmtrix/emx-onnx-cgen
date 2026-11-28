@@ -679,7 +679,9 @@ class Compiler:
             header=header,
             op_context=op_ctx,
         )
-        return apply_state_aliasing(lowered, state_pairs)
+        return apply_state_aliasing(
+            lowered, state_pairs, self._options.dim_param_upper_bounds
+        )
 
     def _materialize_initializer_outputs(self, graph: Graph) -> Graph:
         if graph.nodes:
