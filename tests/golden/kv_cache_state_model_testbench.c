@@ -58,7 +58,7 @@
  * The arrays are ordinary globals; place them with the linker
  * (e.g. -fdata-sections gives each one its own section).
  */
-float kv_cache_state_model_past_k[2][8][3]; /* shared with graph output new_k */
+float kv_cache_state_model_state_past_k[2][8][3]; /* state: past_k -> new_k */
 
 /*
  * Node 0:
@@ -132,7 +132,7 @@ void kv_cache_state_model_state_reset(void) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 8; ++i1) {
             for (idx_t i2 = 0; i2 < 3; ++i2) {
-                kv_cache_state_model_past_k[i0][i1][i2] = 0.0f;
+                kv_cache_state_model_state_past_k[i0][i1][i2] = 0.0f;
             }
         }
     }
@@ -140,8 +140,8 @@ void kv_cache_state_model_state_reset(void) {
 
 void kv_cache_state_model(const float k_row[restrict 2][1][3], const int64_t pos[restrict 2], const float q[restrict 2][1][3], float scores[restrict 2][1][8]) {
     float tmp0_new_k_t[2][3][8];
-    node0_write_cache(k_row, pos, kv_cache_state_model_past_k);
-    node1_transpose(kv_cache_state_model_past_k, tmp0_new_k_t);
+    node0_write_cache(k_row, pos, kv_cache_state_model_state_past_k);
+    node1_transpose(kv_cache_state_model_state_past_k, tmp0_new_k_t);
     node2_attend(q, tmp0_new_k_t, scores);
 }
 
@@ -160,7 +160,7 @@ static const float q_testbench_data[] = {
     0.714808524f, -0.932828844f, 0.459310889f, -0.648688734f, 0.726357818f, 0.0829224437f, -0.400576204f, -0.154625565f,
     -0.943360686f, -0.751433432f, 0.34124884f, 0.294379026f
 };
-static const float kv_cache_state_model_past_k_testbench_initial_state[] = {
+static const float kv_cache_state_model_state_past_k_testbench_initial_state[] = {
     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
@@ -284,7 +284,7 @@ static int testbench_run(const char *input_path) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 8; ++i1) {
             for (idx_t i2 = 0; i2 < 3; ++i2) {
-                kv_cache_state_model_past_k[i0][i1][i2] = kv_cache_state_model_past_k_testbench_initial_state[((i0 * 8 + i1) * 3 + i2)];
+                kv_cache_state_model_state_past_k[i0][i1][i2] = kv_cache_state_model_state_past_k_testbench_initial_state[((i0 * 8 + i1) * 3 + i2)];
             }
         }
     }
@@ -300,7 +300,7 @@ static int testbench_run(const char *input_path) {
         for (idx_t i1 = 0; i1 < 2; ++i1) {
             for (idx_t i2 = 0; i2 < 8; ++i2) {
                 for (idx_t i3 = 0; i3 < 3; ++i3) {
-                    new_k_steps[step][i1][i2][i3] = kv_cache_state_model_past_k[i1][i2][i3];
+                    new_k_steps[step][i1][i2][i3] = kv_cache_state_model_state_past_k[i1][i2][i3];
                 }
             }
         }

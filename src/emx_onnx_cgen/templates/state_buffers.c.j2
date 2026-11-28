@@ -8,5 +8,5 @@
  * (e.g. -fdata-sections gives each one its own section).
  */
 {% for member in members %}
-{{ storage }}{{ member.c_type }} {{ member.name }}{{ member.suffix }}; /* shared with graph output {{ member.output_name }} */
+{{ storage }}{{ member.c_type }} {{ member.name }}{{ member.suffix }}; /* state: {{ member.input_label }} -> {{ member.output_label }} */
 {% endfor %}
