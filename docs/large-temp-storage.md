@@ -27,7 +27,9 @@ branch and documented the heap behavior.
 Fixed-size large temporaries are `static` by default; only runtime-sized ones
 use `malloc`/`free` (`CEmitter._temp_buffer_is_static`,
 `CEmitter._temp_buffer_uses_heap`). `--large-temp-storage malloc` selects the
-heap for the fixed-size ones too. The stack variant stays behind
+heap for the fixed-size ones too; `malloc-scoped` additionally allocates each
+heap temporary right before its first use and frees it right after its last
+one (`CEmitter._scoped_heap_call_lines`). The stack variant stays behind
 `EMX_LARGE_TEMPS_ON_STACK`.
 
 The primary targets are embedded systems where a model runs in one task and an
@@ -43,7 +45,13 @@ generated code was not reentrant anyway.
   moves a lot of memory into `.bss`. Applications that need the memory back
   between calls use `--large-temp-storage malloc`, or compile with
   `EMX_LARGE_TEMPS_ON_STACK` and size the stack accordingly.
-- With `malloc`, all heap temporaries are allocated at the start of the call
-  and freed at its end, so the peak is the sum of all of them, not the largest
-  set live at the same time.
+- With `static` and `malloc`, all heap temporaries are allocated at the start
+  of the call and freed at its end, so the peak is the sum of all of them.
+  `malloc-scoped` brings it down to the largest set alive at the same time.
+  For Qwen2.5-0.5B (int8, 32k context) that is 649 MiB instead of 17.9 GiB.
+  The price is more allocator calls in the middle of the computation; a
+  failure there aborts the call after part of the work.
+- The uses of a temporary are the op calls that name it. This holds because
+  the model function only passes buffers to op functions, which keep no
+  pointer to them after returning.
 - Static-shape models no longer include `<stdlib.h>` for temporaries.

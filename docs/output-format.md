@@ -503,6 +503,11 @@ Large temporaries:
 - A temporary whose size depends on a runtime dimension cannot be `static`;
   above the threshold it is heap-allocated with `malloc` at the start of the
   entrypoint and released with `free` before returning.
+- With `--large-temp-storage malloc-scoped`, every heap temporary is instead
+  allocated right before the first op call that uses it and freed right after
+  the last one, so only the temporaries alive at the same time occupy memory.
+- If an allocation fails, the entrypoint frees the temporaries it already
+  holds and returns early; the outputs are then incomplete.
 - Sequence temporaries and testbench input/output buffers above the threshold
   are declared `static` as well.
 - Setting `--large-temp-threshold 0` keeps all temporaries on the stack.
@@ -530,7 +535,7 @@ temporaries and the buffers of `Tokenizer` have `static` storage, so a model
 function must not be entered again while a call of it is running: no calls
 from several threads at once, from an interrupt that preempts a call, or
 through recursion. Calls of different models are independent; their symbols
-carry the model name. `--large-temp-storage malloc` takes the model's large
+carry the model name. `--large-temp-storage malloc[-scoped]` takes the model's large
 tensor temporaries off static storage, but sequence temporaries, `Tokenizer`
 buffers and state arrays stay `static`. With `--large-temp-threshold 0` (or
 `EMX_LARGE_TEMPS_ON_STACK`) the temporaries move to the stack, but the code is
