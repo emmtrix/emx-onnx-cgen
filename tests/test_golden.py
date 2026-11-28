@@ -673,22 +673,23 @@ def test_codegen_golden_large_temp_static() -> None:
     assert_golden(generated, golden_path)
 
 
-def test_large_temp_threshold_zero_disables_heap() -> None:
+def test_large_temp_threshold_zero_disables_static_storage() -> None:
     model = _make_large_temp_model()
 
-    heap_generated = Compiler(CompilerOptions()).compile(model)
+    static_generated = Compiler(CompilerOptions()).compile(model)
     stack_generated = Compiler(CompilerOptions(large_temp_threshold_bytes=0)).compile(
         model
     )
 
-    # Default threshold heap-allocates the large temporary.
-    assert "malloc(" in heap_generated
-    assert "free(" in heap_generated
+    # The default threshold gives the large fixed-size temporary static
+    # storage; only runtime-sized temporaries use the heap.
+    assert "    static float tmp0_tmp[1][257];" in static_generated
+    assert "malloc(" not in static_generated
+    assert "#include <stdlib.h>" not in static_generated
 
-    # Threshold 0 keeps everything on the stack: no malloc/free, and the
-    # temporary becomes a plain (non-static) local array.
-    assert "malloc(" not in stack_generated
-    assert "free(" not in stack_generated
+    # Threshold 0 keeps everything on the stack: the temporary becomes a
+    # plain (non-static) local array.
+    assert "static float tmp0_tmp" not in stack_generated
     assert "    float tmp0_tmp[1][257];" in stack_generated
 
 
@@ -706,6 +707,13 @@ def _make_dynamic_large_temp_model() -> onnx.ModelProto:
     model = helper.make_model(graph, opset_imports=[helper.make_operatorsetid("", 13)])
     model.ir_version = 7
     return model
+
+
+def test_runtime_sized_large_temp_uses_heap() -> None:
+    generated = Compiler(CompilerOptions()).compile(_make_dynamic_large_temp_model())
+    assert "float (*tmp0_tmp)[257] = malloc(sizeof(*tmp0_tmp) * N);" in generated
+    assert "free(tmp0_tmp);" in generated
+    assert "static float tmp0_tmp" not in generated
 
 
 def _make_sequence_temp_model() -> onnx.ModelProto:
@@ -758,7 +766,7 @@ def _without_threshold_traces(source: str) -> str:
         (_make_dynamic_large_temp_model, 1024),
         (_make_sequence_temp_model, 100),
     ],
-    ids=["heap", "heap_vla", "static_sequence"],
+    ids=["static", "heap_vla", "static_sequence"],
 )
 def test_large_temps_on_stack_macro_matches_threshold_zero(
     make_model: Callable[[], onnx.ModelProto], threshold: int

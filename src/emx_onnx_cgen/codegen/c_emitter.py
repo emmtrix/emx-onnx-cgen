@@ -2562,6 +2562,12 @@ class CEmitter:
                         )
                     )
                     heap_temp_names.append(temp.name)
+                elif self._temp_buffer_is_static(temp, dim_names):
+                    lines.extend(
+                        self._large_temp_alternatives(
+                            [declaration], [f"static {declaration}"]
+                        )
+                    )
                 else:
                     lines.append(f"    {declaration}")
         sequence_temp_count_names = {
@@ -2942,7 +2948,12 @@ class CEmitter:
         temp: TempBuffer,
         dim_names: Mapping[int, CodegenDim] | None = None,
     ) -> bool:
-        if temp.is_sequence:
+        """Large tensor temporaries whose extent depends on a runtime dim.
+
+        Fixed-size ones get static storage instead (:meth:`_temp_buffer_is_static`),
+        so the generated code needs no allocator for them.
+        """
+        if temp.is_sequence or not dim_names:
             return False
         return self._exceeds_temp_threshold(
             self._buffer_size_bytes(
@@ -2951,6 +2962,18 @@ class CEmitter:
                 dim_names=dim_names,
                 is_sequence=temp.is_sequence,
             )
+        )
+
+    def _temp_buffer_is_static(
+        self,
+        temp: TempBuffer,
+        dim_names: Mapping[int, CodegenDim] | None = None,
+    ) -> bool:
+        """Large fixed-size tensor temporaries; they make the model non-reentrant."""
+        if temp.is_sequence or dim_names:
+            return False
+        return self._exceeds_temp_threshold(
+            self._buffer_size_bytes(temp.shape, temp.dtype)
         )
 
     def _heap_temp_buffer_lines(

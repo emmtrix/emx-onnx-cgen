@@ -492,31 +492,44 @@ model entrypoint by default.
 
 Large temporaries:
 
-- If a temporary exceeds `--large-temp-threshold`, it is heap-allocated with
-  `malloc` at the start of the entrypoint and released with `free` before
-  returning, to avoid large stack usage (see
+- If a fixed-size temporary exceeds `--large-temp-threshold`, it is declared
+  `static` inside the entrypoint, to avoid large stack usage without an
+  allocator (see
   [`tests/golden/large_temp_static_model.c`](../tests/golden/large_temp_static_model.c)).
-- Setting `--large-temp-threshold 0` disables heap allocation entirely: all
-  temporaries stay on the stack. Buffers with static shapes become fixed-size
-  local arrays, while buffers with dynamic dimensions become C99 variable-length
-  arrays. This avoids `malloc`/`free` at the cost of higher stack usage.
-- The same applies to sequence temporaries and testbench input/output buffers
-  above the threshold, which are declared `static` instead of being
-  heap-allocated.
+- A temporary whose size depends on a runtime dimension cannot be `static`;
+  above the threshold it is heap-allocated with `malloc` at the start of the
+  entrypoint and released with `free` before returning.
+- Sequence temporaries and testbench input/output buffers above the threshold
+  are declared `static` as well.
+- Setting `--large-temp-threshold 0` keeps all temporaries on the stack.
+  Buffers with static shapes become fixed-size local arrays, while buffers
+  with dynamic dimensions become C99 variable-length arrays. This avoids
+  `static` storage and `malloc`/`free` at the cost of higher stack usage.
 - Every buffer moved off the stack is emitted together with its stack variant:
 
   ```c
   #ifdef EMX_LARGE_TEMPS_ON_STACK
       float tmp0_tmp[1][257];
   #else
-      float (*tmp0_tmp)[257] = malloc(sizeof(*tmp0_tmp) * 1);
-      ...
+      static float tmp0_tmp[1][257];
   #endif
   ```
 
   Defining `EMX_LARGE_TEMPS_ON_STACK` when compiling the generated code
   therefore yields the code `--large-temp-threshold 0` would generate, without
   regenerating it.
+
+### Reentrancy
+
+The generated code is **not reentrant**. Large temporaries, sequence
+temporaries and the buffers of `Tokenizer` have `static` storage, so a model
+function must not be entered again while a call of it is running: no calls
+from several threads at once, from an interrupt that preempts a call, or
+through recursion. Calls of different models are independent; their symbols
+carry the model name. With `--large-temp-threshold 0` (or
+`EMX_LARGE_TEMPS_ON_STACK`) the temporaries move to the stack, but the code is
+still not guaranteed to be reentrant. Weights read by `<model>_load()` are
+written once before the first call and only read afterwards.
 
 ## String Tensors
 
