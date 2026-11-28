@@ -4,7 +4,7 @@ The model is the smallest form of the Qwen2.5 decoder's cache update:
 ``present = Concat(past, new, axis=1)`` with ``past[2, p, 3]`` and
 ``present[2, p + 1, 3]``, followed by attention over ``present``. With
 ``--state-pair past=present`` and ``--input-dim p<=7`` the cache lives in a
-state struct of capacity 8; a C driver runs several steps through that buffer
+global state array of capacity 8; a C driver runs several steps through that buffer
 and every step is compared with ONNX Runtime fed the previous ``present``.
 """
 
@@ -91,7 +91,9 @@ def _options(**overrides) -> CompilerOptions:
 
 def test_growing_state_is_one_buffer_with_capacity() -> None:
     generated = Compiler(_options()).compile(_kv_cache_model())
-    assert "    float past[2][8][3]; /* past -> present */" in generated
+    assert (
+        "float model_past[2][8][3]; /* shared with graph output present */" in generated
+    )
     # Concat only writes the new row; the old rows already are in place.
     assert "void node1_concat(int p, const float input_1[2][1][3], " in generated
     assert "output[i0][i1 + p][i2] = input_1[i0][i1][i2];" in generated
@@ -99,7 +101,7 @@ def test_growing_state_is_one_buffer_with_capacity() -> None:
     assert "const float input0[2][8][3], float output[2][3][(p + 1)]" in generated
     assert "for (idx_t i2 = 0; i2 < (p + 1); ++i2)" in generated
     assert "    if (p < 0 || p > 7) {" in generated
-    assert "node1_concat(p, tmp0_new, state->past);" in generated
+    assert "node1_concat(p, tmp0_new, model_past);" in generated
 
 
 def test_growing_state_needs_a_capacity() -> None:
@@ -116,8 +118,7 @@ _DRIVER = r"""
 #include <stdio.h>
 
 int main(void) {
-    model_state state;
-    model_state_reset(&state);
+    model_state_reset();
     for (int step = 0; step < STEPS; ++step) {
         int p = step;
         float x[2][1][3];
@@ -131,7 +132,7 @@ int main(void) {
             || fread(probs, sizeof(probs), 1, stdin) != 1) {
             return 1;
         }
-        model(p, &state, x, q, probs, scores, repeated, context, broadcast);
+        model(p, x, q, probs, scores, repeated, context, broadcast);
         printf("%s[[", step ? "," : "");
         for (int h = 0; h < 2; ++h)
             for (int t = 0; t <= p; ++t)

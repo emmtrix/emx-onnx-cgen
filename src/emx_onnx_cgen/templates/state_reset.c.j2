@@ -1,9 +1,9 @@
-void {{ reset_name }}({{ type_name }} *{{ param }}) {
+void {{ reset_name }}(void) {
 {% for member in members %}
 {% for dim in member.shape %}
 for (idx_t {{ member.loop_vars[loop.index0] }} = 0; {{ member.loop_vars[loop.index0] }} < {{ dim }}; ++{{ member.loop_vars[loop.index0] }}) {
 {% endfor %}
-{{ param }}->{{ member.name }}{% for var in member.loop_vars %}[{{ var }}]{% endfor %} = {{ member.zero }};
+{{ member.name }}{% for var in member.loop_vars %}[{{ var }}]{% endfor %} = {{ member.zero }};
 {% for _ in member.shape %}
 }
 {% endfor %}

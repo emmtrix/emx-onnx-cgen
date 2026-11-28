@@ -383,7 +383,6 @@ for (idx_t {{ output.loop_vars[depth] }} = 0; {{ output.loop_vars[depth] }} < {{
 {% endif %}
 {% if state_steps %}
 static int testbench_run(const char *input_path) {
-    static {{ state_type }} {{ state_var }};
 {% for input in inputs %}
 {{ input.declaration }}
 {% endfor %}
@@ -398,13 +397,13 @@ static int testbench_run(const char *input_path) {
     if (!{{ model_name }}_load("{{ weight_data_filename }}")) {
         return 1;
     }
-    {{ state_reset }}(&{{ state_var }});
+    {{ state_reset }}();
 {% for state_input in state_inputs %}
 {% if state_input.constant_name %}
 {% for depth in range(state_input.rank) %}
     for (idx_t {{ state_input.loop_vars[depth] }} = 0; {{ state_input.loop_vars[depth] }} < {{ state_input.shape[depth] }}; ++{{ state_input.loop_vars[depth] }}) {
 {% endfor %}
-        {{ state_var }}.{{ state_input.member }}{{ state_input.array_index_expr }} = {{ state_input.constant_name }}[{{ state_input.index_expr }}];
+        {{ state_input.member }}{{ state_input.array_index_expr }} = {{ state_input.constant_name }}[{{ state_input.index_expr }}];
 {% for depth in range(state_input.rank) %}
     }
 {% endfor %}
@@ -416,7 +415,7 @@ static int testbench_run(const char *input_path) {
         testbench_fill_random_input({% for input in variable_inputs %}{{ input.name }}{% if not loop.last %}, {% endif %}{% endfor %});
 
         timer_start();
-        {{ model_name }}(&{{ state_var }}{% for input in inputs %}, {{ input.name }}{% endfor %}{% for output in step_outputs %}, {{ output.name }}{% endfor %});
+        {{ model_name }}({{ (inputs + step_outputs) | map(attribute='name') | join(', ') }});
         timer_stop();
 
 {% for output in outputs %}
