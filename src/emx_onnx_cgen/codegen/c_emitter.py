@@ -989,9 +989,10 @@ class CEmitter:
                 continue
             sanitized = self._sanitize_identifier(name)
             if name in state_inputs:
-                # State buffers are globals; the model prefix keeps the
-                # buffers of several models in one program apart.
-                sanitized = f"{model_c_name}_{sanitized}"
+                # State buffers are globals named like the state API
+                # (<model>_state_reset); the model prefix keeps the buffers
+                # of several models in one program apart.
+                sanitized = f"{model_c_name}_state_{sanitized}"
             unique = self._ensure_unique_identifier(sanitized, used)
             name_map[name] = unique
             used.add(unique)
@@ -999,15 +1000,7 @@ class CEmitter:
                 # The model name comes first; the state API derives from it.
                 model_c_name = unique
                 if model.state_bindings:
-                    # The prefixed state globals share the file scope with
-                    # these model functions.
-                    used.update(
-                        (
-                            self._state_reset_name_for(unique),
-                            f"{unique}_load",
-                            f"{unique}_load_file",
-                        )
-                    )
+                    used.add(self._state_reset_name_for(unique))
         for index, const in enumerate(model.constants, start=1):
             if const.name in name_map:
                 continue
@@ -1645,7 +1638,7 @@ class CEmitter:
             sections.extend((image_decoder_support.rstrip(), ""))
         weight_loader = self._emit_weight_loader(model, large_constants)
         if model.state_bindings:
-            sections.extend((self._emit_state_buffers(model), ""))
+            sections.extend((self._emit_state_buffers(model, name_map), ""))
         sections.extend(
             (
                 operator_fns.rstrip(),
@@ -1875,7 +1868,7 @@ class CEmitter:
             sections.extend((image_decoder_support.rstrip(), ""))
         weight_loader = self._emit_weight_loader(model, large_constants)
         if model.state_bindings:
-            sections.extend((self._emit_state_buffers(model), ""))
+            sections.extend((self._emit_state_buffers(model, name_map), ""))
         sections.extend(
             (
                 operator_fns.rstrip(),
@@ -2875,7 +2868,7 @@ class CEmitter:
         if model.state_bindings:
             lines.extend(
                 (
-                    self._emit_state_buffers(model, storage="extern "),
+                    self._emit_state_buffers(model, name_map, storage="extern "),
                     f"void {self._state_reset_name(model)}(void);",
                 )
             )
@@ -2897,12 +2890,24 @@ class CEmitter:
         return f"{model_name}_state_reset"
 
     def _render_state_template(
-        self, template_name: str, model: LoweredModel, *, storage: str = ""
+        self,
+        template_name: str,
+        model: LoweredModel,
+        *,
+        storage: str = "",
+        name_map: Mapping[str, str] | None = None,
     ) -> str:
+        # Comments name the pair as given to --state-pair (ONNX names).
+        onnx_names = {c_name: name for name, c_name in (name_map or {}).items()}
+
+        def label(c_name: str) -> str:
+            return onnx_names.get(c_name, c_name).replace("*/", "* /")
+
         members = [
             {
                 "name": binding.input_name,
-                "output_name": binding.output_name,
+                "input_label": label(binding.input_name),
+                "output_label": label(binding.output_name),
                 "c_type": binding.dtype.c_type,
                 "suffix": self._array_suffix(binding.shape, binding.dtype),
                 "shape": self._codegen_shape(binding.shape),
@@ -2923,8 +2928,12 @@ class CEmitter:
         )
         return rendered
 
-    def _emit_state_buffers(self, model: LoweredModel, *, storage: str = "") -> str:
-        return self._render_state_template("state_buffers.c.j2", model, storage=storage)
+    def _emit_state_buffers(
+        self, model: LoweredModel, name_map: Mapping[str, str], *, storage: str = ""
+    ) -> str:
+        return self._render_state_template(
+            "state_buffers.c.j2", model, storage=storage, name_map=name_map
+        )
 
     def _emit_state_reset(self, model: LoweredModel) -> str:
         return _format_c_indentation(

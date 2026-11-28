@@ -195,9 +195,9 @@ def test_state_pairs_from_metadata_and_overrides() -> None:
     assert parse_state_pair_args(None) is None
     assert parse_state_pair_args(["a=b"], disabled=True) == ()
     # The compiler itself reads the metadata; () switches it off.
-    assert "float model_past_k[2][8][3];" in Compiler().compile(model)
+    assert "float model_state_past_k[2][8][3];" in Compiler().compile(model)
     plain = Compiler(CompilerOptions(state_pairs=())).compile(model)
-    assert "model_past_k" not in plain
+    assert "model_state_past_k" not in plain
 
 
 def test_cli_no_state_pairs_ignores_metadata(tmp_path: Path) -> None:
@@ -207,12 +207,12 @@ def test_cli_no_state_pairs_ignores_metadata(tmp_path: Path) -> None:
     onnx.save_model(model, model_path)
     compiled = cli.run_cli_command(["compile", str(model_path), str(tmp_path / "a.c")])
     assert compiled.exit_code == 0, compiled.result
-    assert "float model_past_k[2][8][3];" in compiled.generated
+    assert "float model_state_past_k[2][8][3];" in compiled.generated
     plain = cli.run_cli_command(
         ["compile", str(model_path), str(tmp_path / "b.c"), "--no-state-pairs"]
     )
     assert plain.exit_code == 0, plain.result
-    assert "model_past_k" not in plain.generated
+    assert "model_state_past_k" not in plain.generated
 
 
 def test_tensor_scatter_state_drops_cache_copy() -> None:
@@ -224,7 +224,7 @@ def test_tensor_scatter_state_drops_cache_copy() -> None:
     assert "void model(const float k_row[restrict 2][1][3], " in generated
     assert "past_k[restrict" not in generated
     assert "new_k[restrict" not in generated
-    assert "node0_write_cache(k_row, pos, model_past_k);" in generated
+    assert "node0_write_cache(k_row, pos, model_state_past_k);" in generated
     assert "void model_state_reset(void) {" in generated
 
 
@@ -291,8 +291,8 @@ def test_elementwise_state_update_matches_onnxruntime(
 
 def test_in_place_elementwise_writer_shares_buffer() -> None:
     generated = _compile(_make_accumulate_model(), "acc=acc_next")
-    assert "node0_accumulate(model_acc, delta, model_acc);" in generated
-    assert "node1_reducesum(model_acc, total);" in generated
+    assert "node0_accumulate(model_state_acc, delta, model_state_acc);" in generated
+    assert "node1_reducesum(model_state_acc, total);" in generated
 
 
 def test_state_buffer_persists_and_resets_in_c(tmp_path: Path) -> None:
@@ -306,12 +306,12 @@ int main(void) {
     for (idx_t b = 0; b < 2; ++b)
         for (idx_t s = 0; s < 8; ++s)
             for (idx_t d = 0; d < 3; ++d)
-                model_past_k[b][s][d] = 7.0f;
+                model_state_past_k[b][s][d] = 7.0f;
     model_state_reset();
     for (idx_t b = 0; b < 2; ++b)
         for (idx_t s = 0; s < 8; ++s)
             for (idx_t d = 0; d < 3; ++d)
-                if (model_past_k[b][s][d] != 0.0f) return 1;
+                if (model_state_past_k[b][s][d] != 0.0f) return 1;
     float k_row[2][1][3] = {{{1, 2, 3}}, {{4, 5, 6}}};
     float q[2][1][3] = {{{1, 0, 0}}, {{0, 1, 0}}};
     float scores[2][1][8];
@@ -322,9 +322,9 @@ int main(void) {
         k_row[1][0][1] += 1.0f;
     }
     /* Rows written in earlier calls survive the later calls. */
-    if (model_past_k[0][0][0] != 1.0f || model_past_k[0][2][0] != 3.0f) return 2;
-    if (model_past_k[1][7][1] != 5.0f || model_past_k[1][5][1] != 7.0f) return 3;
-    if (model_past_k[0][3][0] != 0.0f || model_past_k[1][4][1] != 0.0f) return 4;
+    if (model_state_past_k[0][0][0] != 1.0f || model_state_past_k[0][2][0] != 3.0f) return 2;
+    if (model_state_past_k[1][7][1] != 5.0f || model_state_past_k[1][5][1] != 7.0f) return 3;
+    if (model_state_past_k[0][3][0] != 0.0f || model_state_past_k[1][4][1] != 0.0f) return 4;
     if (scores[0][0][0] != 1.0f || scores[1][0][5] != 7.0f) return 5;
     return 0;
 }
@@ -354,7 +354,7 @@ int main(void) {
 def test_testbench_declarations_include_state_api() -> None:
     compiler = Compiler(CompilerOptions(state_pairs=(StatePair("past_k", "new_k"),)))
     declarations = compiler.compile_testbench_declarations(_make_kv_cache_model())
-    assert "extern float model_past_k[2][8][3];" in declarations
+    assert "extern float model_state_past_k[2][8][3];" in declarations
     assert "void model_state_reset(void);" in declarations
     assert "void model(const float k_row[restrict 2][1][3], " in declarations
 
@@ -512,25 +512,32 @@ def test_tensor_scatter_write_index_bounds() -> None:
 def test_state_api_names_are_reserved() -> None:
     model = _make_model(
         [
-            helper.make_node("Add", ["model_acc", "model_state_reset"], ["delta"]),
+            helper.make_node(
+                "Add", ["model_state_acc", "model_state_reset"], ["delta"]
+            ),
             helper.make_node("Add", ["acc", "delta"], ["acc_next"]),
         ],
         [
             _cache_info("acc"),
-            _cache_info("model_acc"),
+            _cache_info("model_state_acc"),
             _cache_info("model_state_reset"),
         ],
         [_cache_info("acc_next")],
     )
     generated = _compile(model, "acc=acc_next")
-    assert "float model_acc[2][8][3];" in generated
-    assert "const float model_acc_1[restrict 2][8][3]" in generated
+    assert "float model_state_acc[2][8][3];" in generated
+    assert "const float model_state_acc_1[restrict 2][8][3]" in generated
     assert "const float model_state_reset_1[restrict 2][8][3]" in generated
     assert "void model_state_reset(void) {" in generated
 
 
-@pytest.mark.parametrize("state_name", ["load", "load_file"])
-def test_state_globals_avoid_model_functions(tmp_path: Path, state_name: str) -> None:
+@pytest.mark.parametrize(
+    ("state_name", "c_name"),
+    [("reset", "model_state_reset_1"), ("load", "model_state_load")],
+)
+def test_state_globals_avoid_model_functions(
+    tmp_path: Path, state_name: str, c_name: str
+) -> None:
     model = _make_model(
         [
             helper.make_node("Add", [state_name, "delta"], ["next"]),
@@ -545,7 +552,7 @@ def test_state_globals_avoid_model_functions(tmp_path: Path, state_name: str) ->
         emit_testbench=True,
         state_testbench=StateTestbenchData(steps=2),
     )
-    assert f"float model_{state_name}_1[2][8][3];" in source
+    assert f"float {c_name}[2][8][3]; /* state: {state_name} -> next */" in source
     result = _build_and_run(source, tmp_path)
     assert result.returncode == 0, result
 
@@ -678,7 +685,7 @@ def test_pass_through_state_emits_no_copy() -> None:
     )
     generated = _compile(model, "past=present")
     assert "OpType: Identity" not in generated
-    assert "node0_reducesum(model_past, total);" in generated
+    assert "node0_reducesum(model_state_past, total);" in generated
 
 
 def test_state_testbench_helpers_avoid_loop_var_names(tmp_path: Path) -> None:
@@ -704,7 +711,7 @@ def test_state_names_follow_model_name_remap() -> None:
     )
     generated = _compile(model, "acc=acc_next", model_name="my-model")
     assert "void my_model(const float my_model_1[restrict 2][8][3]" in generated
-    assert "float my_model_acc[2][8][3];" in generated
+    assert "float my_model_state_acc[2][8][3];" in generated
     assert "void my_model_state_reset(void) {" in generated
 
 

@@ -57,7 +57,7 @@
  * The arrays are ordinary globals; place them with the linker
  * (e.g. -fdata-sections gives each one its own section).
  */
-float kv_cache_state_model_past_k[2][8][3]; /* shared with graph output new_k */
+float kv_cache_state_model_state_past_k[2][8][3]; /* state: past_k -> new_k */
 
 /*
  * Node 0:
@@ -131,7 +131,7 @@ void kv_cache_state_model_state_reset(void) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 8; ++i1) {
             for (idx_t i2 = 0; i2 < 3; ++i2) {
-                kv_cache_state_model_past_k[i0][i1][i2] = 0.0f;
+                kv_cache_state_model_state_past_k[i0][i1][i2] = 0.0f;
             }
         }
     }
@@ -139,7 +139,7 @@ void kv_cache_state_model_state_reset(void) {
 
 void kv_cache_state_model(const float k_row[restrict 2][1][3], const int64_t pos[restrict 2], const float q[restrict 2][1][3], float scores[restrict 2][1][8]) {
     float tmp0_new_k_t[2][3][8];
-    node0_write_cache(k_row, pos, kv_cache_state_model_past_k);
-    node1_transpose(kv_cache_state_model_past_k, tmp0_new_k_t);
+    node0_write_cache(k_row, pos, kv_cache_state_model_state_past_k);
+    node1_transpose(kv_cache_state_model_state_past_k, tmp0_new_k_t);
     node2_attend(q, tmp0_new_k_t, scores);
 }

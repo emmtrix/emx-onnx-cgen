@@ -69,7 +69,7 @@ fallback to a copy.
 ### Storage: one global array per pair
 
 ```c
-float model_past_k_0[4][128][24]; /* shared with graph output new_k_0 */
+float model_state_past_k_0[4][128][24]; /* state: past_k_0 -> new_k_0 */
 ...
 
 void model_state_reset(void);                    /* zero-fills */
@@ -77,36 +77,39 @@ void model(/* other inputs */, /* other outputs */);
 ```
 
 The entry point loses the paired inputs/outputs. Each pair becomes a global
-array `<model>_<input>`; the model prefix keeps the buffers of several models
-in one program apart. Kernels receive `model_past_k_0` like any other array.
+array `<model>_state_<input>`: the `<model>_state_` prefix is shared with
+`<model>_state_reset()`, marks the array as state and keeps the buffers of
+several models in one program apart. The comment names the pair as given to
+`--state-pair`. Kernels receive `model_state_past_k_0` like any other array.
+
+The arrays have static storage, so a model with state pairs is **not
+reentrant**: one program runs one sequence of that model at a time, and calls
+must not overlap (threads, interrupts).
 
 Alternatives considered:
 
 - **A caller-owned state struct** (`model_state *state` as first parameter;
   the first version of this feature). It allows several independent sequences
-  and placement through the struct definition, but it is the only struct in
-  the generated code, and reentrancy buys little: buffers with static shapes
-  above `--large-temp-threshold` are already `static`, so most models are not
-  reentrant anyway. Only a model whose large temporaries all have dynamic
-  dimensions (heap-allocated) loses reentrancy with this change.
+  and placement through the struct definition. It was dropped because it is
+  the only struct in the generated code and the generated code does not aim
+  at reentrancy: large fixed-size sequence temporaries and the Tokenizer
+  buffers already have static storage.
 - **One array parameter per pair.** Flexible for placement, but the
   signature grows with the layer count (2 parameters per layer for Tiny, 48
   for Qwen2.5-0.5B) and `reset` needs all of them again.
 
-The globals follow the storage model of the large temporaries: static
-storage, one sequence per model at a time. They are placed like any other
-global with the toolchain's own mechanism: a linker script that selects their
-sections (with `-fdata-sections` each array has its own section
-`.bss.<model>_<input>`). The generated definitions carry no section attribute
-or pragma; a toolchain that cannot select single variables in the linker has
-to place the whole object file of the model. The arrays require static state
-shapes, which a fixed-size cache has anyway.
+The arrays are placed like any other global with the toolchain's own
+mechanism: a linker script that selects their sections (with
+`-fdata-sections` each array has its own section `.bss.<model>_state_<input>`).
+The generated definitions carry no section attribute or pragma; a toolchain
+that cannot select single variables in the linker has to place the whole
+object file of the model. The arrays require static state shapes, which a
+fixed-size cache has anyway.
 
 `model_state_reset()` zero-fills every array; the caller can also write
-initial values into them directly. The array names avoid the other
-model-prefixed functions (`<model>_load`, `<model>_load_file`,
-`<model>_state_reset`); a state input that has the name of the model is
-rejected (its array would clash with the model function).
+initial values into them directly. A state input whose array name is taken
+(e.g. an input `reset` against `<model>_state_reset`) gets a numeric suffix;
+a state input that has the name of the model is rejected.
 
 ### TensorScatter in place
 
