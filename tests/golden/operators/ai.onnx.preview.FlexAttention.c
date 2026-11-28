@@ -26,7 +26,6 @@
  */
 
 #include <stdint.h>
-#include <stdlib.h>
 #include <math.h>
 #include <float.h>
 #include <string.h>
@@ -591,50 +590,32 @@ void model(const float Q[restrict 2][4][8][16], const float K[restrict 2][4][6][
 #ifdef EMX_LARGE_TEMPS_ON_STACK
     float tmp0__flexattn_0_KUnsqueezed[2][4][1][6][16];
 #else
-    float (*tmp0__flexattn_0_KUnsqueezed)[4][1][6][16] = malloc(sizeof(*tmp0__flexattn_0_KUnsqueezed) * 2);
-    if (tmp0__flexattn_0_KUnsqueezed == NULL) {
-        return;
-    }
+    static float tmp0__flexattn_0_KUnsqueezed[2][4][1][6][16];
 #endif
 #ifdef EMX_LARGE_TEMPS_ON_STACK
     float tmp1__flexattn_0_KExpanded[2][4][1][6][16];
 #else
-    float (*tmp1__flexattn_0_KExpanded)[4][1][6][16] = malloc(sizeof(*tmp1__flexattn_0_KExpanded) * 2);
-    if (tmp1__flexattn_0_KExpanded == NULL) {
-        return;
-    }
+    static float tmp1__flexattn_0_KExpanded[2][4][1][6][16];
 #endif
 #ifdef EMX_LARGE_TEMPS_ON_STACK
     float tmp2__flexattn_0_KAligned[2][4][6][16];
 #else
-    float (*tmp2__flexattn_0_KAligned)[4][6][16] = malloc(sizeof(*tmp2__flexattn_0_KAligned) * 2);
-    if (tmp2__flexattn_0_KAligned == NULL) {
-        return;
-    }
+    static float tmp2__flexattn_0_KAligned[2][4][6][16];
 #endif
 #ifdef EMX_LARGE_TEMPS_ON_STACK
     float tmp3__flexattn_0_VUnsqueezed[2][4][1][6][16];
 #else
-    float (*tmp3__flexattn_0_VUnsqueezed)[4][1][6][16] = malloc(sizeof(*tmp3__flexattn_0_VUnsqueezed) * 2);
-    if (tmp3__flexattn_0_VUnsqueezed == NULL) {
-        return;
-    }
+    static float tmp3__flexattn_0_VUnsqueezed[2][4][1][6][16];
 #endif
 #ifdef EMX_LARGE_TEMPS_ON_STACK
     float tmp4__flexattn_0_VExpanded[2][4][1][6][16];
 #else
-    float (*tmp4__flexattn_0_VExpanded)[4][1][6][16] = malloc(sizeof(*tmp4__flexattn_0_VExpanded) * 2);
-    if (tmp4__flexattn_0_VExpanded == NULL) {
-        return;
-    }
+    static float tmp4__flexattn_0_VExpanded[2][4][1][6][16];
 #endif
 #ifdef EMX_LARGE_TEMPS_ON_STACK
     float tmp5__flexattn_0_VAligned[2][4][6][16];
 #else
-    float (*tmp5__flexattn_0_VAligned)[4][6][16] = malloc(sizeof(*tmp5__flexattn_0_VAligned) * 2);
-    if (tmp5__flexattn_0_VAligned == NULL) {
-        return;
-    }
+    static float tmp5__flexattn_0_VAligned[2][4][6][16];
 #endif
     int64_t tmp6__flexattn_0_QShapeAll[4];
     int64_t tmp7__flexattn_0_QKHeadSize[1];
@@ -647,66 +628,42 @@ void model(const float Q[restrict 2][4][8][16], const float K[restrict 2][4][6][
 #ifdef EMX_LARGE_TEMPS_ON_STACK
     float tmp14__flexattn_0_QScaled[2][4][8][16];
 #else
-    float (*tmp14__flexattn_0_QScaled)[4][8][16] = malloc(sizeof(*tmp14__flexattn_0_QScaled) * 2);
-    if (tmp14__flexattn_0_QScaled == NULL) {
-        return;
-    }
+    static float tmp14__flexattn_0_QScaled[2][4][8][16];
 #endif
 #ifdef EMX_LARGE_TEMPS_ON_STACK
     float tmp15__flexattn_0_KScaled[2][4][6][16];
 #else
-    float (*tmp15__flexattn_0_KScaled)[4][6][16] = malloc(sizeof(*tmp15__flexattn_0_KScaled) * 2);
-    if (tmp15__flexattn_0_KScaled == NULL) {
-        return;
-    }
+    static float tmp15__flexattn_0_KScaled[2][4][6][16];
 #endif
 #ifdef EMX_LARGE_TEMPS_ON_STACK
     float tmp16__flexattn_0_KTranspose[2][4][16][6];
 #else
-    float (*tmp16__flexattn_0_KTranspose)[4][16][6] = malloc(sizeof(*tmp16__flexattn_0_KTranspose) * 2);
-    if (tmp16__flexattn_0_KTranspose == NULL) {
-        return;
-    }
+    static float tmp16__flexattn_0_KTranspose[2][4][16][6];
 #endif
 #ifdef EMX_LARGE_TEMPS_ON_STACK
     float tmp17__flexattn_0_Score[2][4][8][6];
 #else
-    float (*tmp17__flexattn_0_Score)[4][8][6] = malloc(sizeof(*tmp17__flexattn_0_Score) * 2);
-    if (tmp17__flexattn_0_Score == NULL) {
-        return;
-    }
+    static float tmp17__flexattn_0_Score[2][4][8][6];
 #endif
 #ifdef EMX_LARGE_TEMPS_ON_STACK
     float tmp18__flexattn_0_SoftmaxCast[2][4][8][6];
 #else
-    float (*tmp18__flexattn_0_SoftmaxCast)[4][8][6] = malloc(sizeof(*tmp18__flexattn_0_SoftmaxCast) * 2);
-    if (tmp18__flexattn_0_SoftmaxCast == NULL) {
-        return;
-    }
+    static float tmp18__flexattn_0_SoftmaxCast[2][4][8][6];
 #endif
 #ifdef EMX_LARGE_TEMPS_ON_STACK
     float tmp19__flexattn_0_ScoreAfterScoreMod[2][4][8][6];
 #else
-    float (*tmp19__flexattn_0_ScoreAfterScoreMod)[4][8][6] = malloc(sizeof(*tmp19__flexattn_0_ScoreAfterScoreMod) * 2);
-    if (tmp19__flexattn_0_ScoreAfterScoreMod == NULL) {
-        return;
-    }
+    static float tmp19__flexattn_0_ScoreAfterScoreMod[2][4][8][6];
 #endif
 #ifdef EMX_LARGE_TEMPS_ON_STACK
     float tmp20__flexattn_0_Prob[2][4][8][6];
 #else
-    float (*tmp20__flexattn_0_Prob)[4][8][6] = malloc(sizeof(*tmp20__flexattn_0_Prob) * 2);
-    if (tmp20__flexattn_0_Prob == NULL) {
-        return;
-    }
+    static float tmp20__flexattn_0_Prob[2][4][8][6];
 #endif
 #ifdef EMX_LARGE_TEMPS_ON_STACK
     float tmp21__flexattn_0_ProbAfterProbMod[2][4][8][6];
 #else
-    float (*tmp21__flexattn_0_ProbAfterProbMod)[4][8][6] = malloc(sizeof(*tmp21__flexattn_0_ProbAfterProbMod) * 2);
-    if (tmp21__flexattn_0_ProbAfterProbMod == NULL) {
-        return;
-    }
+    static float tmp21__flexattn_0_ProbAfterProbMod[2][4][8][6];
 #endif
     node0_unsqueeze(K, tmp0__flexattn_0_KUnsqueezed);
     node1_expand(tmp0__flexattn_0_KUnsqueezed, tmp1__flexattn_0_KExpanded);
@@ -731,20 +688,4 @@ void model(const float Q[restrict 2][4][8][16], const float K[restrict 2][4][6][
     node20_softmax(tmp19__flexattn_0_ScoreAfterScoreMod, tmp20__flexattn_0_Prob);
     node21_identity(tmp20__flexattn_0_Prob, tmp21__flexattn_0_ProbAfterProbMod);
     node22_matmul(tmp21__flexattn_0_ProbAfterProbMod, tmp5__flexattn_0_VAligned, Y);
-#ifndef EMX_LARGE_TEMPS_ON_STACK
-    free(tmp21__flexattn_0_ProbAfterProbMod);
-    free(tmp20__flexattn_0_Prob);
-    free(tmp19__flexattn_0_ScoreAfterScoreMod);
-    free(tmp18__flexattn_0_SoftmaxCast);
-    free(tmp17__flexattn_0_Score);
-    free(tmp16__flexattn_0_KTranspose);
-    free(tmp15__flexattn_0_KScaled);
-    free(tmp14__flexattn_0_QScaled);
-    free(tmp5__flexattn_0_VAligned);
-    free(tmp4__flexattn_0_VExpanded);
-    free(tmp3__flexattn_0_VUnsqueezed);
-    free(tmp2__flexattn_0_KAligned);
-    free(tmp1__flexattn_0_KExpanded);
-    free(tmp0__flexattn_0_KUnsqueezed);
-#endif
 }

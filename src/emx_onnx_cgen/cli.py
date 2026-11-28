@@ -1236,9 +1236,10 @@ def _build_parser() -> argparse.ArgumentParser:
         default=1024,
         dest="large_temp_threshold_bytes",
         help=(
-            "Heap-allocate temporary buffers larger than this byte threshold; "
-            "smaller buffers stay on the stack (default: 1024; set to 0 to "
-            "disable heap allocation and keep all temporaries on the stack)"
+            "Move temporary buffers larger than this byte threshold off the "
+            "stack: fixed-size ones become static, runtime-sized ones are "
+            "heap-allocated; smaller buffers stay on the stack (default: 1024; "
+            "set to 0 to keep all temporaries on the stack)"
         ),
     )
     compile_parser.add_argument(
@@ -1315,9 +1316,10 @@ def _build_parser() -> argparse.ArgumentParser:
         default=1024,
         dest="large_temp_threshold_bytes",
         help=(
-            "Heap-allocate temporary buffers larger than this byte threshold; "
-            "smaller buffers stay on the stack (default: 1024; set to 0 to "
-            "disable heap allocation and keep all temporaries on the stack)"
+            "Move temporary buffers larger than this byte threshold off the "
+            "stack: fixed-size ones become static, runtime-sized ones are "
+            "heap-allocated; smaller buffers stay on the stack (default: 1024; "
+            "set to 0 to keep all temporaries on the stack)"
         ),
     )
     verify_parser.add_argument(
