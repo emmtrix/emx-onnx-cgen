@@ -1511,6 +1511,12 @@ class CEmitter:
             original: buffer.name for original, buffer in temp_buffers.items()
         }
         self._copy_temp_buffer_dim_names(tensor_dim_names, temp_name_map)
+        resolved_ops = [self._resolve_op(op, temp_name_map) for op in model.ops]
+        self._copy_derived(model.op_context, model.ops, resolved_ops)
+        value_name_map = self._build_value_name_map(name_map, temp_name_map)
+        self._emit_state.value_name_map = value_name_map
+        self._propagate_tensor_dim_names(resolved_ops, tensor_dim_names)
+        # After propagation: the wrapper decides heap vs static from these names.
         heap_temp_include = {
             "#include <stdlib.h>"
             for temp in temp_buffers.values()
@@ -1519,11 +1525,6 @@ class CEmitter:
                 tensor_dim_names.get(temp.name),
             )
         }
-        resolved_ops = [self._resolve_op(op, temp_name_map) for op in model.ops]
-        self._copy_derived(model.op_context, model.ops, resolved_ops)
-        value_name_map = self._build_value_name_map(name_map, temp_name_map)
-        self._emit_state.value_name_map = value_name_map
-        self._propagate_tensor_dim_names(resolved_ops, tensor_dim_names)
         operator_fns = self._emit_operator_functions(model, resolved_ops)
         wrapper_fn = self._emit_model_wrapper(
             model,
@@ -1746,6 +1747,12 @@ class CEmitter:
             original: buffer.name for original, buffer in temp_buffers.items()
         }
         self._copy_temp_buffer_dim_names(tensor_dim_names, temp_name_map)
+        resolved_ops = [self._resolve_op(op, temp_name_map) for op in model.ops]
+        self._copy_derived(model.op_context, model.ops, resolved_ops)
+        value_name_map = self._build_value_name_map(name_map, temp_name_map)
+        self._emit_state.value_name_map = value_name_map
+        self._propagate_tensor_dim_names(resolved_ops, tensor_dim_names)
+        # After propagation: the wrapper decides heap vs static from these names.
         heap_temp_include = {
             "#include <stdlib.h>"
             for temp in temp_buffers.values()
@@ -1754,11 +1761,6 @@ class CEmitter:
                 tensor_dim_names.get(temp.name),
             )
         }
-        resolved_ops = [self._resolve_op(op, temp_name_map) for op in model.ops]
-        self._copy_derived(model.op_context, model.ops, resolved_ops)
-        value_name_map = self._build_value_name_map(name_map, temp_name_map)
-        self._emit_state.value_name_map = value_name_map
-        self._propagate_tensor_dim_names(resolved_ops, tensor_dim_names)
         operator_fns = self._emit_operator_functions(model, resolved_ops)
         wrapper_fn = self._emit_model_wrapper(
             model,
@@ -2617,6 +2619,12 @@ class CEmitter:
                         )
                     )
                     heap_temp_names.append(temp.name)
+                elif self._temp_buffer_is_static(temp, dim_names):
+                    lines.extend(
+                        self._large_temp_alternatives(
+                            [declaration], [f"static {declaration}"]
+                        )
+                    )
                 else:
                     lines.append(f"    {declaration}")
         sequence_temp_count_names = {
@@ -3005,7 +3013,12 @@ class CEmitter:
         temp: TempBuffer,
         dim_names: Mapping[int, CodegenDim] | None = None,
     ) -> bool:
-        if temp.is_sequence:
+        """Large tensor temporaries whose extent depends on a runtime dim.
+
+        Fixed-size ones get static storage instead (:meth:`_temp_buffer_is_static`),
+        so the generated code needs no allocator for them.
+        """
+        if temp.is_sequence or not dim_names:
             return False
         return self._exceeds_temp_threshold(
             self._buffer_size_bytes(
@@ -3014,6 +3027,18 @@ class CEmitter:
                 dim_names=dim_names,
                 is_sequence=temp.is_sequence,
             )
+        )
+
+    def _temp_buffer_is_static(
+        self,
+        temp: TempBuffer,
+        dim_names: Mapping[int, CodegenDim] | None = None,
+    ) -> bool:
+        """Large fixed-size tensor temporaries; they make the model non-reentrant."""
+        if temp.is_sequence or dim_names:
+            return False
+        return self._exceeds_temp_threshold(
+            self._buffer_size_bytes(temp.shape, temp.dtype)
         )
 
     def _heap_temp_buffer_lines(
