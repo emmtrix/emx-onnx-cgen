@@ -496,6 +496,8 @@ Large temporaries:
   `static` inside the entrypoint, to avoid large stack usage without an
   allocator (see
   [`tests/golden/large_temp_static_model.c`](../tests/golden/large_temp_static_model.c)).
+  Such buffers stay reserved for the whole program run, one set per model
+  (design note: [`large-temp-storage.md`](large-temp-storage.md)).
 - A temporary whose size depends on a runtime dimension cannot be `static`;
   above the threshold it is heap-allocated with `malloc` at the start of the
   entrypoint and released with `free` before returning.

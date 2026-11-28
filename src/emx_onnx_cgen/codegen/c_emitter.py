@@ -1454,6 +1454,12 @@ class CEmitter:
             original: buffer.name for original, buffer in temp_buffers.items()
         }
         self._copy_temp_buffer_dim_names(tensor_dim_names, temp_name_map)
+        resolved_ops = [self._resolve_op(op, temp_name_map) for op in model.ops]
+        self._copy_derived(model.op_context, model.ops, resolved_ops)
+        value_name_map = self._build_value_name_map(name_map, temp_name_map)
+        self._emit_state.value_name_map = value_name_map
+        self._propagate_tensor_dim_names(resolved_ops, tensor_dim_names)
+        # After propagation: the wrapper decides heap vs static from these names.
         heap_temp_include = {
             "#include <stdlib.h>"
             for temp in temp_buffers.values()
@@ -1462,11 +1468,6 @@ class CEmitter:
                 tensor_dim_names.get(temp.name),
             )
         }
-        resolved_ops = [self._resolve_op(op, temp_name_map) for op in model.ops]
-        self._copy_derived(model.op_context, model.ops, resolved_ops)
-        value_name_map = self._build_value_name_map(name_map, temp_name_map)
-        self._emit_state.value_name_map = value_name_map
-        self._propagate_tensor_dim_names(resolved_ops, tensor_dim_names)
         operator_fns = self._emit_operator_functions(model, resolved_ops)
         wrapper_fn = self._emit_model_wrapper(
             model,
@@ -1688,6 +1689,12 @@ class CEmitter:
             original: buffer.name for original, buffer in temp_buffers.items()
         }
         self._copy_temp_buffer_dim_names(tensor_dim_names, temp_name_map)
+        resolved_ops = [self._resolve_op(op, temp_name_map) for op in model.ops]
+        self._copy_derived(model.op_context, model.ops, resolved_ops)
+        value_name_map = self._build_value_name_map(name_map, temp_name_map)
+        self._emit_state.value_name_map = value_name_map
+        self._propagate_tensor_dim_names(resolved_ops, tensor_dim_names)
+        # After propagation: the wrapper decides heap vs static from these names.
         heap_temp_include = {
             "#include <stdlib.h>"
             for temp in temp_buffers.values()
@@ -1696,11 +1703,6 @@ class CEmitter:
                 tensor_dim_names.get(temp.name),
             )
         }
-        resolved_ops = [self._resolve_op(op, temp_name_map) for op in model.ops]
-        self._copy_derived(model.op_context, model.ops, resolved_ops)
-        value_name_map = self._build_value_name_map(name_map, temp_name_map)
-        self._emit_state.value_name_map = value_name_map
-        self._propagate_tensor_dim_names(resolved_ops, tensor_dim_names)
         operator_fns = self._emit_operator_functions(model, resolved_ops)
         wrapper_fn = self._emit_model_wrapper(
             model,

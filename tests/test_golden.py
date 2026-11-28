@@ -760,16 +760,24 @@ def _without_threshold_traces(source: str) -> str:
 
 
 @pytest.mark.parametrize(
-    ("make_model", "threshold"),
+    ("make_model", "threshold", "large_declaration"),
     [
-        (_make_large_temp_model, 1024),
-        (_make_dynamic_large_temp_model, 1024),
-        (_make_sequence_temp_model, 100),
+        (_make_large_temp_model, 1024, "    static float tmp0_tmp[1][257];"),
+        (
+            _make_dynamic_large_temp_model,
+            1024,
+            "    float (*tmp0_tmp)[257] = malloc(sizeof(*tmp0_tmp) * N);",
+        ),
+        (
+            _make_sequence_temp_model,
+            100,
+            "    static float tmp0_seq[EMX_SEQUENCE_MAX_LEN][2][3];",
+        ),
     ],
     ids=["static", "heap_vla", "static_sequence"],
 )
 def test_large_temps_on_stack_macro_matches_threshold_zero(
-    make_model: Callable[[], onnx.ModelProto], threshold: int
+    make_model: Callable[[], onnx.ModelProto], threshold: int, large_declaration: str
 ) -> None:
     model = make_model()
     thresholded = Compiler(
@@ -784,7 +792,8 @@ def test_large_temps_on_stack_macro_matches_threshold_zero(
     assert _without_threshold_traces(
         _select_large_temp_variant(thresholded, on_stack=True)
     ) == _without_threshold_traces(unbounded)
-    assert ("malloc(" in thresholded) or ("static float" in thresholded)
+    # The model's own temporary, not the testbench's static buffers.
+    assert large_declaration in thresholded
 
 
 def test_mul_add_matches_onnxruntime() -> None:
