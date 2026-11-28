@@ -85,22 +85,28 @@ Alternatives considered:
 - **A caller-owned state struct** (`model_state *state` as first parameter;
   the first version of this feature). It allows several independent sequences
   and placement through the struct definition, but it is the only struct in
-  the generated code, and reentrancy buys nothing: buffers above
-  `--large-temp-threshold` are already `static`, so the model is not
-  reentrant anyway.
+  the generated code, and reentrancy buys little: buffers with static shapes
+  above `--large-temp-threshold` are already `static`, so most models are not
+  reentrant anyway. Only a model whose large temporaries all have dynamic
+  dimensions (heap-allocated) loses reentrancy with this change.
 - **One array parameter per pair.** Flexible for placement, but the
   signature grows with the layer count (2 parameters per layer for Tiny, 48
   for Qwen2.5-0.5B) and `reset` needs all of them again.
 
 The globals follow the storage model of the large temporaries: static
 storage, one sequence per model at a time. They are placed like any other
-global with the toolchain's own mechanism (linker script; with
-`-fdata-sections` each array has its own section `.bss.<model>_<input>`). The
-arrays require static state shapes, which a fixed-size cache has anyway.
+global with the toolchain's own mechanism: a linker script that selects their
+sections (with `-fdata-sections` each array has its own section
+`.bss.<model>_<input>`). The generated definitions carry no section attribute
+or pragma; a toolchain that cannot select single variables in the linker has
+to place the whole object file of the model. The arrays require static state
+shapes, which a fixed-size cache has anyway.
 
 `model_state_reset()` zero-fills every array; the caller can also write
-initial values into them directly. A state input that has the name of the
-model is rejected (its array would clash with the model function).
+initial values into them directly. The array names avoid the other
+model-prefixed functions (`<model>_load`, `<model>_load_file`,
+`<model>_state_reset`); a state input that has the name of the model is
+rejected (its array would clash with the model function).
 
 ### TensorScatter in place
 

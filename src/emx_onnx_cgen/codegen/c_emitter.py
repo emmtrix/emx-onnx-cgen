@@ -999,7 +999,15 @@ class CEmitter:
                 # The model name comes first; the state API derives from it.
                 model_c_name = unique
                 if model.state_bindings:
-                    used.add(self._state_reset_name_for(unique))
+                    # The prefixed state globals share the file scope with
+                    # these model functions.
+                    used.update(
+                        (
+                            self._state_reset_name_for(unique),
+                            f"{unique}_load",
+                            f"{unique}_load_file",
+                        )
+                    )
         for index, const in enumerate(model.constants, start=1):
             if const.name in name_map:
                 continue

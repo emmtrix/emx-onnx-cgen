@@ -529,6 +529,43 @@ def test_state_api_names_are_reserved() -> None:
     assert "void model_state_reset(void) {" in generated
 
 
+@pytest.mark.parametrize("state_name", ["load", "load_file"])
+def test_state_globals_avoid_model_functions(tmp_path: Path, state_name: str) -> None:
+    model = _make_model(
+        [
+            helper.make_node("Add", [state_name, "delta"], ["next"]),
+            helper.make_node("ReduceSum", ["next"], ["total"], keepdims=0),
+        ],
+        [_cache_info(state_name), _cache_info("delta")],
+        [_cache_info("next"), helper.make_tensor_value_info("total", 1, [])],
+    )
+    source = _compile(
+        model,
+        f"{state_name}=next",
+        emit_testbench=True,
+        state_testbench=StateTestbenchData(steps=2),
+    )
+    assert f"float model_{state_name}_1[2][8][3];" in source
+    result = _build_and_run(source, tmp_path)
+    assert result.returncode == 0, result
+
+
+def test_state_testbench_maps_sanitized_step_input_names(tmp_path: Path) -> None:
+    model = _make_kv_cache_model(pos_name="pos:0")
+    source = _compile(
+        model,
+        "past_k=new_k",
+        emit_testbench=True,
+        state_testbench=StateTestbenchData(
+            steps=2,
+            step_inputs={"pos:0": np.array([[0, 1], [2, 3]], dtype=np.int64)},
+        ),
+    )
+    assert "const int64_t pos_0[restrict 2]" in source
+    result = _build_and_run(source, tmp_path)
+    assert result.returncode == 0, result
+
+
 def test_update_reading_the_state_is_not_in_place() -> None:
     model = _make_model(
         [

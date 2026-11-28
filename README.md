@@ -317,8 +317,8 @@ for (int64_t pos = 0; pos < n; ++pos) {
 }
 ```
 
-Like the large temporaries (`--large-temp-threshold`), the state has static
-storage, so one program runs one sequence of a model at a time. The arrays are
+Like the large static-shape temporaries (`--large-temp-threshold`), the state
+has static storage, so one program runs one sequence of a model at a time. The arrays are
 ordinary globals: place them with the linker, e.g. in large slow memory
 instead of the small vector memory (with `-fdata-sections`, each array has its
 own section `.bss.model_past_k_0`).
