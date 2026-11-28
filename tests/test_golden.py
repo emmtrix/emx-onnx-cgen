@@ -921,6 +921,23 @@ def test_large_temps_on_stack_macro_matches_threshold_zero(
     assert large_declaration in thresholded
 
 
+def test_large_temps_on_stack_macro_with_malloc_scoped() -> None:
+    # The stack variant declares each temporary at its first use instead of at
+    # the top, so it has the lines of --large-temp-threshold 0 in another order.
+    model = _make_large_temp_chain_model("N")
+    scoped = Compiler(CompilerOptions(large_temp_storage="malloc-scoped")).compile(
+        model
+    )
+    unbounded = Compiler(CompilerOptions(large_temp_threshold_bytes=0)).compile(model)
+    on_stack = _without_threshold_traces(
+        _select_large_temp_variant(scoped, on_stack=True)
+    )
+    assert on_stack != _without_threshold_traces(unbounded)
+    assert sorted(on_stack.splitlines()) == sorted(
+        _without_threshold_traces(unbounded).splitlines()
+    )
+
+
 def test_mul_add_matches_onnxruntime() -> None:
     model = _make_mul_add_model()
     input_a = np.random.rand(2, 3).astype(np.float32)
