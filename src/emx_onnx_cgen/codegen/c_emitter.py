@@ -258,6 +258,10 @@ _LSTM_ACTIVATION_SPECS: dict[int, tuple[ScalarFunction, int]] = {
 # --large-temp-threshold moves to the heap or to static storage back on the stack.
 LARGE_TEMPS_ON_STACK_MACRO = "EMX_LARGE_TEMPS_ON_STACK"
 
+# Where fixed-size tensor temporaries above --large-temp-threshold live.
+# Runtime-sized ones are always heap-allocated.
+LARGE_TEMP_STORAGE_CHOICES = ("static", "malloc")
+
 _C_IDENTIFIER_RE = re.compile(r"[^a-zA-Z0-9_]")
 _C_KEYWORDS = {
     "_Bool",
@@ -393,6 +397,7 @@ class CEmitter:
         fp16_accumulation_strategy: str = "fp32",
         truncate_weights_after: int | None = None,
         large_temp_threshold_bytes: int = 1024,
+        large_temp_storage: str = "static",
         large_weight_threshold: int = 1024,
         replicate_ort_bugs: bool = False,
         sequence_element_shapes: Mapping[str, SequenceElementShapeHint] | None = None,
@@ -423,6 +428,12 @@ class CEmitter:
         if large_temp_threshold_bytes < 0:
             raise CodegenError("large_temp_threshold_bytes must be >= 0")
         self._large_temp_threshold_bytes = large_temp_threshold_bytes
+        if large_temp_storage not in LARGE_TEMP_STORAGE_CHOICES:
+            raise CodegenError(
+                "large_temp_storage must be one of "
+                f"{', '.join(LARGE_TEMP_STORAGE_CHOICES)}, got {large_temp_storage!r}"
+            )
+        self._large_temp_storage = large_temp_storage
         if large_weight_threshold < 0:
             raise CodegenError("large_weight_threshold must be >= 0")
         self._large_weight_threshold = large_weight_threshold
@@ -3022,12 +3033,15 @@ class CEmitter:
         temp: TempBuffer,
         dim_names: Mapping[int, CodegenDim] | None = None,
     ) -> bool:
-        """Large tensor temporaries whose extent depends on a runtime dim.
+        """Large tensor temporaries allocated with ``malloc`` on every call.
 
-        Fixed-size ones get static storage instead (:meth:`_temp_buffer_is_static`),
-        so the generated code needs no allocator for them.
+        Runtime-sized ones always are; fixed-size ones only with
+        ``--large-temp-storage malloc``, otherwise they get static storage
+        (:meth:`_temp_buffer_is_static`) and need no allocator.
         """
-        if temp.is_sequence or not dim_names:
+        if temp.is_sequence:
+            return False
+        if not dim_names and self._large_temp_storage != "malloc":
             return False
         return self._exceeds_temp_threshold(
             self._buffer_size_bytes(
@@ -3044,7 +3058,7 @@ class CEmitter:
         dim_names: Mapping[int, CodegenDim] | None = None,
     ) -> bool:
         """Large fixed-size tensor temporaries; they make the model non-reentrant."""
-        if temp.is_sequence or dim_names:
+        if temp.is_sequence or dim_names or self._large_temp_storage != "static":
             return False
         return self._exceeds_temp_threshold(
             self._buffer_size_bytes(temp.shape, temp.dtype)

@@ -498,6 +498,8 @@ Large temporaries:
   [`tests/golden/large_temp_static_model.c`](../tests/golden/large_temp_static_model.c)).
   Such buffers stay reserved for the whole program run, one set per model
   (design note: [`large-temp-storage.md`](large-temp-storage.md)).
+  `--large-temp-storage malloc` heap-allocates them instead, like the
+  runtime-sized ones below, so the memory is only taken during a call.
 - A temporary whose size depends on a runtime dimension cannot be `static`;
   above the threshold it is heap-allocated with `malloc` at the start of the
   entrypoint and released with `free` before returning.
@@ -528,7 +530,9 @@ temporaries and the buffers of `Tokenizer` have `static` storage, so a model
 function must not be entered again while a call of it is running: no calls
 from several threads at once, from an interrupt that preempts a call, or
 through recursion. Calls of different models are independent; their symbols
-carry the model name. With `--large-temp-threshold 0` (or
+carry the model name. `--large-temp-storage malloc` takes the model's large
+tensor temporaries off static storage, but sequence temporaries, `Tokenizer`
+buffers and state arrays stay `static`. With `--large-temp-threshold 0` (or
 `EMX_LARGE_TEMPS_ON_STACK`) the temporaries move to the stack, but the code is
 still not guaranteed to be reentrant. Weights read by `<model>_load()` are
 written once before the first call and only read afterwards.

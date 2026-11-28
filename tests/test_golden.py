@@ -12,7 +12,8 @@ from typing import Callable
 from onnx import TensorProto, helper
 from onnx.reference import ReferenceEvaluator
 
-from emx_onnx_cgen import Compiler
+from emx_onnx_cgen import Compiler, cli
+from emx_onnx_cgen.errors import CodegenError
 from emx_onnx_cgen.compiler import CompilerOptions
 from emx_onnx_cgen.sequence_shape_hints import parse_sequence_element_shape_hints
 from golden_utils import assert_golden
@@ -693,6 +694,37 @@ def test_large_temp_threshold_zero_disables_static_storage() -> None:
     assert "    float tmp0_tmp[1][257];" in stack_generated
 
 
+def test_large_temp_storage_malloc_heap_allocates_fixed_size_temps() -> None:
+    generated = Compiler(CompilerOptions(large_temp_storage="malloc")).compile(
+        _make_large_temp_model()
+    )
+    assert " *   large_temp_storage: malloc" in generated
+    assert "#include <stdlib.h>" in generated
+    assert "float (*tmp0_tmp)[257] = malloc(sizeof(*tmp0_tmp) * 1);" in generated
+    assert "free(tmp0_tmp);" in generated
+    assert "static float tmp0_tmp" not in generated
+    # The default does not list the setting, so existing outputs are unchanged.
+    assert "large_temp_storage" not in Compiler().compile(_make_large_temp_model())
+
+
+def test_large_temp_storage_rejects_unknown_value() -> None:
+    with pytest.raises(CodegenError, match="large_temp_storage must be one of"):
+        Compiler(CompilerOptions(large_temp_storage="stack"))
+
+
+def test_large_temp_storage_malloc_matches_onnxruntime(tmp_path: Path) -> None:
+    model_path = tmp_path / "model.onnx"
+    onnx.save_model(_make_large_temp_model(), model_path)
+    verify = ["verify", str(model_path), "--temp-dir-root", str(tmp_path)]
+    result = cli.run_cli_command([*verify, "--large-temp-storage", "malloc"])
+    assert result.exit_code == 0, result.result
+    assert result.result.startswith("OK"), result.result
+    # The option reached code generation: the code differs from the default.
+    default = cli.run_cli_command(verify)
+    assert result.generated_checksum and default.generated_checksum
+    assert result.generated_checksum != default.generated_checksum
+
+
 def _make_dynamic_large_temp_model() -> onnx.ModelProto:
     shape: list[str | int] = ["N", 257]
     graph = helper.make_graph(
@@ -755,33 +787,51 @@ def _without_threshold_traces(source: str) -> str:
     return "\n".join(
         line
         for line in source.splitlines()
-        if "large_temp_threshold:" not in line and line != "#include <stdlib.h>"
+        if "large_temp_threshold:" not in line
+        and "large_temp_storage:" not in line
+        and line != "#include <stdlib.h>"
     )
 
 
 @pytest.mark.parametrize(
-    ("make_model", "threshold", "large_declaration"),
+    ("make_model", "threshold", "storage", "large_declaration"),
     [
-        (_make_large_temp_model, 1024, "    static float tmp0_tmp[1][257];"),
+        (_make_large_temp_model, 1024, "static", "    static float tmp0_tmp[1][257];"),
+        (
+            _make_large_temp_model,
+            1024,
+            "malloc",
+            "    float (*tmp0_tmp)[257] = malloc(sizeof(*tmp0_tmp) * 1);",
+        ),
         (
             _make_dynamic_large_temp_model,
             1024,
+            "static",
             "    float (*tmp0_tmp)[257] = malloc(sizeof(*tmp0_tmp) * N);",
         ),
+        # Sequence buffers stay static with either storage.
         (
             _make_sequence_temp_model,
             100,
+            "malloc",
             "    static float tmp0_seq[EMX_SEQUENCE_MAX_LEN][2][3];",
         ),
     ],
-    ids=["static", "heap_vla", "static_sequence"],
+    ids=["static", "malloc", "heap_vla", "static_sequence"],
 )
 def test_large_temps_on_stack_macro_matches_threshold_zero(
-    make_model: Callable[[], onnx.ModelProto], threshold: int, large_declaration: str
+    make_model: Callable[[], onnx.ModelProto],
+    threshold: int,
+    storage: str,
+    large_declaration: str,
 ) -> None:
     model = make_model()
     thresholded = Compiler(
-        CompilerOptions(emit_testbench=True, large_temp_threshold_bytes=threshold)
+        CompilerOptions(
+            emit_testbench=True,
+            large_temp_threshold_bytes=threshold,
+            large_temp_storage=storage,
+        )
     ).compile(model)
     unbounded = Compiler(
         CompilerOptions(emit_testbench=True, large_temp_threshold_bytes=0)
