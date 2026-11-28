@@ -299,30 +299,29 @@ emx-onnx-cgen compile decoder_step.onnx decoder_step.c \
   --state-pair past_k_0=new_k_0 --state-pair past_v_0=new_v_0
 ```
 
-The paired input and output disappear from the entry point; a caller-owned
-state struct takes their place:
+The paired input and output disappear from the entry point; each pair becomes
+a global array named after the model and the input:
 
 ```c
-typedef struct {
-    float past_k_0[4][128][24]; /* past_k_0 -> new_k_0 */
-    float past_v_0[4][128][24]; /* past_v_0 -> new_v_0 */
-} model_state;
+float model_past_k_0[4][128][24]; /* shared with graph output new_k_0 */
+float model_past_v_0[4][128][24]; /* shared with graph output new_v_0 */
 
-void model_state_reset(model_state *state); /* zero-fills the state */
-void model(model_state *restrict state, const int64_t pos[restrict 1], ...);
+void model_state_reset(void); /* zero-fills the state */
+void model(const int64_t pos[restrict 1], ...);
 ```
 
-The caller decides where the state lives, e.g. in large slow memory instead of
-the small vector memory:
-
 ```c
-static model_state state __attribute__((section(".bss.lmu")));
-
-model_state_reset(&state);              /* start of a sequence */
+model_state_reset();                    /* start of a sequence */
 for (int64_t pos = 0; pos < n; ++pos) {
-    model(&state, ...);                 /* reads and updates state.past_k_0 */
+    model(...);                         /* reads and updates model_past_k_0 */
 }
 ```
+
+Like the large temporaries (`--large-temp-threshold`), the state has static
+storage, so one program runs one sequence of a model at a time. The arrays are
+ordinary globals: place them with the linker, e.g. in large slow memory
+instead of the small vector memory (with `-fdata-sections`, each array has its
+own section `.bss.model_past_k_0`).
 
 The pairs are never inferred from names. The compiler checks that both sides
 have the same static shape and dtype, and that no node reads the old state
