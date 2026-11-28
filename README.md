@@ -319,7 +319,7 @@ emx-onnx-cgen compile model.onnx --input-dim batch_size=1 --input-dim sequence_l
 ```
 
 The caller passes the current length (`int past_sequence_length`) as before;
-the state array is `float model_past_key_values_0_key[1][2][256][64]` and each
+the state array is `float model_state_past_key_values_0_key[1][2][256][64]` and each
 call only writes the new row. See `docs/state-aliasing.md`.
 
 ```c

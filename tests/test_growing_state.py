@@ -91,9 +91,7 @@ def _options(**overrides) -> CompilerOptions:
 
 def test_growing_state_is_one_buffer_with_capacity() -> None:
     generated = Compiler(_options()).compile(_kv_cache_model())
-    assert (
-        "float model_past[2][8][3]; /* shared with graph output present */" in generated
-    )
+    assert "float model_state_past[2][8][3]; /* state: past -> present */" in generated
     # Concat only writes the new row; the old rows already are in place.
     assert "void node1_concat(int p, const float input_1[2][1][3], " in generated
     assert "output[i0][i1 + p][i2] = input_1[i0][i1][i2];" in generated
@@ -101,7 +99,7 @@ def test_growing_state_is_one_buffer_with_capacity() -> None:
     assert "const float input0[2][8][3], float output[2][3][(p + 1)]" in generated
     assert "for (idx_t i2 = 0; i2 < (p + 1); ++i2)" in generated
     assert "    if (p < 0 || p > 7) {" in generated
-    assert "node1_concat(p, tmp0_new, model_past);" in generated
+    assert "node1_concat(p, tmp0_new, model_state_past);" in generated
 
 
 def test_growing_state_needs_a_capacity() -> None:

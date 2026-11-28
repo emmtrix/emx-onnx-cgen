@@ -162,7 +162,7 @@ A pair whose shapes differ only on one dynamic axis, where the output's
 
 - The buffer gets a fixed **capacity** on that axis, the upper bound of `n`
   from `--input-dim n<=N` plus the growth; without a bound the pair is
-  rejected. The state array is e.g. `float model_past_k_0[1][2][N + 1][64]`.
+  rejected. The state array is e.g. `float model_state_past_k_0[1][2][N + 1][64]`.
 - Both names stay (no renaming): the input is the first `n` rows of the
   buffer, the output the first `n + 1`. Kernels declare the buffer with its
   capacity (`CodegenDim.storage`) and loop to the logical length, which is
