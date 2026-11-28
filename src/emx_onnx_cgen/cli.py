@@ -26,6 +26,7 @@ from shared.ulp import ulp_intdiff_float
 
 from ._build_info import BUILD_DATE, GIT_VERSION
 from .compiler import Compiler, CompilerOptions
+from .codegen.c_emitter import LARGE_TEMP_STORAGE_CHOICES
 from .codegen.image_decoder_libs import (
     DEFAULT_IMAGE_DECODER_LIBS,
     model_uses_image_decoder,
@@ -1237,9 +1238,22 @@ def _build_parser() -> argparse.ArgumentParser:
         dest="large_temp_threshold_bytes",
         help=(
             "Move temporary buffers larger than this byte threshold off the "
-            "stack: fixed-size ones become static, runtime-sized ones are "
-            "heap-allocated; smaller buffers stay on the stack (default: 1024; "
+            "stack: fixed-size ones become static (see --large-temp-storage), "
+            "runtime-sized ones are heap-allocated; smaller buffers stay on "
+            "the stack (default: 1024; "
             "set to 0 to keep all temporaries on the stack)"
+        ),
+    )
+    compile_parser.add_argument(
+        "--large-temp-storage",
+        choices=LARGE_TEMP_STORAGE_CHOICES,
+        default="static",
+        help=(
+            "Storage of fixed-size temporaries above --large-temp-threshold: "
+            "static (one buffer for the program's lifetime, no allocator) or "
+            "malloc (allocated and freed on every call, so the memory is only "
+            "taken while the model runs). Runtime-sized temporaries always use "
+            "malloc (default: static)"
         ),
     )
     compile_parser.add_argument(
@@ -1317,9 +1331,22 @@ def _build_parser() -> argparse.ArgumentParser:
         dest="large_temp_threshold_bytes",
         help=(
             "Move temporary buffers larger than this byte threshold off the "
-            "stack: fixed-size ones become static, runtime-sized ones are "
-            "heap-allocated; smaller buffers stay on the stack (default: 1024; "
+            "stack: fixed-size ones become static (see --large-temp-storage), "
+            "runtime-sized ones are heap-allocated; smaller buffers stay on "
+            "the stack (default: 1024; "
             "set to 0 to keep all temporaries on the stack)"
+        ),
+    )
+    verify_parser.add_argument(
+        "--large-temp-storage",
+        choices=LARGE_TEMP_STORAGE_CHOICES,
+        default="static",
+        help=(
+            "Storage of fixed-size temporaries above --large-temp-threshold: "
+            "static (one buffer for the program's lifetime, no allocator) or "
+            "malloc (allocated and freed on every call, so the memory is only "
+            "taken while the model runs). Runtime-sized temporaries always use "
+            "malloc (default: static)"
         ),
     )
     verify_parser.add_argument(
@@ -1604,6 +1631,7 @@ def _compile_model(
             image_decoder_libs=args.image_decoder_libs,
             truncate_weights_after=args.truncate_weights_after,
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
+            large_temp_storage=args.large_temp_storage,
             large_weight_threshold=args.large_weight_threshold,
             state_pairs=_state_pairs(args, model),
             state_testbench=StateTestbenchData(steps=_state_steps(args)),
@@ -1724,6 +1752,7 @@ def _compile_testbench_declarations(
         image_decoder_libs=args.image_decoder_libs,
         truncate_weights_after=args.truncate_weights_after,
         large_temp_threshold_bytes=args.large_temp_threshold_bytes,
+        large_temp_storage=args.large_temp_storage,
         large_weight_threshold=args.large_weight_threshold,
         testbench_optional_inputs=None,
         timings=None,
@@ -2258,6 +2287,7 @@ def _verify_model(
             image_decoder_libs=args.image_decoder_libs,
             truncate_weights_after=args.truncate_weights_after,
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
+            large_temp_storage=args.large_temp_storage,
             large_weight_threshold=args.large_weight_threshold,
             testbench_inputs=None if state_pairs else testbench_inputs,
             testbench_outputs=testbench_outputs,

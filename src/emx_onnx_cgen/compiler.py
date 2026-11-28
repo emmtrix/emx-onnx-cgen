@@ -139,6 +139,7 @@ class CompilerOptions:
     testbench_output_format: str = "json"
     truncate_weights_after: int | None = None
     large_temp_threshold_bytes: int = 1024
+    large_temp_storage: str = "static"
     large_weight_threshold: int = 100 * 1024
     replicate_ort_bugs: bool = False
     sequence_element_shapes: Mapping[str, SequenceElementShapeHint] | None = None
@@ -192,6 +193,7 @@ class Compiler:
             fp16_accumulation_strategy=options.fp16_accumulation_strategy,
             truncate_weights_after=options.truncate_weights_after,
             large_temp_threshold_bytes=options.large_temp_threshold_bytes,
+            large_temp_storage=options.large_temp_storage,
             large_weight_threshold=options.large_weight_threshold,
             replicate_ort_bugs=options.replicate_ort_bugs,
             sequence_element_shapes=options.sequence_element_shapes,
@@ -1191,12 +1193,16 @@ class Compiler:
             codegen_settings.append(
                 ("truncate_weights_after", str(self._options.truncate_weights_after))
             )
+        codegen_settings.append(
+            ("large_temp_threshold", str(self._options.large_temp_threshold_bytes))
+        )
+        # Only listed when not the default, so existing outputs stay unchanged.
+        if self._options.large_temp_storage != "static":
+            codegen_settings.append(
+                ("large_temp_storage", self._options.large_temp_storage)
+            )
         codegen_settings.extend(
             [
-                (
-                    "large_temp_threshold",
-                    str(self._options.large_temp_threshold_bytes),
-                ),
                 (
                     "large_weight_threshold",
                     str(self._options.large_weight_threshold),
